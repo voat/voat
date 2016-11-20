@@ -6,6 +6,7 @@ using System.Runtime.Caching;
 using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Data;
+using Voat.Logging;
 using Voat.Utilities.Components;
 
 namespace Voat.Caching
@@ -18,37 +19,40 @@ namespace Voat.Caching
     }
 
     #region Prototyping
-    //public abstract class RefreshEntry
-    //{
-    //    public TimeSpan CacheTime { get; set; }
-    //    public int CurrentCount { get; set; }
-    //    public int MaxCount { get; set; }
+    public abstract class RefetchEntry
+    {
+        public TimeSpan CacheTime { get; set; }
+        public int CurrentCount { get; set; }
+        public int MaxCount { get; set; }
 
-    //    public T GetData<T>()
-    //    {
-    //        return (T)ProtectedGetData();
-    //    }
+    }
+    public class TaskRefetchEntry<T> : RefetchEntry
+    {
+        private Task<T> _task;
 
-    //    protected abstract object ProtectedGetData();
-    //}
-    //public class TaskRefreshEntry<T> : RefreshEntry
-    //{
-    //    private Task<T> _task;
+        public TaskRefetchEntry(Task<T> task)
+        {
+            this._task = task;
+        }
 
-    //    public TaskRefreshEntry(Task<T> task)
-    //    {
-    //        this._task = task;
-    //    }
+        public async Task<T> GetDataAsync()
+        {
+            return await _task;
+        }
+    }
+    public class FuncRefetchEntry<T> : RefetchEntry
+    {
+        private Func<T> _func;
 
-    //    public new async Task<T> GetData()
-    //    {
-    //        return await _task;
-    //    }
-    //    protected override object ProtectedGetData()
-    //    {
-    //        return (object)Task.Run(() => _task);
-    //    }
-    //}
+        public FuncRefetchEntry(Func<T> func)
+        {
+            _func = func;
+        }
+        public T GetData()
+        {
+            return _func();
+        }
+    }
     #endregion
 
     public abstract class CacheHandler : ICacheHandler
@@ -176,51 +180,62 @@ namespace Voat.Caching
                 //    return data;
                 //}
 
-                object o = _lockStore.GetLockObject(cacheKey);
-                lock (o)
+                //Log the duration this takes to pull fresh
+                using (var duration = new DurationLogger(EventLogger.Instance, new LogInformation()
                 {
-                    if (!Exists(cacheKey))
+                    Type = LogType.Debug,
+                    Origin = Configuration.Settings.Origin.ToString(),
+                    Category = "Duration",
+                    Message = $"Cache Load ({cacheKey})"
+                }))
+                {
+                    object o = _lockStore.GetLockObject(cacheKey);
+                    lock (o)
                     {
-                        try
+                        if (!Exists(cacheKey))
                         {
-                            var data = getData();
-                            if (data != null || data == null && !_ignoreNulls)
+                            try
                             {
-                                Debug.Print("Inserting Cache: " + cacheKey);
-                                SetItem(cacheKey, data, cacheTime);
+                                var data = getData();
+                                if (data != null || data == null && !_ignoreNulls)
+                                {
+                                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = $"Inserting Cache ({cacheKey})", Origin = Configuration.Settings.Origin.ToString() });
+                                    Debug.Print("Inserting Cache: " + cacheKey);
+                                    SetItem(cacheKey, data, cacheTime);
 
-                                //Refetch Logic
-                                if (RefetchEnabled && refetchLimit >= 0)
-                                {
-                                    _meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, refetchLimit, 0);
-                                    var cache = System.Runtime.Caching.MemoryCache.Default;
-                                    var policy = new CacheItemPolicy()
+                                    //Refetch Logic
+                                    if (RefetchEnabled && refetchLimit >= 0)
                                     {
-                                        AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)),
-                                        UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
-                                    };
-                                    cache.Set(cacheKey, new object(), policy);
+                                        _meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, refetchLimit, 0);
+                                        var cache = System.Runtime.Caching.MemoryCache.Default;
+                                        var policy = new CacheItemPolicy()
+                                        {
+                                            AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)),
+                                            UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
+                                        };
+                                        cache.Set(cacheKey, new object(), policy);
+                                    }
+                                    else if (RequiresExpirationRemoval)
+                                    {
+                                        var cache = System.Runtime.Caching.MemoryCache.Default;
+                                        cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
+                                    }
                                 }
-                                else if (RequiresExpirationRemoval)
+                                return data;
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.Print(ex.ToString());
+                                //Cache now supports Tasks which throw aggregates, if agg has only 1 inner, throw it instead
+                                var aggEx = ex as AggregateException;
+                                if (aggEx != null && aggEx.InnerExceptions.Count == 1)
                                 {
-                                    var cache = System.Runtime.Caching.MemoryCache.Default;
-                                    cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
+                                    throw aggEx.InnerException;
                                 }
-                            }
-                            return data;
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.Print(ex.ToString());
-                            //Cache now supports Tasks which throw aggregates, if agg has only 1 inner, throw it instead
-                            var aggEx = ex as AggregateException;
-                            if (aggEx != null && aggEx.InnerExceptions.Count == 1)
-                            {
-                                throw aggEx.InnerException;
-                            }
-                            else
-                            {
-                                throw ex;
+                                else
+                                {
+                                    throw ex;
+                                }
                             }
                         }
                     }
@@ -260,7 +275,10 @@ namespace Voat.Caching
 
             if (refreshLimit == 0 || refreshCount <= refreshLimit)
             {
-                Debug.Print(String.Format("Refreshing cache: {0} - #{1}", cacheKey, refreshCount));
+                string msg = String.Format("Refreshing cache ({0}) - #{1}", cacheKey, refreshCount);
+                EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
+                Debug.Print(msg);
+
                 _meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(meta.Item1, meta.Item2, meta.Item3, refreshCount);
 
                 args.UpdatedCacheItem = new CacheItem(cacheKey, new object());
@@ -283,7 +301,9 @@ namespace Voat.Caching
             }
             else
             {
-                Debug.Print(String.Format("Expiring cache: {0} - #{1}", cacheKey, refreshCount));
+                string msg = String.Format("Expiring cache ({0}) - #{1}", cacheKey, refreshCount);
+                EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
+                Debug.Print(msg);
                 Remove(cacheKey, true);
             }
         }
@@ -292,8 +312,10 @@ namespace Voat.Caching
         {
             try
             {
-                Debug.Print(args.RemovedReason.ToString());
-                Debug.Print(String.Format("Expiring cache: {0}", args.CacheItem.Key));
+                string msg = String.Format("Expiring cache ({0})", args.CacheItem.Key);
+                EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
+                Debug.Print(msg);
+
                 if (args.RemovedReason != CacheEntryRemovedReason.CacheSpecificEviction)
                 {
                     Remove(args.CacheItem.Key);

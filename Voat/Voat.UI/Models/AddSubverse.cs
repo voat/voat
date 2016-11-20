@@ -23,12 +23,12 @@ namespace Voat.Models
 
         //any upper or lower case alphabetic or numeric character, no spaces or special characters, length: 20
         [RegularExpression(@"^[a-zA-Z0-9]*$", ErrorMessage = "Sorry, no spaces or special characters, max 20 characters")]
-        [StringLength(20, ErrorMessage = "The name length is limited to 20 characters.")]
+        [StringLength(20, ErrorMessage = "The name length is limited to 20 characters")]
         [Required(ErrorMessage = "Name is required. Seriously.")]
         public string Name { get; set; }
         
         //this needs to be calculated via name
-        [Required(ErrorMessage = "Title is required. Has to be calculated.")]
+        [Required(ErrorMessage = "Title is required. Has to be calculated")]
         public string Title { get; set; }
 
         public string Type { get; set; }
@@ -57,7 +57,9 @@ namespace Voat.Models
         public Nullable<int> Traffic_stats_public { get; set; }
         public Nullable<int> Minutes_to_hide_comments { get; set; }        
         public DateTime Creation_date { get; set; }
-        [Required(ErrorMessage = "Please describe what your subverse is about.")]
+
+        [Required(ErrorMessage = "Please describe what your subverse is about")]
+        [StringLength(500, ErrorMessage = "The description length is limited to 500 characters")]
         public string Description { get; set; }
         public string Owner { get; set; }
         

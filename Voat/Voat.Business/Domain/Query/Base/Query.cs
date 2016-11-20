@@ -30,10 +30,12 @@ namespace Voat.Domain.Query
             }
         }
 
+        //BLOCK: This needs fixed
         public abstract Task<T> ExecuteAsync();
 
         public virtual T Execute()
         {
+            //BLOCK: This needs fixed
             Task<T> t = Task.Run(ExecuteAsync);
             Task.WaitAny(t);
             return t.Result;

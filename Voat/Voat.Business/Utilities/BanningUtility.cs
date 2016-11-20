@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Voat.Caching;
+using Voat.Data;
 using Voat.Data.Models;
 
 namespace Voat.Utilities
@@ -59,21 +60,11 @@ namespace Voat.Utilities
 
         public static bool IsDomainBanned(params string[] domains)
         {
-            using (var db = new voatEntities())
+            using (var repo = new Repository())
             {
-                foreach (var domain in domains)
-                {
-                    if (!String.IsNullOrWhiteSpace(domain))
-                    {
-                        var found = db.BannedDomains.Any(r => r.Domain.Equals(domain, StringComparison.OrdinalIgnoreCase));
-                        if (found)
-                        {
-                            return true;
-                        }
-                    }
-                }
+                var bannedDomains = repo.BannedDomains(domains);
+                return bannedDomains.Any();
             }
-            return false;
         }
     }
 }

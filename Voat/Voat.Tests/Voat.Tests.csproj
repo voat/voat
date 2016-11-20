@@ -178,6 +178,7 @@
     <Compile Include="Data\SchemaInitializerApplicationDbContext.cs" />
     <Compile Include="Data\SearchOptions_Tests.cs" />
     <Compile Include="Helpers\TestHelper.cs" />
+    <Compile Include="Logging\LoggingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryTests\QueryCommentTests.cs" />
     <Compile Include="QueryTests\QueryCommentTreeAnonTests.cs" />
@@ -215,6 +216,10 @@
       <Project>{1e367cda-5508-47e1-9e95-ed100aee42d0}</Project>
       <Name>Voat.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Voat.Logging\Voat.Logging.csproj">
+      <Project>{440536c7-287d-47d7-9d84-edbe179b46ec}</Project>
+      <Name>Voat.Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj">
       <Project>{dd358253-041f-4feb-9714-1164127780f8}</Project>
       <Name>Voat.RulesEngine</Name>
@@ -228,7 +233,13 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="~App.config" />
+    <None Include="~Logging.config" />
+    <None Include="Logging.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="~App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

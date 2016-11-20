@@ -2720,12 +2720,7 @@ namespace Voat.Data
                     break;
             }
 
-            
-
-            using (var db = new voatEntities())
-            {
-                result = db.Database.Connection.Query<VoteValue>(q.ToString(), new { UserName = userName, ID = id });
-            }
+            result = _db.Database.Connection.Query<VoteValue>(q.ToString(), new { UserName = userName, ID = id });
 
             return result;
         }
@@ -3735,7 +3730,16 @@ namespace Voat.Data
                     orderby x.CreationDate descending
                     select x).ToList();
         }
+        public IEnumerable<BannedDomain> BannedDomains(params string[] domains)
+        {
+            var q = new DapperQuery();
+            q.Select = "* FROM BannedDomain";
+            q.Where = "Domain IN @Domains";
+            q.Parameters = new { Domains = domains };
 
+            var bannedDomains = _db.Database.Connection.Query<BannedDomain>(q.ToString(), q.Parameters);
+            return bannedDomains;
+        }
         public string SubverseForComment(int commentID)
         {
             var subname = (from x in _db.Comments

@@ -56,6 +56,8 @@ namespace Voat.Configuration
         public const string SiteLogo = "siteLogo";
         public const string SiteName = "siteName";
         public const string SiteSlogan = "siteSlogan";
+        public const string Origin = "origin";
+
         public const string UseContentDeliveryNetwork = "useContentDeliveryNetwork";
     }
 
@@ -147,6 +149,8 @@ namespace Voat.Configuration
                 SetValueIfPresent<bool>(CONFIGURATION.ApiKeyCreationEnabled, section[CONFIGURATION.ApiKeyCreationEnabled]);
                 SetValueIfPresent<bool>(CONFIGURATION.CaptchaDisabled, section[CONFIGURATION.CaptchaDisabled]);
 
+                SetValueIfPresent<Domain.Models.Origin>(CONFIGURATION.Origin, section[CONFIGURATION.Origin]);
+
                 //HACK ATTACK
                 CacheHandler.Instance.CacheEnabled = !Settings.CacheDisabled;
             }
@@ -210,6 +214,11 @@ namespace Voat.Configuration
                         {
                             conValue = false;
                         }
+                        saveValue = conValue;
+                    }
+                    else if (typeof(T).IsEnum)
+                    {
+                        T conValue = (T)Enum.Parse(typeof(T), value);
                         saveValue = conValue;
                     }
                     else

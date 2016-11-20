@@ -235,6 +235,13 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.MinimumCommentPointsForCaptchaSubmission, 25);
             }
         }
+        public static Domain.Models.Origin Origin
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.Origin, Domain.Models.Origin.Unknown);
+            }
+        }
         public static string RecaptchaPrivateKey
         {
             get

@@ -201,3 +201,5 @@ Voat/Voat.API.Tests/
 Voat/Voat-All.sln
 
 Voat/.vs/
+Logging.config
+Voat/Voat.UI/logs/

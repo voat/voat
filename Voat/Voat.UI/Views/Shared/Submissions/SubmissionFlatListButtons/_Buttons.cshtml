@@ -23,8 +23,6 @@
 
     @if (User.Identity.IsAuthenticated)
     {
-
-
         if (!Model.IsDeleted)
         {
             <li>
@@ -34,25 +32,28 @@
                 @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonReport.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } })
             </li>
         }
-        if (!Model.IsDeleted && User.Identity.Name != Model.UserName)
+        if (!Model.IsDeleted && User.Identity.Name != Model.UserName && Model.Type == (int)Voat.Domain.Models.SubmissionType.Text)
         {
             <li>
                 <a class="" href="javascript:void(0)" onclick="toggleSource(this);">source</a>
             </li>
         }
-
         if (User.Identity.Name == Model.UserName)
         {
-            <li>
-                <a class="" href="#submissionTop" onclick="return editSubmissionPrepareForm(@Model.ID)">edit</a>
-            </li>
+            if (Model.Type == (int)Voat.Domain.Models.SubmissionType.Text)
+            {
+                <li>
+                    <a class="" href="#submissionTop" onclick="return editSubmissionPrepareForm(@Model.ID)">edit</a>
+                </li>
+            }
             <li>
                 @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonDelete.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } })
-                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignFlair))
+
+                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignFlair, ViewBag.ModeratorList))
                 {
                     Html.RenderPartial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonFlair.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID }, { "submissionSubverse", Model.Subverse } });
                 }
-                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignStickies))
+                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignStickies, ViewBag.ModeratorList))
                 {
                     Html.RenderPartial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSticky.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } });
                 }
@@ -61,15 +62,15 @@
         else if (!Model.IsDeleted)
         {
             <li>
-                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.DeletePosts))
+                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.DeletePosts, ViewBag.ModeratorList))
                 {
                     Html.RenderPartial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonModeratorDelete.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } });
                 }
-                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignFlair))
+                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignFlair, ViewBag.ModeratorList))
                 {
                     Html.RenderPartial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonFlair.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID }, { "submissionSubverse", Model.Subverse } });
                 }
-                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignStickies))
+                @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignStickies, ViewBag.ModeratorList))
                 {
                     Html.RenderPartial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSticky.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } });
                 }

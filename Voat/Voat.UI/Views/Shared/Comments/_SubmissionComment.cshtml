@@ -51,8 +51,10 @@
 
     @if (!Model.IsDeleted)
     {
-        @Html.Partial("_votingIconsComment", Model, new ViewDataDictionary {
-            { "collapsedStyle", uncollapsedComment } })
+        @Html.Partial("_votingIconsComment", Model,
+            new ViewDataDictionary {
+                { "collapsedStyle", uncollapsedComment }
+            })
     }
 
     <div class="entry unvoted">
@@ -203,45 +205,50 @@
 
             </form>
             <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Model.Content</textarea>
-            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", Model)
+            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", Model,
+               new ViewDataDictionary()
+               {
+                   { "ModeratorList", ViewBag.ModeratorList }
+               })
         </div>
     </div>
 
-@if (Model.Children.TotalCount > 0)
-{
-    parentIsHidden = (Model.IsCollapsed);
-    var remaining = 0;
-    var startingIndex = 0;
+    @if (Model.Children.TotalCount > 0)
+    {
+        parentIsHidden = (Model.IsCollapsed);
+        var remaining = 0;
+        var startingIndex = 0;
 
-    if (Model.Children != null && Model.Children.SegmentCount > 0)
-    {
-        foreach (var childComment in Model.Children.Comments)
+        if (Model.Children != null && Model.Children.SegmentCount > 0)
         {
-            @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", childComment,
-            new ViewDataDictionary {
-            { "SortOrder", ViewBag.SortOrder },
-            { "ParentIsHidden", parentIsHidden },
-            { "Subverse", ViewBag.Subverse },
-            { "Submission", ViewBag.Submission },
-            { "ShowContextLink", ViewBag.ShowContextLink },
-            { "CommentToHighlight", ViewBag.CommentToHighLight }
-        })
+            foreach (var childComment in Model.Children.Comments)
+            {
+                @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", childComment,
+                    new ViewDataDictionary {
+                    { "ModeratorList", ViewBag.ModeratorList },
+                    { "SortOrder", ViewBag.SortOrder },
+                    { "ParentIsHidden", parentIsHidden },
+                    { "Subverse", ViewBag.Subverse },
+                    { "Submission", ViewBag.Submission },
+                    { "ShowContextLink", ViewBag.ShowContextLink },
+                    { "CommentToHighlight", ViewBag.CommentToHighLight }
+                })
+            }
+            remaining = Model.Children.TotalCount - Model.Children.SegmentCount;
+            System.Diagnostics.Debug.Assert(remaining == Model.Children.RemainingCount, "Remaining Count invalid");
+            startingIndex = Model.Children.EndingIndex + 1;
         }
-        remaining = Model.Children.TotalCount - Model.Children.SegmentCount;
-        System.Diagnostics.Debug.Assert(remaining == Model.Children.RemainingCount, "Remaining Count invalid");
-        startingIndex = Model.Children.EndingIndex + 1;
+        else
+        {
+            //System.Diagnostics.Debug.Assert(Model.ChildCount == Model.Children.TotalCount, "ChildCount does not match TotalCount");
+            remaining = Model.ChildCount;
+        }
+        if (remaining > 0)
+        {
+            var display = Model.IsCollapsed ? "none" : "block";
+            <div class="loadMoreComments" style="display:@display;">
+                <a style="cursor:pointer;" id="loadmore-@Model.ID" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@Model.ID'),$('.id-@Model.ID'),@Model.SubmissionID,@Model.ID,'children',@startingIndex,'@sortOrder')">@remaining @(remaining == 1 ? "reply" : "replies")</a>
+            </div>
+        }
     }
-    else
-    {
-        //System.Diagnostics.Debug.Assert(Model.ChildCount == Model.Children.TotalCount, "ChildCount does not match TotalCount");
-        remaining = Model.ChildCount;
-    }
-    if (remaining > 0)
-    {
-        var display = Model.IsCollapsed ? "none" : "block";
-        <div class="loadMoreComments" style="display:@display;">
-            <a style="cursor:pointer;" id="loadmore-@Model.ID" class="inline-loadcomments-btn" onclick="javascript:loadMoreComments2($('#loadmore-@Model.ID'),$('.id-@Model.ID'),@Model.SubmissionID,@Model.ID,'children',@startingIndex,'@sortOrder')">@remaining @(remaining == 1 ? "reply" : "replies")</a>
-        </div>
-    }
-}
 </div>

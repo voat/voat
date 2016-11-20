@@ -16,6 +16,7 @@ using Voat.Configuration;
 using Voat.Data;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
+using Voat.Logging;
 using Voat.Rules;
 using Voat.UI.Utilities;
 using Voat.Utilities;
@@ -110,41 +111,36 @@ namespace Voat
 
             //Temp Log ThreadPool Stats
             timer = new Timer(new TimerCallback(o => {
-                using (var repo = new Repository())
+                int workerThreads;
+                int completionPortThreads;
+                int maxWorkerThreads;
+                int maxCompletionPortThreads;
+
+                ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
+                ThreadPool.GetMaxThreads(out maxWorkerThreads, out maxCompletionPortThreads);
+
+                var data = new
                 {
-                    int workerThreads;
-                    int completionPortThreads;
-                    int maxWorkerThreads;
-                    int maxCompletionPortThreads;
+                    InUse = maxWorkerThreads - workerThreads,
+                    InUseIO = maxCompletionPortThreads - completionPortThreads,
+                    AvailableWorkerThreads = workerThreads,
+                    AvailableIOThreads = completionPortThreads,
+                    MaxWorkerThreads = maxWorkerThreads,
+                    MaxIOThreads = maxCompletionPortThreads
+                };
 
-                    ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
-                    ThreadPool.GetMaxThreads(out maxWorkerThreads, out maxCompletionPortThreads);
 
-                    var data = new
-                    {
-                        InUse = maxWorkerThreads - workerThreads,
-                        InUseIO = maxCompletionPortThreads - completionPortThreads,
-                        AvailableWorkerThreads = workerThreads,
-                        AvailableIOThreads = completionPortThreads,
-                        MaxWorkerThreads = maxWorkerThreads,
-                        MaxIOThreads = maxCompletionPortThreads
-                    };
+                var logEntry = new LogInformation
+                {
+                    Origin = Settings.Origin.ToString(),
+                    Type = LogType.Debug,
+                    UserName = null,
+                    Message = "ThreadPool Stats",
+                    Category = "Monitor",
+                    Data = data
+                };
 
-                    var result = repo.Log(new Data.Models.EventLog
-                    {
-                        //TODO: Modify schema to include this param
-                        Origin = Origin.UI.ToString(),
-                        ParentID = null,
-                        Type = "Info",
-                        UserName = null,
-                        Message = "ThreadPool Stats",
-                        Source = "",
-                        CallStack = "",
-                        IsBase = true,
-                        CreationDate = Repository.CurrentDate,
-                        Data = JsonConvert.SerializeObject(data)
-                    });
-                }
+                EventLogger.Instance.Log(logEntry);
 
             }), null, TimeSpan.Zero, TimeSpan.FromSeconds(15));
             

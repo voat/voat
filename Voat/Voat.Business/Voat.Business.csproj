@@ -158,6 +158,7 @@
     <Compile Include="Caching\Handlers\RedisCacheHandler.cs" />
     <Compile Include="Caching\ICacheHandler.cs" />
     <Compile Include="Common\LockStore.cs" />
+    <Compile Include="Configuration\ArgumentParser.cs" />
     <Compile Include="Configuration\JsonSettings.cs" />
     <Compile Include="Configuration\RuntimeState.cs" />
     <Compile Include="Data\AGGREGATE_SUBVERSE.cs" />
@@ -355,6 +356,10 @@
     <ProjectReference Include="..\Voat.Data\Voat.Data.csproj">
       <Project>{1e367cda-5508-47e1-9e95-ed100aee42d0}</Project>
       <Name>Voat.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Voat.Logging\Voat.Logging.csproj">
+      <Project>{440536c7-287d-47d7-9d84-edbe179b46ec}</Project>
+      <Name>Voat.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj">
       <Project>{dd358253-041f-4feb-9714-1164127780f8}</Project>

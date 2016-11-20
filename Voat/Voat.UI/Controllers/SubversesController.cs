@@ -126,18 +126,6 @@ namespace Voat.Controllers
             return PartialView("~/Views/Shared/Sidebars/_Sidebar.cshtml", subverse);
         }
 
-        //// GET: stylesheet for selected subverse
-        //public ActionResult StylesheetForSelectedSubverse(string selectedSubverse)
-        //{
-        //    var q = new QuerySubverseStylesheet(selectedSubverse);
-        //    var r = q.Execute();
-        //    return Content(r.Minimized);
-
-        //    var subverse = DataCache.Subverse.Retrieve(selectedSubverse);
-
-        //    return Content(subverse != null ? subverse.Stylesheet : string.Empty);
-        //}
-
         // POST: Create a new Subverse
         [HttpPost]
         [Authorize]
@@ -151,7 +139,7 @@ namespace Voat.Controllers
                 return View(subverseTmpModel);
             }
 
-            var title = $"/v/{subverseTmpModel.Title}"; //backwards compatibility, previous code always uses this
+            var title = $"/v/{subverseTmpModel.Name}"; //backwards compatibility, previous code always uses this
             var cmd = new CreateSubverseCommand(subverseTmpModel.Name, title, subverseTmpModel.Description, subverseTmpModel.Sidebar);
             var respones = await cmd.Execute();
             if (respones.Success)
@@ -728,7 +716,7 @@ namespace Voat.Controllers
                 return NotFoundErrorView();
             }
 
-            var subverses = _db.Subverses.Where(s => s.Description != null && s.SideBar != null).OrderByDescending(s => s.CreationDate);
+            var subverses = _db.Subverses.Where(s => s.Description != null).OrderByDescending(s => s.CreationDate);
 
             var paginatedNewestSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
 

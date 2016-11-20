@@ -2,6 +2,9 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Configuration;
+using Voat.Logging;
+using Voat.Utilities.Components;
 
 namespace Voat.Domain.Query
 {
@@ -67,16 +70,27 @@ namespace Voat.Domain.Query
 
             if (CachingPolicy != null && CachingPolicy.IsValid)
             {
-                //I think this will keep data in memory. Need to have method that just inserts data.
-                CacheHit = true;
+                using (var durationLog = new DurationLogger(EventLogger.Instance, 
+                    new LogInformation() {
+                        Type = LogType.Debug,
+                        Origin = Settings.Origin.ToString(),
+                        Category = "Duration",
+                        UserName = UserName,
+                        Message = $"{this.GetType().Name} ({FullCacheKey})" }))
+                {
+                    //I think this will keep data in memory. Need to have method that just inserts data.
+                    CacheHit = true;
 
-                var func = new Func<T>(() => {
-                    var task = Task.Run(GetFreshData);
-                    Task.WaitAny(task);
-                    return task.Result;
-                });
+                    //BLOCK: This needs fixed
+                    var func = new Func<T>(() => {
+                        //await GetFreshData();
+                        var task = Task.Run(GetFreshData);
+                        Task.WaitAny(task);
+                        return task.Result;
+                    });
 
-                result = CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), func, CachingPolicy.Duration, CachingPolicy.RefetchLimit);
+                    result = CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), func, CachingPolicy.Duration, CachingPolicy.RefetchLimit);
+                }
             }
             else
             {
@@ -92,8 +106,10 @@ namespace Voat.Domain.Query
         /// <returns></returns>
         protected abstract Task<T> GetData();
 
+        //BLOCK: This needs fixed
         private async Task<T> GetFreshData()
         {
+            //BLOCK: This needs fixed
             CacheHit = false;
             Debug.Print("{0}(loading)", this.GetType().Name);
             T data = await GetData().ConfigureAwait(false);

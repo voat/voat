@@ -303,6 +303,7 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Submission")]
+        [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public async Task PostSubmission_BannedDomain()
         {
             using (var db = new Voat.Data.Repository())
@@ -318,6 +319,7 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Comment")]
+        [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public async Task PostComment_BannedDomain()
         {
             using (var db = new Voat.Data.Repository())

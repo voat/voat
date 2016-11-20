@@ -19,11 +19,11 @@ namespace Voat.Data.Models
         public string UserName { get; set; }
         public string Type { get; set; }
         public string Message { get; set; }
-        public string Source { get; set; }
-        public bool IsBase { get; set; }
-        public string CallStack { get; set; }
         public string Data { get; set; }
         public System.DateTime CreationDate { get; set; }
         public string Origin { get; set; }
+        public string ActivityID { get; set; }
+        public string Category { get; set; }
+        public string Exception { get; set; }
     }
 }
