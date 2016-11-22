@@ -3446,6 +3446,28 @@ namespace Voat.Data
 
         #region Misc
 
+        public double? HighestRankInSubverse(string subverse)
+        {
+            var q = new DapperQuery();
+            q.Select = "TOP 1 ISNULL(Rank, 0) FROM Submission WITH (NOLOCK)";
+            q.Where = "Subverse = @Subverse AND IsArchived = 0";
+            q.OrderBy = "Rank DESC";
+            q.Parameters = new { Subverse = subverse };
+
+            var result = _db.Database.Connection.ExecuteScalar<double?>(q.ToString(), q.Parameters);
+            return result;
+
+            //using (var db = new voatEntities())
+            //{
+            //    var submission = db.Submissions.OrderByDescending(x => x.Rank).Where(x => x.Subverse == subverse).FirstOrDefault();
+            //    if (submission != null)
+            //    {
+            //        return submission.Rank;
+            //    }
+            //    return null;
+            //}
+        }
+
         public int VoteCount(string sourceUser, string destinationUser, ContentType contentType, Vote voteType, TimeSpan timeSpan)
         {
             var sum = 0;

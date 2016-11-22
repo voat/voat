@@ -96,39 +96,4 @@ namespace Voat.Domain.Query
             }
         }
     }
-    //public class QueryUserSubmissions : CachedQuerySearch<IEnumerable<SubmissionComment>>
-    //{
-    //    private string _userName;
-
-    //    public QueryUserSubmissions(string userName, SearchOptions options)
-    //        : base(options, new Caching.CachePolicy(TimeSpan.FromMinutes(30)))
-    //    {
-    //        _userName = userName;
-    //    }
-
-    //    public override string CacheKey
-    //    {
-    //        get
-    //        {
-    //            throw new NotImplementedException();
-    //        }
-    //    }
-
-    //    protected override string FullCacheKey
-    //    {
-    //        get
-    //        {
-    //            return CachingKey.UserContent(_userName, ContentType.Comment, base.SearchOptions);
-    //        }
-    //    }
-
-    //    protected override async Task<IEnumerable<Data.Sub>> GetData()
-    //    {
-    //        using (var repo = new Repository())
-    //        {
-    //            var data = repo.GetUserSubmissions(null, this._userName, this.SearchOptions);
-    //            return data;
-    //        }
-    //    }
-    //}
 }

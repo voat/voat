@@ -7,6 +7,8 @@ namespace Voat.Utilities
 {
     public static class CommentCounter
     {
+        private static TimeSpan _cacheTime = TimeSpan.FromMinutes(4);
+
         public static int CommentCount(int submissionID)
         {
             string cacheKey = CachingKey.CommentCount(submissionID);
@@ -16,9 +18,14 @@ namespace Voat.Utilities
                 {
                     return repo.GetCommentCount(submissionID);
                 }
-            }), TimeSpan.FromMinutes(4), 1);
+            }), _cacheTime, 3);
 
             return data.Value;
         }
+        //public static void IncrementCount(int submissionID)
+        //{
+        //    string cacheKey = CachingKey.CommentCount(submissionID);
+        //    CacheHandler.Instance.Replace<int?>(cacheKey, x => (x.HasValue ? x + 1 : 1), _cacheTime);
+        //}
     }
 }

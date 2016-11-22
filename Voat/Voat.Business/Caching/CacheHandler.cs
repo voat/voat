@@ -65,7 +65,7 @@ namespace Voat.Caching
         private bool _requiresExpirationRemoval = false;
         private bool _cacheEnabled = true;
         //BLOCK: Should be set to true, testing for blocking
-        private bool _refetchEnabled = false;
+        private bool _refetchEnabled = true;
 
         //holds meta data about the cache item such as the Func, expiration, recacheLimit, and current recaches
         private ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>> _meta = new ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>>();
@@ -107,6 +107,22 @@ namespace Voat.Caching
             lock (_lockStore.GetLockObject(cacheKey))
             {
                 SetItem(cacheKey, replacementValue, cacheTime);
+            }
+        }
+        public void ReplaceIfExists<T>(string cacheKey, Func<T, T> replaceAlg, TimeSpan? cacheTime = default(TimeSpan?))
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+            if (Exists(cacheKey))
+            {
+                Replace(cacheKey, replaceAlg, cacheTime);
+            }
+        }
+
+        public void ReplaceIfExists<T>(string cacheKey, T replacementValue, TimeSpan? cacheTime = default(TimeSpan?))
+        {
+            if (Exists(cacheKey))
+            {
+                Replace(cacheKey, replacementValue, cacheTime);
             }
         }
 
@@ -275,7 +291,7 @@ namespace Voat.Caching
 
             if (refreshLimit == 0 || refreshCount <= refreshLimit)
             {
-                string msg = String.Format("Refreshing cache ({0}) - #{1}", cacheKey, refreshCount);
+                string msg = String.Format("Refetching cache ({0}) - #{1}", cacheKey, refreshCount);
                 EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
                 Debug.Print(msg);
 
@@ -616,6 +632,8 @@ namespace Voat.Caching
             cacheKey = StandardizeCacheKey(cacheKey);
             return ItemExists(cacheKey, key, CacheType.Set);
         }
+
+       
         #endregion
 
     }

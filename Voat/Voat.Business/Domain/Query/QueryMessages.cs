@@ -87,12 +87,5 @@ namespace Voat.Domain.Query
                 return await repo.GetMessages(_ownerName, _ownerType, _type, _state, _markAsRead, _options);
             }
         }
-
-        public override IEnumerable<Message> Execute()
-        {
-            Task<IEnumerable<Message>> t = Task.Run(ExecuteAsync);
-            Task.WaitAll(t);
-            return t.Result;
-        }
     }
 }

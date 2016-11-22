@@ -109,7 +109,7 @@ namespace Voat
             #endregion 
 
 
-            //Temp Log ThreadPool Stats
+            //BLOCK: Temp Log ThreadPool Stats
             timer = new Timer(new TimerCallback(o => {
                 int workerThreads;
                 int completionPortThreads;

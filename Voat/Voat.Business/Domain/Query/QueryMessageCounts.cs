@@ -7,11 +7,11 @@ using Voat.Domain.Models;
 
 namespace Voat.Domain.Query
 {
-   
+
 
     public class QueryAllMessageCounts : QueryMessageBase<IEnumerable<MessageCounts>>
     {
-      
+
         public QueryAllMessageCounts(MessageTypeFlag type, MessageState state)
             : base(type, state)
         {
@@ -45,12 +45,6 @@ namespace Voat.Domain.Query
             }
 
             return counts;
-        }
-        public override IEnumerable<MessageCounts> Execute()
-        {
-            var t = Task.Run(ExecuteAsync);
-            Task.WaitAny(t);
-            return t.Result;
         }
     }
 
@@ -94,13 +88,6 @@ namespace Voat.Domain.Query
                     }
                 }
             }
-        }
-
-        public override MessageCounts Execute()
-        {
-            Task<MessageCounts> t = Task.Run(ExecuteAsync);
-            Task.WaitAll(t);
-            return t.Result;
         }
 
         public override async Task<MessageCounts> ExecuteAsync()

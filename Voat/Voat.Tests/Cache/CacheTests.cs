@@ -393,7 +393,44 @@ namespace Voat.Tests.Cache
             }
             handler.Remove(cacheKey);
         }
+        [TestMethod]
+        [TestCategory("Cache")]
+        [TestCategory("Cache.Handler")]
+        public void ReplaceIfExistsTests()
+        {
+            string cacheKey = "ReplaceIfExistsTests";
+            handler.Remove(cacheKey);
 
+            //No entry tests
+            string testValue = "TestValue";
+            bool funcCalled = false;
+            handler.ReplaceIfExists<string>(cacheKey, x => { funcCalled = true; return testValue.ToUpper(); } );
+
+            Assert.AreEqual(false, handler.Exists(cacheKey));
+            Assert.AreEqual(false, funcCalled);
+
+            handler.ReplaceIfExists(cacheKey, testValue);
+            Assert.AreEqual(false, handler.Exists(cacheKey));
+
+            //This won't pass with NullCacheHandler
+            if (handler.CacheEnabled)
+            {
+                //Existing Entry tests
+                handler.Replace(cacheKey, testValue);
+                Assert.AreEqual(true, handler.Exists(cacheKey));
+
+                handler.ReplaceIfExists(cacheKey, testValue.ToUpper());
+                Assert.AreEqual(true, handler.Exists(cacheKey));
+                Assert.AreEqual(testValue.ToUpper(), handler.Retrieve<string>(cacheKey));
+
+                handler.ReplaceIfExists<string>(cacheKey, x => { funcCalled = true; return $"{testValue}{testValue}".ToUpper(); });
+                Assert.AreEqual(true, funcCalled);
+                Assert.AreEqual($"{testValue}{testValue}".ToUpper(), handler.Retrieve<string>(cacheKey));
+            }
+
+
+            handler.Remove(cacheKey);
+        }
         #region Set Operations
 
         [TestMethod]
