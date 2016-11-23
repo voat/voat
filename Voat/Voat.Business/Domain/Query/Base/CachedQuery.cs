@@ -78,18 +78,33 @@ namespace Voat.Domain.Query
                         UserName = UserName,
                         Message = $"{this.GetType().Name} ({FullCacheKey})" }))
                 {
-                    //I think this will keep data in memory. Need to have method that just inserts data.
-                    CacheHit = true;
 
-                    //BLOCK: This needs fixed
-                    var func = new Func<T>(() => {
-                        //await GetFreshData();
-                        var task = Task.Run(GetFreshData);
-                        Task.WaitAny(task);
-                        return task.Result;
-                    });
+                    if (!CacheHandler.Instance.Exists(FullCacheKey))
+                    {
+                        CacheHit = false;
+                        result = await GetData().ConfigureAwait(false);
+                        if (!result.IsDefault())
+                        {
+                            CacheHandler.Instance.Replace(FullCacheKey, result, CachingPolicy.Duration);
+                        }
+                    }
+                    else
+                    {
+                        CacheHit = true;
+                        result = CacheHandler.Instance.Retrieve<T>(FullCacheKey);
+                    }
+                    ////I think this will keep data in memory. Need to have method that just inserts data.
+                    //CacheHit = true;
 
-                    result = CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), func, CachingPolicy.Duration, CachingPolicy.RefetchLimit);
+                    ////BLOCK: This needs fixed
+                    //var func = new Func<T>(() => {
+                    //    //await GetFreshData();
+                    //    var task = Task.Run(GetFreshData);
+                    //    Task.WaitAny(task);
+                    //    return task.Result;
+                    //});
+
+                    //result = CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), func, CachingPolicy.Duration, CachingPolicy.RefetchLimit);
                 }
             }
             else

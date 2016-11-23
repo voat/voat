@@ -21,7 +21,7 @@ namespace Voat.Domain.Command
         {
             using (var db = new Repository())
             {
-                var outcome = await Task.Run(() => db.VoteComment(CommentID, VoteValue, AddressHash, RevokeOnRevote));
+                var outcome = await Task.Run(() => db.VoteComment(CommentID, VoteValue, AddressHash, RevokeOnRevote)).ConfigureAwait(false);
 
                 //Raise event
                 if (outcome.Success)
@@ -56,7 +56,7 @@ namespace Voat.Domain.Command
         {
             using (var gateway = new Repository())
             {
-                var outcome = await Task.Run(() => gateway.VoteSubmission(SubmissionID, VoteValue, AddressHash, RevokeOnRevote));
+                var outcome = await Task.Run(() => gateway.VoteSubmission(SubmissionID, VoteValue, AddressHash, RevokeOnRevote)).ConfigureAwait(false);
 
                 //Raise event
                 if (outcome.Success)

@@ -196,6 +196,7 @@
     <Compile Include="Utils\DateTimeExtensionTests.cs" />
     <Compile Include="Utils\EventNotificationTests.cs" />
     <Compile Include="Utils\ExtensionTests.cs" />
+    <Compile Include="Utils\LockStoreTests.cs" />
     <Compile Include="Utils\MiscUtilsTests.cs" />
     <Compile Include="Rules\RulesEngineTests.cs" />
     <Compile Include="Utils\RuntimeSettingTests.cs" />
