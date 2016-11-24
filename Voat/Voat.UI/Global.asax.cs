@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
 using System.Web.Http;
@@ -170,7 +171,8 @@ namespace Voat
 
             if (!isLocal)
             {
-                var isSignalR = request.Path.ToLower().StartsWith("/signalr/");
+                var path = request.Path.ToLower();
+                var isSignalR = path.StartsWith("/signalr/");
                 if (!isSignalR)
                 {
                     //Need to be able to kill connections for certain db tasks... This intercepts calls and redirects
@@ -179,10 +181,10 @@ namespace Voat
                         try
                         {
                             var isAjax = request.RequestContext.HttpContext.Request.IsAjaxRequest();
+                            var response = HttpContext.Current.Response;
                             if (isAjax)
                             {
                                 //js calls
-                                var response = HttpContext.Current.Response;
                                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                                 response.StatusDescription = "Website is disabled :( Try again in a moment.";
                                 response.End();
@@ -190,16 +192,29 @@ namespace Voat
                             }
                             else
                             {
-                                //page requests
+                                //Don't send stylesheet request to an html page
+                                if (Regex.IsMatch(path, $"v/{CONSTANTS.SUBVERSE_REGEX}/stylesheet", RegexOptions.IgnoreCase))
+                                {
+                                    response.ContentType = "text/css";
+                                    response.End();
+                                    return;
+                                }
+                                else
+                                {
+                                    //page requests
+                                    Server.Transfer("~/inactive.min.htm");
+                                    return;
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            if (!(ex is ThreadAbortException))
+                            {
+                                //bail with static
                                 Server.Transfer("~/inactive.min.htm");
                                 return;
                             }
-                        }
-                        catch
-                        {
-                            //bail with static
-                            Server.Transfer("~/inactive.min.htm");
-                            return;
                         }
                     }
 
