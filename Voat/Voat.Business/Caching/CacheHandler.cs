@@ -203,7 +203,8 @@ namespace Voat.Caching
                     Origin = Configuration.Settings.Origin.ToString(),
                     Category = "Duration",
                     Message = $"Cache Load ({cacheKey})"
-                }))
+                },
+                TimeSpan.FromSeconds(1)))
                 {
                     object o = _lockStore.GetLockObject(cacheKey);
                     lock (o)

@@ -115,5 +115,34 @@ namespace Voat.Tests.Logging
                 }
             }
         }
+        [TestMethod]
+        [TestCategory("Logging")]
+        public void TestLogDurationWithMinimum()
+        {
+            if (log == null)
+            {
+                Assert.Inconclusive("Log4Net Logger disabled");
+            }
+            else
+            {
+                var activityID = Guid.NewGuid();
+                using (var durationLog = new DurationLogger(log, 
+                        new LogInformation() {
+                            ActivityID = activityID,
+                            Type = LogType.Debug,
+                            Category = "Duration",
+                            UserName = "",
+                            Message = $"{this.GetType().Name}" },
+                        TimeSpan.FromSeconds(10)))
+                {
+                    System.Threading.Thread.Sleep(1000);
+                }
+                using (var db = new voatEntities())
+                {
+                    var entry = db.EventLogs.FirstOrDefault(x => x.ActivityID == activityID.ToString().ToUpper());
+                    Assert.IsNull(entry, "Should not have log entry with specified minimum");
+                }
+            }
+        }
     }
 }

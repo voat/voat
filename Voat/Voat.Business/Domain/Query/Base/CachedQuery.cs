@@ -76,7 +76,8 @@ namespace Voat.Domain.Query
                         Origin = Settings.Origin.ToString(),
                         Category = "Duration",
                         UserName = UserName,
-                        Message = $"{this.GetType().Name} ({FullCacheKey})" }))
+                        Message = $"{this.GetType().Name} ({FullCacheKey})" },
+                    TimeSpan.FromSeconds(1)))
                 {
 
                     if (!CacheHandler.Instance.Exists(FullCacheKey))
@@ -93,7 +94,8 @@ namespace Voat.Domain.Query
                         CacheHit = true;
                         result = CacheHandler.Instance.Retrieve<T>(FullCacheKey);
                     }
-                    ////I think this will keep data in memory. Need to have method that just inserts data.
+
+                    ////Original Code - CacheHandler locks and is preferred 
                     //CacheHit = true;
 
                     ////BLOCK: This needs fixed
