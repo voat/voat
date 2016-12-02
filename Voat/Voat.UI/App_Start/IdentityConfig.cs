@@ -15,20 +15,31 @@ namespace Voat.App_Start
     {
         public class EmailService : IIdentityMessageService
         {
-            public Task SendAsync(IdentityMessage message)
+            public async Task SendAsync(IdentityMessage message)
             {
-                var sgMessage = new SendGridMessage { From = new MailAddress("noreply@voat.co", CONSTANTS.SYSTEM_USER_NAME) };
-                
-                sgMessage.AddTo(message.Destination);
-                sgMessage.Subject = message.Subject;
-                sgMessage.Html = message.Body;
-                sgMessage.Text = message.Body;
-                
-                sgMessage.DisableClickTracking();
-                sgMessage.DisableOpenTracking();
 
-                var transportWeb = new Web(Settings.EmailServiceKey);
-                return transportWeb.DeliverAsync(sgMessage);
+                var content = new SendGrid.Helpers.Mail.Content();
+                content.Type = "text/html";
+                content.Value = message.Body;
+
+                var msg = new SendGrid.Helpers.Mail.Mail(
+                    new SendGrid.Helpers.Mail.Email("noreply@voat.co", CONSTANTS.SYSTEM_USER_NAME),
+                    message.Subject,
+                    new SendGrid.Helpers.Mail.Email(message.Destination),
+                    content
+                    );
+
+                var trackingSettings = new SendGrid.Helpers.Mail.TrackingSettings();
+                trackingSettings.ClickTracking = new SendGrid.Helpers.Mail.ClickTracking();
+                trackingSettings.OpenTracking = new SendGrid.Helpers.Mail.OpenTracking();
+                trackingSettings.ClickTracking.Enable = false;
+                trackingSettings.OpenTracking.Enable = false;
+                msg.TrackingSettings = trackingSettings;
+
+                dynamic sendGridClient = new SendGridAPIClient(Settings.EmailServiceKey);
+
+                var response = await sendGridClient.client.mail.send.post(requestBody: msg.Get());
+
             }
         }
     }
