@@ -1,0 +1,118 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@model PaginatedList<Voat.Data.Models.Submission>
+
+@using System.Configuration
+
+@{
+    ViewBag.Title = Settings.SiteSlogan;
+    string sortingMode = ViewBag.SortingMode;
+    string urlaction = "";
+
+    if (sortingMode != "new")
+    {
+        urlaction = "Index";
+    }
+    else
+    {
+        urlaction = "New";
+    }
+}
+
+<style type="text/css">
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
+</style>
+
+<div id="container">
+
+    @{
+        @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
+    }
+
+    <div class="content" role="main">
+
+        <div class="sitetable">
+            @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
+            @Html.Action("FeaturedSub", "Home")
+            @Html.Action("StickiedSubmission", "Home")
+
+            @{
+                //(current page number -1)*25
+                int currentPageNumber = Model.PageIndex;
+                int counterCont = (currentPageNumber)*25;
+
+                int counter = counterCont + 1;
+                string submissionClass = "";
+            }
+
+            @foreach (var submission in Model)
+            {
+                //type 2 = link
+                //type 1 = message
+                if (submission.Type == 1)
+                {
+                    submissionClass = "self";
+                }
+                else
+                {
+                    submissionClass = "";
+                }
+
+                string classEvenOrOdd = "";
+                if (counter%2 == 0)
+                {
+                    //is even
+                    classEvenOrOdd = "even";
+                }
+                else
+                {
+                    //is odd
+                    classEvenOrOdd = "odd";
+                }
+
+                <div class="submission id-@submission.ID @classEvenOrOdd link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.UpCount" data-downs="@submission.DownCount">
+                    <p class="parent"></p>
+                    @Html.Partial("_VotingIconsSubmission", submission)
+                    @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
+
+                    <div class="child"></div>
+                    <div class="clearleft">@*IE6fix*@</div>
+                </div>
+                counter++;
+            }
+
+            <div class="pagination-container">
+                <ul>
+                    @if (Model.HasPreviousPage)
+                    {
+                        <li class="btn-whoaverse-paging">
+                            @Html.RouteLink("‹ prev", urlaction, new { frontpage = Request.QueryString["frontpage"], page = (Model.PageIndex - 1)}, new {rel = "prev"})
+                        </li>
+                    }
+
+                    @if (Model.HasNextPage)
+                    {
+                        <li class="btn-whoaverse-paging">
+                            @Html.RouteLink("next ›", urlaction, new {frontpage = Request.QueryString["frontpage"], page = (Model.PageIndex + 1)}, new {rel = "next"})
+                        </li>
+                    }
+                </ul>
+            </div>
+            <a href="/random">try a random subverse</a> or <a href="/randomnsfw">a NSFW random subverse</a>
+
+        </div>
+
+    </div>
+</div>

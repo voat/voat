@@ -19,6 +19,7 @@ using Voat.Domain;
 using System.Data.Entity;
 using Voat.Caching;
 using Dapper;
+using Voat.Configuration;
 
 namespace Voat.Data
 {
@@ -809,7 +810,339 @@ namespace Voat.Data
 
             return results;
         }
+        public async Task<IEnumerable<Models.Submission>> GetSubmissionsDapper(string subverse, SearchOptions options)
+        {
+            if (String.IsNullOrEmpty(subverse))
+            {
+                throw new VoatValidationException("A subverse must be provided.");
+            }
 
+            if (options == null)
+            {
+                options = new SearchOptions();
+            }
+
+            var query = new DapperQuery();
+            query.SelectColumns = "s.*";
+            query.Select = @"SELECT DISTINCT {0} FROM Submission s WITH (NOLOCK) INNER JOIN Subverse sub WITH (NOLOCK) ON s.Subverse = sub.Name";
+
+            //Parameter Declarations
+            DateTime? startDate = options.StartDate;
+            DateTime? endDate = options.EndDate;
+            //string subverse = subverse;
+            bool nsfw = false;
+            string userName = null;
+            
+            UserData userData = null;
+            if (User.Identity.IsAuthenticated)
+            {
+                userData = new UserData(User.Identity.Name);
+                userName = userData.UserName;
+            }
+
+            bool filterBlockedSubverses = false;
+
+            switch (subverse.ToLower())
+            {
+                //Match Aggregate Subs
+                case AGGREGATE_SUBVERSE.FRONT:
+                    query.Append(x => x.Select, "INNER JOIN SubverseSubscription ss WITH (NOLOCK) ON s.Subverse = ss.Subverse");
+                    query.Append(x => x.Where, "s.IsArchived = 0 AND s.IsDeleted = 0 AND ss.UserName = @UserName");
+
+                    //query = (from x in _db.Submissions
+                    //         join subscribed in _db.SubverseSubscriptions on x.Subverse equals subscribed.Subverse
+                    //         where subscribed.UserName == User.Identity.Name
+                    //         select x);
+                   
+                    break;
+                case AGGREGATE_SUBVERSE.DEFAULT:
+                    //if no user or user has no subscriptions or logged in user requests default page
+                    query.Append(x => x.Select, "INNER JOIN DefaultSubverse ss WITH (NOLOCK) ON s.Subverse = ss.Subverse");
+
+                    if (Settings.IsVoatBranded)
+                    {
+                        //This is a modification Voat uses in the default page
+                        query.Append(x => x.Where, "(s.UpCount - s.DownCount >= 20) AND ABS(DATEDIFF(HH, s.CreationDate, GETUTCDATE())) <= 24");
+                    }
+
+                    //sort default by relative rank
+                    options.Sort = Domain.Models.SortAlgorithm.RelativeRank;
+
+                    //query = (from x in _db.Submissions
+                    //         join defaults in _db.DefaultSubverses on x.Subverse equals defaults.Subverse
+                    //         select x);
+
+                    break;
+                case AGGREGATE_SUBVERSE.ANY:
+                    query.Where = "sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0";
+                    //query = (from x in _db.Submissions
+                    //         where
+                    //         !x.Subverse1.IsAdminPrivate
+                    //         && !x.Subverse1.IsPrivate
+                    //         && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value)
+                    //         select x);
+                    break;
+
+                case AGGREGATE_SUBVERSE.ALL:
+                case "all":
+                    filterBlockedSubverses = true;
+                    ////Controller logic:
+                    //IQueryable<Submission> submissionsFromAllSubversesByDate = 
+                    //(from message in _db.Submissions
+                    //join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                    //where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.MinCCPForDownvote == 0
+                    //where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                    //where !subverse.IsAdminDisabled.Value
+                    //where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(userName)
+                    //select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
+
+                    nsfw = (User.Identity.IsAuthenticated ? userData.Preferences.EnableAdultContent : false);
+
+                    //v/all has certain conditions
+                    //1. Only subs that have a MinCCP of zero
+                    //2. Don't show private subs
+                    //3. Don't show NSFW subs if nsfw isn't enabled in profile, if they are logged in
+                    //4. Don't show blocked subs if logged in // not implemented
+                    query.Where = "sub.MinCCPForDownvote = 0 AND sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0 AND s.IsArchived = 0";
+                    if (!nsfw)
+                    {
+                        query.Where += " AND sub.IsAdult = 0";
+                    }
+
+                    //query = (from x in _db.Submissions
+                    //         where x.Subverse1.MinCCPForDownvote == 0
+                    //                && (!x.Subverse1.IsAdminPrivate && !x.Subverse1.IsPrivate && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value))
+                    //                && (x.Subverse1.IsAdult && nsfw || !x.Subverse1.IsAdult)
+                    //         select x);
+
+                    break;
+
+                //for regular subverse queries
+                default:
+
+                    if (!SubverseExists(subverse))
+                    {
+                        throw new VoatNotFoundException("Subverse '{0}' not found.", subverse);
+                    }
+
+                    ////Controller Logic:
+                    //IQueryable<Submission> submissionsFromASubverseByDate = 
+                    //    (from message in _db.Submissions
+                    //    join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                    //    where !message.IsDeleted && message.Subverse == subverseName
+                    //    where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                    //    where !(from bu in _db.SubverseBans where bu.Subverse == subverse.Name select bu.UserName).Contains(message.UserName)
+                    //    select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
+
+                    subverse = ToCorrectSubverseCasing(subverse);
+                    query.Where = "s.Subverse = @Subverse";
+
+                    //Filter out stickies in subs
+                    query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = s.Subverse)");
+                    
+                    //query = (from x in _db.Submissions
+                    //         where (x.Subverse == subverse || subverse == null)
+                    //         select x);
+                    break;
+            }
+
+            query.Append(x => x.Where, "s.IsDeleted = 0");
+
+            if (User.Identity.IsAuthenticated)
+            {
+                if (filterBlockedSubverses)
+                {
+                    //query = query.Where(s => !_db.UserBlockedSubverses.Where(b =>
+                    //    b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                    //    && b.Subverse.Equals(s.Subverse, StringComparison.OrdinalIgnoreCase)).Any());
+
+                    //filter blocked subs
+                    query.Append(x => x.Where, "s.Subverse NOT IN (SELECT b.Subverse FROM UserBlockedSubverse b WITH (NOLOCK) WHERE b.UserName = @UserName)");
+                }
+
+
+                //filter blocked users (Currently commented out do to a collation issue)
+                //query = query.Where(s => !_db.UserBlockedUsers.Where(b =>
+                //    b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                //    && s.UserName.Equals(b.BlockUser, StringComparison.OrdinalIgnoreCase)
+                //    ).Any());
+
+                //filter global banned users
+                //query = query.Where(s => !_db.BannedUsers.Where(b => b.UserName.Equals(s.UserName, StringComparison.OrdinalIgnoreCase)).Any());
+            }
+
+            #region Ordering
+            //TODO: Re-implement this logic
+            //HACK: Warning, Super hacktastic
+            //if (!String.IsNullOrEmpty(options.Phrase))
+            //{
+            //    //WARNING: This is a quickie that views spaces as AND conditions in a search.
+            //    List<string> keywords = null;
+            //    if (options.Phrase.Contains(" "))
+            //    {
+            //        keywords = new List<string>(options.Phrase.Split(' '));
+            //    }
+            //    else
+            //    {
+            //        keywords = new List<string>(new string[] { options.Phrase });
+            //    }
+
+            //    keywords.ForEach(x =>
+            //    {
+            //        query = query.Where(m => m.Title.Contains(x) || m.Content.Contains(x) || m.Url.Contains(x));
+            //    });
+            //}
+
+            if (options.StartDate.HasValue)
+            {
+                query.Where += " AND s.CreationDate >= @StartDate";
+                //query = query.Where(x => x.CreationDate >= options.StartDate.Value);
+            }
+            if (options.EndDate.HasValue)
+            {
+                query.Where += " AND s.CreationDate <= @EndDate";
+                //query = query.Where(x => x.CreationDate <= options.EndDate.Value);
+            }
+
+            //Search Options
+            switch (options.Sort)
+            {
+                case SortAlgorithm.RelativeRank:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query.OrderBy = "s.RelativeRank ASC";
+                        //query = query.OrderBy(x => x.RelativeRank);
+                    }
+                    else
+                    {
+                        query.OrderBy = "s.RelativeRank DESC";
+                        //query = query.OrderByDescending(x => x.RelativeRank);
+                    }
+                    break;
+
+                case SortAlgorithm.Rank:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query.OrderBy = "s.Rank ASC";
+                        //query = query.OrderBy(x => x.Rank);
+                    }
+                    else
+                    {
+                        query.OrderBy = "s.Rank DESC";
+                        //query = query.OrderByDescending(x => x.Rank);
+                    }
+                    break;
+
+                case SortAlgorithm.Top:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query.OrderBy = "s.UpCount ASC";
+                        //query = query.OrderBy(x => x.UpCount);
+                    }
+                    else
+                    {
+                        query.OrderBy = "s.UpCount DESC";
+                        //query = query.OrderByDescending(x => x.UpCount);
+                    }
+                    break;
+
+                case SortAlgorithm.Viewed:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query.OrderBy = "s.Views ASC";
+                        //query = query.OrderBy(x => x.Views);
+                    }
+                    else
+                    {
+                        query.OrderBy = "s.Views DESC";
+                        //query = query.OrderByDescending(x => x.Views);
+                    }
+                    break;
+                //Need to verify performance of these before using
+                //case SortAlgorithm.Discussed:
+                //    if (options.SortDirection == SortDirection.Reverse)
+                //    {
+                //        query = query.OrderBy(x => x.Comments.Count);
+                //    }
+                //    else
+                //    {
+                //        query = query.OrderByDescending(x => x.Comments.Count);
+                //    }
+                //    break;
+
+                //case SortAlgorithm.Active:
+                //    if (options.SortDirection == SortDirection.Reverse)
+                //    {
+                //        query = query.OrderBy(x => x.Comments.OrderBy(c => c.CreationDate).FirstOrDefault().CreationDate);
+                //    }
+                //    else
+                //    {
+                //        query = query.OrderByDescending(x => x.Comments.OrderBy(c => c.CreationDate).FirstOrDefault().CreationDate);
+                //    }
+                //    break;
+
+                case SortAlgorithm.Bottom:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query.OrderBy = "s.DownCount ASC";
+                        //query = query.OrderBy(x => x.DownCount);
+                    }
+                    else
+                    {
+                        query.OrderBy = "s.DownCount DESC";
+                        //query = query.OrderByDescending(x => x.DownCount);
+                    }
+                    break;
+
+                case SortAlgorithm.Intensity:
+                    string sort = "(s.UpCount + s.DownCount)";
+                    query.SelectColumns = query.AppendClause(query.SelectColumns, sort, ", ");
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query.OrderBy = $"{sort} ASC";
+                        //query = query.OrderBy(x => x.UpCount + x.DownCount);
+                    }
+                    else
+                    {
+                        query.OrderBy = $"{sort} DESC";
+                        //query = query.OrderByDescending(x => x.UpCount + x.DownCount);
+                    }
+                    break;
+                
+                    //making this default for easy debugging
+                case SortAlgorithm.New:
+                default:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query.OrderBy = "s.CreationDate ASC";
+                        //query = query.OrderBy(x => x.CreationDate);
+                    }
+                    else
+                    {
+                        query.OrderBy = "s.CreationDate DESC";
+                        //query = query.OrderByDescending(x => x.CreationDate);
+                    }
+                    break;
+            }
+
+            //query = query.Skip(options.Index).Take(options.Count);
+            //return query;
+
+            #endregion
+
+            query.SkipCount = options.Index;
+            query.TakeCount = options.Count;
+
+            //Filter out all disabled subs
+            query.Append(x => x.Where, "sub.IsAdminDisabled = 0");
+            
+            query.Parameters = new { StartDate = startDate, EndDate = endDate, Subverse = subverse, UserName = userName};
+
+            //execute query
+            var data = await _db.Database.Connection.QueryAsync<Models.Submission>(query.ToString(), query.Parameters);
+            var results = data.Select(Selectors.SecureSubmission).ToList();
+            return results;
+        }
         public async Task<IEnumerable<Models.Submission>> GetSubmissions(string subverse, SearchOptions options)
         {
             if (String.IsNullOrEmpty(subverse))

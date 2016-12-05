@@ -360,32 +360,35 @@ namespace Voat.Domain
 
         public static void ProcessComment(Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<CommentVoteTracker> commentVotes = null)
         {
-            string userName = Thread.CurrentPrincipal.Identity.IsAuthenticated ? Thread.CurrentPrincipal.Identity.Name : null;
-            if (!String.IsNullOrEmpty(userName))
+            if (comment != null)
             {
-                comment.IsOwner = comment.UserName == userName;
-                comment.Vote = 0;
-                if (commentVotes != null)
+                string userName = Thread.CurrentPrincipal.Identity.IsAuthenticated ? Thread.CurrentPrincipal.Identity.Name : null;
+                if (!String.IsNullOrEmpty(userName))
                 {
-                    var vote = commentVotes.FirstOrDefault(x => x.CommentID == comment.ID);
-                    if (vote != null)
+                    comment.IsOwner = comment.UserName == userName;
+                    comment.Vote = 0;
+                    if (commentVotes != null)
                     {
-                        comment.Vote = vote.VoteStatus;
+                        var vote = commentVotes.FirstOrDefault(x => x.CommentID == comment.ID);
+                        if (vote != null)
+                        {
+                            comment.Vote = vote.VoteStatus;
+                        }
                     }
-                }
-                else if (populateMissingUserState)
-                {
-                    using (var repo = new Repository())
+                    else if (populateMissingUserState)
                     {
-                        //comment.Vote = VotingComments.CheckIfVotedComment(userName, comment.ID);
-                        comment.Vote = repo.UserVoteStatus(userName, ContentType.Comment, comment.ID);
+                        using (var repo = new Repository())
+                        {
+                            //comment.Vote = VotingComments.CheckIfVotedComment(userName, comment.ID);
+                            comment.Vote = repo.UserVoteStatus(userName, ContentType.Comment, comment.ID);
+                        }
                     }
-                }
 
-                comment.IsSaved = false;
-                comment.IsSaved = UserHelper.IsSaved(ContentType.Comment, comment.ID);
+                    comment.IsSaved = false;
+                    comment.IsSaved = UserHelper.IsSaved(ContentType.Comment, comment.ID);
+                }
+                comment.UserName = (comment.IsAnonymized ? comment.ID.ToString() : comment.UserName);
             }
-            comment.UserName = (comment.IsAnonymized ? comment.ID.ToString() : comment.UserName);
         }
     }
 }

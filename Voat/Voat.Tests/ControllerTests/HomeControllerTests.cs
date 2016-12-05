@@ -17,7 +17,7 @@ namespace Voat.Tests.ControllerTests
         public void Index()
         {
             var requestContext = new RequestContext(ControllerMock.MockControllerContext(null, false).Object, new RouteData());
-            var controller = new HomeController()
+            var controller = new SubversesController()
             {
                 Url = new UrlHelper(requestContext)
             };
@@ -28,7 +28,7 @@ namespace Voat.Tests.ControllerTests
             };
 
             
-            var result = controller.Index(null);
+            var result = controller.SubverseIndex(null, "_front");
 
 
         }

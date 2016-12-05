@@ -158,7 +158,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                var s = await db.GetSubmissions("unit", new SearchOptions());
+                var s = await db.GetSubmissionsDapper("unit", new SearchOptions()).ConfigureAwait(false);
                 Assert.IsTrue(s.Any());
             }
         }
@@ -170,12 +170,11 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                var anon_sub = await db.GetSubmissions("anon", SearchOptions.Default);
+                var anon_sub = await db.GetSubmissionsDapper("anon", SearchOptions.Default).ConfigureAwait(false);
                 var first = anon_sub.OrderBy(x => x.CreationDate).First();
                 Assert.IsNotNull(first, "no anon submissions found");
                 Assert.AreEqual("First Anon Post", first.Title);
                 Assert.AreEqual(first.UserName, first.ID.ToString());
-
             }
         }
 

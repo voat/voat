@@ -207,13 +207,13 @@
     <Compile Include="Domain\Query\Base\BaseQueryCommentSegment.cs" />
     <Compile Include="Domain\Query\Base\CachedQuery.cs" />
     <Compile Include="Domain\Query\Base\QuerySubverseBase.cs" />
-    <Compile Include="Domain\Query\Queries.cs" />
     <Compile Include="Domain\Query\QueryApiCorsPolicies.cs" />
     <Compile Include="Domain\Query\QueryApiKey.cs" />
     <Compile Include="Domain\Query\QueryApiPermissionSet.cs" />
     <Compile Include="Domain\Query\QueryApiStreamLastCalledDate.cs" />
     <Compile Include="Domain\Query\QueryApiThrottlePolicy.cs" />
     <Compile Include="Domain\Query\QueryBannedDomains.cs" />
+    <Compile Include="Domain\Query\QueryComment.cs" />
     <Compile Include="Domain\Query\QueryCommentContext.cs" />
     <Compile Include="Domain\Query\QueryDefaultSubverses.cs" />
     <Compile Include="Domain\Query\QueryMessageCounts.cs" />
@@ -223,6 +223,7 @@
     <Compile Include="Domain\Query\QueryModLogRemovedSubmissions.cs" />
     <Compile Include="Domain\Query\QueryNewestSubverses.cs" />
     <Compile Include="Domain\Query\QueryComments.cs" />
+    <Compile Include="Domain\Query\QuerySubmission.cs" />
     <Compile Include="Domain\Query\QuerySubmissions.cs" />
     <Compile Include="Domain\Query\QuerySubverse.cs" />
     <Compile Include="Domain\Query\QuerySubverseModerators.cs" />
@@ -236,6 +237,7 @@
     <Compile Include="Domain\Query\QueryCommentSegment.cs" />
     <Compile Include="Domain\Query\QueryCommentTree.cs" />
     <Compile Include="Domain\Query\QuerySubverseInformation.cs" />
+    <Compile Include="Domain\Query\QueryUserCommentVotesForSubmission.cs" />
     <Compile Include="Domain\Query\QueryUserContributionPoints.cs" />
     <Compile Include="Domain\Query\QueryUserPreferences.cs" />
     <Compile Include="Domain\Query\QueryUserInformation.cs" />

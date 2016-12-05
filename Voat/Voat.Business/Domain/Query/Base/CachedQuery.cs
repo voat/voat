@@ -38,10 +38,10 @@ namespace Voat.Domain.Query
         /// </summary>
         public abstract string CacheKey { get; }
 
-        public CachePolicy CachingPolicy
+        public virtual CachePolicy CachingPolicy
         {
             get;
-            private set; //force policy via constructor
+            protected set; //force policy via constructor
         }
 
         protected virtual string CacheContainer
@@ -67,8 +67,9 @@ namespace Voat.Domain.Query
         public override async Task<T> ExecuteAsync()
         {
             T result = default(T);
+            var policy = CachingPolicy;
 
-            if (CachingPolicy != null && CachingPolicy.IsValid)
+            if (policy != null && policy.IsValid)
             {
                 using (var durationLog = new DurationLogger(EventLogger.Instance, 
                     new LogInformation() {
@@ -86,7 +87,7 @@ namespace Voat.Domain.Query
                         result = await GetData().ConfigureAwait(false);
                         if (!result.IsDefault())
                         {
-                            CacheHandler.Instance.Replace(FullCacheKey, result, CachingPolicy.Duration);
+                            CacheHandler.Instance.Replace(FullCacheKey, result, policy.Duration);
                         }
                     }
                     else

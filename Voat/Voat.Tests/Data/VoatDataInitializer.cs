@@ -73,6 +73,7 @@ namespace Voat.Tests.Repository
                 Type = "link",
                 IsAnonymized = false,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
+                IsAdminDisabled = false,
             });
 
             //ID:2 (Anon Subverse)
@@ -85,6 +86,8 @@ namespace Voat.Tests.Repository
                 Type = "link",
                 IsAnonymized = true,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
+                IsAdminDisabled = false,
+
             });
 
             //ID:4 (Min Subverse)
@@ -98,6 +101,8 @@ namespace Voat.Tests.Repository
                 IsAnonymized = false,
                 MinCCPForDownvote = 5000,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
+                IsAdminDisabled = false,
+
             });
 
             //ID:5 (Private Subverse)
@@ -112,6 +117,8 @@ namespace Voat.Tests.Repository
                 IsAuthorizedOnly = true,
                 IsPrivate = true,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
+                IsAdminDisabled = false,
+
             });
 
             //ID:6 (AskVoat Subverse)
@@ -126,6 +133,8 @@ namespace Voat.Tests.Repository
                 IsAuthorizedOnly = false,
                 IsPrivate = false,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
+                IsAdminDisabled = false,
+
             });
 
             //ID:7 (whatever Subverse)
@@ -140,6 +149,8 @@ namespace Voat.Tests.Repository
                 IsAuthorizedOnly = false,
                 IsPrivate = false,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
+                IsAdminDisabled = false,
+
             });
 
             //ID:8 (news Subverse)
@@ -154,6 +165,8 @@ namespace Voat.Tests.Repository
                 IsAuthorizedOnly = false,
                 IsPrivate = false,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
+                IsAdminDisabled = false,
+
             });
 
             //ID:9 (AuthorizedOnly Subverse)
@@ -168,6 +181,8 @@ namespace Voat.Tests.Repository
                 IsAuthorizedOnly = true,
                 IsPrivate = false,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
+                IsAdminDisabled = false,
+
             });
 
             context.SubverseModerators.Add(new SubverseModerator() { Subverse = "AuthorizedOnly", CreatedBy = "unit", CreationDate = DateTime.UtcNow, Power = 1, UserName = "unit" });
@@ -436,6 +451,7 @@ namespace Voat.Tests.Repository
                     Type = "link",
                     IsAnonymized = false,
                     CreationDate = DateTime.UtcNow.AddDays(-70),
+                    IsAdminDisabled = false
                 });
                 context.SaveChanges();
 

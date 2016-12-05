@@ -163,10 +163,11 @@ namespace Voat.Controllers
                 return View("Submit", model);
             }
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // GET: /
         public ActionResult Index(int? page)
         {
+            throw new NotImplementedException("This code is on the delete list");
             ViewBag.SelectedSubverse = "frontpage";
 
             const int pageSize = 25;
@@ -234,7 +235,7 @@ namespace Voat.Controllers
                 return View(paginatedSubmissions);
             }
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         public static IList<Submission> GetGuestFrontPage(int pageSize, int pageNumber)
         {
             //IAmAGate: Perf mods for caching
@@ -336,10 +337,11 @@ namespace Voat.Controllers
 
             return View("~/Views/Home/IndexV2.cshtml", defaultFrontPageResultModel);
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         // GET: /new
         public ActionResult @New(int? page, string sortingmode)
         {
+            throw new NotImplementedException("This code is on the delete list");
             // sortingmode: new, contraversial, hot, etc
             ViewBag.SortingMode = sortingmode;
 
@@ -354,22 +356,7 @@ namespace Voat.Controllers
                 return NotFoundErrorView();
             }
 
-            // setup a cookie to find first time visitors and display welcome banner
-            const string cookieName = "NotFirstTime";
-            if (ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
-            {
-                // not a first time visitor
-                ViewBag.FirstTimeVisitor = false;
-            }
-            else
-            {
-                // add a cookie for first time visitors
-                HttpCookie hc = new HttpCookie("NotFirstTime", "1");
-                hc.Expires = Repository.CurrentDate.AddYears(1);
-                System.Web.HttpContext.Current.Response.Cookies.Add(hc);
-
-                ViewBag.FirstTimeVisitor = true;
-            }
+            
             var userData = Voat.Domain.UserData.GetContextUserData();
             // show only submissions from subverses that user is subscribed to if user is logged in
             // also do a check so that user actually has subscriptions

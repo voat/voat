@@ -735,6 +735,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_Buttons.cshtml" />
+    <Content Include="Views\Subverses\AggregateIndex.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

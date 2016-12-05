@@ -17,7 +17,7 @@
     var commentCount = CommentCounter.CommentCount(Model.ID);
 
 
-    string routeActiveSubverse = (string)ViewContext.RouteData.Values["subversetoshow"];
+    string routeActiveSubverse = (string)ViewContext.RouteData.Values["subverse"];
     string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
 
     DateTime submissionDate = Model.CreationDate;

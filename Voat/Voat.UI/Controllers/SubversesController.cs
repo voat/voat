@@ -144,7 +144,7 @@ namespace Voat.Controllers
             var respones = await cmd.Execute();
             if (respones.Success)
             {
-                return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subverseTmpModel.Name });
+                return RedirectToAction("SubverseIndex", "Subverses", new { subverse = subverseTmpModel.Name });
             }
             else
             {
@@ -301,7 +301,7 @@ namespace Voat.Controllers
                     CacheHandler.Instance.Remove(CachingKey.Subverse(existingSubverse.Name));
 
                     // go back to this subverse
-                    return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = updatedModel.Name });
+                    return RedirectToAction("SubverseIndex", "Subverses", new { subverse = updatedModel.Name });
 
                     // user was not authorized to commit the changes, drop attempt
                 }
@@ -391,7 +391,7 @@ namespace Voat.Controllers
                     CacheHandler.Instance.Remove(CachingKey.Subverse(existingSubverse.Name));
 
                     // go back to this subverse
-                    return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = updatedModel.Name });
+                    return RedirectToAction("SubverseIndex", "Subverses", new { subverse = updatedModel.Name });
                 }
 
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");
@@ -402,217 +402,6 @@ namespace Voat.Controllers
                 ModelState.AddModelError(string.Empty, "Something bad happened.");
                 return View("~/Views/Subverses/Admin/SubverseStylesheetEditor.cshtml");
             }
-        }
-
-        // GET: show a subverse index
-        public ActionResult SubverseIndex(int? page, string subversetoshow, bool? previewMode)
-        {
-            ViewBag.previewMode = previewMode ?? false;
-
-            const string cookieName = "NSFWEnabled";
-            int pageSize = 25;
-            int pageNumber = (page ?? 0);
-
-            if (pageNumber < 0)
-            {
-                return NotFoundErrorView();
-            }
-
-            if (subversetoshow == null)
-            {
-                return SubverseNotFoundErrorView();
-            }
-
-            // register a new session for this subverse
-            try
-            {
-                var currentSubverse = (string)RouteData.Values["subversetoshow"];
-
-                // register a new session for this subverse
-                string clientIpAddress = UserHelper.UserIpAddress(Request);
-                string ipHash = IpHash.CreateHash(clientIpAddress);
-                SessionHelper.Add(currentSubverse, ipHash);
-
-                ViewBag.OnlineUsers = SessionHelper.ActiveSessionsForSubverse(currentSubverse);
-            }
-            catch (Exception)
-            {
-                ViewBag.OnlineUsers = -1;
-            }
-
-            try
-            {
-                if (!subversetoshow.Equals("all", StringComparison.OrdinalIgnoreCase))
-                {
-                    // check if subverse exists, if not, send to a page not found error
-
-                    //Can't use cached, view using to query db
-                    var subverse = _db.Subverses.Find(subversetoshow);
-
-                    if (subverse == null)
-                    {
-                        ViewBag.SelectedSubverse = "404";
-                        return SubverseNotFoundErrorView();
-                    }
-
-                    //HACK: Disable subverse
-                    if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
-                    {
-                        ViewBag.Subverse = subverse.Name;
-                        return SubverseDisabledErrorView();
-                    }
-
-                    ViewBag.SelectedSubverse = subverse.Name;
-                    ViewBag.Title = subverse.Description;
-
-                    //IAmAGate: Perf mods for caching
-                    string cacheKey = String.Format("legacy:subverse:{0}:page.{1}.sort.{2}", subversetoshow, pageNumber, "rank").ToLower();
-                    Tuple<IList<Submission>, int> cacheData = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKey);
-
-                    if (cacheData == null)
-                    {
-                        var getDataFunc = new Func<object>(() =>
-                        {
-                            using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
-                            {
-                                db.EnableCacheableOutput();
-
-                                var x = SubmissionsFromASubverseByRank(subversetoshow, db);
-                                int count = -1;
-                                List<Submission> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
-                                return new Tuple<IList<Submission>, int>(content, count);
-                            }
-                        });
-
-                        cacheData = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKey, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
-                    }
-
-                    PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>(cacheData.Item1, pageNumber, pageSize, cacheData.Item2);
-
-                    // check if subverse is rated adult, show a NSFW warning page before entering
-                    if (!subverse.IsAdult)
-                    {
-                        return View(paginatedSubmissions);
-                    }
-
-                    // check if user wants to see NSFW content by reading user preference
-                    if (User.Identity.IsAuthenticated)
-                    {
-                        if (UserData.Preferences.EnableAdultContent)
-                        {
-                            return View(paginatedSubmissions);
-                        }
-
-                        // display a view explaining that account preference is set to NO NSFW and why this subverse can not be shown
-                        return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.Name });
-                    }
-
-                    // check if user wants to see NSFW content by reading NSFW cookie
-                    if (!ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
-                    {
-                        return RedirectToAction("AdultContentWarning", "Subverses", new { destination = subverse.Name, nsfwok = false });
-                    }
-                    return View(paginatedSubmissions);
-                }
-
-                // selected subverse is ALL, show submissions from all subverses, sorted by rank
-                ViewBag.SelectedSubverse = "all";
-                ViewBag.Title = "all subverses";
-
-                PaginatedList<Submission> paginatedSfwSubmissions;
-
-                // check if user wants to see NSFW content by reading user preference
-                if (User.Identity.IsAuthenticated)
-                {
-                    if (UserData.Preferences.EnableAdultContent)
-                    {
-                        var paginatedSubmissionsFromAllSubverses = new PaginatedList<Submission>(SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
-                        return View(paginatedSubmissionsFromAllSubverses);
-                    }
-
-                    // return only sfw submissions
-                    paginatedSfwSubmissions = new PaginatedList<Submission>(SfwSubmissionsFromAllSubversesByRank(_db), page ?? 0, pageSize);
-                    return View(paginatedSfwSubmissions);
-                }
-
-                // check if user wants to see NSFW content by reading NSFW cookie
-                if (ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
-                {
-                    var paginatedSubmissionsFromAllSubverses = new PaginatedList<Submission>(SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
-                    return View(paginatedSubmissionsFromAllSubverses);
-                }
-
-                //NEW LOGIC
-                //IAmAGate: Perf mods for caching
-                string cacheKeyAll = String.Format("legacy:subverse:{0}:page.{1}.sort.{2}.sfw", "all", pageNumber, "rank").ToLower();
-                Tuple<IList<Submission>, int> cacheDataAll = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyAll);
-
-                if (cacheDataAll == null)
-                {
-                    var getDataFunc = new Func<object>(() =>
-                    {
-                        using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
-                        {
-                            db.EnableCacheableOutput();
-
-                            var x = SfwSubmissionsFromAllSubversesByRank(db);
-                            int count = 50000;
-                            List<Submission> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
-                            return new Tuple<IList<Submission>, int>(content, count);
-                        }
-                    });
-                    cacheDataAll = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber > 2) ? 5 : 0);
-                }
-                paginatedSfwSubmissions = new PaginatedList<Submission>(cacheDataAll.Item1, pageNumber, pageSize, cacheDataAll.Item2);
-                return View(paginatedSfwSubmissions);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public ActionResult SortedSubverseFrontpage(int? page, string subversetoshow, string sortingmode, string time)
-        {
-            // sortingmode: new, contraversial, hot, etc
-            ViewBag.SortingMode = sortingmode;
-            ViewBag.Time = time;
-            ViewBag.SelectedSubverse = subversetoshow;
-            ViewBag.Title = subversetoshow;
-
-            if (!sortingmode.Equals("new") && !sortingmode.Equals("top"))
-                return RedirectToAction("Index", "Home");
-
-            int pageNumber = (page ?? 0);
-            if (pageNumber < 0)
-            {
-                return NotFoundErrorView();
-            }
-
-            // register a new session for this subverse
-            try
-            {
-                var currentSubverse = (string)RouteData.Values["subversetoshow"];
-
-                // register a new session for this subverse
-                string clientIpAddress = UserHelper.UserIpAddress(Request);
-                string ipHash = IpHash.CreateHash(clientIpAddress);
-                SessionHelper.Add(currentSubverse, ipHash);
-
-                ViewBag.OnlineUsers = SessionHelper.ActiveSessionsForSubverse(currentSubverse);
-            }
-            catch (Exception)
-            {
-                ViewBag.OnlineUsers = -1;
-            }
-
-            if (!subversetoshow.Equals("all", StringComparison.OrdinalIgnoreCase))
-            {
-                return HandleSortedSubverse(page, subversetoshow, sortingmode, time);
-            }
-
-            // selected subverse is ALL, show submissions from all subverses, sorted by date
-            return HandleSortedSubverseAll(page, sortingmode, time);
         }
 
         // GET: show a list of subverses by number of subscribers
@@ -782,7 +571,7 @@ namespace Voat.Controllers
                 System.Web.HttpContext.Current.Response.Cookies.Add(hc);
 
                 // redirect to destination subverse
-                return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = destination });
+                return RedirectToAction("SubverseIndex", "Subverses", new { subverse = destination });
             }
             ViewBag.Destination = destination;
             return View("~/Views/Subverses/AdultContentWarning.cshtml");
@@ -794,7 +583,7 @@ namespace Voat.Controllers
             try
             {
                 string randomSubverse = RandomSubverse(true);
-                return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = randomSubverse });
+                return RedirectToAction("SubverseIndex", "Subverses", new { subverse = randomSubverse });
             }
             catch (Exception ex)
             {
@@ -808,7 +597,7 @@ namespace Voat.Controllers
             try
             {
                 string randomSubverse = RandomSubverse(false);
-                return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = randomSubverse });
+                return RedirectToAction("SubverseIndex", "Subverses", new { subverse = randomSubverse });
             }
             catch (Exception ex)
             {
@@ -1388,6 +1177,379 @@ namespace Voat.Controllers
             }
         }
 
+        #region Submission Display Methods
+
+        private void RecordSession(string subverse)
+        {
+            //TODO: Relocate this to a command object
+            // register a new session for this subverse
+            try
+            {
+                // register a new session for this subverse
+                string clientIpAddress = UserHelper.UserIpAddress(Request);
+                string ipHash = IpHash.CreateHash(clientIpAddress);
+                SessionHelper.Add(subverse, ipHash);
+
+                ViewBag.OnlineUsers = SessionHelper.ActiveSessionsForSubverse(subverse);
+            }
+            catch (Exception)
+            {
+                ViewBag.OnlineUsers = -1;
+            }
+        }
+        private void SetFirstTimeCookie()
+        {
+            // setup a cookie to find first time visitors and display welcome banner
+            const string cookieName = "NotFirstTime";
+            if (ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+            {
+                // not a first time visitor
+                ViewBag.FirstTimeVisitor = false;
+            }
+            else
+            {
+                // add a cookie for first time visitors
+                HttpCookie hc = new HttpCookie("NotFirstTime", "1");
+                hc.Expires = Repository.CurrentDate.AddYears(1);
+                System.Web.HttpContext.Current.Response.Cookies.Add(hc);
+
+                ViewBag.FirstTimeVisitor = true;
+            }
+        }
+        // GET: show a subverse index
+        public async Task<ActionResult> SubverseIndex(int? page, string subverse, string sort = "hot", string time = "day", bool? previewMode = null)
+        {
+            ViewBag.previewMode = previewMode ?? false;
+
+            const string cookieName = "NSFWEnabled";
+            int pageNumber = (page ?? 0);
+
+            if (pageNumber < 0)
+            {
+                return NotFoundErrorView();
+            }
+            //Set to DEFAULT if querystring is present
+            if (Request.QueryString["frontpage"] == "guest")
+            {
+                subverse = AGGREGATE_SUBVERSE.DEFAULT;
+            }
+            if (String.IsNullOrEmpty(subverse))
+            {
+                return SubverseNotFoundErrorView();
+            }
+
+            SetFirstTimeCookie();
+            RecordSession(subverse);
+
+            var options = new SearchOptions();
+            options.Page = pageNumber;
+            options.Count = 25;
+
+            switch (sort.ToLower())
+            {
+                case "new":
+                    options.Sort = Domain.Models.SortAlgorithm.New;
+                    break;
+                case "hot":
+                    options.Sort = Domain.Models.SortAlgorithm.Rank;
+                    break;
+                case "top":
+                    //set defaults
+                    if (String.IsNullOrEmpty(time))
+                    {
+                        time = "day";
+                    }
+                    options.Sort = Domain.Models.SortAlgorithm.Top;
+                    switch (time.ToLower())
+                    {
+                        case "day":
+                            options.Span = Domain.Models.SortSpan.Day;
+                            break;
+                        case "week":
+                            options.Span = Domain.Models.SortSpan.Week;
+                            break;
+                        case "month":
+                            options.Span = Domain.Models.SortSpan.Month;
+                            break;
+                        case "year":
+                            options.Span = Domain.Models.SortSpan.Year;
+                            break;
+                        case "all":
+                            options.Span = Domain.Models.SortSpan.All;
+                            break;
+                        default:
+                            throw new NotImplementedException("span " + time + " is unknown");
+                    }
+                    break;
+                default:
+                    throw new NotImplementedException("sort " + sort + " is unknown");
+            }
+
+            try
+            {
+                if (AGGREGATE_SUBVERSE.IsAggregate(subverse))
+                {
+                    if (subverse == AGGREGATE_SUBVERSE.FRONT)
+                    {
+                        //Check if user is logged in and has subscriptions, if not we convert to default query
+                        if (User.Identity.IsAuthenticated && !UserData.HasSubscriptions())
+                        {
+                            subverse = AGGREGATE_SUBVERSE.DEFAULT;
+                        }
+                        ViewBag.SelectedSubverse = "frontpage";
+                    }
+                    else if (subverse == AGGREGATE_SUBVERSE.DEFAULT)
+                    {
+                        ViewBag.SelectedSubverse = "frontpage";
+                    }
+                    else
+                    {
+                        // selected subverse is ALL, show submissions from all subverses, sorted by rank
+                        ViewBag.SelectedSubverse = "all";
+                        ViewBag.Title = "all subverses";
+                    }
+
+                    //This should filter out NSFW if User is not logged in or has adult content disabled
+                    var q = new QuerySubmissionsLegacy(subverse, options);
+                    var results = await q.ExecuteAsync().ConfigureAwait(false);
+
+                    PaginatedList<Submission> pageList = new PaginatedList<Submission>(results, options.Page, options.Count, -1);
+                    return View("AggregateIndex", pageList);
+
+                    //// check if user wants to see NSFW content by reading user preference
+                    //if (User.Identity.IsAuthenticated)
+                    //{
+                    //    if (UserData.Preferences.EnableAdultContent)
+                    //    {
+                    //        var paginatedSubmissionsFromAllSubverses = new PaginatedList<Submission>(SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                    //        return View(paginatedSubmissionsFromAllSubverses);
+                    //    }
+
+                    //    // return only sfw submissions
+                    //    paginatedSfwSubmissions = new PaginatedList<Submission>(SfwSubmissionsFromAllSubversesByRank(_db), page ?? 0, pageSize);
+                    //    return View(paginatedSfwSubmissions);
+                    //}
+
+                    //// check if user wants to see NSFW content by reading NSFW cookie
+                    //if (ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+                    //{
+                    //    var paginatedSubmissionsFromAllSubverses = new PaginatedList<Submission>(SubmissionsFromAllSubversesByRank(), page ?? 0, pageSize);
+                    //    return View(paginatedSubmissionsFromAllSubverses);
+                    //}
+
+                    //NEW LOGIC
+                    //IAmAGate: Perf mods for caching
+                    //string cacheKeyAll = String.Format("legacy:subverse:{0}:page.{1}.sort.{2}.sfw", "all", pageNumber, "rank").ToLower();
+                    //Tuple<IList<Submission>, int> cacheDataAll = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKeyAll);
+
+                    //if (cacheDataAll == null)
+                    //{
+                    //    var getDataFunc = new Func<object>(() =>
+                    //    {
+                    //        using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
+                    //        {
+                    //            db.EnableCacheableOutput();
+
+                    //            var x = SfwSubmissionsFromAllSubversesByRank(db);
+                    //            int count = 50000;
+                    //            List<Submission> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                    //            return new Tuple<IList<Submission>, int>(content, count);
+                    //        }
+                    //    });
+                    //    cacheDataAll = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKeyAll, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber > 2) ? 5 : 0);
+                    //}
+                    //paginatedSfwSubmissions = new PaginatedList<Submission>(cacheDataAll.Item1, pageNumber, pageSize, cacheDataAll.Item2);
+                    //return View(paginatedSfwSubmissions);
+                }
+                else
+                {
+                    // check if subverse exists, if not, send to a page not found error
+
+                    //Can't use cached, view using to query db
+                    var subverseObject = _db.Subverses.Find(subverse);
+
+                    if (subverseObject == null)
+                    {
+                        ViewBag.SelectedSubverse = "404";
+                        return SubverseNotFoundErrorView();
+                    }
+
+                    //HACK: Disable subverse
+                    if (subverseObject.IsAdminDisabled.HasValue && subverseObject.IsAdminDisabled.Value)
+                    {
+                        ViewBag.Subverse = subverseObject.Name;
+                        return SubverseDisabledErrorView();
+                    }
+                    //Check NSFW Settings
+                    #region Original Logic Located after query takes place
+                    //// check if subverse is rated adult, show a NSFW warning page before entering
+                    //if (!subverse.IsAdult)
+                    //{
+                    //    return View(paginatedSubmissions);
+                    //}
+
+                    //// check if user wants to see NSFW content by reading user preference
+                    //if (User.Identity.IsAuthenticated)
+                    //{
+                    //    if (UserData.Preferences.EnableAdultContent)
+                    //    {
+                    //        return View(paginatedSubmissions);
+                    //    }
+
+                    //    // display a view explaining that account preference is set to NO NSFW and why this subverse can not be shown
+                    //    return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverse.Name });
+                    //}
+
+                    //// check if user wants to see NSFW content by reading NSFW cookie
+                    //if (!ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+                    //{
+                    //    return RedirectToAction("AdultContentWarning", "Subverses", new { destination = subverse.Name, nsfwok = false });
+                    //}
+                    #endregion
+                    if (subverseObject.IsAdult)
+                    {
+                        if (User.Identity.IsAuthenticated)
+                        {
+                            if (!UserData.Preferences.EnableAdultContent)
+                            {
+                                // display a view explaining that account preference is set to NO NSFW and why this subverse can not be shown
+                                return RedirectToAction("AdultContentFiltered", "Subverses", new { destination = subverseObject.Name });
+                            }
+                        }
+                        // check if user wants to see NSFW content by reading NSFW cookie
+                        else if (!ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+                        {
+                            return RedirectToAction("AdultContentWarning", "Subverses", new { destination = subverseObject.Name, nsfwok = false });
+                        }
+                    }
+
+                    ViewBag.SelectedSubverse = subverseObject.Name;
+                    ViewBag.Title = subverseObject.Description;
+
+                    var q = new QuerySubmissionsLegacy(subverse, options);
+                    var results = await q.ExecuteAsync().ConfigureAwait(false);
+
+                    ////IAmAGate: Perf mods for caching
+                    //string cacheKey = String.Format("legacy:subverse:{0}:page.{1}.sort.{2}", subversetoshow, pageNumber, "rank").ToLower();
+                    //Tuple<IList<Submission>, int> cacheData = CacheHandler.Instance.Retrieve<Tuple<IList<Submission>, int>>(cacheKey);
+
+                    //if (cacheData == null)
+                    //{
+                    //    var getDataFunc = new Func<object>(() =>
+                    //    {
+                    //        using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
+                    //        {
+                    //            db.EnableCacheableOutput();
+
+                    //            var x = SubmissionsFromASubverseByRank(subversetoshow, db);
+                    //            int count = -1;
+                    //            List<Submission> content = x.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+                    //            return new Tuple<IList<Submission>, int>(content, count);
+                    //        }
+                    //    });
+
+                    //    cacheData = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKey, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
+                    //}
+
+                    PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>(results, options.Page, options.Count, -1);
+                    return View(paginatedSubmissions);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
+        public async Task<ActionResult> SortedSubverseFrontpage(int? page, string subversetoshow, string sortingmode, string time)
+        {
+            // sortingmode: new, contraversial, hot, etc
+            ViewBag.SortingMode = sortingmode;
+            ViewBag.Time = time;
+            ViewBag.SelectedSubverse = subversetoshow;
+            ViewBag.Title = subversetoshow;
+
+            if (!sortingmode.Equals("new") && !sortingmode.Equals("top"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            int pageNumber = (page ?? 0);
+            if (pageNumber < 0)
+            {
+                return NotFoundErrorView();
+            }
+
+            RecordSession(subversetoshow);
+
+            var options = new SearchOptions();
+            options.Page = pageNumber;
+            options.Count = 25;
+
+            switch (sortingmode.ToLower())
+            {
+                case "new":
+                    options.Sort = Domain.Models.SortAlgorithm.New;
+                    break;
+                case "top":
+                    //set defaults
+                    if (String.IsNullOrEmpty(time))
+                    {
+                        time = "day";
+                    }
+                    options.Sort = Domain.Models.SortAlgorithm.Top;
+                    switch (time.ToLower())
+                    {
+                        case "day":
+                            options.Span = Domain.Models.SortSpan.Day;
+                            break;
+                        case "week":
+                            options.Span = Domain.Models.SortSpan.Week;
+                            break;
+                        case "month":
+                            options.Span = Domain.Models.SortSpan.Month;
+                            break;
+                        case "year":
+                            options.Span = Domain.Models.SortSpan.Year;
+                            break;
+                        case "all":
+                            options.Span = Domain.Models.SortSpan.All;
+                            break;
+                        default:
+                            throw new NotImplementedException("span " + time + " is unknown");
+                    }
+                    break;
+                default:
+                    throw new NotImplementedException("sort " + sortingmode + " is unknown");
+            }
+            
+            QuerySubmissionsLegacy q = null;
+            IEnumerable<Data.Models.Submission> results = null;
+
+            if (subversetoshow.Equals("all", StringComparison.OrdinalIgnoreCase))
+            {
+
+                //This should filter out NSFW if User is not logged in or has adult content disabled
+                q = new QuerySubmissionsLegacy(AGGREGATE_SUBVERSE.ALL, options);
+                results = await q.ExecuteAsync().ConfigureAwait(false);
+
+                // selected subverse is ALL, show submissions from all subverses, sorted by date
+                //return HandleSortedSubverseAll(page, sortingmode, time);
+            }
+            else
+            {
+                q = new QuerySubmissionsLegacy(subversetoshow, options);
+                results = await q.ExecuteAsync().ConfigureAwait(false);
+                //return HandleSortedSubverse(page, subversetoshow, sortingmode, time);
+
+            }
+
+            PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>(results, options.Page, options.Count, -1);
+            return View("SubverseIndex", paginatedSubmissions);
+        }
+
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         [ChildActionOnly]
         private ActionResult HandleSortedSubverse(int? page, string subversetoshow, string sortingmode, string daterange)
         {
@@ -1514,7 +1676,7 @@ namespace Voat.Controllers
             paginatedSubmissionsByRank = new PaginatedList<Submission>(SubmissionsFromASubverseByRank(subversetoshow), page ?? 0, pageSize);
             return View("SubverseIndex", paginatedSubmissionsByRank);
         }
-
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         [ChildActionOnly]
         private ActionResult HandleSortedSubverseAll(int? page, string sortingmode, string daterange)
         {
@@ -1761,6 +1923,221 @@ namespace Voat.Controllers
 
             #endregion guest users: submissions including NSFW
         }
+
+
+        #region sfw submissions from all subverses
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
+        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByDate(voatEntities _db = null)
+        {
+            if (_db == null)
+            {
+                _db = this._db;
+            }
+            string userName = "";
+            if (User != null)
+            {
+                userName = User.Identity.Name;
+            }
+            IQueryable<Submission> sfwSubmissionsFromAllSubversesByDate = (from message in _db.Submissions
+                                                                           join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                                                                           where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && subverse.MinCCPForDownvote == 0
+                                                                           where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                                                                           where !(from bu in _db.SubverseBans where bu.Subverse == subverse.Name select bu.UserName).Contains(message.UserName)
+                                                                           where !subverse.IsAdminDisabled.Value
+                                                                           where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(userName)
+                                                                           select message
+                                                                        ).OrderByDescending(s => s.CreationDate).AsNoTracking();
+
+            return sfwSubmissionsFromAllSubversesByDate;
+        }
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
+        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByRank(voatEntities _db)
+        {
+            if (_db == null)
+            {
+                _db = this._db;
+            }
+            string userName = "";
+            if (User != null)
+            {
+                userName = User.Identity.Name;
+            }
+            IQueryable<Submission> sfwSubmissionsFromAllSubversesByRank = (from message in _db.Submissions
+                                                                           join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                                                                           where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && subverse.MinCCPForDownvote == 0 && message.Rank > 0.00009
+                                                                           where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                                                                           where !subverse.IsAdminDisabled.Value
+                                                                           where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(userName)
+                                                                           select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.CreationDate).AsNoTracking();
+
+            return sfwSubmissionsFromAllSubversesByRank;
+        }
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
+        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByTop(DateTime startDate, voatEntities _db = null)
+        {
+            if (_db == null)
+            {
+                _db = this._db;
+            }
+            IQueryable<Submission> sfwSubmissionsFromAllSubversesByTop = (from message in _db.Submissions
+                                                                          join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                                                                          where !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdult == false && subverse.MinCCPForDownvote == 0
+                                                                          where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                                                                          where !subverse.IsAdminDisabled.Value
+                                                                          where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
+                                                                          select message).OrderByDescending(s => s.UpCount - s.DownCount).Where(s => s.CreationDate >= startDate && s.CreationDate <= Repository.CurrentDate)
+                                                                       .AsNoTracking();
+
+            return sfwSubmissionsFromAllSubversesByTop;
+        }
+        //TODO: Move to dedicated query object
+        //[Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
+        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByViews24Hours(voatEntities _db)
+        {
+            if (_db == null)
+            {
+                _db = this._db;
+            }
+            var startDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
+            IQueryable<Submission> sfwSubmissionsFromAllSubversesByViews24Hours = (from message in _db.Submissions
+                                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                                                                                   where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && message.CreationDate >= startDate && message.CreationDate <= Repository.CurrentDate
+                                                                                   where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                                                                                   where !subverse.IsAdminDisabled.Value
+                                                                                   where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
+                                                                                   select message).OrderByDescending(s => s.Views).DistinctBy(m => m.Subverse).Take(5).AsQueryable().AsNoTracking();
+
+            return sfwSubmissionsFromAllSubversesByViews24Hours;
+        }
+
+        #endregion sfw submissions from all subverses
+
+        #region unfiltered submissions from all subverses
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
+        private IQueryable<Submission> SubmissionsFromAllSubversesByDate(voatEntities _db = null)
+        {
+            if (_db == null)
+            {
+                _db = this._db;
+            }
+            string userName = "";
+            if (User != null)
+            {
+                userName = User.Identity.Name;
+            }
+            IQueryable<Submission> submissionsFromAllSubversesByDate = (from message in _db.Submissions
+                                                                        join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                                                                        where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.MinCCPForDownvote == 0
+                                                                        where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                                                                        where !subverse.IsAdminDisabled.Value
+                                                                        where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(userName)
+                                                                        select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
+
+            return submissionsFromAllSubversesByDate;
+        }
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
+        private IQueryable<Submission> SubmissionsFromAllSubversesByRank(voatEntities _db = null)
+        {
+            if (_db == null)
+            {
+                _db = this._db;
+            }
+            IQueryable<Submission> submissionsFromAllSubversesByRank = (from message in _db.Submissions
+                                                                        join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                                                                        where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.MinCCPForDownvote == 0 && message.Rank > 0.00009
+                                                                        where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                                                                        where !subverse.IsAdminDisabled.Value
+                                                                        where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
+                                                                        select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.CreationDate).AsNoTracking();
+
+            return submissionsFromAllSubversesByRank;
+        }
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
+        private IQueryable<Submission> SubmissionsFromAllSubversesByTop(DateTime startDate, voatEntities _db = null)
+        {
+            if (_db == null)
+            {
+                _db = this._db;
+            }
+
+            IQueryable<Submission> submissionsFromAllSubversesByTop = (from message in _db.Submissions
+                                                                       join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                                                                       where !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.MinCCPForDownvote == 0
+                                                                       where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                                                                       where !subverse.IsAdminDisabled.Value
+                                                                       where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
+                                                                       select message).OrderByDescending(s => s.UpCount - s.DownCount).Where(s => s.CreationDate >= startDate && s.CreationDate <= Repository.CurrentDate)
+                                                                    .AsNoTracking();
+
+            return submissionsFromAllSubversesByTop;
+        }
+
+        #endregion unfiltered submissions from all subverses
+
+        #region submissions from a single subverse
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
+        private IQueryable<Submission> SubmissionsFromASubverseByDate(string subverseName, voatEntities _db = null)
+        {
+            if (_db == null)
+            {
+                _db = this._db;
+            }
+            var subverseStickie = _db.StickiedSubmissions.FirstOrDefault(ss => ss.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
+            IQueryable<Submission> submissionsFromASubverseByDate = (from message in _db.Submissions
+                                                                     join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                                                                     where !message.IsDeleted && message.Subverse == subverseName
+                                                                     where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                                                                     where !(from bu in _db.SubverseBans where bu.Subverse == subverse.Name select bu.UserName).Contains(message.UserName)
+                                                                     select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
+
+            if (subverseStickie != null)
+            {
+                return submissionsFromASubverseByDate.Where(s => s.ID != subverseStickie.SubmissionID);
+            }
+            return submissionsFromASubverseByDate;
+        }
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
+        private IQueryable<Submission> SubmissionsFromASubverseByRank(string subverseName, voatEntities _db = null)
+        {
+            if (_db == null)
+            {
+                _db = this._db;
+            }
+            var subverseStickie = _db.StickiedSubmissions.FirstOrDefault(ss => ss.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
+            IQueryable<Submission> submissionsFromASubverseByRank = (from message in _db.Submissions
+                                                                     join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                                                                     where !message.IsDeleted && message.Subverse == subverseName
+                                                                     where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                                                                     select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.CreationDate).AsNoTracking();
+
+            if (subverseStickie != null)
+            {
+                return submissionsFromASubverseByRank.Where(s => s.ID != subverseStickie.SubmissionID);
+            }
+            return submissionsFromASubverseByRank;
+        }
+        [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
+        private IQueryable<Submission> SubmissionsFromASubverseByTop(string subverseName, DateTime startDate)
+        {
+            var subverseStickie = _db.StickiedSubmissions.FirstOrDefault(ss => ss.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
+            IQueryable<Submission> submissionsFromASubverseByTop = (from message in _db.Submissions
+                                                                    join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                                                                    where !message.IsDeleted && message.Subverse == subverseName
+                                                                    where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                                                                    select message).OrderByDescending(s => s.UpCount - s.DownCount).Where(s => s.CreationDate >= startDate && s.CreationDate <= Repository.CurrentDate)
+                                                                 .AsNoTracking();
+            if (subverseStickie != null)
+            {
+                return submissionsFromASubverseByTop.Where(s => s.ID != subverseStickie.SubmissionID);
+            }
+            return submissionsFromASubverseByTop;
+        }
+
+        #endregion submissions from a single subverse
+
+        #endregion
+
+
 
         [ChildActionOnly]
         [OutputCache(Duration = 600, VaryByParam = "none")]
@@ -2089,215 +2466,6 @@ namespace Voat.Controllers
         }
 
         #endregion ADD/REMOVE MODERATORS LOGIC
-
-        #region sfw submissions from all subverses
-
-        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByDate(voatEntities _db = null)
-        {
-            if (_db == null)
-            {
-                _db = this._db;
-            }
-            string userName = "";
-            if (User != null)
-            {
-                userName = User.Identity.Name;
-            }
-            IQueryable<Submission> sfwSubmissionsFromAllSubversesByDate = (from message in _db.Submissions
-                                                                           join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                                                                           where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && subverse.MinCCPForDownvote == 0
-                                                                           where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-                                                                           where !(from bu in _db.SubverseBans where bu.Subverse == subverse.Name select bu.UserName).Contains(message.UserName)
-                                                                           where !subverse.IsAdminDisabled.Value
-                                                                           where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(userName)
-                                                                           select message
-                                                                        ).OrderByDescending(s => s.CreationDate).AsNoTracking();
-
-            return sfwSubmissionsFromAllSubversesByDate;
-        }
-
-        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByRank(voatEntities _db)
-        {
-            if (_db == null)
-            {
-                _db = this._db;
-            }
-            string userName = "";
-            if (User != null)
-            {
-                userName = User.Identity.Name;
-            }
-            IQueryable<Submission> sfwSubmissionsFromAllSubversesByRank = (from message in _db.Submissions
-                                                                           join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                                                                           where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && subverse.MinCCPForDownvote == 0 && message.Rank > 0.00009
-                                                                           where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-                                                                           where !subverse.IsAdminDisabled.Value
-                                                                           where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(userName)
-                                                                           select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.CreationDate).AsNoTracking();
-
-            return sfwSubmissionsFromAllSubversesByRank;
-        }
-
-        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByTop(DateTime startDate, voatEntities _db = null)
-        {
-            if (_db == null)
-            {
-                _db = this._db;
-            }
-            IQueryable<Submission> sfwSubmissionsFromAllSubversesByTop = (from message in _db.Submissions
-                                                                          join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                                                                          where !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdult == false && subverse.MinCCPForDownvote == 0
-                                                                          where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-                                                                          where !subverse.IsAdminDisabled.Value
-                                                                          where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
-                                                                          select message).OrderByDescending(s => s.UpCount - s.DownCount).Where(s => s.CreationDate >= startDate && s.CreationDate <= Repository.CurrentDate)
-                                                                       .AsNoTracking();
-
-            return sfwSubmissionsFromAllSubversesByTop;
-        }
-
-        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByViews24Hours(voatEntities _db)
-        {
-            if (_db == null)
-            {
-                _db = this._db;
-            }
-            var startDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
-            IQueryable<Submission> sfwSubmissionsFromAllSubversesByViews24Hours = (from message in _db.Submissions
-                                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                                                                                   where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && message.CreationDate >= startDate && message.CreationDate <= Repository.CurrentDate
-                                                                                   where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-                                                                                   where !subverse.IsAdminDisabled.Value
-                                                                                   where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
-                                                                                   select message).OrderByDescending(s => s.Views).DistinctBy(m => m.Subverse).Take(5).AsQueryable().AsNoTracking();
-
-            return sfwSubmissionsFromAllSubversesByViews24Hours;
-        }
-
-        #endregion sfw submissions from all subverses
-
-        #region unfiltered submissions from all subverses
-
-        private IQueryable<Submission> SubmissionsFromAllSubversesByDate(voatEntities _db = null)
-        {
-            if (_db == null)
-            {
-                _db = this._db;
-            }
-            string userName = "";
-            if (User != null)
-            {
-                userName = User.Identity.Name;
-            }
-            IQueryable<Submission> submissionsFromAllSubversesByDate = (from message in _db.Submissions
-                                                                        join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                                                                        where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.MinCCPForDownvote == 0
-                                                                        where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-                                                                        where !subverse.IsAdminDisabled.Value
-                                                                        where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(userName)
-                                                                        select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
-
-            return submissionsFromAllSubversesByDate;
-        }
-
-        private IQueryable<Submission> SubmissionsFromAllSubversesByRank(voatEntities _db = null)
-        {
-            if (_db == null)
-            {
-                _db = this._db;
-            }
-            IQueryable<Submission> submissionsFromAllSubversesByRank = (from message in _db.Submissions
-                                                                        join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                                                                        where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.MinCCPForDownvote == 0 && message.Rank > 0.00009
-                                                                        where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-                                                                        where !subverse.IsAdminDisabled.Value
-                                                                        where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
-                                                                        select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.CreationDate).AsNoTracking();
-
-            return submissionsFromAllSubversesByRank;
-        }
-
-        private IQueryable<Submission> SubmissionsFromAllSubversesByTop(DateTime startDate, voatEntities _db = null)
-        {
-            if (_db == null)
-            {
-                _db = this._db;
-            }
-
-            IQueryable<Submission> submissionsFromAllSubversesByTop = (from message in _db.Submissions
-                                                                       join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                                                                       where !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.MinCCPForDownvote == 0
-                                                                       where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-                                                                       where !subverse.IsAdminDisabled.Value
-                                                                       where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
-                                                                       select message).OrderByDescending(s => s.UpCount - s.DownCount).Where(s => s.CreationDate >= startDate && s.CreationDate <= Repository.CurrentDate)
-                                                                    .AsNoTracking();
-
-            return submissionsFromAllSubversesByTop;
-        }
-
-        #endregion unfiltered submissions from all subverses
-
-        #region submissions from a single subverse
-
-        private IQueryable<Submission> SubmissionsFromASubverseByDate(string subverseName, voatEntities _db = null)
-        {
-            if (_db == null)
-            {
-                _db = this._db;
-            }
-            var subverseStickie = _db.StickiedSubmissions.FirstOrDefault(ss => ss.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
-            IQueryable<Submission> submissionsFromASubverseByDate = (from message in _db.Submissions
-                                                                     join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                                                                     where !message.IsDeleted && message.Subverse == subverseName
-                                                                     where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-                                                                     where !(from bu in _db.SubverseBans where bu.Subverse == subverse.Name select bu.UserName).Contains(message.UserName)
-                                                                     select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
-
-            if (subverseStickie != null)
-            {
-                return submissionsFromASubverseByDate.Where(s => s.ID != subverseStickie.SubmissionID);
-            }
-            return submissionsFromASubverseByDate;
-        }
-
-        private IQueryable<Submission> SubmissionsFromASubverseByRank(string subverseName, voatEntities _db = null)
-        {
-            if (_db == null)
-            {
-                _db = this._db;
-            }
-            var subverseStickie = _db.StickiedSubmissions.FirstOrDefault(ss => ss.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
-            IQueryable<Submission> submissionsFromASubverseByRank = (from message in _db.Submissions
-                                                                     join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                                                                     where !message.IsDeleted && message.Subverse == subverseName
-                                                                     where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-                                                                     select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.CreationDate).AsNoTracking();
-
-            if (subverseStickie != null)
-            {
-                return submissionsFromASubverseByRank.Where(s => s.ID != subverseStickie.SubmissionID);
-            }
-            return submissionsFromASubverseByRank;
-        }
-
-        private IQueryable<Submission> SubmissionsFromASubverseByTop(string subverseName, DateTime startDate)
-        {
-            var subverseStickie = _db.StickiedSubmissions.FirstOrDefault(ss => ss.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
-            IQueryable<Submission> submissionsFromASubverseByTop = (from message in _db.Submissions
-                                                                    join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                                                                    where !message.IsDeleted && message.Subverse == subverseName
-                                                                    where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-                                                                    select message).OrderByDescending(s => s.UpCount - s.DownCount).Where(s => s.CreationDate >= startDate && s.CreationDate <= Repository.CurrentDate)
-                                                                 .AsNoTracking();
-            if (subverseStickie != null)
-            {
-                return submissionsFromASubverseByTop.Where(s => s.ID != subverseStickie.SubmissionID);
-            }
-            return submissionsFromASubverseByTop;
-        }
-
-        #endregion submissions from a single subverse
 
         #region random subverse
 
