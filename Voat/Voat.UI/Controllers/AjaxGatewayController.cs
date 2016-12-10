@@ -173,7 +173,7 @@ namespace Voat.Controllers
         [Authorize]
         public ActionResult PreviewStylesheet(string subversetoshow, bool previewMode)
         {
-            return RedirectToRoute("SubverseIndex", new { subversetoshow, previewMode });
+            return RedirectToRoute("SubverseIndex", new { subverse = subversetoshow, previewMode = previewMode });
         }
 
         // GET: subverse basic info used for V2 sets layout
