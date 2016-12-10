@@ -38,7 +38,7 @@
     *@
     @if (!submission.Subverse.Equals("user"))
     {
-        
+
         @Html.Action("SidebarForSelectedSubverseComments", "Subverses", submission)
     }
     <div class="content" role="main">
@@ -49,16 +49,22 @@
             //type 1 = message submission
             if (submission.Type == 1)
             {
+                //I don't know if we need this ViewBag setup
                 ViewBag.Title = submission.Title + " | " + submission.Subverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
                 ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
                 ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
-                @Html.Partial("~/Views/Shared/Submissions/_MessageSubmissionDetails.cshtml", submission, new ViewDataDictionary { { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
+                @Html.Partial("~/Views/Shared/Submissions/_MessageSubmissionDetails.cshtml", submission,
+                    new ViewDataDictionary {
+                        { "ModeratorList", ViewBag.ModeratorList },
+                        { "SubverseAnonymized", ViewBag.SubverseAnonymized }
+                    })
             }
 
             //type 2 = link submission
             if (ViewBag.Submission.Type == 2)
             {
+                //I don't know if we need this ViewBag setup
                 ViewBag.Title = submission.Title + " | " + submission.Subverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
                 ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
@@ -80,7 +86,11 @@
                     ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
                 }
 
-                @Html.Partial("~/Views/Shared/Submissions/_LinkSubmissionDetails.cshtml", submission, new ViewDataDictionary { { "SubverseAnonymized", ViewBag.SubverseAnonymized } })
+                @Html.Partial("~/Views/Shared/Submissions/_LinkSubmissionDetails.cshtml", submission,
+                    new ViewDataDictionary {
+                        { "ModeratorList", ViewBag.ModeratorList },
+                        { "SubverseAnonymized", ViewBag.SubverseAnonymized }
+                    })
             }
         }
 
@@ -93,6 +103,7 @@
         <div class="horizontal-line"></div>
 
         @Html.Partial("~/Views/Shared/Comments/_CommentTree.cshtml", Model, new ViewDataDictionary {
+                    { "ModeratorList", ViewBag.ModeratorList },
                     { "SavedCommentCache", ViewBag.SavedCommentCache },
                     { "VoteCache", ViewBag.VoteCache },
                     { "SortingMode", ViewBag.SortingMode },

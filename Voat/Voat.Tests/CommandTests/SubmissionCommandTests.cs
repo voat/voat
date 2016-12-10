@@ -31,7 +31,7 @@ using Voat.Tests.Repository;
 namespace Voat.Tests.CommandTests
 {
     [TestClass]
-    public class SubmissionCommandTests 
+    public class SubmissionCommandTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
@@ -211,6 +211,7 @@ namespace Voat.Tests.CommandTests
         }
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
+        [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void PreventBannedDomainPost()
         {
             using (var repo = new voatEntities())
@@ -233,11 +234,20 @@ namespace Voat.Tests.CommandTests
             Assert.IsFalse(r.Success, r.Message);
             Assert.AreEqual(r.Message, "Submission contains banned domains");
 
+            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Test Embedded Banned Domain",
+                Content = "http://yahoo.com/index.html Check out this cool image I found using compuserve.com: http://saiddit.com/images/feelsgoodman.jpg. http://www2.home.geocities.com/index.html"
+            });
+            r = cmd.Execute().Result;
+            Assert.IsNotNull(r, "Response was null");
+            Assert.IsFalse(r.Success, r.Message);
+            Assert.AreEqual(r.Message, "Submission contains banned domains");
+
         }
 
 
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
+        [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void PreventBannedDomainPost_MultiPartDomains()
         {
             using (var repo = new voatEntities())
@@ -318,6 +328,7 @@ namespace Voat.Tests.CommandTests
         }
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
+        [TestCategory("Ban"), TestCategory("Ban.User")]
         public void PreventGlobalBannedUsers()
         {
             TestHelper.SetPrincipal("BannedGlobally");
@@ -331,6 +342,7 @@ namespace Voat.Tests.CommandTests
 
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
+        [TestCategory("Ban"), TestCategory("Ban.User")]
         public void PreventSubverseBannedUsers()
         {
             TestHelper.SetPrincipal("BannedFromVUnit");

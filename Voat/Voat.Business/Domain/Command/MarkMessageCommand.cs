@@ -32,7 +32,7 @@ namespace Voat.Domain.Command
         {
             using (var repo = new Repository())
             {
-                return await Task.Run(() => repo.MarkMessages(_ownerName, _ownerType, _type, _action, _id));
+                return await repo.MarkMessages(_ownerName, _ownerType, _type, _action, _id);
             }
         }
     }
@@ -63,7 +63,7 @@ namespace Voat.Domain.Command
         {
             using (var repo = new Repository())
             {
-                return await Task.Run(() => repo.DeleteMessages(_ownerName, _ownerType, _type, _id));
+                return await repo.DeleteMessages(_ownerName, _ownerType, _type, _id);
             }
         }
     }

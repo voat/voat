@@ -13,6 +13,8 @@ using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
+using Voat.Logging;
+using Voat.Utilities.Components;
 
 namespace Voat.Domain
 {
@@ -73,6 +75,7 @@ namespace Voat.Domain
                 userData = ContextCache.Get<UserData>(key);
                 if (userData == null)
                 {
+                    EventLogger.Instance.Log(LogType.Debug, "ContextCache", $"Not found: {key}");
                     identity = System.Threading.Thread.CurrentPrincipal.Identity;
                     userData = new UserData(identity.Name);
                     ContextCache.Set(key, userData);

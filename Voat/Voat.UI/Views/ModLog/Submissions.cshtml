@@ -50,7 +50,7 @@
                         // type 2 = link, type 1 = message
                         submissionClass = logItem.Submission.Type == 1 ? "self" : "";
 
-                        <div class="submission id-@logItem.Submission.ID link @submissionClass" data-fullname="@logItem.Submission.ID" data-ups="@logItem.Submission.Votes" data-downs="">
+                        <div class="submission id-@logItem.Submission.ID link @submissionClass" data-fullname="@logItem.Submission.ID" data-ups="@logItem.Submission.UpCount" data-downs="@logItem.Submission.DownCount">
                             <p class="parent"></p>
 
                             @Html.Partial("_votingIconsSubmission", logItem.Submission)

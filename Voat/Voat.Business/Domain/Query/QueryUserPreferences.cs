@@ -49,21 +49,18 @@ namespace Voat.Domain.Query
         {
             UserPreference pref = null;
 
-            if (!string.IsNullOrEmpty(_userToRetrieve))
+            using (var db = new Repository())
             {
-                using (var db = new Repository())
-                {
-                    pref = await db.GetUserPreferences(_userToRetrieve);
-                }
+                pref = await db.GetUserPreferences(_userToRetrieve);
             }
-
-            //User doesn't have prefs or user is is not logged in. Create default pref and return
-            if (pref == null)
-            {
-                pref = new UserPreference();
-                Repository.SetDefaultUserPreferences(pref);
-                pref.UserName = _userToRetrieve;
-            }
+            //REPO now handles
+            ////User doesn't have prefs or user is is not logged in. Create default pref and return
+            //if (pref == null)
+            //{
+            //    pref = new UserPreference();
+            //    Repository.SetDefaultUserPreferences(pref);
+            //    pref.UserName = _userToRetrieve;
+            //}
             return pref;
         }
     }

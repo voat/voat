@@ -18,7 +18,6 @@ namespace Voat.Data.Models
         public string Path { get; set; }
         public string Subverse { get; set; }
         public int ID { get; set; }
-        public Nullable<int> Votes { get; set; }
         public string UserName { get; set; }
         public string Content { get; set; }
         public System.DateTime CreationDate { get; set; }

@@ -46,8 +46,9 @@ namespace Voat.Controllers
         public AccountController()
             : this(new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
         {
-            var provider = new DpapiDataProtectionProvider("VoatUI");
+            var provider = Startup.DataProtectionProvider;
             UserManager.UserValidator = new UserValidator<VoatUser>(UserManager) { AllowOnlyAlphanumericUserNames = false };
+            //Email issues: http://stackoverflow.com/questions/23455579/generating-reset-password-token-does-not-work-in-azure-website
             UserManager.UserTokenProvider = new DataProtectorTokenProvider<VoatUser>(provider.Create("VoatTokenProvider"));
         }
 
@@ -137,8 +138,12 @@ namespace Voat.Controllers
                 // sign in and continue
                 await SignInAsync(user, model.RememberMe);
 
-                // read User Theme preference and set value to cookie
-                UserHelper.SetUserStylePreferenceCookie(UserHelper.UserStylePreference());
+                // remove the theme cookie, it will be set to the user preference after the page reloads
+                var cookie = HttpContext.Request.Cookies["theme"];
+                if(cookie != null && !String.IsNullOrEmpty(cookie.Value))
+                {
+                    HttpContext.Response.Cookies["theme"].Expires = DateTime.Now.AddDays(-1);
+                }
                 return RedirectToLocal(returnUrl);
             }
         }
@@ -701,7 +706,10 @@ namespace Voat.Controllers
                 // Send an email with this link
                 string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
                 var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                await UserManager.SendEmailAsync(user.Id, "Voat Password Reset Request", "You have requested to reset your Voat password. If you did not do this, please ignore this email. In order to open a page which will let you reset your Voat password, please click <a href=\"" + callbackUrl + "\">here</a>");
+                await UserManager.SendEmailAsync(
+                    user.Id, 
+                    "Voat Password Reset Request", 
+                    $"You have requested to reset your Voat password.<br/><br/>If you did not do this, please ignore this email.<br/><br/>To reset your password please click the following link or copy and paste the url into your browser address bar: <a href=\"{callbackUrl}\">{callbackUrl}</a>");
                 return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
 

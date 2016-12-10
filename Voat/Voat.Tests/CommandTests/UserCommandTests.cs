@@ -12,7 +12,7 @@ using Voat.Utilities;
 namespace Voat.Tests.CommandTests
 {
     [TestClass]
-    public class UserCommandTests
+    public class UserCommandTests : BaseUnitTest
     {
 
         [TestMethod]

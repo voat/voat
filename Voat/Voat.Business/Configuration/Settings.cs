@@ -197,15 +197,51 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.MaximumOwnedSubs, 10);
             }
         }
-
-        public static int MinimumCcp
+        public static int MinimumAccountAgeInDaysForSubverseCreation
         {
             get
             {
-                return GetValue(CONFIGURATION.MinimumCcp, 0);
+                return GetValue(CONFIGURATION.MinimumAccountAgeInDaysForSubverseCreation, 30);
             }
         }
 
+        public static int MinimumCommentPointsForSubverseCreation
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.MinimumCommentPointsForSubverseCreation, 10);
+            }
+        }
+      
+
+        public static int MinimumSubmissionPointsForSubverseCreation
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.MinimumSubmissionPointsForSubverseCreation, 10);
+            }
+        }
+        public static int MinimumCommentPointsForCaptchaMessaging
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.MinimumCommentPointsForCaptchaMessaging, 100);
+            }
+        }
+        public static int MinimumCommentPointsForCaptchaSubmission
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.MinimumCommentPointsForCaptchaSubmission, 25);
+            }
+        }
+        public static Domain.Models.Origin Origin
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.Origin, Domain.Models.Origin.Unknown);
+            }
+        }
         public static string RecaptchaPrivateKey
         {
             get

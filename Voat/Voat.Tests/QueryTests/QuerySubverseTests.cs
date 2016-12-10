@@ -12,7 +12,7 @@ using Voat.Domain.Query;
 namespace Voat.Tests.QueryTests
 {
     [TestClass]
-    public class QuerySubverseTests
+    public class QuerySubverseTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Query")]

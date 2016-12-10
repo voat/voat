@@ -5,7 +5,15 @@ namespace Voat.Caching
 {
     public interface ICacheHandler
     {
+        /// <summary>
+        /// Determines if cache is enabled
+        /// </summary>
         bool CacheEnabled { get; set; }
+
+        /// <summary>
+        /// Determines if cache will honor refetch parameters and background refetch entries if specified
+        /// </summary>
+        bool RefetchEnabled { get; set; }
 
         /// <summary>
         /// Checks if a cached object exists at specified key
@@ -31,7 +39,7 @@ namespace Voat.Caching
         /// <param name="recacheLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
         /// <returns></returns>
         T Register<T>(string cacheKey, Func<T> getData, TimeSpan cacheTime, int recacheLimit = -1);
-
+        //Task<T> Register<T>(string cacheKey, Task<T> getData, TimeSpan cacheTime, int recacheLimit = -1);
         /// <summary>
         /// Removes cached item at key
         /// </summary>
@@ -58,6 +66,22 @@ namespace Voat.Caching
         /// <param name="cacheKey">Unique Cache Key</param>
         /// <param name="replaceAlg"></param>
         void Replace<T>(string cacheKey, T replacementValue, TimeSpan? cacheTime = null);
+
+        /// <summary>
+        /// Replaces cached item at key after processing via Func.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cacheKey">Unique Cache Key</param>
+        /// <param name="replaceAlg"></param>
+        void ReplaceIfExists<T>(string cacheKey, Func<T, T> replaceAlg, TimeSpan? cacheTime = null);
+
+        /// <summary>
+        /// Replaces cached item at key after processing via Func
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cacheKey">Unique Cache Key</param>
+        /// <param name="replaceAlg"></param>
+        void ReplaceIfExists<T>(string cacheKey, T replacementValue, TimeSpan? cacheTime = null);
 
         /// <summary>
         /// Returns object in cache with specified key

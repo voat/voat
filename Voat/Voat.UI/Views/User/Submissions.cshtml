@@ -34,7 +34,7 @@
             {
                 submissionClass = "";
             }
-            <div class="submission id-@submission.ID even link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.Votes" data-downs="">
+            <div class="submission id-@submission.ID even link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.UpCount" data-downs="@submission.DownCount">
                 @Html.Partial("Userprofile/_UserProfileSubmission", submission)
                 <div class="child"></div>
                 <div class="clearleft">@*IE6fix*@</div>

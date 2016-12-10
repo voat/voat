@@ -8,29 +8,37 @@ namespace Voat.Utilities
 {
     public static class ModeratorPermission
     {
-        private static IEnumerable<Data.Models.SubverseModerator> GetModerators(string subverse)
+        private static IEnumerable<Data.Models.SubverseModerator> GetModerators(string subverse, IEnumerable<Data.Models.SubverseModerator> modList = null)
         {
-            var q = new QuerySubverseModerators(subverse);
-            return q.Execute();
+            if (modList != null)
+            {
+                //just ensure we filter - probably don't have to but this protects a bit
+                return modList.Where(x => x.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase));
+            }
+            else
+            {
+                var q = new QuerySubverseModerators(subverse);
+                return q.Execute();
+            }
         }
 
-        public static bool IsModerator(string userName, string subverse, ModeratorLevel[] levels = null)
+        public static bool IsModerator(string userName, string subverse, ModeratorLevel[] levels = null, IEnumerable<Data.Models.SubverseModerator> modList = null)
         {
-            var mods = GetModerators(subverse);
+            var mods = GetModerators(subverse, modList);
             return mods.Any(x =>
                 x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
                 && (levels == null || (levels != null && levels.Any(l => x.Power == (int)l)))
             );
         }
 
-        public static bool IsLevel(string userName, string subverse, ModeratorLevel level)
+        public static bool IsLevel(string userName, string subverse, ModeratorLevel level, IEnumerable<Data.Models.SubverseModerator> modList = null)
         {
-            return IsModerator(userName, subverse, new ModeratorLevel[] { level });
+            return IsModerator(userName, subverse, new ModeratorLevel[] { level }, modList);
         }
 
-        public static ModeratorLevel? Level(string userName, string subverse)
+        public static ModeratorLevel? Level(string userName, string subverse, IEnumerable<Data.Models.SubverseModerator> modList = null)
         {
-            var mods = GetModerators(subverse);
+            var mods = GetModerators(subverse, modList);
             var o = mods.FirstOrDefault(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
             if (o != null)
             {
@@ -84,64 +92,18 @@ namespace Voat.Utilities
 
             return result;
         }
-        public static bool HasPermission(string userName, string subverse, ModeratorAction action)
+        public static bool HasPermission(string userName, string subverse, ModeratorAction action, IEnumerable<Data.Models.SubverseModerator> modList = null)
         {
             bool result = false;
             if (!String.IsNullOrEmpty(userName) && !String.IsNullOrEmpty(subverse))
             {
-                var r = GetModerators(subverse);
+                var r = GetModerators(subverse, modList);
 
                 if (r != null && r.Any())
                 {
                     result = r.Any(x =>
                                 x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) &&
                                 HasPermission((ModeratorLevel)x.Power, action));
-
-                    //var levelEvaluator = new Func<int, IEnumerable<ModeratorLevel>, bool>((currentLevel, allowedLevels) =>
-                    //{
-                    //    bool allowed = false;
-                    //    if (allowedLevels != null && allowedLevels.Any())
-                    //    {
-                    //        allowed = allowedLevels.Any(x => currentLevel == (int)x);
-                    //    }
-                    //    return allowed;
-                    //});
-
-                    //switch (action)
-                    //{
-                    //    case ModeratorAction.InviteMods:
-                    //    case ModeratorAction.RemoveMods:
-                    //    case ModeratorAction.ModifySettings:
-                    //    case ModeratorAction.AssignStickies:
-                    //        result = r.Any(x =>
-                    //            x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) &&
-                    //            levelEvaluator(x.Power, new ModeratorLevel[] { ModeratorLevel.Owner, ModeratorLevel.Moderator }));
-                    //        break;
-
-                    //    case ModeratorAction.DeleteComments:
-                    //    case ModeratorAction.DeletePosts:
-                    //    case ModeratorAction.Banning:
-                    //    case ModeratorAction.DistinguishContent:
-                    //    case ModeratorAction.AssignFlair:
-                    //    case ModeratorAction.ReadMail:
-                    //    case ModeratorAction.SendMail:
-                    //        result = r.Any(x =>
-                    //            x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) &&
-                    //            levelEvaluator(x.Power, new ModeratorLevel[] { ModeratorLevel.Owner, ModeratorLevel.Moderator, ModeratorLevel.Janitor }));
-                    //        break;
-
-                    //    case ModeratorAction.ModifyCSS:
-                    //    case ModeratorAction.ModifyFlair:
-                    //        result = r.Any(x =>
-                    //            x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) &&
-                    //            levelEvaluator(x.Power, new ModeratorLevel[] { ModeratorLevel.Owner, ModeratorLevel.Moderator, ModeratorLevel.Designer }));
-                    //        break;
-
-                    //    case ModeratorAction.DeleteMail: //mod mail should not be deleted
-                    //    default:
-                    //        result = false;
-                    //        break;
-                    //}
                 }
             }
             return result;

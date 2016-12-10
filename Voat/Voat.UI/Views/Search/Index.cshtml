@@ -43,7 +43,7 @@
 <div id="container">
     <div class="side">
         @{
-            @Html.Partial("_SearchMinimal", new SearchViewModel())
+            @Html.Partial("_SearchBox", new SearchViewModel())
         }
     </div>
 
@@ -78,7 +78,7 @@
                     submissionClass = "";
                 }
 
-                <div class="submission id-@submission.ID even link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.Votes" data-downs="">
+                <div class="submission id-@submission.ID even link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.UpCount" data-downs="@submission.DownCount">
                     <p class="parent"></p>
 
                     @Html.Partial("_VotingIconsSubmission", submission)

@@ -13,7 +13,7 @@ using Voat.Tests.Repository;
 namespace Voat.Tests.QueryTests
 {
     [TestClass]
-    public class QuerySubmissionSortTests
+    public class QuerySubmissionSortTests : BaseUnitTest
     {
         private static string subverse = "sort";
 

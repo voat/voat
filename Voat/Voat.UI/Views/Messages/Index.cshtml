@@ -9,7 +9,7 @@
     the specific language governing rights and limitations under the License.
 
     All portions of the code written by Voat are Copyright (c) 2014 Voat
-    
+
     All Rights Reserved.
 *@
 
@@ -100,7 +100,7 @@
                                 {
                                     sendingUser = message.CreatedBy;
                                 }
-                                else if(message.Type == Voat.Domain.Models.MessageType.Sent && message.SenderType == Voat.Domain.Models.IdentityType.Subverse)
+                                else if (message.Type == Voat.Domain.Models.MessageType.Sent && message.SenderType == Voat.Domain.Models.IdentityType.Subverse)
                                 {
                                     sendingUser = message.CreatedBy;
                                 }
@@ -127,10 +127,10 @@
 
                                                 @if (message.Type == Voat.Domain.Models.MessageType.Private)
                                                 {
-                                            <li>
-                                                <a id="replyPrivateMessage" href="javascript:void(0)" onclick="return messageReplyForm(@message.ID);">reply</a>
-                                            </li>
-                                            }
+                                                    <li>
+                                                        <a id="replyPrivateMessage" href="javascript:void(0)" onclick="return messageReplyForm(@message.ID);">reply</a>
+                                                    </li>
+                                                }
 
                                                 <li>
                                                     <a id="sourcePrivateMessage" href="javascript:void(0)" onclick="toggleSource(this)">source</a>
@@ -138,10 +138,10 @@
 
                                                 @if (showDelete)
                                                 {
-                                            <li>
-                                                <a id="deletePrivateMessage" href="javascript:void(0)" onclick="return deleteMessage(this, '@message.Type', @message.ID, '@subContext')">delete</a>
-                                            </li>
-                                            }
+                                                    <li>
+                                                        <a id="deletePrivateMessage" href="javascript:void(0)" onclick="return deleteMessage(this, '@message.Type', @message.ID, '@subContext')">delete</a>
+                                                    </li>
+                                                }
                                                 @if (!message.IsRead)
                                                 {
                                                     // status: true = unread, false = read
@@ -152,13 +152,13 @@
                                             </ul>
                                         </div>
                                     </div>
-                                    </div>
+                                </div>
                                 break;
 
                             case Voat.Domain.Models.MessageType.SubmissionMention:
 
                                 var submission = Voat.Caching.DataCache.Submission.Retrieve(message.SubmissionID);
-                                
+
                                 <div id="messageContainer-@message.ID" class="entry">
                                     <div class="panel panel-default @(unreadCssClass)">
                                         <div class="panel panel-heading">
@@ -166,50 +166,66 @@
                                         </div>
 
                                         <div class="panel-message-body">
-                                            <div class="submission id-@submission.ID link" data-fullname="@submission.ID" data-ups="@submission.Votes" data-downs="">
+                                            <div class="submission id-@submission.ID link" data-fullname="@submission.ID" data-ups="@submission.UpCount" data-downs="@submission.DownCount">
                                                 <p class="parent"></p>
                                                 @Html.Partial("_votingIconsSubmission", submission)
                                                 @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
                                             </div>
                                         </div>
                                     </div>
-                                    </div>
+                                </div>
                                 break;
                             case Voat.Domain.Models.MessageType.CommentMention:
                             case Voat.Domain.Models.MessageType.CommentReply:
                             case Voat.Domain.Models.MessageType.SubmissionReply:
+                                
+                                try
+                                {
+                                    var q = new Voat.Domain.Query.QuerySubmission(message.SubmissionID.Value);
+                                    var submission2 = q.Execute();
 
-                                var q = new Voat.Domain.Query.QuerySubmission(message.SubmissionID.Value);
-                                        var submission2 = q.Execute();
+                                    var qc = new Voat.Domain.Query.QueryComment(message.CommentID.Value);
+                                    var comment = qc.Execute();
 
-                                        var qc = new Voat.Domain.Query.QueryComment(message.CommentID.Value);
-                                        var comment = qc.Execute();
-
-                                <div id="messageContainer-@comment.ID" class="entry">
-                                    <div class="panel panel-default @(unreadCssClass)">
-                                        @*<div class="panel panel-heading">
-                From: <a href="@senderHref">@sender</a> | Sent: @Age.ToRelative(comment.CreationDate) ago on @comment.CreationDate
-            </div>*@
-                                        <div class="panel panel-heading">
-                                            <a href="@VoatPathHelper.CommentsPagePath(message.Subverse, message.SubmissionID.Value)"><b>@submission2.Title</b></a>
+                                    <div id="messageContainer-@comment.ID" class="entry">
+                                        <div class="panel panel-default @(unreadCssClass)">
+                                            @if (submission2 != null && comment != null)
+                                            {
+                                                <div class="panel panel-heading">
+                                                    <a href="@VoatPathHelper.CommentsPagePath(message.Subverse, message.SubmissionID.Value)"><b>@submission2.Title</b></a>
+                                                </div>
+                                                <div class="panel-message-body">
+                                                    @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
+                                                    Voat.Domain.DomainMaps.Map(comment, true),
+                                                    new ViewDataDictionary {
+                                                        { "parentIsHidden", false },
+                                                        { "SortOrder", Voat.Domain.Models.CommentSortAlgorithm.New },
+                                                        { "ShowContextLink", true } }
+                                                    )
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="panel panel-heading">
+                                                    <b>Can't Find Data</b>
+                                                </div>
+                                                <div class="panel-message-body">
+                                                    <p>Can't Find Data</p>
+                                                </div>
+                                            }
                                         </div>
-                                        <div class="panel-message-body">
-                                            @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
-                                                Voat.Domain.DomainMaps.Map(comment, true),
-                                                new ViewDataDictionary {
-                                                    { "parentIsHidden", false },
-                                                    { "SortOrder", Voat.Domain.Models.CommentSortAlgorithm.New },
-                                                    { "ShowContextLink", true } }
-                                                )
-                                        </div>
-
                                     </div>
-                                </div>
+                                }
+                                catch (Exception ex)
+                                {
+                                    Voat.Utilities.Components.EventLogger.Instance.Log(ex, new { message = message }, null);
+                                }
 
-                            break;
+
+                                break;
                         }
                     }
-            </div>
+                </div>
             }
             else
             {

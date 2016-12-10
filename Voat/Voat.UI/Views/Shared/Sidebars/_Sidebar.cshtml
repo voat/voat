@@ -38,7 +38,7 @@
 
 <div class="side">
 
-    @Html.Partial("_SearchInSubverse", new SearchInSubverseViewModel(), new ViewDataDictionary { { "SelectedSubverse", ViewBag.SelectedSubverse } })
+    @Html.Partial("_SearchBox", new SearchViewModel(), new ViewDataDictionary { { "SelectedSubverse", ViewBag.SelectedSubverse } })
 
     <div class="spacer">
         <a href="/v/@Model.Name/submit?linkpost=true" class="btn-whoaverse btn-block contribute submit-link">

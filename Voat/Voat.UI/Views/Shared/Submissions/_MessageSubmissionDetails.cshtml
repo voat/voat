@@ -85,7 +85,7 @@
                             <span data-valmsg-replace="false" data-valmsg-for="Content" class="field-validation-error"></span>
                             <div class="usertext-buttons">
                                 <input value="Save" class="btn-whoaverse-paging" type="submit">
-								<input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement.parentElement).find('#Content'),$(this.parentElement.parentElement).find('#submission-preview-area'))">
+                                <input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement.parentElement).find('#Content'),$(this.parentElement.parentElement).find('#submission-preview-area'))">
                                 <button class="btn-whoaverse-paging" onclick="removeSubmissionEditForm(@Model.ID)" type="button">Cancel</button>
                             </div>
                             <div class="panel panel-default" id="submission-preview-area" style="display: none">
@@ -105,10 +105,14 @@
                 </form>
 
             </div>
-			<textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Model.Content</textarea>
-            
+            <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Model.Content</textarea>
 
-            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_MSFLButtons.cshtml", Model, new ViewDataDictionary { { "commentCount", commentCount } })
+
+            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_Buttons.cshtml", Model,
+                new ViewDataDictionary {
+                    { "ModeratorList", ViewBag.ModeratorList },
+                    { "commentCount", commentCount }
+                })
 
         </div>
         <div class="child"></div>

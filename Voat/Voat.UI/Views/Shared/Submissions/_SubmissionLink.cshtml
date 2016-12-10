@@ -15,7 +15,7 @@
 @{
     string ahrefTarget = "_self";
     bool ratedAdult = false;
-    bool anonymizedSubverse = false;
+
 
     if (User.Identity.IsAuthenticated)
     {
@@ -30,14 +30,16 @@
     //var commentCount = Model.Comments.Count(c => c.Name != "deleted");
     var commentCount = CommentCounter.CommentCount(Model.ID);
 
-    //if (Model.Subverses != null)
-    //{
-    var sub = Voat.Caching.DataCache.Subverse.Retrieve(Model.Subverse);
-    ratedAdult = sub.IsAdult;
-    anonymizedSubverse = sub.IsAnonymized;
-    //}
+    //BLOCK: Lots of threads are waiting on this, commenting out to test
+    bool anonymizedSubverse = Model.IsAnonymized;
+    ////if (Model.Subverses != null)
+    ////{
+    //var sub = Voat.Caching.DataCache.Subverse.Retrieve(Model.Subverse);
+    //ratedAdult = sub.IsAdult;
+    //anonymizedSubverse = sub.IsAnonymized;
+    ////}
 
-    string routeActiveSubverse = (string)ViewContext.RouteData.Values["subversetoshow"];
+    string routeActiveSubverse = (string)ViewContext.RouteData.Values["subverse"];
 
     string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
 

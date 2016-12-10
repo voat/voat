@@ -9,8 +9,6 @@ namespace Voat.Domain.Query
 
     public abstract class Query<T> : IQuery<T>
     {
-        //if we wish to pass in a context
-        //private voatEntities _dataContext;
         private string _userName;
 
         public Query()
@@ -32,12 +30,14 @@ namespace Voat.Domain.Query
             }
         }
 
+        //BLOCK: This needs fixed
         public abstract Task<T> ExecuteAsync();
 
         public virtual T Execute()
         {
+            //BLOCK: This needs fixed
             Task<T> t = Task.Run(ExecuteAsync);
-            Task.WaitAll(t);
+            Task.WaitAny(t);
             return t.Result;
         }
     }

@@ -21,7 +21,7 @@ namespace Voat.Domain.Command
                 {
                     repo.SaveUserPrefernces(_preferences);
                 }
-            });
+            }).ConfigureAwait(false);
             return CommandResponse.Successful();
         }
 

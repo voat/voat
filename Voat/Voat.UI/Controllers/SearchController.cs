@@ -16,9 +16,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Voat.Caching;
+using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain.Query;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 
@@ -29,19 +32,20 @@ namespace Voat.Controllers
     {
         //IAmAGate: Move queries to read-only mirror
         private readonly voatEntities _db = new voatEntities(CONSTANTS.CONNECTION_READONLY);
-
+        
+        //TODO: Port to submission search alg
         [PreventSpam]
-        public ActionResult SearchResults(int? page, string q, string l, string sub)
+        public async Task<ActionResult> SearchResults(int? page, string q, string l, string sub)
         {
-
-            if (q == null || q.Length < 3)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
             //sanitize
-            q = q.Trim();
+            q = q.TrimSafe();
 
+            if (String.IsNullOrWhiteSpace(q) || q.Length < 3)
+            {
+                return View("~/Views/Search/Index.cshtml", new PaginatedList<Submission>(new List<Submission>(), 0, 25, 24));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            
             if (q == "rick roll")
             {
                 return new RedirectResult("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
@@ -51,97 +55,35 @@ namespace Voat.Controllers
             {
                 return View("Jaje");
             }
-            
+
+            const int pageSize = 25;
+            int pageNumber = (page ?? 0);
+
+            if (pageNumber < 0)
+            {
+                return NotFoundErrorView();
+            }
+
+            var subverse = AGGREGATE_SUBVERSE.ANY;
+
             // limit the search to selected subverse
             if (l != null && sub != null)
             {
-                // ViewBag.SelectedSubverse = string.Empty;
-                ViewBag.SearchTerm = q;
-
-                const int pageSize = 25;
-                int pageNumber = (page ?? 0);
-
-                if (pageNumber < 0)
-                {
-                    return NotFoundErrorView();
-                }
-                
-                string cacheKey = DataCache.Keys.Search(sub, q);
-                IList<Submission> cacheData = CacheHandler.Instance.Retrieve<IList<Submission>>(cacheKey);
-                if (cacheData == null) {
-                    cacheData = (IList<Submission>)CacheHandler.Instance.Register(cacheKey, new Func<object>(() =>
-                    {
-                        using (var db = new voatEntities())
-                        {
-                            db.EnableCacheableOutput();
-
-                            var results = (from m in db.Submissions
-                                           join s in db.Subverses on m.Subverse equals s.Name
-                                           where
-                                            !s.IsAdminDisabled.Value &&
-                                            !m.IsDeleted &&
-                                            m.Subverse == sub &&
-                                            (m.Url.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
-                                           orderby m.Rank ascending, m.CreationDate descending
-                                           select m).Take(25).ToList();
-                            return results;
-                        }
-                    }), TimeSpan.FromMinutes(10));
-
-                }
-
-                ViewBag.Title = "search results";
-
-                var paginatedResults = new PaginatedList<Submission>(cacheData, 0, pageSize, 24); //HACK: To turn off paging 
-
-                return View("~/Views/Search/Index.cshtml", paginatedResults);
+                subverse = sub;
             }
-            else
-            {
-                ViewBag.SelectedSubverse = string.Empty;
-                ViewBag.SearchTerm = q;
+              
+            var options = new SearchOptions();
+            options.Phrase = q;
+            options.Sort = Domain.Models.SortAlgorithm.Top;
 
-                const int pageSize = 25;
-                int pageNumber = (page ?? 0);
+            var query = new QuerySubmissionsLegacy(subverse, options, new CachePolicy(TimeSpan.FromMinutes(60)));
+            var results = await query.ExecuteAsync().ConfigureAwait(false);
+            var paginatedResults = new PaginatedList<Submission>(results, 0, pageSize, 24); //HACK: To turn off paging 
 
-                if (pageNumber < 0)
-                {
-                    return NotFoundErrorView();
-                }
+            ViewBag.Title = "search results";
+            ViewBag.SearchTerm = q;
 
-                string cacheKey = DataCache.Keys.Search(q);
-                IList<Submission> cacheData = CacheHandler.Instance.Retrieve<IList<Submission>>(cacheKey);
-                if (cacheData == null)
-                {
-                    cacheData = (IList<Submission>)CacheHandler.Instance.Register(cacheKey, new Func<object>(() =>
-                    {
-                        using (var db = new voatEntities())
-                        {
-                            db.EnableCacheableOutput();
-
-                            var results = (from m in db.Submissions
-                                           join s in db.Subverses on m.Subverse equals s.Name
-                                           where
-                                            !s.IsAdminDisabled.Value &&
-                                            !m.IsDeleted &&
-                                            //m.Subverse == sub &&
-                                            (m.Url.ToLower().Contains(q) || m.Content.ToLower().Contains(q) || m.Title.ToLower().Contains(q))
-                                           orderby m.Rank ascending, m.CreationDate descending
-                                           select m
-                                    ).Take(25).ToList();
-                            return results;
-                        }
-                        
-                    }), TimeSpan.FromMinutes(10));
-
-                }
-
-                var paginatedResults = new PaginatedList<Submission>(cacheData, 0, pageSize, 24);//HACK to stop paging
-
-                ViewBag.Title = "search results";
-
-                return View("~/Views/Search/Index.cshtml", paginatedResults);
-            }
+            return View("~/Views/Search/Index.cshtml", paginatedResults);
         }
 
         [PreventSpam]

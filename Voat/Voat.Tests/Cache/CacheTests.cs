@@ -34,7 +34,7 @@ using Voat.Domain.Models;
 
 namespace Voat.Tests.Cache
 {
-    public abstract class CacheTests
+    public abstract class CacheTests : BaseUnitTest
     {
         public ICacheHandler handler = null;
 
@@ -52,11 +52,15 @@ namespace Voat.Tests.Cache
 
             handler.Register<Item>(key, () => new Item() { ID = 1, Name = "Bill" }, TimeSpan.FromSeconds(30));
 
-            Assert.AreEqual(true, handler.Exists(key));
-            var val = handler.Retrieve<Item>(key);
-            Assert.IsNotNull(val);
-            Assert.AreEqual(1, val.ID);
-            Assert.AreEqual("Bill", val.Name);
+            Assert.AreEqual(handler.CacheEnabled, handler.Exists(key));
+            if (handler.CacheEnabled)
+            {
+                var val = handler.Retrieve<Item>(key);
+                Assert.IsNotNull(val);
+                Assert.AreEqual(1, val.ID);
+                Assert.AreEqual("Bill", val.Name);
+            }
+
             handler.Remove(key);
             Assert.AreEqual(false, handler.Exists(key));
         }
@@ -69,10 +73,12 @@ namespace Voat.Tests.Cache
             string key = DateTime.UtcNow.ToOADate().ToString();
 
             handler.Register<long>(key, () => 1, TimeSpan.FromSeconds(30));
-
-            Assert.AreEqual(true, handler.Exists(key));
-            var val = handler.Retrieve<long>(key);
-            Assert.AreEqual(1, val);
+            if (handler.CacheEnabled)
+            {
+                Assert.AreEqual(true, handler.Exists(key));
+                var val = handler.Retrieve<long>(key);
+                Assert.AreEqual(1, val);
+            }
             handler.Remove(key);
             Assert.AreEqual(false, handler.Exists(key));
         }
@@ -97,15 +103,19 @@ namespace Voat.Tests.Cache
             List<Item> items = GetNewItems(10);
             handler.Register(cacheKey, new Func<IDictionary<object, Item>>(() => items.ToDictionary(new Func<Item, object>(x => x.ID))), TimeSpan.FromMinutes(30));
 
-            //handler.RegisterDictionary(cacheKey, new Func<IList<Item>>(() => items), new Func<Item, object>((x) => x.ID), TimeSpan.FromMinutes(100));
-            var r = handler.Retrieve<IDictionary>(cacheKey);
+            if (handler.CacheEnabled)
+            {
+                //handler.RegisterDictionary(cacheKey, new Func<IList<Item>>(() => items), new Func<Item, object>((x) => x.ID), TimeSpan.FromMinutes(100));
+                var r = handler.Retrieve<IDictionary>(cacheKey);
 
-            Assert.IsNotNull(r);
-            Assert.AreEqual(items.Count, r.Count);
+                Assert.IsNotNull(r);
+                Assert.AreEqual(items.Count, r.Count);
 
-            var item = handler.DictionaryRetrieve<int, Item>(cacheKey, 1);
-            Assert.IsNotNull(item);
-            Assert.AreEqual(1, item.ID);
+                var item = handler.DictionaryRetrieve<int, Item>(cacheKey, 1);
+                Assert.IsNotNull(item);
+                Assert.AreEqual(1, item.ID);
+
+            }
             handler.Remove(cacheKey);
         }
 
@@ -166,13 +176,20 @@ namespace Voat.Tests.Cache
             //replace existing key
             var newItem = new Item() { ID = 1, Count = 400, Name = "New Name" };
             handler.DictionaryReplace(cacheKey, 1, newItem);
+            if (handler.CacheEnabled)
+            {
+                var cachedItem = handler.DictionaryRetrieve<int, Item>(cacheKey, 1);
 
-            var cachedItem = handler.DictionaryRetrieve<int, Item>(cacheKey, 1);
-
-            Assert.IsNotNull(cachedItem);
-            Assert.AreEqual(newItem.ID, cachedItem.ID);
-            Assert.AreEqual(newItem.Name, cachedItem.Name);
-            Assert.AreEqual(newItem.Count, cachedItem.Count);
+                Assert.IsNotNull(cachedItem);
+                Assert.AreEqual(newItem.ID, cachedItem.ID);
+                Assert.AreEqual(newItem.Name, cachedItem.Name);
+                Assert.AreEqual(newItem.Count, cachedItem.Count);
+            }
+            else
+            {
+                var cachedItem = handler.DictionaryRetrieve<int, Item>(cacheKey, 1);
+                Assert.IsNull(cachedItem);
+            }
 
             handler.Remove(cacheKey);
         }
@@ -217,12 +234,14 @@ namespace Voat.Tests.Cache
             var newItem = new Item() { ID = 1, Count = 400, Name = "New Name" };
             handler.Register(cacheKey, () => new Dictionary<int, Item>() { { 1, newItem } }, TimeSpan.Zero);
 
-            handler.DictionaryReplace<int, Item>(cacheKey, 1, (x) => { Assert.IsNotNull(x, "Condition 1"); return x; }, true);
-            handler.DictionaryReplace<int, Item>(cacheKey, 1, (x) => { Assert.IsNotNull(x, "Condition 2"); return x; }, false);
+            if (handler.CacheEnabled)
+            {
+                handler.DictionaryReplace<int, Item>(cacheKey, 1, (x) => { Assert.IsNotNull(x, "Condition 1"); return x; }, true);
+                handler.DictionaryReplace<int, Item>(cacheKey, 1, (x) => { Assert.IsNotNull(x, "Condition 2"); return x; }, false);
 
-            handler.DictionaryReplace<int, Item>(cacheKey, 2, (x) => { Assert.IsNull(x, "Condition 3"); return x; }, false);
-            handler.DictionaryReplace<int, Item>(cacheKey, 2, (x) => { Assert.Fail("Condition 4"); return x; }, true);
-
+                handler.DictionaryReplace<int, Item>(cacheKey, 2, (x) => { Assert.IsNull(x, "Condition 3"); return x; }, false);
+                handler.DictionaryReplace<int, Item>(cacheKey, 2, (x) => { Assert.Fail("Condition 4"); return x; }, true);
+            }
             handler.Remove(cacheKey);
         }
 
@@ -242,22 +261,24 @@ namespace Voat.Tests.Cache
                 return dictionary;
             }), TimeSpan.FromMinutes(30));
 
-            var dict = handler.Retrieve<IDictionary<DomainType, IList<Item>>>(cacheKey);
-            Assert.IsNotNull(dict);
+            if (handler.CacheEnabled)
+            {
+                var dict = handler.Retrieve<IDictionary<DomainType, IList<Item>>>(cacheKey);
+                Assert.IsNotNull(dict);
 
-            handler.DictionaryReplace(cacheKey, DomainType.User, new List<Item>() { new Item() { ID = 20, Count = 20, Name = "Twenty" } });
+                handler.DictionaryReplace(cacheKey, DomainType.User, new List<Item>() { new Item() { ID = 20, Count = 20, Name = "Twenty" } });
 
-            //See if we can get updated dictionary entry by enum key
-            var data = handler.DictionaryRetrieve<DomainType, IList<Item>>(cacheKey, DomainType.User);
-            var item = data.First();
-            Assert.IsNotNull(item);
-            Assert.AreEqual(20, item.ID);
-            Assert.AreEqual("Twenty", item.Name);
+                //See if we can get updated dictionary entry by enum key
+                var data = handler.DictionaryRetrieve<DomainType, IList<Item>>(cacheKey, DomainType.User);
+                var item = data.First();
+                Assert.IsNotNull(item);
+                Assert.AreEqual(20, item.ID);
+                Assert.AreEqual("Twenty", item.Name);
 
-            dict = handler.Retrieve<IDictionary<DomainType, IList<Item>>>(cacheKey);
-            Assert.IsNotNull(dict);
-            Assert.AreEqual(3, dict.Count);
-
+                dict = handler.Retrieve<IDictionary<DomainType, IList<Item>>>(cacheKey);
+                Assert.IsNotNull(dict);
+                Assert.AreEqual(3, dict.Count);
+            }
             handler.Remove(cacheKey);
         }
 
@@ -272,22 +293,24 @@ namespace Voat.Tests.Cache
 
             List<Item> items = GetNewItems(10);
             handler.Register(cacheKey, new Func<IDictionary<int, Item>>(() => items.ToDictionary(x => x.ID)), TimeSpan.FromMinutes(30));
+            if (handler.CacheEnabled)
+            {
 
-            var dict = handler.Retrieve<IDictionary<int, Item>>(cacheKey);
-            Assert.IsNotNull(dict);
+                var dict = handler.Retrieve<IDictionary<int, Item>>(cacheKey);
+                Assert.IsNotNull(dict);
 
-            handler.DictionaryReplace(cacheKey, 20, new Item() { ID = 20, Count = 20, Name = "Twenty" });
+                handler.DictionaryReplace(cacheKey, 20, new Item() { ID = 20, Count = 20, Name = "Twenty" });
 
-            //See if we can get dictionary entry by int key
-            var item = handler.DictionaryRetrieve<int, Item>(cacheKey, 20);
-            Assert.IsNotNull(item);
-            Assert.AreEqual(20, item.ID);
-            Assert.AreEqual("Twenty", item.Name);
+                //See if we can get dictionary entry by int key
+                var item = handler.DictionaryRetrieve<int, Item>(cacheKey, 20);
+                Assert.IsNotNull(item);
+                Assert.AreEqual(20, item.ID);
+                Assert.AreEqual("Twenty", item.Name);
 
-            dict = handler.Retrieve<IDictionary<int, Item>>(cacheKey);
-            Assert.IsNotNull(dict);
-            Assert.AreEqual(11, dict.Count);
-
+                dict = handler.Retrieve<IDictionary<int, Item>>(cacheKey);
+                Assert.IsNotNull(dict);
+                Assert.AreEqual(11, dict.Count);
+            }
             handler.Remove(cacheKey);
         }
 
@@ -303,13 +326,15 @@ namespace Voat.Tests.Cache
             List<Item> items = GetNewItems(10);
             handler.Register(cacheKey, new Func<IDictionary<int, Item>>(() => items.ToDictionary(x => x.ID)), TimeSpan.FromMinutes(30));
 
-            var dict = handler.Retrieve<IDictionary<int, Item>>(cacheKey);
-            Assert.IsNotNull(dict);
+            if (handler.CacheEnabled)
+            {
+                var dict = handler.Retrieve<IDictionary<int, Item>>(cacheKey);
+                Assert.IsNotNull(dict);
 
-            //See if we can get dictionary entry by int key
-            var item = handler.DictionaryRetrieve<int, Item>(cacheKey, 2);
-            Assert.IsNotNull(item);
-
+                //See if we can get dictionary entry by int key
+                var item = handler.DictionaryRetrieve<int, Item>(cacheKey, 2);
+                Assert.IsNotNull(item);
+            }
             handler.Remove(cacheKey);
         }
 
@@ -325,21 +350,23 @@ namespace Voat.Tests.Cache
             List<Item> items = GetNewItems(10);
             handler.Register(cacheKey, new Func<IDictionary<string, Item>>(() => items.ToDictionary(x => x.ID.ToString())), TimeSpan.FromMinutes(30));
 
-            var dict = handler.Retrieve<IDictionary<string, Item>>(cacheKey);
-            Assert.IsNotNull(dict);
+            if (handler.CacheEnabled)
+            {
+                var dict = handler.Retrieve<IDictionary<string, Item>>(cacheKey);
+                Assert.IsNotNull(dict);
 
-            handler.DictionaryReplace(cacheKey, "20", new Item() { ID = 20, Count = 20, Name = "Twenty" });
+                handler.DictionaryReplace(cacheKey, "20", new Item() { ID = 20, Count = 20, Name = "Twenty" });
 
-            //See if we can get dictionary entry by int key
-            var item = handler.DictionaryRetrieve<string, Item>(cacheKey, "20");
-            Assert.IsNotNull(item);
-            Assert.AreEqual(20, item.ID);
-            Assert.AreEqual("Twenty", item.Name);
+                //See if we can get dictionary entry by int key
+                var item = handler.DictionaryRetrieve<string, Item>(cacheKey, "20");
+                Assert.IsNotNull(item);
+                Assert.AreEqual(20, item.ID);
+                Assert.AreEqual("Twenty", item.Name);
 
-            dict = handler.Retrieve<IDictionary<string, Item>>(cacheKey);
-            Assert.IsNotNull(dict);
-            Assert.AreEqual(11, dict.Count);
-
+                dict = handler.Retrieve<IDictionary<string, Item>>(cacheKey);
+                Assert.IsNotNull(dict);
+                Assert.AreEqual(11, dict.Count);
+            }
             handler.Remove(cacheKey);
         }
 
@@ -355,16 +382,55 @@ namespace Voat.Tests.Cache
             List<Item> items = GetNewItems(10);
             handler.Register(cacheKey, new Func<IDictionary<string, Item>>(() => items.ToDictionary(x => x.ID.ToString())), TimeSpan.FromMinutes(30));
 
-            var dict = handler.Retrieve<IDictionary<string, Item>>(cacheKey);
-            Assert.IsNotNull(dict);
+            if (handler.CacheEnabled)
+            {
+                var dict = handler.Retrieve<IDictionary<string, Item>>(cacheKey);
+                Assert.IsNotNull(dict);
 
-            //See if we can get dictionary entry by int key
-            var item = handler.DictionaryRetrieve<string, Item>(cacheKey, "2");
-            Assert.IsNotNull(item);
+                //See if we can get dictionary entry by int key
+                var item = handler.DictionaryRetrieve<string, Item>(cacheKey, "2");
+                Assert.IsNotNull(item);
+            }
+            handler.Remove(cacheKey);
+        }
+        [TestMethod]
+        [TestCategory("Cache")]
+        [TestCategory("Cache.Handler")]
+        public void ReplaceIfExistsTests()
+        {
+            string cacheKey = "ReplaceIfExistsTests";
+            handler.Remove(cacheKey);
+
+            //No entry tests
+            string testValue = "TestValue";
+            bool funcCalled = false;
+            handler.ReplaceIfExists<string>(cacheKey, x => { funcCalled = true; return testValue.ToUpper(); } );
+
+            Assert.AreEqual(false, handler.Exists(cacheKey));
+            Assert.AreEqual(false, funcCalled);
+
+            handler.ReplaceIfExists(cacheKey, testValue);
+            Assert.AreEqual(false, handler.Exists(cacheKey));
+
+            //This won't pass with NullCacheHandler
+            if (handler.CacheEnabled)
+            {
+                //Existing Entry tests
+                handler.Replace(cacheKey, testValue);
+                Assert.AreEqual(true, handler.Exists(cacheKey));
+
+                handler.ReplaceIfExists(cacheKey, testValue.ToUpper());
+                Assert.AreEqual(true, handler.Exists(cacheKey));
+                Assert.AreEqual(testValue.ToUpper(), handler.Retrieve<string>(cacheKey));
+
+                handler.ReplaceIfExists<string>(cacheKey, x => { funcCalled = true; return $"{testValue}{testValue}".ToUpper(); });
+                Assert.AreEqual(true, funcCalled);
+                Assert.AreEqual($"{testValue}{testValue}".ToUpper(), handler.Retrieve<string>(cacheKey));
+            }
+
 
             handler.Remove(cacheKey);
         }
-
         #region Set Operations
 
         [TestMethod]
@@ -382,11 +448,11 @@ namespace Voat.Tests.Cache
             handler.Register(cacheKey, new Func<ISet<int>>(() => set), TimeSpan.FromMinutes(30));
 
             handler.SetAdd(cacheKey, 6);
-
-            var exists = handler.SetExists(cacheKey, 6);
-
-            Assert.AreEqual(true, exists);
-
+            if (handler.CacheEnabled)
+            {
+                var exists = handler.SetExists(cacheKey, 6);
+                Assert.AreEqual(true, exists);
+            }
             handler.Remove(cacheKey);
         }
 
@@ -403,13 +469,14 @@ namespace Voat.Tests.Cache
             HashSet<int> set = new HashSet<int>(items);
 
             handler.Register(cacheKey, new Func<ISet<int>>(() => set), TimeSpan.FromMinutes(30));
-
-            foreach (var item in items)
+            if (handler.CacheEnabled)
             {
-                var exists = handler.SetExists(cacheKey, item);
-                Assert.AreEqual(true, exists);
+                foreach (var item in items)
+                {
+                    var exists = handler.SetExists(cacheKey, item);
+                    Assert.AreEqual(true, exists);
+                }
             }
-
             handler.Remove(cacheKey);
         }
 
@@ -425,13 +492,14 @@ namespace Voat.Tests.Cache
             List<Item> items = GetNewItems(10);
             HashSet<Item> set = new HashSet<Item>(items);
             handler.Register(cacheKey, new Func<ISet<Item>>(() => set), TimeSpan.FromMinutes(30));
-
-            foreach (var item in items)
+            if (handler.CacheEnabled)
             {
-                var exists = handler.SetExists(cacheKey, item);
-                Assert.AreEqual(true, exists);
+                foreach (var item in items)
+                {
+                    var exists = handler.SetExists(cacheKey, item);
+                    Assert.AreEqual(true, exists);
+                }
             }
-
             handler.Remove(cacheKey);
         }
 
@@ -448,12 +516,14 @@ namespace Voat.Tests.Cache
             HashSet<Item> set = new HashSet<Item>(items);
             handler.Register(cacheKey, new Func<ISet<Item>>(() => set), TimeSpan.FromMinutes(30));
 
-            foreach (var item in items)
+            if (handler.CacheEnabled)
             {
-                var exists = handler.SetExists(cacheKey, item);
-                Assert.AreEqual(true, exists);
+                foreach (var item in items)
+                {
+                    var exists = handler.SetExists(cacheKey, item);
+                    Assert.AreEqual(true, exists);
+                }
             }
-
             foreach (var item in items)
             {
                 handler.SetRemove(cacheKey, item);
@@ -478,33 +548,45 @@ namespace Voat.Tests.Cache
 
             int? count = 0;
             int? originalCount = count;
-            handler.Register(cacheKey, () => {
 
-                count = (count + 1);
-                return count;
-
-            }, TimeSpan.FromSeconds(15), 5);
-
-            //Try to bail as quickly as possible once we know the hot cache is functioning
-            var startTime = DateTime.Now;
-            var timeoutTimeSpan = TimeSpan.FromSeconds(60);
-            var hasUpdated = false;
-            while (!hasUpdated && DateTime.Now.Subtract(startTime) < timeoutTimeSpan)
+            if (handler.RefetchEnabled)
             {
-                int? checkValue = handler.Retrieve<int?>(cacheKey);
-                hasUpdated = (checkValue.HasValue && checkValue.Value != 0 && checkValue.Value != 1);
-                if (!hasUpdated)
-                {
-                    await Task.Delay(5000);
-                }
-            }
+                handler.Register(cacheKey, () => {
 
-            int? newCount = handler.Retrieve<int?>(cacheKey);
-            Assert.IsNotNull(newCount); //Make sure we still have it
-            Assert.AreNotEqual(0, newCount); //Make sure default value is not inserted
-            Assert.AreNotEqual(1, newCount); //This will be the first value inserted
-            
-            handler.Remove(cacheKey);
+                    count = (count + 1);
+                    return count;
+
+                }, TimeSpan.FromSeconds(15), 5);
+
+
+
+                if (handler.CacheEnabled)
+                {
+                    //Try to bail as quickly as possible once we know the hot cache is functioning
+                    var startTime = DateTime.Now;
+                    var timeoutTimeSpan = TimeSpan.FromSeconds(60);
+                    var hasUpdated = false;
+                    while (!hasUpdated && DateTime.Now.Subtract(startTime) < timeoutTimeSpan)
+                    {
+                        int? checkValue = handler.Retrieve<int?>(cacheKey);
+                        hasUpdated = (checkValue.HasValue && checkValue.Value != 0 && checkValue.Value != 1);
+                        if (!hasUpdated)
+                        {
+                            await Task.Delay(5000);
+                        }
+                    }
+
+                    int? newCount = handler.Retrieve<int?>(cacheKey);
+                    Assert.IsNotNull(newCount); //Make sure we still have it
+                    Assert.AreNotEqual(0, newCount); //Make sure default value is not inserted
+                    Assert.AreNotEqual(1, newCount); //This will be the first value inserted
+                }
+                handler.Remove(cacheKey);
+            }
+            else
+            {
+                Assert.Inconclusive("Cache Refetch not enabled");
+            }
         }
 
         #endregion Set Operations
@@ -552,6 +634,14 @@ namespace Voat.Tests.Cache
             var handler = CacheHandlerSection.Instance.Handlers.First(x => x.Type.ToLower().Contains("redis")).Construct();
             base.handler = handler;
 
+        }
+    }
+    [TestClass]
+    public class NullCacheTests : CacheTests
+    {
+        public NullCacheTests() : base(new NullCacheHandler())
+        {
+            Debug.Print("Starting NullCacheTests");
         }
     }
 }

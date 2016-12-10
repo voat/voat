@@ -13,14 +13,15 @@ namespace Voat.Domain.Query
         protected MessageState _state;
         protected bool _markAsRead;
         protected MessageTypeFlag _type;
-        private int _pageNumber = 0;
-        private int _pageCount = 25;
+        protected SearchOptions _options = SearchOptions.Default;
+        //private int _pageNumber = 0;
+        //private int _pageCount = 25;
 
         public int PageNumber
         {
             get
             {
-                return _pageNumber;
+                return _options.Page;
             }
 
             set
@@ -29,7 +30,7 @@ namespace Voat.Domain.Query
                 {
                     throw new InvalidOperationException("Page number must be 0 or greater");
                 }
-                _pageNumber = value;
+                _options.Page = value;
             }
         }
 
@@ -37,7 +38,7 @@ namespace Voat.Domain.Query
         {
             get
             {
-                return _pageCount;
+                return _options.Count;
             }
 
             set
@@ -46,7 +47,7 @@ namespace Voat.Domain.Query
                 {
                     throw new InvalidOperationException("Page count must be 0 or greater");
                 }
-                _pageCount = value;
+                _options.Count = value;
             }
         }
 
@@ -83,15 +84,8 @@ namespace Voat.Domain.Query
         {
             using (var repo = new Repository())
             {
-                return await repo.GetMessages(_ownerName, _ownerType, _type, _state, _markAsRead, PageNumber, PageCount);
+                return await repo.GetMessages(_ownerName, _ownerType, _type, _state, _markAsRead, _options);
             }
-        }
-
-        public override IEnumerable<Message> Execute()
-        {
-            Task<IEnumerable<Message>> t = Task.Run(ExecuteAsync);
-            Task.WaitAll(t);
-            return t.Result;
         }
     }
 }

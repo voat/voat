@@ -21,7 +21,7 @@ namespace Voat.Domain.Command
         {
             using (var repo = new Repository())
             {
-                return await Task.Run(() => repo.SendMessage(_message, _forceSend, _ensureUserExists));
+                return await repo.SendMessage(_message, _forceSend, _ensureUserExists).ConfigureAwait(false);
             }
         }
     }
@@ -41,7 +41,7 @@ namespace Voat.Domain.Command
         {
             using (var repo = new Repository())
             {
-                return await Task.Run(() => repo.SendMessageReply(_messageID, _message));
+                return await repo.SendMessageReply(_messageID, _message).ConfigureAwait(false);
             }
         }
     }

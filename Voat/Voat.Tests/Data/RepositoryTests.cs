@@ -26,13 +26,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Data;
+using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
 
 namespace Voat.Tests.Repository
 {
     [TestClass]
-    public class RepositoryTests 
+    public class RepositoryTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Block"), TestCategory("Repository.Block.Subverse")]
@@ -153,11 +154,11 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository")]
-        public void GetSubmission()
+        public async Task GetSubmission()
         {
             using (var db = new Voat.Data.Repository())
             {
-                var s = db.GetSubmissions("unit", new SearchOptions());
+                var s = await db.GetSubmissionsDapper("unit", new SearchOptions()).ConfigureAwait(false);
                 Assert.IsTrue(s.Any());
             }
         }
@@ -165,16 +166,15 @@ namespace Voat.Tests.Repository
         [TestMethod]
         [TestCategory("Repository")]
         [TestCategory("Anon")]
-        public void GetSubmissionsFilterAnonymous()
+        public async Task GetSubmissionsFilterAnonymous()
         {
             using (var db = new Voat.Data.Repository())
             {
-                var anon_sub = db.GetSubmissions("anon", SearchOptions.Default);
+                var anon_sub = await db.GetSubmissionsDapper("anon", SearchOptions.Default).ConfigureAwait(false);
                 var first = anon_sub.OrderBy(x => x.CreationDate).First();
                 Assert.IsNotNull(first, "no anon submissions found");
                 Assert.AreEqual("First Anon Post", first.Title);
                 Assert.AreEqual(first.UserName, first.ID.ToString());
-
             }
         }
 
@@ -199,7 +199,7 @@ namespace Voat.Tests.Repository
             using (var db = new Voat.Data.Repository())
             {
                 var p = await db.GetUserPreferences("asrtastarstarstarstart343");
-                Assert.IsTrue(p == null);
+                Assert.AreNotEqual(null, p);
             }
         }
 
@@ -303,6 +303,7 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Submission")]
+        [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public async Task PostSubmission_BannedDomain()
         {
             using (var db = new Voat.Data.Repository())
@@ -318,6 +319,7 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Comment")]
+        [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public async Task PostComment_BannedDomain()
         {
             using (var db = new Voat.Data.Repository())
@@ -375,6 +377,38 @@ namespace Voat.Tests.Repository
                 Assert.IsTrue(result.Any(x => x.Subverse == "AuthorizedOnly"), "Result expected to see subverse AuthorizedOnly for user unit");
             }
         }
+        [TestMethod]
+        [TestCategory("Repository"), TestCategory("Ban"), TestCategory("Ban.Domain")]
+        public void BannedDomainTest()
+        {
+            var domain = "paydayloansforeverybody.com";
+            var reason = "Total Rip off!";
+            var createdBy = "AntiSpamcist";
+            var createdDate = DateTime.UtcNow.AddDays(-10);
 
+            using (var db = new voatEntities())
+            {
+                db.BannedDomains.Add(new BannedDomain()
+                {
+                    Domain = domain,
+                    Reason = reason,
+                    CreatedBy = createdBy,
+                    CreationDate = createdDate
+                });
+                db.SaveChanges();
+            }
+            using (var repo = new Voat.Data.Repository())
+            {
+                var result = repo.BannedDomains("yahoo.com", "google.com", domain, domain.ToUpper(), "testuri.org");
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsTrue(result.Any(), "Result expected");
+                Assert.AreEqual(1, result.Count(), "Count off");
+                var bd = result.First();
+                Assert.AreEqual(domain, bd.Domain);
+                Assert.AreEqual(reason, bd.Reason);
+                Assert.AreEqual(createdBy, bd.CreatedBy);
+                Assert.AreEqual(createdDate.ToString(), bd.CreationDate.ToString());
+            }
+        }
     }
 }

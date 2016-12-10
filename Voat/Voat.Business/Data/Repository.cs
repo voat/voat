@@ -18,6 +18,8 @@ using System.Text.RegularExpressions;
 using Voat.Domain;
 using System.Data.Entity;
 using Voat.Caching;
+using Dapper;
+using Voat.Configuration;
 
 namespace Voat.Data
 {
@@ -26,6 +28,7 @@ namespace Voat.Data
         private static LockStore _lockStore = new LockStore();
         private voatEntities _db;
 
+        #region Class
         public Repository() : this(new voatEntities())
         {
             /*no-op*/
@@ -39,6 +42,28 @@ namespace Voat.Data
             //us during The Fattening, so we throw now -> (╯°□°)╯︵ ┻━┻
             _db.Configuration.ProxyCreationEnabled = false;
         }
+        public void Dispose()
+        {
+            Dispose(false);
+        }
+
+        ~Repository()
+        {
+            Dispose(true);
+        }
+
+        protected void Dispose(bool gcCalling)
+        {
+            if (_db != null)
+            {
+                _db.Dispose();
+            }
+            if (!gcCalling)
+            {
+                System.GC.SuppressFinalize(this);
+            }
+        }
+        #endregion  
 
         #region Vote
 
@@ -596,9 +621,92 @@ namespace Voat.Data
             return data.AsEnumerable();
         }
 
+        public async Task<CommandResponse> CreateSubverse(string name, string title, string description, string sidebar = null)
+        {
+            DemandAuthentication();
+            
+            //Evaulate Rules
+            VoatRuleContext context = new VoatRuleContext();
+            context.PropertyBag.SubverseName = name;
+            var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.CreateSubverse);
+            if (!outcome.IsAllowed)
+            {
+                return MapRuleOutCome<object>(outcome, null);
+            }
+
+            try
+            {
+                // setup default values and create the subverse
+                var subverse = new Subverse
+                {
+                    Name = name,
+                    Title = title,
+                    Description = description,
+                    SideBar = sidebar,
+                    CreationDate = Repository.CurrentDate,
+                    Type = "link",
+                    IsThumbnailEnabled = true,
+                    IsAdult = false,
+                    IsPrivate = false,
+                    MinCCPForDownvote = 0,
+                    IsAdminDisabled = false,
+                    CreatedBy = User.Identity.Name,
+                    SubscriberCount = 0
+                };
+
+                _db.Subverses.Add(subverse);
+                await _db.SaveChangesAsync().ConfigureAwait(false);
+
+                await SubscribeUser(DomainType.Subverse, SubscriptionAction.Subscribe, subverse.Name).ConfigureAwait(false);
+
+
+                // register user as the owner of the newly created subverse
+                var tmpSubverseAdmin = new Models.SubverseModerator
+                {
+                    Subverse = name,
+                    UserName = User.Identity.Name,
+                    Power = 1
+                };
+                _db.SubverseModerators.Add(tmpSubverseAdmin);
+                await _db.SaveChangesAsync().ConfigureAwait(false);
+
+
+                // go to newly created Subverse
+                return CommandResponse.Successful();
+                //return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subverseTmpModel.Name });
+            }
+            catch (Exception ex)
+            {
+                return CommandResponse.Error<CommandResponse>(ex);
+                //ModelState.AddModelError(string.Empty, "Something bad happened, please report this to /v/voatdev. Thank you.");
+                //return View();
+            }
+
+        }
+
         #endregion Subverse
 
         #region Submissions
+
+        public int GetCommentCount(int submissionID)
+        {
+            using (voatEntities db = new voatEntities())
+            {
+                var cmd = db.Database.Connection.CreateCommand();
+                cmd.CommandText = "SELECT COUNT(*) FROM Comment WITH (NOLOCK) WHERE SubmissionID = @SubmissionID AND IsDeleted != 1";
+                var param = cmd.CreateParameter();
+                param.ParameterName = "SubmissionID";
+                param.DbType = System.Data.DbType.Int32;
+                param.Value = submissionID;
+                cmd.Parameters.Add(param);
+
+                if (cmd.Connection.State != System.Data.ConnectionState.Open)
+                {
+                    cmd.Connection.Open();
+                }
+                return (int)cmd.ExecuteScalar();
+            }
+        }
 
         public IEnumerable<Data.Models.Submission> GetTopViewedSubmissions()
         {
@@ -702,8 +810,342 @@ namespace Voat.Data
 
             return results;
         }
+        public async Task<IEnumerable<Models.Submission>> GetSubmissionsDapper(string subverse, SearchOptions options)
+        {
+            if (String.IsNullOrEmpty(subverse))
+            {
+                throw new VoatValidationException("A subverse must be provided.");
+            }
 
-        public IEnumerable<Models.Submission> GetSubmissions(string subverse, SearchOptions options)
+            if (options == null)
+            {
+                options = new SearchOptions();
+            }
+
+            var query = new DapperQuery();
+            query.SelectColumns = "s.*";
+            query.Select = @"SELECT DISTINCT {0} FROM Submission s WITH (NOLOCK) INNER JOIN Subverse sub WITH (NOLOCK) ON s.Subverse = sub.Name";
+
+            //Parameter Declarations
+            DateTime? startDate = options.StartDate;
+            DateTime? endDate = options.EndDate;
+            //string subverse = subverse;
+            bool nsfw = false;
+            string userName = null;
+            
+            UserData userData = null;
+            if (User.Identity.IsAuthenticated)
+            {
+                userData = new UserData(User.Identity.Name);
+                userName = userData.UserName;
+            }
+
+            bool filterBlockedSubverses = false;
+
+            switch (subverse.ToLower())
+            {
+                //Match Aggregate Subs
+                case AGGREGATE_SUBVERSE.FRONT:
+                    query.Append(x => x.Select, "INNER JOIN SubverseSubscription ss WITH (NOLOCK) ON s.Subverse = ss.Subverse");
+                    query.Append(x => x.Where, "s.IsArchived = 0 AND s.IsDeleted = 0 AND ss.UserName = @UserName");
+
+                    //query = (from x in _db.Submissions
+                    //         join subscribed in _db.SubverseSubscriptions on x.Subverse equals subscribed.Subverse
+                    //         where subscribed.UserName == User.Identity.Name
+                    //         select x);
+                   
+                    break;
+                case AGGREGATE_SUBVERSE.DEFAULT:
+                    //if no user or user has no subscriptions or logged in user requests default page
+                    query.Append(x => x.Select, "INNER JOIN DefaultSubverse ss WITH (NOLOCK) ON s.Subverse = ss.Subverse");
+
+                    if (Settings.IsVoatBranded)
+                    {
+                        //This is a modification Voat uses in the default page
+                        query.Append(x => x.Where, "(s.UpCount - s.DownCount >= 20) AND ABS(DATEDIFF(HH, s.CreationDate, GETUTCDATE())) <= 24");
+                    }
+
+                    //sort default by relative rank
+                    options.Sort = Domain.Models.SortAlgorithm.RelativeRank;
+
+                    //query = (from x in _db.Submissions
+                    //         join defaults in _db.DefaultSubverses on x.Subverse equals defaults.Subverse
+                    //         select x);
+
+                    break;
+                case AGGREGATE_SUBVERSE.ANY:
+                    query.Where = "sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0";
+                    //query = (from x in _db.Submissions
+                    //         where
+                    //         !x.Subverse1.IsAdminPrivate
+                    //         && !x.Subverse1.IsPrivate
+                    //         && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value)
+                    //         select x);
+                    break;
+
+                case AGGREGATE_SUBVERSE.ALL:
+                case "all":
+                    filterBlockedSubverses = true;
+                    ////Controller logic:
+                    //IQueryable<Submission> submissionsFromAllSubversesByDate = 
+                    //(from message in _db.Submissions
+                    //join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                    //where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.MinCCPForDownvote == 0
+                    //where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                    //where !subverse.IsAdminDisabled.Value
+                    //where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(userName)
+                    //select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
+
+                    nsfw = (User.Identity.IsAuthenticated ? userData.Preferences.EnableAdultContent : false);
+
+                    //v/all has certain conditions
+                    //1. Only subs that have a MinCCP of zero
+                    //2. Don't show private subs
+                    //3. Don't show NSFW subs if nsfw isn't enabled in profile, if they are logged in
+                    //4. Don't show blocked subs if logged in // not implemented
+                    query.Where = "sub.MinCCPForDownvote = 0 AND sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0 AND s.IsArchived = 0";
+                    if (!nsfw)
+                    {
+                        query.Where += " AND sub.IsAdult = 0";
+                    }
+
+                    //query = (from x in _db.Submissions
+                    //         where x.Subverse1.MinCCPForDownvote == 0
+                    //                && (!x.Subverse1.IsAdminPrivate && !x.Subverse1.IsPrivate && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value))
+                    //                && (x.Subverse1.IsAdult && nsfw || !x.Subverse1.IsAdult)
+                    //         select x);
+
+                    break;
+
+                //for regular subverse queries
+                default:
+
+                    if (!SubverseExists(subverse))
+                    {
+                        throw new VoatNotFoundException("Subverse '{0}' not found.", subverse);
+                    }
+
+                    ////Controller Logic:
+                    //IQueryable<Submission> submissionsFromASubverseByDate = 
+                    //    (from message in _db.Submissions
+                    //    join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                    //    where !message.IsDeleted && message.Subverse == subverseName
+                    //    where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                    //    where !(from bu in _db.SubverseBans where bu.Subverse == subverse.Name select bu.UserName).Contains(message.UserName)
+                    //    select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
+
+                    subverse = ToCorrectSubverseCasing(subverse);
+                    query.Where = "s.Subverse = @Subverse";
+
+                    //Filter out stickies in subs
+                    query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = s.Subverse)");
+                    
+                    //query = (from x in _db.Submissions
+                    //         where (x.Subverse == subverse || subverse == null)
+                    //         select x);
+                    break;
+            }
+
+            query.Append(x => x.Where, "s.IsDeleted = 0");
+
+            if (User.Identity.IsAuthenticated)
+            {
+                if (filterBlockedSubverses)
+                {
+                    //query = query.Where(s => !_db.UserBlockedSubverses.Where(b =>
+                    //    b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                    //    && b.Subverse.Equals(s.Subverse, StringComparison.OrdinalIgnoreCase)).Any());
+
+                    //filter blocked subs
+                    query.Append(x => x.Where, "s.Subverse NOT IN (SELECT b.Subverse FROM UserBlockedSubverse b WITH (NOLOCK) WHERE b.UserName = @UserName)");
+                }
+
+
+                //filter blocked users (Currently commented out do to a collation issue)
+                //query = query.Where(s => !_db.UserBlockedUsers.Where(b =>
+                //    b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                //    && s.UserName.Equals(b.BlockUser, StringComparison.OrdinalIgnoreCase)
+                //    ).Any());
+
+                //filter global banned users
+                //query = query.Where(s => !_db.BannedUsers.Where(b => b.UserName.Equals(s.UserName, StringComparison.OrdinalIgnoreCase)).Any());
+            }
+
+            //TODO: Re-implement this logic
+            //HACK: Warning, Super hacktastic
+            if (!String.IsNullOrEmpty(options.Phrase))
+            {
+                query.Append(x => x.Where, "(s.Title LIKE CONCAT('%', @Phrase, '%') OR s.Content LIKE CONCAT('%', @Phrase, '%') OR s.Url LIKE CONCAT('%', @Phrase, '%'))");
+                ////WARNING: This is a quickie that views spaces as AND conditions in a search.
+                //List<string> keywords = null;
+                //if (options.Phrase.Contains(" "))
+                //{
+                //    keywords = new List<string>(options.Phrase.Split(' '));
+                //}
+                //else
+                //{
+                //    keywords = new List<string>(new string[] { options.Phrase });
+                //}
+
+                //keywords.ForEach(x =>
+                //{
+                //    query = query.Where(m => m.Title.Contains(x) || m.Content.Contains(x) || m.Url.Contains(x));
+                //});
+            }
+            #region Ordering
+
+
+            if (options.StartDate.HasValue)
+            {
+                query.Where += " AND s.CreationDate >= @StartDate";
+                //query = query.Where(x => x.CreationDate >= options.StartDate.Value);
+            }
+            if (options.EndDate.HasValue)
+            {
+                query.Where += " AND s.CreationDate <= @EndDate";
+                //query = query.Where(x => x.CreationDate <= options.EndDate.Value);
+            }
+
+            //Search Options
+            switch (options.Sort)
+            {
+                case SortAlgorithm.RelativeRank:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query.OrderBy = "s.RelativeRank ASC";
+                        //query = query.OrderBy(x => x.RelativeRank);
+                    }
+                    else
+                    {
+                        query.OrderBy = "s.RelativeRank DESC";
+                        //query = query.OrderByDescending(x => x.RelativeRank);
+                    }
+                    break;
+
+                case SortAlgorithm.Rank:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query.OrderBy = "s.Rank ASC";
+                        //query = query.OrderBy(x => x.Rank);
+                    }
+                    else
+                    {
+                        query.OrderBy = "s.Rank DESC";
+                        //query = query.OrderByDescending(x => x.Rank);
+                    }
+                    break;
+
+                case SortAlgorithm.Top:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query.OrderBy = "s.UpCount ASC";
+                        //query = query.OrderBy(x => x.UpCount);
+                    }
+                    else
+                    {
+                        query.OrderBy = "s.UpCount DESC";
+                        //query = query.OrderByDescending(x => x.UpCount);
+                    }
+                    break;
+
+                case SortAlgorithm.Viewed:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query.OrderBy = "s.Views ASC";
+                        //query = query.OrderBy(x => x.Views);
+                    }
+                    else
+                    {
+                        query.OrderBy = "s.Views DESC";
+                        //query = query.OrderByDescending(x => x.Views);
+                    }
+                    break;
+                //Need to verify performance of these before using
+                //case SortAlgorithm.Discussed:
+                //    if (options.SortDirection == SortDirection.Reverse)
+                //    {
+                //        query = query.OrderBy(x => x.Comments.Count);
+                //    }
+                //    else
+                //    {
+                //        query = query.OrderByDescending(x => x.Comments.Count);
+                //    }
+                //    break;
+
+                //case SortAlgorithm.Active:
+                //    if (options.SortDirection == SortDirection.Reverse)
+                //    {
+                //        query = query.OrderBy(x => x.Comments.OrderBy(c => c.CreationDate).FirstOrDefault().CreationDate);
+                //    }
+                //    else
+                //    {
+                //        query = query.OrderByDescending(x => x.Comments.OrderBy(c => c.CreationDate).FirstOrDefault().CreationDate);
+                //    }
+                //    break;
+
+                case SortAlgorithm.Bottom:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query.OrderBy = "s.DownCount ASC";
+                        //query = query.OrderBy(x => x.DownCount);
+                    }
+                    else
+                    {
+                        query.OrderBy = "s.DownCount DESC";
+                        //query = query.OrderByDescending(x => x.DownCount);
+                    }
+                    break;
+
+                case SortAlgorithm.Intensity:
+                    string sort = "(s.UpCount + s.DownCount)";
+                    query.SelectColumns = query.AppendClause(query.SelectColumns, sort, ", ");
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query.OrderBy = $"{sort} ASC";
+                        //query = query.OrderBy(x => x.UpCount + x.DownCount);
+                    }
+                    else
+                    {
+                        query.OrderBy = $"{sort} DESC";
+                        //query = query.OrderByDescending(x => x.UpCount + x.DownCount);
+                    }
+                    break;
+                
+                    //making this default for easy debugging
+                case SortAlgorithm.New:
+                default:
+                    if (options.SortDirection == SortDirection.Reverse)
+                    {
+                        query.OrderBy = "s.CreationDate ASC";
+                        //query = query.OrderBy(x => x.CreationDate);
+                    }
+                    else
+                    {
+                        query.OrderBy = "s.CreationDate DESC";
+                        //query = query.OrderByDescending(x => x.CreationDate);
+                    }
+                    break;
+            }
+
+            //query = query.Skip(options.Index).Take(options.Count);
+            //return query;
+
+            #endregion
+
+            query.SkipCount = options.Index;
+            query.TakeCount = options.Count;
+
+            //Filter out all disabled subs
+            query.Append(x => x.Where, "sub.IsAdminDisabled = 0");
+            
+            query.Parameters = new { StartDate = startDate, EndDate = endDate, Subverse = subverse, UserName = userName, Phrase = options.Phrase};
+
+            //execute query
+            var data = await _db.Database.Connection.QueryAsync<Models.Submission>(query.ToString(), query.Parameters);
+            var results = data.Select(Selectors.SecureSubmission).ToList();
+            return results;
+        }
+        public async Task<IEnumerable<Models.Submission>> GetSubmissions(string subverse, SearchOptions options)
         {
             if (String.IsNullOrEmpty(subverse))
             {
@@ -817,9 +1259,11 @@ namespace Voat.Data
             query = ApplySubmissionSearch(options, query);
 
             //execute query
-            var results = query.Select(Selectors.SecureSubmission).ToList();
+            var data = await query.ToListAsync().ConfigureAwait(false);
 
-            return results.AsEnumerable();
+            var results = data.Select(Selectors.SecureSubmission).ToList();
+
+            return results;
         }
 
         [Authorize]
@@ -828,8 +1272,8 @@ namespace Voat.Data
             DemandAuthentication();
 
             //Load Subverse Object
-            var cmdSubverse = new QuerySubverse(userSubmission.Subverse);
-            var subverseObject = cmdSubverse.Execute();
+            //var cmdSubverse = new QuerySubverse(userSubmission.Subverse);
+            var subverseObject = _db.Subverses.Where(x => x.Name.Equals(userSubmission.Subverse, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
             //Evaluate Rules
             var context = new VoatRuleContext();
@@ -877,13 +1321,13 @@ namespace Voat.Data
                 if (subverseObject.IsThumbnailEnabled)
                 {
                     // try to generate and assign a thumbnail to submission model
-                    m.Thumbnail = await ThumbGenerator.GenerateThumbFromWebpageUrl(userSubmission.Url);
+                    m.Thumbnail = await ThumbGenerator.GenerateThumbFromWebpageUrl(userSubmission.Url).ConfigureAwait(false);
                 }
             }
 
             _db.Submissions.Add(m);
 
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
 
             //This sends notifications by parsing content
             if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
@@ -958,7 +1402,7 @@ namespace Voat.Data
 
             submission.LastEditDate = CurrentDate;
 
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
 
             return CommandResponse.FromStatus(Selectors.SecureSubmission(submission), Status.Success, "");
         }
@@ -1211,7 +1655,7 @@ namespace Voat.Data
                     {
                         comment.IsDeleted = true;
                         comment.Content = "Deleted by author at " + Repository.CurrentDate;
-                        await _db.SaveChangesAsync();
+                        await _db.SaveChangesAsync().ConfigureAwait(false);
                     }
 
                     // delete comment if delete request is issued by subverse moderator
@@ -1238,7 +1682,7 @@ namespace Voat.Data
                                         comment.Content
                         };
                         var cmd = new SendMessageCommand(message);
-                        await cmd.Execute();
+                        await cmd.Execute().ConfigureAwait(false);
 
                         comment.IsDeleted = true;
 
@@ -1254,7 +1698,7 @@ namespace Voat.Data
                         _db.CommentRemovalLogs.Add(removalLog);
 
                         comment.Content = "Deleted by a moderator at " + Repository.CurrentDate;
-                        await _db.SaveChangesAsync();
+                        await _db.SaveChangesAsync().ConfigureAwait(false);
                     }
                     else
                     {
@@ -1304,7 +1748,7 @@ namespace Voat.Data
                     var formattedComment = Voat.Utilities.Formatting.FormatMessage(comment.Content);
                     comment.FormattedContent = formattedComment;
 
-                    await _db.SaveChangesAsync();
+                    await _db.SaveChangesAsync().ConfigureAwait(false);
                 }
                 else
                 {
@@ -1327,7 +1771,7 @@ namespace Voat.Data
                 throw new VoatNotFoundException("Can not find parent comment with id {0}", parentCommentID.ToString());
             }
             var submissionid = c.SubmissionID;
-            return await PostComment(submissionid.Value, parentCommentID, comment);
+            return await PostComment(submissionid.Value, parentCommentID, comment).ConfigureAwait(false);
         }
 
         public async Task<CommandResponse<Domain.Models.Comment>> PostComment(int submissionID, int? parentCommentID, string commentContent)
@@ -1357,7 +1801,6 @@ namespace Voat.Data
                 c.UserName = User.Identity.Name;
                 c.ParentID = (parentCommentID > 0 ? parentCommentID : (int?)null);
                 c.SubmissionID = submissionID;
-                c.Votes = 0;
                 c.UpCount = 0;
 
                 //TODO: Ensure this is acceptable
@@ -1371,14 +1814,14 @@ namespace Voat.Data
                 c.FormattedContent = formattedComment;
 
                 _db.Comments.Add(c);
-                await _db.SaveChangesAsync();
+                await _db.SaveChangesAsync().ConfigureAwait(false);
 
                 if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
                 {
                     ContentProcessor.Instance.Process(c.Content, ProcessingStage.InboundPostSave, c);
                 }
 
-                await NotificationManager.SendCommentNotification(c);
+                await NotificationManager.SendCommentNotification(c).ConfigureAwait(false);
 
                 return MapRuleOutCome(outcome, DomainMaps.Map(Selectors.SecureComment(c), submission.Subverse));
             }
@@ -1577,10 +2020,10 @@ namespace Voat.Data
             switch (type)
             {
                 case ContentType.Comment:
-                    savedIDs = await _db.CommentSaveTrackers.Where(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).Select(x => x.CommentID).ToListAsync();
+                    savedIDs = await _db.CommentSaveTrackers.Where(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).Select(x => x.CommentID).ToListAsync().ConfigureAwait(false);
                     break;
                 case ContentType.Submission:
-                    savedIDs = await _db.SubmissionSaveTrackers.Where(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).Select(x => x.SubmissionID).ToListAsync();
+                    savedIDs = await _db.SubmissionSaveTrackers.Where(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).Select(x => x.SubmissionID).ToListAsync().ConfigureAwait(false);
                     break;
             }
             return savedIDs;
@@ -1617,7 +2060,7 @@ namespace Voat.Data
                         _db.CommentSaveTrackers.Remove(c);
                         isSaved = false;
                     }
-                    await _db.SaveChangesAsync();
+                    await _db.SaveChangesAsync().ConfigureAwait(false);
 
                     break;
 
@@ -1635,7 +2078,7 @@ namespace Voat.Data
                         _db.SubmissionSaveTrackers.Remove(s);
                         isSaved = false;
                     }
-                    await _db.SaveChangesAsync();
+                    await _db.SaveChangesAsync().ConfigureAwait(false);
 
                     break;
             }
@@ -1784,14 +2227,14 @@ namespace Voat.Data
                 message.Content = messageContent;
                 message.FormattedContent = Formatting.FormatMessage(messageContent);
 
-                return await SendMessage(message);
+                return await SendMessage(message).ConfigureAwait(false);
             }
         }
 
         [Authorize]
         public async Task<IEnumerable<CommandResponse<Domain.Models.Message>>> SendMessages(params Domain.Models.Message[] messages)
         {
-            return await SendMessages(messages.AsEnumerable());
+            return await SendMessages(messages.AsEnumerable()).ConfigureAwait(false);
         }
 
         [Authorize]
@@ -1799,7 +2242,7 @@ namespace Voat.Data
         {
             var tasks = messages.Select(x => Task.Run(async () => { return await SendMessage(x).ConfigureAwait(false); }));
 
-            var result = await Task.WhenAll(tasks);
+            var result = await Task.WhenAll(tasks).ConfigureAwait(false);
 
             return result;
         }
@@ -1958,7 +2401,7 @@ namespace Voat.Data
                 }
             }
 
-            var savedMessages = await SendMessages(messages);
+            var savedMessages = await SendMessages(messages).ConfigureAwait(false);
             var firstSent = savedMessages.FirstOrDefault();
             if (firstSent == null)
             {
@@ -2044,6 +2487,56 @@ namespace Voat.Data
             return q;
         }
 
+        private List<int> ConvertMessageTypeFlag(MessageTypeFlag type)
+        {
+            //filter Message Type
+            if (type != MessageTypeFlag.All)
+            {
+                List<int> messageTypes = new List<int>();
+
+                var flags = Enum.GetValues(typeof(MessageTypeFlag));
+                foreach (var flag in flags)
+                {
+                    //This needs to be cleaned up, we have two enums that are serving a similar purpose
+                    var mTFlag = (MessageTypeFlag)flag;
+                    if (mTFlag != MessageTypeFlag.All && ((type & mTFlag) > 0))
+                    {
+                        switch (mTFlag)
+                        {
+                            case MessageTypeFlag.Sent:
+                                messageTypes.Add((int)MessageType.Sent);
+                                break;
+
+                            case MessageTypeFlag.Private:
+                                messageTypes.Add((int)MessageType.Private);
+                                break;
+
+                            case MessageTypeFlag.CommentReply:
+                                messageTypes.Add((int)MessageType.CommentReply);
+                                break;
+
+                            case MessageTypeFlag.CommentMention:
+                                messageTypes.Add((int)MessageType.CommentMention);
+                                break;
+
+                            case MessageTypeFlag.SubmissionReply:
+                                messageTypes.Add((int)MessageType.SubmissionReply);
+                                break;
+
+                            case MessageTypeFlag.SubmissionMention:
+                                messageTypes.Add((int)MessageType.SubmissionMention);
+                                break;
+                        }
+                    }
+                }
+                return messageTypes;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         [Authorize]
         public async Task<CommandResponse> DeleteMessages(string ownerName, IdentityType ownerType, MessageTypeFlag type, int? id = null)
         {
@@ -2067,7 +2560,7 @@ namespace Voat.Data
                 if (message != null)
                 {
                     _db.Messages.Remove(message);
-                    await _db.SaveChangesAsync();
+                    await _db.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
             else
@@ -2075,8 +2568,8 @@ namespace Voat.Data
                 using (var db = new voatEntities())
                 {
                     var q = GetMessageQueryBase(db, ownerName, ownerType, type, MessageState.All);
-                    await q.ForEachAsync(x => db.Messages.Remove(x));
-                    await db.SaveChangesAsync();
+                    await q.ForEachAsync(x => db.Messages.Remove(x)).ConfigureAwait(false);
+                    await db.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
 
@@ -2127,8 +2620,8 @@ namespace Voat.Data
             else
             {
                 var q = GetMessageQueryBase(ownerName, ownerType, type, stateToFind);
-                await q.ForEachAsync(x => x.ReadDate = setReadDate(x));
-                await _db.SaveChangesAsync();
+                await q.ForEachAsync(x => x.ReadDate = setReadDate(x)).ConfigureAwait(false);
+                await _db.SaveChangesAsync().ConfigureAwait(false);
             }
 
             Task.Run(() => EventNotification.Instance.SendMessageNotice(
@@ -2144,36 +2637,86 @@ namespace Voat.Data
         [Authorize]
         public async Task<MessageCounts> GetMessageCounts(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state)
         {
-            var q = GetMessageQueryBase(ownerName, ownerType, type, state);
+            #region Dapper
 
-            var counts = await q.GroupBy(x => x.Type).Select(x => new { x.Key, Count = x.Count() }).ToListAsync();
-            var result = new MessageCounts(UserDefinition.Create(ownerName, ownerType));
-            foreach (var count in counts)
+            using (var db = new voatEntities())
             {
-                result.Counts.Add(new MessageCount() { Type = (MessageType)count.Key, Count = count.Count });
+                var q = new DapperQuery();
+                q.Select = "SELECT [Type], Count = COUNT(*) FROM [Message] WITH (NOLOCK)";
+                q.Where =
+                    @"(
+                        (Recipient = @UserName AND RecipientType = @OwnerType AND [Type] <> @SentType)
+                        OR
+                        (Sender = @UserName AND SenderType = @OwnerType AND [Type] = @SentType)
+                    )";
+
+                //Filter
+                if (state != MessageState.All)
+                {
+                    q.Where += String.Format(" AND ReadDate IS {0} NULL", state == MessageState.Unread ? "" : "NOT");
+                }
+
+                var types = ConvertMessageTypeFlag(type);
+                if (types != null)
+                {
+                    q.Where += String.Format(" AND [Type] IN @MessageTypes");
+                }
+
+                q.GroupBy = "[Type]";
+                q.Parameters = new {
+                    UserName = ownerName,
+                    OwnerType = (int)ownerType,
+                    SentType = (int)MessageType.Sent,
+                    MessageTypes = (types != null ? types.ToArray() : (int[])null)
+                };
+
+                var results = await db.Database.Connection.QueryAsync<MessageCount>(q.ToString(), q.Parameters);
+
+                var result = new MessageCounts(UserDefinition.Create(ownerName, ownerType));
+                result.Counts = results.ToList();
+                return result;
             }
-            return result;
+
+            #endregion
+
+            #region EF
+            //var q = GetMessageQueryBase(ownerName, ownerType, type, state);
+            //var counts = await q.GroupBy(x => x.Type).Select(x => new { x.Key, Count = x.Count() }).ToListAsync();
+
+            //var result = new MessageCounts(UserDefinition.Create(ownerName, ownerType));
+            //foreach (var count in counts)
+            //{
+            //    result.Counts.Add(new MessageCount() { Type = (MessageType)count.Key, Count = count.Count });
+            //}
+            //return result;
+            #endregion
+
+           
         }
 
         [Authorize]
-        public async Task<IEnumerable<Domain.Models.Message>> GetMessages(MessageTypeFlag type, MessageState state, bool markAsRead = true, int pageNumber = 0, int pageCount = 25)
+        public async Task<IEnumerable<Domain.Models.Message>> GetMessages(MessageTypeFlag type, MessageState state, bool markAsRead = true, SearchOptions options = null)
         {
-            return await GetMessages(User.Identity.Name, IdentityType.User, type, state, markAsRead, pageNumber, pageCount);
+            return await GetMessages(User.Identity.Name, IdentityType.User, type, state, markAsRead, options).ConfigureAwait(false);
         }
 
         [Authorize]
-        public async Task<IEnumerable<Domain.Models.Message>> GetMessages(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true, int pageNumber = 0, int pageCount = 25)
+        public async Task<IEnumerable<Domain.Models.Message>> GetMessages(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state, bool markAsRead = true, SearchOptions options = null)
         {
             DemandAuthentication();
+            if (options == null)
+            {
+                options = SearchOptions.Default;
+            }
             using (var db = new voatEntities())
             {
                 var q = GetMessageQueryBase(db, ownerName, ownerType, type, state);
                 var messages = (await q
                                     .OrderByDescending(x => x.CreationDate)
-                                    .Skip(pageNumber * pageCount)
-                                    .Take(pageCount)
+                                    .Skip(options.Index)
+                                    .Take(options.Count)
                                     .ToListAsync()
-                                    .ConfigureAwait(false)
+                                    //.ConfigureAwait(false)
                                ).AsEnumerable();
 
                 var mapped = messages.Map();
@@ -2181,8 +2724,8 @@ namespace Voat.Data
                 //mark as read
                 if (markAsRead && messages.Any(x => x.ReadDate == null))
                 {
-                    await q.Where(x => x.ReadDate == null).ForEachAsync<Models.Message>(x => x.ReadDate = CurrentDate);
-                    await db.SaveChangesAsync();
+                    await q.Where(x => x.ReadDate == null).ForEachAsync<Models.Message>(x => x.ReadDate = CurrentDate).ConfigureAwait(false);
+                    await db.SaveChangesAsync().ConfigureAwait(false);
 
                     Task.Run(() => EventNotification.Instance.SendMessageNotice(
                        UserDefinition.Format(ownerName, ownerType),
@@ -2255,7 +2798,11 @@ namespace Voat.Data
         {
             var blocked = (from x in _db.UserBlockedSubverses
                            where x.UserName == userName
-                           select new BlockedItem() { Name = x.Subverse, Type = DomainType.Subverse, CreationDate = x.CreationDate }).ToList();
+                           select new BlockedItem() {
+                               Name = x.Subverse,
+                               Type = DomainType.Subverse,
+                               CreationDate = x.CreationDate
+                           }).ToList();
             return blocked;
         }
 
@@ -2265,9 +2812,9 @@ namespace Voat.Data
             {
                 return null;
             }
-
-            var q = new QueryUserRecord(userName);
-            var userRecord = await q.ExecuteAsync();
+            //THIS COULD BE A SOURCE OF BLOCKING
+            var q = new QueryUserRecord(userName, CachePolicy.None); //Turn off cache retrieval for this
+            var userRecord = await q.ExecuteAsync().ConfigureAwait(false);
 
             if (userRecord == null)
             {
@@ -2288,16 +2835,17 @@ namespace Voat.Data
                                     Task<Score>.Factory.StartNew(() => UserVotingBehavior(userName, ContentType.Comment)),
             };
 
-
-            var pq = new QueryUserPreferences(userName);
-            var userPreferences = await pq.ExecuteAsync();
+            var userPreferences = await GetUserPreferences(userName).ConfigureAwait(false);
+            
+            //var pq = new QueryUserPreferences(userName);
+            //var userPreferences = await pq.ExecuteAsync();
             //var userPreferences = await GetUserPreferences(userName);
 
             userInfo.Bio = String.IsNullOrWhiteSpace(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio;
             userInfo.ProfilePicture = VoatPathHelper.AvatarPath(userName, userPreferences.Avatar, true, true, !String.IsNullOrEmpty(userPreferences.Avatar));
 
             //Task.WaitAll(tasks);
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
 
             userInfo.CommentPoints = tasks[0].Result;
             userInfo.SubmissionPoints = tasks[1].Result;
@@ -2311,7 +2859,7 @@ namespace Voat.Data
             //userInfo.CommentVoting = UserVotingBehavior(userName, ContentType.Comment);
 
             //Badges
-            var userBadges = (from b in _db.Badges
+            var userBadges = await (from b in _db.Badges
                               join ub in _db.UserBadges on b.ID equals ub.BadgeID into ubn
                               from uball in ubn.DefaultIfEmpty()
                               where
@@ -2333,7 +2881,7 @@ namespace Voat.Data
                                   Title = b.Title,
                                   Graphic = b.Graphic,
                               }
-                              ).ToList();
+                              ).ToListAsync().ConfigureAwait(false);
 
             userInfo.Badges = userBadges;
 
@@ -2342,11 +2890,22 @@ namespace Voat.Data
 
         public async Task<Models.UserPreference> GetUserPreferences(string userName)
         {
-            var query = _db.UserPreferences.Where(x => (x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)));
+            Models.UserPreference result = null;
+            if (!String.IsNullOrEmpty(userName))
+            {
+                var query = _db.UserPreferences.Where(x => (x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
-            var results = await query.FirstOrDefaultAsync();
+                result = await query.FirstOrDefaultAsync().ConfigureAwait(false);
+            }
 
-            return results;
+            if (result == null)
+            {
+                result = new Data.Models.UserPreference();
+                Repository.SetDefaultUserPreferences(result);
+                result.UserName = userName;
+            }
+
+            return result;
         }
 
         public Score UserVotingBehavior(string userName, ContentType type = ContentType.Comment | ContentType.Submission, TimeSpan? span = null)
@@ -2423,22 +2982,32 @@ namespace Voat.Data
         }
         public int UserVoteStatus(string userName, ContentType type, int id)
         {
-            int result = 0;
-
-            using (var db = new voatEntities())
+            var result = UserVoteStatus(userName, type, new int[] { id });
+            if (result.Any())
             {
-                switch (type)
-                {
-                    case ContentType.Comment:
-                        var record = db.CommentVoteTrackers.FirstOrDefault(b => b.CommentID == id && b.UserName.Equals(userName));
-                        result = record == null ? 0 : record.VoteStatus.Value;
-                        break;
-                    case ContentType.Submission:
-                        var record2 = db.SubmissionVoteTrackers.FirstOrDefault(b => b.SubmissionID == id && b.UserName.Equals(userName));
-                        result = record2 == null ? 0 : record2.VoteStatus.Value;
-                        break;
-                }
+                return result.First().Value;
             }
+            return 0;
+        }
+        public IEnumerable<VoteValue> UserVoteStatus(string userName, ContentType type, int[] id)
+        {
+            IEnumerable<VoteValue> result = null;
+            var q = new DapperQuery();
+
+            switch (type)
+            {
+                case ContentType.Comment:
+                    q.Select = "SELECT [ID] = CommentID, [Value] = IsNull(VoteStatus, 0) FROM CommentVoteTracker WITH (NOLOCK)";
+                    q.Where = "UserName = @UserName AND CommentID IN @ID";
+                    break;
+                case ContentType.Submission:
+                    q.Select = "SELECT [ID] = SubmissionID, [Value] = IsNull(VoteStatus, 0) FROM SubmissionVoteTracker WITH (NOLOCK)";
+                    q.Where = "UserName = @UserName AND SubmissionID IN @ID";
+                    break;
+            }
+
+            result = _db.Database.Connection.Query<VoteValue>(q.ToString(), new { UserName = userName, ID = id });
+
             return result;
         }
         public int UserCommentCount(string userName, TimeSpan? span, string subverse = null)
@@ -2628,9 +3197,9 @@ namespace Voat.Data
                         }
                     }
 
-                    await _db.SaveChangesAsync();
+                    await _db.SaveChangesAsync().ConfigureAwait(false);
 
-                    await UpdateSubverseSubscriberCount(subscriptionName, action);
+                    await UpdateSubverseSubscriberCount(subscriptionName, action).ConfigureAwait(false);
 
                     break;
 
@@ -2662,7 +3231,7 @@ namespace Voat.Data
                     sub.SubscriberCount = Math.Max(0, sub.SubscriberCount.Value - 1);
                 }
             }
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task<CommandResponse<bool?>> BanUserFromSubverse(string userName, string subverse, string reason, bool? force = null)
@@ -2737,13 +3306,13 @@ namespace Voat.Data
                     subverseBan.CreationDate = Repository.CurrentDate;
                     subverseBan.Reason = reason;
                     _db.SubverseBans.Add(subverseBan);
-                    await _db.SaveChangesAsync();
+                    await _db.SaveChangesAsync().ConfigureAwait(false);
                 }
                 else
                 {
                     status = false; //removed ban
                     _db.SubverseBans.Remove(existingBan);
-                    await _db.SaveChangesAsync();
+                    await _db.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
 
@@ -2790,7 +3359,7 @@ namespace Voat.Data
                                 UserName = b.UserName
                             });
                 data = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
-                var results = await data.ToListAsync();
+                var results = await data.ToListAsync().ConfigureAwait(false);
                 return results;
             }
         }
@@ -2806,7 +3375,7 @@ namespace Voat.Data
                             select b).Include(x => x.Submission);
 
                 data = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
-                var results = await data.ToListAsync();
+                var results = await data.ToListAsync().ConfigureAwait(false);
                 return results;
             }
         }
@@ -2823,7 +3392,7 @@ namespace Voat.Data
                             select b).Include(x => x.Comment).Include(x => x.Comment.Submission);
 
                 data = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
-                var results = await data.ToListAsync();
+                var results = await data.ToListAsync().ConfigureAwait(false);
 
                 //TODO: Move to DomainMaps
                 var mapToDomain = new Func<Data.Models.CommentRemovalLog, Domain.Models.CommentRemovalLog>(d => 
@@ -2876,7 +3445,7 @@ namespace Voat.Data
             var originUserName = User.Identity.Name;
 
             // get moderator name for selected subverse
-            var subModerator = await _db.SubverseModerators.FindAsync(subverseModeratorRecordID);
+            var subModerator = await _db.SubverseModerators.FindAsync(subverseModeratorRecordID).ConfigureAwait(false);
             if (subModerator == null)
             {
                 return new CommandResponse<RemoveModeratorResponse>(response, Status.Invalid, "Can not find record");
@@ -2971,7 +3540,7 @@ namespace Voat.Data
             {
                 // execute removal
                 _db.SubverseModerators.Remove(subModerator);
-                await _db.SaveChangesAsync();
+                await _db.SaveChangesAsync().ConfigureAwait(false);
 
                 ////clear mod cache
                 //CacheHandler.Instance.Remove(CachingKey.SubverseModerators(subverse.Name));
@@ -3162,6 +3731,28 @@ namespace Voat.Data
         #endregion Block
 
         #region Misc
+
+        public double? HighestRankInSubverse(string subverse)
+        {
+            var q = new DapperQuery();
+            q.Select = "TOP 1 ISNULL(Rank, 0) FROM Submission WITH (NOLOCK)";
+            q.Where = "Subverse = @Subverse AND IsArchived = 0";
+            q.OrderBy = "Rank DESC";
+            q.Parameters = new { Subverse = subverse };
+
+            var result = _db.Database.Connection.ExecuteScalar<double?>(q.ToString(), q.Parameters);
+            return result;
+
+            //using (var db = new voatEntities())
+            //{
+            //    var submission = db.Submissions.OrderByDescending(x => x.Rank).Where(x => x.Subverse == subverse).FirstOrDefault();
+            //    if (submission != null)
+            //    {
+            //        return submission.Rank;
+            //    }
+            //    return null;
+            //}
+        }
 
         public int VoteCount(string sourceUser, string destinationUser, ContentType contentType, Vote voteType, TimeSpan timeSpan)
         {
@@ -3447,23 +4038,16 @@ namespace Voat.Data
                     orderby x.CreationDate descending
                     select x).ToList();
         }
-
-        public bool IsUserModerator(string subverse, string userName = null, int? power = null)
+        public IEnumerable<BannedDomain> BannedDomains(params string[] domains)
         {
-            DemandAuthentication();
-            userName = (userName == null ? User.Identity.Name : userName);
+            var q = new DapperQuery();
+            q.Select = "* FROM BannedDomain";
+            q.Where = "Domain IN @Domains";
+            q.Parameters = new { Domains = domains };
 
-            //if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
-            var m = new QuerySubverseModerators(subverse);
-            var mods = Task.Run(() => m.ExecuteAsync()).Result;
-            return mods.Any(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && (power == null ? true : (x.Power <= power)));
+            var bannedDomains = _db.Database.Connection.Query<BannedDomain>(q.ToString(), q.Parameters);
+            return bannedDomains;
         }
-
-        public bool IsSystemSubverse(string subverse)
-        {
-            return IsUserModerator(subverse, "System", 1);
-        }
-
         public string SubverseForComment(int commentID)
         {
             var subname = (from x in _db.Comments
@@ -3534,27 +4118,7 @@ namespace Voat.Data
             }
         }
 
-        public void Dispose()
-        {
-            Dispose(false);
-        }
-
-        ~Repository()
-        {
-            Dispose(true);
-        }
-
-        protected void Dispose(bool gcCalling)
-        {
-            if (_db != null)
-            {
-                _db.Dispose();
-            }
-            if (!gcCalling)
-            {
-                System.GC.SuppressFinalize(this);
-            }
-        }
+        
 
         protected CommandResponse<T> MapRuleOutCome<T>(RuleOutcome outcome, T result)
         {
@@ -3569,5 +4133,11 @@ namespace Voat.Data
         }
 
         #endregion Misc
+
+        #region Search 
+        
+        
+        
+        #endregion
     }
 }

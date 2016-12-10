@@ -28,7 +28,7 @@ using Voat.Utilities;
 namespace Voat.Tests.Utils
 {
     [TestClass]
-    public class UrlUtilityTests
+    public class UrlUtilityTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Utility")]

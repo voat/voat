@@ -158,26 +158,19 @@
     <Reference Include="RouteDebugger">
       <HintPath>..\packages\routedebugger.2.1.4.0\lib\net40\RouteDebugger.dll</HintPath>
     </Reference>
-    <Reference Include="SendGrid, Version=6.3.4.0, Culture=neutral, PublicKeyToken=4f047e93159395ca, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sendgrid.6.3.4\lib\SendGrid.dll</HintPath>
+    <Reference Include="SendGrid, Version=8.0.5.0, Culture=neutral, PublicKeyToken=4f047e93159395ca, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sendgrid.8.0.5\lib\SendGrid.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SendGrid.CSharp.HTTP.Client, Version=3.0.0.0, Culture=neutral, PublicKeyToken=79219bf4e5ecaaca, processorArchitecture=MSIL">
       <HintPath>..\packages\SendGrid.CSharp.HTTP.Client.3.0.0\lib\SendGrid.CSharp.HTTP.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SendGrid.SmtpApi, Version=1.3.1.0, Culture=neutral, PublicKeyToken=2ae73662c35d80e4, processorArchitecture=MSIL">
-      <HintPath>..\packages\SendGrid.SmtpApi.1.3.1\lib\net40\SendGrid.SmtpApi.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SendGridMail, Version=6.3.4.0, Culture=neutral, PublicKeyToken=4f047e93159395ca, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sendgrid.6.3.4\lib\SendGridMail.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
@@ -331,6 +324,7 @@
     <Compile Include="Models\ViewModels\SetFrontpageViewModel.cs" />
     <Compile Include="Models\SetSubmission.cs" />
     <Compile Include="Models\ViewModels\CreateSubmissionViewModel.cs" />
+    <Compile Include="Models\ViewModels\SubmissionListViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseBanViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseStylesheetViewModel.cs" />
     <Compile Include="Utils\Extensions.cs" />
@@ -362,7 +356,6 @@
     <Compile Include="Models\ViewModels\CommentViewModel.cs" />
     <Compile Include="Models\EditSubmission.cs" />
     <Compile Include="Models\ViewModels\MessageViewModel.cs" />
-    <Compile Include="Models\ViewModels\SearchInSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\CommentSingleViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseLinkFlairViewModel.cs" />
@@ -493,6 +486,7 @@
     <Content Include="gizmo\src\js\jquery.swipebox.min.js.map" />
     <None Include="bundleconfig.json" />
     <None Include="Properties\PublishProfiles\local fs.pubxml" />
+    <None Include="Properties\PublishProfiles\File System.pubxml" />
     <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\voatweb03.pubxml" />
     <None Include="Properties\PublishProfiles\voatWeb04.pubxml" />
@@ -525,7 +519,9 @@
     <Content Include="Scripts\markdownEditor.js" />
     <Content Include="Scripts\libs\npm.js" />
     <None Include="Scripts\_references.js" />
-    <Content Include="sitemap.xml" />
+    <Content Include="sitemap.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Storage\Avatars\Placeholder.txt" />
     <Content Include="Storage\Thumbs\Placeholder.txt" />
     <Content Include="Views\Subverses\_FeaturedSub.cshtml" />
@@ -616,8 +612,6 @@
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmissionSelf.cshtml" />
     <Content Include="Views\Shared\Submissions\_SubmissionSelf.cshtml" />
     <Content Include="Views\Shared\Submissions\_SubmissionLink.cshtml" />
-    <Content Include="Views\Shared\_SearchMinimal.cshtml" />
-    <Content Include="Views\Shared\_SearchInSubverse.cshtml" />
     <Content Include="Views\Search\Index.cshtml" />
     <Content Include="Views\Help\Faq.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
@@ -661,11 +655,9 @@
     <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonReport.cshtml" />
     <Content Include="Views\Shared\Userprofile\_SidebarSubsUserIsSubscribedTo.cshtml" />
     <Content Include="Views\Shared\_ListOfSubscribedToSubverses.cshtml" />
-    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_LSFLButtons.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonDelete.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonFlair.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSticky.cshtml" />
-    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_MSFLButtons.cshtml" />
     <Content Include="Views\Account\_UserPreferencesAbout.cshtml" />
     <Content Include="Views\AjaxViews\_VideoPlayer.cshtml" />
     <Content Include="Views\Home\IndexV2.cshtml" />
@@ -740,6 +732,11 @@
     <Content Include="Views\ModLog\Banned.cshtml" />
     <Content Include="Views\ModLog\_ModLogSidebarLinks.cshtml" />
     <Content Include="Views\Error\Generic.cshtml" />
+    <Content Include="Logging.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_Buttons.cshtml" />
+    <Content Include="Views\Shared\_SearchBox.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -747,6 +744,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <Content Include="~Web.config" />
+    <Content Include="~Logging.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -762,6 +760,10 @@
     <ProjectReference Include="..\Voat.Data\Voat.Data.csproj">
       <Project>{1e367cda-5508-47e1-9e95-ed100aee42d0}</Project>
       <Name>Voat.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Voat.Logging\Voat.Logging.csproj">
+      <Project>{440536c7-287d-47d7-9d84-edbe179b46ec}</Project>
+      <Name>Voat.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj">
       <Project>{dd358253-041f-4feb-9714-1164127780f8}</Project>
@@ -790,9 +792,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>54242</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:54113/</IISUrl>
-          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
-          <IISAppRootUrl>http://localhost:54113/v/news/comments/247736</IISAppRootUrl>
+          <IISUrl>http://localhost:54111/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

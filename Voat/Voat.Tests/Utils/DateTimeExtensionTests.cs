@@ -6,7 +6,7 @@ using Voat.Utilities;
 namespace Voat.Tests.Utils
 {
     [TestClass]
-    public class DateTimeExtensionTests
+    public class DateTimeExtensionTests : BaseUnitTest
     {
         private JulianCalendar julian = new JulianCalendar();
 

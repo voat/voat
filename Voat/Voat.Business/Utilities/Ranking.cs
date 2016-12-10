@@ -22,23 +22,14 @@ namespace Voat.Utilities
 {
     public static class Ranking
     {
-        private static string GetHighestRankingCacheKey(string subverse)
-        {
-            return String.Format("legacy:subverse.{0}.highest-rank", subverse).ToLower();
-        }
 
         public static double? GetSubverseHighestRanking(string subverse)
         {
-            var highestRank = CacheHandler.Instance.Register(GetHighestRankingCacheKey(subverse), new Func<double?>(() =>
+            var highestRank = CacheHandler.Instance.Register(CachingKey.SubverseHighestRank(subverse), new Func<double?>(() =>
             {
-                using (var db = new voatEntities())
+                using (var repo = new Repository())
                 {
-                    var submission = db.Submissions.OrderByDescending(x => x.Rank).Where(x => x.Subverse == subverse).FirstOrDefault();
-                    if (submission != null)
-                    {
-                        return submission.Rank;
-                    }
-                    return null;
+                    return repo.HighestRankInSubverse(subverse);
                 }
             }), TimeSpan.FromMinutes(30));
 
@@ -53,7 +44,7 @@ namespace Voat.Utilities
             {
                 if (highestRankCacheEntry < newRank)
                 {
-                    CacheHandler.Instance.Replace<double?>(GetHighestRankingCacheKey(subverse), highestRankCacheEntry, TimeSpan.FromMinutes(30));
+                    CacheHandler.Instance.Replace<double?>(CachingKey.SubverseHighestRank(subverse), highestRankCacheEntry, TimeSpan.FromMinutes(30));
                 }
             }
         }
@@ -90,11 +81,11 @@ namespace Voat.Utilities
             submission.Rank = newRank;
 
             // calculate relative rank
-            var subCtr = GetSubverseHighestRanking(submission.Subverse);
-            var relRank = CalculateNewRelativeRank(newRank, subCtr);
-            if (relRank != null)
+            var highestRanking = GetSubverseHighestRanking(submission.Subverse);
+            var relativeRanking = CalculateNewRelativeRank(newRank, highestRanking);
+            if (relativeRanking != null)
             {
-                submission.RelativeRank = relRank.Value;
+                submission.RelativeRank = relativeRanking.Value;
             }
 
             //update cache if higher rank that what's in there already

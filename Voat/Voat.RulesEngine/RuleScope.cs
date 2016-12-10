@@ -132,7 +132,12 @@ namespace Voat.RulesEngine
         /// <summary>
         /// Applies to viewing of a subverse
         /// </summary>
-        ViewSubverse = RuleAction.View | RuleArea.Subverse
+        ViewSubverse = RuleAction.View | RuleArea.Subverse,
+
+        /// <summary>
+        /// Applies to creating a new subverse
+        /// </summary>
+        CreateSubverse = RuleAction.Create | RuleArea.Subverse
 
         #endregion C-C-C-COMBOs
 

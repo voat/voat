@@ -12,6 +12,9 @@ using Voat.Models;
 using Voat.Controllers;
 using System.Threading;
 using Voat.Utilities;
+using System.Diagnostics;
+using Moq;
+using System.Web.Mvc;
 
 namespace Voat.Tests.BugTraps
 {

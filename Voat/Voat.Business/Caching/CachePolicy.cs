@@ -15,12 +15,12 @@ namespace Voat.Caching
         /// Specifies a caching policy
         /// </summary>
         /// <param name="duration">The duration item remains in cache</param>
-        /// <param name="recacheLimit">The number of times a cached item is refreshed. Never (-1), Forever (0), or a specific number of times</param>
+        /// <param name="refetchLimit">The number of times a cached item is refreshed. Never (-1), Forever (0), or a specific number of times</param>
         /// <param name="isSliding">Is cache duration renewed upon access of cached item (Not Currently Implemented)</param>
-        public CachePolicy(TimeSpan duration, int recacheLimit = -1, bool isSliding = false)
+        public CachePolicy(TimeSpan duration, int refetchLimit = -1, bool isSliding = false)
         {
             this.Duration = duration;
-            this.RecacheLimit = recacheLimit;
+            this.RefetchLimit = refetchLimit;
             this.IsSliding = isSliding;
         }
 
@@ -53,8 +53,48 @@ namespace Voat.Caching
         //techniques and then we will need have a Master vs. Slave setting because we don't want slave webservers
         //recaching on top of a master. I'm planning on implementing this but don't know if I want redis handling
         //expirations or if we do it internally.
-        public int RecacheLimit { get; protected set; }
+        public int RefetchLimit { get; protected set; }
 
         public static CachePolicy None { get { return new CachePolicy(TimeSpan.Zero); } }
+
+        public override bool Equals(object obj)
+        {
+            bool result = false;
+            if (obj != null)
+            {
+                var comparePolicy = obj as CachePolicy;
+                if (comparePolicy != null)
+                {
+                    result = comparePolicy.Duration == this.Duration && comparePolicy.RefetchLimit == this.RefetchLimit;
+                }
+            }
+            return result;
+        }
+
+        public static bool operator ==(CachePolicy x, CachePolicy y)
+        {
+            var result = Object.ReferenceEquals(x, y);
+
+            if (!result)
+            {
+                if (!Object.ReferenceEquals(x, null))
+                {
+                    result = x.Equals(y);
+                }
+                else if (!Object.ReferenceEquals(y, null))
+                {
+                    result = y.Equals(x);
+                }
+            }
+
+            return result;
+        }
+
+
+        public static bool operator !=(CachePolicy x, CachePolicy y)
+        {
+            return !(x == y);
+        }
+
     }
 }

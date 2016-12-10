@@ -47,6 +47,7 @@ namespace Voat.Controllers
             ViewBag.SelectedDomain = domainname;
             domainname = domainname.Trim().ToLower();
 
+            //TODO: This needs to moved to Query/Repository
             var results = CacheHandler.Instance.Register(CachingKey.DomainSearch(domainname, pageNumber, sortingmode), () => {
                 using (var db = new voatEntities())
                 {

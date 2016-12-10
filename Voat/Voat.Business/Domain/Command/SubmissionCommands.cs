@@ -44,7 +44,7 @@ namespace Voat.Domain.Command
                 {
                     return db.DeleteSubmission(_submissionID, _reason);
                 }
-            });
+            }).ConfigureAwait(false);
             return Tuple.Create(CommandResponse.Successful(), result);
         }
 

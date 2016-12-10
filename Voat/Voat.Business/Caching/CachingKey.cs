@@ -30,7 +30,10 @@ namespace Voat.Caching
         {
             return String.Format("Subverse:Bans:{0}", subverse);
         }
-
+        public static string SubverseHighestRank(string subverse)
+        {
+            return String.Format("Subverse:HighestRank:{0}", subverse).ToLower();
+        }
         public static string Submission(int submissionID)
         {
             return String.Format("Submission:{0}", submissionID);

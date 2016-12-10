@@ -29,11 +29,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Voat.Caching;
+using Voat.Configuration;
 
 namespace Voat.Tests.Cache
 {
     [TestClass]
-    public class MiscTests
+    public class MiscTests : BaseUnitTest
     {
         public object ConnectionMultiplexer { get; private set; }
 
@@ -63,8 +64,9 @@ namespace Voat.Tests.Cache
         [TestMethod]
         public void TestDictionary()
         {
-            var args = CacheHandlerSection.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis")).Arguments;
-            var conn = StackExchange.Redis.ConnectionMultiplexer.Connect(args);
+            var args = ArgumentParser.Parse( CacheHandlerSection.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis")).Arguments);
+
+            var conn = StackExchange.Redis.ConnectionMultiplexer.Connect(args[0].ToString());
             var db = conn.GetDatabase(0);
 
             db.KeyDelete("Test");

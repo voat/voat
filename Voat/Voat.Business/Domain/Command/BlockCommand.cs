@@ -26,7 +26,7 @@ namespace Voat.Domain.Command
             using (var db = new Repository())
             {
                 //TODO: Convert to async repo method
-                var response = await Task.Run(() => db.Block(_domainType, _name, (_toggleSetting ? (bool?)null : true)));
+                var response = await Task.Run(() => db.Block(_domainType, _name, (_toggleSetting ? (bool?)null : true))).ConfigureAwait(false);
                 return Tuple.Create(response, response.Response);
             }
         }
@@ -80,7 +80,7 @@ namespace Voat.Domain.Command
             using (var db = new Repository())
             {
                 //TODO: Convert to async repo method
-                var response = await Task.Run(() => db.Block(_domainType, _name, false));
+                var response = await Task.Run(() => db.Block(_domainType, _name, false)).ConfigureAwait(false);
                 return Tuple.Create(response, response.Response);
             }
         }

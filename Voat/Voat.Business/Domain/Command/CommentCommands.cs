@@ -41,8 +41,6 @@ namespace Voat.Domain.Command
             if (result.Success)
             {
                 var c = result.Response;
-
-                //HACK: Pretty sure this will fail if dictionary isn't already in cache.
                 var key = CachingKey.CommentTree(result.Response.SubmissionID.Value);
 
                 //Prevent key-ed entries if parent isn't in cache with expiration date
@@ -100,7 +98,6 @@ namespace Voat.Domain.Command
                 {
                     var treeItem = result.Response.MapToTree();
 
-                    //CacheHandler.Instance.Replace(key, result.Response.ID, treeItem);
                     CacheHandler.Instance.DictionaryReplace<int, usp_CommentTree_Result>(key, result.Response.ID, x =>
                     {
                         x.IsDeleted = result.Response.IsDeleted;

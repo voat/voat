@@ -3,6 +3,7 @@ using Voat.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using Voat.Domain.Models;
+using Voat.Logging;
 
 namespace Voat.Utilities.Components
 {
@@ -12,6 +13,21 @@ namespace Voat.Utilities.Components
     //This might need replacement down the road with a commericial logger but should be satisfactory right now
     public static class EventLogger
     {
+
+        private static ILogger _logger;
+
+        public static ILogger Instance
+        {
+            get
+            {
+                if (_logger == null)
+                {
+                    _logger = LogSection.Instance.GetDefault();
+                }
+                return _logger;
+            }
+        }
+
         /// <summary>
         /// Log an exception to the database
         /// </summary>
@@ -49,15 +65,13 @@ namespace Voat.Utilities.Components
                                 }
                                 var result = repo.Log(new Data.Models.EventLog
                                 {
-                                    //TODO: Modify schema to include this param
-                                    //Origin = origin.ToString(),
                                     ParentID = parentID,
-                                    Type = exception.GetType().Name,
                                     UserName = userName,
+                                    Origin = origin.ToString(),
+                                    Type = "Exception",
+                                    Category = "Exception",
                                     Message = exception.Message,
-                                    Source = (!String.IsNullOrEmpty(exception.Source) ? exception.Source : "N/A"),
-                                    CallStack = (!String.IsNullOrEmpty(exception.StackTrace) ? exception.StackTrace : "N/A"),
-                                    IsBase = (exception.InnerException == null),
+                                    Exception = exception.ToString(),
                                     CreationDate = Repository.CurrentDate,
                                     Data = sDetails
                                 });

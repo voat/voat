@@ -11,7 +11,7 @@ using Voat.Domain.Query;
 
 namespace Voat.Tests.CommandTests
 {
-    public class BaseCommandTest
+    public class BaseCommandTest : BaseUnitTest
     {
 
         protected void VerifyCommentSegmentIsAnonProtected(CommentSegment segment)

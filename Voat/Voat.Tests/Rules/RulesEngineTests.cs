@@ -32,7 +32,7 @@ using Voat.RulesEngine;
 namespace Voat.Tests.Rules
 {
     [TestClass]
-    public class RulesEngineTests
+    public class RulesEngineTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("RulesEngine")]

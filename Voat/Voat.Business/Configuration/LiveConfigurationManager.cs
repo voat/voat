@@ -35,7 +35,13 @@ namespace Voat.Configuration
         public const string MaxAllowedAccountsFromSingleIP = "maxAllowedAccountsFromSingleIP";
         public const string MaximumOwnedSets = "maximumOwnedSets";
         public const string MaximumOwnedSubs = "maximumOwnedSubs";
-        public const string MinimumCcp = "minimumCcp";
+        
+        public const string MinimumAccountAgeInDaysForSubverseCreation = "minimumAccountAgeInDaysForSubverseCreation";
+        public const string MinimumCommentPointsForSubverseCreation = "minimumCommentPointsForSubverseCreation";
+        public const string MinimumSubmissionPointsForSubverseCreation = "minimumSubmissionPointsForSubverseCreation";
+        public const string MinimumCommentPointsForCaptchaSubmission = "minimumCommentPointsForCaptchaSubmission";
+        public const string MinimumCommentPointsForCaptchaMessaging = "minimumCommentPointsForCaptchaMessaging";
+
         public const string RuntimeState = "runtimeState";
         public const string RecaptchaPrivateKey = "recaptchaPrivateKey";
         public const string RedirectToSiteDomain = "redirectToSiteDomain";
@@ -50,6 +56,8 @@ namespace Voat.Configuration
         public const string SiteLogo = "siteLogo";
         public const string SiteName = "siteName";
         public const string SiteSlogan = "siteSlogan";
+        public const string Origin = "origin";
+
         public const string UseContentDeliveryNetwork = "useContentDeliveryNetwork";
     }
 
@@ -105,7 +113,6 @@ namespace Voat.Configuration
                 SetValueIfPresent<string>(CONFIGURATION.DestinationPathThumbs, section[CONFIGURATION.DestinationPathThumbs]);
                 SetValueIfPresent<string>(CONFIGURATION.FooterText, section[CONFIGURATION.FooterText]);
                 
-                SetValueIfPresent<int>(CONFIGURATION.MinimumCcp, section[CONFIGURATION.MinimumCcp]);
                 SetValueIfPresent<int>(CONFIGURATION.MaximumOwnedSubs, section[CONFIGURATION.MaximumOwnedSubs]);
                 SetValueIfPresent<int>(CONFIGURATION.MaximumOwnedSets, section[CONFIGURATION.MaximumOwnedSets]);
                 SetValueIfPresent<int>(CONFIGURATION.DailyPostingQuotaPerSub, section[CONFIGURATION.DailyPostingQuotaPerSub]);
@@ -119,6 +126,13 @@ namespace Voat.Configuration
                 SetValueIfPresent<int>(CONFIGURATION.DailyCommentPostingQuota, section[CONFIGURATION.DailyCommentPostingQuota]);
                 SetValueIfPresent<int>(CONFIGURATION.HourlyCommentPostingQuota, section[CONFIGURATION.HourlyCommentPostingQuota]);
                 SetValueIfPresent<int>(CONFIGURATION.MaxAllowedAccountsFromSingleIP, section[CONFIGURATION.MaxAllowedAccountsFromSingleIP]);
+
+                SetValueIfPresent<int>(CONFIGURATION.MinimumAccountAgeInDaysForSubverseCreation, section[CONFIGURATION.MinimumAccountAgeInDaysForSubverseCreation]);
+                SetValueIfPresent<int>(CONFIGURATION.MinimumCommentPointsForSubverseCreation, section[CONFIGURATION.MinimumCommentPointsForSubverseCreation]);
+                SetValueIfPresent<int>(CONFIGURATION.MinimumSubmissionPointsForSubverseCreation, section[CONFIGURATION.MinimumSubmissionPointsForSubverseCreation]);
+                SetValueIfPresent<int>(CONFIGURATION.MinimumCommentPointsForCaptchaMessaging, section[CONFIGURATION.MinimumCommentPointsForCaptchaMessaging]);
+                SetValueIfPresent<int>(CONFIGURATION.MinimumCommentPointsForCaptchaSubmission, section[CONFIGURATION.MinimumCommentPointsForCaptchaSubmission]);
+
 
                 SetValueIfPresent<bool>(CONFIGURATION.ForceHTTPS, section[CONFIGURATION.ForceHTTPS]);
                 SetValueIfPresent<bool>(CONFIGURATION.SignalRDisabled, section[CONFIGURATION.SignalRDisabled]);
@@ -134,6 +148,8 @@ namespace Voat.Configuration
 
                 SetValueIfPresent<bool>(CONFIGURATION.ApiKeyCreationEnabled, section[CONFIGURATION.ApiKeyCreationEnabled]);
                 SetValueIfPresent<bool>(CONFIGURATION.CaptchaDisabled, section[CONFIGURATION.CaptchaDisabled]);
+
+                SetValueIfPresent<Domain.Models.Origin>(CONFIGURATION.Origin, section[CONFIGURATION.Origin]);
 
                 //HACK ATTACK
                 CacheHandler.Instance.CacheEnabled = !Settings.CacheDisabled;
@@ -198,6 +214,11 @@ namespace Voat.Configuration
                         {
                             conValue = false;
                         }
+                        saveValue = conValue;
+                    }
+                    else if (typeof(T).IsEnum)
+                    {
+                        T conValue = (T)Enum.Parse(typeof(T), value);
                         saveValue = conValue;
                     }
                     else

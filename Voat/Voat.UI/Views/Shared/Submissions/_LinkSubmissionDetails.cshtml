@@ -99,7 +99,11 @@
                         }
                     </p>
 
-                    @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_LSFLButtons.cshtml", Model, new ViewDataDictionary { { "commentCount", commentCount } })
+                    @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_Buttons.cshtml", Model,
+                        new ViewDataDictionary {
+                            { "ModeratorList", ViewBag.ModeratorList },
+                            { "commentCount", commentCount }
+                        })
 
                     <div class="expando" style='display: none'>
                         <span class="error">loading...</span>

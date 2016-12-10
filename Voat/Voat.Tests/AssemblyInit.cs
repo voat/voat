@@ -25,7 +25,7 @@ namespace Voat.Tests
                     var data = db.DefaultSubverses.ToList();
                 }
             }
-
+      
             //load web.config.live monitor
             LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
             LiveConfigurationManager.Start();

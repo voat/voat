@@ -9,7 +9,9 @@ namespace Voat.Caching
     {
         public NullCacheHandler()
         {
+            base.RequiresExpirationRemoval = false;
             base.CacheEnabled = false;
+            base.Initialize();
         }
 
         protected override object GetItem(string key)

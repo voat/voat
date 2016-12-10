@@ -49,7 +49,7 @@ namespace Voat.Tests.Data
     }
 
     [TestClass]
-    public class SearchOptions_Tests
+    public class SearchOptions_Tests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Search.Formatting"), TestCategory("Search.Parse")]

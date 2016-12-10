@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalSource", "ExternalS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkdownDeep", "External\Source\toptensoftware\MarkdownDeep\MarkdownDeep.csproj", "{1569ED47-C7C9-4261-B6F4-7445BD0F2C95}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Voat.Logging", "Voat.Logging\Voat.Logging.csproj", "{440536C7-287D-47D7-9D84-EDBE179B46EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{1569ED47-C7C9-4261-B6F4-7445BD0F2C95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1569ED47-C7C9-4261-B6F4-7445BD0F2C95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1569ED47-C7C9-4261-B6F4-7445BD0F2C95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{440536C7-287D-47D7-9D84-EDBE179B46EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{440536C7-287D-47D7-9D84-EDBE179B46EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{440536C7-287D-47D7-9D84-EDBE179B46EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{440536C7-287D-47D7-9D84-EDBE179B46EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -52,7 +52,7 @@
                 <li>
                     <a class="" href="javascript:void(0)" onclick="toggleSource(this);">source</a>
                 </li>
-                if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.DeleteComments))
+                if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.DeleteComments, ViewBag.ModeratorList))
                 {
                     @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonModeratorDelete.cshtml", Model, new ViewDataDictionary { { "CommentId", Model.ID } })
                 }
@@ -67,7 +67,7 @@
                 @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", Model.ID } })
 
                 // if user is comment author but also sub mod or sub admin show distinguish button
-                if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.DistinguishContent))
+                if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.DistinguishContent, ViewBag.ModeratorList))
                 {
                     var distinquishText = (@Model.IsDistinguished ? "undistinguish" : "distinguish");
                     <li>

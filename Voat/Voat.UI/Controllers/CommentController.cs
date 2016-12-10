@@ -198,6 +198,9 @@ namespace Voat.Controllers
                 model = await GetCommentSegment(submission.ID, null, 0, sort);
             }
 
+            var q = new QuerySubverseModerators(subverseName);
+            ViewBag.ModeratorList = await q.ExecuteAsync();
+
             return View("~/Views/Home/Comments.cshtml", model);
 
         }
@@ -275,6 +278,9 @@ namespace Voat.Controllers
             ViewBag.SortingMode = SortingMode;
 
             #endregion
+
+            var q = new QuerySubverseModerators(subverse.Name);
+            ViewBag.ModeratorList = await q.ExecuteAsync();
 
             var results = await GetCommentSegment(submissionID, parentID, startingIndex, sort);
             return PartialView("~/Views/Shared/Comments/_CommentSegment.cshtml", results);

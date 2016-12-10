@@ -90,14 +90,12 @@ namespace Voat.Controllers
             }
 
             var userData = UserData;
-            model.RequireCaptcha = userData.Information.CommentPoints.Sum < 25 && !Settings.CaptchaDisabled;
+            model.RequireCaptcha = userData.Information.CommentPoints.Sum < Settings.MinimumCommentPointsForCaptchaSubmission && !Settings.CaptchaDisabled;
 
             return View("Submit", model);
         }
        
         // POST: submit
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
@@ -106,7 +104,7 @@ namespace Voat.Controllers
         {
             //set this incase invalid submittal 
             var userData = UserData;
-            model.RequireCaptcha = userData.Information.CommentPoints.Sum < 25 && !Settings.CaptchaDisabled;
+            model.RequireCaptcha = userData.Information.CommentPoints.Sum < Settings.MinimumCommentPointsForCaptchaSubmission && !Settings.CaptchaDisabled;
 
             // abort if model state is invalid
             if (!ModelState.IsValid)
@@ -162,110 +160,6 @@ namespace Voat.Controllers
                 PreventSpamAttribute.Reset();
                 return View("Submit", model);
             }
-        }
-
-        // GET: /
-        public ActionResult Index(int? page)
-        {
-            ViewBag.SelectedSubverse = "frontpage";
-
-            const int pageSize = 25;
-            int pageNumber = (page ?? 0);
-
-            if (pageNumber < 0)
-            {
-                return NotFoundErrorView();
-            }
-
-            // show only submissions from subverses that user is subscribed to if user is logged in
-            // also do a check so that user actually has subscriptions
-            if (User.Identity.IsAuthenticated && UserData.HasSubscriptions() && Request.QueryString["frontpage"] != "guest")
-            {
-                //IAmAGate: Perf mods for caching
-                int pagesToTake = 2;
-                int subset = pageNumber / pagesToTake;
-                string cacheKey = String.Format("legacy:front.{0}.block.{1}.sort.rank", User.Identity.Name, subset);
-                object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
-
-                if (cacheData == null)
-                {
-                    int recordsToTake = pageSize * pagesToTake; //4 pages worth
-
-                    var getDataFunc = new Func<object>(() =>
-                    {
-                        using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
-                        {
-                            db.EnableCacheableOutput();
-
-                            var blockedSubverses = db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
-
-                            // TODO: check if user wants to exclude downvoted submissions from frontpage
-                            var downvotedSubmissionIds = db.SubmissionVoteTrackers.AsNoTracking().Where(vt => vt.UserName.Equals(User.Identity.Name) && vt.VoteStatus == -1).Select(s => s.SubmissionID);
-
-                            IQueryable<Submission> submissions = (from m in db.Submissions.Include("Subverse").AsNoTracking()
-                                                                  join s in db.SubverseSubscriptions on m.Subverse equals s.Subverse
-                                                                  where !m.IsArchived && !m.IsDeleted && s.UserName == User.Identity.Name
-                                                                  where !(from bu in db.BannedUsers select bu.UserName).Contains(m.UserName)
-                                                                  select m).OrderByDescending(s => s.Rank);
-
-                            var submissionsWithoutStickies = submissions.Where(s => s.StickiedSubmission.SubmissionID != s.ID);
-
-                            // exclude downvoted submissions
-                            var submissionsWithoutDownvotedSubmissions = submissionsWithoutStickies.Where(x => !downvotedSubmissionIds.Contains(x.ID));
-
-                            return submissionsWithoutDownvotedSubmissions.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * recordsToTake).Take(recordsToTake).ToList();
-                        }
-                    });
-
-                    //now with new and improved locking
-                    cacheData = CacheHandler.Instance.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(5));
-                }
-                var set = ((IList<Submission>)cacheData).Skip((pageNumber - (subset * pagesToTake)) * pageSize).Take(pageSize).ToList();
-                PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>(set, pageNumber, pageSize, 50000);
-
-                return View(paginatedSubmissions);
-            }
-            else
-            {
-                IList<Submission> cacheData = GetGuestFrontPage(pageSize, pageNumber);
-
-                PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>((IList<Submission>)cacheData, pageNumber, pageSize, 50000);
-
-                return View(paginatedSubmissions);
-            }
-        }
-
-        public static IList<Submission> GetGuestFrontPage(int pageSize, int pageNumber)
-        {
-            //IAmAGate: Perf mods for caching
-            string cacheKey = String.Format("legacy:front.guest.page.{0}.sort.rank", pageNumber);
-            IList<Submission> cacheData = CacheHandler.Instance.Retrieve<IList<Submission>>(cacheKey);
-            if (cacheData == null)
-            {
-                var getDataFunc = new Func<IList<Submission>>(() =>
-                {
-                    using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
-                    {
-                        db.EnableCacheableOutput();
-
-                        // get only submissions from default subverses not older than 24 hours, order by relative rank
-                        var startDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
-
-                        IQueryable<Submission> submissions = (from message in db.Submissions.AsNoTracking()
-                                                              where !message.IsArchived && !message.IsDeleted && (message.UpCount - message.DownCount >= 20) && message.CreationDate >= startDate && message.CreationDate <= Repository.CurrentDate
-                                                              where !(from bu in db.BannedUsers select bu.UserName).Contains(message.UserName)
-                                                              join defaultsubverse in db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
-                                                              select message).OrderByDescending(s => s.RelativeRank);
-
-                        return submissions.Where(s => s.StickiedSubmission.SubmissionID != s.ID).Skip(pageNumber * pageSize).Take(pageSize).ToList();
-                    }
-                });
-
-                //Now with it's own locking!
-                cacheData = CacheHandler.Instance.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), (pageNumber < 3 ? 0 : 3));
-            }
-
-            return cacheData;
         }
 
         // GET: /v2
@@ -335,120 +229,6 @@ namespace Voat.Controllers
             defaultFrontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
 
             return View("~/Views/Home/IndexV2.cshtml", defaultFrontPageResultModel);
-        }
-
-        // GET: /new
-        public ActionResult @New(int? page, string sortingmode)
-        {
-            // sortingmode: new, contraversial, hot, etc
-            ViewBag.SortingMode = sortingmode;
-
-            if (!sortingmode.Equals("new"))
-                return RedirectToAction("Index", "Home");
-
-            const int pageSize = 25;
-            int pageNumber = (page ?? 0);
-
-            if (pageNumber < 0)
-            {
-                return NotFoundErrorView();
-            }
-
-            // setup a cookie to find first time visitors and display welcome banner
-            const string cookieName = "NotFirstTime";
-            if (ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
-            {
-                // not a first time visitor
-                ViewBag.FirstTimeVisitor = false;
-            }
-            else
-            {
-                // add a cookie for first time visitors
-                HttpCookie hc = new HttpCookie("NotFirstTime", "1");
-                hc.Expires = Repository.CurrentDate.AddYears(1);
-                System.Web.HttpContext.Current.Response.Cookies.Add(hc);
-
-                ViewBag.FirstTimeVisitor = true;
-            }
-            var userData = Voat.Domain.UserData.GetContextUserData();
-            // show only submissions from subverses that user is subscribed to if user is logged in
-            // also do a check so that user actually has subscriptions
-            if (User.Identity.IsAuthenticated && userData.HasSubscriptions())
-            {
-                //IAmAGate: Perf mods for caching
-                int pagesToTake = 2;
-                int subset = pageNumber / pagesToTake;
-                string cacheKey = String.Format("legacy:front.{0}.block.{1}.sort.new", User.Identity.Name, subset);
-                object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
-
-                if (cacheData == null)
-                {
-                    int recordsToTake = 25 * pagesToTake; //pages worth
-
-                    var getDataFunc = new Func<object>(() =>
-                    {
-                        using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_LIVE))
-                        {
-                            db.EnableCacheableOutput();
-
-                            var blockedSubverses = db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
-                            IQueryable<Submission> submissions = (from m in db.Submissions
-                                                                  join s in db.SubverseSubscriptions on m.Subverse equals s.Subverse
-                                                                  where !m.IsArchived && !m.IsDeleted && s.UserName == User.Identity.Name
-                                                                  where !(from bu in db.BannedUsers select bu.UserName).Contains(m.UserName)
-                                                                  select m).OrderByDescending(s => s.CreationDate);
-                            return submissions.Where(x => !blockedSubverses.Contains(x.Subverse)).Skip(subset * recordsToTake).Take(recordsToTake).ToList();
-                        }
-                    });
-
-                    //now with new and improved locking
-                    cacheData = CacheHandler.Instance.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(5), 1);
-                }
-                var set = ((IList<Submission>)cacheData).Skip((pageNumber - (subset * pagesToTake)) * pageSize).Take(pageSize).ToList();
-
-                PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>(set, pageNumber, pageSize, 50000);
-                return View("Index", paginatedSubmissions);
-            }
-            else
-            {
-                //IAmAGate: Perf mods for caching
-                string cacheKey = String.Format("legacy:front.guest.page.{0}.sort.new", pageNumber);
-                object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
-
-                if (cacheData == null)
-                {
-                    var getDataFunc = new Func<object>(() =>
-                    {
-                        using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
-                        {
-                            db.EnableCacheableOutput();
-
-                            // get only submissions from default subverses, order by rank
-                            IQueryable<Submission> submissions = (from message in db.Submissions
-                                                                  where !message.IsArchived && !message.IsDeleted
-                                                                  where !(from bu in db.BannedUsers select bu.UserName).Contains(message.UserName)
-                                                                  join defaultsubverse in db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
-                                                                  select message).OrderByDescending(s => s.CreationDate);
-                            return submissions.Where(s => s.StickiedSubmission.SubmissionID != s.ID).Skip(pageNumber * pageSize).Take(pageSize).ToList();
-                        }
-                    });
-
-                    //now with new and improved locking
-                    cacheData = CacheHandler.Instance.Register(cacheKey, getDataFunc, TimeSpan.FromMinutes(CONSTANTS.DEFAULT_GUEST_PAGE_CACHE_MINUTES), (pageNumber < 3 ? 0 : 3));
-                }
-                PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>((IList<Submission>)cacheData, pageNumber, pageSize, 50000);
-
-                //// get only submissions from default subverses, sort by date
-                //IQueryable<Message> submissions = (from submission in _db.Messages
-                //                              where submission.Name != "deleted"
-                //                              where !(from bu in _db.Bannedusers select bu.Username).Contains(submission.Name)
-                //                              join defaultsubverse in _db.Defaultsubverses on submission.Subverse equals defaultsubverse.name
-                //                              select submission).OrderByDescending(s => s.Date);
-
-                //PaginatedList<Message> paginatedSubmissions = new PaginatedList<Message>(submissions, page ?? 0, pageSize);
-
-                return View("Index", paginatedSubmissions);
-            }
         }
 
         // GET: /about

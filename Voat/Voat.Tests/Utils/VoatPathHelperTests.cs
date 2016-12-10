@@ -30,7 +30,7 @@ using Voat.Utilities;
 namespace Voat.Tests.Utils
 {
     [TestClass]
-    public class VoatPathHelperTests
+    public class VoatPathHelperTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Formatting"), TestCategory("Formatting.Paths")]

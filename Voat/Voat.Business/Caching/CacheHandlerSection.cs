@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
+using Voat.Configuration;
 
 namespace Voat.Caching
 {
@@ -35,11 +36,7 @@ namespace Voat.Caching
                 var type = System.Type.GetType(this.Type);
                 if (type != null)
                 {
-                    object[] args = null;
-                    if (!String.IsNullOrEmpty(Arguments))
-                    {
-                        args = new object[] { Arguments };
-                    }
+                    object[] args = ArgumentParser.Parse(Arguments);
                     return (ICacheHandler)Activator.CreateInstance(type, args);
                 }
                 throw new InvalidOperationException(String.Format("Can not construct CacheHandler: {0}", this.Type));

@@ -5,10 +5,13 @@
   when the LastWrite date changes (file is saved).
  -->
 <configuration>
+  
   <appSettings>
-    <add key="runtimeState" value="True" />
+    <add key="runtimeState" value="false" /> 
+    <!--
     <add key="registrationDisabled" value="true" />
     <add key="signalrDisabled" value="false" />
     <add key="adsEnabled" value="true" />
+    -->
   </appSettings>
 </configuration>

@@ -2,16 +2,20 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Configuration;
+using Voat.Logging;
+using Voat.Utilities.Components;
 
 namespace Voat.Domain.Query
 {
     public abstract class CachedQuery<T> : Query<T>, ICacheable
     {
         private bool _cacheHit = false;
+        protected CachePolicy _cachePolicy = CachePolicy.None;
 
         public CachedQuery(CachePolicy policy)
         {
-            CachingPolicy = (policy != null ? policy : CachePolicy.None); //Ensure we have a cache policy
+            CachingPolicy = policy;
         }
 
         /// <summary>
@@ -35,15 +39,17 @@ namespace Voat.Domain.Query
         /// </summary>
         public abstract string CacheKey { get; }
 
-        public CachePolicy CachingPolicy
+        public virtual CachePolicy CachingPolicy
         {
-            get;
-            private set; //force policy via constructor
+            get
+            {
+                return _cachePolicy;
+            }
+            protected set
+            {
+                _cachePolicy = (value != null ? value : CachePolicy.None);
+            } 
         }
-
-        //{
-        //    get { throw new InvalidOperationException("Derived classes must override either CacheKey or FullCacheKey properties"); }
-        //}
 
         protected virtual string CacheContainer
         {
@@ -67,23 +73,56 @@ namespace Voat.Domain.Query
         }
         public override async Task<T> ExecuteAsync()
         {
-            if (CachingPolicy != null && CachingPolicy.IsValid)
-            {
-                //I think this will keep data in memory. Need to have method that just inserts data.
-                CacheHit = true;
-                Func<T> func = new Func<T>(() => {
-                    var task = Task.Run(GetFreshData);
-                    Task.WaitAny(task);
-                    return task.Result;
-                });
+            T result = default(T);
+            var policy = CachingPolicy;
 
-                return CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), func, CachingPolicy.Duration, CachingPolicy.RecacheLimit);
+            if (policy != null && policy.IsValid)
+            {
+                using (var durationLog = new DurationLogger(EventLogger.Instance, 
+                    new LogInformation() {
+                        Type = LogType.Debug,
+                        Origin = Settings.Origin.ToString(),
+                        Category = "Duration",
+                        UserName = UserName,
+                        Message = $"{this.GetType().Name} ({FullCacheKey})" },
+                    TimeSpan.FromSeconds(1)))
+                {
+
+                    if (!CacheHandler.Instance.Exists(FullCacheKey))
+                    {
+                        CacheHit = false;
+                        result = await GetData().ConfigureAwait(false);
+                        if (!result.IsDefault())
+                        {
+                            CacheHandler.Instance.Replace(FullCacheKey, result, policy.Duration);
+                        }
+                    }
+                    else
+                    {
+                        CacheHit = true;
+                        result = CacheHandler.Instance.Retrieve<T>(FullCacheKey);
+                    }
+
+                    ////Original Code - CacheHandler locks and is preferred 
+                    //CacheHit = true;
+
+                    ////BLOCK: This needs fixed
+                    //var func = new Func<T>(() => {
+                    //    //await GetFreshData();
+                    //    var task = Task.Run(GetFreshData);
+                    //    Task.WaitAny(task);
+                    //    return task.Result;
+                    //});
+
+                    //result = CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), func, CachingPolicy.Duration, CachingPolicy.RefetchLimit);
+                }
             }
             else
             {
                 CacheHit = true;
-                return await GetFreshData().ConfigureAwait(false);
+                result = await GetFreshData().ConfigureAwait(false);
             }
+            return result;
         }
         
         /// <summary>
@@ -92,8 +131,10 @@ namespace Voat.Domain.Query
         /// <returns></returns>
         protected abstract Task<T> GetData();
 
+        //BLOCK: This needs fixed
         private async Task<T> GetFreshData()
         {
+            //BLOCK: This needs fixed
             CacheHit = false;
             Debug.Print("{0}(loading)", this.GetType().Name);
             T data = await GetData().ConfigureAwait(false);

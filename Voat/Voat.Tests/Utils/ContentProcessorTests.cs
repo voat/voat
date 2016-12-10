@@ -31,7 +31,7 @@ using Voat.Utilities.Components;
 namespace Voat.Tests.Utils
 {
     [TestClass]
-    public class ContentProcessorTests
+    public class ContentProcessorTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Content Processor")]

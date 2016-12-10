@@ -30,7 +30,7 @@ using Voat.Utilities;
 namespace Voat.Tests.Utils
 {
     [TestClass]
-    public class AgeTests
+    public class AgeTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Age")]

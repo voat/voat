@@ -116,7 +116,6 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Votes" Type="int" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Content" Type="nvarchar(max)" Nullable="false" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
@@ -172,12 +171,13 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ParentID" Type="int" />
+          <Property Name="ActivityID" Type="varchar" MaxLength="50" />
           <Property Name="UserName" Type="nvarchar" MaxLength="100" />
+          <Property Name="Origin" Type="varchar" MaxLength="20" />
           <Property Name="Type" Type="varchar" MaxLength="300" Nullable="false" />
+          <Property Name="Category" Type="varchar" MaxLength="1000" Nullable="false" />
           <Property Name="Message" Type="varchar" MaxLength="1500" Nullable="false" />
-          <Property Name="Source" Type="varchar" MaxLength="1000" Nullable="false" />
-          <Property Name="IsBase" Type="bit" Nullable="false" />
-          <Property Name="CallStack" Type="varchar(max)" Nullable="false" />
+          <Property Name="Exception" Type="varchar(max)" />
           <Property Name="Data" Type="varchar(max)" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
         </EntityType>
@@ -248,7 +248,6 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="IsArchived" Type="bit" Nullable="false" />
-          <Property Name="Votes" Type="int" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Content" Type="nvarchar(max)" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
@@ -954,7 +953,6 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Votes" Type="Int32" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Content" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
@@ -1059,7 +1057,6 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="IsArchived" Type="Boolean" Nullable="false" />
-          <Property Name="Votes" Type="Int32" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Type" Type="Int32" Nullable="false" />
@@ -1740,7 +1737,6 @@
           <Property Type="String" Name="Path" Nullable="true" />
           <Property Type="String" Name="Subverse" Nullable="true" MaxLength="20" />
           <Property Type="Int32" Name="ID" Nullable="false" />
-          <Property Type="Int32" Name="Votes" Nullable="true" />
           <Property Type="String" Name="UserName" Nullable="false" MaxLength="50" />
           <Property Type="String" Name="Content" Nullable="false" />
           <Property Type="DateTime" Name="CreationDate" Nullable="false" Precision="23" />
@@ -1804,11 +1800,12 @@
           <Property Name="UserName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Type" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
           <Property Name="Message" Type="String" Nullable="false" MaxLength="1500" FixedLength="false" Unicode="false" />
-          <Property Name="Source" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="IsBase" Type="Boolean" Nullable="false" />
-          <Property Name="CallStack" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Data" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreationDate" Type="DateTime" Precision="3" Nullable="false" />
+          <Property Name="Origin" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="ActivityID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Category" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="Exception" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="ApiCorsPolicy">
           <Key>
@@ -1957,7 +1954,6 @@
             <EntityTypeMapping TypeName="Models.Comment">
               <MappingFragment StoreEntitySet="Comment">
                 <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Votes" ColumnName="Votes" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="Content" ColumnName="Content" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
@@ -2063,7 +2059,6 @@
                 <ScalarProperty Name="Content" ColumnName="Content" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="IsArchived" ColumnName="IsArchived" />
-                <ScalarProperty Name="Votes" ColumnName="Votes" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
@@ -2283,7 +2278,6 @@
                 <ScalarProperty Name="Path" ColumnName="Path" />
                 <ScalarProperty Name="Subverse" ColumnName="Subverse" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Votes" ColumnName="Votes" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="Content" ColumnName="Content" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
@@ -2343,11 +2337,12 @@
           <EntitySetMapping Name="EventLogs">
             <EntityTypeMapping TypeName="Models.EventLog">
               <MappingFragment StoreEntitySet="EventLog">
+                <ScalarProperty Name="Exception" ColumnName="Exception" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="ActivityID" ColumnName="ActivityID" />
+                <ScalarProperty Name="Origin" ColumnName="Origin" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
                 <ScalarProperty Name="Data" ColumnName="Data" />
-                <ScalarProperty Name="CallStack" ColumnName="CallStack" />
-                <ScalarProperty Name="IsBase" ColumnName="IsBase" />
-                <ScalarProperty Name="Source" ColumnName="Source" />
                 <ScalarProperty Name="Message" ColumnName="Message" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />

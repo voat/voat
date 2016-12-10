@@ -32,7 +32,6 @@ namespace Voat.UI.Utilities
                                         select new SetSubmission
                                         {
                                             ID = submission.ID,
-                                            Votes = submission.Votes,
                                             UserName = submission.UserName,
                                             CreationDate = submission.CreationDate,
                                             Type = submission.Type,
@@ -67,7 +66,6 @@ namespace Voat.UI.Utilities
                                         select new SetSubmission
                                         {
                                             ID = submission.ID,
-                                            Votes = submission.Votes,
                                             UserName = submission.UserName,
                                             CreationDate = submission.CreationDate,
                                             Type = submission.Type,

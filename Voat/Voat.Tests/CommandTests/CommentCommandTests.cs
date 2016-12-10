@@ -168,6 +168,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
+        [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void CreateComment_BannedDomain()
         {
             TestHelper.SetPrincipal("TestUser2");
@@ -184,6 +185,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
+        [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void EditComment_BannedDomain()
         {
             TestHelper.SetPrincipal("TestUser2");
@@ -208,6 +210,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
+        [TestCategory("Ban"), TestCategory("Ban.User")]
         public void CreateComment_WithBannedSubUser()
         {
             TestHelper.SetPrincipal("BannedFromVUnit");
@@ -223,6 +226,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
+        [TestCategory("Ban"), TestCategory("Ban.User")]
         public void CreateComment_WithGloballyBannedUser()
         {
             TestHelper.SetPrincipal("BannedGlobally");

@@ -19,7 +19,7 @@ namespace Voat
         {
             if (!String.IsNullOrEmpty(text))
             {
-                return text.Trim();
+                return Utilities.Formatting.StripWhiteSpace(text);
             }
             return text;
         }

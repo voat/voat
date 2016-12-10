@@ -55,7 +55,7 @@
             </div>
 
             <div class="form-group">
-                @Html.Label("Title", htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.Label("Description", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-9">
                     @Html.TextBoxFor(m => m.Description, new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.Description)
@@ -80,21 +80,6 @@
                     @Html.ValidationMessageFor(model => model.Sidebar)
                 </div>
             </div>
-
-            <div class="panel panel-default">
-                <div class="panel-heading">Are you a human?</div>
-                <div class="panel-body">
-                    <p>Please solve the reCAPTCHA challenge below:</p>
-                </div>
-            </div>
-            
-            @if (!Settings.CaptchaDisabled)
-            {
-                <div class="panel panel-default panel-transparent">
-                    @{Html.RenderPartial("_Captcha");}
-                </div>
-            }
-
 
             <div class="form-group">
                     <input type="submit" value="Create" class="btn-whoaverse" />
