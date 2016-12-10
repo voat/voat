@@ -56,5 +56,45 @@ namespace Voat.Caching
         public int RefetchLimit { get; protected set; }
 
         public static CachePolicy None { get { return new CachePolicy(TimeSpan.Zero); } }
+
+        public override bool Equals(object obj)
+        {
+            bool result = false;
+            if (obj != null)
+            {
+                var comparePolicy = obj as CachePolicy;
+                if (comparePolicy != null)
+                {
+                    result = comparePolicy.Duration == this.Duration && comparePolicy.RefetchLimit == this.RefetchLimit;
+                }
+            }
+            return result;
+        }
+
+        public static bool operator ==(CachePolicy x, CachePolicy y)
+        {
+            var result = Object.ReferenceEquals(x, y);
+
+            if (!result)
+            {
+                if (!Object.ReferenceEquals(x, null))
+                {
+                    result = x.Equals(y);
+                }
+                else if (!Object.ReferenceEquals(y, null))
+                {
+                    result = y.Equals(x);
+                }
+            }
+
+            return result;
+        }
+
+
+        public static bool operator !=(CachePolicy x, CachePolicy y)
+        {
+            return !(x == y);
+        }
+
     }
 }

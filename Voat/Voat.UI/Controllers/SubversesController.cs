@@ -1216,11 +1216,11 @@ namespace Voat.Controllers
                 ViewBag.FirstTimeVisitor = true;
             }
         }
+
+       
         // GET: show a subverse index
         public async Task<ActionResult> SubverseIndex(int? page, string subverse, string sort = "hot", string time = "day", bool? previewMode = null)
         {
-            ViewBag.previewMode = previewMode ?? false;
-
             const string cookieName = "NSFWEnabled";
             int pageNumber = (page ?? 0);
 
@@ -1228,6 +1228,15 @@ namespace Voat.Controllers
             {
                 return NotFoundErrorView();
             }
+            var viewProperties = new SubmissionListViewModel();
+            viewProperties.PreviewMode = previewMode ?? false;
+
+            ////Set View Info for menus
+            //ViewBag.SortingMode = sort;
+            //ViewBag.Time = time;
+            //ViewBag.SelectedSubverse = subverse;
+            //ViewBag.Title = subverse;
+
             //Set to DEFAULT if querystring is present
             if (Request.QueryString["frontpage"] == "guest")
             {
@@ -1251,6 +1260,7 @@ namespace Voat.Controllers
                     options.Sort = Domain.Models.SortAlgorithm.New;
                     break;
                 case "hot":
+                case "rank":
                     options.Sort = Domain.Models.SortAlgorithm.Rank;
                     break;
                 case "top":
@@ -1285,36 +1295,46 @@ namespace Voat.Controllers
                     throw new NotImplementedException("sort " + sort + " is unknown");
             }
 
+            //Null out defaults
+            viewProperties.Sort = options.Sort == Domain.Models.SortAlgorithm.Rank ? (Domain.Models.SortAlgorithm?)null : options.Sort;
+            viewProperties.Span = options.Span == Domain.Models.SortSpan.All ? (Domain.Models.SortSpan?)null : options.Span;
+           
             try
             {
+                PaginatedList<Submission> pageList = null;
+
                 if (AGGREGATE_SUBVERSE.IsAggregate(subverse))
                 {
                     if (subverse == AGGREGATE_SUBVERSE.FRONT)
                     {
                         //Check if user is logged in and has subscriptions, if not we convert to default query
-                        if (User.Identity.IsAuthenticated && !UserData.HasSubscriptions())
+                        if (!User.Identity.IsAuthenticated || (User.Identity.IsAuthenticated && !UserData.HasSubscriptions()))
                         {
                             subverse = AGGREGATE_SUBVERSE.DEFAULT;
                         }
-                        ViewBag.SelectedSubverse = "frontpage";
+                        viewProperties.Title = "frontpage";
+                        //ViewBag.SelectedSubverse = "frontpage";
                     }
                     else if (subverse == AGGREGATE_SUBVERSE.DEFAULT)
                     {
-                        ViewBag.SelectedSubverse = "frontpage";
+                        viewProperties.Title = "frontpage";
+                        //ViewBag.SelectedSubverse = "frontpage";
                     }
                     else
                     {
                         // selected subverse is ALL, show submissions from all subverses, sorted by rank
-                        ViewBag.SelectedSubverse = "all";
-                        ViewBag.Title = "all subverses";
+                        viewProperties.Title = "all subverses";
+                        viewProperties.Subverse = "all";
+                        subverse = AGGREGATE_SUBVERSE.ALL;
+                        //ViewBag.SelectedSubverse = "all";
+                        //ViewBag.Title = "all subverses";
                     }
 
-                    //This should filter out NSFW if User is not logged in or has adult content disabled
-                    var q = new QuerySubmissionsLegacy(subverse, options);
-                    var results = await q.ExecuteAsync().ConfigureAwait(false);
+                    ////This should filter out NSFW if User is not logged in or has adult content disabled
+                    //var q = new QuerySubmissionsLegacy(subverse, options);
+                    //var results = await q.ExecuteAsync().ConfigureAwait(false);
 
-                    PaginatedList<Submission> pageList = new PaginatedList<Submission>(results, options.Page, options.Count, -1);
-                    return View("AggregateIndex", pageList);
+                    //pageList = new PaginatedList<Submission>(results, options.Page, options.Count, -1);
 
                     //// check if user wants to see NSFW content by reading user preference
                     //if (User.Identity.IsAuthenticated)
@@ -1364,7 +1384,6 @@ namespace Voat.Controllers
                 else
                 {
                     // check if subverse exists, if not, send to a page not found error
-
                     //Can't use cached, view using to query db
                     var subverseObject = _db.Subverses.Find(subverse);
 
@@ -1377,6 +1396,7 @@ namespace Voat.Controllers
                     //HACK: Disable subverse
                     if (subverseObject.IsAdminDisabled.HasValue && subverseObject.IsAdminDisabled.Value)
                     {
+                        //viewProperties.Subverse = subverseObject.Name;
                         ViewBag.Subverse = subverseObject.Name;
                         return SubverseDisabledErrorView();
                     }
@@ -1423,11 +1443,12 @@ namespace Voat.Controllers
                         }
                     }
 
-                    ViewBag.SelectedSubverse = subverseObject.Name;
-                    ViewBag.Title = subverseObject.Description;
+                    viewProperties.Subverse = subverseObject.Name;
+                    viewProperties.Title = subverseObject.Description;
+                    //ViewBag.SelectedSubverse = subverseObject.Name;
+                    //ViewBag.Title = subverseObject.Description;
 
-                    var q = new QuerySubmissionsLegacy(subverse, options);
-                    var results = await q.ExecuteAsync().ConfigureAwait(false);
+
 
                     ////IAmAGate: Perf mods for caching
                     //string cacheKey = String.Format("legacy:subverse:{0}:page.{1}.sort.{2}", subversetoshow, pageNumber, "rank").ToLower();
@@ -1450,10 +1471,32 @@ namespace Voat.Controllers
 
                     //    cacheData = (Tuple<IList<Submission>, int>)CacheHandler.Instance.Register(cacheKey, getDataFunc, TimeSpan.FromSeconds(subverseCacheTimeInSeconds), (pageNumber < 3 ? 10 : 1));
                     //}
-
-                    PaginatedList<Submission> paginatedSubmissions = new PaginatedList<Submission>(results, options.Page, options.Count, -1);
-                    return View(paginatedSubmissions);
                 }
+
+
+                var q = new QuerySubmissionsLegacy(subverse, options);
+                var results = await q.ExecuteAsync().ConfigureAwait(false);
+
+                pageList = new PaginatedList<Submission>(results, options.Page, options.Count, -1);
+                viewProperties.Submissions = pageList;
+                viewProperties.Subverse = subverse;
+
+                //Backwards compat with Views
+                if (subverse == AGGREGATE_SUBVERSE.FRONT || subverse == AGGREGATE_SUBVERSE.DEFAULT)
+                {
+                    ViewBag.SelectedSubverse = "frontpage";
+                }
+                else if (subverse == AGGREGATE_SUBVERSE.ALL || subverse == AGGREGATE_SUBVERSE.ANY)
+                {
+                    ViewBag.SelectedSubverse = "all";
+                }
+                else 
+                {
+                    ViewBag.SelectedSubverse = subverse;
+                }
+                ViewBag.SortingMode = sort;
+                
+                return View(viewProperties);
             }
             catch (Exception ex)
             {

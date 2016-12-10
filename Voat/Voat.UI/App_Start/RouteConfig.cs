@@ -868,18 +868,23 @@ namespace Voat
                 );
             }
 
-            // /new
-            routes.MapRoute(
-                name: "New",
-                url: "{sortingmode}",
-                defaults: new { controller = "Subverses", action = "SubverseIndex", subverse = "_front" }
-            );
+            //// /new
+            //routes.MapRoute(
+            //    name: "FrontNew",
+            //    url: "{sort}",
+            //    defaults: new { controller = "Subverses", action = "SubverseIndex", subverse = "_front" }
+            //);
 
             // /
             routes.MapRoute(
-                name: "Index",
-                url: "",
-                defaults: new { controller = "Subverses", action = "SubverseIndex", subverse = "_front" }
+                name: "FrontIndex",
+                url: "{sort}",
+                defaults: new {
+                    controller = "Subverses",
+                    action = "SubverseIndex",
+                    subverse = "_front",
+                    sort = UrlParameter.Optional
+                }
             );
 
             #region Mod Logs
@@ -1022,16 +1027,20 @@ namespace Voat
             // v/subversetoshow
             routes.MapRoute(
                 name: "SubverseIndex",
-                url: "v/{subverse}",
-                defaults: new { controller = "Subverses", action = "SubverseIndex" }
+                url: "v/{subverse}/{sort}",
+                defaults: new {
+                    controller = "Subverses",
+                    action = "SubverseIndex",
+                    sort = UrlParameter.Optional
+                }
             );
 
-            // v/subversetoshow/sortingmode
-            routes.MapRoute(
-                name: "SortedSubverseFrontpage",
-                url: "v/{subverse}/{sort}",
-                defaults: new { controller = "Subverses", action = "SubverseIndex" }
-            );
+            //// v/subversetoshow/sortingmode
+            //routes.MapRoute(
+            //    name: "SortedSubverseFrontpage",
+            //    url: "v/{subverse}/{sort}",
+            //    defaults: new { controller = "Subverses", action = "SubverseIndex" }
+            //);
 
             // ajaxhelpers/commentreplyform
             routes.MapRoute(

@@ -10,35 +10,38 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Voat.Data.Models.Submission>
+@model Voat.Models.ViewModels.SubmissionListViewModel
 
 @{
-    string selectedSubverse = ViewBag.SelectedSubverse;
+    //string selectedSubverse = ViewBag.SelectedSubverse;
+    //string sortingMode = ViewBag.SortingMode;
+    string urlaction = Model.Subverse == AGGREGATE_SUBVERSE.DEFAULT || Model.Subverse == AGGREGATE_SUBVERSE.FRONT ? "FrontIndex" : "SubverseIndex";
+    //bool isActualSubverse = !(selectedSubverse.IsEqual("user") || selectedSubverse.IsEqual("all") || AGGREGATE_SUBVERSE.IsAggregate(selectedSubverse));
 
-    string sortingMode = ViewBag.SortingMode;
-    string urlaction = "";
+    //switch (sortingMode)
+    //{
+    //    case "new":
+    //        urlaction = "SortedSubverseFrontpage";
+    //        break;
+    //    case "top":
+    //        urlaction = "SortedSubverseFrontpage";
+    //        break;
+    //    default:
+    //        urlaction = "SubverseIndex";
+    //        break;
+    //}
 
-    switch (sortingMode)
-    {
-        case "new":
-            urlaction = "SortedSubverseFrontpage";
-            break;
-        case "top":
-            urlaction = "SortedSubverseFrontpage";
-            break;
-        default:
-            urlaction = "SubverseIndex";
-            break;
-    }
-
-    if (ViewBag.previewMode != null && ViewBag.previewMode)
+    if (Model.PreviewMode)
     {
         Layout = null;
     }
 }
 
 @section PageHeader {
-    @Html.Partial("_SubverseStylesheetLink", selectedSubverse, new ViewDataDictionary())
+    @if (Model.IsActualSubverse)
+    {
+        @Html.Partial("_SubverseStylesheetLink", Model.Subverse, new ViewDataDictionary())
+    }
 }
 
 <style type="text/css">
@@ -48,9 +51,9 @@
 </style>
 
 <div id="container">
-    @if (!selectedSubverse.Equals("user") && !selectedSubverse.Equals("all"))
+    @if (Model.IsActualSubverse)
     {
-        @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = selectedSubverse })
+        @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = Model.Subverse })
     }
     else
     {
@@ -58,33 +61,43 @@
     }
 
     <div class="content" role="main">
-        @if (sortingMode == "top")
+        @if (Model.Sort == Voat.Domain.Models.SortAlgorithm.Top)
         {
             <div id="sortingThingy" class="sorting-thingy">
-                @Html.RouteLink("day", urlaction) | 
-                @Html.RouteLink("week", urlaction, new {time = "week"}) | 
-                @Html.RouteLink("month", urlaction, new {time = "month"}) |
-                @Html.RouteLink("year", urlaction, new {time = "year"}) |
-                @Html.RouteLink("all", urlaction, new {time = "all"})
+                @Html.RouteLink("day", urlaction, new { subverse = Model.Subverse, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "day" }) | 
+                @Html.RouteLink("week", urlaction, new {subverse = Model.Subverse, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "week" }) | 
+                @Html.RouteLink("month", urlaction, new { subverse = Model.Subverse, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "month"}) |
+                @Html.RouteLink("year", urlaction, new { subverse = Model.Subverse, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "year"}) |
+                @Html.RouteLink("all", urlaction, new { subverse = Model.Subverse, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "all"})
             </div>
         }
         <div class="sitetable linklisting">
-            @Html.Action("StickiedSubmission", "Subverses", new {subverseName = selectedSubverse})
+            @if (Model.IsActualSubverse)
+            {
+                @Html.Action("StickiedSubmission", "Subverses", new { subverseName = Model.Subverse })
+            }
+            else
+            {
+                @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
+                @Html.Action("FeaturedSub", "Home")
+                @Html.Action("StickiedSubmission", "Home")
+            }
+
 
             @{
-                int currentPageNumber = Model.PageIndex;
-                int counterCont = (currentPageNumber)*25;
+                int currentPageNumber = Model.Submissions.PageIndex;
+                int counterCont = (currentPageNumber) * 25;
 
                 int counter = counterCont + 1;
                 string submissionClass = "";
             }
 
-            @if (Model.Count < 1)
+            @if (Model.Submissions.Count <= 0)
             {
-                Html.RenderPartial("_DefaultMessage", new ViewDataDictionary() {{"selectedSubverse", selectedSubverse}});
+                Html.RenderPartial("_DefaultMessage", new ViewDataDictionary() {{"selectedSubverse", Model.Subverse}});
             }
 
-            @foreach (var submission in Model)
+            @foreach (var submission in Model.Submissions)
             {
                 //type 2 = link
                 //type 1 = message
@@ -98,7 +111,7 @@
                 }
 
                 var classEvenOrOdd = "";
-                if (counter%2 == 0)
+                if (counter % 2 == 0)
                 {
                     //is even
                     classEvenOrOdd = "even";
@@ -124,20 +137,36 @@
 
         <div class="pagination-container">
             <ul>
-                @if (Model.HasPreviousPage)
+                @if (Model.Submissions.HasPreviousPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("‹ prev", urlaction, new { page = (Model.PageIndex - 1), time = ViewBag.Time }, new {rel = "prev"})
+                        @Html.RouteLink("‹ prev", urlaction, new {
+                       page = (Model.Submissions.PageIndex - 1),
+                       sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()),
+                       time = (Model.Span == null ? "" : Model.Span.ToString().ToLower()),
+                       frontpage = Request.QueryString["frontpage"]
+                   }, new {rel = "prev"})
                     </li>
                 }
 
-                @if (Model.HasNextPage)
+                @if (Model.Submissions.HasNextPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("next ›", urlaction, new { page = (Model.PageIndex + 1), time = ViewBag.Time }, new { rel = "next" })
+                        @Html.RouteLink("next ›", urlaction, new {
+                       page = (Model.Submissions.PageIndex + 1),
+                       sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()),
+                       time = (Model.Span == null ? "" : Model.Span.ToString().ToLower()),
+                       frontpage = Request.QueryString["frontpage"]
+                   }, new { rel = "next" })
                     </li>
                 }
             </ul>
         </div>
+        @if (!Model.IsActualSubverse)
+        {
+            <div>
+                <a href="/random">try a random subverse</a> or <a href="/randomnsfw">a NSFW random subverse</a>
+            </div>
+        }
     </div>
 </div>

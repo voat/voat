@@ -11,10 +11,11 @@ namespace Voat.Domain.Query
     public abstract class CachedQuery<T> : Query<T>, ICacheable
     {
         private bool _cacheHit = false;
+        protected CachePolicy _cachePolicy = CachePolicy.None;
 
         public CachedQuery(CachePolicy policy)
         {
-            CachingPolicy = (policy != null ? policy : CachePolicy.None); //Ensure we have a cache policy
+            CachingPolicy = policy;
         }
 
         /// <summary>
@@ -40,8 +41,14 @@ namespace Voat.Domain.Query
 
         public virtual CachePolicy CachingPolicy
         {
-            get;
-            protected set; //force policy via constructor
+            get
+            {
+                return _cachePolicy;
+            }
+            protected set
+            {
+                _cachePolicy = (value != null ? value : CachePolicy.None);
+            } 
         }
 
         protected virtual string CacheContainer

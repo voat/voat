@@ -971,27 +971,29 @@ namespace Voat.Data
                 //query = query.Where(s => !_db.BannedUsers.Where(b => b.UserName.Equals(s.UserName, StringComparison.OrdinalIgnoreCase)).Any());
             }
 
-            #region Ordering
             //TODO: Re-implement this logic
             //HACK: Warning, Super hacktastic
-            //if (!String.IsNullOrEmpty(options.Phrase))
-            //{
-            //    //WARNING: This is a quickie that views spaces as AND conditions in a search.
-            //    List<string> keywords = null;
-            //    if (options.Phrase.Contains(" "))
-            //    {
-            //        keywords = new List<string>(options.Phrase.Split(' '));
-            //    }
-            //    else
-            //    {
-            //        keywords = new List<string>(new string[] { options.Phrase });
-            //    }
+            if (!String.IsNullOrEmpty(options.Phrase))
+            {
+                query.Append(x => x.Where, "(s.Title LIKE CONCAT('%', @Phrase, '%') OR s.Content LIKE CONCAT('%', @Phrase, '%') OR s.Url LIKE CONCAT('%', @Phrase, '%'))");
+                ////WARNING: This is a quickie that views spaces as AND conditions in a search.
+                //List<string> keywords = null;
+                //if (options.Phrase.Contains(" "))
+                //{
+                //    keywords = new List<string>(options.Phrase.Split(' '));
+                //}
+                //else
+                //{
+                //    keywords = new List<string>(new string[] { options.Phrase });
+                //}
 
-            //    keywords.ForEach(x =>
-            //    {
-            //        query = query.Where(m => m.Title.Contains(x) || m.Content.Contains(x) || m.Url.Contains(x));
-            //    });
-            //}
+                //keywords.ForEach(x =>
+                //{
+                //    query = query.Where(m => m.Title.Contains(x) || m.Content.Contains(x) || m.Url.Contains(x));
+                //});
+            }
+            #region Ordering
+
 
             if (options.StartDate.HasValue)
             {
@@ -1136,7 +1138,7 @@ namespace Voat.Data
             //Filter out all disabled subs
             query.Append(x => x.Where, "sub.IsAdminDisabled = 0");
             
-            query.Parameters = new { StartDate = startDate, EndDate = endDate, Subverse = subverse, UserName = userName};
+            query.Parameters = new { StartDate = startDate, EndDate = endDate, Subverse = subverse, UserName = userName, Phrase = options.Phrase};
 
             //execute query
             var data = await _db.Database.Connection.QueryAsync<Models.Submission>(query.ToString(), query.Parameters);

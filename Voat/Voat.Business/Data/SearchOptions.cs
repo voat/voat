@@ -439,17 +439,20 @@ namespace Voat.Data
                 return x;
             }
         }
-
         public override string ToString()
+        {
+            return ToString(false);
+        }
+        public string ToString(bool useCacheFriendlyDateDelim = false)
         {
             Dictionary<string, string> keyValues = new Dictionary<string, string>();
             if (StartDate.HasValue)
             {
-                keyValues.Add("startDate", StartDate.Value.ToString("o"));
+                keyValues.Add("startDate", (useCacheFriendlyDateDelim ? StartDate.Value.ToString("s").Replace(':', '.') : StartDate.Value.ToString("o")));
             }
             if (EndDate.HasValue)
             {
-                keyValues.Add("endDate", EndDate.Value.ToString("o"));
+                keyValues.Add("endDate", (useCacheFriendlyDateDelim ? EndDate.Value.ToString("s").Replace(':','.') : EndDate.Value.ToString("o")));
             }
             if (SortDirection != SortDirection.Default)
             {

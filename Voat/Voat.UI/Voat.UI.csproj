@@ -324,6 +324,7 @@
     <Compile Include="Models\ViewModels\SetFrontpageViewModel.cs" />
     <Compile Include="Models\SetSubmission.cs" />
     <Compile Include="Models\ViewModels\CreateSubmissionViewModel.cs" />
+    <Compile Include="Models\ViewModels\SubmissionListViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseBanViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseStylesheetViewModel.cs" />
     <Compile Include="Utils\Extensions.cs" />
@@ -355,7 +356,6 @@
     <Compile Include="Models\ViewModels\CommentViewModel.cs" />
     <Compile Include="Models\EditSubmission.cs" />
     <Compile Include="Models\ViewModels\MessageViewModel.cs" />
-    <Compile Include="Models\ViewModels\SearchInSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\SearchSubverseViewModel.cs" />
     <Compile Include="Models\ViewModels\CommentSingleViewModel.cs" />
     <Compile Include="Models\ViewModels\SubverseLinkFlairViewModel.cs" />
@@ -486,6 +486,7 @@
     <Content Include="gizmo\src\js\jquery.swipebox.min.js.map" />
     <None Include="bundleconfig.json" />
     <None Include="Properties\PublishProfiles\local fs.pubxml" />
+    <None Include="Properties\PublishProfiles\File System.pubxml" />
     <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\voatweb03.pubxml" />
     <None Include="Properties\PublishProfiles\voatWeb04.pubxml" />
@@ -609,8 +610,6 @@
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmissionSelf.cshtml" />
     <Content Include="Views\Shared\Submissions\_SubmissionSelf.cshtml" />
     <Content Include="Views\Shared\Submissions\_SubmissionLink.cshtml" />
-    <Content Include="Views\Shared\_SearchMinimal.cshtml" />
-    <Content Include="Views\Shared\_SearchInSubverse.cshtml" />
     <Content Include="Views\Search\Index.cshtml" />
     <Content Include="Views\Help\Faq.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
@@ -736,6 +735,7 @@
     </Content>
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_Buttons.cshtml" />
     <Content Include="Views\Subverses\AggregateIndex.cshtml" />
+    <Content Include="Views\Shared\_SearchBox.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

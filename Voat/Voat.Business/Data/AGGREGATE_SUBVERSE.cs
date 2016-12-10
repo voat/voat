@@ -11,15 +11,18 @@
         {
             bool result = false;
 
-            switch (subverse.ToLower())
+            if (!string.IsNullOrEmpty(subverse))
             {
-                case AGGREGATE_SUBVERSE.ALL:
-                case AGGREGATE_SUBVERSE.FRONT:
-                case AGGREGATE_SUBVERSE.DEFAULT:
-                case AGGREGATE_SUBVERSE.ANY:
-                case "all":
-                    result = true;
-                    break;
+                switch (subverse.ToLower())
+                {
+                    case AGGREGATE_SUBVERSE.ALL:
+                    case AGGREGATE_SUBVERSE.FRONT:
+                    case AGGREGATE_SUBVERSE.DEFAULT:
+                    case AGGREGATE_SUBVERSE.ANY:
+                    case "all":
+                        result = true;
+                        break;
+                }
             }
 
             return result;
