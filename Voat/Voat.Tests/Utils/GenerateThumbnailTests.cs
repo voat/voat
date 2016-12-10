@@ -7,7 +7,7 @@ using System.IO;
 namespace Voat.Tests.Utils
 {
     [TestClass]
-    public class GenerateThumbnailTests
+    public class GenerateThumbnailTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Thumbnail")]

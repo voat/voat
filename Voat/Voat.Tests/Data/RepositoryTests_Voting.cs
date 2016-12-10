@@ -30,7 +30,7 @@ using Voat.Utilities;
 namespace Voat.Tests.Repository
 {
     [TestClass]
-    public class RepositoryTests_Voting 
+    public class RepositoryTests_Voting : BaseUnitTest
     {
         public ContentContext context = null;
 

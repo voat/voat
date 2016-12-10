@@ -33,7 +33,7 @@ using Voat.Domain.Models;
 namespace Voat.Tests.Repository
 {
     [TestClass]
-    public class RepositoryTests 
+    public class RepositoryTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Block"), TestCategory("Repository.Block.Subverse")]

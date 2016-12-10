@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Voat.Tests.Utils
 {
     [TestClass]
-    public class ExtensionTests
+    public class ExtensionTests : BaseUnitTest
     {
 
         [TestMethod]

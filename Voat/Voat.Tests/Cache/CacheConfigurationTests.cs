@@ -3,7 +3,7 @@
 namespace Voat.Tests.Cache
 {
     [TestClass]
-    public class CacheConfigurationTests
+    public class CacheConfigurationTests : BaseUnitTest
     {
         [TestMethod]
         public void Can_Read_Config()

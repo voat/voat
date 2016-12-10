@@ -10,7 +10,7 @@ using Voat.Domain.Command;
 namespace Voat.Tests.CommandTests
 {
     [TestClass]
-    public class ModeratorCommandTests
+    public class ModeratorCommandTests : BaseUnitTest
     {
 
         public Dictionary<string, SubverseModerator> InitializeSubverseModerators(string subName)

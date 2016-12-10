@@ -34,7 +34,7 @@ using Voat.Configuration;
 namespace Voat.Tests.Cache
 {
     [TestClass]
-    public class MiscTests
+    public class MiscTests : BaseUnitTest
     {
         public object ConnectionMultiplexer { get; private set; }
 

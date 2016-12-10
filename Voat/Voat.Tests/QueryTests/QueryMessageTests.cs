@@ -11,7 +11,7 @@ using Voat.Domain.Query;
 namespace Voat.Tests.QueryTests
 {
     [TestClass]
-    public class QueryMessageTests
+    public class QueryMessageTests : BaseUnitTest
     {
         private string userName = "User50CCP";
         private string subName = "unit";

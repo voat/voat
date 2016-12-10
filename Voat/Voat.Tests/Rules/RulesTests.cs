@@ -29,7 +29,7 @@ using Voat.Utilities;
 namespace Voat.Tests.Rules
 {
     [TestClass]
-    public class RulesTests 
+    public class RulesTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Rules")]

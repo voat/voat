@@ -9,7 +9,7 @@ using Voat.Common;
 namespace Voat.Tests.Utils
 {
     [TestClass]
-    public class LockStoreTests
+    public class LockStoreTests : BaseUnitTest
     {
 
         [TestMethod]

@@ -10,7 +10,7 @@ using Voat.Utilities;
 namespace Voat.Tests.Utils
 {
     [TestClass]
-    public class EventNotificationTests
+    public class EventNotificationTests : BaseUnitTest
     {
         [TestMethod]
         public void TestNotificationEvents()

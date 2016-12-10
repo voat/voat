@@ -10,8 +10,8 @@ using Voat.Domain.Command;
 namespace Voat.Tests.CommandTests
 {
     [TestClass]
-    public class SendMessageCommandTests
-    {
+    public class SendMessageCommandTests : BaseUnitTest
+    { 
 
 
         [TestMethod]

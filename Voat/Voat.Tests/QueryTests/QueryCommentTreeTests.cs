@@ -12,7 +12,7 @@ using Voat.Tests.Repository;
 namespace Voat.Tests.QueryTests
 {
     [TestClass]
-    public class QueryCommentTreeTests
+    public class QueryCommentTreeTests : BaseUnitTest
     {
         private static int _unitSubmissionID;
         private static int _rootCount = 1;

@@ -14,7 +14,7 @@ namespace Voat.Tests.Logging
     //<logger enabled="true" name="Log4Net" type="Voat.Logging.Log4NetLogger, Voat.Logging" />
 
     [TestClass]
-    public class LoggingTests
+    public class LoggingTests : BaseUnitTest
     {
         private ILogger log = null;
 

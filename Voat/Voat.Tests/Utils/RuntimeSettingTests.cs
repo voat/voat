@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Voat.Tests.Utils
 {
     [TestClass]
-    public class RuntimeSettingTests
+    public class RuntimeSettingTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Configuration"), TestCategory("RuntimeState")]

@@ -31,7 +31,7 @@ using Voat.Tests.Repository;
 namespace Voat.Tests.CommandTests
 {
     [TestClass]
-    public class SubmissionCommandTests 
+    public class SubmissionCommandTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]

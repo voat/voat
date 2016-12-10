@@ -27,7 +27,7 @@ using Voat.Utilities;
 namespace Voat.Tests.Utils
 {
     [TestClass]
-    public class AccountSecurityTests
+    public class AccountSecurityTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Utility")]

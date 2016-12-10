@@ -30,7 +30,7 @@ using Voat.Utilities;
 namespace Voat.Tests.CommandTests
 {
     [TestClass]
-    public class VoteCommandTests 
+    public class VoteCommandTests : BaseUnitTest
     {
         #region Comment Vote Commands
 

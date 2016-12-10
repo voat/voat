@@ -13,7 +13,7 @@ namespace Voat.Tests.QueryTests
     /// Summary description for QueryCommentTests
     /// </summary>
     [TestClass]
-    public class QueryCommentTests
+    public class QueryCommentTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Comment")]

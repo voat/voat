@@ -14,7 +14,7 @@ using Voat.Tests.Repository;
 namespace Voat.Tests.QueryTests
 {
     [TestClass]
-    public class QueryUserTests 
+    public class QueryUserTests : BaseUnitTest
     {
         
         [TestMethod, TestCategory("UserData"), ExpectedException(typeof(ArgumentException))]

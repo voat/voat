@@ -32,7 +32,7 @@ using Voat.Utilities;
 namespace Voat.Tests.Utils
 {
     [TestClass]
-    public class MiscUtilsTests
+    public class MiscUtilsTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Utility")]

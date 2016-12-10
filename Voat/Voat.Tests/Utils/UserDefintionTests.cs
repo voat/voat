@@ -9,7 +9,7 @@ using Voat.Domain.Models;
 namespace Voat.Tests.Utils
 {
     [TestClass]
-    public class UserDefintionTests
+    public class UserDefintionTests : BaseUnitTest
     {
 
         [TestMethod]

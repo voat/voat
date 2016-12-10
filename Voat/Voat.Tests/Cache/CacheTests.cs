@@ -34,7 +34,7 @@ using Voat.Domain.Models;
 
 namespace Voat.Tests.Cache
 {
-    public abstract class CacheTests
+    public abstract class CacheTests : BaseUnitTest
     {
         public ICacheHandler handler = null;
 
