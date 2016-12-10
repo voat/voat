@@ -13,23 +13,8 @@
 @model Voat.Models.ViewModels.SubmissionListViewModel
 
 @{
-    //string selectedSubverse = ViewBag.SelectedSubverse;
-    //string sortingMode = ViewBag.SortingMode;
+    ViewBag.Title = Model.Title;
     string urlaction = Model.Subverse == AGGREGATE_SUBVERSE.DEFAULT || Model.Subverse == AGGREGATE_SUBVERSE.FRONT ? "FrontIndex" : "SubverseIndex";
-    //bool isActualSubverse = !(selectedSubverse.IsEqual("user") || selectedSubverse.IsEqual("all") || AGGREGATE_SUBVERSE.IsAggregate(selectedSubverse));
-
-    //switch (sortingMode)
-    //{
-    //    case "new":
-    //        urlaction = "SortedSubverseFrontpage";
-    //        break;
-    //    case "top":
-    //        urlaction = "SortedSubverseFrontpage";
-    //        break;
-    //    default:
-    //        urlaction = "SubverseIndex";
-    //        break;
-    //}
 
     if (Model.PreviewMode)
     {
