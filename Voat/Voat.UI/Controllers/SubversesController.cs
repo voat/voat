@@ -1288,12 +1288,12 @@ namespace Voat.Controllers
                         {
                             subverse = AGGREGATE_SUBVERSE.DEFAULT;
                         }
-                        viewProperties.Title = "frontpage";
+                        //viewProperties.Title = "Front";
                         //ViewBag.SelectedSubverse = "frontpage";
                     }
                     else if (subverse == AGGREGATE_SUBVERSE.DEFAULT)
                     {
-                        viewProperties.Title = "frontpage";
+                        //viewProperties.Title = "Front";
                         //ViewBag.SelectedSubverse = "frontpage";
                     }
                     else

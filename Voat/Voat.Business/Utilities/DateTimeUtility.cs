@@ -122,7 +122,51 @@ namespace Voat.Utilities
             }
             return null;
         }
+        public static Tuple<DateTime, DateTime> RelativeRange(this DateTime dateTime, SortSpan sortSpan)
+        {
+            DateTime start = dateTime;
+            DateTime end = dateTime;
+            switch (sortSpan)
+            {
+                case SortSpan.Hour:
+                    end = start.ToEndOfHour();
+                    start = end.AddHours(-1);
+                    break;
 
+                case SortSpan.Day:
+                    end = start.ToEndOfHour();
+                    start = end.AddHours(-24);
+                    break;
+
+                case SortSpan.Week:
+                    end = start.ToEndOfDay();
+                    start = end.AddDays(-7);
+                    break;
+
+                case SortSpan.Month:
+                    end = start.ToEndOfDay();
+                    start = end.AddDays(-30);
+                    break;
+
+                case SortSpan.Quarter:
+                    end = start.ToEndOfDay();
+                    start = end.AddDays(-90);
+                    break;
+
+                case SortSpan.Year:
+                    end = start.ToEndOfDay();
+                    start = end.AddDays(-365);
+                    break;
+
+                default:
+                case SortSpan.All:
+
+                    //Date Range shouldn't be processed for this span
+                    break;
+            }
+
+            return new Tuple<DateTime, DateTime>(start, end);
+        }
         //The purpose of this function is to standardize inputs so that we can cache ranged queries. Currently ranges
         //use the current date which contains diffrent minute, second, and ms with each call. This function converts to common
         //start and end ranges (beginning and ending of days, hours, etc.)

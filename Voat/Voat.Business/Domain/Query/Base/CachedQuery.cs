@@ -87,34 +87,26 @@ namespace Voat.Domain.Query
                         Message = $"{this.GetType().Name} ({FullCacheKey})" },
                     TimeSpan.FromSeconds(1)))
                 {
+                    CacheHit = true; //If cache is loaded, GetFreshData method will change this to false
 
-                    if (!CacheHandler.Instance.Exists(FullCacheKey))
-                    {
-                        CacheHit = false;
-                        result = await GetData().ConfigureAwait(false);
-                        if (!result.IsDefault())
-                        {
-                            CacheHandler.Instance.Replace(FullCacheKey, result, policy.Duration);
-                        }
-                    }
-                    else
-                    {
-                        CacheHit = true;
-                        result = CacheHandler.Instance.Retrieve<T>(FullCacheKey);
-                    }
+                    //Bypass CacheHandler.Register (trouble shooting)
+                    //if (!CacheHandler.Instance.Exists(FullCacheKey))
+                    //{
+                    //    CacheHit = false;
+                    //    result = await GetData().ConfigureAwait(false);
+                    //    if (!result.IsDefault())
+                    //    {
+                    //        CacheHandler.Instance.Replace(FullCacheKey, result, policy.Duration);
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    CacheHit = true;
+                    //    result = CacheHandler.Instance.Retrieve<T>(FullCacheKey);
+                    //}
 
-                    ////Original Code - CacheHandler locks and is preferred 
-                    //CacheHit = true;
-
-                    ////BLOCK: This needs fixed
-                    //var func = new Func<T>(() => {
-                    //    //await GetFreshData();
-                    //    var task = Task.Run(GetFreshData);
-                    //    Task.WaitAny(task);
-                    //    return task.Result;
-                    //});
-
-                    //result = CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), func, CachingPolicy.Duration, CachingPolicy.RefetchLimit);
+                    //Async 
+                    result = await CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), new Func<Task<T>>(GetFreshData), CachingPolicy.Duration, CachingPolicy.RefetchLimit);
                 }
             }
             else

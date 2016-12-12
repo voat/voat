@@ -35,7 +35,15 @@ namespace Voat
             }
             return text;
         }
-
+        public static bool IsGenericType(this Type type, Type genericType)
+        {
+            var result = false;
+            if (type != null && genericType != null)
+            {
+                result = type.GetGenericTypeDefinition() == genericType.GetGenericTypeDefinition();
+            }
+            return result;
+        }
         public static bool HasInterface(this Type type, Type typeToFind)
         {
             var result = false;

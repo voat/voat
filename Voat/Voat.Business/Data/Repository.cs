@@ -3034,16 +3034,36 @@ namespace Voat.Data
             {
                 compareDate = CurrentDate.Subtract(span.Value);
             }
+            var q = new DapperQuery();
+            q.Select = "COUNT(*) FROM Submission WITH (NOLOCK)";
+            q.Where = "UserName = @UserName";
+            if (compareDate != null)
+            {
+                q.Append(x => x.Where, "CreationDate >= @StartDate");
+            }
+            if (type != null)
+            {
+                q.Append(x => x.Where, "Type = @Type");
+            }
+            if (!String.IsNullOrEmpty(subverse))
+            {
+                q.Append(x => x.Where, "Subverse = @Subverse");
+            }
 
-            var result = (from x in _db.Submissions
-                          where
-                            x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                            &&
-                            ((x.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) || subverse == null)
-                            && (compareDate.HasValue && x.CreationDate >= compareDate)
-                            && (type != null && x.Type == (int)type.Value) || type == null)
-                          select x).Count();
-            return result;
+            var count = _db.Database.Connection.ExecuteScalar<int>(q.ToString(), new { UserName = userName, StartDate = compareDate, Type = type, Subverse = subverse });
+
+            //Logic was buggy here
+            //var result = (from x in _db.Submissions
+            //              where
+            //                x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+            //                &&
+            //                ((x.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) || subverse == null)
+            //                && (compareDate.HasValue && x.CreationDate >= compareDate)
+            //                && (type != null && x.Type == (int)type.Value) || type == null)
+            //              select x).Count();
+            //return result;
+
+            return count;
         }
 
         public Score UserContributionPoints(string userName, ContentType type, string subverse = null)

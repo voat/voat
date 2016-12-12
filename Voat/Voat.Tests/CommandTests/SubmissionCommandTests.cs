@@ -391,5 +391,40 @@ namespace Voat.Tests.CommandTests
             Assert.IsFalse(r.Success, r.Message);
             Assert.AreEqual(r.Message, "Subverse is disabled");
         }
+
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
+        public void TestNegativeSCPSubmission()
+        {
+            var userName = "NegativeSCP";
+            //Create user
+            VoatDataInitializer.CreateUser(userName, DateTime.UtcNow.AddDays(-450));
+            //Add submission with negatives directly to db
+            using (var context = new voatEntities())
+            {
+                
+                var s = context.Submissions.Add(new Submission()
+                {
+                    CreationDate = DateTime.UtcNow.AddHours(-12),
+                    Subverse = "unit",
+                    Title = "Test Negative SCP",
+                    Url = "https://www.youtube.com/watch?v=pnbJEg9r1o8",
+                    Type = 2,
+                    UpCount = 2,
+                    DownCount = 13,
+                    UserName = userName
+                });
+                context.SaveChanges();
+            }
+
+
+
+            TestHelper.SetPrincipal(userName);
+            var userSubmission = new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Le Censorship!", Content = "Will this work?" };
+            var cmd = new CreateSubmissionCommand(userSubmission);
+            var r = cmd.Execute().Result;
+            Assert.IsNotNull(r, "Response was null");
+            Assert.IsTrue(r.Success, r.Message);
+        }
     }
 }

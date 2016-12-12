@@ -159,7 +159,7 @@ namespace Voat.Tests.QueryTests
             Assert.IsTrue(result.Any(), this.GetType().Name);
         }
 
-        [Ignore] //Since CachedQuery.ExecuteAsync is not using the cachehandler.Register method this test will fail on MemoryCache that requires managed removal
+        //[Ignore] //Since CachedQuery.ExecuteAsync is not using the cachehandler.Register method this test will fail on MemoryCache that requires managed removal
         [TestMethod]
         [TestCategory("Query")]
         [TestCategory("Submission")]

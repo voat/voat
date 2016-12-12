@@ -22,12 +22,12 @@ namespace Voat.Caching
         /// <returns></returns>
         bool Exists(string cacheKey);
 
-        /// <summary>
-        /// If cached item was registered using the Register function, will execute the Func and refresh data at specified key
-        /// </summary>
-        /// <param name="cacheKey">Unique Cache Key</param>
-        /// <returns></returns>
-        Task Refresh(string cacheKey);
+        ///// <summary>
+        ///// If cached item was registered using the Register function, will execute the Func and refresh data at specified key
+        ///// </summary>
+        ///// <param name="cacheKey">Unique Cache Key</param>
+        ///// <returns></returns>
+        //Task Refresh(string cacheKey);
 
         /// <summary>
         /// Registers a cache Func with caching runtime. Will return the cached data if it exists, if it doesn't will execute func and store in cache.
@@ -36,10 +36,21 @@ namespace Voat.Caching
         /// <param name="cacheKey">Unique Cache Key</param>
         /// <param name="getData">Function that returns data to be placed in cache</param>
         /// <param name="cacheTime">The timespan in which to update or remove item from cache</param>
-        /// <param name="recacheLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
+        /// <param name="refetchLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
         /// <returns></returns>
-        T Register<T>(string cacheKey, Func<T> getData, TimeSpan cacheTime, int recacheLimit = -1);
-        //Task<T> Register<T>(string cacheKey, Task<T> getData, TimeSpan cacheTime, int recacheLimit = -1);
+        T Register<T>(string cacheKey, Func<T> getData, TimeSpan cacheTime, int refetchLimit = -1);
+
+        /// <summary>
+        /// Registers a cache Func with caching runtime. Will return the cached data if it exists, if it doesn't will execute func and store in cache.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cacheKey">Unique Cache Key</param>
+        /// <param name="getData">Function that returns data to be placed in cache</param>
+        /// <param name="cacheTime">The timespan in which to update or remove item from cache</param>
+        /// <param name="refetchLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
+        /// <returns></returns>
+        Task<T> Register<T>(string cacheKey, Func<Task<T>> getData, TimeSpan cacheTime, int refetchLimit = -1);
+        
         /// <summary>
         /// Removes cached item at key
         /// </summary>

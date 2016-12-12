@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Caching;
+using System.Threading;
 using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Data;
@@ -26,25 +27,25 @@ namespace Voat.Caching
         public int MaxCount { get; set; }
 
     }
-    public class TaskRefetchEntry<T> : RefetchEntry
+    public class RefetchEntryTask<T> : RefetchEntry
     {
-        private Task<T> _task;
+        private Func<Task<T>> _task;
 
-        public TaskRefetchEntry(Task<T> task)
+        public RefetchEntryTask(Func<Task<T>> task)
         {
             this._task = task;
         }
 
-        public async Task<T> GetDataAsync()
+        public T GetData()
         {
-            return await _task;
+            return Task.Run(_task).Result;
         }
     }
-    public class FuncRefetchEntry<T> : RefetchEntry
+    public class RefetchEntryFunc<T> : RefetchEntry
     {
         private Func<T> _func;
 
-        public FuncRefetchEntry(Func<T> func)
+        public RefetchEntryFunc(Func<T> func)
         {
             _func = func;
         }
@@ -60,7 +61,8 @@ namespace Voat.Caching
         private bool _ignoreNulls = true;
         private static ICacheHandler _instance = null;
         private static object _lockInstance = new object();
-        private LockStore _lockStore = new LockStore(true);
+        //private LockStore _lockStore = new LockStore(true);
+        private SemaphoreSlimLockStore _semaphoreSlimLockStore = new SemaphoreSlimLockStore(true);
         private TimeSpan _refreshOffset = TimeSpan.FromSeconds(5);
         private bool _requiresExpirationRemoval = false;
         private bool _cacheEnabled = true;
@@ -68,8 +70,9 @@ namespace Voat.Caching
         private bool _refetchEnabled = true;
 
         //holds meta data about the cache item such as the Func, expiration, recacheLimit, and current recaches
-        private ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>> _meta = new ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>>();
-        
+        //private ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>> _meta = new ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>>();
+        private ConcurrentDictionary<string, RefetchEntry> _meta = new ConcurrentDictionary<string, RefetchEntry>();
+
         protected void Initialize()
         {
             //Test lock store for blocking
@@ -94,20 +97,42 @@ namespace Voat.Caching
         {
             cacheKey = StandardizeCacheKey(cacheKey);
 
-            lock (_lockStore.GetLockObject(cacheKey))
+            var sema = _semaphoreSlimLockStore.GetLockObject(cacheKey);
+            sema.Wait();
+            try
             {
                 SetItem(cacheKey, replaceAlg(Retrieve<T>(cacheKey)), cacheTime);
             }
+            finally
+            {
+                sema.Release();
+            }
+
+            //lock (_lockStore.GetLockObject(cacheKey))
+            //{
+            //    SetItem(cacheKey, replaceAlg(Retrieve<T>(cacheKey)), cacheTime);
+            //}
         }
 
         public void Replace<T>(string cacheKey, T replacementValue, TimeSpan? cacheTime = null)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
 
-            lock (_lockStore.GetLockObject(cacheKey))
+            var sema = _semaphoreSlimLockStore.GetLockObject(cacheKey);
+            sema.Wait();
+            try
             {
                 SetItem(cacheKey, replacementValue, cacheTime);
             }
+            finally
+            {
+                sema.Release();
+            }
+
+            //lock (_lockStore.GetLockObject(cacheKey))
+            //{
+            //    SetItem(cacheKey, replacementValue, cacheTime);
+            //}
         }
         public void ReplaceIfExists<T>(string cacheKey, Func<T, T> replaceAlg, TimeSpan? cacheTime = default(TimeSpan?))
         {
@@ -140,8 +165,9 @@ namespace Voat.Caching
         {
             cacheKey = StandardizeCacheKey(cacheKey);
 
-            object o = _lockStore.GetLockObject(cacheKey);
-            lock (o)
+            var sema = _semaphoreSlimLockStore.GetLockObject(cacheKey);
+            sema.Wait();
+            try
             {
                 if (isExpiration && RequiresExpirationRemoval)
                 {
@@ -153,142 +179,88 @@ namespace Voat.Caching
                 }
 
                 //Attempt removal of metaCache
-                Tuple<Func<object>, TimeSpan, int, int> y;
+                RefetchEntry y;
                 _meta.TryRemove(cacheKey, out y);
             }
+            finally
+            {
+                sema.Release();
+            }
+
+            //object o = _lockStore.GetLockObject(cacheKey);
+            //lock (o)
+            //{
+            //    if (isExpiration && RequiresExpirationRemoval)
+            //    {
+            //        DeleteItem(cacheKey);
+            //    }
+            //    else if (!isExpiration)
+            //    {
+            //        DeleteItem(cacheKey);
+            //    }
+
+            //    //Attempt removal of metaCache
+            //    RefetchEntry y;
+            //    _meta.TryRemove(cacheKey, out y);
+            //}
         }
         public void Remove(string cacheKey)
         {
             Remove(cacheKey, false);
         }
 
-        /// <summary>
-        /// Registers a function for cache. Locks by key and generates data for return from function
-        /// </summary>
-        /// <param name="cacheKey">Unique Cache Keys</param>
-        /// <param name="getData">Function that returns data to be placed in cache</param>
-        /// <param name="cacheTime">The timespan in which to update or remove item from cache</param>
-        /// <param name="refetchLimit">Value indicating refetch behavior. -1: Do not refetch, 0: Unlimited refetch (use with caution), x > 0: Number of times to refetch cached data</param>
-        /// <returns></returns>
-        public object Register(string cacheKey, Func<object> getData, TimeSpan cacheTime, int refetchLimit = -1)
-        {
-            cacheKey = StandardizeCacheKey(cacheKey);
-
-            //allow devs to turn off local cache for testing
-            if (!CacheEnabled)
-            {
-                return getData();
-            }
-
+        ///// <summary>
+        ///// Registers a function for cache. Locks by key and generates data for return from function
+        ///// </summary>
+        ///// <param name="cacheKey">Unique Cache Keys</param>
+        ///// <param name="getData">Function that returns data to be placed in cache</param>
+        ///// <param name="cacheTime">The timespan in which to update or remove item from cache</param>
+        ///// <param name="refetchLimit">Value indicating refetch behavior. -1: Do not refetch, 0: Unlimited refetch (use with caution), x > 0: Number of times to refetch cached data</param>
+        ///// <returns></returns>
+        //public object Register(string cacheKey, Func<object> getData, TimeSpan cacheTime, int refetchLimit = -1)
+        //{
             
-            if (!Exists(cacheKey))
-            {
-                ////BLOCK: Temp work around for blocking exploration
-                ////Not thread safe
-                //bool isRefetchRequest = (RefetchEnabled && cacheTime > TimeSpan.Zero && refetchLimit >= 0);
-                //if (!isRefetchRequest)
-                //{
-                //    var data = getData();
-                //    if (data != null || data == null && !_ignoreNulls)
-                //    {
-                //        SetItem(cacheKey, data, cacheTime);
-                //    }
-                //    return data;
-                //}
+        //}
 
-                //Log the duration this takes to pull fresh
-                using (var duration = new DurationLogger(EventLogger.Instance, new LogInformation()
-                {
-                    Type = LogType.Debug,
-                    Origin = Configuration.Settings.Origin.ToString(),
-                    Category = "Duration",
-                    Message = $"Cache Load ({cacheKey})"
-                },
-                TimeSpan.FromSeconds(1)))
-                {
-                    object o = _lockStore.GetLockObject(cacheKey);
-                    lock (o)
-                    {
-                        if (!Exists(cacheKey))
-                        {
-                            try
-                            {
-                                var data = getData();
-                                if (data != null || data == null && !_ignoreNulls)
-                                {
-                                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = $"Inserting Cache ({cacheKey})", Origin = Configuration.Settings.Origin.ToString() });
-                                    Debug.Print("Inserting Cache: " + cacheKey);
-                                    SetItem(cacheKey, data, cacheTime);
+        //public Task Refresh(string cacheKey)
+        //{
+        //    cacheKey = StandardizeCacheKey(cacheKey);
 
-                                    //Refetch Logic
-                                    if (RefetchEnabled && refetchLimit >= 0)
-                                    {
-                                        _meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, refetchLimit, 0);
-                                        var cache = System.Runtime.Caching.MemoryCache.Default;
-                                        var policy = new CacheItemPolicy()
-                                        {
-                                            AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)),
-                                            UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
-                                        };
-                                        cache.Set(cacheKey, new object(), policy);
-                                    }
-                                    else if (RequiresExpirationRemoval)
-                                    {
-                                        var cache = System.Runtime.Caching.MemoryCache.Default;
-                                        cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
-                                    }
-                                }
-                                return data;
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.Print(ex.ToString());
-                                //Cache now supports Tasks which throw aggregates, if agg has only 1 inner, throw it instead
-                                var aggEx = ex as AggregateException;
-                                if (aggEx != null && aggEx.InnerExceptions.Count == 1)
-                                {
-                                    throw aggEx.InnerException;
-                                }
-                                else
-                                {
-                                    throw ex;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            var cacheItem = GetItem(cacheKey);
-            return cacheItem;
-        }
-
-        public Task Refresh(string cacheKey)
+        //    var task = new Task(() =>
+        //    {
+        //        if (Exists(cacheKey))
+        //        {
+        //            object o = _lockStore.GetLockObject(cacheKey);
+        //            lock (o)
+        //            {
+        //                var meta = _meta[cacheKey];
+        //                throw new NotImplementedException("This needs implementing");
+        //                //var data = meta.Item1(); //get new data
+        //                //SetItem(cacheKey, data, meta.Item2);
+        //            }
+        //        }
+        //    });
+        //    task.Start();
+        //    return task;
+        //}
+        private object RefetchData(RefetchEntry entry)
         {
-            cacheKey = StandardizeCacheKey(cacheKey);
-
-            var task = new Task(() =>
+            if (Extensions.IsGenericType(entry.GetType(), typeof(RefetchEntryTask<>)))
             {
-                if (Exists(cacheKey))
-                {
-                    object o = _lockStore.GetLockObject(cacheKey);
-                    lock (o)
-                    {
-                        var meta = _meta[cacheKey];
-                        var data = meta.Item1(); //get new data
-                        SetItem(cacheKey, data, meta.Item2);
-                    }
-                }
-            });
-            task.Start();
-            return task;
+                return ((dynamic)entry).GetData();
+            }
+            else if (Extensions.IsGenericType(entry.GetType(), typeof(RefetchEntryFunc<>)))
+            {
+                return ((dynamic)entry).GetData();
+            }
+            return null;
         }
-
         private void RefetchItem(CacheEntryUpdateArguments args)
         {
             var cacheKey = args.Key;
             var meta = _meta[cacheKey];
-            int refreshLimit = meta.Item3;
-            int refreshCount = meta.Item4 + 1;
+            int refreshLimit = meta.MaxCount;
+            int refreshCount = meta.CurrentCount + 1;
 
             if (refreshLimit == 0 || refreshCount <= refreshLimit)
             {
@@ -296,20 +268,23 @@ namespace Voat.Caching
                 EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
                 Debug.Print(msg);
 
-                _meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(meta.Item1, meta.Item2, meta.Item3, refreshCount);
+                //_meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(meta.Item1, meta.Item2, meta.Item3, refreshCount);
+                _meta[cacheKey] = meta; 
+                //new Tuple<Func<object>, TimeSpan, int, int>(meta.Item1, meta.Item2, meta.Item3, refreshCount);
 
                 args.UpdatedCacheItem = new CacheItem(cacheKey, new object());
 
                 args.UpdatedCacheItemPolicy = new CacheItemPolicy()
                 {
-                    AbsoluteExpiration = Repository.CurrentDate.Add(meta.Item2),
+                    AbsoluteExpiration = Repository.CurrentDate.Add(meta.CacheTime),
                     UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
                 };
 
                 try
                 {
-                    var data = meta.Item1(); //get new data
-                    SetItem(cacheKey, data, meta.Item2);
+                    //throw new NotImplementedException("This needs implementing");
+                    var data = RefetchData(meta);
+                    SetItem(cacheKey, data, meta.CacheTime);
                 }
                 catch (Exception ex)
                 {
@@ -470,13 +445,203 @@ namespace Voat.Caching
         /// <param name="key">Unique Cache Keys</param>
         /// <param name="getData">Function that returns data to be placed in cache</param>
         /// <param name="cacheTime">The timespan in which to update or remove item from cache</param>
-        /// <param name="recacheLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
+        /// <param name="refetchLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
         /// <returns></returns>
-        public T Register<T>(string cacheKey, Func<T> getData, TimeSpan cacheTime, int recacheLimit = -1)
+        public T Register<T>(string cacheKey, Func<T> getData, TimeSpan cacheTime, int refetchLimit = -1)
         {
-            var val = Register(cacheKey, new Func<object>(() => { return getData(); }), cacheTime, recacheLimit);
-            return Convert<T>(val);
+            cacheKey = StandardizeCacheKey(cacheKey);
+
+            //allow devs to turn off local cache for testing
+            if (!CacheEnabled)
+            {
+                return getData();
+            }
+
+
+            if (!Exists(cacheKey))
+            {
+                ////BLOCK: Temp work around for blocking exploration
+                ////Not thread safe
+                //bool isRefetchRequest = (RefetchEnabled && cacheTime > TimeSpan.Zero && refetchLimit >= 0);
+                //if (!isRefetchRequest)
+                //{
+                //    var data = getData();
+                //    if (data != null || data == null && !_ignoreNulls)
+                //    {
+                //        SetItem(cacheKey, data, cacheTime);
+                //    }
+                //    return data;
+                //}
+
+                //Log the duration this takes to pull fresh
+                using (var duration = new DurationLogger(EventLogger.Instance, new LogInformation()
+                {
+                    Type = LogType.Debug,
+                    Origin = Configuration.Settings.Origin.ToString(),
+                    Category = "Duration",
+                    Message = $"Cache Load ({cacheKey})"
+                },
+                TimeSpan.FromSeconds(1)))
+                {
+                    var sema = _semaphoreSlimLockStore.GetLockObject(cacheKey);
+                    sema.Wait();
+                    try
+                    {
+                        //object o = _lockStore.GetLockObject(cacheKey);
+                        //lock (o)
+                        //{
+                            if (!Exists(cacheKey))
+                            {
+                                try
+                                {
+                                    var data = getData();
+                                    if (data != null || data == null && !_ignoreNulls)
+                                    {
+                                        EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = $"Inserting Cache ({cacheKey})", Origin = Configuration.Settings.Origin.ToString() });
+                                        Debug.Print("Inserting Cache: " + cacheKey);
+                                        SetItem(cacheKey, data, cacheTime);
+
+                                        //Refetch Logic
+                                        if (RefetchEnabled && refetchLimit >= 0)
+                                        {
+                                            //_meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, refetchLimit, 0);
+                                            _meta[cacheKey] = new RefetchEntryFunc<T>(getData) { CacheTime = cacheTime, CurrentCount = 0, MaxCount = refetchLimit };
+                                            var cache = System.Runtime.Caching.MemoryCache.Default;
+                                            var policy = new CacheItemPolicy()
+                                            {
+                                                AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)),
+                                                UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
+                                            };
+                                            cache.Set(cacheKey, new object(), policy);
+                                        }
+                                        else if (RequiresExpirationRemoval)
+                                        {
+                                            var cache = System.Runtime.Caching.MemoryCache.Default;
+                                            cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
+                                        }
+                                    }
+                                    return data;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Debug.Print(ex.ToString());
+                                    //Cache now supports Tasks which throw aggregates, if agg has only 1 inner, throw it instead
+                                    var aggEx = ex as AggregateException;
+                                    if (aggEx != null && aggEx.InnerExceptions.Count == 1)
+                                    {
+                                        throw aggEx.InnerException;
+                                    }
+                                    else
+                                    {
+                                        throw ex;
+                                    }
+                                }
+                            }
+                        //}
+                    }
+                    finally
+                    {
+                        sema.Release();
+                    }
+                }
+            }
+            var cacheItem = GetItem(cacheKey);
+            return Convert<T>(cacheItem);
         }
+
+        /// <summary>
+        /// Registers a function for cache. Locks by key and generates data for return from function
+        /// </summary>
+        /// <param name="key">Unique Cache Keys</param>
+        /// <param name="getData">Function that returns data to be placed in cache</param>
+        /// <param name="cacheTime">The timespan in which to update or remove item from cache</param>
+        /// <param name="refetchLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
+        /// <returns></returns>
+        public async Task<T> Register<T>(string cacheKey, Func<Task<T>> getData, TimeSpan cacheTime, int refetchLimit = -1)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
+            //allow devs to turn off local cache for testing
+            if (!CacheEnabled)
+            {
+                return await getData();
+            }
+
+            if (!Exists(cacheKey))
+            {
+                //Log the duration this takes to pull fresh
+                using (var duration = new DurationLogger(EventLogger.Instance, 
+                    new LogInformation()
+                    {
+                        Type = LogType.Debug,
+                        Origin = Configuration.Settings.Origin.ToString(),
+                        Category = "Duration",
+                        Message = $"Cache Load ({cacheKey})"
+                    }, TimeSpan.FromSeconds(1)))
+                {
+                    var o = _semaphoreSlimLockStore.GetLockObject(cacheKey);
+                    await o.WaitAsync();
+                    try
+                    {
+                        if (!Exists(cacheKey))
+                        {
+                            try
+                            {
+                                var data = await getData().ConfigureAwait(false);
+                                if (data != null || data == null && !_ignoreNulls)
+                                {
+                                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = $"Inserting Cache ({cacheKey})", Origin = Configuration.Settings.Origin.ToString() });
+                                    Debug.Print("Inserting Cache: " + cacheKey);
+                                    SetItem(cacheKey, data, cacheTime);
+
+                                    //Refetch Logic
+                                    if (RefetchEnabled && refetchLimit >= 0)
+                                    {
+                                        //_meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, refetchLimit, 0);
+                                        _meta[cacheKey] = new RefetchEntryTask<T>(getData) { CacheTime = cacheTime, CurrentCount = 0, MaxCount = refetchLimit };
+                                        var cache = System.Runtime.Caching.MemoryCache.Default;
+                                        var policy = new CacheItemPolicy()
+                                        {
+                                            AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)),
+                                            UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
+                                        };
+                                        cache.Set(cacheKey, new object(), policy);
+                                    }
+                                    else if (RequiresExpirationRemoval)
+                                    {
+                                        var cache = System.Runtime.Caching.MemoryCache.Default;
+                                        cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
+                                    }
+                                }
+                                return data;
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.Print(ex.ToString());
+                                //Cache now supports Tasks which throw aggregates, if agg has only 1 inner, throw it instead
+                                var aggEx = ex as AggregateException;
+                                if (aggEx != null && aggEx.InnerExceptions.Count == 1)
+                                {
+                                    throw aggEx.InnerException;
+                                }
+                                else
+                                {
+                                    throw ex;
+                                }
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        o.Release();
+                    }
+                }
+            }
+            var cacheItem = GetItem(cacheKey);
+            return Convert<T>(cacheItem);
+        }
+
+
         //public Task<T> Register<T>(string cacheKey, Task<T> getData, TimeSpan cacheTime, int recacheLimit = -1)
         //{
         //    var val = Register(cacheKey, new Func<object>(() => { return null; }), cacheTime, recacheLimit);
@@ -578,14 +743,29 @@ namespace Voat.Caching
         {
             cacheKey = StandardizeCacheKey(cacheKey);
 
-            lock (_lockStore.GetLockObject(cacheKey))
+            var sema = _semaphoreSlimLockStore.GetLockObject(cacheKey);
+            sema.Wait();
+            try
             {
-                V item = (V)GetItem<K,V>(cacheKey, key, CacheType.Dictionary);
-                if (!bypassMissing || (bypassMissing && !item.IsDefault())) 
+                V item = (V)GetItem<K, V>(cacheKey, key, CacheType.Dictionary);
+                if (!bypassMissing || (bypassMissing && !item.IsDefault()))
                 {
                     SetItem(cacheKey, key, replaceAlg(item), CacheType.Dictionary);
                 }
             }
+            finally
+            {
+                sema.Release();
+            }
+
+            //lock (_lockStore.GetLockObject(cacheKey))
+            //{
+            //    V item = (V)GetItem<K,V>(cacheKey, key, CacheType.Dictionary);
+            //    if (!bypassMissing || (bypassMissing && !item.IsDefault())) 
+            //    {
+            //        SetItem(cacheKey, key, replaceAlg(item), CacheType.Dictionary);
+            //    }
+            //}
         }
 
         public virtual void DictionaryRemove<K>(string cacheKey, K key)

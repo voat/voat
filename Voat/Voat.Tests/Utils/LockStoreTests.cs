@@ -22,6 +22,16 @@ namespace Voat.Tests.Utils
             var o1_2 = lockStore.GetLockObject("MyString");
             Assert.AreEqual(o1, o1_2, "Should have same lock object");
         }
+        [TestMethod]
+        public void TestLockSemaphoreSlim()
+        {
+            var lockStore = new SemaphoreSlimLockStore();
+            var o1 = lockStore.GetLockObject("MyString");
+            var o2 = lockStore.GetLockObject("MyString2");
+            Assert.AreNotEqual(o1, o2, "Should not have same lock object");
+            var o1_2 = lockStore.GetLockObject("MyString");
+            Assert.AreEqual(o1, o1_2, "Should have same lock object");
+        }
 
         [TestMethod]
         public void TestLockNewLocks()

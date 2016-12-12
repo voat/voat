@@ -51,7 +51,15 @@ namespace Voat.Controllers
             }
             ViewBag.UserName = originalUserName;
 
-            var q = new QueryUserComments(userName, new Data.SearchOptions() { Page = page ?? 0, Sort = Domain.Models.SortAlgorithm.New});
+            //if user is accesing their own comments, increase max page size to 100, else use default
+            int? maxPages = (originalUserName == User.Identity.Name ? 100 : (int?)null);
+
+            var q = new QueryUserComments(userName, 
+                new Data.SearchOptions(maxPages) {
+                    Page = page ?? 0,
+                    Sort = Domain.Models.SortAlgorithm.New,
+                });
+
             var comments = await q.ExecuteAsync();
 
             //var userComments = from c in _db.Comments.OrderByDescending(c => c.CreationDate)
@@ -65,7 +73,7 @@ namespace Voat.Controllers
 
             return View(paginatedUserComments);
         }
-        public ActionResult Submissions(string userName, int? page = null)
+        public async Task<ActionResult> Submissions(string userName, int? page = null)
         {
             if (page.HasValue && page.Value < 0)
             {
@@ -80,12 +88,29 @@ namespace Voat.Controllers
             }
             ViewBag.UserName = originalUserName;
 
+            //TODO: Convert this over to query syntax
+            ////if user is accesing their own comments, increase max page size to 100, else use default
+            //int? maxPages = (originalUserName == User.Identity.Name ? 100 : (int?)null);
+
+            //var q = new QueryUserSubmissions(userName,
+            //    new Data.SearchOptions(maxPages)
+            //    {
+            //        Page = page ?? 0,
+            //        Sort = Domain.Models.SortAlgorithm.New,
+            //    });
+
+            //var comments = await q.ExecuteAsync();
+
+            //PaginatedList<Domain.Models.SubmissionComment> paginatedUserComments = new PaginatedList<Submission>(comments, page ?? 0, PAGE_SIZE, -1);
+
+            //return View(paginatedUserComments);
+
             var userSubmissions = from s in _db.Submissions.OrderByDescending(s => s.CreationDate)
-                                    where s.UserName.Equals(originalUserName)
-                                    && !s.IsAnonymized
-                                    && !s.IsDeleted
-                                    && !s.Subverse1.IsAnonymized //Don't think we need this condition
-                                    select s;
+                                  where s.UserName.Equals(originalUserName)
+                                  && !s.IsAnonymized
+                                  && !s.IsDeleted
+                                  && !s.Subverse1.IsAnonymized //Don't think we need this condition
+                                  select s;
 
             PaginatedList<Submission> paginatedUserSubmissions = new PaginatedList<Submission>(userSubmissions, page ?? 0, PAGE_SIZE);
 

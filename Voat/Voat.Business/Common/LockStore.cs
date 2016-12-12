@@ -1,41 +1,69 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace Voat.Common
 {
-    public class LockStore
+    public class LockStore : BaseLockStore<object>
     {
-        private Dictionary<string, object> _lockObjects = new Dictionary<string, object>();
+        public LockStore(bool enabled = true) : base(enabled)
+        {
+        }
+
+        protected override object CreateNewLockObject()
+        {
+            return new object();
+        }
+    }
+    public class SemaphoreSlimLockStore : BaseLockStore<SemaphoreSlim>
+    {
+        public SemaphoreSlimLockStore(bool enabled = true) : base(enabled)
+        {
+        }
+        protected override SemaphoreSlim CreateNewLockObject()
+        {
+            return new SemaphoreSlim(1);
+        }
+    }
+    public abstract class BaseLockStore<T> where T : class
+    {
+        private Dictionary<string, WeakReference<T>> _lockObjects = new Dictionary<string, WeakReference<T>>();
         private readonly object _lock = new object();
         private bool _enabled = true;
 
-        public LockStore(bool enabled = true)
+        public BaseLockStore(bool enabled = true)
         {
             _enabled = enabled;
         }
+        protected abstract T CreateNewLockObject();
 
-        public object GetLockObject(string key)
+        public T GetLockObject(string key)
         {
             if (_enabled)
             {
                 var keyLookup = string.IsNullOrEmpty(key) ? "" : key.ToLower();
 
-                if (!_lockObjects.ContainsKey(keyLookup))
+                WeakReference<T> weakRef = (_lockObjects.ContainsKey(keyLookup) ? _lockObjects[keyLookup] : (WeakReference<T>)null);
+                if (weakRef != null)
                 {
-                    lock (_lock)
+                    T target = null;
+                    if (weakRef.TryGetTarget(out target))
                     {
-                        object o = (_lockObjects.ContainsKey(keyLookup) ? _lockObjects[keyLookup] : null);
-                        if (o == null)
-                        {
-                            o = new object();
-                            _lockObjects[keyLookup] = o;
-                        }
+                        //everything is good
+                        return target;
                     }
                 }
-                return _lockObjects[keyLookup];
+                //create new lockable 
+                lock (_lock)
+                {
+                    var newLockable = CreateNewLockObject();
+                    _lockObjects[keyLookup] = new WeakReference<T>(newLockable);
+                    return newLockable;
+                }
             }
             else
             {
-                return new object();
+                return CreateNewLockObject();
             }
         }
 
@@ -57,7 +85,7 @@ namespace Voat.Common
             //clear out all old lockables
             lock (this)
             {
-                _lockObjects = new Dictionary<string, object>();
+                _lockObjects = new Dictionary<string, WeakReference<T>>();
             }
         }
     }

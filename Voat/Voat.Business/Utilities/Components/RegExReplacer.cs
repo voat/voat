@@ -150,7 +150,7 @@ namespace Voat.Utilities.Components
             {
                 return content;
             }
-            MatchCollection matches = Regex.Matches(content, RegEx);
+            MatchCollection matches = Regex.Matches(content, RegEx, RegexOptions.IgnoreCase);
             string result = content;
             string[] escapeBlocks = { "~~~", "`" };
 

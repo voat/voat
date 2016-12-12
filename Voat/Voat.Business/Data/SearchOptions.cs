@@ -44,12 +44,13 @@ namespace Voat.Data
         public const int MAX_COUNT = 50;
         public const int DEFAULT_COUNT = 25;
         //Implementing this to combat abuse via API, like page=5837 and other cool things
-        public const int MAX_PAGECOUNT = 20; // 20 pages
+        private readonly int _maxPageCount = 20; // 20 pages
 
         private SortAlgorithm _sort = SortAlgorithm.Rank;
         private SortDirection _sortDirection = SortDirection.Default;
         private SortSpan _span = SortSpan.All;
 
+        private bool _useRelativeDateSpans = true;
         private DateTime? _startDate = null;
         private DateTime? _endDate = null;
         private int _count = DEFAULT_COUNT;
@@ -100,16 +101,21 @@ namespace Voat.Data
             return pairs;
         }
 
-        public SearchOptions()
+        public SearchOptions(int? maxPageCount = null, bool useRelativeDateSpans = true)
         {
-            /*no-op*/
+            if (maxPageCount.HasValue)
+            {
+                _maxPageCount = maxPageCount.Value;
+            }
+            _useRelativeDateSpans = useRelativeDateSpans;
         }
 
-        public SearchOptions(string queryString) : this(SearchOptions.ParseQuery(queryString))
+        public SearchOptions(string queryString, int? maxPageCount = null, bool useRelativeDateSpans = true) : this(SearchOptions.ParseQuery(queryString), maxPageCount, useRelativeDateSpans)
         {
+
         }
 
-        public SearchOptions(IEnumerable<KeyValuePair<string, string>> queryStrings)
+        public SearchOptions(IEnumerable<KeyValuePair<string, string>> queryStrings, int? maxPageCount = null, bool useRelativeDateSpans = true) : this(maxPageCount, useRelativeDateSpans)
         {
             //TODO: Make sure the querystrings passed into this method from controller are url decoded values
             if (queryStrings == null)
@@ -227,7 +233,15 @@ namespace Voat.Data
                 }
 
                 //get date range based on span
-                var range = _startDate.Value.Range(this.Span);
+                Tuple<DateTime, DateTime> range;
+                if (UseRelativeDateSpans)
+                {
+                    range = _startDate.Value.RelativeRange(this.Span);
+                }
+                else
+                {
+                    range = _startDate.Value.Range(this.Span);
+                }
                 this._startDate = range.Item1;
                 this._endDate = range.Item2;
             }
@@ -377,9 +391,9 @@ namespace Voat.Data
                 {
                     throw new VoatValidationException("Paging starts at 0 (zero)");
                 }
-                else if (value >= MAX_PAGECOUNT)
+                else if (value >= _maxPageCount)
                 {
-                    throw new VoatValidationException($"Page is limited to max count of {MAX_PAGECOUNT - 1}");
+                    throw new VoatValidationException($"Page is limited to max count of {_maxPageCount - 1}");
                 }
                 else
                 {
@@ -421,6 +435,20 @@ namespace Voat.Data
         public IList<KeyValuePair<string, string>> QueryStrings
         {
             get { return _queryStrings.ToList(); }
+        }
+
+        public bool UseRelativeDateSpans
+        {
+            get
+            {
+                return _useRelativeDateSpans;
+            }
+
+            set
+            {
+                _useRelativeDateSpans = value;
+                CalculateNewDateRange();
+            }
         }
 
         public string ToString(string format, string formatInputIfEmpty = null)

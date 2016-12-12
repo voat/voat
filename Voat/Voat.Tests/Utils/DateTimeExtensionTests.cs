@@ -316,5 +316,30 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(start, start2);
             Assert.AreEqual(end, end2);
         }
+
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("Utility.DateTime")]
+        public void DateTimeExt_RelavtiveRanges()
+        {
+            var current = DateTime.UtcNow;
+            var range = current.RelativeRange(Domain.Models.SortSpan.Hour);
+            Assert.AreEqual(TimeSpan.FromHours(1), range.Item2 - range.Item1);
+
+            range = current.RelativeRange(Domain.Models.SortSpan.Day);
+            Assert.AreEqual(TimeSpan.FromHours(24), range.Item2 - range.Item1);
+
+            range = current.RelativeRange(Domain.Models.SortSpan.Week);
+            Assert.AreEqual(TimeSpan.FromDays(7), range.Item2 - range.Item1);
+
+            range = current.RelativeRange(Domain.Models.SortSpan.Month);
+            Assert.AreEqual(TimeSpan.FromDays(30), range.Item2 - range.Item1);
+
+            range = current.RelativeRange(Domain.Models.SortSpan.Quarter);
+            Assert.AreEqual(TimeSpan.FromDays(90), range.Item2 - range.Item1);
+
+            range = current.RelativeRange(Domain.Models.SortSpan.Year);
+            Assert.AreEqual(TimeSpan.FromDays(365), range.Item2 - range.Item1);
+
+        }
     }
 }
