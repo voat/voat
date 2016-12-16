@@ -16,12 +16,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Voat.Models.ViewModels
 {
-    public class SearchSubverseViewModel
+    public class SearchSubverseViewModel : SearchViewModel
     {
-        [Required (ErrorMessage="Please enter a term to search for.")]
-        [StringLength(100, ErrorMessage = "The search term must be at least {2} characters long.", MinimumLength = 3)]
-        public string q { get; set; }
-
         // include subverse description in search
         public bool d { get; set; }
     }

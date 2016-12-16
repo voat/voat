@@ -286,8 +286,10 @@ namespace Voat.Tests.Utils
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
 
             //right now we don't process upper case V's
-            Assert.IsTrue(content == processed);
-            //Assert.IsTrue(processed == String.Format("[{0}]({1})", content, "https://voat.co" + content));
+            //Assert.IsTrue(content == processed);
+
+            //now we do
+            Assert.AreEqual(String.Format("[{0}](https://voat.co/v/VoatIs)", content), processed);
         }
     }
 

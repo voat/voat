@@ -4058,15 +4058,46 @@ namespace Voat.Data
                     orderby x.CreationDate descending
                     select x).ToList();
         }
-        public IEnumerable<BannedDomain> BannedDomains(params string[] domains)
+        public IEnumerable<BannedDomain> BannedDomains(string[] domains, int? gtldMinimumPartEvaulationCount = 1)
         {
-            var q = new DapperQuery();
-            q.Select = "* FROM BannedDomain";
-            q.Where = "Domain IN @Domains";
-            q.Parameters = new { Domains = domains };
 
-            var bannedDomains = _db.Database.Connection.Query<BannedDomain>(q.ToString(), q.Parameters);
-            return bannedDomains;
+            List<string> alldomains = domains.Where(x => !String.IsNullOrEmpty(x)).ToList();
+
+            if (alldomains.Any())
+            {
+                if (gtldMinimumPartEvaulationCount != null)
+                {
+                    int minPartCount = Math.Max(1, gtldMinimumPartEvaulationCount.Value);
+
+                    foreach (var domain in domains)
+                    {
+                        var pieces = domain.Split('.');
+                        if (pieces.Length > minPartCount)
+                        {
+                            pieces = pieces.Reverse().ToArray();
+                            for (int i = pieces.Length - 1; i >= minPartCount; i--)
+                            {
+                                string newDomain = String.Join(".", pieces.Take(i).Reverse());
+                                if (!String.IsNullOrEmpty(newDomain))
+                                {
+                                    alldomains.Add(newDomain);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var q = new DapperQuery();
+                q.Select = "* FROM BannedDomain";
+                q.Where = "Domain IN @Domains";
+                q.Parameters = new { Domains = alldomains.ToArray() };
+
+                var bannedDomains = _db.Database.Connection.Query<BannedDomain>(q.ToString(), q.Parameters);
+                return bannedDomains;
+            }
+
+            //return empty
+            return new List<BannedDomain>();
         }
         public string SubverseForComment(int commentID)
         {

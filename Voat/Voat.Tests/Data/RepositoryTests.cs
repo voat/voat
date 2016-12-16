@@ -22,6 +22,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Voat.Common;
@@ -399,7 +400,7 @@ namespace Voat.Tests.Repository
             }
             using (var repo = new Voat.Data.Repository())
             {
-                var result = repo.BannedDomains("yahoo.com", "google.com", domain, domain.ToUpper(), "testuri.org");
+                var result = repo.BannedDomains(new string[] { "yahoo.com", "google.com", domain, domain.ToUpper(), "testuri.org" });
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsTrue(result.Any(), "Result expected");
                 Assert.AreEqual(1, result.Count(), "Count off");
@@ -408,6 +409,103 @@ namespace Voat.Tests.Repository
                 Assert.AreEqual(reason, bd.Reason);
                 Assert.AreEqual(createdBy, bd.CreatedBy);
                 Assert.AreEqual(createdDate.ToString(), bd.CreationDate.ToString());
+
+                result = repo.BannedDomains(new string[] { "subdomain." + domain });
+                Assert.IsNotNull(result, "subdomain failure");
+                Assert.IsTrue(result.Any(), "Subdomain Result expected");
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Repository"), TestCategory("Ban"), TestCategory("Ban.Domain")]
+        public void BannedDomainTest_Root()
+        {
+            var domain = "ru";
+            var reason = "Russians!";
+            var createdBy = "AntiSpamcist";
+            var createdDate = DateTime.UtcNow.AddDays(-10);
+
+            using (var db = new voatEntities())
+            {
+                db.BannedDomains.Add(new BannedDomain()
+                {
+                    Domain = domain,
+                    Reason = reason,
+                    CreatedBy = createdBy,
+                    CreationDate = createdDate
+                });
+                db.SaveChanges();
+            }
+            using (var repo = new Voat.Data.Repository())
+            {
+                IEnumerable<BannedDomain> result;
+
+                //Test invalid
+                result = repo.BannedDomains(new string[] { "invalid" }, 1);
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsFalse(result.Any(), "Result expected");
+
+                result = repo.BannedDomains(new string[] { "invalid" }, 100);
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsFalse(result.Any(), "Result expected");
+
+                result = repo.BannedDomains(new string[] { "invalid" }, null);
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsFalse(result.Any(), "Result expected");
+
+                result = repo.BannedDomains(new string[] { null }, null);
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsFalse(result.Any(), "Result expected");
+
+                result = repo.BannedDomains(new string[] { null }, 1);
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsFalse(result.Any(), "Result expected");
+
+                result = repo.BannedDomains(new string[] { null }, -1001);
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsFalse(result.Any(), "Result expected");
+
+                result = repo.BannedDomains(new string[] { "arst" }, -1001);
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsFalse(result.Any(), "Result expected");
+
+
+                //Test ru
+                result = repo.BannedDomains(new string[] { "sub.domain.ru" }, 1);
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsTrue(result.Any(), "Result expected");
+
+                result = repo.BannedDomains(new string[] { "deep.sub.domain.ru" }, 1);
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsTrue(result.Any(), "Result expected");
+
+                //Test domain.sx
+                result = repo.BannedDomains(new string[] { "sub.domain.ru" }, 2);
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsFalse(result.Any(), "Result expected");
+
+                result = repo.BannedDomains(new string[] { "sub.domain.ru" }, 3);
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsFalse(result.Any(), "Result expected");
+
+                result = repo.BannedDomains(new string[] { "sub.domain.ru" }, 3);
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsFalse(result.Any(), "Result expected");
+
+                result = repo.BannedDomains(new string[] { "sub.domain.ru" }, null);
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsFalse(result.Any(), "Result expected");
+
+                result = repo.BannedDomains(new string[] { "sub.domain.ru" }, -1000);
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsTrue(result.Any(), "Result expected");
+
+                //make sure defaults don't change
+                result = repo.BannedDomains(new string[] { "sub.domain.ru" });
+                Assert.IsNotNull(result, "Result was null");
+                Assert.IsTrue(result.Any(), "Result expected");
+
+                
             }
         }
     }
