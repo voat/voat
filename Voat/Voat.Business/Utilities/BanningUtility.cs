@@ -35,16 +35,8 @@ namespace Voat.Utilities
                 }
                 if (s == null || (s != null && !s.ExcludeSitewideBans))
                 {
-                    MatchCollection matches = Regex.Matches(contentToEvaluate, CONSTANTS.HTTP_LINK_REGEX, RegexOptions.IgnoreCase);
                     List<string> domains = new List<string>();
-                    foreach (Match match in matches)
-                    {
-                        string domain = match.Groups["domain"].Value.ToLower();
-                        if (!String.IsNullOrWhiteSpace(domain) && !domains.Contains(domain))
-                        {
-                            domains.Add(domain);
-                        }
-                    }
+                    ProcessMatches(Regex.Matches(contentToEvaluate, CONSTANTS.HTTP_LINK_REGEX, RegexOptions.IgnoreCase), domains);
                     if (domains.Count > 0)
                     {
                         bool hasBannedDomainLinks = BanningUtility.IsDomainBanned(domains.ToArray());
@@ -56,6 +48,24 @@ namespace Voat.Utilities
                 }
             }
             return false;
+        }
+
+        private static void ProcessMatches(MatchCollection matches, List<string> domains)
+        {
+            foreach (Match match in matches)
+            {
+                string domain = match.Groups["domain"].Value.ToLower();
+                if (!String.IsNullOrWhiteSpace(domain) && !domains.Contains(domain))
+                {
+                    domains.Add(domain);
+                }
+
+                var queryGroup = match.Groups["query"];
+                if (queryGroup != null && !String.IsNullOrEmpty(queryGroup.Value))
+                {
+                    ProcessMatches(Regex.Matches(queryGroup.Value, CONSTANTS.HTTP_LINK_REGEX, RegexOptions.IgnoreCase), domains);
+                }
+            }
         }
 
         public static bool IsDomainBanned(params string[] domains)

@@ -242,6 +242,16 @@ namespace Voat.Tests.CommandTests
             Assert.IsFalse(r.Success, r.Message);
             Assert.AreEqual(r.Message, "Submission contains banned domains");
 
+            //Test URLEncoding Markdown Matching
+            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit",
+                Title = "Hello Man - Longer because of Rules",
+                Content = "[https://www.some-fake-domain.com/surl/start](https://www.google.com/url?q=http%3A%2F%2Fww2.saiddit.com%2F%3Flnk%26keyword%3Dsome%2Bkey%2Bword%26charset%3Dutf-8)"
+            });
+            r = cmd.Execute().Result;
+            Assert.IsNotNull(r, "Response was null");
+            Assert.IsFalse(r.Success, r.Message);
+            Assert.AreEqual(r.Message, "Submission contains banned domains");
+
         }
 
 
