@@ -119,7 +119,13 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.DestinationPathThumbs, "~/Storage/Thumbs");
             }
         }
-
+        public static string EmailAddress
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.EmailAddress, "noreply@voat.co");
+            }
+        }
         public static string EmailServiceKey
         {
             get

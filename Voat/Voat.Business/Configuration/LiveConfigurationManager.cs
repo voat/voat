@@ -25,6 +25,8 @@ namespace Voat.Configuration
         public const string DailyVotingQuota = "dailyVotingQuota";
         public const string DestinationPathAvatars = "destinationPathAvatars";
         public const string DestinationPathThumbs = "destinationPathThumbs";
+
+        public const string EmailAddress = "emailAddress";
         public const string EmailServiceKey = "emailServiceKey";
         public const string ForceHTTPS = "forceHTTPS";
         public const string FooterText = "footerText";
@@ -103,6 +105,7 @@ namespace Voat.Configuration
             {
                 SetValueIfPresent<string>(CONFIGURATION.RecaptchaPublicKey, section[CONFIGURATION.RecaptchaPublicKey]);
                 SetValueIfPresent<string>(CONFIGURATION.RecaptchaPrivateKey, section[CONFIGURATION.RecaptchaPrivateKey]);
+                SetValueIfPresent<string>(CONFIGURATION.EmailAddress, section[CONFIGURATION.EmailAddress]);
                 SetValueIfPresent<string>(CONFIGURATION.EmailServiceKey, section[CONFIGURATION.EmailServiceKey]);
                 SetValueIfPresent<string>(CONFIGURATION.SiteName, section[CONFIGURATION.SiteName]);
                 SetValueIfPresent<string>(CONFIGURATION.SiteSlogan, section[CONFIGURATION.SiteSlogan]);

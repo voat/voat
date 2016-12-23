@@ -23,7 +23,7 @@ namespace Voat.App_Start
                 content.Value = message.Body;
 
                 var msg = new SendGrid.Helpers.Mail.Mail(
-                    new SendGrid.Helpers.Mail.Email("noreply@voat.co", CONSTANTS.SYSTEM_USER_NAME),
+                    new SendGrid.Helpers.Mail.Email(Settings.EmailAddress, Settings.SiteName),
                     message.Subject,
                     new SendGrid.Helpers.Mail.Email(message.Destination),
                     content
