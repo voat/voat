@@ -231,14 +231,12 @@ function dropFunction(event) {
         url = $(droppedData).attr('href');
     }
 
-    // dropped data did not contain a HREF element, try to see if it has a SRC element instead
-    if (url != null) {
-        window.location.replace("/submit?linkpost=true&url=" + url);
-    } else {
+    if (url == null) {
+        // dropped data did not contain a HREF element, try to see if it has a SRC element instead
         url = $(droppedData).attr('src');
-        if (url != null) {
-            window.location.replace("/submit?linkpost=true&url=" + url);
-        }
+    }
+    if (url != null) {
+        window.location.assign("/submit?linkpost=true&url=" + url);
     }
 
     $("#share-a-link-overlay").hide();
