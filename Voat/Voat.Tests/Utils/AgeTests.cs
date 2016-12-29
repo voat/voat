@@ -247,6 +247,6 @@ namespace Voat.Tests.Utils
             string result = Age.ToRelative(TimeSpan.FromMinutes(90));
             Assert.AreEqual(String.Format("{0} hours", 1.5), result, "Submission age was not calculated.");
         }
-
+       
     }
 }

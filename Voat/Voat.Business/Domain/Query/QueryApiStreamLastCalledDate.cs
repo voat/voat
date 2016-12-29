@@ -34,15 +34,15 @@ namespace Voat.Domain.Query
             }
         }
 
-        public override DateTime Execute()
+        public override async Task<DateTime> ExecuteAsync()
         {
-            var value = base.Execute();
+            var lastCallDate = await base.ExecuteAsync();
 
             CacheHandler.Instance.Replace<DateTime>(FullCacheKey, Repository.CurrentDate, CachingPolicy.Duration);
 
-            return value;
+            return lastCallDate;
         }
-
+       
         protected override async Task<DateTime> GetData()
         {
             DateTime last = Repository.CurrentDate;

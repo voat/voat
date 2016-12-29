@@ -26,7 +26,7 @@ namespace Voat.Domain
 
         public static IEnumerable<Domain.Models.Comment> Map(this IEnumerable<Domain.Models.Comment> list, bool populateUserState = false)
         {
-            var mapped = list.Select(x => { ProcessComment(x); return x; }).ToList();
+            var mapped = list.Select(x => { HydrateUserData(x); return x; }).ToList();
             return mapped;
         }
 
@@ -162,8 +162,16 @@ namespace Voat.Domain
                     IsAnonymized = submission.IsAnonymized,
                     IsDeleted = submission.IsDeleted,
                     Rank = submission.Rank,
-                    RelativeRank = submission.RelativeRank
+                    RelativeRank = submission.RelativeRank,
                 };
+
+                //add flair if present
+                if (!String.IsNullOrEmpty(submission.FlairCss) && !String.IsNullOrEmpty(submission.FlairLabel))
+                {
+                    result.Attributes = new List<ContentAttribute>() { new ContentAttribute() { ID = -1, Type = AttributeType.Flair, Name = submission.FlairLabel, CssClass = submission.FlairCss } };
+                }
+
+
             }
             return result;
         }
@@ -262,7 +270,7 @@ namespace Voat.Domain
             return result;
         }
 
-        public static NestedComment Map(this usp_CommentTree_Result treeComment, string submissionOwnerName, IEnumerable<CommentVoteTracker> commentVotes = null)
+        public static NestedComment Map(this usp_CommentTree_Result treeComment, string submissionOwnerName, IEnumerable<VoteValue> commentVotes = null)
         {
             NestedComment result = null;
             if (treeComment != null)
@@ -287,7 +295,7 @@ namespace Voat.Domain
                 result.IsSubmitter = (treeComment.UserName == submissionOwnerName);
 
                 //Set User State and secure comment
-                ProcessComment(result, false, commentVotes);
+                HydrateUserData(result, false, commentVotes);
             }
             return result;
         }
@@ -325,7 +333,7 @@ namespace Voat.Domain
                 }
 
                 //Set User State and secure comment
-                ProcessComment(result, populateUserState);
+                HydrateUserData(result, populateUserState);
             }
             return result;
         }
@@ -353,12 +361,60 @@ namespace Voat.Domain
                 result.Subverse = comment.Subverse;
 
                 //Set User State and secure comment
-                ProcessComment(result, populateMissingUserState);
+                HydrateUserData(result, populateMissingUserState);
             }
             return result;
         }
-
-        public static void ProcessComment(Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<CommentVoteTracker> commentVotes = null)
+        public static void HydrateUserData(IEnumerable<Domain.Models.Submission> submissions)
+        {
+            if (Thread.CurrentPrincipal.Identity.IsAuthenticated && (submissions != null && submissions.Any()))
+            {
+                using (var repo = new Repository())
+                {
+                    var votes = repo.UserVoteStatus(Thread.CurrentPrincipal.Identity.Name, ContentType.Submission, submissions.Select(x => x.ID).ToArray());
+                    foreach (var s in submissions)
+                    {
+                        var voteValue = votes.FirstOrDefault(x => x.ID == s.ID);
+                        s.Vote = (voteValue == null ? 0 : voteValue.Value);
+                    }
+                    //saves are cached
+                }
+            }
+        }
+        public static void HydrateUserData(Domain.Models.Submission submission)
+        {
+            if (Thread.CurrentPrincipal.Identity.IsAuthenticated && (submission != null))
+            {
+                using (var repo = new Repository())
+                {
+                    var vote = repo.UserVoteStatus(Thread.CurrentPrincipal.Identity.Name, ContentType.Submission, submission.ID);
+                    submission.Vote = vote;
+                    //saves are cached
+                }
+            }
+        }
+        public static void HydrateUserData(IEnumerable<Domain.Models.Comment> comments)
+        {
+            if (Thread.CurrentPrincipal.Identity.IsAuthenticated && (comments != null && comments.Any()))
+            {
+                string userName = Thread.CurrentPrincipal.Identity.Name;
+                if (!String.IsNullOrEmpty(userName))
+                {
+                    using (var repo = new Repository())
+                    {
+                        var votes = repo.UserVoteStatus(userName, ContentType.Comment, comments.Select(x => x.ID).ToArray());
+                        foreach (var comment in comments)
+                        {
+                            comment.IsOwner = comment.UserName == userName;
+                            var voteValue = votes.FirstOrDefault(x => x.ID == comment.ID);
+                            comment.Vote = (voteValue == null ? 0 : voteValue.Value);
+                            comment.IsSaved = UserHelper.IsSaved(ContentType.Comment, comment.ID);
+                        }
+                    }
+                }
+            }
+        }
+        public static void HydrateUserData(Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<VoteValue> commentVotes = null)
         {
             if (comment != null)
             {
@@ -369,11 +425,8 @@ namespace Voat.Domain
                     comment.Vote = 0;
                     if (commentVotes != null)
                     {
-                        var vote = commentVotes.FirstOrDefault(x => x.CommentID == comment.ID);
-                        if (vote != null)
-                        {
-                            comment.Vote = vote.VoteStatus;
-                        }
+                        var vote = commentVotes.FirstOrDefault(x => x.ID == comment.ID);
+                        comment.Vote = vote == null ? 0 : vote.Value;
                     }
                     else if (populateMissingUserState)
                     {

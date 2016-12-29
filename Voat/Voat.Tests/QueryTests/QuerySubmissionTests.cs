@@ -126,18 +126,18 @@ namespace Voat.Tests.QueryTests
             Assert.AreEqual("en", result.Language, this.GetType().Name);
         }
 
-        [TestMethod]
-        [TestCategory("Query")]
-        [TestCategory("Submission")]
-        public void Query_v_All_Guest()
-        {
-            var q = new QuerySubmissions("_all", SearchOptions.Default, null);
-            //q.CachePolicy.Duration = TimeSpan.Zero; //Turn off caching on this request
-            var result = q.ExecuteAsync().Result;
+        //[TestMethod]
+        //[TestCategory("Query")]
+        //[TestCategory("Submission")]
+        //public void Query_v_All_Guest()
+        //{
+        //    var q = new QuerySubmissions("_all", SearchOptions.Default, null);
+        //    //q.CachePolicy.Duration = TimeSpan.Zero; //Turn off caching on this request
+        //    var result = q.ExecuteAsync().Result;
 
-            Assert.IsNotNull(result, this.GetType().Name);
-            Assert.IsTrue(result.Any(), this.GetType().Name);
-        }
+        //    Assert.IsNotNull(result, this.GetType().Name);
+        //    Assert.IsTrue(result.Any(), this.GetType().Name);
+        //}
 
         [TestMethod]
         [TestCategory("Query")]
@@ -146,6 +146,10 @@ namespace Voat.Tests.QueryTests
         public void Query_v_All_Guest_Cached()
         {
             var q = new QuerySubmissions("_all", SearchOptions.Default, new CachePolicy(TimeSpan.FromSeconds(30)));
+
+            //DELETE Cached entry because other test could insert it
+            CacheHandler.Instance.Remove(q.CacheKey);
+
             //q.CachePolicy.Duration = TimeSpan.FromSeconds(30); //Cache this request
             var result = q.ExecuteAsync().Result;
             Assert.IsNotNull(result);

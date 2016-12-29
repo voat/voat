@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
 using Voat.Models;
@@ -69,9 +71,9 @@ namespace Voat.Controllers
             //                    //&& !c.Submission.Subverse1.IsAnonymized //Don't think we need this condition
             //                    select c;
 
-            PaginatedList<Domain.Models.SubmissionComment> paginatedUserComments = new PaginatedList<Domain.Models.SubmissionComment>(comments, page ?? 0, PAGE_SIZE, -1);
+            var paged = new PaginatedList<Domain.Models.SubmissionComment>(comments, page ?? 0, PAGE_SIZE, -1);
 
-            return View(paginatedUserComments);
+            return View(paged);
         }
         public async Task<ActionResult> Submissions(string userName, int? page = null)
         {
@@ -88,35 +90,24 @@ namespace Voat.Controllers
             }
             ViewBag.UserName = originalUserName;
 
-            //TODO: Convert this over to query syntax
             ////if user is accesing their own comments, increase max page size to 100, else use default
-            //int? maxPages = (originalUserName == User.Identity.Name ? 100 : (int?)null);
+            int? maxPages = (originalUserName == User.Identity.Name ? 100 : (int?)null);
 
-            //var q = new QueryUserSubmissions(userName,
-            //    new Data.SearchOptions(maxPages)
-            //    {
-            //        Page = page ?? 0,
-            //        Sort = Domain.Models.SortAlgorithm.New,
-            //    });
+            var q = new QueryUserSubmissions(userName,
+                new Data.SearchOptions(maxPages)
+                {
+                    Page = page ?? 0,
+                    Sort = Domain.Models.SortAlgorithm.New,
+                });
 
-            //var comments = await q.ExecuteAsync();
+            var data = await q.ExecuteAsync();
 
-            //PaginatedList<Domain.Models.SubmissionComment> paginatedUserComments = new PaginatedList<Submission>(comments, page ?? 0, PAGE_SIZE, -1);
+            var paged = new PaginatedList<Domain.Models.Submission>(data, page ?? 0, PAGE_SIZE, -1);
 
-            //return View(paginatedUserComments);
-
-            var userSubmissions = from s in _db.Submissions.OrderByDescending(s => s.CreationDate)
-                                  where s.UserName.Equals(originalUserName)
-                                  && !s.IsAnonymized
-                                  && !s.IsDeleted
-                                  && !s.Subverse1.IsAnonymized //Don't think we need this condition
-                                  select s;
-
-            PaginatedList<Submission> paginatedUserSubmissions = new PaginatedList<Submission>(userSubmissions, page ?? 0, PAGE_SIZE);
-
-
-            return View(paginatedUserSubmissions);
+            return View(paged);
         }
+
+        //TODO: Rewrite this
         public ActionResult Saved(string userName, int? page = null)
         {
             if (page.HasValue && page.Value < 0)
@@ -135,15 +126,17 @@ namespace Voat.Controllers
             }
             ViewBag.UserName = originalUserName;
 
+            
+
             IQueryable<SavedItem> savedSubmissions = (from m in _db.Submissions
-                                                        join s in _db.SubmissionSaveTrackers on m.ID equals s.SubmissionID
-                                                        where !m.IsDeleted && s.UserName == User.Identity.Name
-                                                        select new SavedItem()
-                                                        {
-                                                            SaveDateTime = s.CreationDate,
-                                                            SavedSubmission = m,
-                                                            SavedComment = null
-                                                        });
+                                                          join s in _db.SubmissionSaveTrackers on m.ID equals s.SubmissionID
+                                                          where !m.IsDeleted && s.UserName == User.Identity.Name
+                                                          select new SavedItem()
+                                                          {
+                                                              SaveDateTime = s.CreationDate,
+                                                              SavedSubmission = m,
+                                                              SavedComment = null
+                                                          });
 
             IQueryable<SavedItem> savedComments = (from c in _db.Comments
                                                     join s in _db.CommentSaveTrackers on c.ID equals s.CommentID

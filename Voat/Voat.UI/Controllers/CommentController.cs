@@ -108,7 +108,9 @@ namespace Voat.Controllers
                 return GenericErrorView(new ErrorViewModel() { Description = "Can not find what was requested because input is not valid" });
             }
 
-            var submission = _db.Submissions.Find(submissionID.Value);
+            var q = new QuerySubmission(submissionID.Value, true);
+
+            var submission = await q.ExecuteAsync().ConfigureAwait(false);
 
             if (submission == null)
             {
@@ -154,39 +156,9 @@ namespace Voat.Controllers
 
             #endregion
 
-            #region Track Views 
+            var cmd = new LogVisitCommand(submissionID.Value, UserHelper.UserIpAddress(this.Request));
+            cmd.Execute();
 
-            // experimental: register a new session for this subverse
-            string clientIpAddress = UserHelper.UserIpAddress(Request);
-            if (clientIpAddress != String.Empty)
-            {
-                // generate salted hash of client IP address
-                string ipHash = IpHash.CreateHash(clientIpAddress);
-
-                // register a new session for this subverse
-                SessionHelper.Add(subverse.Name, ipHash);
-
-                //TODO: This needs to be executed in seperate task
-                #region TODO
-                
-                // register a new view for this thread
-                // check if this hash is present for this submission id in viewstatistics table
-                var existingView = _db.ViewStatistics.Find(submission.ID, ipHash);
-
-                // this IP has already viwed this thread, skip registering a new view
-                if (existingView == null)
-                {
-                    // this is a new view, register it for this submission
-                    var view = new ViewStatistic { SubmissionID = submission.ID, ViewerID = ipHash };
-                    _db.ViewStatistics.Add(view);
-                    submission.Views++;
-                    await _db.SaveChangesAsync();
-                }
-
-                #endregion
-            }
-            
-            #endregion
             CommentSegment model = null;
             if (commentID != null)
             {
@@ -198,8 +170,8 @@ namespace Voat.Controllers
                 model = await GetCommentSegment(submission.ID, null, 0, sort);
             }
 
-            var q = new QuerySubverseModerators(subverseName);
-            ViewBag.ModeratorList = await q.ExecuteAsync();
+            var q2 = new QuerySubverseModerators(subverseName);
+            ViewBag.ModeratorList = await q2.ExecuteAsync();
 
             return View("~/Views/Home/Comments.cshtml", model);
 
@@ -242,7 +214,8 @@ namespace Voat.Controllers
                 return GenericErrorView(new ErrorViewModel() { Description = "Can not find what was requested because input is not valid" });
             }
 
-            var submission = DataCache.Submission.Retrieve(submissionID);
+            var q = new QuerySubmission(submissionID, false);
+            var submission = await q.ExecuteAsync().ConfigureAwait(false);
 
             if (submission == null)
             {
@@ -279,8 +252,8 @@ namespace Voat.Controllers
 
             #endregion
 
-            var q = new QuerySubverseModerators(subverse.Name);
-            ViewBag.ModeratorList = await q.ExecuteAsync();
+            var q2 = new QuerySubverseModerators(subverse.Name);
+            ViewBag.ModeratorList = await q2.ExecuteAsync();
 
             var results = await GetCommentSegment(submissionID, parentID, startingIndex, sort);
             return PartialView("~/Views/Shared/Comments/_CommentSegment.cshtml", results);

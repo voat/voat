@@ -14,7 +14,7 @@
 
 @{
     ViewBag.Title = Model.Title;
-    string urlaction = Model.Subverse == AGGREGATE_SUBVERSE.DEFAULT || Model.Subverse == AGGREGATE_SUBVERSE.FRONT ? "FrontIndex" : "SubverseIndex";
+    string urlaction = String.IsNullOrEmpty(Model.UrlAction) ? Model.Subverse == AGGREGATE_SUBVERSE.DEFAULT || Model.Subverse == AGGREGATE_SUBVERSE.FRONT ? "FrontIndex" : "SubverseIndex" : Model.UrlAction;
 
     //if (Model.PreviewMode)
     //{
@@ -86,7 +86,7 @@
             {
                 //type 2 = link
                 //type 1 = message
-                if (submission.Type == 1)
+                if (submission.Type == Voat.Domain.Models.SubmissionType.Link)
                 {
                     submissionClass = "self";
                 }

@@ -11,6 +11,7 @@ namespace Voat.Caching
     {
         public static class Keys
         {
+            [Obsolete("Arg matie, t'is is dead code", true)]
             public static string Submission(int submissionID)
             {
                 return String.Format("legacy:submission:{0}", submissionID).ToLower();
@@ -27,8 +28,8 @@ namespace Voat.Caching
             }
         }
 
-        [Obsolete("Replace Submission logic with class Submission_New logic")]
-        public static class Submission
+        [Obsolete("Replace Submission logic with class Submission_New logic", true)]
+        public static class Submission_Legacy
         {
             public static void Remove(int submissionID)
             {
@@ -59,7 +60,7 @@ namespace Voat.Caching
         }
 
         //TODO: Repleace Submission class with this code (Views need to be converted)
-        public static class Submission_New
+        public static class Submission
         {
             public static void Remove(int submissionID)
             {

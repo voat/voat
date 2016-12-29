@@ -19,7 +19,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Voat.Caching;
+using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain.Query;
+using Voat.Models.ViewModels;
 using Voat.Utilities;
 
 namespace Voat.Controllers
@@ -48,42 +51,52 @@ namespace Voat.Controllers
             domainname = domainname.Trim().ToLower();
 
             //TODO: This needs to moved to Query/Repository
-            var results = CacheHandler.Instance.Register(CachingKey.DomainSearch(domainname, pageNumber, sortingmode), () => {
-                using (var db = new voatEntities())
-                {
-                    db.EnableCacheableOutput();
+            var options = new SearchOptions();
+            options.Page = pageNumber;
+            options.Sort = sortingmode == "new" ? Domain.Models.SortAlgorithm.New : Domain.Models.SortAlgorithm.Hot;
 
-                    //restrict disabled subs from result list
-                    IQueryable<Submission> q = (from m in db.Submissions
-                                                          join s in db.Subverses on m.Subverse equals s.Name
-                                                          where
-                                                          !s.IsAdminDisabled.Value
-                                                          && !m.IsDeleted
-                                                          && m.Type == 2
-                                                          && m.Url.ToLower().Contains(domainname)
-                                                          select m);
+            var q = new QuerySubmissionsByDomain(domainname, options);
+            var results = await q.ExecuteAsync();
+            //var results = CacheHandler.Instance.Register(CachingKey.DomainSearch(domainname, pageNumber, sortingmode), () => {
+            //    using (var db = new voatEntities())
+            //    {
+            //        db.EnableCacheableOutput();
 
-                    if (sortingmode == "new")
-                    {
-                        ViewBag.SortingMode = sortingmode;
-                        q = q.OrderByDescending(x => x.CreationDate);
-                    }
-                    else
-                    {
-                        ViewBag.SortingMode = "hot";
-                        q = q.OrderByDescending(x => x.Rank).ThenByDescending(x => x.CreationDate);
-                    }
+            //        //restrict disabled subs from result list
+            //        IQueryable<Submission> q = (from m in db.Submissions
+            //                                              join s in db.Subverses on m.Subverse equals s.Name
+            //                                              where
+            //                                              !s.IsAdminDisabled.Value
+            //                                              && !m.IsDeleted
+            //                                              && m.Type == 2
+            //                                              && m.Url.ToLower().Contains(domainname)
+            //                                              select m);
 
-                    var result = q.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+            //        if (sortingmode == "new")
+            //        {
+            //            ViewBag.SortingMode = sortingmode;
+            //            q = q.OrderByDescending(x => x.CreationDate);
+            //        }
+            //        else
+            //        {
+            //            ViewBag.SortingMode = "hot";
+            //            q = q.OrderByDescending(x => x.Rank).ThenByDescending(x => x.CreationDate);
+            //        }
 
-                    return result;
-                }
-            }, TimeSpan.FromMinutes(60));
+            //        var result = q.Skip(pageNumber * pageSize).Take(pageSize).ToList();
 
-            var paginatedSubmissions = new PaginatedList<Submission>(results, page ?? 0, pageSize);
+            //        return result;
+            //    }
+            //}, TimeSpan.FromMinutes(60));
 
-            ViewBag.Title = "Showing all submissions which link to " + domainname;
-            return View("Index", paginatedSubmissions);
+            var paginatedSubmissions = new PaginatedList<Domain.Models.Submission>(results, page ?? 0, pageSize, -1);
+
+            var viewProperties = new SubmissionListViewModel();
+            viewProperties.Submissions = paginatedSubmissions;
+            viewProperties.UrlAction = "DomainIndex";
+
+            viewProperties.Title = "Domain: " + domainname;
+            return View("~/Views/Subverses/SubverseIndex.cshtml", viewProperties);
         }
         
     }

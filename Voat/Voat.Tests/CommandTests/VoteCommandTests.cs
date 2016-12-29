@@ -24,6 +24,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;
 using Voat.Domain.Command;
+using Voat.Domain.Query;
 using Voat.Tests.Repository;
 using Voat.Utilities;
 
@@ -173,6 +174,19 @@ namespace Voat.Tests.CommandTests
                 Assert.AreEqual(comment.DownCount, c.Response.DownCount);
             }
             Assert.IsTrue(voteEventReceived, "VoteEvent not have the expected values");
+
+            //Verify Submission pull has correct vote value recorded in output for current user
+            var q = new QuerySubmission(1, true);
+            var submission = q.Execute();
+            Assert.IsNotNull(submission);
+            Assert.AreEqual(c.RecordedValue, submission.Vote);
+
+            //Verify non-logged in user has correct vote value
+            TestHelper.SetPrincipal(null);
+            q = new QuerySubmission(1, true);
+            submission = q.Execute();
+            Assert.IsNotNull(submission);
+            Assert.AreEqual(null, submission.Vote);
         }
 
         [TestMethod]
@@ -208,6 +222,21 @@ namespace Voat.Tests.CommandTests
                 Assert.AreEqual(comment.DownCount, c.Response.DownCount);
             }
             Assert.IsTrue(voteEventReceived, "VoteEvent not have the expected values");
+
+            //Verify Submission pull has correct vote value recorded in output for current user
+            var q = new QuerySubmission(1, true);
+            var submission = q.Execute();
+            Assert.IsNotNull(submission);
+            Assert.AreEqual(c.RecordedValue, submission.Vote);
+
+            //Verify non-logged in user has correct vote value
+            TestHelper.SetPrincipal(null);
+            q = new QuerySubmission(1, true);
+            submission = q.Execute();
+            Assert.IsNotNull(submission);
+            Assert.AreEqual(null, submission.Vote);
+
+
         }
 
         [TestMethod]

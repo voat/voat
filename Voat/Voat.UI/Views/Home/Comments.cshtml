@@ -18,7 +18,7 @@
 @{
     string highLight = "";
 
-    Voat.Data.Models.Submission submission = ViewBag.Submission;
+    Voat.Domain.Models.Submission submission = ViewBag.Submission;
 }
 
 <style type="text/css">
@@ -47,14 +47,14 @@
 
         @{
             //type 1 = message submission
-            if (submission.Type == 1)
+            if (submission.Type == Voat.Domain.Models.SubmissionType.Text)
             {
                 //I don't know if we need this ViewBag setup
                 ViewBag.Title = submission.Title + " | " + submission.Subverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
                 ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
                 ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
-                @Html.Partial("~/Views/Shared/Submissions/_MessageSubmissionDetails.cshtml", submission,
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionDetail.cshtml", submission,
                     new ViewDataDictionary {
                         { "ModeratorList", ViewBag.ModeratorList },
                         { "SubverseAnonymized", ViewBag.SubverseAnonymized }
@@ -62,7 +62,7 @@
             }
 
             //type 2 = link submission
-            if (ViewBag.Submission.Type == 2)
+            else if (submission.Type == Voat.Domain.Models.SubmissionType.Link)
             {
                 //I don't know if we need this ViewBag setup
                 ViewBag.Title = submission.Title + " | " + submission.Subverse;
@@ -70,23 +70,16 @@
                 ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
 
                 //check if submission has a thumb, otherwise point to site logo
-                if (submission.Thumbnail != null)
+                if (submission.ThumbnailUrl != null)
                 {
-                    if (Settings.UseContentDeliveryNetwork)
-                    {
-                        ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://cdn." + HttpContext.Current.Request.Url.Authority + "/thumbs/" + @submission.Thumbnail;
-                    }
-                    else
-                    {
-                        ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + "/Thumbs/" + @submission.Thumbnail;
-                    }
+                    ViewBag.Image = submission.ThumbnailUrl; 
                 }
                 else
                 {
                     ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
                 }
 
-                @Html.Partial("~/Views/Shared/Submissions/_LinkSubmissionDetails.cshtml", submission,
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionDetail.cshtml", submission,
                     new ViewDataDictionary {
                         { "ModeratorList", ViewBag.ModeratorList },
                         { "SubverseAnonymized", ViewBag.SubverseAnonymized }

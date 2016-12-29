@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Voat
 {
@@ -109,6 +111,35 @@ namespace Voat
                 string typeName = typeof(V).Name;
                 throw new InvalidCastException($"Can not convert {typeName} to {typeof(T).Name}", ex);
             }
+        }
+
+        public static string ToQueryString(this object o, bool includeEmptyArguments = false)
+        {
+            if (o != null)
+            {
+
+                List<string> keyPairs = new List<string>();
+                var props = o.GetType().GetProperties();
+
+                foreach (var prop in props)
+                {
+                    var pValue = prop.GetValue(o);
+                    var qsValue = "";
+
+                    if (pValue != null)
+                    {
+                        qsValue = pValue.ToString();
+                    }
+                    if (includeEmptyArguments || (!includeEmptyArguments && !String.IsNullOrEmpty(qsValue)))
+                    {
+                        //I don't know if this encoding is correct: Uri.EscapeUriString
+                        keyPairs.Add($"{prop.Name.ToLower()}={Uri.EscapeDataString(qsValue)}");
+                    }
+                }
+                var result = String.Join("&", keyPairs);
+                return result;
+            }
+            return "";
         }
     }
 }

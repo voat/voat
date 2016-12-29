@@ -118,5 +118,29 @@ namespace Voat.Utilities
             }
             return scrubbed;
         }
+        public static string PluralizeIt(int amount, string unit, string zeroText = null)
+        {
+            if (amount == 0 && !String.IsNullOrEmpty(zeroText))
+            {
+                return zeroText;
+            }
+            else
+            {
+                return String.Format("{0} {1}{2}", amount, unit, (amount == 1 ? "" : "s"));
+            }
+        }
+
+        public static string PluralizeIt(double amount, string unit, string zeroText = null)
+        {
+            if (amount == 0.0 && !String.IsNullOrEmpty(zeroText))
+            {
+                return zeroText;
+            }
+            else
+            {
+                return String.Format("{0} {1}{2}", (Math.Round(amount, 1)), unit, (Math.Round(amount, 1) == 1.0 ? "" : "s"));
+            }
+            
+        }
     }
 }

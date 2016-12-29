@@ -10,12 +10,10 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.Submission
+@model Voat.Domain.Models.Submission
 
 @{
     string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
-
-    var commentCount = CommentCounter.CommentCount(Model.ID);
 
     DateTime submissionDate = Model.CreationDate;
     string postAge = Age.ToRelative(submissionDate);
@@ -23,21 +21,14 @@
     bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
 
     //type 2 = urls
-    if (Model.Type == 2)
+    if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
     {
         string submissionDomain = UrlUtility.GetDomainFromUri(Model.Url);
 
-        if (Model.Thumbnail != null)
+        if (Model.ThumbnailUrl != null)
         {
             <a class="thumbnail may-blank" href="@Model.Url">
-                @if (Settings.UseContentDeliveryNetwork)
-                {
-                    <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.Title" />
-                }
-                else
-                {
-                    <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.Title" />
-                }
+               <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
             </a>
         }
 
@@ -65,14 +56,7 @@
             }
             <ul class="flat-list buttons">
                 <li class="first">
-                    @if (commentCount > 0)
-                    {
-                        <a href="@commentsUrl" class="comments may-blank">@commentCount comments</a>
-                    }
-                    else
-                    {
-                        <a href="@commentsUrl" class="comments may-blank">discuss</a>
-                    }
+                  <a href="@commentsUrl" class="comments may-blank">@Formatting.PluralizeIt(Model.CommentCount, "comment", "discuss")</a>
                 </li>
                 <li class="share">
                     <span class="share-button toggle" style="">
@@ -113,14 +97,7 @@
 
             <ul class="flat-list buttons">
                 <li class="first">
-                    @if (commentCount > 0)
-                    {
-                        <a href="@commentsUrl" class="comments may-blank">@commentCount comments</a>
-                    }
-                    else
-                    {
-                        <a href="@commentsUrl" class="comments may-blank">discuss</a>
-                    }
+                    <a href="@commentsUrl" class="comments may-blank">@Formatting.PluralizeIt(Model.CommentCount, "comment", "discuss")</a>
                 </li>
                 @if (User.Identity.IsAuthenticated)
                 {

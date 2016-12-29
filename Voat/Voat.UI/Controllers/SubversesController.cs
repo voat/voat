@@ -1277,7 +1277,7 @@ namespace Voat.Controllers
            
             try
             {
-                PaginatedList<Submission> pageList = null;
+                PaginatedList<Domain.Models.Submission> pageList = null;
 
                 if (AGGREGATE_SUBVERSE.IsAggregate(subverse))
                 {
@@ -1349,10 +1349,10 @@ namespace Voat.Controllers
                 }
 
 
-                var q = new QuerySubmissionsLegacy(subverse, options);
+                var q = new QuerySubmissions(subverse, options);
                 var results = await q.ExecuteAsync().ConfigureAwait(false);
 
-                pageList = new PaginatedList<Submission>(results, options.Page, options.Count, -1);
+                pageList = new PaginatedList<Domain.Models.Submission>(results, options.Page, options.Count, -1);
                 viewProperties.Submissions = pageList;
                 viewProperties.Subverse = subverse;
 

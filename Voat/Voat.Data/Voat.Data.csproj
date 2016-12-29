@@ -128,6 +128,9 @@
     <Compile Include="Models\FeaturedSubverse.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Filter.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Message.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>

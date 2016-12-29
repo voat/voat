@@ -66,7 +66,7 @@ namespace Voat.Models.ViewModels
         public bool IsAuthorizedOnly { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]
-        public bool IsAnonymized { get; set; }
+        public bool? IsAnonymized { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]
         [Range(0, 10000, ErrorMessage = "Minimum CCP value must be between 0 and 10000")]

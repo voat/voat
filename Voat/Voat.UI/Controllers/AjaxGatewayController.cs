@@ -60,25 +60,6 @@ namespace Voat.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
-        // GET: EmbedVideo
-        public ActionResult VideoPlayer(int? messageId)
-        {
-
-            var message = DataCache.Submission.Retrieve(messageId.Value);
-
-            if (message != null)
-            {
-                if (message.Content != null)
-                {
-                    return PartialView("~/Views/AjaxViews/_VideoPlayer.cshtml", message);
-                }
-
-                message.Content = "There was a problem loading video.";
-                return PartialView("~/Views/AjaxViews/_VideoPlayer.cshtml", message);
-            }
-            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        }
-
         // GET: subverse link flairs for selected subverse
         [Authorize]
         public ActionResult SubverseLinkFlairs(string subversetoshow, int? messageId)

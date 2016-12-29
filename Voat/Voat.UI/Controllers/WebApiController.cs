@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Voat.Caching;
 using Voat.Data.Models;
@@ -205,6 +206,7 @@ namespace Voat.Controllers
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
+
             //IAmAGate: Perf mods for caching
             string cacheKey = String.Format("Legacy:Api:SubverseFrontpage.{0}", subverse).ToLower();
             object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
@@ -279,56 +281,92 @@ namespace Voat.Controllers
         /// </summary>
         /// <param name="id">The ID of submission to fetch.</param>
         [HttpGet]
-        public ApiMessage SingleSubmission(int id)
+        public async Task<ApiMessage> SingleSubmission(int id)
         {
+            var q = new QuerySubmission(id);
+            var submission = await q.ExecuteAsync();
 
-            ApiMessage singleSubmission = CacheHandler.Instance.Register<ApiMessage>(String.Format("Legacy:Api:SingleSubmission.{0}", id),
-              new Func<ApiMessage>(() =>
-              {
-                  using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
-                  {
-                      var submission = db.Submissions.Find(id);
-
-                      if (submission == null || submission.Subverse1.IsAdminDisabled == true)
-                      {
-                          return null; // throw new HttpResponseException(HttpStatusCode.NotFound);
-                      }
-
-                      var resultModel = new ApiMessage
-                      {
-                          CommentCount = submission.Comments.Count,
-                          Id = submission.ID,
-                          Date = submission.CreationDate,
-                          LastEditDate = submission.LastEditDate,
-                          Likes = (int)submission.UpCount,
-                          Dislikes = (int)submission.DownCount
-                      };
-
-                      if (submission.IsAnonymized || submission.Subverse1.IsAnonymized)
-                      {
-                          resultModel.Name = submission.ID.ToString();
-                      }
-                      else
-                      {
-                          resultModel.Name = submission.UserName;
-                      }
-                      resultModel.Rank = submission.Rank;
-                      resultModel.Thumbnail = submission.Thumbnail;
-                      resultModel.Subverse = submission.Subverse;
-                      resultModel.Type = submission.Type;
-                      resultModel.Title = submission.Title;
-                      resultModel.Linkdescription = null;
-                      resultModel.MessageContent = (submission.Type == 2 ? submission.Content : submission.Content);
-
-                      return resultModel;
-                  }
-              }), TimeSpan.FromMinutes(5), 2);
-
-            if (singleSubmission == null)
+            if (submission == null)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                return null; // throw new HttpResponseException(HttpStatusCode.NotFound);
             }
-            return singleSubmission;
+
+            var resultModel = new ApiMessage
+            {
+                CommentCount = submission.CommentCount,
+                Id = submission.ID,
+                Date = submission.CreationDate,
+                LastEditDate = submission.LastEditDate,
+                Likes = (int)submission.UpCount,
+                Dislikes = (int)submission.DownCount
+            };
+
+            if (submission.IsAnonymized)
+            {
+                resultModel.Name = submission.ID.ToString();
+            }
+            else
+            {
+                resultModel.Name = submission.UserName;
+            }
+            resultModel.Rank = submission.Rank;
+            resultModel.Thumbnail = submission.ThumbnailUrl;
+            resultModel.Subverse = submission.Subverse;
+            resultModel.Type = (int)submission.Type;
+            resultModel.Title = submission.Title;
+            resultModel.Linkdescription = null;
+            resultModel.MessageContent = submission.Content;
+
+            return resultModel;
+
+            //ApiMessage singleSubmission = CacheHandler.Instance.Register<ApiMessage>(String.Format("Legacy:Api:SingleSubmission.{0}", id),
+            //  new Func<ApiMessage>(() =>
+            //  {
+            //      using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
+            //      {
+            //          var submission = db.Submissions.Find(id);
+
+            //          if (submission == null || submission.Subverse1.IsAdminDisabled == true)
+            //          {
+            //              return null; // throw new HttpResponseException(HttpStatusCode.NotFound);
+            //          }
+
+            //          var resultModel = new ApiMessage
+            //          {
+            //              CommentCount = submission.Comments.Count,
+            //              Id = submission.ID,
+            //              Date = submission.CreationDate,
+            //              LastEditDate = submission.LastEditDate,
+            //              Likes = (int)submission.UpCount,
+            //              Dislikes = (int)submission.DownCount
+            //          };
+
+            //          if (submission.IsAnonymized || submission.Subverse1.IsAnonymized)
+            //          {
+            //              resultModel.Name = submission.ID.ToString();
+            //          }
+            //          else
+            //          {
+            //              resultModel.Name = submission.UserName;
+            //          }
+            //          resultModel.Rank = submission.Rank;
+            //          resultModel.Thumbnail = submission.Thumbnail;
+            //          resultModel.Subverse = submission.Subverse;
+            //          resultModel.Type = submission.Type;
+            //          resultModel.Title = submission.Title;
+            //          resultModel.Linkdescription = null;
+            //          resultModel.MessageContent = (submission.Type == 2 ? submission.Content : submission.Content);
+
+            //          return resultModel;
+            //      }
+            //  }), TimeSpan.FromMinutes(5), 2);
+
+
+            //if (singleSubmission == null)
+            //{
+            //    throw new HttpResponseException(HttpStatusCode.NotFound);
+            //}
+            //return singleSubmission;
 
         }
 

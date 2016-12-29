@@ -8,16 +8,6 @@ namespace Voat.Common
     /// </summary>
     public static class Age
     {
-        private static string PluralizeIt(int amount, string unit)
-        {
-            return String.Format("{0} {1}{2}", amount, unit, (amount == 1 ? "" : "s"));
-        }
-
-        private static string PluralizeIt(double amount, string unit)
-        {
-            return String.Format("{0} {1}{2}", (Math.Round(amount, 1)), unit, (Math.Round(amount, 1) == 1.0 ? "" : "s"));
-        }
-
         public static string ToRelative(DateTime date)
         {
             return ToRelative(Repository.CurrentDate.Subtract(date));
@@ -31,7 +21,7 @@ namespace Voat.Common
             {
                 //years
                 double years = Math.Round(span.TotalDays / 365f, 1);
-                result = PluralizeIt(years, "year");
+                result = Utilities.Formatting.PluralizeIt(years, "year");
             }
             else if (span.TotalDays > 31)
             {
@@ -44,7 +34,7 @@ namespace Voat.Common
                 else
                 {
                     int months = (int)(span.TotalDays / 30);
-                    result = PluralizeIt(months, "month");
+                    result = Utilities.Formatting.PluralizeIt(months, "month");
                 }
             }
             else if (span.TotalHours >= 24)
@@ -57,7 +47,7 @@ namespace Voat.Common
                 }
                 else
                 {
-                    result = PluralizeIt(Math.Round(span.TotalDays, (span.TotalDays < 2 ? 1 : 0)), "day");
+                    result = Utilities.Formatting.PluralizeIt(Math.Round(span.TotalDays, (span.TotalDays < 2 ? 1 : 0)), "day");
                 }
             }
             else if (span.TotalHours >= 1)
@@ -65,11 +55,11 @@ namespace Voat.Common
                 //hours
                 if (span.TotalHours < 3)
                 {
-                    result = PluralizeIt(span.TotalHours, "hour");
+                    result = Utilities.Formatting.PluralizeIt(span.TotalHours, "hour");
                 }
                 else
                 {
-                    result = PluralizeIt((int)span.TotalHours, "hour");
+                    result = Utilities.Formatting.PluralizeIt((int)span.TotalHours, "hour");
                 }
             }
             else if (span.TotalSeconds >= 60)
@@ -82,7 +72,7 @@ namespace Voat.Common
                 }
                 else
                 {
-                    result = PluralizeIt(min, "minute");
+                    result = Utilities.Formatting.PluralizeIt(min, "minute");
                 }
             }
             else if (span.TotalSeconds > 0)
@@ -94,7 +84,7 @@ namespace Voat.Common
                 }
                 else
                 {
-                    result = PluralizeIt(Math.Max(1, Math.Round(span.TotalSeconds, 0)), "second");
+                    result = Utilities.Formatting.PluralizeIt(Math.Max(1, Math.Round(span.TotalSeconds, 0)), "second");
                 }
             }
 

@@ -67,6 +67,14 @@ namespace Voat.Domain.Models
         public Nullable<int> SubmissionID { get; set; }
 
         public Nullable<int> CommentID { get; set; }
+        
+        // Currently not exposing this through the API but UI needs it and it is mapped from the Query
+        [JsonIgnore]
+        public Domain.Models.Submission Submission {get; set; }
+
+        // Currently not exposing this through the API but UI needs it and it is mapped from the Query
+        [JsonIgnore]
+        public Domain.Models.Comment Comment { get; set; }
 
         public bool IsAnonymized { get; set; }
 

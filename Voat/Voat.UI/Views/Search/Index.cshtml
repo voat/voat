@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Voat.Data.Models.Submission>
+@model PaginatedList<Voat.Domain.Models.Submission>
 
 @using System.Globalization
 @using Voat.Models.ViewModels
@@ -69,7 +69,7 @@
             {
                 //type 2 = link
                 //type 1 = message
-                if (submission.Type == 1)
+                if (submission.Type == Voat.Domain.Models.SubmissionType.Text)
                 {
                     submissionClass = "self";
                 }

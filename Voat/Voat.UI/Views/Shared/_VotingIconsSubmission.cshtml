@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.Submission
+@model Voat.Domain.Models.Submission
 
 @{
     int score = (int)(Model.UpCount - Model.DownCount);
@@ -28,7 +28,7 @@
         string loggedInUserName = User.Identity.Name;
 
         //returns -1:downvoted, 1:upvoted, or 0:not voted
-        int votedOrNot = Voting.CheckIfVoted(loggedInUserName, Model.ID);
+        int votedOrNot = Model.Vote.HasValue ? Model.Vote.Value : 0;
 
         switch (votedOrNot)
         {

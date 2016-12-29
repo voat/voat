@@ -19,7 +19,7 @@ namespace Voat.Domain.Query.Base
 
         protected int _collapseThreshold = -4;
         protected int _count = 4;
-        protected IEnumerable<CommentVoteTracker> _commentVotes = null;
+        protected IEnumerable<VoteValue> _commentVotes = null;
         protected IEnumerable<CommentSaveTracker> _commentSaves = null;
 
         protected abstract IQueryable<usp_CommentTree_Result> FilterSegment(IQueryable<usp_CommentTree_Result> commentTree);

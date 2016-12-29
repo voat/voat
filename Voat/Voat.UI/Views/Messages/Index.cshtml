@@ -157,7 +157,7 @@
 
                             case Voat.Domain.Models.MessageType.SubmissionMention:
 
-                                var submission = Voat.Caching.DataCache.Submission.Retrieve(message.SubmissionID);
+                                var submission = message.Submission;
 
                                 <div id="messageContainer-@message.ID" class="entry">
                                     <div class="panel panel-default @(unreadCssClass)">
@@ -178,21 +178,21 @@
                             case Voat.Domain.Models.MessageType.CommentMention:
                             case Voat.Domain.Models.MessageType.CommentReply:
                             case Voat.Domain.Models.MessageType.SubmissionReply:
-                                
+
                                 try
                                 {
-                                    var q = new Voat.Domain.Query.QuerySubmission(message.SubmissionID.Value);
-                                    var submission2 = q.Execute();
+                                    //var q = new Voat.Domain.Query.QuerySubmission(message.SubmissionID.Value);
+                                    //var submission2 = q.Execute();
 
-                                    var qc = new Voat.Domain.Query.QueryComment(message.CommentID.Value);
-                                    var comment = qc.Execute();
+                                    //var qc = new Voat.Domain.Query.QueryComment(message.CommentID.Value);
+                                    var comment = message.Comment;
 
                                     <div id="messageContainer-@comment.ID" class="entry">
                                         <div class="panel panel-default @(unreadCssClass)">
-                                            @if (submission2 != null && comment != null)
+                                            @if (comment != null)
                                             {
                                                 <div class="panel panel-heading">
-                                                    <a href="@VoatPathHelper.CommentsPagePath(message.Subverse, message.SubmissionID.Value)"><b>@submission2.Title</b></a>
+                                                    <a href="@VoatPathHelper.CommentsPagePath(message.Subverse, message.SubmissionID.Value)"><b>@message.Title</b></a>
                                                 </div>
                                                 <div class="panel-message-body">
                                                     @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",

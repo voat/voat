@@ -165,6 +165,7 @@
     <Compile Include="Data\DapperQuery.cs" />
     <Compile Include="Data\Selectors.cs" />
     <Compile Include="Domain\Command\CreateSubverseCommand.cs" />
+    <Compile Include="Domain\Command\LogVisitCommand.cs" />
     <Compile Include="Domain\Command\MarkMessageCommand.cs" />
     <Compile Include="Domain\Command\Base\Command.cs" />
     <Compile Include="Domain\Command\Base\CommandResponse.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="Domain\Models\Comment\CommentSegment.cs" />
     <Compile Include="Domain\Models\Comment\NestedComment.cs" />
     <Compile Include="Domain\Models\Comment\SubmissionComment.cs" />
+    <Compile Include="Domain\Models\Flair.cs" />
     <Compile Include="Domain\Models\FriendlyEnumNames.cs" />
     <Compile Include="Domain\Models\Message.cs" />
     <Compile Include="Domain\Models\MessageCounts.cs" />
@@ -223,8 +225,11 @@
     <Compile Include="Domain\Query\QueryModLogRemovedSubmissions.cs" />
     <Compile Include="Domain\Query\QueryNewestSubverses.cs" />
     <Compile Include="Domain\Query\QueryComments.cs" />
+    <Compile Include="Domain\Query\QuerySticky.cs" />
     <Compile Include="Domain\Query\QuerySubmission.cs" />
     <Compile Include="Domain\Query\QuerySubmissions.cs" />
+    <Compile Include="Domain\Query\QueryFilters.cs" />
+    <Compile Include="Domain\Query\QuerySubmissionsByDomain.cs" />
     <Compile Include="Domain\Query\QuerySubverse.cs" />
     <Compile Include="Domain\Query\QuerySubverseModerators.cs" />
     <Compile Include="Domain\Query\QuerySubverseSearch.cs" />
@@ -285,9 +290,11 @@
     <Compile Include="Rules\Global\GlobalBanRule.cs" />
     <Compile Include="Rules\Global\RuntimeStateReadOnlyRule.cs" />
     <Compile Include="Rules\Posting\Base\SubmissionBannedDomainRule.cs" />
+    <Compile Include="Rules\Posting\Base\SubmissionFilterRule.cs" />
     <Compile Include="Rules\Posting\EditCommentRule.cs" />
     <Compile Include="Rules\Posting\EditCommentBannedDomainRule.cs" />
     <Compile Include="Rules\Posting\EditSubmissionBannedDomainRule.cs" />
+    <Compile Include="Rules\Posting\EditSubmissionFilterRule.cs" />
     <Compile Include="Rules\Posting\PostCommentBannedRule.cs" />
     <Compile Include="Rules\Posting\PostCommentCCPRule.cs" />
     <Compile Include="Rules\Posting\PostCommentRule.cs" />
@@ -295,6 +302,7 @@
     <Compile Include="Rules\Posting\PostSubmissionBannedRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionBannedDomainRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionCCPRule.cs" />
+    <Compile Include="Rules\Posting\PostSubmissionFilterRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionRecentlySubmittedRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionValidityRule.cs" />
     <Compile Include="Rules\RuleInformationWithOutcome.cs" />
@@ -327,6 +335,7 @@
     <Compile Include="Caching\DataCache.cs" />
     <Compile Include="Utilities\DateTimeUtility.cs" />
     <Compile Include="Utilities\FileSystemUtility.cs" />
+    <Compile Include="Utilities\FilterUtility.cs" />
     <Compile Include="Utilities\Formatting.cs" />
     <Compile Include="Utilities\HashHandler.cs" />
     <Compile Include="Utilities\IpHashUtility.cs" />

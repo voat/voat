@@ -161,6 +161,12 @@ namespace Voat.Caching
         {
             return String.Format("System:AdCache");
         }
+        public static string Filters()
+        {
+            return String.Format("System:FilterCache");
+        }
+
+        
 
         public static string RssFeed(string subverse)
         {

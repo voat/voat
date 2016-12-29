@@ -159,7 +159,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                var s = await db.GetSubmissionsDapper("unit", new SearchOptions()).ConfigureAwait(false);
+                var s = await db.GetSubmissionsDapper("unit", DomainType.Subverse, new SearchOptions()).ConfigureAwait(false);
                 Assert.IsTrue(s.Any());
             }
         }
@@ -171,7 +171,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                var anon_sub = await db.GetSubmissionsDapper("anon", SearchOptions.Default).ConfigureAwait(false);
+                var anon_sub = await db.GetSubmissionsDapper("anon", DomainType.Subverse, SearchOptions.Default).ConfigureAwait(false);
                 var first = anon_sub.OrderBy(x => x.CreationDate).First();
                 Assert.IsNotNull(first, "no anon submissions found");
                 Assert.AreEqual("First Anon Post", first.Title);
@@ -378,6 +378,7 @@ namespace Voat.Tests.Repository
                 Assert.IsTrue(result.Any(x => x.Subverse == "AuthorizedOnly"), "Result expected to see subverse AuthorizedOnly for user unit");
             }
         }
+
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void BannedDomainTest()
@@ -506,6 +507,15 @@ namespace Voat.Tests.Repository
                 Assert.IsTrue(result.Any(), "Result expected");
 
                 
+            }
+        }
+        [TestMethod]
+        [TestCategory("Repository"), TestCategory("Repository.LogVisit")]
+        public async Task EnsureLogVisitWorks()
+        {
+            using (var repo = new Voat.Data.Repository())
+            {
+                await repo.LogVisit(1, "127.0.0.1");    
             }
         }
     }

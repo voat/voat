@@ -18,7 +18,7 @@ namespace Voat.Utilities
                 {
                     return repo.GetCommentCount(submissionID);
                 }
-            }), _cacheTime, 5);
+            }), _cacheTime, 3);
 
             return data.Value;
         }

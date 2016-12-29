@@ -125,6 +125,8 @@ namespace Voat.Controllers
 
             //new pipeline
             var userSubmission = new Domain.Models.UserSubmission();
+            userSubmission.IsAdult = model.IsAdult;
+            userSubmission.IsAnonymized = model.IsAnonymized;
             userSubmission.Subverse = model.Subverse;
             userSubmission.Title = model.Title;
             userSubmission.Content = (model.Type == Domain.Models.SubmissionType.Text ? model.Content : null);
@@ -296,7 +298,7 @@ namespace Voat.Controllers
         //[OutputCache(Duration = 600)]
         public ActionResult StickiedSubmission()
         {
-            Submission sticky = StickyHelper.GetSticky("announcements");
+            var sticky = StickyHelper.GetSticky("announcements");
 
             if (sticky != null)
             {

@@ -67,6 +67,7 @@
         <EntityTypeShape EntityType="Models.Ad" Width="1.5" PointX="11.75" PointY="12.75" />
         <EntityTypeShape EntityType="Models.UserVisit" Width="1.5" PointX="13.75" PointY="8.75" />
         <EntityTypeShape EntityType="Models.Message" Width="1.5" PointX="13.75" PointY="11.75" />
+        <EntityTypeShape EntityType="Models.Filter" Width="1.5" PointX="15.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

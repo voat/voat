@@ -53,7 +53,7 @@ namespace Voat.Domain.Command
             CacheHandler.Instance.Remove(CachingKey.Submission(result.ID));
 
             //Legacy item removal
-            CacheHandler.Instance.Remove(DataCache.Keys.Submission(result.ID));
+            //CacheHandler.Instance.Remove(DataCache.Keys.Submission(result.ID));
         }
     }
 
@@ -100,7 +100,7 @@ namespace Voat.Domain.Command
             }
 
             //Legacy item removal
-            CacheHandler.Instance.Remove(DataCache.Keys.Submission(result.ID));
+            //CacheHandler.Instance.Remove(DataCache.Keys.Submission(result.ID));
         }
     }
 }

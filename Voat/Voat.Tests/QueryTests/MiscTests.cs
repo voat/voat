@@ -16,19 +16,19 @@ namespace Voat.Tests.QueryTests
         public void TestSubmissionCacheVolatileLogic()
         {
             //No user
-            Assert.AreEqual(false, QuerySubmissionsLegacy.IsUserVolatileCache(null, "news"));
-            Assert.AreEqual(false, QuerySubmissionsLegacy.IsUserVolatileCache(null, Voat.Data.AGGREGATE_SUBVERSE.DEFAULT));
-            Assert.AreEqual(false, QuerySubmissionsLegacy.IsUserVolatileCache(null, Voat.Data.AGGREGATE_SUBVERSE.ANY));
-            Assert.AreEqual(false, QuerySubmissionsLegacy.IsUserVolatileCache(null, Voat.Data.AGGREGATE_SUBVERSE.FRONT));
-            Assert.AreEqual(false, QuerySubmissionsLegacy.IsUserVolatileCache(null, Voat.Data.AGGREGATE_SUBVERSE.ALL));
-            Assert.AreEqual(false, QuerySubmissionsLegacy.IsUserVolatileCache(null, "all"));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, "news"));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, Voat.Data.AGGREGATE_SUBVERSE.DEFAULT));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, Voat.Data.AGGREGATE_SUBVERSE.ANY));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, Voat.Data.AGGREGATE_SUBVERSE.FRONT));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, Voat.Data.AGGREGATE_SUBVERSE.ALL));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, "all"));
             //User
-            Assert.AreEqual(false, QuerySubmissionsLegacy.IsUserVolatileCache("UnitTest", "news"));
-            Assert.AreEqual(false, QuerySubmissionsLegacy.IsUserVolatileCache("UnitTest", Voat.Data.AGGREGATE_SUBVERSE.DEFAULT));
-            Assert.AreEqual(false, QuerySubmissionsLegacy.IsUserVolatileCache("UnitTest", Voat.Data.AGGREGATE_SUBVERSE.ANY));
-            Assert.AreEqual(true, QuerySubmissionsLegacy.IsUserVolatileCache("UnitTest", Voat.Data.AGGREGATE_SUBVERSE.FRONT));
-            Assert.AreEqual(true, QuerySubmissionsLegacy.IsUserVolatileCache("UnitTest", Voat.Data.AGGREGATE_SUBVERSE.ALL));
-            Assert.AreEqual(true, QuerySubmissionsLegacy.IsUserVolatileCache("UnitTest", "all"));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache("UnitTest", "news"));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache("UnitTest", Voat.Data.AGGREGATE_SUBVERSE.DEFAULT));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache("UnitTest", Voat.Data.AGGREGATE_SUBVERSE.ANY));
+            Assert.AreEqual(true, QuerySubmissions.IsUserVolatileCache("UnitTest", Voat.Data.AGGREGATE_SUBVERSE.FRONT));
+            Assert.AreEqual(true, QuerySubmissions.IsUserVolatileCache("UnitTest", Voat.Data.AGGREGATE_SUBVERSE.ALL));
+            Assert.AreEqual(true, QuerySubmissions.IsUserVolatileCache("UnitTest", "all"));
         }
 
         [TestMethod]

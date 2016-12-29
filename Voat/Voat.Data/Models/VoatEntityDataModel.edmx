@@ -175,8 +175,8 @@
           <Property Name="UserName" Type="nvarchar" MaxLength="100" />
           <Property Name="Origin" Type="varchar" MaxLength="20" />
           <Property Name="Type" Type="varchar" MaxLength="300" Nullable="false" />
-          <Property Name="Category" Type="varchar" MaxLength="1000" Nullable="false" />
           <Property Name="Message" Type="varchar" MaxLength="1500" Nullable="false" />
+          <Property Name="Category" Type="varchar" MaxLength="1000" Nullable="false" />
           <Property Name="Exception" Type="varchar(max)" />
           <Property Name="Data" Type="varchar(max)" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
@@ -188,6 +188,20 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Filter">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="1000" />
+          <Property Name="Pattern" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Replacement" Type="varchar" MaxLength="1000" />
+          <Property Name="AppliesTo" Type="int" />
+          <Property Name="Action" Type="int" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="Message">
@@ -267,6 +281,7 @@
           <Property Name="RelativeRank" Type="float" Nullable="false" />
           <Property Name="Url" Type="nvarchar" MaxLength="3000" />
           <Property Name="FormattedContent" Type="nvarchar(max)" />
+          <Property Name="IsAdult" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="SubmissionRemovalLog">
           <Key>
@@ -324,7 +339,7 @@
           <Property Name="SubscriberCount" Type="int" />
           <Property Name="IsPrivate" Type="bit" Nullable="false" />
           <Property Name="IsAuthorizedOnly" Type="bit" Nullable="false" />
-          <Property Name="IsAnonymized" Type="bit" Nullable="false" />
+          <Property Name="IsAnonymized" Type="bit" />
           <Property Name="LastSubmissionDate" Type="datetime" />
           <Property Name="MinCCPForDownvote" Type="int" Nullable="false" />
           <Property Name="IsAdminPrivate" Type="bit" Nullable="false" />
@@ -571,6 +586,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Messages_Subverses">
+          <End Role="Subverse" Type="Self.Subverse" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Submission" Type="Self.Submission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subverse">
+              <PropertyRef Name="Name" />
+            </Principal>
+            <Dependent Role="Submission">
+              <PropertyRef Name="Subverse" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Savingtracker_Messages">
           <End Role="Submission" Type="Self.Submission" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -799,6 +828,7 @@
           <EntitySet Name="DefaultSubverse" EntityType="Self.DefaultSubverse" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EventLog" EntityType="Self.EventLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FeaturedSubverse" EntityType="Self.FeaturedSubverse" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Filter" EntityType="Self.Filter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Message" EntityType="Self.Message" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ModeratorInvitation" EntityType="Self.ModeratorInvitation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SessionTracker" EntityType="Self.SessionTracker" Schema="dbo" store:Type="Tables" />
@@ -852,6 +882,10 @@
           <AssociationSet Name="FK_Featuredsubs_Subverses" Association="Self.FK_Featuredsubs_Subverses">
             <End Role="Subverse" EntitySet="Subverse" />
             <End Role="FeaturedSubverse" EntitySet="FeaturedSubverse" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Messages_Subverses" Association="Self.FK_Messages_Subverses">
+            <End Role="Subverse" EntitySet="Subverse" />
+            <End Role="Submission" EntitySet="Submission" />
           </AssociationSet>
           <AssociationSet Name="FK_Savingtracker_Messages" Association="Self.FK_Savingtracker_Messages">
             <End Role="Submission" EntitySet="Submission" />
@@ -1083,6 +1117,7 @@
           <Property Name="RelativeRank" Type="Double" Nullable="false" />
           <Property Name="Url" Type="String" MaxLength="3000" FixedLength="false" Unicode="true" />
           <Property Name="FormattedContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsAdult" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="SubmissionRemovalLog">
           <Key>
@@ -1143,7 +1178,7 @@
           <Property Name="SubscriberCount" Type="Int32" />
           <Property Name="IsPrivate" Type="Boolean" Nullable="false" />
           <Property Name="IsAuthorizedOnly" Type="Boolean" Nullable="false" />
-          <Property Name="IsAnonymized" Type="Boolean" Nullable="false" />
+          <Property Name="IsAnonymized" Type="Boolean" />
           <Property Name="LastSubmissionDate" Type="DateTime" Precision="3" />
           <Property Name="MinCCPForDownvote" Type="Int32" Nullable="false" />
           <Property Name="IsAdminPrivate" Type="Boolean" Nullable="false" />
@@ -1730,6 +1765,7 @@
           <EntitySet Name="Ads" EntityType="Models.Ad" />
           <EntitySet Name="UserVisits" EntityType="Models.UserVisit" />
           <EntitySet Name="Messages" EntityType="Models.Message" />
+          <EntitySet Name="Filters" EntityType="Models.Filter" />
         </EntityContainer>
         <ComplexType Name="usp_CommentTree_Result">
           <Property Type="Int32" Name="ChildCount" Nullable="true" />
@@ -1912,6 +1948,20 @@
           <Property Name="FormattedContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="Filter">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="Pattern" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Replacement" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="AppliesTo" Type="Int32" />
+          <Property Name="Action" Type="Int32" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2053,6 +2103,7 @@
           <EntitySetMapping Name="Submissions">
             <EntityTypeMapping TypeName="Models.Submission">
               <MappingFragment StoreEntitySet="Submission">
+                <ScalarProperty Name="IsAdult" ColumnName="IsAdult" />
                 <ScalarProperty Name="FormattedContent" ColumnName="FormattedContent" />
                 <ScalarProperty Name="Url" ColumnName="Url" />
                 <ScalarProperty Name="RelativeRank" ColumnName="RelativeRank" />
@@ -2433,6 +2484,21 @@
                 <ScalarProperty Name="Type" ColumnName="Type" />
                 <ScalarProperty Name="ParentID" ColumnName="ParentID" />
                 <ScalarProperty Name="CorrelationID" ColumnName="CorrelationID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Filters">
+            <EntityTypeMapping TypeName="Models.Filter">
+              <MappingFragment StoreEntitySet="Filter">
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="AppliesTo" ColumnName="AppliesTo" />
+                <ScalarProperty Name="Replacement" ColumnName="Replacement" />
+                <ScalarProperty Name="Pattern" ColumnName="Pattern" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

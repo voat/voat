@@ -1,0 +1,168 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@model Voat.Domain.Models.Submission
+
+@{
+    DateTime submissionDate = Model.CreationDate;
+    string postAge = Age.ToRelative(submissionDate);
+    bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
+
+    string submissionDomain = Model.Subverse;
+    string submissionDomainHref = "/v/" + Model.Subverse;
+    if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
+    {
+        submissionDomain = UrlUtility.GetDomainFromUri(Model.Url);
+        submissionDomainHref = "/domains/" + submissionDomain;
+    }
+
+}
+
+<div class="modal fade" id="linkFlairSelectModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true"></div>
+
+<div id="siteTable" class="sitetable linklisting">
+    <div id="submissionid-@Model.ID" class="submission odd link self id-@Model.ID" data-fullname="@Model.ID" data-ups="" data-downs="">
+        <a name="submissionTop"></a>
+        <p class="parent"></p>
+
+        @Html.Partial("_VotingIconsSubmission", Model)
+
+        @{
+            string ahrefTarget = "_self";
+
+            if (User.Identity.IsAuthenticated)
+            {
+                var userData = Voat.Domain.UserData.GetContextUserData();
+                if (userData.Preferences.OpenInNewWindow)
+                {
+                    ahrefTarget = "_blank";
+                }
+            }
+        
+            if (Model.ThumbnailUrl != null)
+            {
+                <a class="thumbnail may-blank" href="@Model.Url" target="@ahrefTarget">
+                    <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
+                </a>
+            }
+            var flairs = Model.Flairs;
+
+            <div class="entry unvoted">
+                <p class="title">
+                    @if (flairs.Any())
+                    {
+                        foreach (var flair in flairs)
+                        {
+                            <span class="flair linkflairlabel @flair.CssClass" title="@flair.Name">@flair.Name</span>
+                        }
+                    }
+                    else
+                    {
+                        <span id="linkflair" class="" title=""></span>
+                    }
+                    <a class="title may-blank " href="@(String.IsNullOrEmpty(Model.Url) ? VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID) : Model.Url)" tabindex="1" title="@Model.Title" target="@ahrefTarget">@Model.Title</a>&#32;<span class="domain">(<a href="@submissionDomainHref">@submissionDomain</a>)</span>
+                </p>
+
+                <p class="tagline">
+                    submitted&#32;<time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time>&#32;ago&#32;by&#32;
+                    @if (Model.IsDeleted)
+                    {
+                        <span class="userattrs">[deleted]</span>
+                    }
+                    else
+                    {
+                        if (Model.IsAnonymized || subverseAnonymized == true)
+                        {
+                            <span class="userattrs">
+                                <a href="#" class="author may-blank">@Model.ID</a>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="userattrs">
+                                <a href="/user/@Model.UserName" class="author may-blank userinfo" data-username="@Model.UserName">@Model.UserName</a>
+                            </span>
+                        }
+                    }
+                </p>
+
+                @switch (Model.Type)
+                {
+                    case Voat.Domain.Models.SubmissionType.Link:
+
+                        @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_Buttons.cshtml", Model,
+                                new ViewDataDictionary {
+                                { "ModeratorList", ViewBag.ModeratorList }
+                            })
+                        <div class="expando" style='display: none'>
+                            <span class="error">loading...</span>
+                        </div>
+
+                        break;
+                    case Voat.Domain.Models.SubmissionType.Text:
+                        <div class="expando">
+                            <form class="usertext" onsubmit="return editSubmission(@Model.ID)" id="messageeditform-@Model.ID" action="#">
+                                @Html.AntiForgeryToken()
+                                <input id="SubmissionID" name="SubmissionID" value="@Model.ID" type="hidden">
+                                <div class="usertext-body original may-blank-within" style="display:@(String.IsNullOrEmpty(Model.Content) ? "none" : "block")">
+                                    <div class="md">
+                                        @Html.Raw((String.IsNullOrEmpty(Model.FormattedContent) ? Formatting.FormatMessage(Model.Content) : Model.FormattedContent))
+                                    </div>
+                                </div>
+                                <div class="usertext-edit" style="display: none;">
+                                    <div>
+                                        @Html.Partial("_MarkdownEditor")
+                                        <textarea aria-invalid="false" class="form-control valid" cols="20" id="Content" name="Content" data-rule-required="true" data-msg-required="The text can not be empty.">@Model.Content</textarea>
+                                        <span data-valmsg-replace="false" data-valmsg-for="Content" class="field-validation-error"></span>
+                                        <div class="usertext-buttons">
+                                            <input value="Save" class="btn-whoaverse-paging" type="submit">
+                                            <input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement.parentElement).find('#Content'),$(this.parentElement.parentElement).find('#submission-preview-area'))">
+                                            <button class="btn-whoaverse-paging" onclick="removeSubmissionEditForm(@Model.ID)" type="button">Cancel</button>
+                                        </div>
+                                        <div class="panel panel-default" id="submission-preview-area" style="display: none">
+                                            <div class="panel-heading">
+                                                <h4 class="panel-title">Preview</h4>
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="usertext-body may-blank-within">
+                                                    <div class="md" id="submission-preview-area-container">
+                                                        Loading preview...
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Model.Content</textarea>
+                        @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_Buttons.cshtml", Model,
+                                new ViewDataDictionary {
+                                { "ModeratorList", ViewBag.ModeratorList }
+                            })
+                        break;
+                    default:
+                        <p>Unknown Type</p>
+                        break;
+                }
+
+            </div>
+        }
+        <div class="child"></div>
+        <div class="clearleft">
+            @*IE6fix*@
+        </div>
+    </div>
+    <div class="clearleft">
+        @*IE6fix*@
+    </div>
+</div>

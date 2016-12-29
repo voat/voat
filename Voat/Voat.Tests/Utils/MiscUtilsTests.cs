@@ -222,5 +222,23 @@ namespace Voat.Tests.Utils
             result = Formatting.StripWhiteSpace(testString);
             Assert.IsNull(result, "Null should return null");
         }
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("Formatting")]
+        public void TestZeroPluralizer()
+        {
+
+            string result = Formatting.PluralizeIt(0, "xxx");
+            Assert.AreEqual("0 xxxs", result);
+
+            result = Formatting.PluralizeIt(0.0, "xxx");
+            Assert.AreEqual("0 xxxs", result);
+
+            result = Formatting.PluralizeIt(0, "xxx", "none");
+            Assert.AreEqual("none", result);
+
+            result = Formatting.PluralizeIt(0.0, "xxx", "none");
+            Assert.AreEqual("none", result);
+
+        }
     }
 }

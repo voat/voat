@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -7,36 +8,27 @@ using System.Threading.Tasks;
 
 namespace Voat.Data
 {
-    public class DapperQuery
+    public static class DapperExtensions
     {
-       
+        public static DynamicParameters ToDynamicParameters(this object parameters)
+        {
+            var d = new DynamicParameters();
+            d.AddDynamicParams(parameters);
+            return d;
+        }
+    }
+    
+    public class DapperQuery : DapperBase
+    {
         public string Select { get; set; }
 
         public string SelectColumns { get; set; }
-
-        public string Where { get; set; }
 
         public string GroupBy { get; set; }
 
         public string OrderBy { get; set; }
 
-        public object Parameters { get; set; }
-
-        //OFFSET 10 ROWS
-        public int? SkipCount { get; set; }
-
-        //FETCH NEXT 10 ROWS ONLY
-        public int? TakeCount { get; set; }
-
-        private string EnsureStartsWith(string content, string prefix)
-        {
-            if (!String.IsNullOrEmpty(content) && !content.ToLower().StartsWith(prefix.ToLower()))
-            {
-                return $"{prefix} {content}";
-            }
-            return content;
-        }
-        private string FormattedSelect
+        protected string FormattedSelect
         {
             get
             {
@@ -47,6 +39,12 @@ namespace Voat.Data
                 return Select;
             }
         }
+
+        //OFFSET 10 ROWS
+        public int? SkipCount { get; set; }
+
+        //FETCH NEXT 10 ROWS ONLY
+        public int? TakeCount { get; set; }
         public override string ToString()
         {
             var q = $"{EnsureStartsWith(FormattedSelect, "SELECT ")} {EnsureStartsWith(Where, "WHERE ")} {EnsureStartsWith(GroupBy, "GROUP BY ")} {EnsureStartsWith(OrderBy, "ORDER BY ")}";
@@ -56,11 +54,8 @@ namespace Voat.Data
             }
             return q;
         }
-        public string AppendClause(string currentValue, string appendValue, string seperator)
-        {
-            return currentValue + (String.IsNullOrEmpty(currentValue) ? appendValue : seperator + appendValue);
-        }
-        public void Append<P>(Expression<Func<DapperQuery, P>> expression, string appendClause)
+
+        public override void Append<P>(Expression<Func<DapperQuery, P>> expression, string appendClause)
         {
             var body = (MemberExpression)expression.Body;
             string name = body.Member.Name;
@@ -78,6 +73,79 @@ namespace Voat.Data
                     break;
                 case "groupby":
                     GroupBy = AppendClause(GroupBy, appendClause, ", ");
+                    break;
+            }
+        }
+    }
+    public class DapperUpdate : DapperBase
+    {
+        public string Update { get; set; }
+
+        public override string ToString()
+        {
+            var q = $"{EnsureStartsWith(Update, "UPDATE ")} {EnsureStartsWith(Where, "WHERE ")}";
+            return q;
+        }
+    }
+    public class DapperDelete : DapperBase
+    {
+        public string Delete { get; set; }
+
+        public override string ToString()
+        {
+            var q = $"{EnsureStartsWith(Delete, "DELETE ")} {EnsureStartsWith(Where, "WHERE ")}";
+            return q;
+        }
+    }
+    public class DapperBase
+    {
+        private DynamicParameters _params = null;
+
+        public string Where { get; set; }
+
+        public DynamicParameters Parameters
+        {
+            get
+            {
+                if (_params == null)
+                {
+                    _params = new DynamicParameters();
+                }
+                return _params;
+            }
+            set
+            {
+                _params = value;
+            }
+        }
+
+        protected string EnsureStartsWith(string content, string prefix)
+        {
+            if (!String.IsNullOrEmpty(content) && !content.ToLower().StartsWith(prefix.ToLower()))
+            {
+                return $"{prefix} {content}";
+            }
+            return content;
+        }
+
+        public string AppendClause(string currentValue, string appendValue, string seperator)
+        {
+            return currentValue + (String.IsNullOrEmpty(currentValue) ? appendValue : seperator + appendValue);
+        }
+        public override string ToString()
+        {
+            throw new NotImplementedException("This method must be overridden in derived classes");
+        }
+
+        public virtual void Append<P>(Expression<Func<DapperQuery, P>> expression, string appendClause)
+        {
+            var body = (MemberExpression)expression.Body;
+            string name = body.Member.Name;
+
+            switch (name.ToLower())
+            {
+                case "where":
+                    Where = AppendClause(Where, appendClause, " AND ");
                     break;
             }
         }

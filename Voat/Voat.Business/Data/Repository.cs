@@ -683,7 +683,15 @@ namespace Voat.Data
             }
 
         }
-
+        public async Task<Domain.Models.Submission> GetSticky(string subverse)
+        {
+            var x = await _db.StickiedSubmissions.FirstOrDefaultAsync(s => s.Subverse == subverse).ConfigureAwait(false);
+            if (x != null)
+            {
+                return GetSubmission(x.SubmissionID).Map();
+            }
+            return null;
+        }
         #endregion Subverse
 
         #region Submissions
@@ -810,11 +818,38 @@ namespace Voat.Data
 
             return results;
         }
-        public async Task<IEnumerable<Models.Submission>> GetSubmissionsDapper(string subverse, SearchOptions options)
+        public async Task<IEnumerable<Data.Models.Submission>> GetSubmissionsByDomain(string domain, SearchOptions options)
         {
-            if (String.IsNullOrEmpty(subverse))
+            var query = new DapperQuery();
+            query.SelectColumns = "s.*";
+            query.Select = @"SELECT DISTINCT {0} FROM Submission s WITH (NOLOCK) INNER JOIN Subverse sub WITH (NOLOCK) ON s.Subverse = sub.Name";
+            query.Where = $"s.Type = {((int)SubmissionType.Link).ToString()} AND s.Url LIKE CONCAT('%', @Domain, '%')";
+            ApplySubmissionSort(query, options);
+
+            query.SkipCount = options.Index;
+            query.TakeCount = options.Count;
+
+            //Filter out all disabled subs
+            query.Append(x => x.Where, "sub.IsAdminDisabled = 0");
+            query.Append(x => x.Where, "s.IsDeleted = 0");
+
+            query.Parameters = (new { Domain = domain }).ToDynamicParameters();
+
+            //execute query
+            var data = await _db.Database.Connection.QueryAsync<Data.Models.Submission>(query.ToString(), query.Parameters);
+            var results = data.Select(Selectors.SecureSubmission).ToList();
+            return results;
+        }
+        public async Task<IEnumerable<Data.Models.Submission>> GetSubmissionsDapper(string name, DomainType type, SearchOptions options)
+        {
+            if (type != DomainType.Subverse)
             {
-                throw new VoatValidationException("A subverse must be provided.");
+                throw new NotImplementedException($"DomainType {type.ToString()} not implemented using this pipeline");
+            }
+
+            if (String.IsNullOrEmpty(name))
+            {
+                throw new VoatValidationException("An object name must be provided.");
             }
 
             if (options == null)
@@ -842,7 +877,7 @@ namespace Voat.Data
 
             bool filterBlockedSubverses = false;
 
-            switch (subverse.ToLower())
+            switch (name.ToLower())
             {
                 //Match Aggregate Subs
                 case AGGREGATE_SUBVERSE.FRONT:
@@ -920,9 +955,9 @@ namespace Voat.Data
                 //for regular subverse queries
                 default:
 
-                    if (!SubverseExists(subverse))
+                    if (!SubverseExists(name))
                     {
-                        throw new VoatNotFoundException("Subverse '{0}' not found.", subverse);
+                        throw new VoatNotFoundException("Subverse '{0}' not found.", name);
                     }
 
                     ////Controller Logic:
@@ -934,7 +969,7 @@ namespace Voat.Data
                     //    where !(from bu in _db.SubverseBans where bu.Subverse == subverse.Name select bu.UserName).Contains(message.UserName)
                     //    select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
 
-                    subverse = ToCorrectSubverseCasing(subverse);
+                    name = ToCorrectSubverseCasing(name);
                     query.Where = "s.Subverse = @Subverse";
 
                     //Filter out stickies in subs
@@ -992,6 +1027,24 @@ namespace Voat.Data
                 //    query = query.Where(m => m.Title.Contains(x) || m.Content.Contains(x) || m.Url.Contains(x));
                 //});
             }
+
+            ApplySubmissionSort(query, options);
+
+            query.SkipCount = options.Index;
+            query.TakeCount = options.Count;
+
+            //Filter out all disabled subs
+            query.Append(x => x.Where, "sub.IsAdminDisabled = 0");
+            
+            query.Parameters = (new { StartDate = startDate, EndDate = endDate, Subverse = name, UserName = userName, Phrase = options.Phrase}).ToDynamicParameters();
+
+            //execute query
+            var data = await _db.Database.Connection.QueryAsync<Data.Models.Submission>(query.ToString(), query.Parameters);
+            var results = data.Select(Selectors.SecureSubmission).ToList();
+            return results;
+        }
+        private void ApplySubmissionSort(DapperQuery query, SearchOptions options)
+        {
             #region Ordering
 
 
@@ -1095,6 +1148,18 @@ namespace Voat.Data
                         //query = query.OrderByDescending(x => x.DownCount);
                     }
                     break;
+                //case SortAlgorithm.Active:
+                //string activeSort = "s.LastCommentDate";
+                ////query.SelectColumns = query.AppendClause(query.SelectColumns, "LastCommentDate = (SELECT TOP 1 ISNULL(c.CreationDate, s.CreationDate) FROM Comment c WITH (NOLOCK) WHERE c.SubmissionID = s.ID ORDER BY c.CreationDate DESC)", ", ");
+                //if (options.SortDirection == SortDirection.Reverse)
+                //{
+                //    query.OrderBy = $"{activeSort} ASC";
+                //}
+                //else
+                //{
+                //    query.OrderBy = $"{activeSort} DESC";
+                //}
+                //break;
 
                 case SortAlgorithm.Intensity:
                     string sort = "(s.UpCount + s.DownCount)";
@@ -1110,8 +1175,8 @@ namespace Voat.Data
                         //query = query.OrderByDescending(x => x.UpCount + x.DownCount);
                     }
                     break;
-                
-                    //making this default for easy debugging
+
+                //making this default for easy debugging
                 case SortAlgorithm.New:
                 default:
                     if (options.SortDirection == SortDirection.Reverse)
@@ -1131,20 +1196,8 @@ namespace Voat.Data
             //return query;
 
             #endregion
-
-            query.SkipCount = options.Index;
-            query.TakeCount = options.Count;
-
-            //Filter out all disabled subs
-            query.Append(x => x.Where, "sub.IsAdminDisabled = 0");
-            
-            query.Parameters = new { StartDate = startDate, EndDate = endDate, Subverse = subverse, UserName = userName, Phrase = options.Phrase};
-
-            //execute query
-            var data = await _db.Database.Connection.QueryAsync<Models.Submission>(query.ToString(), query.Parameters);
-            var results = data.Select(Selectors.SecureSubmission).ToList();
-            return results;
         }
+        [Obsolete("Moving to Dapper, see yall later", true)]
         public async Task<IEnumerable<Models.Submission>> GetSubmissions(string subverse, SearchOptions options)
         {
             if (String.IsNullOrEmpty(subverse))
@@ -1294,10 +1347,11 @@ namespace Voat.Data
             m.CreationDate = CurrentDate;
             m.Subverse = subverseObject.Name;
 
-            //TODO: Allow this value to be passed in and verified instead of hard coding
-            m.IsAnonymized = subverseObject.IsAnonymized;
+            //TODO: Ensure subverse allows anon posts, raise error if not
+            m.IsAnonymized = userSubmission.IsAnonymized;
 
-            //m.IsAdult = submission.IsAdult;
+            //TODO: Determine if submission is marked as adult or has NSFW in title
+            m.IsAdult = userSubmission.IsAdult;
 
             //1: Text, 2: Link
             m.Type = (int)userSubmission.Type;
@@ -1505,6 +1559,81 @@ namespace Voat.Data
             return Selectors.SecureSubmission(submission);
         }
 
+        public async Task<CommandResponse> LogVisit(int submissionID, string clientIpAddress)
+        {
+
+            if (!String.IsNullOrEmpty(clientIpAddress))
+            {
+                try
+                {
+
+                    // generate salted hash of client IP address
+                    string hash = IpHash.CreateHash(clientIpAddress);
+
+                    // register a new session for this subverse
+                    //New logic
+
+                    var sql =
+                        @"IF NOT EXISTS (
+                    SELECT st.* FROM SessionTracker st WITH (NOLOCK)
+                    WHERE st.SessionID = @SessionID AND st.Subverse = (SELECT TOP 1 Subverse FROM Submission WITH (NOLOCK) WHERE ID = @SubmissionID)
+                    ) 
+                    INSERT SessionTracker (SessionID, Subverse, CreationDate)
+                    SELECT @SessionID, s.Subverse, getutcdate() FROM Submission s WITH (NOLOCK) WHERE ID = @SubmissionID";
+
+                    await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+
+
+                    //SessionHelper.Add(subverse.Name, hash);
+
+                    //current logic
+                    //if (SessionExists(sessionId, subverseName))
+                    //    return;
+                    //using (var db = new voatEntities())
+                    //{
+                    //    var newSession = new SessionTracker { SessionID = sessionId, Subverse = subverseName, CreationDate = Repository.CurrentDate };
+
+                    //    db.SessionTrackers.Add(newSession);
+                    //    db.SaveChanges();
+
+                    //}
+
+                    sql =
+                        @"IF NOT EXISTS (
+                        SELECT * FROM ViewStatistic vs WITH (NOLOCK) WHERE vs.SubmissionID = @SubmissionID AND vs.ViewerID = @SessionID
+                        )
+                        BEGIN 
+                        INSERT ViewStatistic (SubmissionID, ViewerID) VALUES (@SubmissionID, @SessionID)
+                        UPDATE Submission SET Views = (Views + 1) WHERE ID = @SubmissionID
+                        END";
+
+                    await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+
+
+                    //// register a new view for this thread
+                    //// check if this hash is present for this submission id in viewstatistics table
+                    //var existingView = _db.ViewStatistics.Find(submissionID, hash);
+
+                    //// this IP has already viwed this thread, skip registering a new view
+                    //if (existingView == null)
+                    //{
+                    //    // this is a new view, register it for this submission
+                    //    var view = new ViewStatistic { SubmissionID = submissionID, ViewerID = hash };
+                    //    _db.ViewStatistics.Add(view);
+                    //    submission.Views++;
+                    //    await _db.SaveChangesAsync();
+                    //}
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Instance.Log(ex);
+                    throw ex;
+                }
+
+            }
+            return CommandResponse.FromStatus(Status.Success, "");
+        }
+
         #endregion Submissions
 
         #region Comments
@@ -1632,7 +1761,7 @@ namespace Voat.Data
 
             var record = query.FirstOrDefault();
 
-            DomainMaps.ProcessComment(record, true);
+            DomainMaps.HydrateUserData(record, true);
 
             return record;
         }
@@ -1778,7 +1907,7 @@ namespace Voat.Data
         {
             DemandAuthentication();
 
-            var submission = GetSubmission(submissionID);
+            var submission = GetSubmissionUnprotected(submissionID);
             if (submission == null)
             {
                 throw new VoatNotFoundException("submissionID", submissionID, "Can not find submission");
@@ -1821,7 +1950,7 @@ namespace Voat.Data
                     ContentProcessor.Instance.Process(c.Content, ProcessingStage.InboundPostSave, c);
                 }
 
-                await NotificationManager.SendCommentNotification(c).ConfigureAwait(false);
+                await NotificationManager.SendCommentNotification(submission, c).ConfigureAwait(false);
 
                 return MapRuleOutCome(outcome, DomainMaps.Map(Selectors.SecureComment(c), submission.Subverse));
             }
@@ -2410,11 +2539,100 @@ namespace Voat.Data
             return firstSent;
         }
 
+        [Obsolete("Packing up and moving to Dapper", true)]
         private IQueryable<Data.Models.Message> GetMessageQueryBase(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state)
         {
             return GetMessageQueryBase(_db, ownerName, ownerType, type, state);
         }
+        private DapperQuery GetMessageQueryDapperBase(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state)
+        {
+            var q = new DapperQuery();
 
+            q.Select = "SELECT {0} FROM [Message] m WITH (NOLOCK) LEFT JOIN Submission s WITH (NOLOCK) ON s.ID = m.SubmissionID LEFT JOIN Comment c WITH (NOLOCK) ON c.ID = m.CommentID";
+            q.SelectColumns = "*";
+            string senderClause = "";
+
+            //messages include sent items, add special condition to include them
+            if ((type & MessageTypeFlag.Sent) > 0)
+            {
+                senderClause = $" OR (m.Sender = @OwnerName AND m.SenderType = @OwnerType AND m.[Type] = {((int)MessageType.Sent).ToString()})";
+            }
+            q.Where = $"((m.Recipient = @OwnerName AND m.RecipientType = @OwnerType AND m.[Type] != {((int)MessageType.Sent).ToString()}){senderClause})";
+            q.OrderBy = "m.CreationDate DESC";
+            q.Parameters.Add("OwnerName", ownerName);
+            q.Parameters.Add("OwnerType", (int)ownerType);
+
+            //var q = (from m in context.Messages
+            //             //join s in _db.Submissions on m.SubmissionID equals s.ID into ns
+            //             //from s in ns.DefaultIfEmpty()
+            //             //join c in _db.Comments on m.CommentID equals c.ID into cs
+            //             //from c in cs.DefaultIfEmpty()
+            //         where (
+            //            (m.Recipient.Equals(ownerName, StringComparison.OrdinalIgnoreCase) && m.RecipientType == (int)ownerType && m.Type != (int)MessageType.Sent)
+            //            ||
+            //            //Limit sent messages
+            //            (m.Sender.Equals(ownerName, StringComparison.OrdinalIgnoreCase) && m.SenderType == (int)ownerType && ((type & MessageTypeFlag.Sent) > 0) && m.Type == (int)MessageType.Sent)
+            //         )
+            //         select m);
+
+            switch (state)
+            {
+                case MessageState.Read:
+                    q.Append(x => x.Where,  "m.ReadDate IS NOT NULL");
+                    break;
+                case MessageState.Unread:
+                    q.Append(x => x.Where, "m.ReadDate IS NULL");
+                    break;
+            }
+
+            //filter Message Type
+            if (type != MessageTypeFlag.All)
+            {
+                List<int> messageTypes = new List<int>();
+
+                var flags = Enum.GetValues(typeof(MessageTypeFlag));
+                foreach (var flag in flags)
+                {
+                    //This needs to be cleaned up, we have two enums that are serving a similar purpose
+                    var mTFlag = (MessageTypeFlag)flag;
+                    if (mTFlag != MessageTypeFlag.All && ((type & mTFlag) > 0))
+                    {
+                        switch (mTFlag)
+                        {
+                            case MessageTypeFlag.Sent:
+                                messageTypes.Add((int)MessageType.Sent);
+                                break;
+
+                            case MessageTypeFlag.Private:
+                                messageTypes.Add((int)MessageType.Private);
+                                break;
+
+                            case MessageTypeFlag.CommentReply:
+                                messageTypes.Add((int)MessageType.CommentReply);
+                                break;
+
+                            case MessageTypeFlag.CommentMention:
+                                messageTypes.Add((int)MessageType.CommentMention);
+                                break;
+
+                            case MessageTypeFlag.SubmissionReply:
+                                messageTypes.Add((int)MessageType.SubmissionReply);
+                                break;
+
+                            case MessageTypeFlag.SubmissionMention:
+                                messageTypes.Add((int)MessageType.SubmissionMention);
+                                break;
+                        }
+                    }
+                }
+                q.Append(x => x.Where, "m.[Type] IN @Types");
+                q.Parameters.Add("Types", messageTypes.ToArray());
+                //q = q.Where(x => messageTypes.Contains(x.Type));
+            }
+            return q;
+        }
+
+        [Obsolete("Packing up and moving to Dapper", true)]
         private IQueryable<Data.Models.Message> GetMessageQueryBase(voatEntities context, string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state)
         {
             var q = (from m in context.Messages
@@ -2551,27 +2769,45 @@ namespace Voat.Data
                 }
             }
 
+            //We are going to use this query as the base to form a protective where clause
+            var q = GetMessageQueryDapperBase(ownerName, ownerType, type, MessageState.All);
+            var d = new DapperDelete();
+
+            //Set the where and parameters from the base query
+            d.Where = q.Where;
+            d.Parameters = q.Parameters;
+
+            d.Delete = "m FROM [Message] m";
+
             if (id.HasValue)
             {
-                var q = GetMessageQueryBase(ownerName, ownerType, type, MessageState.All);
-                q = q.Where(x => x.ID == id.Value);
-                var message = q.FirstOrDefault();
+                d.Append(x => x.Where, "m.ID = @ID");
+                d.Parameters.Add("ID", id.Value);
+            }
+           
+            var result = await _db.Database.Connection.ExecuteAsync(d.ToString(), d.Parameters);
 
-                if (message != null)
-                {
-                    _db.Messages.Remove(message);
-                    await _db.SaveChangesAsync().ConfigureAwait(false);
-                }
-            }
-            else
-            {
-                using (var db = new voatEntities())
-                {
-                    var q = GetMessageQueryBase(db, ownerName, ownerType, type, MessageState.All);
-                    await q.ForEachAsync(x => db.Messages.Remove(x)).ConfigureAwait(false);
-                    await db.SaveChangesAsync().ConfigureAwait(false);
-                }
-            }
+            //if (id.HasValue)
+            //{
+            //    var q = GetMessageQueryBase(ownerName, ownerType, type, MessageState.All);
+            //    q = q.Where(x => x.ID == id.Value);
+            //    var message = q.FirstOrDefault();
+
+            //    if (message != null)
+            //    {
+            //        _db.Messages.Remove(message);
+            //        await _db.SaveChangesAsync().ConfigureAwait(false);
+            //    }
+            //}
+            //else
+            //{
+            //    using (var db = new voatEntities())
+            //    {
+            //        var q = GetMessageQueryBase(db, ownerName, ownerType, type, MessageState.All);
+            //        await q.ForEachAsync(x => db.Messages.Remove(x)).ConfigureAwait(false);
+            //        await db.SaveChangesAsync().ConfigureAwait(false);
+            //    }
+            //}
 
             Task.Run(() => EventNotification.Instance.SendMessageNotice(
                        UserDefinition.Format(ownerName, ownerType),
@@ -2605,24 +2841,25 @@ namespace Voat.Data
             var stateToFind = (state == MessageState.Read ? MessageState.Unread : MessageState.Read);
             var setReadDate = new Func<Data.Models.Message, DateTime?>((x) => (state == MessageState.Read ? CurrentDate : (DateTime?)null));
 
+            //We are going to use this query as the base to form a protective where clause
+            var q = GetMessageQueryDapperBase(ownerName, ownerType, type, stateToFind);
+            var u = new DapperUpdate();
+
+            //Set the where and parameters from the base query
+            u.Where = q.Where;
+            u.Parameters = q.Parameters;
+
+            u.Update = "m SET m.ReadDate = @ReadDate FROM [Message] m";
+
             if (id.HasValue)
             {
-                var q = GetMessageQueryBase(ownerName, ownerType, type, stateToFind);
-                q = q.Where(x => x.ID == id.Value);
-                var message = q.FirstOrDefault();
+                u.Append(x => x.Where, "m.ID = @ID");
+                u.Parameters.Add("ID", id.Value);
+            }
 
-                if (message != null)
-                {
-                    message.ReadDate = setReadDate(message);
-                    await _db.SaveChangesAsync();
-                }
-            }
-            else
-            {
-                var q = GetMessageQueryBase(ownerName, ownerType, type, stateToFind);
-                await q.ForEachAsync(x => x.ReadDate = setReadDate(x)).ConfigureAwait(false);
-                await _db.SaveChangesAsync().ConfigureAwait(false);
-            }
+            u.Parameters.Add("ReadDate", CurrentDate);
+
+            var result = await _db.Database.Connection.ExecuteAsync(u.ToString(), u.Parameters);
 
             Task.Run(() => EventNotification.Instance.SendMessageNotice(
                         UserDefinition.Format(ownerName, ownerType),
@@ -2668,7 +2905,7 @@ namespace Voat.Data
                     OwnerType = (int)ownerType,
                     SentType = (int)MessageType.Sent,
                     MessageTypes = (types != null ? types.ToArray() : (int[])null)
-                };
+                }.ToDynamicParameters();
 
                 var results = await db.Database.Connection.QueryAsync<MessageCount>(q.ToString(), q.Parameters);
 
@@ -2710,22 +2947,51 @@ namespace Voat.Data
             }
             using (var db = new voatEntities())
             {
-                var q = GetMessageQueryBase(db, ownerName, ownerType, type, state);
-                var messages = (await q
-                                    .OrderByDescending(x => x.CreationDate)
-                                    .Skip(options.Index)
-                                    .Take(options.Count)
-                                    .ToListAsync()
-                                    //.ConfigureAwait(false)
-                               ).AsEnumerable();
+                var q = GetMessageQueryDapperBase(ownerName, ownerType, type, state);
+                q.SkipCount = options.Index;
+                q.TakeCount = options.Count;
 
-                var mapped = messages.Map();
+                var messageMap = new Func<Data.Models.Message, Data.Models.Submission, Data.Models.Comment, Domain.Models.Message>((m, s, c) => {
+                    var msg = m.Map();
+                    msg.Submission = s.Map();
+                    msg.Comment = c.Map(m.Subverse);
+
+
+                    //Set Message Title/Info for API Output
+                    switch (msg.Type)
+                    {
+                        case MessageType.CommentMention:
+                        case MessageType.CommentReply:
+                        case MessageType.SubmissionReply:
+                            msg.Title = msg.Submission?.Title;
+                            msg.Content = msg.Comment.Content;
+                            msg.FormattedContent = msg.Comment.FormattedContent;
+                            break;
+                        case MessageType.SubmissionMention:
+                            msg.Title = msg.Submission?.Title;
+                            msg.Content = msg.Submission.Content;
+                            msg.FormattedContent = msg.Submission.FormattedContent;
+                            break;
+                    }
+
+                    return msg;
+                });
+
+                var messages = await _db.Database.Connection.QueryAsync<Data.Models.Message, Data.Models.Submission, Data.Models.Comment, Domain.Models.Message>(q.ToString(), messageMap, q.Parameters, splitOn: "ID");
 
                 //mark as read
                 if (markAsRead && messages.Any(x => x.ReadDate == null))
                 {
-                    await q.Where(x => x.ReadDate == null).ForEachAsync<Models.Message>(x => x.ReadDate = CurrentDate).ConfigureAwait(false);
-                    await db.SaveChangesAsync().ConfigureAwait(false);
+                    var update = new DapperUpdate();
+                    update.Update = "m SET m.ReadDate = @CurrentDate FROM [Message] m";
+                    update.Where = "m.ReadDate IS NULL AND m.ID IN @IDs";
+                    update.Parameters.Add("CurrentDate", Repository.CurrentDate);
+                    update.Parameters.Add("IDs", messages.Where(x => x.ReadDate == null).Select(x => x.ID).ToArray());
+
+                    await _db.Database.Connection.ExecuteAsync(update.ToString(), update.Parameters);
+
+                    //await q.Where(x => x.ReadDate == null).ForEachAsync<Models.Message>(x => x.ReadDate = CurrentDate).ConfigureAwait(false);
+                    //await db.SaveChangesAsync().ConfigureAwait(false);
 
                     Task.Run(() => EventNotification.Instance.SendMessageNotice(
                        UserDefinition.Format(ownerName, ownerType),
@@ -2735,7 +3001,7 @@ namespace Voat.Data
                        null));
 
                 }
-                return mapped;
+                return messages;
             }
         }
 
@@ -2743,18 +3009,28 @@ namespace Voat.Data
 
         #region User Related Functions
 
-        public IEnumerable<CommentVoteTracker> UserCommentVotesBySubmission(int submissionID, string userName)
+        public IEnumerable<VoteValue> UserCommentVotesBySubmission(string userName, int submissionID)
         {
-            List<CommentVoteTracker> vCache = new List<CommentVoteTracker>();
+            IEnumerable<VoteValue> result = null;
+            var q = new DapperQuery();
 
-            if (!String.IsNullOrEmpty(userName))
-            {
-                vCache = (from cv in _db.CommentVoteTrackers.AsNoTracking()
-                          join c in _db.Comments on cv.CommentID equals c.ID
-                          where c.SubmissionID == submissionID && cv.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                          select cv).ToList();
-            }
-            return vCache;
+            q.Select = "SELECT [ID] = v.CommentID, [Value] = IsNull(v.VoteStatus, 0) FROM CommentVoteTracker v WITH (NOLOCK) INNER JOIN Comment c WITH (NOLOCK) ON CommentID = c.ID";
+            q.Where = "v.UserName = @UserName AND c.SubmissionID = @ID";
+
+            result = _db.Database.Connection.Query<VoteValue>(q.ToString(), new { UserName = userName, ID = submissionID });
+
+            return result;
+
+            //List<CommentVoteTracker> vCache = new List<CommentVoteTracker>();
+
+            //if (!String.IsNullOrEmpty(userName))
+            //{
+            //    vCache = (from cv in _db.CommentVoteTrackers.AsNoTracking()
+            //              join c in _db.Comments on cv.CommentID equals c.ID
+            //              where c.SubmissionID == submissionID && cv.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+            //              select cv).ToList();
+            //}
+            //return vCache;
         }
         [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
         public IEnumerable<CommentSaveTracker> UserCommentSavedBySubmission(int submissionID, string userName)
@@ -3758,7 +4034,7 @@ namespace Voat.Data
             q.Select = "TOP 1 ISNULL(Rank, 0) FROM Submission WITH (NOLOCK)";
             q.Where = "Subverse = @Subverse AND IsArchived = 0";
             q.OrderBy = "Rank DESC";
-            q.Parameters = new { Subverse = subverse };
+            q.Parameters = new { Subverse = subverse }.ToDynamicParameters();
 
             var result = _db.Database.Connection.ExecuteScalar<double?>(q.ToString(), q.Parameters);
             return result;
@@ -4090,7 +4366,7 @@ namespace Voat.Data
                 var q = new DapperQuery();
                 q.Select = "* FROM BannedDomain";
                 q.Where = "Domain IN @Domains";
-                q.Parameters = new { Domains = alldomains.ToArray() };
+                q.Parameters = new { Domains = alldomains.ToArray() }.ToDynamicParameters();
 
                 var bannedDomains = _db.Database.Connection.Query<BannedDomain>(q.ToString(), q.Parameters);
                 return bannedDomains;
@@ -4169,7 +4445,17 @@ namespace Voat.Data
             }
         }
 
-        
+        public IEnumerable<Data.Models.Filter> GetFilters(bool activeOnly = true)
+        {
+            var q = new DapperQuery();
+            q.Select = "* FROM Filter";
+            if (activeOnly)
+            {
+                q.Where = "IsActive = @IsActive";
+            }
+            //will return empty list I believe, so should be runtime cacheable 
+            return _db.Database.Connection.Query<Data.Models.Filter>(q.ToString(), new { IsActive = activeOnly });
+        }
 
         protected CommandResponse<T> MapRuleOutCome<T>(RuleOutcome outcome, T result)
         {

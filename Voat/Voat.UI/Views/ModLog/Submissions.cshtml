@@ -15,6 +15,8 @@
 @{
     ViewBag.Title = "Submission Removal Log";
     string submissionClass = "";
+
+    
 }
 
 <div id="container">
@@ -42,6 +44,7 @@
                 <div id="removedSubmissionsList" class="">
                     @foreach (var logItem in Model)
                     {
+                        var submission = Voat.Domain.DomainMaps.Map(logItem.Submission);
                         <div id="logItem" class="logItem alert-singlethread">
                             <p>@logItem.Moderator removed @Age.ToRelative(logItem.CreationDate) ago on @logItem.CreationDate</p>
                             <p>"@logItem.Reason"</p>
@@ -53,8 +56,8 @@
                         <div class="submission id-@logItem.Submission.ID link @submissionClass" data-fullname="@logItem.Submission.ID" data-ups="@logItem.Submission.UpCount" data-downs="@logItem.Submission.DownCount">
                             <p class="parent"></p>
 
-                            @Html.Partial("_votingIconsSubmission", logItem.Submission)
-                            @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", logItem.Submission)
+                            @Html.Partial("_votingIconsSubmission", submission)
+                            @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
 
                             <div class="child"></div>
                             <div class="clearleft">@*IE6fix*@</div>

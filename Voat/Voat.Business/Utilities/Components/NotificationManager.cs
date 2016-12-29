@@ -20,6 +20,7 @@ using Voat.Data;
 //using Microsoft.AspNet.SignalR;
 //using Voat.Data.Models;
 using Voat.Data.Models;
+using Voat.Domain.Query;
 
 namespace Voat.Utilities.Components
 {
@@ -40,8 +41,11 @@ namespace Voat.Utilities.Components
                     //BlockedUser Implementation - Comment User Mention
                     if (!MesssagingUtility.IsSenderBlocked(comment.UserName, recipient))
                     {
-                        var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
-                        var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+                        //var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
+
+                        var q = new QuerySubmission(comment.SubmissionID.Value);
+                        var submission = await q.ExecuteAsync().ConfigureAwait(false);
+                        //var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
                         var message = new Domain.Models.Message();
 
@@ -50,8 +54,8 @@ namespace Voat.Utilities.Components
                         message.RecipientType = Domain.Models.IdentityType.User;
                         message.Sender = comment.UserName;
                         message.SenderType = Domain.Models.IdentityType.User;
-                        message.Subverse = subverse.Name;
-                        message.SubmissionID = submission.ID;
+                        message.Subverse = submission.Subverse;
+                        message.SubmissionID = comment.SubmissionID;
                         message.CommentID = comment.ID;
                         message.Type = Domain.Models.MessageType.CommentMention;
                         message.CreationDate = Repository.CurrentDate;
@@ -89,8 +93,7 @@ namespace Voat.Utilities.Components
                     //BlockedUser Implementation - Submission User Mention
                     if (!MesssagingUtility.IsSenderBlocked(submission.UserName, recipient))
                     {
-                        var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-
+                        //var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
                         var message = new Domain.Models.Message();
 
                         message.IsAnonymized = submission.IsAnonymized;
@@ -98,7 +101,7 @@ namespace Voat.Utilities.Components
                         message.RecipientType = Domain.Models.IdentityType.User;
                         message.Sender = submission.UserName;
                         message.SenderType = Domain.Models.IdentityType.User;
-                        message.Subverse = subverse.Name;
+                        message.Subverse = submission.Subverse;
                         message.SubmissionID = submission.ID;
                         message.Type = Domain.Models.MessageType.SubmissionMention;
                         message.CreationDate = Repository.CurrentDate;
@@ -121,7 +124,7 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendCommentReplyNotification(Comment comment)
+        public static async Task SendCommentReplyNotification(Data.Models.Submission submission, Data.Models.Comment comment)
         {
             try
             {
@@ -145,10 +148,13 @@ namespace Voat.Utilities.Components
                                     //BlockedUser Implementation - Comment Reply
                                     if (!MesssagingUtility.IsSenderBlocked(comment.UserName, parentComment.UserName))
                                     {
-                                        var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
+                                        //var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
+                                        //var q = new QuerySubmission(comment.SubmissionID.Value);
+                                        //var submission = await q.ExecuteAsync().ConfigureAwait(false);
+
                                         if (submission != null)
                                         {
-                                            var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+                                            //var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
                                             var message = new Domain.Models.Message();
 
@@ -157,7 +163,7 @@ namespace Voat.Utilities.Components
                                             message.RecipientType = Domain.Models.IdentityType.User;
                                             message.Sender = comment.UserName;
                                             message.SenderType = Domain.Models.IdentityType.User;
-                                            message.Subverse = subverse.Name;
+                                            message.Subverse = submission.Subverse;
                                             message.SubmissionID = submission.ID;
                                             message.CommentID = comment.ID;
                                             message.Type = Domain.Models.MessageType.CommentReply;
@@ -185,12 +191,15 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendSubmissionReplyNotification(Comment comment)
+        public static async Task SendSubmissionReplyNotification(Data.Models.Submission submission, Data.Models.Comment comment)
         {
             try
             {
                 // comment reply is sent to a root comment which has no parent id, trigger post reply notification
-                var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
+                //var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
+                //var q = new QuerySubmission(comment.SubmissionID.Value);
+                //var submission = await q.ExecuteAsync().ConfigureAwait(false);
+                
                 if (submission != null)
                 {
                     // check if recipient exists
@@ -234,15 +243,15 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendCommentNotification(Comment comment)
+        public static async Task SendCommentNotification(Data.Models.Submission submission, Data.Models.Comment comment)
         {
             if (comment.ParentID != null && comment.Content != null)
             {
-                await SendCommentReplyNotification(comment);
+                await SendCommentReplyNotification(submission, comment);
             }
             else
             {
-                await SendSubmissionReplyNotification(comment);
+                await SendSubmissionReplyNotification(submission, comment);
             }
         }
     }

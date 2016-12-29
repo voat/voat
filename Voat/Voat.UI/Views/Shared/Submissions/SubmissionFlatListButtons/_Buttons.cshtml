@@ -10,15 +10,11 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Data.Models.Submission
-
-@{
-    int commentCount = Convert.ToInt32(ViewData["commentCount"]);
-}
+@model Voat.Domain.Models.Submission
 
 <ul class="flat-list buttons">
     <li class="first">
-        <a href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID)" class="comments may-blank">@commentCount comments</a>
+        <a href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID)" class="comments may-blank">@Formatting.PluralizeIt(Model.CommentCount, "comment")</a>
     </li>
 
     @if (User.Identity.IsAuthenticated)
@@ -32,7 +28,7 @@
                 @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonReport.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } })
             </li>
         }
-        if (!Model.IsDeleted && User.Identity.Name != Model.UserName && Model.Type == (int)Voat.Domain.Models.SubmissionType.Text)
+        if (!Model.IsDeleted && User.Identity.Name != Model.UserName && Model.Type == Voat.Domain.Models.SubmissionType.Text)
         {
             <li>
                 <a class="" href="javascript:void(0)" onclick="toggleSource(this);">source</a>
@@ -40,7 +36,7 @@
         }
         if (User.Identity.Name == Model.UserName)
         {
-            if (Model.Type == (int)Voat.Domain.Models.SubmissionType.Text)
+            if (Model.Type == Voat.Domain.Models.SubmissionType.Text)
             {
                 <li>
                     <a class="" href="#submissionTop" onclick="return editSubmissionPrepareForm(@Model.ID)">edit</a>

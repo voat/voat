@@ -14,6 +14,8 @@ All Rights Reserved.
 
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Voat.Domain.Models
 {
@@ -99,6 +101,25 @@ namespace Voat.Domain.Models
         /// The view count of the submission.
         /// </summary>
         public int Views { get; set; }
+
+        public IEnumerable<ContentAttribute> Attributes { get; set; }
+
+        [JsonIgnore]
+        public IEnumerable<ContentAttribute> Flairs
+        {
+            get
+            {
+                if (Attributes != null && Attributes.Any())
+                {
+                    return Attributes.Where(x => x.Type == AttributeType.Flair).ToList();
+                }
+                return Enumerable.Empty<ContentAttribute>();
+            }
+        }
+
+        //public string FlairLabel { get; set; }
+
+        //public string FlairCss { get; set; }
 
         [JsonIgnore]
         public double Rank { get; set; }

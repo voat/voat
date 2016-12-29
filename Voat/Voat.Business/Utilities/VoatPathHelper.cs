@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using Voat.Configuration;
+using Voat.Domain.Models;
 
 namespace Voat.Utilities
 {
@@ -105,6 +106,15 @@ namespace Voat.Utilities
             //return $"/v/{subverse}/comments/{submissionID.ToString()}{commentPath}";
             //short
             return $"/v/{subverse}/{submissionID.ToString()}{commentPath}";
+        }
+        public static string CommentsPagePath(string subverse, int submissionID, CommentSortAlgorithm sort, object queryString = null)
+        {
+            //var sortPath = $"/{sort.Value.ToString().ToLower()}" : "";
+
+            //long
+            //return $"/v/{subverse}/comments/{submissionID.ToString()}{commentPath}";
+            //short
+            return $"/v/{subverse}/{submissionID.ToString()}/{sort.ToString().ToLower()}";
         }
     }
 }

@@ -167,7 +167,13 @@ namespace Voat.Domain.Models
         /// <summary>
         /// Orders results by intensity of up/down votes
         /// </summary>
-        Intensity
+        Intensity,
+
+        /// <summary>
+        /// Orders results in a traditional forum style by date (uses new sort currently)
+        /// </summary>
+        Forum = New
+
     }
 
     /// <summary>

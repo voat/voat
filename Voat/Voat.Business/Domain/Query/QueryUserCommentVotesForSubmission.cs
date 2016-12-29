@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
+using Voat.Domain.Models;
 
 namespace Voat.Domain.Query
 {
-    public class QueryUserCommentVotesForSubmission : CachedQuery<IEnumerable<Data.Models.CommentVoteTracker>>
+    public class QueryUserCommentVotesForSubmission : CachedQuery<IEnumerable<VoteValue>>
     {
         protected int _submissionID;
 
@@ -36,11 +37,11 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override async Task<IEnumerable<Data.Models.CommentVoteTracker>> GetData()
+        protected override async Task<IEnumerable<VoteValue>> GetData()
         {
             using (var repo = new Repository())
             {
-                var result = repo.UserCommentVotesBySubmission(_submissionID, UserName);
+                var result = repo.UserCommentVotesBySubmission(UserName, _submissionID);
                 return (result == null || !result.Any() ? null : result);
             }
         }

@@ -577,8 +577,6 @@
     <Content Include="Views\Home\Comments.cshtml" />
     <Content Include="Views\Shared\_VotingIconsSubmission.cshtml" />
     <Content Include="Views\Shared\Submissions\_Submission.cshtml" />
-    <Content Include="Views\Shared\Submissions\_MessageSubmissionDetails.cshtml" />
-    <Content Include="Views\Shared\Submissions\_LinkSubmissionDetails.cshtml" />
     <Content Include="Views\Shared\Comments\_SubmissionComment.cshtml" />
     <Content Include="Views\User\Overview.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmission.cshtml" />
@@ -610,12 +608,9 @@
     <Content Include="Views\Account\AccountDeleted.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmissionLink.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmissionSelf.cshtml" />
-    <Content Include="Views\Shared\Submissions\_SubmissionSelf.cshtml" />
-    <Content Include="Views\Shared\Submissions\_SubmissionLink.cshtml" />
     <Content Include="Views\Search\Index.cshtml" />
     <Content Include="Views\Help\Faq.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
-    <Content Include="Views\Domains\Index.cshtml" />
     <Content Include="Views\Subverses\SubscribedSubverses.cshtml" />
     <Content Include="Views\Subverses\_SubscribedSubverseDetails.cshtml" />
     <Content Include="Views\Shared\Userprofile\_SidebarSubsUserModerates.cshtml" />
@@ -659,7 +654,6 @@
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonFlair.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSticky.cshtml" />
     <Content Include="Views\Account\_UserPreferencesAbout.cshtml" />
-    <Content Include="Views\AjaxViews\_VideoPlayer.cshtml" />
     <Content Include="Views\Home\IndexV2.cshtml" />
     <Content Include="Views\Sets\_SetTitle.cshtml" />
     <Content Include="Views\Sets\_SingleSet.cshtml" />
@@ -723,7 +717,7 @@
     <Content Include="Views\Messages\Compose.cshtml" />
     <Content Include="Views\Messages\Index.cshtml" />
     <Content Include="Views\Messages\_MessageReply.cshtml" />
-    <Content Include="Views\Shared\Submissions\_FullSubmission.cshtml" />
+    <Content Include="Views\Shared\Submissions\_SubmissionDetail.cshtml" />
     <Content Include="Views\Messages\Notifications.cshtml" />
     <Content Include="Views\Shared\_SubverseStylesheetLink.cshtml" />
     <Content Include="Views\Error\Others.cshtml" />
