@@ -15,7 +15,7 @@ Voat uses SQL server and .NET framework 4.5.
 The following 3rd party libraries/extensions are used:
 
 - Markdowndeep (http://www.toptensoftware.com/markdowndeep)
-- Entity Framework (https://entityframework.codeplex.com)
+- Entity Framework (https://github.com/aspnet/EntityFramework6)
 - WebApiThrottle (https://github.com/stefanprodan/WebApiThrottle)
 - SignalR (https://github.com/SignalR/SignalR)
 - OpenGraph-Net (https://github.com/ghorsey/OpenGraph-Net)
