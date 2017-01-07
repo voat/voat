@@ -9,6 +9,8 @@ namespace Voat.Models.ViewModels
     public class ApiKeyCreateRequest
     {
 
+        public string ID { get; set; }
+
         [Display(Name = "App Name")]
         [Required]
         [StringLength(50)]

@@ -65,4 +65,38 @@ namespace Voat.Domain.Command
             }
         }
     }
+    public class EditApiKeyCommand : CacheCommand<CommandResponse, ApiClient>
+    {
+        private string _apiKey = null;
+        private string _description = null;
+        private string _name = null;
+        private string _url = null;
+        private string _redirectUrl = null;
+
+        public EditApiKeyCommand(string apiKeyID, string name, string description, string url, string redirectUrl)
+        {
+            this._apiKey = apiKeyID;
+            this._name = name;
+            this._description = description;
+            this._url = url;
+            this._redirectUrl = redirectUrl;
+        }
+
+        protected override async Task<Tuple<CommandResponse, ApiClient>> CacheExecute()
+        {
+            using (var repo = new Repository())
+            {
+                var apiClient = await repo.EditApiKey(_apiKey, _name, _description, _url, _redirectUrl);
+                return new Tuple<CommandResponse, ApiClient>(CommandResponse.Successful(), apiClient);
+            }
+        }
+
+        protected override void UpdateCache(ApiClient result)
+        {
+            if (result != null)
+            {
+                CacheHandler.Instance.Remove(CachingKey.ApiClient(result.PublicKey));
+            }
+        }
+    }
 }

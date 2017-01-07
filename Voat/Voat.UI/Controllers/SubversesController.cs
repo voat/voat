@@ -64,7 +64,7 @@ namespace Voat.Controllers
 
             //if (!showingComments) return new EmptyResult();
 
-            if (submission.IsAnonymized || subverse.IsAnonymized)
+            if (submission.IsAnonymized || (subverse.IsAnonymized.HasValue && subverse.IsAnonymized.Value))
             {
                 ViewBag.name = submission.ID.ToString();
                 ViewBag.anonymized = true;
@@ -218,7 +218,7 @@ namespace Voat.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
+                    return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
                 }
                 var existingSubverse = _db.Subverses.Find(updatedModel.Name);
 
@@ -258,7 +258,7 @@ namespace Voat.Controllers
                         else
                         {
                             ModelState.AddModelError(string.Empty, "Sorry, custom CSS limit is set to 50000 characters.");
-                            return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
+                            return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
                         }
                     }
                     else
@@ -280,10 +280,10 @@ namespace Voat.Controllers
                     existingSubverse.SubmissionText = updatedModel.SubmissionText;
                     existingSubverse.IsDefaultAllowed = updatedModel.IsDefaultAllowed;
 
-                    if (existingSubverse.IsAnonymized && updatedModel.IsAnonymized == false)
+                    if (existingSubverse.IsAnonymized == true && updatedModel.IsAnonymized == false)
                     {
                         ModelState.AddModelError(string.Empty, "Sorry, this subverse is permanently locked to anonymized mode.");
-                        return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
+                        return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
                     }
 
                     // only subverse owners should be able to convert a sub to anonymized mode
@@ -306,12 +306,12 @@ namespace Voat.Controllers
                     // user was not authorized to commit the changes, drop attempt
                 }
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");
-                return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
+                return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
             }
             catch (Exception)
             {
                 ModelState.AddModelError(string.Empty, "Something bad happened.");
-                return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
+                return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
             }
         }
 
@@ -1281,7 +1281,7 @@ namespace Voat.Controllers
 
                 if (AGGREGATE_SUBVERSE.IsAggregate(subverse))
                 {
-                    if (subverse == AGGREGATE_SUBVERSE.FRONT)
+                    if (AGGREGATE_SUBVERSE.FRONT.IsEqual(subverse))
                     {
                         //Check if user is logged in and has subscriptions, if not we convert to default query
                         if (!User.Identity.IsAuthenticated || (User.Identity.IsAuthenticated && !UserData.HasSubscriptions()))
@@ -1291,7 +1291,7 @@ namespace Voat.Controllers
                         //viewProperties.Title = "Front";
                         //ViewBag.SelectedSubverse = "frontpage";
                     }
-                    else if (subverse == AGGREGATE_SUBVERSE.DEFAULT)
+                    else if (AGGREGATE_SUBVERSE.DEFAULT.IsEqual(subverse))
                     {
                         //viewProperties.Title = "Front";
                         //ViewBag.SelectedSubverse = "frontpage";

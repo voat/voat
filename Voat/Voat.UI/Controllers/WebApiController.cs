@@ -171,7 +171,7 @@ namespace Voat.Controllers
                                 MessageContent = (item.Type == 2 ? item.Url : item.Content)
                             };
 
-                            if (item.IsAnonymized || item.Subverse1.IsAnonymized)
+                            if (item.IsAnonymized || (item.Subverse1.IsAnonymized.HasValue && item.Subverse1.IsAnonymized.Value))
                             {
                                 resultModel.Name = item.ID.ToString();
                             }
@@ -247,7 +247,7 @@ namespace Voat.Controllers
                                 MessageContent = (item.Type == 2 ? item.Url : item.Content)
                             };
 
-                            if (item.IsAnonymized || item.Subverse1.IsAnonymized)
+                            if (item.IsAnonymized || (item.Subverse1.IsAnonymized.HasValue && item.Subverse1.IsAnonymized.Value))
                             {
                                 resultModel.Name = item.ID.ToString();
                             }
@@ -399,7 +399,7 @@ namespace Voat.Controllers
                     MessageId = comment.SubmissionID
                 };
 
-                if (comment.Submission.IsAnonymized || comment.Submission.Subverse1.IsAnonymized)
+                if (comment.Submission.IsAnonymized || (comment.Submission.Subverse1.IsAnonymized.HasValue && comment.Submission.Subverse1.IsAnonymized.Value))
                 {
                     resultModel.Name = comment.ID.ToString();
                 }
@@ -571,7 +571,7 @@ namespace Voat.Controllers
                                 CommentContent = firstComment.Content
                             };
 
-                            if (firstComment.Submission.IsAnonymized || firstComment.Submission.Subverse1.IsAnonymized)
+                            if (firstComment.Submission.IsAnonymized || (firstComment.Submission.Subverse1.IsAnonymized.HasValue && firstComment.Submission.Subverse1.IsAnonymized.Value))
                             {
                                 resultModel.Name = firstComment.ID.ToString();
                             }

@@ -1,0 +1,14 @@
+﻿@model Nullable<Boolean>
+
+@if (ViewData.ModelMetadata.IsNullableValueType)
+{
+    @Html.DropDownListFor(r => r, new SelectListItem[] {
+     new SelectListItem() { Text = "Both", Value = "" },
+     new SelectListItem() { Text = "Yes", Value = "True", Selected = (Model == true) },
+     new SelectListItem() { Text = "No", Value = "False", Selected = (Model == false) },
+     }, new { @class="form-control" })
+}
+else
+{
+    @Html.CheckBox("", Model.Value, new { @class = "form-control" });
+}

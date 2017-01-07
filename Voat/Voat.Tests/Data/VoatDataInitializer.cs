@@ -185,6 +185,38 @@ namespace Voat.Tests.Repository
 
             });
 
+            //ID:10 (nsfw Subverse)
+            var nsfwOnly = context.Subverses.Add(new Subverse()
+            {
+                Name = "NSFW",
+                Title = "v/NSFW",
+                Description = "NSFW Only",
+                SideBar = "NSFW Only",
+                Type = "link",
+                IsAdult = true,
+                IsAnonymized = false,
+                IsAuthorizedOnly = false,
+                IsPrivate = false,
+                CreationDate = DateTime.UtcNow.AddDays(-7),
+                IsAdminDisabled = false,
+            });
+
+            //ID:11 (allowAnon Subverse)
+            var allowAnon = context.Subverses.Add(new Subverse()
+            {
+                Name = "AllowAnon",
+                Title = "v/AllowAnon",
+                Description = "AllowAnon",
+                SideBar = "AllowAnon",
+                Type = "link",
+                IsAdult = false,
+                IsAnonymized = null, //allows users to submit anon/non-anon content
+                IsAuthorizedOnly = false,
+                IsPrivate = false,
+                CreationDate = DateTime.UtcNow.AddDays(-7),
+                IsAdminDisabled = false,
+            });
+
             context.SubverseModerators.Add(new SubverseModerator() { Subverse = "AuthorizedOnly", CreatedBy = "unit", CreationDate = DateTime.UtcNow, Power = 1, UserName = "unit" });
             context.SubverseModerators.Add(new SubverseModerator() { Subverse = "unit", CreatedBy = null, CreationDate = null, Power = 1, UserName = "unit" });
             context.SubverseModerators.Add(new SubverseModerator() { Subverse = "anon", CreatedBy = null, CreationDate = null, Power = 1, UserName = "anon" });
@@ -491,7 +523,7 @@ namespace Voat.Tests.Repository
                     Title = $"Comment Tree for v/{subverse}",
                     Type = 1,
                     UserName = "TestUser1",
-                    IsAnonymized = s.IsAnonymized,
+                    IsAnonymized = s.IsAnonymized.HasValue ? s.IsAnonymized.Value : false,
                 };
                 db.Submissions.Add(submission);
                 db.SaveChanges();

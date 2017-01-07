@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Tuple<Voat.Data.Models.ApiClient, Voat.Data.Models.ApiThrottlePolicy>>
+﻿@model IEnumerable<Tuple<Voat.Data.Models.ApiClient, Voat.Data.Models.ApiThrottlePolicy, Voat.Domain.Models.ApiPermissionSet >>
 
 @{
     ViewBag.Title = "Voat Api Keys";
@@ -27,6 +27,7 @@
 
 <div id="container" class="md">
     <h1>Your Api Keys</h1>
+    <p>If you need different permissions or throttle policies please contact voat by email at hello@voat.co.</p>
     @if (Settings.ApiKeyCreationEnabled)
     {
         <p>
@@ -49,13 +50,13 @@
                 <th width="65%">
                     Keys
                 </th>
-                <th></th>
             </tr>
 
             @foreach (var tuple in Model)
             {
                 var item = tuple.Item1;
                 var policy = tuple.Item2;
+                var perms = tuple.Item3;
                 <tr>
                     <td>
 
@@ -112,6 +113,31 @@
 
                             </div>
                         }
+                        @if (perms != null)
+                        {
+                            <div class="breakword indent">
+                                <strong>Permission Policy</strong>
+                                <h3>@perms.Name</h3>
+                                @{
+                                    <span>Unrestricted Login: </span><i>@perms.AllowUnrestrictedLogin</i><br />
+                                    <span>Owner Login: </span><i>@perms.AllowLogin</i><br />
+                                    <span>Allow Stream: </span><i>@perms.AllowStream</i><br />
+                                    <span>Require HMAC: </span><i>@perms.RequireHmacOnLogin</i><br />
+                                }
+
+                            </div>
+                        }
+                        @* Basically, we don't want a user to delete if a key has been turned off by an admin. *@
+                        @if (item.IsActive)
+                        {
+                            @Html.ActionLink("Edit", "Edit", new { id = item.PublicKey }, new { @class = "btn-whoaverse" })
+
+                            using (Html.BeginForm("Delete", "ApiKeys", new { id = item.ID }, FormMethod.Post))
+                            {
+                                <input type="submit" value="Delete" class="btn-whoaverse" />
+                            }
+                        }
+
                     </td>
                     <td>
                         <div>
@@ -132,16 +158,7 @@
                             }
                         </div>
                     </td>
-                    <td>
-                        @* Basically, we don't want a user to delete if a key has been turned off by an admin. *@
-                        @if (item.IsActive)
-                        {
-                            using (Html.BeginForm("Delete", "ApiKeys", new { id = item.ID }, FormMethod.Post))
-                            {
-                                <input type="submit" value="Delete" class="form-control" />
-                            }
-                        }
-                    </td>
+                   
                 </tr>
             }
 

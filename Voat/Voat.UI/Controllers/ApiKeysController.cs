@@ -24,6 +24,35 @@ namespace Voat.Controllers
         }
 
         [HttpPost]
+        public async Task<ActionResult> Edit(ApiKeyCreateRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var cmd = new EditApiKeyCommand(request.ID, request.Name, request.Description, request.AboutUrl, request.RedirectUrl);
+                var response = await cmd.Execute();
+            }
+            return RedirectToAction("Index");
+        }
+
+        public async Task<ActionResult> Edit(string id)
+        {
+            var q = new QueryAPIKey(id);
+            var r = await q.ExecuteAsync().ConfigureAwait(false);
+
+            if (r != null && r.IsActive && User.Identity.Name.IsEqual(r.UserName))
+            {
+                var model = new ApiKeyCreateRequest() { AboutUrl = r.AppAboutUrl, Description = r.AppDescription, ID = r.PublicKey, Name = r.AppName, RedirectUrl = r.RedirectUrl };
+                return View("Edit", model);
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+
+        }
+
+
+        [HttpPost]
         public async Task<ActionResult> Delete(int id)
         {
             //delete key
@@ -34,7 +63,7 @@ namespace Voat.Controllers
 
         public ActionResult Create()
         {
-            return View("Create");
+            return View("Edit");
         }
 
         [HttpPost]
@@ -50,7 +79,7 @@ namespace Voat.Controllers
                 await cmd.Execute();
                 return RedirectToAction("Index");
             }
-            return View("Create");
+            return View("Edit");
         }
 
     }

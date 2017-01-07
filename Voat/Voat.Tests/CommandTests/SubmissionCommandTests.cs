@@ -79,12 +79,12 @@ namespace Voat.Tests.CommandTests
         }
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post"), TestCategory("Anon")]
-        public void CreateSubmission_Anon()
+        public void CreateSubmission_NonAnon_InAnonSub()
         {
             string userName = "TestUser4";
             TestHelper.SetPrincipal(userName);
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "This is a title", Url = "http://www.yahoo.com" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "This is a title", Url = "http://www.yahoo.com", IsAnonymized = true });
 
             var r = cmd.Execute().Result;
 
@@ -97,6 +97,98 @@ namespace Voat.Tests.CommandTests
             Assert.AreNotEqual(userName, r.Response.UserName);
 
         }
+
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post"), TestCategory("Anon")]
+        public void CreateSubmission_Anon_InAnonSub()
+        {
+            string userName = "TestUser4";
+            TestHelper.SetPrincipal(userName);
+
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "This is a title", Url = "http://www.yahoo.com/someurl", IsAnonymized = true });
+
+            var r = cmd.Execute().Result;
+
+            Assert.IsNotNull(r, "Response is null");
+            Assert.IsTrue(r.Success, r.Message);
+            Assert.IsNotNull(r.Response, "Expecting a non null response");
+            Assert.AreNotEqual(0, r.Response.ID, "Expected a valid ID");
+            Assert.AreNotEqual("TestUser2", r.Response.UserName);
+            Assert.AreEqual(true, r.Response.IsAnonymized);
+            Assert.AreNotEqual(userName, r.Response.UserName);
+
+        }
+
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post"), TestCategory("Anon")]
+        public async Task CreateSubmission_Anon_InNonAnonSub()
+        {
+            string userName = "TestUser4";
+            TestHelper.SetPrincipal(userName);
+
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title", Url = "http://www.yahoo.com", IsAnonymized = true });
+
+            var r = await cmd.Execute();
+
+            Assert.IsNotNull(r, "Response is null");
+            Assert.IsFalse(r.Success, r.Message);
+        }
+
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post"), TestCategory("Anon")]
+        public async Task CreateSubmission_NSFW()
+        {
+            string userName = "TestUser4";
+            TestHelper.SetPrincipal(userName);
+
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title", Url = "http://www.yahoo.com", IsAdult = true });
+
+            var r = await cmd.Execute();
+
+            Assert.IsNotNull(r, "Response is null");
+            Assert.IsTrue(r.Success, r.Message);
+            Assert.IsNotNull(r.Response, "Expecting a non null response");
+            Assert.AreNotEqual(0, r.Response.ID, "Expected a valid ID");
+            Assert.AreEqual(true, r.Response.IsAdult);
+
+        }
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post"), TestCategory("Anon")]
+        public async Task CreateSubmission_NonNSFW_InNSFWSub()
+        {
+            string userName = "TestUser14";
+            TestHelper.SetPrincipal(userName);
+
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "nsfw", Title = "This is a title", Url = "http://www.yahoo.com", IsAdult = false });
+
+            var r = await cmd.Execute();
+
+            Assert.IsNotNull(r, "Response is null");
+            Assert.IsTrue(r.Success, r.Message);
+            Assert.IsNotNull(r.Response, "Expecting a non null response");
+            Assert.AreNotEqual(0, r.Response.ID, "Expected a valid ID");
+            Assert.AreEqual(true, r.Response.IsAdult);
+
+        }
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post"), TestCategory("Anon")]
+        public async Task CreateSubmission_NSFW_TitleOnly()
+        {
+            string userName = "TestUser15";
+            TestHelper.SetPrincipal(userName);
+
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title [nSfW]", Url = "http://www.yahoo.com/someotherurl/", IsAdult = false });
+
+            var r = await cmd.Execute();
+
+            Assert.IsNotNull(r, "Response is null");
+            Assert.IsTrue(r.Success, r.Message);
+            Assert.IsNotNull(r.Response, "Expecting a non null response");
+            Assert.AreNotEqual(0, r.Response.ID, "Expected a valid ID");
+            Assert.AreEqual(true, r.Response.IsAdult);
+
+        }
+
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public async Task DeleteSubmission()

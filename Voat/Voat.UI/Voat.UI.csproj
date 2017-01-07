@@ -700,7 +700,7 @@
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
     <Content Include="Views\Ad\_AdPlaceholder.cshtml" />
     <Content Include="Views\Ad\_Ad.cshtml" />
-    <Content Include="Views\ApiKeys\Create.cshtml" />
+    <Content Include="Views\ApiKeys\Edit.cshtml" />
     <Content Include="Views\ApiKeys\Index.cshtml" />
     <Content Include="Views\Home\Rules.cshtml" />
     <Content Include="Views\Subverses\SubversesBlockedByUser.cshtml" />
@@ -731,6 +731,8 @@
     </Content>
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_Buttons.cshtml" />
     <Content Include="Views\Shared\_SearchBox.cshtml" />
+    <Content Include="Views\Shared\Submissions\_Flair.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Boolean.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

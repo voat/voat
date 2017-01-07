@@ -61,12 +61,12 @@ namespace Voat.Domain.Models
         }
 
         /// <summary>
-        /// Not Implemented. Specifies if the submission is NSFW or not.
+        /// Specifies if the submission is NSFW or not. If subverse is marked as adult, this setting is overridden
         /// </summary>
         public bool IsAdult { get; set; }
 
         /// <summary>
-        /// Not Implemented. Specifies if the submission is Anonymous or not.
+        /// Specifies if the submission is Anonymous or not. Used only if subverse allows user defined anonymous posts.
         /// </summary>
         public bool IsAnonymized { get; set; }
 

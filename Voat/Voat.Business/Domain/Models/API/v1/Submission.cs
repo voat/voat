@@ -93,6 +93,11 @@ namespace Voat.Domain.Models
         public bool IsAnonymized { get; set; }
 
         /// <summary>
+        /// Is this submission NSFW/Adult rated
+        /// </summary>
+        public bool IsAdult { get; set; }
+
+        /// <summary>
         /// Is this submission deleted
         /// </summary>
         public bool IsDeleted { get; set; }
@@ -102,7 +107,7 @@ namespace Voat.Domain.Models
         /// </summary>
         public int Views { get; set; }
 
-        public IEnumerable<ContentAttribute> Attributes { get; set; }
+        public IList<ContentAttribute> Attributes { get; set; } = new List<ContentAttribute>();
 
         [JsonIgnore]
         public IEnumerable<ContentAttribute> Flairs

@@ -62,7 +62,7 @@ namespace Voat.Controllers
         }
         // GET: submit
         [Authorize]
-        public ActionResult Submit(string selectedsubverse)
+        public async Task<ActionResult> Submit(string selectedsubverse)
         {
             ViewBag.selectedSubverse = selectedsubverse;
 
@@ -86,7 +86,15 @@ namespace Voat.Controllers
 
             if (!String.IsNullOrWhiteSpace(selectedsubverse))
             {
-                model.Subverse = selectedsubverse;
+                var q = new QuerySubverse(selectedsubverse);
+                var subverse = await q.ExecuteAsync();
+                if (subverse != null)
+                {
+                    model.Subverse = subverse.Name;
+                    model.IsAdult = subverse.IsAdult;
+                    model.IsAnonymized = subverse.IsAnonymized.HasValue ? subverse.IsAnonymized.Value : false;
+                    model.AllowAnonymized = !subverse.IsAnonymized.HasValue;
+                }
             }
 
             var userData = UserData;

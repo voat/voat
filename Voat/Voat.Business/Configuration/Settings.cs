@@ -358,7 +358,11 @@ namespace Voat.Configuration
         {
             if (configValues.ContainsKey(key))
             {
-                return (T)configValues[key];
+                var value = (T)configValues[key];
+                if (!value.IsDefault())
+                {
+                    return value;
+                }
             }
             return defaultIfMissing;
         }

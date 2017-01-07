@@ -65,7 +65,7 @@ namespace Voat.Models.ViewModels
         [Required(ErrorMessage = "This setting is required.")]
         public bool IsAuthorizedOnly { get; set; }
 
-        [Required(ErrorMessage = "This setting is required.")]
+        //[Required(ErrorMessage = "This setting is required.")]
         public bool? IsAnonymized { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]

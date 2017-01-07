@@ -114,7 +114,19 @@
                     <div class="col-md-10">
                         @Html.EditorFor(model => model.IsAnonymized, new {@class = "form-control"})
                         @Html.ValidationMessageFor(model => model.IsAnonymized, "", new {@class = "text-danger"})
-                        @Html.Label("(Hide all usernames and disable voting on submissions and comments, WARNING: this cannot be changed once activated)")
+                        <p>
+                            Explaination of setting:
+                        </p>
+
+                        <ul>
+                            <li>Yes - Turns on Anonymized mode</li>
+                            <li>No - Turns off Anonymized mode</li>
+                            <li>Both - Mixed content - users can decide to submit their content as anonymized</li>
+                        </ul>
+                        
+                        <p>
+                            Changing this setting will not modify existing content. Only Owners can change this setting.
+                        </p>
                     </div>
                 </div>
 

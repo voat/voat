@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using Voat.Domain.Models;
 
@@ -24,5 +25,16 @@ namespace Voat.Models.ViewModels
         public SubmissionType Type { get; set; }
 
         public bool RequireCaptcha { get; set; }
+
+        [DisplayName("Is Anonymized?")]
+        [Description("Check this box if this post should hide your user name")]
+        public bool IsAnonymized { get; set; }
+
+        public bool AllowAnonymized { get; set; }
+
+        [DisplayName("Is Adult (NSFW)?")]
+        [Description("Check this box if this post is not safe for work (NSFW)")]
+        public bool IsAdult { get; set; }
+
     }
 }

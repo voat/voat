@@ -106,9 +106,16 @@
                 created by <a href="/user/@subverseOwner" class="author may-blank">@subverseOwner</a>
                 <span class="userattrs"></span>
                 <span class="age">a community for <time title="@Model.CreationDate" datetime="@Model.CreationDate">@subverseAge</time></span>
-                @if (Model.IsAnonymized)
+                @if (Model.IsAnonymized.HasValue)
                 {
-                    <p>This subverse is anonymized: all usernames are hidden.</p>
+                    if (Model.IsAnonymized.Value)
+                    {
+                        <p>This subverse is anonymized: all usernames are hidden.</p>
+                    }
+                }
+                else
+                {
+                    <p>This subverse allows anonymized submissions.</p>
                 }
             </div>
             <div class="clear">

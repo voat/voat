@@ -1,0 +1,30 @@
+﻿
+@model Voat.Domain.Models.Submission
+
+@{
+
+    var flairs = Model.Flairs;
+}
+
+
+@if (flairs.Any())
+{
+    foreach (var flair in flairs)
+    {
+        <span id="linkflair" class="flair linkflairlabel @flair.CssClass" title="@flair.Name">@flair.Name</span>
+    }
+}
+else
+{
+    <span id="linkflair" class="" title=""></span>
+}
+
+@if (Model.IsAdult)
+{
+    <span id="nsfwflair" class="flair linkflairlabel" title="Not Safe For Work">NSFW</span>
+}
+
+@if (Model.IsAnonymized)
+{
+    <span id="anonflair" class="flair linkflairlabel" title="Anonymized Submission">Anon</span>
+}

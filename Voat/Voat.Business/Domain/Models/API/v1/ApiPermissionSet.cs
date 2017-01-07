@@ -4,6 +4,9 @@ namespace Voat.Domain.Models
 {
     public class ApiPermissionSet
     {
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
         [JsonProperty("allowStream")]
         public bool AllowStream { get; set; }
 

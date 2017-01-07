@@ -160,6 +160,7 @@ namespace Voat.Domain
                     Type = submission.Type == 1 ? SubmissionType.Text : SubmissionType.Link,
                     Subverse = submission.Subverse,
                     IsAnonymized = submission.IsAnonymized,
+                    IsAdult = submission.IsAdult,
                     IsDeleted = submission.IsDeleted,
                     Rank = submission.Rank,
                     RelativeRank = submission.RelativeRank,
@@ -168,9 +169,12 @@ namespace Voat.Domain
                 //add flair if present
                 if (!String.IsNullOrEmpty(submission.FlairCss) && !String.IsNullOrEmpty(submission.FlairLabel))
                 {
-                    result.Attributes = new List<ContentAttribute>() { new ContentAttribute() { ID = -1, Type = AttributeType.Flair, Name = submission.FlairLabel, CssClass = submission.FlairCss } };
+                    result.Attributes.Add(new ContentAttribute() { ID = -1, Type = AttributeType.Flair, Name = submission.FlairLabel, CssClass = submission.FlairCss } );
                 }
-
+                if (result.IsAdult)
+                {
+                    result.Attributes.Add(new ContentAttribute() { ID = -1, Type = AttributeType.Data, Name = "NSFW", CssClass = "linkflairlabel" });
+                }
 
             }
             return result;

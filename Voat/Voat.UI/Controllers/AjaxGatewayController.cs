@@ -122,18 +122,10 @@ namespace Voat.Controllers
         }
 
         // GET: subverse names containing search term (used for autocomplete on new submission views)
-        public JsonResult AutocompleteSubverseName(string term)
+        public async Task<JsonResult> AutocompleteSubverseName(string term, bool exact = false)
         {
-            var resultList = new List<string>();
-
-            var subverseNameSuggestions = _db.Subverses
-                .Where(s => s.Name.ToLower().StartsWith(term))
-                .Take(10).ToArray();
-
-            // jquery UI doesn't play nice with key value pairs so we have to build a simple string array
-            if (!subverseNameSuggestions.Any()) return Json(resultList, JsonRequestBehavior.AllowGet);
-            resultList.AddRange(subverseNameSuggestions.Select(item => item.Name));
-
+            var q = new QuerySubmissionSubverseSettings(term, exact);
+            var resultList = await q.ExecuteAsync().ConfigureAwait(false);
             return Json(resultList, JsonRequestBehavior.AllowGet);
         }
 

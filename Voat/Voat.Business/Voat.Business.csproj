@@ -203,6 +203,7 @@
     <Compile Include="Domain\Models\Stylesheet.cs" />
     <Compile Include="Domain\Models\SubverseBannedUser.cs" />
     <Compile Include="Domain\Models\SubverseModerator.cs" />
+    <Compile Include="Domain\Models\SubverseSubmissionSetting.cs" />
     <Compile Include="Domain\Models\UserDefinition.cs" />
     <Compile Include="Domain\Models\UserSet.cs" />
     <Compile Include="Domain\Models\VoteValue.cs" />
@@ -230,6 +231,7 @@
     <Compile Include="Domain\Query\QuerySubmissions.cs" />
     <Compile Include="Domain\Query\QueryFilters.cs" />
     <Compile Include="Domain\Query\QuerySubmissionsByDomain.cs" />
+    <Compile Include="Domain\Query\QuerySubmissionSubverseSettings.cs" />
     <Compile Include="Domain\Query\QuerySubverse.cs" />
     <Compile Include="Domain\Query\QuerySubverseModerators.cs" />
     <Compile Include="Domain\Query\QuerySubverseSearch.cs" />

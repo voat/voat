@@ -13,7 +13,7 @@ namespace Voat.Domain.Models
     }
     public class ContentAttribute
     {
-        public int ID { get; set; }
+        public int? ID { get; set; }
         public AttributeType Type { get; set; }
         public string Name { get; set; }
         public string CssClass { get; set; }

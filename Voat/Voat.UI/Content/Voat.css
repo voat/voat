@@ -2701,6 +2701,21 @@ textarea.form-control {
     padding: 8px;
 }
 
+input[type=checkbox].form-control {
+    font-size: 13px;
+    line-height: 100%;
+    padding: 6px;
+    width: 20px;
+    background:none;
+}
+select.form-control {
+    font-size: 13px;
+    line-height: 100%;
+    padding: 6px;
+    width: auto;
+    background:none;
+}
+
 /* ! Register
 -------------------------------------------------------------------------------- */
 

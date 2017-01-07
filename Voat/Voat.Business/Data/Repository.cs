@@ -688,7 +688,11 @@ namespace Voat.Data
             var x = await _db.StickiedSubmissions.FirstOrDefaultAsync(s => s.Subverse == subverse).ConfigureAwait(false);
             if (x != null)
             {
-                return GetSubmission(x.SubmissionID).Map();
+                var submission = GetSubmission(x.SubmissionID);
+                if (!submission.IsDeleted)
+                {
+                    return submission.Map();
+                }
             }
             return null;
         }
@@ -941,7 +945,7 @@ namespace Voat.Data
                     query.Where = "sub.MinCCPForDownvote = 0 AND sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0 AND s.IsArchived = 0";
                     if (!nsfw)
                     {
-                        query.Where += " AND sub.IsAdult = 0";
+                        query.Where += " AND sub.IsAdult = 0 AND s.IsAdult = 0";
                     }
 
                     //query = (from x in _db.Submissions
@@ -1347,10 +1351,27 @@ namespace Voat.Data
             m.CreationDate = CurrentDate;
             m.Subverse = subverseObject.Name;
 
-            //TODO: Ensure subverse allows anon posts, raise error if not
-            m.IsAnonymized = userSubmission.IsAnonymized;
+            //TODO: Should be in rule object
+            //If IsAnonymized is NULL, this means subverse allows users to submit either anon or non-anon content
+            if (subverseObject.IsAnonymized.HasValue)
+            {
+                //Trap for a anon submittal in a non-anon subverse
+                if (!subverseObject.IsAnonymized.Value && userSubmission.IsAnonymized)
+                {
+                    return MapRuleOutCome<Models.Submission>(new RuleOutcome(RuleResult.Denied, "Anon Submission Rule", "9.1", "Subverse does not allow anon content"), null);
+                }
+                m.IsAnonymized = subverseObject.IsAnonymized.Value;
+            }
+            else
+            {
+                m.IsAnonymized = userSubmission.IsAnonymized;
+            }
 
-            //TODO: Determine if submission is marked as adult or has NSFW in title
+            //TODO: Determine if subverse is marked as adult or has NSFW in title
+            if (subverseObject.IsAdult || (!userSubmission.IsAdult && Regex.IsMatch(userSubmission.Title, CONSTANTS.NSFW_FLAG, RegexOptions.IgnoreCase)))
+            {
+                userSubmission.IsAdult = true;
+            }
             m.IsAdult = userSubmission.IsAdult;
 
             //1: Text, 2: Link
@@ -1992,7 +2013,7 @@ namespace Voat.Data
         {
             var result = from x in this._db.ApiClients
                          where x.UserName == userName
-                         orderby x.CreationDate descending
+                         orderby x.IsActive descending, x.CreationDate descending
                          select x;
             return result.ToList();
         }
@@ -2035,9 +2056,33 @@ namespace Voat.Data
             return policies;
         }
 
+        public async Task<ApiClient> EditApiKey(string apiKey, string name, string description, string url, string redirectUrl)
+        {
+            DemandAuthentication();
+
+            //Only allow users to edit ApiKeys if they IsActive == 1 and Current User owns it.
+            var apiClient = (from x in _db.ApiClients
+                          where x.PublicKey == apiKey && x.UserName == User.Identity.Name && x.IsActive == true
+                          select x).FirstOrDefault();
+
+            if (apiClient != null)
+            {
+                apiClient.AppAboutUrl = url;
+                apiClient.RedirectUrl = redirectUrl;
+                apiClient.AppDescription = description;
+                apiClient.AppName = name;
+                await _db.SaveChangesAsync().ConfigureAwait(false);
+            }
+
+            return apiClient;
+            
+        }
+
         [Authorize]
         public void CreateApiKey(string name, string description, string url, string redirectUrl)
         {
+            DemandAuthentication();
+
             ApiClient c = new ApiClient();
             c.IsActive = true;
             c.AppAboutUrl = url;
@@ -2079,6 +2124,8 @@ namespace Voat.Data
         [Authorize]
         public ApiClient DeleteApiKey(int id)
         {
+            DemandAuthentication();
+
             //Only allow users to delete ApiKeys if they IsActive == 1
             var apiKey = (from x in _db.ApiClients
                           where x.ID == id && x.UserName == User.Identity.Name && x.IsActive == true
@@ -2086,7 +2133,7 @@ namespace Voat.Data
 
             if (apiKey != null)
             {
-                _db.ApiClients.Remove(apiKey);
+                apiKey.IsActive = false;
                 _db.SaveChanges();
             }
             return apiKey;
@@ -4472,9 +4519,29 @@ namespace Voat.Data
         #endregion Misc
 
         #region Search 
-        
-        
-        
+
+        public async Task<IEnumerable<SubverseSubmissionSetting>> SubverseSubmissionSettingsSearch(string subverseName, bool exactMatch)
+        {
+
+            var q = new DapperQuery();
+            q.Select = "Name, IsAnonymized, IsAdult FROM Subverse";
+            q.OrderBy = "SubscriberCount DESC, CreationDate ASC";
+
+            if (exactMatch)
+            {
+                q.Where = "Name = @Name";
+                q.TakeCount = 1;
+            }
+            else
+            {
+                q.Where = "Name LIKE CONCAT(@Name, '%') OR Name = @Name";
+                q.TakeCount = 10;
+            }
+
+            return await _db.Database.Connection.QueryAsync<SubverseSubmissionSetting>(q.ToString(), new { Name = subverseName });
+
+        }
+
         #endregion
     }
 }

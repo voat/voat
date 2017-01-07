@@ -50,11 +50,72 @@ $(document).ready(function () {
         }
         //$(this).find('ul').css('display', 'none');
     }
+    var postingSubverse = '';
+    $('#Subverse').blur(function () {
+        var sub = $('#Subverse').val();
+        if (sub.length > 0 && postingSubverse != sub) {
+            postingSubverse = sub;
+            var url = '/ajaxhelpers/autocompletesubversename?exact=true&term=' + sub;
+            //set up UI
+            $.ajax({
+                type: "GET",
+                url: url,
+                //data: $form.serialize(),
+                error: function (xhr, status, error) {
+                    var msg = getErrorMessage(error);
+                    alert(msg);
+                },
+                success: function (response) {
+                    if (response && response.length > 0) {
+                        var item = response[0];
 
-    $('#Subverse').autocomplete(
-        {
-            source: '/ajaxhelpers/autocompletesubversename'
-        });
+                        var adultCheckBox = $('#IsAdult');
+                        var anonCheckBox = $('#IsAnonymized');
+                        var anonDiv = $('#AnonDiv')
+
+                        anonDiv.hide();
+                        anonCheckBox.prop("disabled", true);
+                        anonCheckBox.prop("readonly", true);
+
+                        if (item.isAdult) {
+                            if (!adultCheckBox.prop('checked')) {
+                                adultCheckBox.prop("checked", true);
+                            }
+                        }
+
+                        //allows anon content, leave alone
+                        if (item.isAnonymized == null) {
+                            anonCheckBox.prop("disabled", false);
+                            anonCheckBox.prop("readonly", false);
+                            anonDiv.show();
+                        } else if (item.isAnonymized == false) {
+                            anonCheckBox.prop("checked", false);
+
+                        } else if (item.isAnonymized == true) {
+                            anonCheckBox.prop("checked", true);
+                        }
+                    }
+                }
+            });
+        }
+
+    });
+    $('#Subverse').autocomplete({
+        source: '/ajaxhelpers/autocompletesubversename',
+        minLength: 2,
+        select: function (event, ui) {
+            $('#Subverse').val(ui.item.name);
+            return false;
+        },
+        focus: function () {
+            // prevent value inserted on focus
+            return false;
+        }
+    }).autocomplete("instance")._renderItem = function (ul, item) {
+        return $("<li>")
+        .append("<div>" + item.name + "</div>")
+        .appendTo(ul);
+    };
 
     // drag'n'drop link sharing
     //$(document).on('dragenter', function () {

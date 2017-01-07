@@ -51,7 +51,7 @@ namespace Voat.Data.Models
         public Nullable<int> SubscriberCount { get; set; }
         public bool IsPrivate { get; set; }
         public bool IsAuthorizedOnly { get; set; }
-        public bool IsAnonymized { get; set; }
+        public Nullable<bool> IsAnonymized { get; set; }
         public Nullable<System.DateTime> LastSubmissionDate { get; set; }
         public int MinCCPForDownvote { get; set; }
         public bool IsAdminPrivate { get; set; }

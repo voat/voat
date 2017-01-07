@@ -258,45 +258,48 @@ namespace Voat.Caching
         private void RefetchItem(CacheEntryUpdateArguments args)
         {
             var cacheKey = args.Key;
-            var meta = _meta[cacheKey];
-            int refreshLimit = meta.MaxCount;
-            int refreshCount = meta.CurrentCount + 1;
-
-            if (refreshLimit == 0 || refreshCount <= refreshLimit)
+            if (_meta.ContainsKey(cacheKey))
             {
-                string msg = String.Format("Refetching cache ({0}) - #{1}", cacheKey, refreshCount);
-                EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
-                //Debug.Print(msg);
+                var meta = _meta[cacheKey];
+                int refreshLimit = meta.MaxCount;
+                int refreshCount = meta.CurrentCount + 1;
 
-                //_meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(meta.Item1, meta.Item2, meta.Item3, refreshCount);
-                _meta[cacheKey] = meta; 
-                //new Tuple<Func<object>, TimeSpan, int, int>(meta.Item1, meta.Item2, meta.Item3, refreshCount);
-
-                args.UpdatedCacheItem = new CacheItem(cacheKey, new object());
-
-                args.UpdatedCacheItemPolicy = new CacheItemPolicy()
+                if (refreshLimit == 0 || refreshCount <= refreshLimit)
                 {
-                    AbsoluteExpiration = Repository.CurrentDate.Add(meta.CacheTime),
-                    UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
-                };
+                    string msg = String.Format("Refetching cache ({0}) - #{1}", cacheKey, refreshCount);
+                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
+                    //Debug.Print(msg);
 
-                try
-                {
-                    //throw new NotImplementedException("This needs implementing");
-                    var data = RefetchData(meta);
-                    SetItem(cacheKey, data, meta.CacheTime);
+                    //_meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(meta.Item1, meta.Item2, meta.Item3, refreshCount);
+                    _meta[cacheKey] = meta;
+                    //new Tuple<Func<object>, TimeSpan, int, int>(meta.Item1, meta.Item2, meta.Item3, refreshCount);
+
+                    args.UpdatedCacheItem = new CacheItem(cacheKey, new object());
+
+                    args.UpdatedCacheItemPolicy = new CacheItemPolicy()
+                    {
+                        AbsoluteExpiration = Repository.CurrentDate.Add(meta.CacheTime),
+                        UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
+                    };
+
+                    try
+                    {
+                        //throw new NotImplementedException("This needs implementing");
+                        var data = RefetchData(meta);
+                        SetItem(cacheKey, data, meta.CacheTime);
+                    }
+                    catch (Exception ex)
+                    {
+                        EventLogger.Log(ex, Domain.Models.Origin.Unknown);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    EventLogger.Log(ex, Domain.Models.Origin.Unknown);
+                    string msg = String.Format("Expiring cache ({0}) - #{1}", cacheKey, refreshCount);
+                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
+                    //Debug.Print(msg);
+                    Remove(cacheKey, true);
                 }
-            }
-            else
-            {
-                string msg = String.Format("Expiring cache ({0}) - #{1}", cacheKey, refreshCount);
-                EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
-                //Debug.Print(msg);
-                Remove(cacheKey, true);
             }
         }
 
