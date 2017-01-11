@@ -191,15 +191,73 @@ namespace Voat.Tests.CommandTests
 
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
-        public async Task DeleteSubmission()
+        public async Task DeleteSubmission_Owner()
         {
-            TestHelper.SetPrincipal("anon");
+            TestHelper.SetPrincipal("TestUser12");
 
-            var cmd = new DeleteSubmissionCommand(3);
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title", Content = "This is content in this test" });
+
             var r = await cmd.Execute();
 
+            Assert.IsNotNull(r, "Response is null");
             Assert.IsTrue(r.Success, r.Message);
-            //Assert.Inconclusive();
+            Assert.IsNotNull(r.Response, "Expecting a non null response");
+            Assert.AreNotEqual(0, r.Response.ID);
+
+            var d = new DeleteSubmissionCommand(r.Response.ID);
+            var r2 = await d.Execute();
+
+            Assert.IsTrue(r.Success, r.Message);
+
+            //verify
+            using (var db = new Voat.Data.Repository())
+            {
+                var s = db.GetSubmission(r.Response.ID);
+                Assert.AreEqual(true, s.IsDeleted);
+
+                //Content should remain unchanged in mod deletion
+                //Assert.AreEqual(s.Content, r.Response.Content);
+                //Assert.AreEqual(s.FormattedContent, r.Response.FormattedContent);
+                Assert.IsTrue(s.Content.StartsWith("Deleted by"));
+                Assert.AreEqual(s.FormattedContent, Utilities.Formatting.FormatMessage(s.Content));
+            }
+
+        }
+
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
+        public async Task DeleteSubmission_Moderator()
+        {
+            TestHelper.SetPrincipal("TestUser13");
+
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title", Content = "This is content a mod would hate" });
+
+            var r = await cmd.Execute();
+
+            Assert.IsNotNull(r, "Response is null");
+            Assert.IsTrue(r.Success, r.Message);
+            Assert.IsNotNull(r.Response, "Expecting a non null response");
+            Assert.AreNotEqual(0, r.Response.ID);
+
+            TestHelper.SetPrincipal("unit");
+            var d = new DeleteSubmissionCommand(r.Response.ID, "This is content I hate");
+            var r2 = await d.Execute();
+
+            Assert.IsTrue(r.Success, r.Message);
+
+            //verify
+            using (var db = new Voat.Data.Repository())
+            {
+                var s = db.GetSubmission(r.Response.ID);
+                Assert.AreEqual(true, s.IsDeleted);
+
+                //Content should remain unchanged in mod deletion
+                Assert.AreEqual(s.Content, r.Response.Content);
+                Assert.AreEqual(s.FormattedContent, r.Response.FormattedContent);
+                //Assert.IsTrue(s.Content.StartsWith("Deleted by"));
+                //Assert.AreEqual(s.FormattedContent, Utilities.Formatting.FormatMessage(s.Content));
+            }
+
         }
 
         [TestMethod]

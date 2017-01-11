@@ -8,7 +8,7 @@ namespace Voat.Tests.Utils
     [TestClass]
     public class DateTimeExtensionTests : BaseUnitTest
     {
-        private JulianCalendar julian = new JulianCalendar();
+        private Calendar calendar = CultureInfo.InvariantCulture.Calendar;
 
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Utility.DateTime")]
@@ -51,7 +51,7 @@ namespace Voat.Tests.Utils
 
             Assert.AreEqual(current.Year, processed.Year);
             Assert.AreEqual(current.Month, processed.Month);
-            Assert.AreEqual(julian.GetDaysInMonth(current.Year, current.Month), processed.Day);
+            Assert.AreEqual(calendar.GetDaysInMonth(current.Year, current.Month), processed.Day);
             Assert.AreEqual(23, processed.Hour);
             Assert.AreEqual(59, processed.Minute);
             Assert.AreEqual(59, processed.Second);
@@ -65,8 +65,8 @@ namespace Voat.Tests.Utils
             var current = DateTime.UtcNow;
             var processed = current.ToEndOfWeek();
 
-            Assert.AreEqual(DayOfWeek.Saturday, julian.GetDayOfWeek(processed));
-            Assert.IsTrue(julian.GetDayOfYear(current) <= julian.GetDayOfYear(processed));
+            Assert.AreEqual(DayOfWeek.Saturday, calendar.GetDayOfWeek(processed));
+            Assert.IsTrue(calendar.GetDayOfYear(current) <= calendar.GetDayOfYear(processed));
         }
 
         [TestMethod]
@@ -106,7 +106,7 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(3, end.Month, desc);
             //day
             Assert.AreEqual(1, start.Day, desc);
-            Assert.AreEqual(julian.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
+            Assert.AreEqual(calendar.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
 
             Assert.AreEqual(0, start.Minute, desc);
             Assert.AreEqual(0, start.Second, desc);
@@ -128,7 +128,7 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(6, end.Month, desc);
             //day
             Assert.AreEqual(1, start.Day, desc);
-            Assert.AreEqual(julian.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
+            Assert.AreEqual(calendar.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
 
             Assert.AreEqual(0, start.Minute, desc);
             Assert.AreEqual(0, start.Second, desc);
@@ -150,7 +150,7 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(9, end.Month, desc);
             //day
             Assert.AreEqual(1, start.Day, desc);
-            Assert.AreEqual(julian.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
+            Assert.AreEqual(calendar.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
 
             Assert.AreEqual(0, start.Minute, desc);
             Assert.AreEqual(0, start.Second, desc);
@@ -172,7 +172,7 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(12, end.Month, desc);
             //day
             Assert.AreEqual(1, start.Day, desc);
-            Assert.AreEqual(julian.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
+            Assert.AreEqual(calendar.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
 
             Assert.AreEqual(0, start.Minute, desc);
             Assert.AreEqual(0, start.Second, desc);
@@ -275,8 +275,8 @@ namespace Voat.Tests.Utils
             var current = DateTime.UtcNow;
             var processed = current.ToStartOfWeek();
 
-            Assert.AreEqual(DayOfWeek.Sunday, julian.GetDayOfWeek(processed));
-            Assert.IsTrue(julian.GetDayOfYear(current) >= julian.GetDayOfYear(processed));
+            Assert.AreEqual(DayOfWeek.Sunday, calendar.GetDayOfWeek(processed));
+            Assert.IsTrue(calendar.GetDayOfYear(current) >= calendar.GetDayOfYear(processed));
         }
 
         [TestMethod]
@@ -288,8 +288,8 @@ namespace Voat.Tests.Utils
             var start = processed.Item1;
             var end = processed.Item2;
 
-            Assert.AreEqual(DayOfWeek.Sunday, julian.GetDayOfWeek(start));
-            Assert.AreEqual(DayOfWeek.Saturday, julian.GetDayOfWeek(end));
+            Assert.AreEqual(DayOfWeek.Sunday, calendar.GetDayOfWeek(start));
+            Assert.AreEqual(DayOfWeek.Saturday, calendar.GetDayOfWeek(end));
 
             Assert.AreEqual(13, start.Day);
             Assert.AreEqual(19, end.Day);

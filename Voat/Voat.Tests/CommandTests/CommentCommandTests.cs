@@ -242,8 +242,10 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
-        public void DeleteComment()
+        public void DeleteComment_Owner()
         {
+            //Assert.Inconclusive("Complete this test");
+
             TestHelper.SetPrincipal("TestUser1");
             var cmdcreate = new CreateCommentCommand(1, null, "This is my data too you know");
             var c = cmdcreate.Execute().Result;
@@ -264,9 +266,49 @@ namespace Voat.Tests.CommandTests
                 var comment = db.GetComment(id);
                 Assert.AreEqual(true, comment.IsDeleted);
                 Assert.AreNotEqual(c.Response.Content, comment.Content);
+
+                //Ensure content is replaced in moderator deletion
+                Assert.IsTrue(comment.Content.StartsWith("Deleted by"));
+                Assert.AreEqual(comment.FormattedContent, Formatting.FormatMessage(comment.Content));
+
             }
         }
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
+        public void DeleteComment_Moderator()
+        {
+            //Assert.Inconclusive("Complete this test");
 
+            TestHelper.SetPrincipal("TestUser1");
+            var cmdcreate = new CreateCommentCommand(1, null, "This is my data too you know");
+            var c = cmdcreate.Execute().Result;
+
+            Assert.IsNotNull(c, "response null");
+            Assert.IsTrue(c.Success, c.Message);
+            Assert.IsNotNull(c.Response, "Response payload null");
+
+            int id = c.Response.ID;
+
+            //switch to mod of sub
+            TestHelper.SetPrincipal("unit");
+            var cmd = new DeleteCommentCommand(id, "This is spam");
+            var r = cmd.Execute().Result;
+            Assert.IsTrue(r.Success, r.Message);
+
+            //verify
+            using (var db = new Voat.Data.Repository())
+            {
+                var comment = db.GetComment(id);
+                Assert.AreEqual(true, comment.IsDeleted);
+                
+                //Content should remain unchanged in mod deletion
+                Assert.AreEqual(comment.Content, c.Response.Content);
+                Assert.AreEqual(comment.FormattedContent, c.Response.FormattedContent);
+
+            }
+        }
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Comment")]

@@ -953,7 +953,6 @@ namespace Voat.Data
                     //                && (!x.Subverse1.IsAdminPrivate && !x.Subverse1.IsPrivate && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value))
                     //                && (x.Subverse1.IsAdult && nsfw || !x.Subverse1.IsAdult)
                     //         select x);
-
                     break;
 
                 //for regular subverse queries
@@ -984,6 +983,27 @@ namespace Voat.Data
                     //         select x);
                     break;
             }
+            //Filter out stickies
+            switch (name.ToLower())
+            {
+                //Match Aggregate Subs
+                case AGGREGATE_SUBVERSE.FRONT:
+                case AGGREGATE_SUBVERSE.DEFAULT:
+                case AGGREGATE_SUBVERSE.ANY:
+                case AGGREGATE_SUBVERSE.ALL:
+                case "all":
+
+                    query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = 'announcements')");
+
+                    break;
+                //for regular subverse queries
+                default:
+
+                    //Filter out stickies in subs
+                    query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = s.Subverse)");
+                    break;
+            }
+
 
             query.Append(x => x.Where, "s.IsDeleted = 0");
 
@@ -1498,13 +1518,14 @@ namespace Voat.Data
                 {
                     submission.IsDeleted = true;
 
-                    if (submission.Type == 1)
+                    if (submission.Type == (int)SubmissionType.Text)
                     {
-                        submission.Content = "Deleted by author at " + Repository.CurrentDate;
+                        submission.Content = UserDeletedContentMessage();
+                        submission.FormattedContent = Formatting.FormatMessage(submission.Content);
                     }
                     else
                     {
-                        submission.Content = "http://voat.co";
+                        submission.Url = "http://voat.co";
                     }
 
                     // remove sticky if submission was stickied
@@ -1578,6 +1599,11 @@ namespace Voat.Data
             }
 
             return Selectors.SecureSubmission(submission);
+        }
+
+        private static string UserDeletedContentMessage()
+        {
+            return "Deleted by author at " + Repository.CurrentDate;
         }
 
         public async Task<CommandResponse> LogVisit(int submissionID, string clientIpAddress)
@@ -1804,7 +1830,8 @@ namespace Voat.Data
                     if (comment.UserName == User.Identity.Name)
                     {
                         comment.IsDeleted = true;
-                        comment.Content = "Deleted by author at " + Repository.CurrentDate;
+                        comment.Content = UserDeletedContentMessage();
+                        comment.FormattedContent = Formatting.FormatMessage(comment.Content);
                         await _db.SaveChangesAsync().ConfigureAwait(false);
                     }
 
@@ -1847,7 +1874,6 @@ namespace Voat.Data
 
                         _db.CommentRemovalLogs.Add(removalLog);
 
-                        comment.Content = "Deleted by a moderator at " + Repository.CurrentDate;
                         await _db.SaveChangesAsync().ConfigureAwait(false);
                     }
                     else

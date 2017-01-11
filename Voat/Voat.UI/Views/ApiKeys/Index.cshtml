@@ -61,23 +61,34 @@
                     <td>
 
                         <h3>@Html.DisplayFor(modelItem => item.AppName)</h3>
-                        @if (item.IsActive)
-                        {
-                            <span style="color:green;">Active</span>
-                        }
-                        else {
-                            <span style="color:red;">Inactive</span>
-                        }
-
+                        
+                       
                         <p>
                             @Html.DisplayFor(modelItem => item.AppDescription)
-                        <p />
+                        </p>
 
                         @if (!String.IsNullOrEmpty(item.AppAboutUrl))
                         {
                             <p class="breakword"><a href="@item.AppAboutUrl" target="_blank">@item.AppAboutUrl</a></p>
                         }
+
+                        @* Basically, we don't want a user to delete if a key has been turned off by an admin. *@
+                        @if (item.IsActive)
+                        {
+                            @Html.ActionLink("Edit", "Edit", new { id = item.PublicKey }, new { @class = "btn-whoaverse" })
+                        }
+
                         <p>
+                            Status - 
+                            @if (item.IsActive)
+                            {
+                                <span style="">Active</span>
+                            }
+                            else
+                            {
+                                <span style="color:red;">Inactive</span>
+                            }
+                            <br/>
                             Created - @Html.DisplayFor(modelItem => item.CreationDate)<br/>
                             Last Used -
                             @if (item.LastAccessDate.HasValue)
@@ -127,16 +138,7 @@
 
                             </div>
                         }
-                        @* Basically, we don't want a user to delete if a key has been turned off by an admin. *@
-                        @if (item.IsActive)
-                        {
-                            @Html.ActionLink("Edit", "Edit", new { id = item.PublicKey }, new { @class = "btn-whoaverse" })
-
-                            using (Html.BeginForm("Delete", "ApiKeys", new { id = item.ID }, FormMethod.Post))
-                            {
-                                <input type="submit" value="Delete" class="btn-whoaverse" />
-                            }
-                        }
+                       
 
                     </td>
                     <td>
@@ -156,6 +158,16 @@
                                     @Html.DisplayFor(modelItem => item.RedirectUrl)<br />
                                 </p>
                             }
+
+                            @* Basically, we don't want a user to delete if a key has been turned off by an admin. *@
+                            @if (item.IsActive)
+                            {
+                                using (Html.BeginForm("Delete", "ApiKeys", new { id = item.ID }, FormMethod.Post))
+                                {
+                                    <input type="submit" value="Delete" class="btn-whoaverse" />
+                                }
+                            }
+
                         </div>
                     </td>
                    
