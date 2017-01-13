@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Voat.Data.Models;
 using Voat.Domain.Command;
-
+using Voat.Domain.Models;
 namespace Voat.Tests.CommandTests
 {
     [TestClass]
@@ -237,12 +237,12 @@ namespace Voat.Tests.CommandTests
                 var mod = "anon";
                 if (!record.Any(x => x.UserName == mod))
                 {
-                    db.SubverseModerators.Add(new SubverseModerator() { UserName = mod, Subverse = subverse, CreatedBy = "UnitTesting", CreationDate = DateTime.UtcNow, Power = 1 });
+                    db.SubverseModerators.Add(new Voat.Data.Models.SubverseModerator() { UserName = mod, Subverse = subverse, CreatedBy = "UnitTesting", CreationDate = DateTime.UtcNow, Power = 1 });
                 }
                 mod = "unit";
                 if (!record.Any(x => x.UserName == mod))
                 {
-                    db.SubverseModerators.Add(new SubverseModerator() { UserName = mod, Subverse = subverse, CreatedBy = "UnitTesting", CreationDate = DateTime.UtcNow, Power = 1 });
+                    db.SubverseModerators.Add(new Voat.Data.Models.SubverseModerator() { UserName = mod, Subverse = subverse, CreatedBy = "UnitTesting", CreationDate = DateTime.UtcNow, Power = 1 });
                 }
                 db.SaveChanges();
             }
@@ -313,6 +313,46 @@ namespace Voat.Tests.CommandTests
                                 && x.RecipientType == (int)Domain.Models.IdentityType.User
                                 && x.Title == id
                                 && x.Content == id
+                              select x).FirstOrDefault();
+                Assert.IsNotNull(record, "Can not find message in database");
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Messaging"), TestCategory("Command.Messaging"), TestCategory("Process")]
+        public async Task SendMessageReply_ToCommentRelatedMention()
+        {
+            //create a comment and ping another user aka comment mention
+            TestHelper.SetPrincipal("TestUser14");
+            var c = new CreateCommentCommand(1, null, "This is my comment @TestUser15, do you like it?");
+            var r = await c.Execute();
+            Assert.IsTrue(r.Success, r.Message);
+
+            //read ping message and reply to it using message gateway
+            TestHelper.SetPrincipal("TestUser15");
+            var mq = new Domain.Query.QueryMessages(MessageTypeFlag.CommentMention, MessageState.Unread);
+            var messages = await mq.ExecuteAsync();
+            Assert.IsTrue(messages.Any(), "Didn't return any messages");
+
+            var m = messages.FirstOrDefault(x => x.CommentID == r.Response.ID);
+            Assert.IsNotNull(m, "Cant find message");
+
+            var content = "I reply to you from messages";
+            var cmd = new SendMessageReplyCommand(m.ID, content);
+            var response = await cmd.Execute();
+
+            Assert.IsNotNull(response, "Response is null");
+            Assert.IsTrue(response.Success, response.Status.ToString());
+
+            //ensure comment exists in thread as message gateway should submit a comment based on message type and info
+            using (var db = new voatEntities())
+            {
+                var record = (from x in db.Comments
+                              where
+                                x.SubmissionID == m.SubmissionID.Value
+                                && x.ParentID == m.CommentID.Value
+                                && x.Content == content
+                                && x.UserName == "TestUser15"
                               select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find message in database");
             }

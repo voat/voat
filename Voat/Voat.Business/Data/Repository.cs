@@ -913,7 +913,10 @@ namespace Voat.Data
 
                     break;
                 case AGGREGATE_SUBVERSE.ANY:
-                    query.Where = "sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0";
+                    //allowing subverse marked private to not be filtered
+                    //Should subs marked as private be excluded from an ANY query? I don't know.
+                    //query.Where = "sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0";
+                    query.Where = "sub.IsAdminPrivate = 0";
                     //query = (from x in _db.Submissions
                     //         where
                     //         !x.Subverse1.IsAdminPrivate
@@ -2401,35 +2404,74 @@ namespace Voat.Data
             {
                 var message = new Domain.Models.Message();
 
-                if (m.RecipientType == (int)IdentityType.Subverse)
+                //determine if message replying to is a comment and if so execute a comment reply
+                switch ((MessageType)m.Type)
                 {
-                    if (!ModeratorPermission.HasPermission(User.Identity.Name, m.Recipient, ModeratorAction.SendMail))
-                    {
-                        return new CommandResponse<Domain.Models.Message>(null, Status.NotProcessed, "Message integrity violated");
-                    }
+                    case MessageType.CommentMention:
+                    case MessageType.CommentReply:
+                    case MessageType.SubmissionReply:
+                    case MessageType.SubmissionMention:
 
-                    message.Recipient = m.Sender;
-                    message.RecipientType = (IdentityType)m.SenderType;
+                        Domain.Models.Comment comment;
+                        //assume ever comment type has a submission ID contained in it
+                        var response = await PostComment(m.SubmissionID.Value, m.CommentID, messageContent);
+                        comment = response.Response;
 
-                    message.Sender = m.Recipient;
-                    message.SenderType = (IdentityType)m.RecipientType;
+                        //if (m.Type == (int)MessageType.SubmissionMention)
+                        //{
+                        //    comment = 
+                        //}
+                        //else
+                        //{
+                        //    comment = await PostCommentReply(m.CommentID.Value, messageContent);
+                        //}
+
+                        return CommandResponse.Successful(new Domain.Models.Message()
+                        {
+                            ID = -1,
+                            Comment = comment,
+                            SubmissionID = comment.SubmissionID,
+                            CommentID = comment.ID,
+                            Content = comment.Content,
+                            FormattedContent = comment.FormattedContent,
+                        });
+
+
+                        break;
+                    default:
+
+                        if (m.RecipientType == (int)IdentityType.Subverse)
+                        {
+                            if (!ModeratorPermission.HasPermission(User.Identity.Name, m.Recipient, ModeratorAction.SendMail))
+                            {
+                                return new CommandResponse<Domain.Models.Message>(null, Status.NotProcessed, "Message integrity violated");
+                            }
+
+                            message.Recipient = m.Sender;
+                            message.RecipientType = (IdentityType)m.SenderType;
+
+                            message.Sender = m.Recipient;
+                            message.SenderType = (IdentityType)m.RecipientType;
+                        }
+                        else
+                        {
+                            message.Recipient = m.Sender;
+                            message.RecipientType = (IdentityType)m.SenderType;
+
+                            message.Sender = m.Recipient;
+                            message.SenderType = (IdentityType)m.RecipientType;
+                        }
+
+                        message.ParentID = m.ID;
+                        message.CorrelationID = m.CorrelationID;
+                        message.Title = m.Title;
+                        message.Content = messageContent;
+                        message.FormattedContent = Formatting.FormatMessage(messageContent);
+
+                        return await SendMessage(message).ConfigureAwait(false);
+
+                        break;
                 }
-                else
-                {
-                    message.Recipient = m.Sender;
-                    message.RecipientType = (IdentityType)m.SenderType;
-
-                    message.Sender = m.Recipient;
-                    message.SenderType = (IdentityType)m.RecipientType;
-                }
-
-                message.ParentID = m.ID;
-                message.CorrelationID = m.CorrelationID;
-                message.Title = m.Title;
-                message.Content = messageContent;
-                message.FormattedContent = Formatting.FormatMessage(messageContent);
-
-                return await SendMessage(message).ConfigureAwait(false);
             }
         }
 
@@ -3772,6 +3814,7 @@ namespace Voat.Data
                     m.CreationDate = d.CreationDate;
 
                     m.Comment = new SubmissionComment();
+                    m.Comment.ID = d.Comment.ID;
                     m.Comment.UpCount = (int)d.Comment.UpCount;
                     m.Comment.DownCount = (int)d.Comment.DownCount;
                     m.Comment.Content = d.Comment.Content;

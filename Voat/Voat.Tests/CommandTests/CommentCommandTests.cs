@@ -261,9 +261,9 @@ namespace Voat.Tests.CommandTests
             Assert.IsTrue(r.Success);
 
             //verify
-            using (var db = new Voat.Data.Repository())
+            using (var db = new voatEntities())
             {
-                var comment = db.GetComment(id);
+                var comment = db.Comments.FirstOrDefault(x => x.ID == id);
                 Assert.AreEqual(true, comment.IsDeleted);
                 Assert.AreNotEqual(c.Response.Content, comment.Content);
 
@@ -280,9 +280,9 @@ namespace Voat.Tests.CommandTests
         public void DeleteComment_Moderator()
         {
             //Assert.Inconclusive("Complete this test");
-
+            var content = "This is my data too you know 2";
             TestHelper.SetPrincipal("TestUser1");
-            var cmdcreate = new CreateCommentCommand(1, null, "This is my data too you know");
+            var cmdcreate = new CreateCommentCommand(1, null, content);
             var c = cmdcreate.Execute().Result;
 
             Assert.IsNotNull(c, "response null");
@@ -298,14 +298,14 @@ namespace Voat.Tests.CommandTests
             Assert.IsTrue(r.Success, r.Message);
 
             //verify
-            using (var db = new Voat.Data.Repository())
+            using (var db = new voatEntities())
             {
-                var comment = db.GetComment(id);
+                var comment = db.Comments.FirstOrDefault(x => x.ID == id);
                 Assert.AreEqual(true, comment.IsDeleted);
                 
                 //Content should remain unchanged in mod deletion
-                Assert.AreEqual(comment.Content, c.Response.Content);
-                Assert.AreEqual(comment.FormattedContent, c.Response.FormattedContent);
+                Assert.AreEqual(comment.Content, content);
+                Assert.AreEqual(comment.FormattedContent, Formatting.FormatMessage(content));
 
             }
         }

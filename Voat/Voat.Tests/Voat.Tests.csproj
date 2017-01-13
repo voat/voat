@@ -163,6 +163,7 @@
     <Compile Include="Cache\CacheTests.cs" />
     <Compile Include="CommandTests\BaseCommandTest.cs" />
     <Compile Include="CommandTests\CommentCommandTests.cs" />
+    <Compile Include="CommandTests\CommentDeleteWorkFlowTests.cs" />
     <Compile Include="CommandTests\CreateSubverseTests.cs" />
     <Compile Include="CommandTests\ModeratorCommandTests.cs" />
     <Compile Include="CommandTests\SendMessageCommandTests.cs" />

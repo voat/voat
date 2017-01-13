@@ -106,7 +106,7 @@ namespace Voat.Controllers
 
                                 var message = new Domain.Models.SendMessage()
                                 {
-                                    Sender = s.IsAnonymized ? "Anon" : userName,
+                                    Sender = userName,
                                     Recipient = $"v/{subverse}",
                                     Subject = "Submission Spam Report",
                                     Message = body
@@ -178,7 +178,7 @@ namespace Voat.Controllers
 
                                 var message = new Domain.Models.SendMessage()
                                 {
-                                    Sender = comment.IsAnonymized ? "Anon" : userName,
+                                    Sender = userName,
                                     Recipient = $"v/{subverse}",
                                     Subject = "Comment Spam Report",
                                     Message = body

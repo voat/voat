@@ -164,6 +164,7 @@
     <Compile Include="Data\AGGREGATE_SUBVERSE.cs" />
     <Compile Include="Data\DapperQuery.cs" />
     <Compile Include="Data\Selectors.cs" />
+    <Compile Include="Domain\Command\Base\QueuedCommand.cs" />
     <Compile Include="Domain\Command\CreateSubverseCommand.cs" />
     <Compile Include="Domain\Command\LogVisitCommand.cs" />
     <Compile Include="Domain\Command\MarkMessageCommand.cs" />
@@ -177,6 +178,7 @@
     <Compile Include="Domain\Command\ApiKeyCommands.cs" />
     <Compile Include="Domain\Command\DeleteUserCommand.cs" />
     <Compile Include="Domain\Command\RemoveModeratorCommand.cs" />
+    <Compile Include="Domain\Command\ReportContentCommand.cs" />
     <Compile Include="Domain\Command\SaveCommand.cs" />
     <Compile Include="Domain\Command\SendMessageCommand.cs" />
     <Compile Include="Domain\Command\SubmissionCommands.cs" />

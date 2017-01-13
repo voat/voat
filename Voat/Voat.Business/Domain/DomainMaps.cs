@@ -407,12 +407,15 @@ namespace Voat.Domain
                     using (var repo = new Repository())
                     {
                         var votes = repo.UserVoteStatus(userName, ContentType.Comment, comments.Select(x => x.ID).ToArray());
+
                         foreach (var comment in comments)
                         {
-                            comment.IsOwner = comment.UserName == userName;
-                            var voteValue = votes.FirstOrDefault(x => x.ID == comment.ID);
-                            comment.Vote = (voteValue == null ? 0 : voteValue.Value);
-                            comment.IsSaved = UserHelper.IsSaved(ContentType.Comment, comment.ID);
+                            HydrateUserData(comment, false, votes);
+                            //comment.IsOwner = comment.UserName == userName;
+                            //var voteValue = votes.FirstOrDefault(x => x.ID == comment.ID);
+                            //comment.Vote = (voteValue == null ? 0 : voteValue.Value);
+                            //comment.IsSaved = UserHelper.IsSaved(ContentType.Comment, comment.ID);
+                            //Protect(comment);
                         }
                     }
                 }
@@ -444,7 +447,25 @@ namespace Voat.Domain
                     comment.IsSaved = false;
                     comment.IsSaved = UserHelper.IsSaved(ContentType.Comment, comment.ID);
                 }
+                Protect(comment);
+                ////Swap UserName
+                //comment.UserName = (comment.IsAnonymized ? comment.ID.ToString() : comment.UserName);
+            }
+        }
+        private static void Protect(Domain.Models.Comment comment)
+        {
+            if (comment != null)
+            {
+                //Swap UserName
                 comment.UserName = (comment.IsAnonymized ? comment.ID.ToString() : comment.UserName);
+                //Ensure Deleted - this isn't going to work with comment moderation log, I think
+                if (comment.IsDeleted)
+                {
+                    comment.UserName = "";
+                    comment.Content = "Deleted";
+                    comment.FormattedContent = "<p>Deleted</p>";
+                }
+
             }
         }
     }
