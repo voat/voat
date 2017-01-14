@@ -1039,6 +1039,28 @@ YouTubeExpando.prototype.process = function (source) {
     });
 };
 
+/* vid.me */
+var VidmeExpando = function (options) {
+    IFrameEmbedderExpando.call(this, /^(?:https?\:\/\/)?(?:.*vid\.me)\/(.+)$/g, options);
+    this.getSrcUrl = function (id, fun) {
+        fun('//www.vid.me/e/' + id + '?stats=1');
+    };
+};
+VidmeExpando.prototype = new IFrameEmbedderExpando();
+VidmeExpando.prototype.constructor = VidmeExpando;
+VidmeExpando.prototype.process = function (source) {
+    var target = this.options.targetFunc($(source));
+
+    var width = Math.min(560, UI.Common.availableWidth(target.parent()));
+
+    this.hook($(source), 'vid.me', {
+        width: width.toString(),
+        height: (width * this.defaultRatio).toString(),
+        frameborder: '0',
+        allowfullscreen: true
+    });
+};
+
 /* Imgur Album */
 var ImgurAlbumExpando = function (options) {
     IFrameEmbedderExpando.call(this, /imgur\.com\/a\/(\w+)\/?/i, options);
@@ -1231,6 +1253,7 @@ $(document).ready(function () {
         [
             new ImageLinkExpando(commentOptions),
             new YouTubeExpando(commentOptions),
+            new VidmeExpando(commentOptions),
             new VimeoExpando(commentOptions),
             new CoubExpando(commentOptions),
             new GfycatExpando(commentOptions),
@@ -1296,6 +1319,7 @@ $(document).ready(function () {
         [
             new ImageLinkExpando(submissionOptions),
             new YouTubeExpando(submissionOptions),
+            new VidmeExpando(submissionOptions),
             new VimeoExpando(submissionOptions),
             new CoubExpando(submissionOptions),
             new GfycatExpando(submissionOptions),
