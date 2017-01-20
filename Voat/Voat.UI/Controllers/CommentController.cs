@@ -323,6 +323,9 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SubmitComment([Bind(Include = "ID, Content, SubmissionID, ParentID")] Data.Models.Comment commentModel)
         {
+
+            //return JsonError("This is an error message");
+
             if (!ModelState.IsValid)
             {
                 //Model isn't valid, can include throttling
@@ -482,65 +485,6 @@ namespace Voat.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-
-            //var commentToDelete = _db.Comments.Find(commentId);
-
-            //if (commentToDelete != null && !commentToDelete.IsDeleted)
-            //{
-            //    var commentSubverse = commentToDelete.Submission.Subverse;
-
-            //    // delete comment if the comment author is currently logged in user
-            //    if (commentToDelete.UserName == User.Identity.Name)
-            //    {
-            //        commentToDelete.IsDeleted = true;
-            //        commentToDelete.Content = "deleted by author at " + Repository.CurrentDate;
-            //        await _db.SaveChangesAsync();
-            //    }
-
-            //    // delete comment if delete request is issued by subverse moderator
-            //    else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
-            //    {
-
-            //        // notify comment author that his comment has been deleted by a moderator
-            //        var message = new Domain.Models.SendMessage()
-            //        {
-            //            Sender = $"v/{commentSubverse}",
-            //            Recipient = commentToDelete.UserName,
-            //            Subject = "Your comment has been deleted by a moderator",
-            //            Message =  "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.SubmissionID + "/" + commentToDelete.ID + ") has been deleted by: " +
-            //                        "/u/" + User.Identity.Name + " on: " + Repository.CurrentDate + "  " + Environment.NewLine +
-            //                        "Original comment content was: " + Environment.NewLine +
-            //                        "---" + Environment.NewLine +
-            //                        commentToDelete.Content
-            //        };
-            //        var cmd = new SendMessageCommand(message);
-            //        await cmd.Execute();
-
-            //        commentToDelete.IsDeleted = true;
-
-            //        // move the comment to removal log
-            //        var removalLog = new CommentRemovalLog
-            //        {
-            //            CommentID = commentToDelete.ID,
-            //            Moderator = User.Identity.Name,
-            //            Reason = "This feature is not yet implemented",
-            //            CreationDate = Repository.CurrentDate
-            //        };
-
-            //        _db.CommentRemovalLogs.Add(removalLog);
-
-            //        commentToDelete.Content = "deleted by a moderator at " + Repository.CurrentDate;
-            //        await _db.SaveChangesAsync();
-            //    }
-
-            //}
-            //if (Request.IsAjaxRequest())
-            //{
-            //    return new HttpStatusCodeResult(HttpStatusCode.OK);
-            //}
-            //var url = Request.UrlReferrer.AbsolutePath;
-            //return Redirect(url);
         }
 
         // POST: comments/distinguish/{commentId}

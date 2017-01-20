@@ -336,6 +336,7 @@ namespace Voat.Domain.Models
         InviteMods,
         RemoveMods,
         AssignStickies,
-        DistinguishContent
+        DistinguishContent,
+        AccessReports
     }
 }

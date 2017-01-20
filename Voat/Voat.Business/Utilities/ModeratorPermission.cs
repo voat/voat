@@ -76,6 +76,7 @@ namespace Voat.Utilities
                 case ModeratorAction.AssignFlair:
                 case ModeratorAction.ReadMail:
                 case ModeratorAction.SendMail:
+                case ModeratorAction.AccessReports:
                     result = levelEvaluator(level, new ModeratorLevel[] { ModeratorLevel.Owner, ModeratorLevel.Moderator, ModeratorLevel.Janitor });
                     break;
 

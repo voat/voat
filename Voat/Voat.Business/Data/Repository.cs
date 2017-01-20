@@ -4144,6 +4144,30 @@ namespace Voat.Data
 
         #region Misc
 
+        [Authorize]
+        public async Task<CommandResponse> SaveRuleReport(ContentType contentType, int id, int ruleID)
+        {
+            DemandAuthentication();
+
+            var reported = false;
+
+            var q = $"IF NOT EXISTS (SELECT * FROM RuleReport WHERE CreatedBy = @UserName AND {contentType.ToString()}ID = @ID) INSERT RuleReport (Subverse, UserName, SubmissionID, CommentID, RuleInformationID, CreatedBy, CreationDate) ";
+
+            switch (contentType)
+            {
+                case ContentType.Comment:
+                    q += "SELECT s.Subverse, NULL, s.ID, c.ID, @RuleID, @UserName, GETUTCDATE() FROM Submission s INNER JOIN Comment c ON c.SubmissionID = s.ID WHERE c.ID = @ID";
+                    break;
+                case ContentType.Submission:
+                    q += "SELECT s.Subverse, NULL, s.ID, NULL, @RuleID, @UserName, GETUTCDATE() FROM Submission s WHERE s.ID = @ID";
+                    break;
+            }
+
+            var result = await _db.Database.Connection.ExecuteAsync(q, new { UserName = User.Identity.Name, ID = id, RuleID = ruleID });
+            
+            return CommandResponse.Successful();
+        }
+
         public double? HighestRankInSubverse(string subverse)
         {
             var q = new DapperQuery();

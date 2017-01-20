@@ -96,7 +96,7 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Domain" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Domain" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
           <Property Name="Reason" Type="nvarchar" MaxLength="500" Nullable="false" />
@@ -237,6 +237,33 @@
           <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Subverse" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Power" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RuleInformation">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="Subverse" Type="nvarchar" MaxLength="50" />
+          <Property Name="ContentType" Type="tinyint" />
+          <Property Name="SortOrder" Type="int" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" />
+          <Property Name="Description" Type="nvarchar" MaxLength="1000" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RuleReport">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Subverse" Type="nvarchar" MaxLength="50" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="100" />
+          <Property Name="SubmissionID" Type="int" />
+          <Property Name="CommentID" Type="int" />
+          <Property Name="RuleInformationID" Type="int" Nullable="false" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="SessionTracker">
           <Key>
@@ -831,6 +858,8 @@
           <EntitySet Name="Filter" EntityType="Self.Filter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Message" EntityType="Self.Message" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ModeratorInvitation" EntityType="Self.ModeratorInvitation" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RuleInformation" EntityType="Self.RuleInformation" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RuleReport" EntityType="Self.RuleReport" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SessionTracker" EntityType="Self.SessionTracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StickiedSubmission" EntityType="Self.StickiedSubmission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Submission" EntityType="Self.Submission" Schema="dbo" store:Type="Tables" />
@@ -967,7 +996,7 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Domain" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Domain" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Reason" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
@@ -1766,6 +1795,8 @@
           <EntitySet Name="UserVisits" EntityType="Models.UserVisit" />
           <EntitySet Name="Messages" EntityType="Models.Message" />
           <EntitySet Name="Filters" EntityType="Models.Filter" />
+          <EntitySet Name="RuleInformations" EntityType="Models.RuleInformation" />
+          <EntitySet Name="RuleReports" EntityType="Models.RuleReport" />
         </EntityContainer>
         <ComplexType Name="usp_CommentTree_Result">
           <Property Type="Int32" Name="ChildCount" Nullable="true" />
@@ -1960,6 +1991,33 @@
           <Property Name="Replacement" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
           <Property Name="AppliesTo" Type="Int32" />
           <Property Name="Action" Type="Int32" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="RuleInformation">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="Subverse" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ContentType" Type="Byte" />
+          <Property Name="SortOrder" Type="Int32" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedBy" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="RuleReport">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Subverse" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UserName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="SubmissionID" Type="Int32" />
+          <Property Name="CommentID" Type="Int32" />
+          <Property Name="RuleInformationID" Type="Int32" Nullable="false" />
+          <Property Name="CreatedBy" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
       </Schema>
@@ -2499,6 +2557,35 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RuleInformations">
+            <EntityTypeMapping TypeName="Models.RuleInformation">
+              <MappingFragment StoreEntitySet="RuleInformation">
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+                <ScalarProperty Name="ContentType" ColumnName="ContentType" />
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RuleReports">
+            <EntityTypeMapping TypeName="Models.RuleReport">
+              <MappingFragment StoreEntitySet="RuleReport">
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="RuleInformationID" ColumnName="RuleInformationID" />
+                <ScalarProperty Name="CommentID" ColumnName="CommentID" />
+                <ScalarProperty Name="SubmissionID" ColumnName="SubmissionID" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -306,6 +306,7 @@
     <Compile Include="Controllers\ModLogController.cs" />
     <Compile Include="Controllers\NavController.cs" />
     <Compile Include="Controllers\SetsController.cs" />
+    <Compile Include="Controllers\SubverseModerationController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />

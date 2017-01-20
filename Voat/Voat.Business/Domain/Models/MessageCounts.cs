@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,7 +27,7 @@ namespace Voat.Domain.Models
         {
             return Counts.Where(x => x.Type == type).Sum(x => x.Count);
         }
-
+        [JsonIgnore]
         public UserDefinition UserDefinition { get; private set; }
 
         public int Total

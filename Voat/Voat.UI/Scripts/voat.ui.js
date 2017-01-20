@@ -1041,7 +1041,7 @@ YouTubeExpando.prototype.process = function (source) {
 
 /* vid.me */
 var VidmeExpando = function (options) {
-    IFrameEmbedderExpando.call(this, /^(?:https?\:\/\/)?(?:.*vid\.me)\/(.+)$/g, options);
+    IFrameEmbedderExpando.call(this, /(?:https?\:\/\/)?(?:.*vid\.me)\/(.+)/i, options);
     this.getSrcUrl = function (id, fun) {
         fun('//www.vid.me/e/' + id + '?stats=1');
     };

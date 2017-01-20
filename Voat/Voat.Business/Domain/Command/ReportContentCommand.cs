@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Data;
 using Voat.Domain.Models;
 
 namespace Voat.Domain.Command
@@ -20,10 +21,13 @@ namespace Voat.Domain.Command
             this._reasonID = reasonID;
         }
 
-        protected override Task<CommandResponse> ProtectedExecute()
+        protected override async Task<CommandResponse> ProtectedExecute()
         {
-            throw new NotImplementedException();
+            using (var repo = new Repository())
+            {
+                var result = await repo.SaveRuleReport(_contentType, _id, _reasonID);
+                return result;
+            }
         }
-
     }
 }

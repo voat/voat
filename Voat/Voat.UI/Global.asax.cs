@@ -15,6 +15,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using Voat.Configuration;
 using Voat.Data;
+using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.Logging;
@@ -166,7 +167,12 @@ namespace Voat
 
         protected void Application_BeginRequest(Object sender, EventArgs e)
         {
+            
             var request = HttpContext.Current.Request;
+            //Not logging ajax calls in DEV, leaving out until we can look at
+            //var cmd = new LogRequestCommand(Origin.UI, RequestInfo.Parse(request));
+            //cmd.Execute();
+
             var isLocal = request.IsLocal;
 
             if (!isLocal)

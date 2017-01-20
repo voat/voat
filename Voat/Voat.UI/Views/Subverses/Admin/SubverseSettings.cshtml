@@ -33,6 +33,14 @@
                 @Html.HiddenFor(model => model.Name)
 
                 <div class="form-group">
+                    @Html.Label("Description ", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
                     @Html.Label("Sidebar text, accepts Markdown formatting", htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
                         @Html.MarkdownEditorFor(model => model.SideBar, new { @class = "form-control", rows = "5" })
@@ -61,13 +69,7 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    @Html.Label("Description ", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-                    </div>
-                </div>
+               
 
                 <div class="form-group">
                     @Html.Label("Set private (exclude the subverse from showing in /v/all)", htmlAttributes: new { @class = "control-label col-md-2" })

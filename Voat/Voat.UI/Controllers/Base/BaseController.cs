@@ -29,6 +29,16 @@ namespace Voat.Controllers
             base.OnException(filterContext);
         }
 
+        public ActionResult JsonError(string type, string message)
+        {
+            Response.StatusCode = 400;
+            return Json(new { success = false, error = new { type = type, message = message } });
+        }
+        public ActionResult JsonError(string message)
+        {
+            return JsonError("General", message);
+        }
+
         #region Error View Accessors
         public ViewResult NotFoundErrorView()
         {

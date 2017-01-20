@@ -359,7 +359,7 @@ namespace Voat.Configuration
             if (configValues.ContainsKey(key))
             {
                 var value = (T)configValues[key];
-                if (!value.IsDefault())
+                if (typeof(T) == typeof(bool) || !value.IsDefault())
                 {
                     return value;
                 }

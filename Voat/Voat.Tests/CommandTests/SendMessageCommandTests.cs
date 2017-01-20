@@ -450,7 +450,7 @@ namespace Voat.Tests.CommandTests
 
             //Post submission as TestUser1
             TestHelper.SetPrincipal(user1);
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = sub, Title = "I love you more than butter in my coffee", Content = $"Did you hear that @{user2}?" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = sub, Title = "I love you more than butter in my coffee", Content = $"Did you hear that @{user2} or /u/{user2}?" });
             var response = await cmd.Execute();
             Assert.IsTrue(response.Success, "Expected post submission to return true");
             var submission = response.Response;

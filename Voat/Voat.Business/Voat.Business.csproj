@@ -166,6 +166,7 @@
     <Compile Include="Data\Selectors.cs" />
     <Compile Include="Domain\Command\Base\QueuedCommand.cs" />
     <Compile Include="Domain\Command\CreateSubverseCommand.cs" />
+    <Compile Include="Domain\Command\LogRequestCommand.cs" />
     <Compile Include="Domain\Command\LogVisitCommand.cs" />
     <Compile Include="Domain\Command\MarkMessageCommand.cs" />
     <Compile Include="Domain\Command\Base\Command.cs" />

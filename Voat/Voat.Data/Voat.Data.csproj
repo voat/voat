@@ -137,6 +137,12 @@
     <Compile Include="Models\ModeratorInvitation.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\RuleInformation.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\RuleReport.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\SessionTracker.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>

@@ -166,6 +166,7 @@
     <Compile Include="CommandTests\CommentDeleteWorkFlowTests.cs" />
     <Compile Include="CommandTests\CreateSubverseTests.cs" />
     <Compile Include="CommandTests\ModeratorCommandTests.cs" />
+    <Compile Include="CommandTests\RuleReportTests.cs" />
     <Compile Include="CommandTests\SendMessageCommandTests.cs" />
     <Compile Include="CommandTests\SubmissionCommandTests.cs" />
     <Compile Include="CommandTests\UserCommandTests.cs" />

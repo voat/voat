@@ -931,95 +931,102 @@ namespace Voat
 
             #region Sub Moderation
 
+            // v/subverseName/about/reports
+            routes.MapRoute(
+                name: "subverseReports",
+                url: "v/{subverseName}/about/reports",
+                defaults: new { controller = "SubverseModeration", action = "Reports" }
+            );
+
             // v/subversetoedit/about/edit
             routes.MapRoute(
                 name: "subverseSettings",
                 url: "v/{subversetoshow}/about/edit",
-                defaults: new { controller = "Subverses", action = "SubverseSettings" }
+                defaults: new { controller = "SubverseModeration", action = "SubverseSettings" }
             );
 
             // v/subversetoedit/about/edit/stylesheet
             routes.MapRoute(
                 name: "subverseStylesheetEditor",
                 url: "v/{subversetoshow}/about/edit/stylesheet",
-                defaults: new { controller = "Subverses", action = "SubverseStylesheetEditor" }
+                defaults: new { controller = "SubverseModeration", action = "SubverseStylesheetEditor" }
             );
 
             // v/subversetoedit/about/flair
             routes.MapRoute(
                 name: "subverseFlairSettings",
                 url: "v/{subversetoshow}/about/flair",
-                defaults: new { controller = "Subverses", action = "SubverseFlairSettings" }
+                defaults: new { controller = "SubverseModeration", action = "SubverseFlairSettings" }
             );
 
             // v/subversetoedit/about/linkflair/add
             routes.MapRoute(
                 name: "addSubverseLinkFlair",
                 url: "v/{subversetoshow}/about/linkflair/add",
-                defaults: new { controller = "Subverses", action = "AddLinkFlair" }
+                defaults: new { controller = "SubverseModeration", action = "AddLinkFlair" }
             );
 
             // v/subversetoedit/about/linkflair/delete
             routes.MapRoute(
                 name: "removeSubverseLinkFlair",
                 url: "v/{subversetoshow}/about/flair/delete/{id}",
-                defaults: new { controller = "Subverses", action = "RemoveLinkFlair" }
+                defaults: new { controller = "SubverseModeration", action = "RemoveLinkFlair" }
             );
 
             // v/subversetoedit/about/moderators
             routes.MapRoute(
                 name: "subverseModerators",
                 url: "v/{subversetoshow}/about/moderators",
-                defaults: new { controller = "Subverses", action = "SubverseModerators" }
+                defaults: new { controller = "SubverseModeration", action = "SubverseModerators" }
             );
 
             // v/subversetoedit/about/bans
             routes.MapRoute(
                 name: "subverseBans",
                 url: "v/{subversetoshow}/about/bans",
-                defaults: new { controller = "Subverses", action = "SubverseBans" }
+                defaults: new { controller = "SubverseModeration", action = "SubverseBans" }
             );
 
             // v/subversetoedit/about/moderators/add
             routes.MapRoute(
                 name: "addSubverseModerator",
                 url: "v/{subversetoshow}/about/moderators/add",
-                defaults: new { controller = "Subverses", action = "AddModerator" }
+                defaults: new { controller = "SubverseModeration", action = "AddModerator" }
             );
 
             // v/subversetoedit/about/bans/add
             routes.MapRoute(
                 name: "addSubverseBan",
                 url: "v/{subversetoshow}/about/bans/add",
-                defaults: new { controller = "Subverses", action = "AddBan" }
+                defaults: new { controller = "SubverseModeration", action = "AddBan" }
             );
 
             // v/subversetoedit/about/moderators/delete
             routes.MapRoute(
                 name: "removeSubverseModerator",
                 url: "v/{subversetoshow}/about/moderators/delete/{id}",
-                defaults: new { controller = "Subverses", action = "RemoveModerator" }
+                defaults: new { controller = "SubverseModeration", action = "RemoveModerator" }
             );
 
             // v/subversetoedit/about/moderatorinvitations/delete
             routes.MapRoute(
                 name: "removeSubverseModeratorInvitation",
                 url: "v/{subversetoshow}/about/moderatorinvitations/delete/{invitationId}",
-                defaults: new { controller = "Subverses", action = "RecallModeratorInvitation" }
+                defaults: new { controller = "SubverseModeration", action = "RecallModeratorInvitation" }
             );
 
             // v/subversetoedit/about/bans/delete
             routes.MapRoute(
                 name: "removeSubverseBan",
                 url: "v/{subversetoshow}/about/bans/delete/{id}",
-                defaults: new { controller = "Subverses", action = "RemoveBan" }
+                defaults: new { controller = "SubverseModeration", action = "RemoveBan" }
             );
 
             // v/subversetoedit/about/moderators/leave
             routes.MapRoute(
                 name: "resignAsModerator",
                 url: "v/{subversetoresignfrom}/about/moderators/resign/",
-                defaults: new { controller = "Subverses", action = "ResignAsModerator" }
+                defaults: new { controller = "SubverseModeration", action = "ResignAsModerator" }
             );
 
             #endregion Sub Moderation
