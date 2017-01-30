@@ -137,10 +137,10 @@
     <Compile Include="Models\ModeratorInvitation.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\RuleInformation.cs">
+    <Compile Include="Models\RuleReport.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\RuleReport.cs">
+    <Compile Include="Models\RuleSet.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SessionTracker.cs">

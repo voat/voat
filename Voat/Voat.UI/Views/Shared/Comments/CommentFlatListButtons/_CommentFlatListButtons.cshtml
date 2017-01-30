@@ -78,7 +78,7 @@
             <li>
                 <a class="" href="javascript:void(0)" onclick="return reply(@Model.ID, @Model.SubmissionID)">reply</a>
             </li>
-            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonReport.cshtml", null, new ViewDataDictionary { { "CommentId", Model.ID } })
+            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonReport.cshtml", Model, new ViewDataDictionary { { "CommentId", Model.ID } })
         }
     }
 </ul>

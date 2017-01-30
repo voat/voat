@@ -636,6 +636,16 @@ function replyToCommentNotification(commentId, submissionId) {
     $.validator.unobtrusive.parse(form);
 }
 
+function getErrorObject(arguments) {
+    var request = arguments[2];
+    if (request.responseJSON) {
+        if (!request.responseJSON.success) {
+            return request.responseJSON;
+        }
+    }
+    return null;
+}
+
 //attempting to clean up client side error handling
 function getErrorMessage(error, defaultMessage)
 {
@@ -666,30 +676,38 @@ function postCommentAjax(senderButton, parentCommentID) {
             url: $form.attr('action'),
             data: $form.serialize(),
             error: function (xhr, status, error) {
-                var msg = getErrorMessage(error);
                 // comment failed, likely cause: user triggered anti-spam throttle
                 $form.find("#submitbutton").val("Submit comment");
                 $form.find("#submitbutton").prop('disabled', false);
-                $form.find("#errorMessage").html(msg);
+                $form.find("#errorMessage").html("An unexpected error happened");
                 $form.find("#errorMessage").toggle(true);
             },
             success: function (response) {
 
-                if (parentCommentID) {
-                    removereplyform(parentCommentID);
-                    $(".id-" + parentCommentID).append(response);
-                    //notify UI framework of DOM insertion async
-                    window.setTimeout(function () { UI.Notifications.raise('DOM', $('.id-' + parentCommentID).last('div')); });
-                } else {
-                    $(".sitetable.nestedlisting > #no-comments").remove();
-                    $(".sitetable.nestedlisting").prepend(response);
-                    // reset submit button
+                var errorObj = getErrorObject(arguments);
+
+                if (errorObj) {
                     $form.find("#submitbutton").val("Submit comment");
                     $form.find("#submitbutton").prop('disabled', false);
-                    // reset textbox
-                    $form.find("#Content").val("");
-                    //notify UI framework of DOM insertion async
-                    window.setTimeout(function () { UI.Notifications.raise('DOM', $('.sitetable.nestedlisting').first()); });
+                    $form.find("#errorMessage").html(errorObj.error.message);
+                    $form.find("#errorMessage").toggle(true);
+                } else {
+                    if (parentCommentID) {
+                        removereplyform(parentCommentID);
+                        $(".id-" + parentCommentID).append(response);
+                        //notify UI framework of DOM insertion async
+                        window.setTimeout(function () { UI.Notifications.raise('DOM', $('.id-' + parentCommentID).last('div')); });
+                    } else {
+                        $(".sitetable.nestedlisting > #no-comments").remove();
+                        $(".sitetable.nestedlisting").prepend(response);
+                        // reset submit button
+                        $form.find("#submitbutton").val("Submit comment");
+                        $form.find("#submitbutton").prop('disabled', false);
+                        // reset textbox
+                        $form.find("#Content").val("");
+                        //notify UI framework of DOM insertion async
+                        window.setTimeout(function () { UI.Notifications.raise('DOM', $('.sitetable.nestedlisting').first()); });
+                    }
                 }
             }
         });
@@ -968,6 +986,91 @@ function deletesubmission(senderButton, submissionid) {
     });
 }
 
+function getReportDialog(sender, subverse, type, id) {
+    //"v/{subverse}/about/reports/{type}/{id}/dialog"
+    var urlComplete = "/v/" + subverse + "/about/reports/" + type + "/" + id + "/dialog?nocache=" + cachePrevention();
+
+    $.ajax({
+        type: "GET",
+        url: urlComplete,
+        success: function (arg1, request, value) {
+            $(sender).hide();
+            $(sender).parents('div').first().append(arg1);
+        },
+        error: function (error) {
+            $(sender).text("Oops... a problem");
+            //Something bad happened
+        }
+    });
+    //$(obj).parent().parent().find('.option, .main').toggleClass("active");
+    return false;
+}
+function cancelReportDialog(sender) {
+
+    //remove report form
+    var reportForm = $(sender).parents(".reportDialog").first()
+    var toggleButton = reportForm.parent().find('.togglebutton');
+    toggleButton.show();
+    reportForm.remove();
+
+    return false;
+}
+function sendReport(sender) {
+
+    var $form = $(sender).parents('form');
+
+    $.ajax({
+        type: "POST",
+        url: $form.attr('action'),
+        data: $form.serialize(),
+        error: function (xhr, status, error) {
+    
+        },
+        success: function (response) {
+
+            var errorObj = getErrorObject(arguments);
+            var reportForm = $(sender).parents(".reportDialog").first()
+            if (errorObj) {
+                var errorControl = reportForm.find(".error");
+
+                errorControl.text(errorObj.error.message);
+                errorControl.show();
+                //toggleButton.text("report failed");
+                
+            } else {
+                var toggleButton = reportForm.parent().find('.report-button');
+                toggleButton.show();
+                reportForm.remove();
+                toggleButton.text("thank you!");
+            }
+        }
+    });
+    return false;
+}
+function markReportAsReviewed(sender, subverse, type, id) {
+    //var $form = $(sender).parents('form');
+    //"v/{subverse}/about/reports/{type}/{id}/mark"
+    var urlComplete = "/v/" + subverse + "/about/reports/" + type + "/" + id + "/mark";
+
+    $.ajax({
+        type: "POST",
+        url: urlComplete,
+        error: function (xhr, status, error) {
+            $(sender).parents(".contentReport").remove();
+        },
+        success: function (response) {
+
+            var errorObj = getErrorObject(arguments);
+
+            if (errorObj) {
+                sender.text(errorObj.error.message);
+            } else {
+                $(sender).parents(".contentReport").remove();
+            }
+        }
+    });
+    return false;
+}
 // toggle are you sure question for comment deletion
 function toggle(obj, commentid) {
     $(obj).parent().parent().find('.option, .main').toggleClass("active");

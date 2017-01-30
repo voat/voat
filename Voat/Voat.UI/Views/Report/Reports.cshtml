@@ -1,0 +1,82 @@
+﻿
+@model Dictionary<Voat.Domain.Models.ContentItem, IEnumerable<Voat.Domain.Models.ContentUserReport>>
+
+@{
+    ViewBag.Title = "Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    //Set route
+    int? days = ViewBag.Days;
+    int[] ruleid = ViewBag.RuleID;
+    Voat.Domain.Models.ReviewStatus status = ViewBag.ReviewStatus;
+
+}
+<div id="container">
+    
+    <h1>User Reports</h1>     
+
+    @Html.RouteLink("Submissions", "subverseReports", new { type = Voat.Domain.Models.ContentType.Submission, days = days, status = status, ruleid = (ruleid != null && ruleid.Any() ? ruleid.First().ToString() : null) }, new { @class= "btn-whoaverse" })
+
+    @Html.RouteLink("Comments", "subverseReports", new { type = Voat.Domain.Models.ContentType.Comment, days = days, status = status, ruleid = (ruleid != null && ruleid.Any() ? ruleid.First().ToString() : null) }, new { @class = "btn-whoaverse" })
+
+
+    <div class="content-no-margin" role="main">
+
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model.Keys)
+            {
+                var subverse = "";
+                var id = 0;
+                //var hasReviewed = false;
+                <div class="contentReport">
+
+                    @switch (item.ContentType)
+                    {
+                        case Voat.Domain.Models.ContentType.Submission:
+                            subverse = item.Submission.Subverse;
+                            id = item.Submission.ID;
+
+                            <div class="submission id-@item.Submission.ID link" data-fullname="@item.Submission.ID" data-ups="@item.Submission.UpCount" data-downs="@item.Submission.DownCount">
+                                <p class="parent"></p>
+                                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", item.Submission)
+
+                                <div class="child"></div>
+                                <div class="clearleft">@*IE6fix*@</div>
+                            </div>
+
+                            break;
+                        case Voat.Domain.Models.ContentType.Comment:
+                            subverse = item.Comment.Subverse;
+                            id = item.Comment.ID;
+
+                            @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", Voat.Domain.DomainMaps.Map(item.Comment))
+                            break;
+
+                        default:
+                            <!-- unknown content type -->
+                            break;
+                    }
+
+                    <div class="reportList highlightedComment" style="padding:5px;">
+                        <h2>Report Counts</h2>
+                        <ul>
+                            @foreach (var report in Model[item])
+                            {
+                                <li>(@report.Count) @report.Name - @report.Description</li>
+                            }
+                        </ul>
+                        @if (status != Voat.Domain.Models.ReviewStatus.Reviewed && User.Identity.IsAuthenticated && ModeratorPermission.HasPermission(User.Identity.Name, subverse, Voat.Domain.Models.ModeratorAction.MarkReports))
+                        {
+                            <input class="btn-whoaverse" value="Ignore" type="button" onclick="javascript:markReportAsReviewed(this, '@subverse', '@item.ContentType', @id);" />
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <span>Wow, nothing here. Time for a vacation.</span>
+        }
+    </div>
+</div>

@@ -1,0 +1,44 @@
+﻿@model Voat.Models.ViewModels.ReportContentModel
+
+@{ 
+    //var reportInfo = Model.Item1;
+    var controlID = String.Format("reportDialog_{0}", Model.ID);
+}
+
+<div class="reportDialog highlight" id="@controlID">
+    <div class="alert-h2">Report Content</div>
+    <div class="error" style="display:none;"></div>
+    @Html.ValidationSummary()
+
+    @using (Html.BeginForm("ReportContent", "Report", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => Model.Subverse);
+        @Html.HiddenFor(x => Model.ContentType);
+        @Html.HiddenFor(x => Model.ID);
+
+        <ul>
+            @foreach (var rule in Model.Rules)
+            {
+                var voatRule = String.IsNullOrEmpty(rule.Subverse);
+                var ruleFormat = "{0}";
+                if (voatRule)
+                {
+                    ruleFormat = "<strong>{0} (" + Settings.SiteName + " Rule)</strong>";
+                }
+                <li>
+                    <label>
+                        @Html.RadioButton("ruleSetID", rule.ID) 
+                        @Html.Raw(String.Format(ruleFormat, rule.Name))
+                        <br/>
+                        <span style="padding-left:25px;"><i>@rule.Description</i></span>
+                    </label>
+                </li>
+            }
+        </ul>
+        <div>
+            <input type="button" class="btn-whoaverse" onclick="javascript:cancelReportDialog(this);" value="Cancel" />
+            <input type="button" class="btn-whoaverse" onclick="javascript:sendReport(this)" value="Submit" />
+        </div>
+    }
+</div>

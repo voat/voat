@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using Voat.Caching;
 using Voat.Domain;
+using Voat.Domain.Command;
 using Voat.Models.ViewModels;
 using Voat.Utilities.Components;
 
@@ -29,16 +30,40 @@ namespace Voat.Controllers
             base.OnException(filterContext);
         }
 
+        #region JSON Responses
+        //These are beginning port to api structures
         public ActionResult JsonError(string type, string message)
         {
-            Response.StatusCode = 400;
+            //Response.StatusCode = 400;
             return Json(new { success = false, error = new { type = type, message = message } });
         }
         public ActionResult JsonError(string message)
         {
             return JsonError("General", message);
         }
-
+        public ActionResult JsonResult(CommandResponse response)
+        {
+            if (response.Success)
+            {
+                return Json(new { success = true });
+            }
+            else
+            {
+                return JsonError(response.Message);
+            }
+        }
+        public ActionResult JsonResult<T>(CommandResponse<T> response)
+        {
+            if (response.Success)
+            {
+                return Json(new { success = true, data = response.Response });
+            }
+            else
+            {
+                return JsonError(response.Message);
+            }
+        }
+        #endregion
         #region Error View Accessors
         public ViewResult NotFoundErrorView()
         {

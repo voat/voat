@@ -19,8 +19,10 @@ namespace Voat.Data.Models
         public string UserName { get; set; }
         public Nullable<int> SubmissionID { get; set; }
         public Nullable<int> CommentID { get; set; }
-        public int RuleInformationID { get; set; }
         public string CreatedBy { get; set; }
         public System.DateTime CreationDate { get; set; }
+        public int RuleSetID { get; set; }
+        public string ReviewedBy { get; set; }
+        public Nullable<System.DateTime> ReviewedDate { get; set; }
     }
 }

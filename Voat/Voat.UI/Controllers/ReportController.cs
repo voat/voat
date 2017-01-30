@@ -25,6 +25,7 @@ using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Models;
+using Voat.Models.ViewModels;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 
@@ -32,33 +33,108 @@ namespace Voat.Controllers
 {
     public class ReportController : BaseController
     {
+        #region NEW CODE
+        
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult> Reports(string subverse, Domain.Models.ContentType? type = null, int days = 1, Domain.Models.ReviewStatus status = Domain.Models.ReviewStatus.Unreviewed, int[] ruleid = null)
+        {
+            days = days.EnsureRange(1, 7);
+
+            if (subverse.IsEqual("all"))
+            {
+                subverse = null;
+            }
+            else
+            {
+                //check perms
+                if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.AccessReports))
+                {
+                    return UnAuthorizedErrorView();
+                }
+            }
+
+            using (var repo = new Repository())
+            {
+                var data = await repo.GetRuleReports(subverse, type, days * 24, status, ruleid);
+                ViewBag.Days = days;
+                ViewBag.RuleID = ruleid;
+                ViewBag.ReviewStatus = status;
+                return View(data);
+            }
+        }
+
+        [Authorize]
+        public async Task<ActionResult> Mark(string subverse, ContentType type, int id)
+        {
+            //TODO: Move into Query
+            using (var repo = new Repository())
+            {
+                var result = await repo.MarkReportsAsReviewed(subverse, type, id);
+                return JsonResult(result);
+            }
+        }
+
+        [Authorize]
+        public async Task<ActionResult> UserReportDialog(string subverse, ContentType type, int id)
+        {
+            //TODO: Move into Query
+            using (var repo = new Repository())
+            {
+                var data = await repo.GetRuleSets(subverse, type);
+                return PartialView(new Models.ViewModels.ReportContentModel() { Subverse = subverse, ContentType = type, ID = id, Rules = data });
+            }
+        }
+        [HttpPost]
+        [Authorize]
+        [VoatValidateAntiForgeryToken]
+        [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        public async Task<ActionResult> ReportContent(ReportContentModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                using (var repo = new Repository())
+                {
+                    var result = await repo.SaveRuleReport(model.ContentType, model.ID, model.RuleSetID.Value);
+                    return JsonResult(result);
+                }
+            }
+            else
+            {
+                PreventSpamAttribute.Reset();
+                return JsonError(ModelState.GetFirstErrorMessage());
+            }
+        }
+        #endregion
+
+        #region OLD CODE
         private readonly voatEntities _db = new voatEntities();
 
         private TimeSpan contentReportTimeOut = TimeSpan.FromHours(6);
         private TimeSpan contentUserCountTimeOut = TimeSpan.FromHours(2);
 
-        // POST: ReportContent
-        [HttpPost]
-        [Authorize]
-        [VoatValidateAntiForgeryToken]
-        [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public async Task<ActionResult> ReportContent(ContentType type, int id)
-        {
-            ActionResult result = null;
-            switch (type)
-            {
-                case ContentType.Comment:
-                    result = await ReportComment(id);
-                    break;
-                case ContentType.Submission:
-                    result = await ReportSubmission(id);
-                    break;
-                default:
-                    result = new EmptyResult();
-                    break;
-            }
-            return result;
-        }
+        //// POST: ReportContent
+        //[HttpPost]
+        //[Authorize]
+        //[VoatValidateAntiForgeryToken]
+        //[PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        //public async Task<ActionResult> ReportContent(ContentType type, int id)
+        //{
+        //    ActionResult result = null;
+        //    switch (type)
+        //    {
+        //        case ContentType.Comment:
+        //            result = await ReportComment(id);
+        //            break;
+        //        case ContentType.Submission:
+        //            result = await ReportSubmission(id);
+        //            break;
+        //        default:
+        //            result = new EmptyResult();
+        //            break;
+        //    }
+        //    return result;
+        //}
 
         public async Task<ActionResult> ReportSubmission(int id)
         {
@@ -131,7 +207,7 @@ namespace Voat.Controllers
 
             return new HttpStatusCodeResult(HttpStatusCode.OK, "OK");
         }
-    
+
         public async Task<ActionResult> ReportComment(int id)
         {
             var comment = _db.Comments.Find(id);
@@ -155,7 +231,7 @@ namespace Voat.Controllers
                             //mark comment in cache as having been reported
                             CacheHandler.Instance.Register(cacheKeyReport, new Func<object>(() => { return new object(); }), contentReportTimeOut, -1);
 
-                                
+
                             string userName = User.Identity.Name;
                             string cacheKeyUserReportCount = CachingKey.ReportCountUserKey(ContentType.Comment, userName);
                             int reportsPerUserThreshold = 5;
@@ -203,5 +279,6 @@ namespace Voat.Controllers
 
             return new HttpStatusCodeResult(HttpStatusCode.OK, "OK");
         }
+        #endregion 
     }
 }

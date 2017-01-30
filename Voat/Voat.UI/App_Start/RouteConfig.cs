@@ -13,6 +13,7 @@ All Rights Reserved.
 */
 
 using System;
+using System.Diagnostics;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Voat.Configuration;
@@ -28,12 +29,12 @@ namespace Voat
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.LowercaseUrls = true;
 
-            // /dashboard
-            routes.MapRoute(
-                name: "dashboard",
-                url: "dashboard",
-                defaults: new { controller = "Management", action = "Dashboard" }
-            );
+            //// /dashboard
+            //routes.MapRoute(
+            //    name: "dashboard",
+            //    url: "dashboard",
+            //    defaults: new { controller = "Management", action = "Dashboard" }
+            //);
 
             // /rss
             routes.MapRoute(
@@ -704,12 +705,12 @@ namespace Voat
                 defaults: new { controller = "Home", action = "About" }
             );
 
-            // cla
-            routes.MapRoute(
-                name: "cla",
-                url: "cla/",
-                defaults: new { controller = "Home", action = "Cla" }
-            );
+            //// cla
+            //routes.MapRoute(
+            //    name: "cla",
+            //    url: "cla/",
+            //    defaults: new { controller = "Home", action = "Cla" }
+            //);
 
             // subscribe to subverse
             routes.MapRoute(
@@ -788,22 +789,36 @@ namespace Voat
                   new { controller = "Comment", action = "DeleteComment", id = UrlParameter.Optional }
              );
 
-            // reportContent
-            routes.MapRoute(
-                  "reportContent",
-                  "report/{type}/{id}",
-                  constraints: new
-                  {
-                      type = "comment|submission",
-                      id = @"\d+"
-                  },
-                  defaults: new
-                  {
-                      controller = "Report",
-                      action = "ReportContent",
-                      id = UrlParameter.Optional
-                  }
-             );
+            
+            //// ReportContent(string subverse, ContentType type, int id)
+            //routes.MapRoute(
+            //      "reportContent",
+            //      "report",
+            //      constraints: new
+            //      {
+            //      },
+            //      defaults: new
+            //      {
+            //          controller = "Report",
+            //          action = "ReportContent",
+            //      }
+            // );
+            //// reportContent
+            //routes.MapRoute(
+            //      "reportContent_Old",
+            //      "report/{type}/{id}",
+            //      constraints: new
+            //      {
+            //          type = "comment|submission",
+            //          id = @"\d+"
+            //      },
+            //      defaults: new
+            //      {
+            //          controller = "Report",
+            //          action = "ReportContent",
+            //          id = UrlParameter.Optional
+            //      }
+            // );
 
             // editsubmission
             routes.MapRoute(
@@ -929,14 +944,65 @@ namespace Voat
 
             #endregion Mod Logs
 
-            #region Sub Moderation
+          
 
-            // v/subverseName/about/reports
+            #region Reports
+            // UserReportDialog(string subverse, ContentType type, int id)
+            routes.MapRoute(
+                  "subverseReportsDialog",
+                  "v/{subverse}/about/reports/{type}/{id}/dialog",
+                  constraints: new
+                  {
+                      type = String.Join("|", Enum.GetNames(typeof(ContentType))).ToLower()
+                  },
+                  defaults: new
+                  {
+                      controller = "Report",
+                      action = "UserReportDialog",
+                      id = UrlParameter.Optional
+                  }
+             );
+
+            // v/subverseName/about/reports/comment|submission
+            routes.MapRoute(
+                name: "subverseReportsMark",
+                url: "v/{subverse}/about/reports/{type}/{id}/mark",
+                constraints: new {
+                    type = String.Join("|", Enum.GetNames(typeof(ContentType))).ToLower()
+                },
+                defaults: new
+                {
+                    controller = "Report",
+                    action = "Mark"
+                }
+            );
+            // v/subverseName/about/reports/comment|submission
             routes.MapRoute(
                 name: "subverseReports",
-                url: "v/{subverseName}/about/reports",
-                defaults: new { controller = "SubverseModeration", action = "Reports" }
+                url: "v/{subverse}/about/reports/{type}",
+                constraints: new {
+                    type = String.Join("|", Enum.GetNames(typeof(ContentType))).ToLower()
+                },
+                defaults: new
+                {
+                    controller = "Report",
+                    action = "Reports"
+                }
             );
+            // v/subverseName/about/reports
+            routes.MapRoute(
+                name: "subverseReports2",
+                url: "v/{subverse}/about/reports",
+                defaults: new
+                {
+                    type = ContentType.Submission,
+                    controller = "Report",
+                    action = "Reports"
+                }
+            );
+            #endregion 
+
+            #region Sub Moderation
 
             // v/subversetoedit/about/edit
             routes.MapRoute(
@@ -1099,12 +1165,12 @@ namespace Voat
                 defaults: new { controller = "AjaxGateway", action = "UserBasicInfo" }
             );
 
-            // ajaxhelpers/videoplayer
-            routes.MapRoute(
-                name: "VideoPlayer",
-                url: "ajaxhelpers/videoplayer/{messageId}",
-                defaults: new { controller = "AjaxGateway", action = "VideoPlayer" }
-            );
+            //// ajaxhelpers/videoplayer
+            //routes.MapRoute(
+            //    name: "VideoPlayer",
+            //    url: "ajaxhelpers/videoplayer/{messageId}",
+            //    defaults: new { controller = "AjaxGateway", action = "VideoPlayer" }
+            //);
 
             // ajaxhelpers/rendersubmission
             routes.MapRoute(
@@ -1253,6 +1319,17 @@ namespace Voat
                     id = UrlParameter.Optional
                 }
             );
+
+#if DEBUG
+            var sb = new System.Text.StringBuilder();
+            foreach (Route route in routes)
+            {
+                sb.AppendLine(route.Url);
+            }
+            Debug.Print(sb.ToString());
+#endif
+
+
         }
     }
 }

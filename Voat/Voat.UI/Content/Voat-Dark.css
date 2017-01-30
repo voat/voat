@@ -31,7 +31,7 @@
     background: #2E2E2E;
 }
 
-.highlightedComment {
+.highlight, .highlightedComment {
     background: #4F3333 !important;
     border: 1px dashed #A23E3E !important;
 }
@@ -3323,3 +3323,13 @@ select.form-control {
     border-bottom: 1px solid;
     border-color: #222;
 }
+
+
+.reportDialog {
+    
+    padding: 20px;
+}
+
+    .reportDialog ul li {
+        display:block;
+    }

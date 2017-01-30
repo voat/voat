@@ -9,19 +9,9 @@
 
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
+@model Voat.Domain.Models.Submission
 
-@{
-    int submissionID = Convert.ToInt32(ViewData["submissionId"]);
-}
+<span class="option main active">
+    <a href="javascript:void(0)" class="togglebutton report-button" onclick="return getReportDialog(this, '@Model.Subverse', 'submission', @Model.ID)">report</a>
+</span>
 
-<li>
-    <form class="toggle report-button active" action="#" method="get">
-        <input class="active" name="executed" value="reported" type="hidden">
-        <span class="option main active">
-            <a href="javascript:void(0)" class="togglebutton" onclick="return toggle(this, @submissionID)">report spam</a>
-        </span>
-        <span class="option error">
-            are you sure?  <a href="javascript:void(0)" class="yes" onclick="reportContent(this, 'submission', @submissionID)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(this)">no</a>
-        </span>
-    </form>
-</li>

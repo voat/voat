@@ -28,9 +28,10 @@ namespace Voat.Domain.Query
         {
             using (var db = new Repository())
             {
-                var result = db.GetComment(_commentID);
-                DomainMaps.HydrateUserData(result, true);
-                return result;
+                var result = await db.GetComments(_commentID);
+                var comment = result.FirstOrDefault();
+                DomainMaps.HydrateUserData(comment, true);
+                return comment;
             }
         }
     }

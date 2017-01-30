@@ -58,6 +58,12 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
+                //ensure banned user blocked from operation
+                if (db.BannedUsers.Any(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return false;
+                }
+
                 using (var tmpUserManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
                 {
                     var tmpuser = tmpUserManager.FindByName(userName);
@@ -126,6 +132,8 @@ namespace Voat.Utilities
                                     // exec delete
                                     File.Delete(tempAvatarLocation);
                                 }
+                                //reset avatar
+                                userPrefs.Avatar = null;
                             }
                         }
 

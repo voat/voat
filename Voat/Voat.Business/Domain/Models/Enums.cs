@@ -22,6 +22,7 @@ namespace Voat.Domain.Models
     {
         Submission = 1,
         Comment = 2,
+        User = 3
         //Set = 4
     }
 
@@ -337,6 +338,14 @@ namespace Voat.Domain.Models
         RemoveMods,
         AssignStickies,
         DistinguishContent,
-        AccessReports
+        AccessReports,
+        MarkReports
+    }
+
+    public enum ReviewStatus
+    {
+        Any,
+        Reviewed,
+        Unreviewed
     }
 }

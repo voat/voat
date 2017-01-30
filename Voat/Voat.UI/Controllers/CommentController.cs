@@ -331,6 +331,7 @@ namespace Voat.Controllers
                 //Model isn't valid, can include throttling
                 if (Request.IsAjaxRequest())
                 {
+                    return JsonError(ModelState.GetFirstErrorMessage());
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ModelState.GetFirstErrorMessage());
                 }
                 else
@@ -367,6 +368,7 @@ namespace Voat.Controllers
                 }
                 else
                 {
+                    return JsonError(result.Message);
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest, result.Message);
                 }
             }

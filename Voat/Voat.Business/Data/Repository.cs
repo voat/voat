@@ -844,6 +844,20 @@ namespace Voat.Data
             var results = data.Select(Selectors.SecureSubmission).ToList();
             return results;
         }
+        public async Task<IEnumerable<Data.Models.Submission>> GetSubmissions(params int[] submissionID)
+        {
+            var query = new DapperQuery();
+            query.SelectColumns = "s.*";
+            query.Select = @"SELECT DISTINCT {0} FROM Submission s WITH (NOLOCK)";
+            query.Where = "ID IN @IDs";
+            query.Parameters = (new { IDs = submissionID }).ToDynamicParameters();
+
+            //execute query
+            var data = await _db.Database.Connection.QueryAsync<Data.Models.Submission>(query.ToString(), query.Parameters);
+            var results = data.Select(Selectors.SecureSubmission).ToList();
+            return results;
+        }
+
         public async Task<IEnumerable<Data.Models.Submission>> GetSubmissionsDapper(string name, DomainType type, SearchOptions options)
         {
             if (type != DomainType.Subverse)
@@ -1224,127 +1238,127 @@ namespace Voat.Data
 
             #endregion
         }
-        [Obsolete("Moving to Dapper, see yall later", true)]
-        public async Task<IEnumerable<Models.Submission>> GetSubmissions(string subverse, SearchOptions options)
-        {
-            if (String.IsNullOrEmpty(subverse))
-            {
-                throw new VoatValidationException("A subverse must be provided.");
-            }
+        //[Obsolete("Moving to Dapper, see yall later", true)]
+        //public async Task<IEnumerable<Models.Submission>> GetSubmissions(string subverse, SearchOptions options)
+        //{
+        //    if (String.IsNullOrEmpty(subverse))
+        //    {
+        //        throw new VoatValidationException("A subverse must be provided.");
+        //    }
 
-            if (options == null)
-            {
-                options = new SearchOptions();
-            }
+        //    if (options == null)
+        //    {
+        //        options = new SearchOptions();
+        //    }
 
-            IQueryable<Models.Submission> query;
+        //    IQueryable<Models.Submission> query;
 
-            UserData userData = null;
-            if (User.Identity.IsAuthenticated)
-            {
-                userData = new UserData(User.Identity.Name);
-            }
+        //    UserData userData = null;
+        //    if (User.Identity.IsAuthenticated)
+        //    {
+        //        userData = new UserData(User.Identity.Name);
+        //    }
 
-            switch (subverse.ToLower())
-            {
-                //for *special* subverses, this is UNDONE
-                case AGGREGATE_SUBVERSE.FRONT:
-                    if (User.Identity.IsAuthenticated && userData.HasSubscriptions())
-                    {
-                        query = (from x in _db.Submissions
-                                 join subscribed in _db.SubverseSubscriptions on x.Subverse equals subscribed.Subverse
-                                 where subscribed.UserName == User.Identity.Name
-                                 select x);
-                    }
-                    else
-                    {
-                        //if no user, default to default
-                        query = (from x in _db.Submissions
-                                 join defaults in _db.DefaultSubverses on x.Subverse equals defaults.Subverse
-                                 select x);
-                    }
-                    break;
+        //    switch (subverse.ToLower())
+        //    {
+        //        //for *special* subverses, this is UNDONE
+        //        case AGGREGATE_SUBVERSE.FRONT:
+        //            if (User.Identity.IsAuthenticated && userData.HasSubscriptions())
+        //            {
+        //                query = (from x in _db.Submissions
+        //                         join subscribed in _db.SubverseSubscriptions on x.Subverse equals subscribed.Subverse
+        //                         where subscribed.UserName == User.Identity.Name
+        //                         select x);
+        //            }
+        //            else
+        //            {
+        //                //if no user, default to default
+        //                query = (from x in _db.Submissions
+        //                         join defaults in _db.DefaultSubverses on x.Subverse equals defaults.Subverse
+        //                         select x);
+        //            }
+        //            break;
 
-                case AGGREGATE_SUBVERSE.DEFAULT:
+        //        case AGGREGATE_SUBVERSE.DEFAULT:
 
-                    query = (from x in _db.Submissions
-                             join defaults in _db.DefaultSubverses on x.Subverse equals defaults.Subverse
-                             select x);
-                    break;
+        //            query = (from x in _db.Submissions
+        //                     join defaults in _db.DefaultSubverses on x.Subverse equals defaults.Subverse
+        //                     select x);
+        //            break;
 
-                case AGGREGATE_SUBVERSE.ANY:
+        //        case AGGREGATE_SUBVERSE.ANY:
 
-                    query = (from x in _db.Submissions
-                             where
-                             !x.Subverse1.IsAdminPrivate
-                             && !x.Subverse1.IsPrivate
-                             && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value)
-                             select x);
-                    break;
+        //            query = (from x in _db.Submissions
+        //                     where
+        //                     !x.Subverse1.IsAdminPrivate
+        //                     && !x.Subverse1.IsPrivate
+        //                     && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value)
+        //                     select x);
+        //            break;
 
-                case AGGREGATE_SUBVERSE.ALL:
-                case "all":
+        //        case AGGREGATE_SUBVERSE.ALL:
+        //        case "all":
 
-                    var nsfw = (User.Identity.IsAuthenticated ? userData.Preferences.EnableAdultContent : false);
+        //            var nsfw = (User.Identity.IsAuthenticated ? userData.Preferences.EnableAdultContent : false);
 
-                    //v/all has certain conditions
-                    //1. Only subs that have a MinCCP of zero
-                    //2. Don't show private subs
-                    //3. Don't show NSFW subs if nsfw isn't enabled in profile, if they are logged in
-                    //4. Don't show blocked subs if logged in // not implemented
+        //            //v/all has certain conditions
+        //            //1. Only subs that have a MinCCP of zero
+        //            //2. Don't show private subs
+        //            //3. Don't show NSFW subs if nsfw isn't enabled in profile, if they are logged in
+        //            //4. Don't show blocked subs if logged in // not implemented
 
-                    query = (from x in _db.Submissions
-                             where x.Subverse1.MinCCPForDownvote == 0
-                                    && (!x.Subverse1.IsAdminPrivate && !x.Subverse1.IsPrivate && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value))
-                                    && (x.Subverse1.IsAdult && nsfw || !x.Subverse1.IsAdult)
-                             select x);
+        //            query = (from x in _db.Submissions
+        //                     where x.Subverse1.MinCCPForDownvote == 0
+        //                            && (!x.Subverse1.IsAdminPrivate && !x.Subverse1.IsPrivate && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value))
+        //                            && (x.Subverse1.IsAdult && nsfw || !x.Subverse1.IsAdult)
+        //                     select x);
 
-                    break;
+        //            break;
 
-                //for regular subverse queries
-                default:
+        //        //for regular subverse queries
+        //        default:
 
-                    if (!SubverseExists(subverse))
-                    {
-                        throw new VoatNotFoundException("Subverse '{0}' not found.", subverse);
-                    }
+        //            if (!SubverseExists(subverse))
+        //            {
+        //                throw new VoatNotFoundException("Subverse '{0}' not found.", subverse);
+        //            }
 
-                    subverse = ToCorrectSubverseCasing(subverse);
+        //            subverse = ToCorrectSubverseCasing(subverse);
 
-                    query = (from x in _db.Submissions
-                             where (x.Subverse == subverse || subverse == null)
-                             select x);
-                    break;
-            }
+        //            query = (from x in _db.Submissions
+        //                     where (x.Subverse == subverse || subverse == null)
+        //                     select x);
+        //            break;
+        //    }
 
-            query = query.Where(x => !x.IsDeleted);
+        //    query = query.Where(x => !x.IsDeleted);
 
-            if (User.Identity.IsAuthenticated)
-            {
-                //filter blocked subs
-                query = query.Where(s => !_db.UserBlockedSubverses.Where(b =>
-                    b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
-                    && b.Subverse.Equals(s.Subverse, StringComparison.OrdinalIgnoreCase)).Any());
+        //    if (User.Identity.IsAuthenticated)
+        //    {
+        //        //filter blocked subs
+        //        query = query.Where(s => !_db.UserBlockedSubverses.Where(b =>
+        //            b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+        //            && b.Subverse.Equals(s.Subverse, StringComparison.OrdinalIgnoreCase)).Any());
 
-                //filter blocked users (Currently commented out do to a collation issue)
-                query = query.Where(s => !_db.UserBlockedUsers.Where(b =>
-                    b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
-                    && s.UserName.Equals(b.BlockUser, StringComparison.OrdinalIgnoreCase)
-                    ).Any());
+        //        //filter blocked users (Currently commented out do to a collation issue)
+        //        query = query.Where(s => !_db.UserBlockedUsers.Where(b =>
+        //            b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+        //            && s.UserName.Equals(b.BlockUser, StringComparison.OrdinalIgnoreCase)
+        //            ).Any());
 
-                //filter global banned users
-                query = query.Where(s => !_db.BannedUsers.Where(b => b.UserName.Equals(s.UserName, StringComparison.OrdinalIgnoreCase)).Any());
-            }
+        //        //filter global banned users
+        //        query = query.Where(s => !_db.BannedUsers.Where(b => b.UserName.Equals(s.UserName, StringComparison.OrdinalIgnoreCase)).Any());
+        //    }
 
-            query = ApplySubmissionSearch(options, query);
+        //    query = ApplySubmissionSearch(options, query);
 
-            //execute query
-            var data = await query.ToListAsync().ConfigureAwait(false);
+        //    //execute query
+        //    var data = await query.ToListAsync().ConfigureAwait(false);
 
-            var results = data.Select(Selectors.SecureSubmission).ToList();
+        //    var results = data.Select(Selectors.SecureSubmission).ToList();
 
-            return results;
-        }
+        //    return results;
+        //}
 
         [Authorize]
         public async Task<CommandResponse<Models.Submission>> PostSubmission(UserSubmission userSubmission)
@@ -1784,36 +1798,50 @@ namespace Voat.Data
             var results = commentTree.ToList();
             return results;
         }
-
-        public Domain.Models.Comment GetComment(int commentID)
+        //For backwards compat
+        public async Task<Domain.Models.Comment> GetComment(int commentID)
         {
-            var query = (from comment in _db.Comments
-                         join submission in _db.Submissions on comment.SubmissionID equals submission.ID
-                         where
-                         comment.ID == commentID
-                         select new Domain.Models.Comment()
-                         {
-                             ID = comment.ID,
-                             ParentID = comment.ParentID,
-                             Content = comment.Content,
-                             FormattedContent = comment.FormattedContent,
-                             UserName = comment.UserName,
-                             UpCount = (int)comment.UpCount,
-                             DownCount = (int)comment.DownCount,
-                             CreationDate = comment.CreationDate,
-                             IsAnonymized = comment.IsAnonymized,
-                             IsDeleted = comment.IsDeleted,
-                             IsDistinguished = comment.IsDistinguished,
-                             LastEditDate = comment.LastEditDate,
-                             SubmissionID = comment.SubmissionID,
-                             Subverse = submission.Subverse
-                         });
+            var result = await GetComments(commentID);
+            return result.FirstOrDefault();
+        }
+        public async Task<IEnumerable<Domain.Models.Comment>> GetComments(params int[] commentID)
+        {
 
-            var record = query.FirstOrDefault();
+            var q = new DapperQuery();
+            q.Select = "c.*, s.Subverse FROM Comment c WITH (NOLOCK) INNER JOIN Submission s WITH (NOLOCK) ON s.ID = c.SubmissionID";
+            q.Where = "c.ID IN @IDs";
 
-            DomainMaps.HydrateUserData(record, true);
+            q.Parameters = (new { IDs = commentID}).ToDynamicParameters();
 
-            return record;
+            //var query = (from comment in _db.Comments
+            //             join submission in _db.Submissions on comment.SubmissionID equals submission.ID
+            //             where
+            //             comment.ID == commentID
+            //             select new Domain.Models.Comment()
+            //             {
+            //                 ID = comment.ID,
+            //                 ParentID = comment.ParentID,
+            //                 Content = comment.Content,
+            //                 FormattedContent = comment.FormattedContent,
+            //                 UserName = comment.UserName,
+            //                 UpCount = (int)comment.UpCount,
+            //                 DownCount = (int)comment.DownCount,
+            //                 CreationDate = comment.CreationDate,
+            //                 IsAnonymized = comment.IsAnonymized,
+            //                 IsDeleted = comment.IsDeleted,
+            //                 IsDistinguished = comment.IsDistinguished,
+            //                 LastEditDate = comment.LastEditDate,
+            //                 SubmissionID = comment.SubmissionID,
+            //                 Subverse = submission.Subverse
+            //             });
+
+            //var record = query.FirstOrDefault();
+
+            var data = await _db.Database.Connection.QueryAsync<Domain.Models.Comment>(q.ToString(), q.Parameters);
+
+            DomainMaps.HydrateUserData(data);
+
+            return data;
         }
 
         public async Task<CommandResponse<Data.Models.Comment>> DeleteComment(int commentID, string reason = null)
@@ -3966,7 +3994,172 @@ namespace Voat.Data
         }
 
         #endregion Moderator Functions
+        #region RuleReports
+       
+        public async Task<IEnumerable<Data.Models.RuleSet>> GetRuleSets(string subverse, ContentType? contentType)
+        {
+            var typeFilter = contentType == ContentType.Submission ? "r.SubmissionID IS NOT NULL" : "r.CommentID IS NOT NULL";
+            var q = new DapperQuery();
 
+            q.Select = "* FROM RuleSet r";
+            q.Where = "(r.Subverse = @Subverse OR r.Subverse IS NULL) AND (r.ContentType = @ContentType OR r.ContentType IS NULL) AND r.IsActive = 1";
+            q.OrderBy = "r.SortOrder ASC";
+
+            int? intContentType = contentType == null ? (int?)null : (int)contentType;
+
+            var data = await _db.Database.Connection.QueryAsync<Data.Models.RuleSet>(q.ToString(), new { Subverse = subverse, ContentType = intContentType });
+
+            return data;
+
+        }
+        public async Task<Dictionary<ContentItem, IEnumerable<ContentUserReport>>> GetRuleReports(string subverse, ContentType? contentType = null, int hours = 24, ReviewStatus reviewedStatus = ReviewStatus.Unreviewed, int[] ruleSetID = null)
+        {
+            var typeFilter = contentType == ContentType.Submission ? "rr.SubmissionID IS NOT NULL" : "rr.CommentID IS NOT NULL";
+            var q = new DapperQuery();
+
+            q.Select = $@"SELECT rr.Subverse, rr.UserName, rr.SubmissionID, rr.CommentID, rr.RuleSetID, r.Name, r.Description, Count = COUNT(*), MostRecent = MAX(rr.CreationDate)
+                        FROM RuleReport rr WITH (NOLOCK)
+                        INNER JOIN RuleSet r WITH (NOLOCK) ON rr.RuleSetID = r.ID";
+
+                        //--LEFT JOIN Submission s WITH (NOLOCK) ON s.ID = rr.SubmissionID
+                        //--LEFT JOIN Comment c WITH (NOLOCK) ON c.ID = rr.CommentID
+                        //WHERE
+                        //    (rr.Subverse = @Subverse OR @Subverse IS NULL)
+                        //    AND
+                        //    (rr.CreationDate >= @StartDate OR @StartDate IS NULL)
+                        //    AND
+                        //    (rr.CreationDate <= @EndDate OR @EndDate IS NULL)
+                        //    AND {typeFilter}
+            q.Where = @"(rr.Subverse = @Subverse OR @Subverse IS NULL)
+                        AND
+                        (rr.CreationDate >= @StartDate OR @StartDate IS NULL)
+                        AND
+                        (rr.CreationDate <= @EndDate OR @EndDate IS NULL)";
+            q.OrderBy = "MostRecent DESC";
+
+            if (contentType != null)
+            {
+                q.Append(x => x.Where, contentType == ContentType.Submission ? "rr.SubmissionID IS NOT NULL" : "rr.CommentID IS NOT NULL");
+            }
+
+            if (reviewedStatus != ReviewStatus.Any)
+            {
+                q.Append(x => x.Where, reviewedStatus == ReviewStatus.Reviewed ? "rr.ReviewedDate IS NOT NULL" : "rr.ReviewedDate IS NULL");
+            }
+
+            if (ruleSetID != null && ruleSetID.Any())
+            {
+                q.Append(x => x.Where, "rr.RuleSetID IN @RuleSetID");
+            }
+
+            q.GroupBy = "rr.Subverse, rr.UserName, rr.SubmissionID, rr.CommentID, rr.RuleSetID, r.Name, r.Description";
+
+            DateTime? startDate = Repository.CurrentDate.AddHours(hours * -1);
+            DateTime? endDate = null;
+
+            var data = await _db.Database.Connection.QueryAsync<ContentUserReport>(q.ToString(), new { Subverse = subverse, StartDate = startDate, EndDate = endDate, RuleSetID = ruleSetID });
+
+            Dictionary<ContentItem, IEnumerable<ContentUserReport>> groupedData = new Dictionary<ContentItem, IEnumerable<ContentUserReport>>();
+
+            //load target content and add to output dictionary
+            if (contentType == null || contentType == ContentType.Submission)
+            {
+                var ids = data.Where(x => x.SubmissionID != null && x.CommentID == null).Select(x => x.SubmissionID.Value).Distinct();
+                //Get associated content
+                var submissions = await GetSubmissions(ids.ToArray());
+                var dict = ids.ToDictionary(x => new ContentItem() { Submission = DomainMaps.Map(submissions.FirstOrDefault(s => s.ID == x)), ContentType = ContentType.Submission }, x => data.Where(y => y.SubmissionID.Value == x && !y.CommentID.HasValue));
+                dict.ToList().ForEach(x => groupedData.Add(x.Key, x.Value));
+            }
+
+            if (contentType == null || contentType == ContentType.Comment)
+            {
+                var ids = data.Where(x => x.SubmissionID != null && x.CommentID != null).Select(x => x.CommentID.Value).Distinct();
+                //Get associated content
+                var comments = await GetComments(ids.ToArray());
+                var dict = ids.ToDictionary(x => new ContentItem() { Comment = comments.FirstOrDefault(s => s.ID == x), ContentType = ContentType.Comment}, x => data.Where(y => y.CommentID.HasValue && y.CommentID.Value == x));
+                dict.ToList().ForEach(x => groupedData.Add(x.Key, x.Value));
+            }
+
+            return groupedData;
+
+        }
+        [Authorize]
+        public async Task<CommandResponse> MarkReportsAsReviewed(string subverse, ContentType contentType, int id)
+        {
+
+            DemandAuthentication();
+
+            if (!SubverseExists(subverse))
+            {
+                return CommandResponse.FromStatus(Status.Invalid, "Subverse does not exist");
+            }
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, ModeratorAction.MarkReports))
+            {
+                return CommandResponse.FromStatus(Status.Denied, "User does not have permissions to mark reports");
+            }
+
+            var q = new DapperUpdate();
+            q.Update = "r SET r.ReviewedBy = @UserName, r.ReviewedDate = @CreationDate FROM RuleReport r";
+            if (contentType == ContentType.Submission)
+            {
+                q.Where = "r.Subverse = @Subverse AND SubmissionID = @ID";
+            }
+            else
+            {
+                q.Where = "r.Subverse = @Subverse AND CommentID = @ID";
+            }
+            q.Append(x => x.Where, "r.ReviewedDate IS NULL AND r.ReviewedBy IS NULL");
+
+            var result = await _db.Database.Connection.ExecuteAsync(q.ToString(), new { Subverse = subverse, ID = id, UserName = User.Identity.Name, CreationDate = CurrentDate });
+
+            return CommandResponse.FromStatus(Status.Success);
+
+        }
+
+        [Authorize]
+        public async Task<CommandResponse> SaveRuleReport(ContentType contentType, int id, int ruleID)
+        {
+            DemandAuthentication();
+
+            var duplicateFilter = "";
+            switch (contentType)
+            {
+                case ContentType.Comment:
+                    duplicateFilter = "AND CommentID = @ID";
+                    break;
+                case ContentType.Submission:
+                    duplicateFilter = "AND SubmissionID = @ID AND CommentID IS NULL";
+                    break;
+                default:
+                    throw new NotImplementedException("ContentType not supported");
+                    break;
+            }
+
+            var q = $"IF NOT EXISTS (SELECT * FROM RuleReport WHERE CreatedBy = @UserName {duplicateFilter}) INSERT RuleReport (Subverse, UserName, SubmissionID, CommentID, RuleSetID, CreatedBy, CreationDate) ";
+
+            switch (contentType)
+            {
+                case ContentType.Comment:
+                    q += @"SELECT s.Subverse, NULL, s.ID, c.ID, @RuleID, @UserName, GETUTCDATE() FROM Submission s WITH (NOLOCK) 
+                          INNER JOIN Comment c WITH (NOLOCK) ON c.SubmissionID = s.ID 
+                          INNER JOIN RuleSet r WITH (NOLOCK) ON r.ID = @RuleID AND (r.Subverse = s.Subverse OR r.Subverse IS NULL) AND (r.ContentType = @ContentType OR r.ContentType IS NULL) 
+                          WHERE c.ID = @ID AND c.IsDeleted = 0 AND r.IsActive = 1";
+                    break;
+                case ContentType.Submission:
+                    q += @"SELECT s.Subverse, NULL, s.ID, NULL, @RuleID, @UserName, GETUTCDATE() FROM Submission s WITH (NOLOCK) 
+                        INNER JOIN RuleSet r WITH (NOLOCK) ON r.ID = @RuleID AND (r.Subverse = s.Subverse OR r.Subverse IS NULL) AND (r.ContentType = @ContentType OR r.ContentType IS NULL) 
+                        WHERE s.ID = @ID AND s.IsDeleted = 0 AND r.IsActive = 1";
+                    break;
+            }
+            //filter out banned users
+            q += " AND NOT EXISTS (SELECT * FROM BannedUser WHERE UserName = @UserName) AND NOT EXISTS(SELECT * FROM SubverseBan WHERE UserName = @UserName AND Subverse = s.Subverse)";
+
+            var result = await _db.Database.Connection.ExecuteAsync(q, new { UserName = User.Identity.Name, ID = id, RuleID = ruleID, ContentType = (int)contentType });
+
+            return CommandResponse.Successful();
+        }
+
+        #endregion
         #region Admin Functions
 
         //public void SaveAdminLogEntry(AdminLog log) {
@@ -4144,29 +4337,7 @@ namespace Voat.Data
 
         #region Misc
 
-        [Authorize]
-        public async Task<CommandResponse> SaveRuleReport(ContentType contentType, int id, int ruleID)
-        {
-            DemandAuthentication();
 
-            var reported = false;
-
-            var q = $"IF NOT EXISTS (SELECT * FROM RuleReport WHERE CreatedBy = @UserName AND {contentType.ToString()}ID = @ID) INSERT RuleReport (Subverse, UserName, SubmissionID, CommentID, RuleInformationID, CreatedBy, CreationDate) ";
-
-            switch (contentType)
-            {
-                case ContentType.Comment:
-                    q += "SELECT s.Subverse, NULL, s.ID, c.ID, @RuleID, @UserName, GETUTCDATE() FROM Submission s INNER JOIN Comment c ON c.SubmissionID = s.ID WHERE c.ID = @ID";
-                    break;
-                case ContentType.Submission:
-                    q += "SELECT s.Subverse, NULL, s.ID, NULL, @RuleID, @UserName, GETUTCDATE() FROM Submission s WHERE s.ID = @ID";
-                    break;
-            }
-
-            var result = await _db.Database.Connection.ExecuteAsync(q, new { UserName = User.Identity.Name, ID = id, RuleID = ruleID });
-            
-            return CommandResponse.Successful();
-        }
 
         public double? HighestRankInSubverse(string subverse)
         {

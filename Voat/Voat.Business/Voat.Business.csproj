@@ -203,6 +203,7 @@
     <Compile Include="Domain\Models\Message.cs" />
     <Compile Include="Domain\Models\MessageCounts.cs" />
     <Compile Include="Domain\Models\RemovalBase.cs" />
+    <Compile Include="Domain\Models\Reports\ContentUserReport.cs" />
     <Compile Include="Domain\Models\Stylesheet.cs" />
     <Compile Include="Domain\Models\SubverseBannedUser.cs" />
     <Compile Include="Domain\Models\SubverseModerator.cs" />

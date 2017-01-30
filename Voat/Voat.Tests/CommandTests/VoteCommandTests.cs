@@ -23,6 +23,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;
+using System.Threading.Tasks;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
 using Voat.Tests.Repository;
@@ -39,7 +40,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Command.Vote")]
         [TestCategory("Command.Comment.Vote")]
-        public void DownvoteComment()
+        public async Task DownvoteComment()
         {
             TestHelper.SetPrincipal("User500CCP");
             bool voteEventReceived = false;
@@ -55,7 +56,7 @@ namespace Voat.Tests.CommandTests
             //verify in db
             using (var db = new Voat.Data.Repository())
             {
-                var comment = db.GetComment(1);
+                var comment = await db.GetComment(1);
                 Assert.IsNotNull(comment, "Couldn't find comment in db");
                 Assert.AreEqual(comment.UpCount, c.Response.UpCount);
                 Assert.AreEqual(comment.DownCount, c.Response.DownCount);
@@ -118,7 +119,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Command.Vote")]
         [TestCategory("Command.Comment.Vote")]
-        public void UpvoteComment()
+        public async Task UpvoteComment()
         {
             TestHelper.SetPrincipal("User50CCP");
             var cmd = new CommentVoteCommand(1, 1, IpHash.CreateHash("127.0.0.2"));
@@ -131,7 +132,7 @@ namespace Voat.Tests.CommandTests
             //verify in db
             using (var db = new Voat.Data.Repository())
             {
-                var comment = db.GetComment(1);
+                var comment = await db.GetComment(1);
                 Assert.IsNotNull(comment, "Couldn't find comment in db");
                 Assert.AreEqual(comment.UpCount, c.Response.UpCount);
                 Assert.AreEqual(comment.DownCount, c.Response.DownCount);

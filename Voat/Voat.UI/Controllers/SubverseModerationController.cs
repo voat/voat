@@ -1023,20 +1023,6 @@ namespace Voat.Controllers
 
         #endregion ADD/REMOVE MODERATORS LOGIC
 
-        #region Reports
-        // POST: remove a moderator from given subverse
-        [HttpGet]
-        [Authorize]
-        public async Task<ActionResult> Reports(string subverseName, int hours = 24)
-        {
-            //check perms
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverseName, Domain.Models.ModeratorAction.AccessReports))
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            return new EmptyResult();
-        }
-
-        #endregion
+       
     }
 }

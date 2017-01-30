@@ -12,7 +12,7 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class RuleInformation
+    public partial class RuleSet
     {
         public int ID { get; set; }
         public bool IsActive { get; set; }

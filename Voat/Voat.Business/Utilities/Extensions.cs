@@ -6,6 +6,20 @@ namespace Voat
 {
     public static class Extensions
     {
+
+        public static T EnsureRange<T>(this T value, T low, T high) where T : IComparable
+        {
+            if (value.CompareTo(low) == -1)
+            {
+                return low;
+            }
+            else if (value.CompareTo(high) == 1)
+            {
+                return high;
+            }
+            return value;
+        }
+
         /// <summary>
         /// Runs case insensitive compare
         /// </summary>

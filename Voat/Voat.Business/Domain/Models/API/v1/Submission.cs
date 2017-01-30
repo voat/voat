@@ -131,5 +131,10 @@ namespace Voat.Domain.Models
 
         [JsonIgnore]
         public double RelativeRank { get; set; }
+
+        /// <summary>
+        /// Marker for if current account owns this comment.
+        /// </summary>
+        public bool IsOwner { get; set; }
     }
 }

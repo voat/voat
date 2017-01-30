@@ -45,7 +45,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
         [TestCategory("Anon")]
-        public void CreateComment_Anon()
+        public async Task CreateComment_Anon()
         {
             string userName = "TestUser1";
             TestHelper.SetPrincipal(userName);
@@ -62,7 +62,7 @@ namespace Voat.Tests.CommandTests
             //verify in db
             using (var db = new Voat.Data.Repository())
             {
-                var comment = db.GetComment(c.Response.ID);
+                var comment = await db.GetComment(c.Response.ID);
                 Assert.IsNotNull(comment, "Couldn't find comment in db", c.Response.ID);
 
                 Assert.AreEqual(c.Response.ID, comment.ID);
@@ -84,7 +84,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
-        public void CreateComment()
+        public async Task CreateComment()
         {
             TestHelper.SetPrincipal("TestUser2");
 
@@ -98,7 +98,7 @@ namespace Voat.Tests.CommandTests
             //verify in db
             using (var db = new Voat.Data.Repository())
             {
-                var comment = db.GetComment(c.Response.ID);
+                var comment = await db.GetComment(c.Response.ID);
                 Assert.IsNotNull(comment, "Couldn't find comment in db", c.Response.ID);
                 Assert.AreEqual(c.Response.ID, comment.ID);
                 Assert.AreEqual(c.Response.UserName, comment.UserName);
@@ -313,7 +313,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
-        public void EditComment()
+        public async Task EditComment()
         {
             string content = "This is data [howdy](http://www.howdy.com)";
             TestHelper.SetPrincipal("unit");
@@ -326,7 +326,7 @@ namespace Voat.Tests.CommandTests
             //verify
             using (var db = new Voat.Data.Repository())
             {
-                var comment = db.GetComment(1);
+                var comment = await db.GetComment(1);
                 Assert.IsNotNull(comment.LastEditDate);
                 Assert.AreEqual(cmd.Content, comment.Content);
             }
