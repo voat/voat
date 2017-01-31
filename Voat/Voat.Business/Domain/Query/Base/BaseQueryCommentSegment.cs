@@ -21,6 +21,7 @@ namespace Voat.Domain.Query.Base
         protected int _count = 4;
         protected IEnumerable<VoteValue> _commentVotes = null;
         protected IEnumerable<CommentSaveTracker> _commentSaves = null;
+        protected IEnumerable<BlockedItem> _userBlocks = null;
 
         protected abstract IQueryable<usp_CommentTree_Result> FilterSegment(IQueryable<usp_CommentTree_Result> commentTree);
 
@@ -50,7 +51,11 @@ namespace Voat.Domain.Query.Base
             {
                 //var p = new QueryUserData(UserName).Execute();
                 //var preference = p.Preferences;
-                _commentVotes = new QueryUserCommentVotesForSubmission(_submissionID, CachePolicy.None).Execute();
+                var qvotes = new QueryUserCommentVotesForSubmission(_submissionID, CachePolicy.None);
+                _commentVotes = await qvotes.ExecuteAsync();
+
+                var qblocks = new QueryUserBlocks();
+                _userBlocks = (await qblocks.ExecuteAsync()).Where(x => x.Type == DomainType.User);
                 //_commentSaves = new QueryUserSavedCommentsForSubmission(_submissionID).Execute();
             }
 
@@ -93,14 +98,17 @@ namespace Voat.Domain.Query.Base
             //creating this to keep local vars in scope
             Func<usp_CommentTree_Result, NestedComment> mapToNestedCommentFunc = new Func<usp_CommentTree_Result, NestedComment>(commentTree =>
             {
-                return commentTree.Map(SubmitterName, _commentVotes);
+                return commentTree.Map(SubmitterName, _commentVotes, _userBlocks);
             });
 
             List<NestedComment> comments = new List<NestedComment>();
             foreach (var c in queryableTree)
             {
                 var n = mapToNestedCommentFunc(c);
-                n.IsCollapsed = (n.Sum <= _collapseThreshold);
+                if (!n.IsCollapsed)
+                {
+                    n.IsCollapsed = (n.Sum <= _collapseThreshold);
+                }
                 if (addChildren)
                 {
                     AddComments(fullTree, n, _count, nestLevel, 1, _collapseThreshold, _sort, mapToNestedCommentFunc);
@@ -139,7 +147,10 @@ namespace Voat.Domain.Query.Base
                         {
                             var c = mapToNestedCommentFunc(children[i]);
 
-                            c.IsCollapsed = (c.Sum <= collapseThreshold);
+                            if (!c.IsCollapsed)
+                            {
+                                c.IsCollapsed = (c.Sum <= _collapseThreshold);
+                            }
                             var nextNestLevel = currentNestLevel + 1;
                             AddComments(queryTree, c, count, nestLevel, nextNestLevel, collapseThreshold, sort, mapToNestedCommentFunc);
                             parent.AddChildComment(c);
