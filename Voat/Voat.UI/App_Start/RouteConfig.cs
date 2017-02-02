@@ -120,12 +120,6 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "Subverses" }
             );
 
-            // /acceptmodinvitation/{invitationId}
-            routes.MapRoute(
-                name: "AcceptModInvitation",
-                url: "acceptmodinvitation/{invitationId}",
-                defaults: new { controller = "Subverses", action = "AcceptModInvitation" }
-            );
 
             // /subverses/search
             routes.MapRoute(
@@ -1000,9 +994,17 @@ namespace Voat
                     action = "Reports"
                 }
             );
-            #endregion 
+            #endregion
 
             #region Sub Moderation
+
+
+            // /acceptmodinvitation/{invitationId}
+            routes.MapRoute(
+                name: "AcceptModInvitation",
+                url: "acceptmodinvitation/{invitationId}",
+                defaults: new { controller = "SubverseModeration", action = "AcceptModInvitation" }
+            );
 
             // v/subversetoedit/about/edit
             routes.MapRoute(

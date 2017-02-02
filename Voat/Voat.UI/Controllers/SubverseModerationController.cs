@@ -41,7 +41,9 @@ namespace Voat.Controllers
                     x => x.Subverse == subversetoshow && x.UserName == User.Identity.Name && x.Power <= 2);
 
             if (subAdmin == null)
-                return RedirectToAction("Index", "Home");
+            {
+                return RedirectToAction("SubverseIndex", "Subverses", new { subverse = subversetoshow });
+            }
 
             // map existing data to view model for editing and pass it to frontend
             // NOTE: we should look into a mapper which automatically maps these properties to corresponding fields to avoid tedious manual mapping
@@ -803,7 +805,7 @@ namespace Voat.Controllers
             _db.ModeratorInvitations.Remove(userInvitation);
             _db.SaveChanges();
 
-            return RedirectToAction("SubverseSettings", "Subverses", new { subversetoshow = userInvitation.Subverse });
+            return RedirectToAction("SubverseSettings", "SubverseModeration", new { subversetoshow = userInvitation.Subverse });
         }
 
         // GET: show add moderators view for selected subverse

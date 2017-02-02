@@ -2431,6 +2431,7 @@ namespace Voat.Data
             else
             {
                 var message = new Domain.Models.Message();
+                CommandResponse<Domain.Models.Message> commandResponse = null;
 
                 //determine if message replying to is a comment and if so execute a comment reply
                 switch ((MessageType)m.Type)
@@ -2441,30 +2442,32 @@ namespace Voat.Data
                     case MessageType.SubmissionMention:
 
                         Domain.Models.Comment comment;
-                        //assume ever comment type has a submission ID contained in it
-                        var response = await PostComment(m.SubmissionID.Value, m.CommentID, messageContent);
-                        comment = response.Response;
+                        //assume every comment type has a submission ID contained in it
+                        var cmd = new CreateCommentCommand(m.SubmissionID.Value, m.CommentID, messageContent);
+                        var response = await cmd.Execute();
 
-                        //if (m.Type == (int)MessageType.SubmissionMention)
-                        //{
-                        //    comment = 
-                        //}
-                        //else
-                        //{
-                        //    comment = await PostCommentReply(m.CommentID.Value, messageContent);
-                        //}
-
-                        return CommandResponse.Successful(new Domain.Models.Message()
+                        if (response.Success)
                         {
-                            ID = -1,
-                            Comment = comment,
-                            SubmissionID = comment.SubmissionID,
-                            CommentID = comment.ID,
-                            Content = comment.Content,
-                            FormattedContent = comment.FormattedContent,
-                        });
+                            comment = response.Response;
+                            commandResponse = CommandResponse.Successful(new Domain.Models.Message()
+                            {
+                                ID = -1,
+                                Comment = comment,
+                                SubmissionID = comment.SubmissionID,
+                                CommentID = comment.ID,
+                                Content = comment.Content,
+                                FormattedContent = comment.FormattedContent,
+                            });
+                        }
+                        else
+                        {
+                            commandResponse = CommandResponse.FromStatus<Domain.Models.Message>(null, response.Status, response.Message);
+                        }
 
-
+                        break;
+                    case MessageType.Sent:
+                        //no replying to sent messages
+                        commandResponse = CommandResponse.FromStatus<Domain.Models.Message>(null, Status.Denied, "Sent messages do not allow replies");
                         break;
                     default:
 
@@ -2472,7 +2475,7 @@ namespace Voat.Data
                         {
                             if (!ModeratorPermission.HasPermission(User.Identity.Name, m.Recipient, ModeratorAction.SendMail))
                             {
-                                return new CommandResponse<Domain.Models.Message>(null, Status.NotProcessed, "Message integrity violated");
+                                commandResponse = new CommandResponse<Domain.Models.Message>(null, Status.NotProcessed, "Message integrity violated");
                             }
 
                             message.Recipient = m.Sender;
@@ -2496,10 +2499,12 @@ namespace Voat.Data
                         message.Content = messageContent;
                         message.FormattedContent = Formatting.FormatMessage(messageContent);
 
-                        return await SendMessage(message).ConfigureAwait(false);
+                        commandResponse = await SendMessage(message).ConfigureAwait(false);
 
                         break;
                 }
+                //return response
+                return commandResponse;
             }
         }
 

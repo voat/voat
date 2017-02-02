@@ -18,11 +18,5 @@ namespace Voat.Domain.Models
         public int Count { get; set; }
         public DateTime MostRecentReportDate { get; set; }
     }
-    public class ContentItem
-    {
-        public ContentType ContentType { get; set; }
-        public Domain.Models.Submission Submission { get; set; }
-        public Domain.Models.Comment Comment { get; set; }
-
-    }
+   
 }

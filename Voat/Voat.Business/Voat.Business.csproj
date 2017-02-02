@@ -157,6 +157,7 @@
     <Compile Include="Caching\Handlers\NullCacheHandler.cs" />
     <Compile Include="Caching\Handlers\RedisCacheHandler.cs" />
     <Compile Include="Caching\ICacheHandler.cs" />
+    <Compile Include="Common\DatabaseMappedValueAttribute.cs" />
     <Compile Include="Common\LockStore.cs" />
     <Compile Include="Configuration\ArgumentParser.cs" />
     <Compile Include="Configuration\JsonSettings.cs" />
@@ -203,6 +204,7 @@
     <Compile Include="Domain\Models\Message.cs" />
     <Compile Include="Domain\Models\MessageCounts.cs" />
     <Compile Include="Domain\Models\RemovalBase.cs" />
+    <Compile Include="Domain\Models\Reports\ContentItem.cs" />
     <Compile Include="Domain\Models\Reports\ContentUserReport.cs" />
     <Compile Include="Domain\Models\Stylesheet.cs" />
     <Compile Include="Domain\Models\SubverseBannedUser.cs" />
