@@ -20,7 +20,8 @@ namespace Voat.Common
             if (span.TotalDays >= 365)
             {
                 //years
-                double years = Math.Round(span.TotalDays / 365f, 1);
+                //double years = Math.Round(span.TotalDays / 365f, 1); //Round 
+                double years = Math.Round(Math.Floor(span.TotalDays / 365f * 10) / 10, 1); //Round down
                 result = Utilities.Formatting.PluralizeIt(years, "year");
             }
             else if (span.TotalDays > 31)
