@@ -663,7 +663,7 @@ function getErrorMessage(error, defaultMessage)
     return msg;
 }
 // post comment reply form through ajax
-function postCommentAjax(senderButton, parentCommentID) {
+function submitComment(senderButton, parentCommentID) {
     var $form = $(senderButton).parents('form');
     $form.find("#errorMessage").toggle(false);
 
@@ -839,7 +839,7 @@ function removereplyform(parentcommentid) {
 }
 
 // remove edit form for given parent id and replace it with original comment
-function removeeditform(parentcommentid) {
+function removeEditForm(parentcommentid) {
     $("#" + parentcommentid).find(".usertext-body").show();
     $("#" + parentcommentid).find(".usertext-edit").hide();
 }
@@ -908,12 +908,17 @@ function editcommentsubmit(commentid) {
             $('#commenteditform-' + commentid + " span.field-validation-error").html(msg);
         },
         success: function (data) {
-            $("#" + commentid).find('.md').html(data.response);
 
-            removeeditform(commentid);
+            var errorObj = getErrorObject(arguments);
 
-            //notify UI framework of DOM insertion async
-            window.setTimeout(function () { UI.Notifications.raise('DOM', $('#' + commentid)); });
+            if (errorObj) {
+                $('#commenteditform-' + commentid + " span.field-validation-error").html(errorObj.error.message);
+            } else {
+                $("#" + commentid).find('.md').html(data.response);
+                removeEditForm(commentid);
+                //notify UI framework of DOM insertion async
+                window.setTimeout(function () { UI.Notifications.raise('DOM', $('#' + commentid)); });
+            }
         }
     });
 
@@ -941,7 +946,7 @@ function deletecomment(commentid) {
     //hide "are you sure" option
     toggleback(commentid);
 
-    removeeditform(commentid);
+    removeEditForm(commentid);
 
     //execute POST call to remove comment from database
     deletecommentsubmit(commentid);
@@ -959,7 +964,7 @@ function deletecommentsubmit(commentid) {
         datatype: "json"
     });
 
-    removeeditform(commentid);
+    removeEditForm(commentid);
     return false;
 }
 
