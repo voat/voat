@@ -3533,7 +3533,10 @@ namespace Voat.Data
                 if ((type & ContentType.Submission) > 0)
                 {
                     var cmd = db.Database.Connection.CreateCommand();
-                    cmd.CommandText = @"SELECT 'UpCount' = CAST(ABS(ISNULL(SUM(s.UpCount), 0)) AS INT), 'DownCount' = CAST(ABS(ISNULL(SUM(s.DownCount), 0)) AS INT) FROM Submission s WITH (NOLOCK)
+                    cmd.CommandText = @"SELECT 
+                                    'UpCount' = CAST(ABS(ISNULL(SUM(s.UpCount), 0)) AS INT), 
+                                    'DownCount' = CAST(ABS(ISNULL(SUM(s.DownCount), 0)) AS INT) 
+                                    FROM Submission s WITH (NOLOCK)
                                     WHERE s.UserName = @UserName
                                     AND (s.Subverse = @Subverse OR @Subverse IS NULL)
                                     AND s.IsAnonymized = 0";

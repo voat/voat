@@ -39,8 +39,6 @@ namespace Voat.Controllers
 {
     public class CommentController : BaseController
     {
-        private readonly voatEntities _db = new voatEntities();
-
         // POST: votecomment/{commentId}/{typeOfVote}
         [HttpPost]
         [Authorize]
@@ -70,33 +68,33 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
             }
         }
-        private List<CommentVoteTracker> UserCommentVotesBySubmission(int submissionID)
-        {
-            List<CommentVoteTracker> vCache = new List<CommentVoteTracker>();
+        //private List<CommentVoteTracker> UserCommentVotesBySubmission(int submissionID)
+        //{
+        //    List<CommentVoteTracker> vCache = new List<CommentVoteTracker>();
 
-            if (User.Identity.IsAuthenticated)
-            {
-                vCache = (from cv in _db.CommentVoteTrackers.AsNoTracking()
-                          join c in _db.Comments on cv.CommentID equals c.ID
-                          where c.SubmissionID == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
-                          select cv).ToList();
-            }
-            return vCache;
-        }
+        //    if (User.Identity.IsAuthenticated)
+        //    {
+        //        vCache = (from cv in _db.CommentVoteTrackers.AsNoTracking()
+        //                  join c in _db.Comments on cv.CommentID equals c.ID
+        //                  where c.SubmissionID == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+        //                  select cv).ToList();
+        //    }
+        //    return vCache;
+        //}
 
-        private List<CommentSaveTracker> UserSavedCommentsBySubmission(int submissionID)
-        {
-            List<CommentSaveTracker> vCache = new List<CommentSaveTracker>();
+        //private List<CommentSaveTracker> UserSavedCommentsBySubmission(int submissionID)
+        //{
+        //    List<CommentSaveTracker> vCache = new List<CommentSaveTracker>();
 
-            if (User.Identity.IsAuthenticated)
-            {
-                vCache = (from cv in _db.CommentSaveTrackers.AsNoTracking()
-                          join c in _db.Comments on cv.CommentID equals c.ID
-                          where c.SubmissionID == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) && !c.IsDeleted
-                          select cv).ToList();
-            }
-            return vCache;
-        }
+        //    if (User.Identity.IsAuthenticated)
+        //    {
+        //        vCache = (from cv in _db.CommentSaveTrackers.AsNoTracking()
+        //                  join c in _db.Comments on cv.CommentID equals c.ID
+        //                  where c.SubmissionID == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) && !c.IsDeleted
+        //                  select cv).ToList();
+        //    }
+        //    return vCache;
+        //}
 
         // GET: Renders Primary Submission Comments Page
         public async Task<ActionResult> Comments(int? submissionID, string subverseName, int? commentID, string sort, int? context)
@@ -242,10 +240,10 @@ namespace Voat.Controllers
             ViewBag.Subverse = subverse;
             ViewBag.Submission = submission;
 
-            //Temp cache user votes for this thread
-            ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
-            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
-            //ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
+            ////Temp cache user votes for this thread
+            //ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
+            //ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
+            ////ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
 
             var SortingMode = (sort == null ? "top" : sort).ToLower();
             ViewBag.SortingMode = SortingMode;
@@ -296,10 +294,10 @@ namespace Voat.Controllers
             ViewBag.Subverse = subverse;
             ViewBag.Submission = submission;
 
-            //Temp cache user votes for this thread
-            ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
-            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
-            //ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
+            ////Temp cache user votes for this thread
+            //ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
+            //ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
+            ////ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
 
             var SortingMode = (sort == null ? "top" : sort).ToLower();
             ViewBag.SortingMode = SortingMode;
@@ -489,37 +487,42 @@ namespace Voat.Controllers
             }
         }
 
+        #region MOVE TO SubverseModeration CONTROLLER
+
         // POST: comments/distinguish/{commentId}
         [Authorize]
         public JsonResult DistinguishComment(int commentId)
         {
-            var commentToDistinguish = _db.Comments.Find(commentId);
-
-            if (commentToDistinguish != null)
+            using (var _db = new voatEntities())
             {
-                // check to see if request came from comment author
-                if (User.Identity.Name == commentToDistinguish.UserName)
+                var commentToDistinguish = _db.Comments.Find(commentId);
+
+                if (commentToDistinguish != null)
                 {
-                    // check to see if comment author is also sub mod or sub admin for comment sub
-                    if (ModeratorPermission.HasPermission(User.Identity.Name, commentToDistinguish.Submission.Subverse, ModeratorAction.DistinguishContent))
+                    // check to see if request came from comment author
+                    if (User.Identity.Name == commentToDistinguish.UserName)
                     {
-                        // mark the comment as distinguished and save to db
-                        if (commentToDistinguish.IsDistinguished)
+                        // check to see if comment author is also sub mod or sub admin for comment sub
+                        if (ModeratorPermission.HasPermission(User.Identity.Name, commentToDistinguish.Submission.Subverse, ModeratorAction.DistinguishContent))
                         {
-                            commentToDistinguish.IsDistinguished = false;
+                            // mark the comment as distinguished and save to db
+                            if (commentToDistinguish.IsDistinguished)
+                            {
+                                commentToDistinguish.IsDistinguished = false;
+                            }
+                            else
+                            {
+                                commentToDistinguish.IsDistinguished = true;
+                            }
+
+                            _db.SaveChangesAsync();
+
+                            //Update Cache
+                            CacheHandler.Instance.DictionaryReplace<int, usp_CommentTree_Result>(CachingKey.CommentTree(commentToDistinguish.SubmissionID.Value), commentToDistinguish.ID, x => { x.IsDistinguished = commentToDistinguish.IsDistinguished; return x; }, true);
+
+                            Response.StatusCode = 200;
+                            return Json("Distinguish flag changed.", JsonRequestBehavior.AllowGet);
                         }
-                        else
-                        {
-                            commentToDistinguish.IsDistinguished = true;
-                        }
-
-                        _db.SaveChangesAsync();
-
-                        //Update Cache
-                        CacheHandler.Instance.DictionaryReplace<int, usp_CommentTree_Result>(CachingKey.CommentTree(commentToDistinguish.SubmissionID.Value), commentToDistinguish.ID, x => { x.IsDistinguished = commentToDistinguish.IsDistinguished; return x; }, true);
-
-                        Response.StatusCode = 200;
-                        return Json("Distinguish flag changed.", JsonRequestBehavior.AllowGet);
                     }
                 }
             }
@@ -527,8 +530,6 @@ namespace Voat.Controllers
             Response.StatusCode = (int)HttpStatusCode.BadRequest;
             return Json("Unauthorized distinguish attempt.", JsonRequestBehavior.AllowGet);
         }
-
-
 
         [HttpGet]
         [Authorize]
@@ -592,5 +593,6 @@ namespace Voat.Controllers
 
         }
 
+        #endregion 
     }
 }

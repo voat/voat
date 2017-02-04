@@ -12,9 +12,11 @@ namespace Voat.Domain.Query
     public class QueryUserInformation : CachedQuery<UserInformation>
     {
         private string _userToRetrieve;
+        private static TimeSpan _totalCacheTime = TimeSpan.FromHours(12);
+        private TimeSpan _refreshTime = TimeSpan.FromMinutes(15);
 
         public QueryUserInformation(string userToRetrieve)
-            : this(userToRetrieve, new CachePolicy(TimeSpan.FromMinutes(15)))
+            : this(userToRetrieve, new CachePolicy(QueryUserInformation._totalCacheTime))
         {
         }
 
@@ -39,6 +41,20 @@ namespace Voat.Domain.Query
                 return CachingKey.UserInformation(_userToRetrieve);
             }
         }
+
+        public override async Task<UserInformation> ExecuteAsync()
+        {
+            var data = await base.ExecuteAsync();
+            //See if data is static and Update in backgroud if old
+            if (Repository.CurrentDate.Subtract(data.GenerationDate) > _refreshTime)
+            {
+                Task.Run(async () => {
+                    CacheHandler.Instance.Replace(FullCacheKey, await GetData(), QueryUserInformation._totalCacheTime);
+                });
+            }
+            return data;
+        }
+
 
         protected override async Task<UserInformation> GetData()
         {

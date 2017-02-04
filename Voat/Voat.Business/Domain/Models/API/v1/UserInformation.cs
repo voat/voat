@@ -15,11 +15,17 @@ All Rights Reserved.
 using System;
 using System.Collections.Generic;
 using Voat.Common;
+using Voat.Data;
 
 namespace Voat.Domain.Models
 {
     public class UserInformation
     {
+        /// <summary>
+        /// Date that data was calculated
+        /// </summary>
+        public DateTime GenerationDate { get; set; } = Repository.CurrentDate;
+
         /// <summary>
         /// The badges the user has accumulated
         /// </summary>
