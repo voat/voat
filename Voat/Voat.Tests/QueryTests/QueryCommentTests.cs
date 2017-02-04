@@ -26,7 +26,7 @@ namespace Voat.Tests.QueryTests
             Assert.IsNotNull(comment, "Comment is null 1");
             Assert.AreEqual(0, comment.Vote, "vote value not set for logged in user 1");
 
-            var cmd = new CommentVoteCommand(1, 1, IpHash.CreateHash(Guid.NewGuid().ToString()));
+            var cmd = new CommentVoteCommand(1, default(int?), 1, IpHash.CreateHash(Guid.NewGuid().ToString()));
             var result = cmd.Execute().Result;
             Assert.IsNotNull(result, "Result is null");
             Assert.AreEqual(Status.Success, result.Status);
