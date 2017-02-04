@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Voat.Caching;
 using Voat.Data;
 using Voat.Models;
 using Voat.Utilities;
@@ -8,11 +9,14 @@ namespace Voat.Domain.Command
 {
     public class CommentVoteCommand : VoteCommand
     {
-        public CommentVoteCommand(int commentID, int voteValue, string addressHash, bool revokeOnRevote = true)
+        private readonly int? _submissionID;
+
+        public CommentVoteCommand(int commentID, int? submissionID, int voteValue, string addressHash, bool revokeOnRevote = true)
             : base(voteValue, addressHash)
         {
             CommentID = commentID;
             RevokeOnRevote = revokeOnRevote;
+            _submissionID = submissionID;
         }
 
         public int CommentID { get; private set; }
@@ -34,9 +38,9 @@ namespace Voat.Domain.Command
 
         protected override void UpdateCache(VoteResponse result)
         {
-            if (result.Success)
+            if (result.Success && _submissionID.HasValue)
             {
-                //update cache somehow
+                CacheHandler.Instance.Remove(CachingKey.CommentTree(_submissionID.Value));
             }
         }
     }

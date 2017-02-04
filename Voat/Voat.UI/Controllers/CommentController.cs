@@ -16,12 +16,14 @@ All Rights Reserved.
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Voat.Caching;
+using Voat.Common;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
@@ -47,7 +49,13 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<JsonResult> VoteComment(int commentId, int typeOfVote)
         {
-            var cmd = new CommentVoteCommand(commentId, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
+            var comment = await _db.Comments.FirstOrDefaultAsync();
+            if (comment == null)
+            {
+                throw new VoatNotFoundException("Can not find comment with id {0}", commentId.ToString());
+            }
+
+            var cmd = new CommentVoteCommand(commentId, comment.SubmissionID, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
             var result = await cmd.Execute();
             return Json(result);
         }
