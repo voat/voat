@@ -1273,8 +1273,8 @@ namespace Voat.Controllers
 
             //Null out defaults
             viewProperties.Sort = options.Sort == Domain.Models.SortAlgorithm.Rank ? (Domain.Models.SortAlgorithm?)null : options.Sort;
-            viewProperties.Span = options.Span == Domain.Models.SortSpan.All ? (Domain.Models.SortSpan?)null : options.Span;
-           
+            viewProperties.Span = options.Span;
+
             try
             {
                 PaginatedList<Submission> pageList = null;
