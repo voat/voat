@@ -3111,14 +3111,32 @@ namespace Voat.Data
                         case MessageType.CommentMention:
                         case MessageType.CommentReply:
                         case MessageType.SubmissionReply:
-                            msg.Title = msg.Submission?.Title;
-                            msg.Content = msg.Comment.Content;
-                            msg.FormattedContent = msg.Comment.FormattedContent;
+                            if (msg.Comment != null)
+                            {
+                                msg.Title = msg.Submission?.Title;
+                                msg.Content = msg.Comment?.Content;
+                                msg.FormattedContent = msg.Comment?.FormattedContent;
+                            }
+                            else
+                            {
+                                msg.Title = "Removed";
+                                msg.Content = "Removed";
+                                msg.FormattedContent = "Removed";
+                            }
                             break;
                         case MessageType.SubmissionMention:
-                            msg.Title = msg.Submission?.Title;
-                            msg.Content = msg.Submission.Content;
-                            msg.FormattedContent = msg.Submission.FormattedContent;
+                            if (msg.Submission != null)
+                            {
+                                msg.Title = msg.Submission?.Title;
+                                msg.Content = msg.Submission?.Content;
+                                msg.FormattedContent = msg.Submission?.FormattedContent;
+                            }
+                            else
+                            {
+                                msg.Title = "Removed";
+                                msg.Content = "Removed";
+                                msg.FormattedContent = "Removed";
+                            }
                             break;
                     }
 
