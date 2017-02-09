@@ -1597,7 +1597,7 @@ namespace Voat.Data
                                     "[" + submission.Url + "](" + submission.Url + ")"
                                     )
                     };
-                    var cmd = new SendMessageCommand(message);
+                    var cmd = new SendMessageCommand(message, isAnonymized: submission.IsAnonymized);
                     cmd.Execute();
 
                     // remove sticky if submission was stickied
@@ -1889,7 +1889,7 @@ namespace Voat.Data
                                         "#Original Comment" + Environment.NewLine +
                                         comment.Content
                         };
-                        var cmd = new SendMessageCommand(message);
+                        var cmd = new SendMessageCommand(message, isAnonymized: comment.IsAnonymized);
                         await cmd.Execute().ConfigureAwait(false);
 
                         comment.IsDeleted = true;
@@ -2498,7 +2498,7 @@ namespace Voat.Data
                         message.Title = m.Title;
                         message.Content = messageContent;
                         message.FormattedContent = Formatting.FormatMessage(messageContent);
-
+                        message.IsAnonymized = m.IsAnonymized;
                         commandResponse = await SendMessage(message).ConfigureAwait(false);
 
                         break;
@@ -2586,7 +2586,7 @@ namespace Voat.Data
         }
 
         [Authorize]
-        public async Task<CommandResponse<Domain.Models.Message>> SendMessage(SendMessage message, bool forceSend = false, bool ensureUserExists = true)
+        public async Task<CommandResponse<Domain.Models.Message>> SendMessage(SendMessage message, bool forceSend = false, bool ensureUserExists = true, bool isAnonymized = false)
         {
             DemandAuthentication();
 
@@ -2647,6 +2647,7 @@ namespace Voat.Data
                         Content = message.Message,
                         ReadDate = null,
                         CreationDate = Repository.CurrentDate,
+                        IsAnonymized = isAnonymized,
                     });
                 }
                 else
@@ -2673,6 +2674,7 @@ namespace Voat.Data
                             Content = message.Message,
                             ReadDate = null,
                             CreationDate = Repository.CurrentDate,
+                            IsAnonymized = isAnonymized,
                         });
                     }
                 }
