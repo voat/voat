@@ -26,14 +26,14 @@ namespace Voat.Tests.QueryTests
 
             TestHelper.SetPrincipal(userName);
             var msg = "1";
-            var cmd = new SendMessageCommand(new Domain.Models.SendMessage() { Subject = "Chain", Recipient = "TestUser1", Message = msg });
+            var cmd = new SendMessageCommand(new Domain.Models.SendMessage() { Subject = "Chain", Recipient = "TestUser01", Message = msg });
             var response = cmd.Execute().Result;
-            Assert.IsTrue(response.Success, "Expecting true on send");
+            Assert.IsTrue(response.Success, response.Message);
             Assert.IsNotNull(response.Response, "Expecting non-null response");
             message = response.Response;
             messages.Add(message);
 
-            TestHelper.SetPrincipal("TestUser1");
+            TestHelper.SetPrincipal("TestUser01");
             msg = "1.1";
             var cmdReply = new SendMessageReplyCommand(message.ID, msg);
             var responseReply = cmdReply.Execute().Result;
@@ -52,7 +52,7 @@ namespace Voat.Tests.QueryTests
             message = responseReply.Response;
             messages.Add(message);
 
-            TestHelper.SetPrincipal("TestUser1");
+            TestHelper.SetPrincipal("TestUser01");
             msg = "1.1.1.1";
             cmdReply = new SendMessageReplyCommand(message.ID, msg);
             responseReply = cmdReply.Execute().Result;

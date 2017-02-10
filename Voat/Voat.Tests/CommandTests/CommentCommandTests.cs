@@ -47,7 +47,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Anon")]
         public async Task CreateComment_Anon()
         {
-            string userName = "TestUser1";
+            string userName = "TestUser01";
             TestHelper.SetPrincipal(userName);
 
             var cmd = new CreateCommentCommand(2, null, "This is my data");
@@ -86,7 +86,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Comment.Post")]
         public async Task CreateComment()
         {
-            TestHelper.SetPrincipal("TestUser2");
+            TestHelper.SetPrincipal("TestUser02");
 
             var cmd = new CreateCommentCommand(1, null, "This is my data");
             var c = cmd.Execute().Result;
@@ -171,7 +171,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void CreateComment_BannedDomain()
         {
-            TestHelper.SetPrincipal("TestUser2");
+            TestHelper.SetPrincipal("TestUser02");
 
             var cmd = new CreateCommentCommand(1, null, "[Check out this killer website](http://fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!");
             var c = cmd.Execute().Result;
@@ -188,7 +188,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void EditComment_BannedDomain()
         {
-            TestHelper.SetPrincipal("TestUser2");
+            TestHelper.SetPrincipal("TestUser02");
 
             var cmd = new CreateCommentCommand(1, null, "This is a unit test and I like it.");
             var c = cmd.Execute().Result;
@@ -246,7 +246,7 @@ namespace Voat.Tests.CommandTests
         {
             //Assert.Inconclusive("Complete this test");
 
-            TestHelper.SetPrincipal("TestUser1");
+            TestHelper.SetPrincipal("TestUser01");
             var cmdcreate = new CreateCommentCommand(1, null, "This is my data too you know");
             var c = cmdcreate.Execute().Result;
 
@@ -281,7 +281,7 @@ namespace Voat.Tests.CommandTests
         {
             //Assert.Inconclusive("Complete this test");
             var content = "This is my data too you know 2";
-            TestHelper.SetPrincipal("TestUser1");
+            TestHelper.SetPrincipal("TestUser01");
             var cmdcreate = new CreateCommentCommand(1, null, content);
             var c = cmdcreate.Execute().Result;
 
@@ -356,7 +356,7 @@ namespace Voat.Tests.CommandTests
                 db.SaveChanges();
             }
 
-            TestHelper.SetPrincipal("TestUser5");
+            TestHelper.SetPrincipal("TestUser05");
             var cmd = new CreateCommentCommand(submission.ID, null, "Are you @FuzzyWords?");
             var c = cmd.Execute().Result;
 

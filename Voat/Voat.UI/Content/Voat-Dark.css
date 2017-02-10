@@ -3333,3 +3333,7 @@ select.form-control {
     .reportDialog ul li {
         display:block;
     }
+
+.hidden {
+    visibility: hidden;
+}

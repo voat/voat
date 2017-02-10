@@ -53,7 +53,8 @@
     {
         @Html.Partial("_votingIconsComment", Model,
             new ViewDataDictionary {
-                { "collapsedStyle", uncollapsedComment }
+                { "collapsedStyle", uncollapsedComment },
+                { "Submission", ViewBag.Submission }
             })
     }
 
@@ -127,22 +128,22 @@
                         <span class="userattrs"></span>
                     }
 
-                    <span class="score dislikes">
-                        <span class="number">@Model.DownCount</span> points
-                    </span>
-                    <span class="score unvoted">
-                        <span class="number">@Model.Sum</span> points
-                    </span>
-                    <span class="score likes">
-                        <span class="number">@Model.UpCount</span> points
-                    </span>
-                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
+                    
                 }
                 else
                 {
                     <span class="userattrs">[deleted]</span>
                 }
-
+                <span class="score dislikes">
+                    <span class="number">@Model.DownCount</span> points
+                </span>
+                <span class="score unvoted">
+                    <span class="number">@Model.Sum</span> points
+                </span>
+                <span class="score likes">
+                    <span class="number">@Model.UpCount</span> points
+                </span>
+                <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
                 <time title="@Model.CreationDate" datetime="@Model.CreationDate">@Age.ToRelative(Model.CreationDate)</time>&#32;ago&nbsp;
                 @if (Model.LastEditDate.HasValue)
                 {
@@ -208,7 +209,8 @@
             @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", Model,
                new ViewDataDictionary()
                {
-                   { "ModeratorList", ViewBag.ModeratorList }
+                   { "ModeratorList", ViewBag.ModeratorList },
+                   { "Submission", ViewBag.Submission }
                })
         </div>
     </div>

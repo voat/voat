@@ -72,9 +72,7 @@
             @{
                 int currentPageNumber = Model.Submissions.PageIndex;
                 int counterCont = (currentPageNumber) * 25;
-
-                int counter = counterCont + 1;
-                string submissionClass = "";
+                int counter = 0;
             }
 
             @if (Model.Submissions.Count <= 0)
@@ -84,38 +82,7 @@
 
             @foreach (var submission in Model.Submissions)
             {
-                //type 2 = link
-                //type 1 = message
-                if (submission.Type == Voat.Domain.Models.SubmissionType.Link)
-                {
-                    submissionClass = "self";
-                }
-                else
-                {
-                    submissionClass = "";
-                }
-
-                var classEvenOrOdd = "";
-                if (counter % 2 == 0)
-                {
-                    //is even
-                    classEvenOrOdd = "even";
-                }
-                else
-                {
-                    //is odd
-                    classEvenOrOdd = "odd";
-                }
-
-                <div class="submission id-@submission.ID @classEvenOrOdd link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.UpCount" data-downs="@submission.DownCount">
-                    <p class="parent"></p>
-
-                    @Html.Partial("_VotingIconsSubmission", submission)
-                    @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
-
-                    <div class="child"></div>
-                    <div class="clearleft">@*IE6fix*@</div>
-                </div>
+                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission, new ViewDataDictionary() { { "CssClass", new string[] { counter % 2 == 0 ? "even" : "odd" } } })
                 counter++;
             }
         </div>

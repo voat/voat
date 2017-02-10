@@ -23,37 +23,40 @@
     string votingStatusClassUpArrow = "arrow-upvote";
     string votingStatusClassDownArrow = "arrow-downvote";
     string likesOrDislikesClass = "unvoted";
-
-    //LOGGED IN USERS
-    if (User.Identity.IsAuthenticated)
+    Submission submission = ViewBag.Submission;
+    if (submission == null || !submission.ArchiveDate.HasValue)
     {
-        if (Model.Vote.HasValue)
+        //LOGGED IN USERS
+        if (User.Identity.IsAuthenticated)
         {
-            switch (Model.Vote.Value)
+            if (Model.Vote.HasValue)
             {
-                case 1:
-                    votingStatusClassUpArrow = "arrow-upvoted";
-                    votingStatusClassDownArrow = "arrow-downvote";
-                    likesOrDislikesClass = "likes";
-                    break;
-                case -1:
-                    likesOrDislikesClass = "dislikes";
-                    votingStatusClassUpArrow = "arrow-upvote";
-                    votingStatusClassDownArrow = "arrow-downvoted";
-                    break;
+                switch (Model.Vote.Value)
+                {
+                    case 1:
+                        votingStatusClassUpArrow = "arrow-upvoted";
+                        votingStatusClassDownArrow = "arrow-downvote";
+                        likesOrDislikesClass = "likes";
+                        break;
+                    case -1:
+                        likesOrDislikesClass = "dislikes";
+                        votingStatusClassUpArrow = "arrow-upvote";
+                        votingStatusClassDownArrow = "arrow-downvoted";
+                        break;
+                }
+            }
+            <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
+                <div class="@votingStatusClassUpArrow login-required" onclick="voteComment(@Model.ID, 1);" role="button" aria-label="upvote" tabindex="0"></div>
+                <div class="@votingStatusClassDownArrow login-required" onclick="voteComment(@Model.ID, -1);" role="button" aria-label="downvote" tabindex="0"></div>
+            </div>
+            }
+            else
+            //GUESTS
+            {
+            <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
+                <div class="@votingStatusClassUpArrow login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0"></div>
+                <div class="@votingStatusClassDownArrow login-required" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
+            </div>
             }
         }
-        <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
-            <div class="@votingStatusClassUpArrow login-required" onclick="voteComment(@Model.ID, 1);" role="button" aria-label="upvote" tabindex="0"></div>
-            <div class="@votingStatusClassDownArrow login-required" onclick="voteComment(@Model.ID, -1);" role="button" aria-label="downvote" tabindex="0"></div>
-        </div>
     }
-    else
-    //GUESTS
-    {
-        <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
-            <div class="@votingStatusClassUpArrow login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0"></div>
-            <div class="@votingStatusClassDownArrow login-required" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
-        </div>
-    }
-}

@@ -303,6 +303,7 @@
     <Compile Include="Rules\Posting\EditCommentBannedDomainRule.cs" />
     <Compile Include="Rules\Posting\EditSubmissionBannedDomainRule.cs" />
     <Compile Include="Rules\Posting\EditSubmissionFilterRule.cs" />
+    <Compile Include="Rules\Posting\PostCommentArchiveRule.cs" />
     <Compile Include="Rules\Posting\PostCommentBannedRule.cs" />
     <Compile Include="Rules\Posting\PostCommentCCPRule.cs" />
     <Compile Include="Rules\Posting\PostCommentRule.cs" />
@@ -319,6 +320,7 @@
     <Compile Include="Rules\VoatRuleException.cs" />
     <Compile Include="Rules\VoatRulesEngine.cs" />
     <Compile Include="Configuration\Settings.cs" />
+    <Compile Include="Rules\Voting\ArchivedVoteRules.cs" />
     <Compile Include="Rules\Voting\DownVoteCommentAgeRule.cs" />
     <Compile Include="Rules\Voting\DownVoteCommentMeanieRule.cs" />
     <Compile Include="Rules\Voting\DownVoteRule.cs" />

@@ -12,16 +12,16 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class SubmissionVoteTracker
+    public partial class UserContribution
     {
         public int ID { get; set; }
-        public int SubmissionID { get; set; }
         public string UserName { get; set; }
+        public bool IsReceived { get; set; }
+        public int ContentType { get; set; }
         public int VoteStatus { get; set; }
-        public System.DateTime CreationDate { get; set; }
-        public string IPAddress { get; set; }
+        public int VoteCount { get; set; }
         public double VoteValue { get; set; }
-    
-        public virtual Submission Submission { get; set; }
+        public System.DateTime ValidThroughDate { get; set; }
+        public System.DateTime LastUpdateDate { get; set; }
     }
 }

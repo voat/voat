@@ -70,6 +70,8 @@
         <EntityTypeShape EntityType="Models.Filter" Width="1.5" PointX="15.375" PointY="0.75" />
         <EntityTypeShape EntityType="Models.RuleReport" Width="1.5" PointX="16.375" PointY="8.75" />
         <EntityTypeShape EntityType="Models.RuleSet" Width="1.5" PointX="10.375" PointY="16.75" />
+        <AssociationConnector Association="Models.FK_RuleReport_RuleSet" />
+        <EntityTypeShape EntityType="Models.UserContribution" Width="1.5" PointX="15.375" PointY="4.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

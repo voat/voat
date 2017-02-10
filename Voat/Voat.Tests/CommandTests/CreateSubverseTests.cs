@@ -68,7 +68,7 @@ namespace Voat.Tests.CommandTests
             var description = "Some Description";
             var cmd = new CreateSubverseCommand(name, title, description);
             var response = await cmd.Execute();
-            Assert.AreEqual(Status.Success, response.Status);
+            Assert.AreEqual(Status.Success, response.Status, response.Message);
 
             using (var db = new voatEntities())
             {

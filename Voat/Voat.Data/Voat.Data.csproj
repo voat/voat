@@ -185,6 +185,9 @@
     <Compile Include="Models\UserBlockedUser.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\UserContribution.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\UserPreference.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>

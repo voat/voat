@@ -136,5 +136,10 @@ namespace Voat.Domain.Models
         /// Marker for if current account owns this comment.
         /// </summary>
         public bool IsOwner { get; set; }
+
+        /// <summary>
+        /// Date Submission was archived
+        /// </summary>
+        public DateTime? ArchiveDate { get; set; }
     }
 }

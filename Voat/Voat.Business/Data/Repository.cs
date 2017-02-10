@@ -21,6 +21,7 @@ using Voat.Caching;
 using Dapper;
 using Voat.Configuration;
 
+
 namespace Voat.Data
 {
     public class Repository : IDisposable
@@ -66,7 +67,7 @@ namespace Voat.Data
         #endregion  
 
         #region Vote
-
+        [Authorize]
         public VoteResponse VoteComment(int commentID, int vote, string addressHash, bool revokeOnRevote = true)
         {
             DemandAuthentication();
@@ -107,9 +108,9 @@ namespace Voat.Data
                     //check existing vote
                     int existingVote = 0;
                     var existingVoteTracker = _db.CommentVoteTrackers.FirstOrDefault(x => x.CommentID == commentID && x.UserName == userName);
-                    if (existingVoteTracker != null && existingVoteTracker.VoteStatus.HasValue)
+                    if (existingVoteTracker != null)
                     {
-                        existingVote = existingVoteTracker.VoteStatus.Value;
+                        existingVote = existingVoteTracker.VoteStatus;
                     }
 
                     // do not execute voting, user has already up/down voted item and is submitting a vote that matches their existing vote
@@ -169,6 +170,7 @@ namespace Voat.Data
                                         CommentID = commentID,
                                         UserName = userName,
                                         VoteStatus = vote,
+                                        VoteValue = GetVoteValue(userName, comment.UserName, ContentType.Comment, comment.ID, vote), //TODO: Need to set this to zero for Anon, MinCCP subs, and Private subs
                                         IPAddress = addressHash,
                                         CreationDate = Repository.CurrentDate
                                     };
@@ -196,7 +198,6 @@ namespace Voat.Data
                                         comment.UpCount--;
 
                                         _db.CommentVoteTrackers.Remove(existingVoteTracker);
-
                                         _db.SaveChanges();
 
                                         response = VoteResponse.Successful(0, REVOKE_MSG);
@@ -215,6 +216,7 @@ namespace Voat.Data
                                         comment.DownCount++;
 
                                         existingVoteTracker.VoteStatus = vote;
+                                        existingVoteTracker.VoteValue = GetVoteValue(userName, comment.UserName, ContentType.Comment, comment.ID, vote);
                                         existingVoteTracker.CreationDate = CurrentDate;
                                         _db.SaveChanges();
 
@@ -253,6 +255,7 @@ namespace Voat.Data
                                         comment.DownCount--;
 
                                         existingVoteTracker.VoteStatus = vote;
+                                        existingVoteTracker.VoteValue = GetVoteValue(userName, comment.UserName, ContentType.Comment, comment.ID, vote);
                                         existingVoteTracker.CreationDate = CurrentDate;
 
                                         _db.SaveChanges();
@@ -302,9 +305,13 @@ namespace Voat.Data
                     if (submission.IsDeleted)
                     {
                         return VoteResponse.Ignored(0, "Deleted submissions cannot be voted");
-
                         //return VoteResponse.Ignored(0, "User is prevented from voting on own content");
                     }
+                    //if (submission.IsArchived)
+                    //{
+                    //    return VoteResponse.Ignored(0, "Archived submissions cannot be voted");
+                    //    //return VoteResponse.Ignored(0, "User is prevented from voting on own content");
+                    //}
 
                     //ignore votes if user owns it
                     if (String.Equals(submission.UserName, userName, StringComparison.InvariantCultureIgnoreCase))
@@ -315,9 +322,9 @@ namespace Voat.Data
                     //check existing vote
                     int existingVote = 0;
                     var existingVoteTracker = _db.SubmissionVoteTrackers.FirstOrDefault(x => x.SubmissionID == submissionID && x.UserName == userName);
-                    if (existingVoteTracker != null && existingVoteTracker.VoteStatus.HasValue)
+                    if (existingVoteTracker != null)
                     {
-                        existingVote = existingVoteTracker.VoteStatus.Value;
+                        existingVote = existingVoteTracker.VoteStatus;
                     }
 
                     // do not execute voting, user has already up/down voted item and is submitting a vote that matches their existing vote
@@ -379,6 +386,7 @@ namespace Voat.Data
                                         SubmissionID = submissionID,
                                         UserName = userName,
                                         VoteStatus = vote,
+                                        VoteValue = GetVoteValue(userName, submission.UserName, ContentType.Submission, submission.ID, vote), //TODO: Need to set this to zero for Anon, MinCCP subs, and Private subs
                                         IPAddress = addressHash,
                                         CreationDate = Repository.CurrentDate
                                     };
@@ -429,6 +437,7 @@ namespace Voat.Data
                                         Ranking.RerankSubmission(submission);
 
                                         existingVoteTracker.VoteStatus = vote;
+                                        existingVoteTracker.VoteValue = GetVoteValue(userName, submission.UserName, ContentType.Submission, submission.ID, vote);
                                         existingVoteTracker.CreationDate = CurrentDate;
 
                                         _db.SaveChanges();
@@ -477,6 +486,7 @@ namespace Voat.Data
                                         Ranking.RerankSubmission(submission);
 
                                         existingVoteTracker.VoteStatus = vote;
+                                        existingVoteTracker.VoteValue = GetVoteValue(userName, submission.UserName, ContentType.Submission, submission.ID, vote);
                                         existingVoteTracker.CreationDate = CurrentDate;
 
                                         _db.SaveChanges();
@@ -497,6 +507,34 @@ namespace Voat.Data
             }
         }
 
+        private int GetVoteValue(string sourceUser, string targetUser, ContentType contentType, int id, int voteStatus)
+        {
+            var q = new DapperQuery();
+            q.Select = @"sub.IsPrivate, s.IsAnonymized, sub.MinCCPForDownvote FROM Subverse sub WITH (NOLOCK)
+                         INNER JOIN Submission s WITH (NOLOCK) ON s.Subverse = sub.Name";
+
+            switch (contentType)
+            {
+                case ContentType.Comment:
+                    q.Select += " INNER JOIN Comment c WITH (NOLOCK) ON c.SubmissionID = s.ID";
+                    q.Where = "c.ID = @ID";
+                    break;
+                case ContentType.Submission:
+                    q.Where = "s.ID = @ID";
+                    break;
+            }
+
+            var record = _db.Database.Connection.QueryFirst(q.ToString(), new { ID = id });
+
+            if (record.IsPrivate || record.IsAnonymized || record.MinCCPForDownvote > 0)
+            {
+                return 0;
+            }
+            else
+            {
+                return voteStatus;
+            }
+        }
         #endregion Vote
 
         #region Subverse
@@ -725,7 +763,7 @@ namespace Voat.Data
             var startDate = CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
             var data = (from submission in _db.Submissions
                         join subverse in _db.Subverses on submission.Subverse equals subverse.Name
-                        where !submission.IsArchived && !submission.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && submission.CreationDate >= startDate && submission.CreationDate <= CurrentDate
+                        where submission.ArchiveDate == null && !submission.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && submission.CreationDate >= startDate && submission.CreationDate <= CurrentDate
                         where !(from bu in _db.BannedUsers select bu.UserName).Contains(submission.UserName)
                         where !subverse.IsAdminDisabled.Value
 
@@ -900,7 +938,7 @@ namespace Voat.Data
                 //Match Aggregate Subs
                 case AGGREGATE_SUBVERSE.FRONT:
                     query.Append(x => x.Select, "INNER JOIN SubverseSubscription ss WITH (NOLOCK) ON s.Subverse = ss.Subverse");
-                    query.Append(x => x.Where, "s.IsArchived = 0 AND s.IsDeleted = 0 AND ss.UserName = @UserName");
+                    query.Append(x => x.Where, "s.ArchiveDate IS NULL AND s.IsDeleted = 0 AND ss.UserName = @UserName");
 
                     //query = (from x in _db.Submissions
                     //         join subscribed in _db.SubverseSubscriptions on x.Subverse equals subscribed.Subverse
@@ -959,7 +997,7 @@ namespace Voat.Data
                     //2. Don't show private subs
                     //3. Don't show NSFW subs if nsfw isn't enabled in profile, if they are logged in
                     //4. Don't show blocked subs if logged in // not implemented
-                    query.Where = "sub.MinCCPForDownvote = 0 AND sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0 AND s.IsArchived = 0";
+                    query.Where = "sub.MinCCPForDownvote = 0 AND sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0 AND s.ArchiveDate IS NULL";
                     if (!nsfw)
                     {
                         query.Where += " AND sub.IsAdult = 0 AND s.IsAdult = 0";
@@ -1596,6 +1634,7 @@ namespace Voat.Data
                                     :
                                     "[" + submission.Url + "](" + submission.Url + ")"
                                     )
+                       
                     };
                     var cmd = new SendMessageCommand(message, isAnonymized: submission.IsAnonymized);
                     cmd.Execute();
@@ -1998,7 +2037,7 @@ namespace Voat.Data
             context.SubmissionID = submissionID;
             context.PropertyBag.CommentContent = commentContent;
 
-            var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.PostComment);
+            var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.Post, RuleScope.PostComment);
 
             if (outcome.IsAllowed)
             {
@@ -3273,10 +3312,10 @@ namespace Voat.Data
             userInfo.UserName = userRecord.UserName;
             userInfo.RegistrationDate = userRecord.RegistrationDateTime;
 
-            Task<Score>[] tasks = { Task<Score>.Factory.StartNew(() => UserContributionPoints(userName, ContentType.Comment)),
-                                    Task<Score>.Factory.StartNew(() => UserContributionPoints(userName, ContentType.Submission)),
-                                    Task<Score>.Factory.StartNew(() => UserVotingBehavior(userName, ContentType.Submission)),
-                                    Task<Score>.Factory.StartNew(() => UserVotingBehavior(userName, ContentType.Comment)),
+            Task<Score>[] tasks = { Task<Score>.Factory.StartNew(() => UserContributionPoints(userName, ContentType.Comment, null, true)),
+                                    Task<Score>.Factory.StartNew(() => UserContributionPoints(userName, ContentType.Submission, null, true)),
+                                    Task<Score>.Factory.StartNew(() => UserContributionPoints(userName, ContentType.Submission, null, false)),
+                                    Task<Score>.Factory.StartNew(() => UserContributionPoints(userName, ContentType.Comment, null, false)),
             };
 
             var userPreferences = await GetUserPreferences(userName).ConfigureAwait(false);
@@ -3352,24 +3391,24 @@ namespace Voat.Data
             return result;
         }
 
-        public Score UserVotingBehavior(string userName, ContentType type = ContentType.Comment | ContentType.Submission, TimeSpan? span = null)
+        public Score UserVotingBehavior(string userName, ContentType contentType = ContentType.Comment | ContentType.Submission, TimeSpan? timeSpan = null)
         {
-            Score vb = new Score();
+            Score vb = UserContributionPoints(userName, contentType, null, false, timeSpan);
 
-            if ((type & ContentType.Comment) > 0)
-            {
-                var c = GetUserVotingBehavior(userName, ContentType.Comment, span);
-                vb.Combine(c);
-            }
-            if ((type & ContentType.Submission) > 0)
-            {
-                var c = GetUserVotingBehavior(userName, ContentType.Submission, span);
-                vb.Combine(c);
-            }
+            //if ((type & ContentType.Comment) > 0)
+            //{
+            //    var c = GetUserVotingBehavior(userName, ContentType.Comment, span);
+            //    vb.Combine(c);
+            //}
+            //if ((type & ContentType.Submission) > 0)
+            //{
+            //    var c = GetUserVotingBehavior(userName, ContentType.Submission, span);
+            //    vb.Combine(c);
+            //}
 
             return vb;
         }
-
+        [Obsolete("User UserContributionPoints instead when implemented", true)]
         private Score GetUserVotingBehavior(string userName, ContentType type, TimeSpan? span = null)
         {
             var score = new Score();
@@ -3386,7 +3425,7 @@ namespace Voat.Data
                                     @"SELECT x.VoteStatus, 'Count' = ABS(ISNULL(SUM(x.VoteStatus), 0))
                                 FROM {0} x WITH (NOLOCK)
                                 WHERE x.UserName = @UserName
-                                AND(x.CreationDate >= @CompareDate OR @CompareDate IS NULL)
+                                AND (x.CreationDate >= @CompareDate OR @CompareDate IS NULL)
                                 GROUP BY x.VoteStatus", type == ContentType.Comment ? "CommentVoteTracker" : "SubmissionVoteTracker");
                 cmd.CommandType = System.Data.CommandType.Text;
 
@@ -3509,127 +3548,192 @@ namespace Voat.Data
 
             return count;
         }
-
-        public Score UserContributionPoints(string userName, ContentType type, string subverse = null)
+        public Score UserContributionPoints(string userName, ContentType contentType, string subverse = null, bool isReceived = true, TimeSpan? timeSpan = null)
         {
+
+            Func<IEnumerable<dynamic>, Score> processRecords = new Func<IEnumerable<dynamic>, Score>(records => {
+                Score score = new Score();
+                if (records != null && records.Any())
+                {
+                    foreach (var record in records)
+                    {
+                        if (record.VoteStatus == 1)
+                        {
+                            score.UpCount = isReceived ? (int)record.VoteValue : (int)record.VoteCount;
+                        }
+                        else if (record.VoteStatus == -1)
+                        {
+                            score.DownCount = isReceived ? (int)record.VoteValue : (int)record.VoteCount;
+                        }
+                    }
+                }
+                return score;
+            });
+
+            var groupingClause = @"SELECT UserName, IsReceived, ContentType, VoteStatus, VoteCount = SUM(VoteCount), VoteValue = SUM(VoteValue) 
+                        FROM (	
+	                        {0}
+                        ) AS a
+                        GROUP BY a.UserName, a.IsReceived, a.ContentType, a.VoteStatus";
+            var archivedPointsClause = @"SELECT UserName, IsReceived, ContentType, VoteStatus, VoteCount, VoteValue
+	                        FROM UserContribution AS uc WITH (NOLOCK)
+	                        WHERE uc.UserName = @UserName AND uc.IsReceived = @IsReceived AND uc.ContentType = @ContentType
+	                        UNION ALL
+                    ";
+            var alias = "";
+            DateTime? dateRange = timeSpan.HasValue ? CurrentDate.Subtract(timeSpan.Value) : (DateTime?)null;
             Score s = new Score();
             using (var db = new voatEntities())
             {
-                if ((type & ContentType.Comment) > 0)
+                var contentTypes = contentType.GetEnumFlags();
+                foreach (var contentTypeToQuery in contentTypes)
                 {
-                    var cmd = db.Database.Connection.CreateCommand();
-                    cmd.CommandText = @"SELECT 'UpCount' = CAST(ABS(ISNULL(SUM(c.UpCount),0)) AS INT), 'DownCount' = CAST(ABS(ISNULL(SUM(c.DownCount),0)) AS INT) FROM Comment c WITH (NOLOCK)
-                                    INNER JOIN Submission s WITH (NOLOCK) ON(c.SubmissionID = s.ID)
-                                    WHERE c.UserName = @UserName
-                                    AND (s.Subverse = @Subverse OR @Subverse IS NULL)
-                                    AND c.IsAnonymized = 0"; //this prevents anon votes from showing up in stats
-                    cmd.CommandType = System.Data.CommandType.Text;
+                    var q = new DapperQuery();
 
-                    var param = cmd.CreateParameter();
-                    param.ParameterName = "UserName";
-                    param.DbType = System.Data.DbType.String;
-                    param.Value = userName;
-                    cmd.Parameters.Add(param);
-
-                    param = cmd.CreateParameter();
-                    param.ParameterName = "Subverse";
-                    param.DbType = System.Data.DbType.String;
-                    param.Value = String.IsNullOrEmpty(subverse) ? (object)DBNull.Value : subverse;
-                    cmd.Parameters.Add(param);
-
-                    if (cmd.Connection.State != System.Data.ConnectionState.Open)
+                    switch (contentTypeToQuery)
                     {
-                        cmd.Connection.Open();
+                        case ContentType.Comment:
+
+                            //basic point calc query
+                            q.Select = $@"SELECT UserName = @UserName, IsReceived = @IsReceived, ContentType = @ContentType, VoteStatus = v.VoteStatus, VoteCount = 1, VoteValue = ABS(v.VoteValue)
+	                                FROM CommentVoteTracker v WITH (NOLOCK) 
+	                                INNER JOIN Comment c WITH (NOLOCK) ON c.ID = v.CommentID
+	                                INNER JOIN Submission s ON s.ID = c.SubmissionID";
+
+                            //This controls whether we search for given or received votes
+                            alias = (isReceived ? "c" : "v");
+                            q.Append(x => x.Where, $"{alias}.UserName = @UserName");
+
+                            break;
+                        case ContentType.Submission:
+                            //basic point calc query
+                            q.Select = $@"SELECT UserName = @UserName, IsReceived = @IsReceived, ContentType = @ContentType, VoteStatus = v.VoteStatus, VoteCount = 1, VoteValue = ABS(v.VoteValue)
+	                        FROM SubmissionVoteTracker v WITH (NOLOCK) 
+	                        INNER JOIN Submission s ON s.ID = v.SubmissionID";
+
+                            //This controls whether we search for given or received votes
+                            alias = (isReceived ? "s" : "v");
+                            q.Append(x => x.Where, $"{alias}.UserName = @UserName");
+
+                            break;
+                        default:
+                            throw new NotImplementedException($"Type {contentType.ToString()} is not supported");
                     }
-                    using (var reader = cmd.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+
+                    //if subverse/daterange calc we do not use archived table
+                    if (!String.IsNullOrEmpty(subverse) || dateRange.HasValue)
                     {
-                        if (reader.Read())
+                        if (!String.IsNullOrEmpty(subverse))
                         {
-                            s.Combine(new Score() { UpCount = (int)reader["UpCount"], DownCount = (int)reader["DownCount"] });
+                            q.Append(x => x.Where, "s.Subverse = @Subverse");
+                        }
+                        if (dateRange.HasValue)
+                        {
+                            q.Append(x => x.Where, "v.CreationDate >= @DateRange");
                         }
                     }
-                }
-
-                if ((type & ContentType.Submission) > 0)
-                {
-                    var cmd = db.Database.Connection.CreateCommand();
-                    cmd.CommandText = @"SELECT 
-                                    'UpCount' = CAST(ABS(ISNULL(SUM(s.UpCount), 0)) AS INT), 
-                                    'DownCount' = CAST(ABS(ISNULL(SUM(s.DownCount), 0)) AS INT) 
-                                    FROM Submission s WITH (NOLOCK)
-                                    WHERE s.UserName = @UserName
-                                    AND (s.Subverse = @Subverse OR @Subverse IS NULL)
-                                    AND s.IsAnonymized = 0";
-
-                    var param = cmd.CreateParameter();
-                    param.ParameterName = "UserName";
-                    param.DbType = System.Data.DbType.String;
-                    param.Value = userName;
-                    cmd.Parameters.Add(param);
-
-                    param = cmd.CreateParameter();
-                    param.ParameterName = "Subverse";
-                    param.DbType = System.Data.DbType.String;
-                    param.Value = String.IsNullOrEmpty(subverse) ? (object)DBNull.Value : subverse;
-                    cmd.Parameters.Add(param);
-
-                    if (cmd.Connection.State != System.Data.ConnectionState.Open)
+                    else
                     {
-                        cmd.Connection.Open();
+                        q.Select = archivedPointsClause + q.Select;
+                        q.Append(x => x.Where, "s.ArchiveDate IS NULL");
                     }
-                    using (var reader = cmd.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+
+                    string statement = String.Format(groupingClause, q.ToString());
+                    System.Diagnostics.Debug.Print("Query Output");
+                    System.Diagnostics.Debug.Print(statement);
+                    var records = db.Database.Connection.Query(statement, new
                     {
-                        if (reader.Read())
-                        {
-                            s.Combine(new Score() { UpCount = (int)reader["UpCount"], DownCount = (int)reader["DownCount"] });
-                        }
-                    }
+                        UserName = userName,
+                        IsReceived = isReceived,
+                        Subverse = subverse,
+                        ContentType = (int)contentType,
+                        DateRange = dateRange
+                    });
+                    Score result = processRecords(records);
+                    s.Combine(result);
                 }
             }
             return s;
         }
 
-        public Score UserContributionPointsEF(string userName, ContentType type, string subverse = null)
-        {
-            Score s = new Score();
+        //public Score UserContributionPoints_OLD(string userName, ContentType type, string subverse = null)
+        //{
+        //    Score s = new Score();
+        //    using (var db = new voatEntities())
+        //    {
+        //        if ((type & ContentType.Comment) > 0)
+        //        {
+        //            var cmd = db.Database.Connection.CreateCommand();
+        //            cmd.CommandText = @"SELECT 'UpCount' = CAST(ABS(ISNULL(SUM(c.UpCount),0)) AS INT), 'DownCount' = CAST(ABS(ISNULL(SUM(c.DownCount),0)) AS INT) FROM Comment c WITH (NOLOCK)
+        //                            INNER JOIN Submission s WITH (NOLOCK) ON(c.SubmissionID = s.ID)
+        //                            WHERE c.UserName = @UserName
+        //                            AND (s.Subverse = @Subverse OR @Subverse IS NULL)
+        //                            AND c.IsAnonymized = 0"; //this prevents anon votes from showing up in stats
+        //            cmd.CommandType = System.Data.CommandType.Text;
 
-            if ((type & ContentType.Comment) > 0)
-            {
-                var totals = (from x in _db.Comments
-                              where x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                                 && (x.Submission.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) || subverse == null)
-                              group x by x.UserName into y
-                              select new
-                              {
-                                  up = y.Sum(ups => ups.UpCount),
-                                  down = y.Sum(downs => downs.DownCount)
-                              }).FirstOrDefault();
+        //            var param = cmd.CreateParameter();
+        //            param.ParameterName = "UserName";
+        //            param.DbType = System.Data.DbType.String;
+        //            param.Value = userName;
+        //            cmd.Parameters.Add(param);
 
-                if (totals != null)
-                {
-                    s.Combine(new Score() { UpCount = (int)totals.up, DownCount = (int)totals.down });
-                }
-            }
+        //            param = cmd.CreateParameter();
+        //            param.ParameterName = "Subverse";
+        //            param.DbType = System.Data.DbType.String;
+        //            param.Value = String.IsNullOrEmpty(subverse) ? (object)DBNull.Value : subverse;
+        //            cmd.Parameters.Add(param);
 
-            if ((type & ContentType.Submission) > 0)
-            {
-                var totals = (from x in _db.Submissions
-                              where x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                                 && (x.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) || subverse == null)
-                              group x by x.UserName into y
-                              select new
-                              {
-                                  up = y.Sum(ups => ups.UpCount),
-                                  down = y.Sum(downs => downs.DownCount)
-                              }).FirstOrDefault();
-                if (totals != null)
-                {
-                    s.Combine(new Score() { UpCount = (int)totals.up, DownCount = (int)totals.down });
-                }
-            }
+        //            if (cmd.Connection.State != System.Data.ConnectionState.Open)
+        //            {
+        //                cmd.Connection.Open();
+        //            }
+        //            using (var reader = cmd.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+        //            {
+        //                if (reader.Read())
+        //                {
+        //                    s.Combine(new Score() { UpCount = (int)reader["UpCount"], DownCount = (int)reader["DownCount"] });
+        //                }
+        //            }
+        //        }
 
-            return s;
-        }
+        //        if ((type & ContentType.Submission) > 0)
+        //        {
+        //            var cmd = db.Database.Connection.CreateCommand();
+        //            cmd.CommandText = @"SELECT 
+        //                            'UpCount' = CAST(ABS(ISNULL(SUM(s.UpCount), 0)) AS INT), 
+        //                            'DownCount' = CAST(ABS(ISNULL(SUM(s.DownCount), 0)) AS INT) 
+        //                            FROM Submission s WITH (NOLOCK)
+        //                            WHERE s.UserName = @UserName
+        //                            AND (s.Subverse = @Subverse OR @Subverse IS NULL)
+        //                            AND s.IsAnonymized = 0";
+
+        //            var param = cmd.CreateParameter();
+        //            param.ParameterName = "UserName";
+        //            param.DbType = System.Data.DbType.String;
+        //            param.Value = userName;
+        //            cmd.Parameters.Add(param);
+
+        //            param = cmd.CreateParameter();
+        //            param.ParameterName = "Subverse";
+        //            param.DbType = System.Data.DbType.String;
+        //            param.Value = String.IsNullOrEmpty(subverse) ? (object)DBNull.Value : subverse;
+        //            cmd.Parameters.Add(param);
+
+        //            if (cmd.Connection.State != System.Data.ConnectionState.Open)
+        //            {
+        //                cmd.Connection.Open();
+        //            }
+        //            using (var reader = cmd.ExecuteReader(System.Data.CommandBehavior.CloseConnection))
+        //            {
+        //                if (reader.Read())
+        //                {
+        //                    s.Combine(new Score() { UpCount = (int)reader["UpCount"], DownCount = (int)reader["DownCount"] });
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return s;
+        //}
 
         public async Task<CommandResponse> SubscribeUser(DomainType domainType, SubscriptionAction action, string subscriptionName)
         {
@@ -4371,7 +4475,7 @@ namespace Voat.Data
         {
             var q = new DapperQuery();
             q.Select = "TOP 1 ISNULL(Rank, 0) FROM Submission WITH (NOLOCK)";
-            q.Where = "Subverse = @Subverse AND IsArchived = 0";
+            q.Where = "Subverse = @Subverse AND ArchiveDate IS NULL";
             q.OrderBy = "Rank DESC";
             q.Parameters = new { Subverse = subverse }.ToDynamicParameters();
 
@@ -4389,7 +4493,7 @@ namespace Voat.Data
             //}
         }
 
-        public int VoteCount(string sourceUser, string destinationUser, ContentType contentType, Vote voteType, TimeSpan timeSpan)
+        public int VoteCount(string sourceUser, string targetUser, ContentType contentType, Vote voteType, TimeSpan timeSpan)
         {
             var sum = 0;
             var startDate = CurrentDate.Subtract(timeSpan);
@@ -4401,7 +4505,7 @@ namespace Voat.Data
                              where
                                  x.UserName.Equals(sourceUser, StringComparison.OrdinalIgnoreCase)
                                  &&
-                                 c.UserName.Equals(destinationUser, StringComparison.OrdinalIgnoreCase)
+                                 c.UserName.Equals(targetUser, StringComparison.OrdinalIgnoreCase)
                                  &&
                                  x.CreationDate > startDate
                                  &&
@@ -4416,7 +4520,7 @@ namespace Voat.Data
                              where
                                  x.UserName.Equals(sourceUser, StringComparison.OrdinalIgnoreCase)
                                  &&
-                                 s.UserName.Equals(destinationUser, StringComparison.OrdinalIgnoreCase)
+                                 s.UserName.Equals(targetUser, StringComparison.OrdinalIgnoreCase)
                                  &&
                                  x.CreationDate > startDate
                                  &&

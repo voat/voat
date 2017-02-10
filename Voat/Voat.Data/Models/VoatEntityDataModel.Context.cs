@@ -68,6 +68,7 @@ namespace Voat.Data.Models
         public virtual DbSet<Filter> Filters { get; set; }
         public virtual DbSet<RuleReport> RuleReports { get; set; }
         public virtual DbSet<RuleSet> RuleSets { get; set; }
+        public virtual DbSet<UserContribution> UserContributions { get; set; }
     
         public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
         {

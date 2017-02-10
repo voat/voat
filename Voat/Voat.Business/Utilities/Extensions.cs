@@ -6,6 +6,29 @@ namespace Voat
 {
     public static class Extensions
     {
+        //I don't like this
+        public static IEnumerable<T> GetEnumFlags<T>(this T value) where T : struct, IConvertible
+        {
+
+            var type = typeof(T);
+            if (!type.IsEnum)
+            {
+                throw new ArgumentException("T must be an enumerated type");
+            }
+
+            List<T> list = new List<T>();
+            var vals = Enum.GetValues(type);
+            int flag = (int)Enum.Parse(type, value.ToString());
+            foreach (T v in vals)
+            {
+                int i = 0;
+                if (((int)Enum.Parse(type, v.ToString()) & flag) > 0)
+                {
+                    list.Add(v);
+                }
+            }
+            return list;
+        }
 
         public static T EnsureRange<T>(this T value, T low, T high) where T : IComparable
         {

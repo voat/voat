@@ -24,5 +24,7 @@ namespace Voat.Data.Models
         public int RuleSetID { get; set; }
         public string ReviewedBy { get; set; }
         public Nullable<System.DateTime> ReviewedDate { get; set; }
+    
+        public virtual RuleSet RuleSet { get; set; }
     }
 }

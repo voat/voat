@@ -639,7 +639,7 @@ function replyToCommentNotification(commentId, submissionId) {
 function getErrorObject(arguments) {
     var request = arguments[2];
     if (request.responseJSON) {
-        if (!request.responseJSON.success) {
+        if (request.responseJSON.success === false) {
             return request.responseJSON;
         }
     }

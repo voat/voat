@@ -29,13 +29,6 @@ namespace Voat
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.LowercaseUrls = true;
 
-            //// /dashboard
-            //routes.MapRoute(
-            //    name: "dashboard",
-            //    url: "dashboard",
-            //    defaults: new { controller = "Management", action = "Dashboard" }
-            //);
-
             // /rss
             routes.MapRoute(
                 name: "rss",
@@ -63,13 +56,6 @@ namespace Voat
                 url: "randomnsfw/",
                 defaults: new { controller = "Subverses", action = "RandomNsfw" }
             );
-
-            // /v2, disabled until further notice
-            //routes.MapRoute(
-            //    name: "v2",
-            //    url: "v2",
-            //    defaults: new { controller = "Home", action = "IndexV2" }
-            //);
 
             // /set/setId
             routes.MapRoute(

@@ -94,7 +94,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Utility")]
         public void Age_1_5years()
         {
-            string result = Age.ToRelative(TimeSpan.FromDays(18 * 30));
+            string result = Age.ToRelative(TimeSpan.FromDays(18 * 31));
             Assert.AreEqual(String.Format("{0} years", 1.5), result, "Submission age was not calculated.");
         }
 

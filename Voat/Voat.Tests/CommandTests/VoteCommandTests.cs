@@ -50,7 +50,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CommentVoteCommand(1, -1, IpHash.CreateHash("127.0.0.1"));
 
             var c = cmd.Execute().Result;
-            Assert.IsTrue(c.Success);
+            Assert.IsTrue(c.Success, c.Message);
             Assert.IsNotNull(c.Response);
 
             //verify in db

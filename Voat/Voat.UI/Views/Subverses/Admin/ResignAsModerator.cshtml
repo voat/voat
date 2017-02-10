@@ -39,14 +39,14 @@
             </dd>
         </dl>
 
-        @using (Html.BeginForm("ResignAsModerator", "Subverses", FormMethod.Post))
+        @using (Html.BeginForm("resignAsModerator", "SubverseModeration", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
 
             <br />
             <input type="submit" value="Resign" class="btn-whoaverse-medium" />
             <br /><br />
-            @Html.ActionLink("Back to subverse frontpage", "Index", new { subversetoshow = Model.Subverse })
+            @Html.ActionLink("Back to subverse frontpage", "SubverseIndex", "Subverses", new { subverse = Model.Subverse }, null)
         }
     </div>
 </div>

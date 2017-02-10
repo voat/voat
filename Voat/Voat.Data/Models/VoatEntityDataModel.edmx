@@ -153,10 +153,11 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CommentID" Type="int" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
-          <Property Name="VoteStatus" Type="int" />
-          <Property Name="CreationDate" Type="datetime" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="VoteStatus" Type="int" Nullable="false" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
           <Property Name="IPAddress" Type="nvarchar" MaxLength="90" />
+          <Property Name="VoteValue" Type="float" Nullable="false" />
         </EntityType>
         <EntityType Name="DefaultSubverse">
           <Key>
@@ -262,7 +263,7 @@
           <Property Name="Subverse" Type="nvarchar" MaxLength="50" />
           <Property Name="ContentType" Type="tinyint" />
           <Property Name="SortOrder" Type="int" />
-          <Property Name="Name" Type="nvarchar" MaxLength="100" />
+          <Property Name="Name" Type="nvarchar" MaxLength="200" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="1000" />
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
@@ -290,7 +291,6 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IsArchived" Type="bit" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Content" Type="nvarchar(max)" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
@@ -311,6 +311,7 @@
           <Property Name="Url" Type="nvarchar" MaxLength="3000" />
           <Property Name="FormattedContent" Type="nvarchar(max)" />
           <Property Name="IsAdult" Type="bit" Nullable="false" />
+          <Property Name="ArchiveDate" Type="smalldatetime" />
         </EntityType>
         <EntityType Name="SubmissionRemovalLog">
           <Key>
@@ -336,10 +337,11 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="SubmissionID" Type="int" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
-          <Property Name="VoteStatus" Type="int" />
-          <Property Name="CreationDate" Type="datetime" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="VoteStatus" Type="int" Nullable="false" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
           <Property Name="IPAddress" Type="nvarchar" MaxLength="90" />
+          <Property Name="VoteValue" Type="float" Nullable="false" />
         </EntityType>
         <EntityType Name="Subverse">
           <Key>
@@ -440,6 +442,20 @@
           <Property Name="BlockUser" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserContribution">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="IsReceived" Type="bit" Nullable="false" />
+          <Property Name="ContentType" Type="int" Nullable="false" />
+          <Property Name="VoteStatus" Type="int" Nullable="false" />
+          <Property Name="VoteCount" Type="int" Nullable="false" />
+          <Property Name="VoteValue" Type="float" Nullable="false" />
+          <Property Name="ValidThroughDate" Type="datetime" Nullable="false" />
+          <Property Name="LastUpdateDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="UserPreference">
           <Key>
@@ -626,6 +642,18 @@
             </Principal>
             <Dependent Role="Submission">
               <PropertyRef Name="Subverse" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RuleReport_RuleSet">
+          <End Role="RuleSet" Type="Self.RuleSet" Multiplicity="1" />
+          <End Role="RuleReport" Type="Self.RuleReport" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RuleSet">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RuleReport">
+              <PropertyRef Name="RuleSetID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -876,6 +904,7 @@
           <EntitySet Name="UserBadge" EntityType="Self.UserBadge" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserBlockedSubverse" EntityType="Self.UserBlockedSubverse" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserBlockedUser" EntityType="Self.UserBlockedUser" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserContribution" EntityType="Self.UserContribution" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserPreference" EntityType="Self.UserPreference" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserSet" EntityType="Self.UserSet" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserSetList" EntityType="Self.UserSetList" Schema="dbo" store:Type="Tables" />
@@ -917,6 +946,10 @@
           <AssociationSet Name="FK_Messages_Subverses" Association="Self.FK_Messages_Subverses">
             <End Role="Subverse" EntitySet="Subverse" />
             <End Role="Submission" EntitySet="Submission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RuleReport_RuleSet" Association="Self.FK_RuleReport_RuleSet">
+            <End Role="RuleSet" EntitySet="RuleSet" />
+            <End Role="RuleReport" EntitySet="RuleReport" />
           </AssociationSet>
           <AssociationSet Name="FK_Savingtracker_Messages" Association="Self.FK_Savingtracker_Messages">
             <End Role="Submission" EntitySet="Submission" />
@@ -1061,11 +1094,12 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CommentID" Type="Int32" Nullable="false" />
-          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="VoteStatus" Type="Int32" />
-          <Property Name="CreationDate" Type="DateTime" Precision="3" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="VoteStatus" Type="Int32" Nullable="false" />
+          <Property Name="CreationDate" Type="DateTime" Precision="3" Nullable="false" />
           <Property Name="IPAddress" Type="String" MaxLength="90" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Comment" Relationship="Self.FK_Commentvotingtracker_Comments" FromRole="CommentVoteTracker" ToRole="Comment" />
+          <Property Name="VoteValue" Type="Double" Nullable="false" />
         </EntityType>
         <EntityType Name="DefaultSubverse">
           <Key>
@@ -1121,7 +1155,6 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="IsArchived" Type="Boolean" Nullable="false" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Type" Type="Int32" Nullable="false" />
@@ -1149,6 +1182,7 @@
           <Property Name="Url" Type="String" MaxLength="3000" FixedLength="false" Unicode="true" />
           <Property Name="FormattedContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="IsAdult" Type="Boolean" Nullable="false" />
+          <Property Name="ArchiveDate" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="SubmissionRemovalLog">
           <Key>
@@ -1176,11 +1210,12 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="SubmissionID" Type="Int32" Nullable="false" />
-          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="VoteStatus" Type="Int32" />
-          <Property Name="CreationDate" Type="DateTime" Precision="3" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="VoteStatus" Type="Int32" Nullable="false" />
+          <Property Name="CreationDate" Type="DateTime" Precision="3" Nullable="false" />
           <Property Name="IPAddress" Type="String" MaxLength="90" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Submission" Relationship="Self.FK_Votingtracker_Messages" FromRole="SubmissionVoteTracker" ToRole="Submission" />
+          <Property Name="VoteValue" Type="Double" Nullable="false" />
         </EntityType>
         <EntityType Name="Subverse">
           <Key>
@@ -1799,6 +1834,11 @@
           <EntitySet Name="Filters" EntityType="Models.Filter" />
           <EntitySet Name="RuleReports" EntityType="Models.RuleReport" />
           <EntitySet Name="RuleSets" EntityType="Models.RuleSet" />
+          <AssociationSet Name="FK_RuleReport_RuleSet" Association="Models.FK_RuleReport_RuleSet">
+            <End Role="RuleSet" EntitySet="RuleSets" />
+            <End Role="RuleReport" EntitySet="RuleReports" />
+          </AssociationSet>
+          <EntitySet Name="UserContributions" EntityType="Models.UserContribution" />
         </EntityContainer>
         <ComplexType Name="usp_CommentTree_Result">
           <Property Type="Int32" Name="ChildCount" Nullable="true" />
@@ -2009,6 +2049,7 @@
           <Property Name="RuleSetID" Type="Int32" Nullable="false" />
           <Property Name="ReviewedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="ReviewedDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="RuleSet" Relationship="Models.FK_RuleReport_RuleSet" FromRole="RuleReport" ToRole="RuleSet" />
         </EntityType>
         <EntityType Name="RuleSet">
           <Key>
@@ -2019,10 +2060,37 @@
           <Property Name="Subverse" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ContentType" Type="Byte" />
           <Property Name="SortOrder" Type="Int32" />
-          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
           <Property Name="CreatedBy" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="RuleReports" Relationship="Models.FK_RuleReport_RuleSet" FromRole="RuleSet" ToRole="RuleReport" />
+        </EntityType>
+        <Association Name="FK_RuleReport_RuleSet">
+          <End Type="Models.RuleSet" Role="RuleSet" Multiplicity="1" />
+          <End Type="Models.RuleReport" Role="RuleReport" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RuleSet">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RuleReport">
+              <PropertyRef Name="RuleSetID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="UserContribution">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="IsReceived" Type="Boolean" Nullable="false" />
+          <Property Name="ContentType" Type="Int32" Nullable="false" />
+          <Property Name="VoteStatus" Type="Int32" Nullable="false" />
+          <Property Name="VoteCount" Type="Int32" Nullable="false" />
+          <Property Name="VoteValue" Type="Double" Nullable="false" />
+          <Property Name="ValidThroughDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastUpdateDate" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -2104,6 +2172,7 @@
           <EntitySetMapping Name="CommentVoteTrackers">
             <EntityTypeMapping TypeName="Models.CommentVoteTracker">
               <MappingFragment StoreEntitySet="CommentVoteTracker">
+                <ScalarProperty Name="VoteValue" ColumnName="VoteValue" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="CommentID" ColumnName="CommentID" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
@@ -2165,13 +2234,13 @@
           <EntitySetMapping Name="Submissions">
             <EntityTypeMapping TypeName="Models.Submission">
               <MappingFragment StoreEntitySet="Submission">
+                <ScalarProperty Name="ArchiveDate" ColumnName="ArchiveDate" />
                 <ScalarProperty Name="IsAdult" ColumnName="IsAdult" />
                 <ScalarProperty Name="FormattedContent" ColumnName="FormattedContent" />
                 <ScalarProperty Name="Url" ColumnName="Url" />
                 <ScalarProperty Name="RelativeRank" ColumnName="RelativeRank" />
                 <ScalarProperty Name="Content" ColumnName="Content" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="IsArchived" ColumnName="IsArchived" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
                 <ScalarProperty Name="Type" ColumnName="Type" />
@@ -2213,6 +2282,7 @@
           <EntitySetMapping Name="SubmissionVoteTrackers">
             <EntityTypeMapping TypeName="Models.SubmissionVoteTracker">
               <MappingFragment StoreEntitySet="SubmissionVoteTracker">
+                <ScalarProperty Name="VoteValue" ColumnName="VoteValue" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="SubmissionID" ColumnName="SubmissionID" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
@@ -2592,6 +2662,21 @@
                 <ScalarProperty Name="ContentType" ColumnName="ContentType" />
                 <ScalarProperty Name="Subverse" ColumnName="Subverse" />
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserContributions">
+            <EntityTypeMapping TypeName="Models.UserContribution">
+              <MappingFragment StoreEntitySet="UserContribution">
+                <ScalarProperty Name="LastUpdateDate" ColumnName="LastUpdateDate" />
+                <ScalarProperty Name="ValidThroughDate" ColumnName="ValidThroughDate" />
+                <ScalarProperty Name="VoteValue" ColumnName="VoteValue" />
+                <ScalarProperty Name="VoteCount" ColumnName="VoteCount" />
+                <ScalarProperty Name="VoteStatus" ColumnName="VoteStatus" />
+                <ScalarProperty Name="ContentType" ColumnName="ContentType" />
+                <ScalarProperty Name="IsReceived" ColumnName="IsReceived" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

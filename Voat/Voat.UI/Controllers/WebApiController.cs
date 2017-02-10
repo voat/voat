@@ -148,7 +148,7 @@ namespace Voat.Controllers
                     {
                         // get only submissions from default subverses, order by rank
                         var frontpageSubmissions = (from message in db.Submissions
-                                                    where !message.IsArchived && !message.IsDeleted && message.Subverse1.IsAdminDisabled != true
+                                                    where message.ArchiveDate == null && !message.IsDeleted && message.Subverse1.IsAdminDisabled != true
                                                     join defaultsubverse in db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
                                                     select message)
                                                     .OrderByDescending(s => s.Rank)

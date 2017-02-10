@@ -12,7 +12,7 @@ namespace Voat.Domain.Query
     public class QueryUserInformation : CachedQuery<UserInformation>
     {
         private string _userToRetrieve;
-        private static TimeSpan _totalCacheTime = TimeSpan.FromHours(12);
+        private static TimeSpan _totalCacheTime = TimeSpan.FromHours(24);
         private TimeSpan _refreshTime = TimeSpan.FromMinutes(15);
 
         public QueryUserInformation(string userToRetrieve)

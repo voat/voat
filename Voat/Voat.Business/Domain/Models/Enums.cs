@@ -22,7 +22,7 @@ namespace Voat.Domain.Models
     {
         Submission = 1,
         Comment = 2,
-        User = 3
+        User = 4
         //Set = 4
     }
 

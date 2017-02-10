@@ -87,7 +87,7 @@
             }
         }
 
-        @if (User.Identity.IsAuthenticated)
+        @if (!submission.ArchiveDate.HasValue && User.Identity.IsAuthenticated)
         //if user logged in, show add comment form
         {
             @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", submission.ID } })

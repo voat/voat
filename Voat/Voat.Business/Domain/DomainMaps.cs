@@ -165,6 +165,7 @@ namespace Voat.Domain
                     IsDeleted = submission.IsDeleted,
                     Rank = submission.Rank,
                     RelativeRank = submission.RelativeRank,
+                    ArchiveDate = submission.ArchiveDate
                 };
 
                 //add flair if present
@@ -176,7 +177,10 @@ namespace Voat.Domain
                 {
                     result.Attributes.Add(new ContentAttribute() { ID = -1, Type = AttributeType.Data, Name = "NSFW", CssClass = "linkflairlabel" });
                 }
-
+                if (result.ArchiveDate.HasValue)
+                {
+                    result.Attributes.Add(new ContentAttribute() { ID = -1, Type = AttributeType.Data, Name = "Archived", CssClass = "linkflairlabel" });
+                }
             }
             return result;
         }

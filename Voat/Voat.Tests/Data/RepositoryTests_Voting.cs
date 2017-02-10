@@ -55,7 +55,7 @@ namespace Voat.Tests.Repository
                 TestHelper.SetPrincipal(userName, null); //This user has one comment with 101 likes
 
                 var response = db.VoteComment(context.CommentID, -1, IpHash.CreateHash("127.0.0.1"));
-                Assert.IsTrue(response.Success, "Vote was not successfull");
+                Assert.IsTrue(response.Success, response.Message);
                 Assert.AreEqual(-1, response.RecordedValue, "Vote was not successfull");
 
                 //refresh comment 
@@ -74,7 +74,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                TestHelper.SetPrincipal("TestUser3", null); //Random User has no CCP
+                TestHelper.SetPrincipal("TestUser03", null); //Random User has no CCP
 
                 var response = db.VoteComment(context.CommentID, -1, IpHash.CreateHash("127.0.0.1"));
 
@@ -233,7 +233,7 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteSubmission(context.SubmissionID, -1, IpHash.CreateHash("127.0.0.1"));
 
-                Assert.AreEqual(Status.Success, response.Status, "Vote was not successfull");
+                Assert.AreEqual(Status.Success, response.Status, response.Message);
                 Assert.AreEqual(-1, response.RecordedValue, "Recorded value off");
 
 
@@ -256,7 +256,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                TestHelper.SetPrincipal("TestUser3", null); //Random User has no CCP
+                TestHelper.SetPrincipal("TestUser03", null); //Random User has no CCP
 
                 var response = db.VoteSubmission(context.SubmissionID, -1, IpHash.CreateHash("127.0.0.1"));
 

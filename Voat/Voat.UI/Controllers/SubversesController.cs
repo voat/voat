@@ -44,7 +44,7 @@ namespace Voat.Controllers
         private int subverseCacheTimeInSeconds = 240;
 
         // GET: sidebar for selected subverse
-        public ActionResult SidebarForSelectedSubverseComments(Submission submission)
+        public ActionResult SidebarForSelectedSubverseComments(Domain.Models.Submission submission)
         {
             //Can't cache as view is using model to query
             //var subverse = _db.Subverses.Find(submission.Subverse);
@@ -55,39 +55,7 @@ namespace Voat.Controllers
             {
                 return new EmptyResult();
             }
-
-            // get subscriber count for selected subverse
-            //var subscriberCount = _db.SubverseSubscriptions.Count(r => r.Subverse.Equals(submission.Subverse, StringComparison.OrdinalIgnoreCase));
-
-            //ViewBag.SubscriberCount = subscriberCount;
-            ViewBag.SelectedSubverse = submission.Subverse;
-
-            //if (!showingComments) return new EmptyResult();
-
-            if (submission.IsAnonymized || (subverse.IsAnonymized.HasValue && subverse.IsAnonymized.Value))
-            {
-                ViewBag.name = submission.ID.ToString();
-                ViewBag.anonymized = true;
-            }
-            else
-            {
-                if (submission.IsDeleted)
-                {
-                    ViewBag.name = "deleted";
-                }
-                else
-                {
-                    ViewBag.name = submission.UserName;
-                }
-            }
-
-            ViewBag.date = submission.CreationDate;
-            ViewBag.lastEditDate = submission.LastEditDate;
-            ViewBag.likes = submission.UpCount;
-            ViewBag.dislikes = submission.DownCount;
-            ViewBag.anonymized_mode = subverse.IsAnonymized;
-            ViewBag.views = submission.Views;
-
+            
             try
             {
                 ViewBag.OnlineUsers = SessionHelper.ActiveSessionsForSubverse(submission.Subverse);
@@ -97,6 +65,7 @@ namespace Voat.Controllers
                 ViewBag.OnlineUsers = -1;
             }
 
+            ViewBag.Submission = submission;
             return PartialView("~/Views/Shared/Sidebars/_SidebarComments.cshtml", subverse);
         }
 
@@ -136,6 +105,7 @@ namespace Voat.Controllers
             // abort if model state is invalid
             if (!ModelState.IsValid)
             {
+                PreventSpamAttribute.Reset();
                 return View(subverseTmpModel);
             }
 
@@ -705,7 +675,7 @@ namespace Voat.Controllers
             var startDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
             IQueryable<Submission> sfwSubmissionsFromAllSubversesByViews24Hours = (from message in _db.Submissions
                                                                                    join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                                                                                   where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && message.CreationDate >= startDate && message.CreationDate <= Repository.CurrentDate
+                                                                                   where message.ArchiveDate == null && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && message.CreationDate >= startDate && message.CreationDate <= Repository.CurrentDate
                                                                                    where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
                                                                                    where !subverse.IsAdminDisabled.Value
                                                                                    where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)

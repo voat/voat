@@ -114,7 +114,7 @@ namespace Voat.Tests.Repository
                 SideBar = "Private for Testing",
                 Type = "link",
                 IsAnonymized = false,
-                IsAuthorizedOnly = true,
+                IsAuthorizedOnly = false,
                 IsPrivate = true,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
                 IsAdminDisabled = false,
@@ -379,7 +379,7 @@ namespace Voat.Tests.Repository
 
             //these blocks are used for testing individual operations
             CreateUserBatch(UNIT_TEST_CONSTANTS.UNIT_TEST_USER_TEMPLATE, 0, 50);
-            CreateUserBatch(UNIT_TEST_CONSTANTS.TEST_USER_TEMPLATE, 0, 15);
+            CreateUserBatch(UNIT_TEST_CONSTANTS.TEST_USER_TEMPLATE, 0, 50);
 
             //Users with varying levels of CCP
             CreateUser("User0CCP");
@@ -401,6 +401,7 @@ namespace Voat.Tests.Repository
                 UpCount = 500,
             });
             context.SaveChanges();
+            VoteContent(context, Domain.Models.ContentType.Submission, s.ID, 500, Domain.Models.Vote.Up);
 
             c = context.Comments.Add(new Comment()
             {
@@ -412,6 +413,7 @@ namespace Voat.Tests.Repository
                 ParentID = null
             });
             context.SaveChanges();
+            VoteContent(context, Domain.Models.ContentType.Comment, c.ID, 50, Domain.Models.Vote.Up);
 
             c = context.Comments.Add(new Comment()
             {
@@ -423,6 +425,7 @@ namespace Voat.Tests.Repository
                 ParentID = null
             });
             context.SaveChanges();
+            VoteContent(context, Domain.Models.ContentType.Comment, c.ID, 100, Domain.Models.Vote.Up);
 
             c = context.Comments.Add(new Comment()
             {
@@ -434,6 +437,7 @@ namespace Voat.Tests.Repository
                 ParentID = null
             });
             context.SaveChanges();
+            VoteContent(context, Domain.Models.ContentType.Comment, c.ID, 500, Domain.Models.Vote.Up);
 
             #endregion Create Test Users
 
@@ -512,8 +516,6 @@ namespace Voat.Tests.Repository
             using (var db = new voatEntities())
             {
                 var s = db.Subverses.Where(x => x.Name == subverse).FirstOrDefault();
-
-
                 //create submission
                 var submission = new Submission()
                 {
@@ -522,7 +524,7 @@ namespace Voat.Tests.Repository
                     Subverse = subverse,
                     Title = $"Comment Tree for v/{subverse}",
                     Type = 1,
-                    UserName = "TestUser1",
+                    UserName = "TestUser01",
                     IsAnonymized = s.IsAnonymized.HasValue ? s.IsAnonymized.Value : false,
                 };
                 db.Submissions.Add(submission);
@@ -593,11 +595,47 @@ namespace Voat.Tests.Repository
                 }
            // }
         }
+        public static void VoteContent(voatEntities context, Domain.Models.ContentType contentType, int id, int count, Domain.Models.Vote vote)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                string userName = String.Format("VoteUser{0}", i.ToString().PadLeft(4, '0'));
+                if (contentType == Domain.Models.ContentType.Comment)
+                {
+                    context.CommentVoteTrackers.Add(
+                        new CommentVoteTracker()
+                        {
+                            UserName = userName,
+                            IPAddress = Guid.NewGuid().ToString(),
+                            CommentID = id,
+                            VoteStatus = (int)vote,
+                            VoteValue = (int)vote,
+                            CreationDate = DateTime.UtcNow
+                        });
+
+                }
+                else if (contentType == Domain.Models.ContentType.Submission)
+                {
+                    context.SubmissionVoteTrackers.Add(
+                        new SubmissionVoteTracker()
+                        {
+                            UserName = userName,
+                            IPAddress = Guid.NewGuid().ToString(),
+                            SubmissionID = id,
+                            VoteStatus = (int)vote,
+                            VoteValue = (int)vote,
+                            CreationDate = DateTime.UtcNow
+                        });
+
+                }
+            }
+            context.SaveChanges();
+        }
         public static void CreateUserBatch(string userNameTemplate, int start, int end)
         {
             for (int i = start; i <= end; i++)
             {
-                CreateUser(String.Format(userNameTemplate, i.ToString()));
+                CreateUser(String.Format(userNameTemplate, i.ToString().PadLeft(2, '0')));
             }
         }
         private void CreateUserSchema(voatEntities context)

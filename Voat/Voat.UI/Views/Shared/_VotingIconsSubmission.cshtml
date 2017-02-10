@@ -22,55 +22,62 @@
 
     double likes = Math.Round(((double)Model.UpCount / ((double)Model.UpCount + (double)Model.DownCount)) * 100);
     double dislikes = Math.Round(((double)Model.DownCount / ((double)Model.UpCount + (double)Model.DownCount)) * 100);
-
-    if (User.Identity.IsAuthenticated)
-    {
-        string loggedInUserName = User.Identity.Name;
-
-        //returns -1:downvoted, 1:upvoted, or 0:not voted
-        int votedOrNot = Model.Vote.HasValue ? Model.Vote.Value : 0;
-
-        switch (votedOrNot)
-        {
-            case 1:
-                votingStatusClassUpArrow = "arrow-upvoted";
-                votingStatusClassDownArrow = "arrow-downvote";
-                likesOrDislikesClass = "likes";
-                break;
-            case -1:
-                likesOrDislikesClass = "dislikes";
-                votingStatusClassUpArrow = "arrow-upvote";
-                votingStatusClassDownArrow = "arrow-downvoted";
-                break;
-        }
-
-        <div class="midcol @likesOrDislikesClass">
-            <div class="@votingStatusClassUpArrow login-required" onclick="voteSubmission(@Model.ID, 1);" role="button" aria-label="upvote" tabindex="0"></div>
-            <div class="score dislikes">@Model.DownCount</div>
-            <div class="score unvoted">@score</div>
-            <div class="score likes">@Model.UpCount</div>
-            <div class="@votingStatusClassDownArrow login-required" onclick="voteSubmission(@Model.ID, -1);" role="button" aria-label="downvote" tabindex="0"></div>
-        </div>
-
-        <div class="scorebar" title="Blue = upvotes, violet = downvotes">
-            <div class="scorebar-likes" style="height: @likes%"></div>
-            <div class="scorebar-dislikes" style="height: @dislikes%"></div>
-        </div>
-    }
-
-    else
+    var hidden = Model.ArchiveDate.HasValue ? "" : "";
+    if (Model.ArchiveDate.HasValue)
     {
         <div class="midcol unvoted">
-            <div class="arrow-upvote login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0" id="upvotebutton-@Model.ID"></div>
             <div class="score dislikes">@Model.DownCount</div>
-            <div class="score unvoted">@score</div>
+            <div class="score submissionscore">@Model.Sum</div>
             <div class="score likes">@Model.UpCount</div>
-            <div class="arrow-downvote login-required" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
-        </div>
-
-        <div class="scorebar" title="Blue = upvotes, violet = downvotes">
-            <div class="scorebar-likes" style="height: @likes%"></div>
-            <div class="scorebar-dislikes" style="height: @dislikes%"></div>
         </div>
     }
+    else
+    {
+        if (Model.Vote.HasValue)
+        {
+            //returns -1:downvoted, 1:upvoted, or 0:not voted
+            int votedOrNot = Model.Vote.HasValue ? Model.Vote.Value : 0;
+
+            switch (votedOrNot)
+            {
+                case 1:
+                    votingStatusClassUpArrow = "arrow-upvoted";
+                    votingStatusClassDownArrow = "arrow-downvote";
+                    likesOrDislikesClass = "likes";
+                    break;
+                case -1:
+                    likesOrDislikesClass = "dislikes";
+                    votingStatusClassUpArrow = "arrow-upvote";
+                    votingStatusClassDownArrow = "arrow-downvoted";
+                    break;
+            }
+
+            <div class="midcol @likesOrDislikesClass">
+                <div class="@votingStatusClassUpArrow login-required @hidden" onclick="voteSubmission(@Model.ID, 1);" role="button" aria-label="upvote" tabindex="0"></div>
+                <div class="score dislikes">@Model.DownCount</div>
+                <div class="score unvoted">@score</div>
+                <div class="score likes">@Model.UpCount</div>
+                <div class="@votingStatusClassDownArrow login-required @hidden" onclick="voteSubmission(@Model.ID, -1);" role="button" aria-label="downvote" tabindex="0"></div>
+            </div>
+
+        }
+
+        else
+        {
+            <div class="midcol unvoted">
+                <div class="arrow-upvote login-required @hidden" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0" id="upvotebutton-@Model.ID"></div>
+                <div class="score dislikes">@Model.DownCount</div>
+                <div class="score unvoted">@score</div>
+                <div class="score likes">@Model.UpCount</div>
+                <div class="arrow-downvote login-required @hidden" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
+            </div>
+
+        }
+    }
+
+
+    <div class="scorebar" title="Blue = upvotes, violet = downvotes">
+        <div class="scorebar-likes" style="height: @likes%"></div>
+        <div class="scorebar-dislikes" style="height: @dislikes%"></div>
+    </div>
 }
