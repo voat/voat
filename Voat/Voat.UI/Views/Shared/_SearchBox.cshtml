@@ -13,36 +13,39 @@
 @model Voat.Models.ViewModels.SearchViewModel
 
 @{
-    string selectedSubverse = "";
-    if (!String.IsNullOrEmpty(Request.QueryString["sub"]))
+    if (!Settings.SearchDisabled)
     {
-        selectedSubverse = Request.QueryString["sub"];
-    }
-    else if (!String.IsNullOrEmpty(ViewBag.SelectedSubverse))
-    {
-        selectedSubverse = ViewBag.SelectedSubverse;
+        string selectedSubverse = "";
+        if (!String.IsNullOrEmpty(Request.QueryString["sub"]))
+        {
+            selectedSubverse = Request.QueryString["sub"];
+        }
+        else if (!String.IsNullOrEmpty(ViewBag.SelectedSubverse))
+        {
+            selectedSubverse = ViewBag.SelectedSubverse;
+        }
+
+        <div class="spacersection spacer">
+    
+            <div class="alert-h1">
+                Search @Settings.SiteName
+            </div>
+
+            @using (Html.BeginForm("SearchResults", "Search", new { }, FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
+            {
+                <h2>@Html.ValidationSummary(true)</h2>
+                @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search " + Settings.SiteName })
+                @Html.ValidationMessage("q")
+
+                if (!String.IsNullOrEmpty(selectedSubverse))
+                {
+                    @Html.Hidden("sub", selectedSubverse)
+                    <input type="checkbox" name="l" value="true" id="l"
+                           @(!String.IsNullOrEmpty(selectedSubverse) ? "checked=\"checked\"" : "") />
+
+                    @Html.Label("Limit to v/" + selectedSubverse)
+                }
+            }
+        </div>
     }
 }
-
-<div class="spacersection spacer">
-    
-    <div class="alert-h1">
-        Search @Settings.SiteName
-    </div>
-
-    @using (Html.BeginForm("SearchResults", "Search", new { }, FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
-    {
-        <h2>@Html.ValidationSummary(true)</h2>
-        @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search " + Settings.SiteName })
-        @Html.ValidationMessage("q")
-
-        if (!String.IsNullOrEmpty(selectedSubverse))
-        {
-            @Html.Hidden("sub", selectedSubverse)
-            <input type="checkbox" name="l" value="true" id="l"
-                   @(!String.IsNullOrEmpty(selectedSubverse) ? "checked=\"checked\"" : "") />
-
-            @Html.Label("Limit to v/" + selectedSubverse)
-        }
-    }
-</div>

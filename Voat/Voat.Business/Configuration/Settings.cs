@@ -281,7 +281,13 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.RegistrationDisabled, false);
             }
         }
-
+        public static bool SearchDisabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.SearchDisabled, true);
+            }
+        }
         public static bool SetsDisabled
         {
             get
