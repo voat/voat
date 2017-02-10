@@ -969,7 +969,11 @@ namespace MarkdownDeep
         Token ProcessLinkOrImageOrFootnote()
         {
             // Link or image?
-            TokenType token_type = SkipChar('!') ? TokenType.img : TokenType.link;
+            //Voat: Disable automatic url to img mapping
+            //Original:
+            //TokenType token_type = SkipChar('!') ? TokenType.img : TokenType.link;
+            //Modified:
+            TokenType token_type = SkipChar('!') ? TokenType.link : TokenType.link;
 
             // Opening '['
             if (!SkipChar('['))
