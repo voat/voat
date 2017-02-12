@@ -85,7 +85,7 @@
             {
                 <span>(last edited <time title="@Model.LastEditDate" datetime="@Model.LastEditDate">@Age.ToRelative(Model.LastEditDate.Value)</time>&#32;ago)</span>
             }
-            &nbsp;<a href="#" class="expand" style="@showIfParent" onclick="return toggleComment(@Model.ID)">(show children)</a>
+            &nbsp;<a href="#" class="expand" style="@showIfParent" onclick="return toggleComment(@Model.ID)">(show)</a>
         </div>
         <div class="noncollapsed" id="@Model.ID" style="@uncollapsedComment">
             <p class="tagline">

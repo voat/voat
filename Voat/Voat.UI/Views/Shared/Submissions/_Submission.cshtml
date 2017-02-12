@@ -54,7 +54,11 @@
         submissionDomainHref = "/domains/" + submissionDomain;
     }
     var submissionClass = Model.Type == Voat.Domain.Models.SubmissionType.Text ? "self" : "";
-    var classes = String.Join(" ", ViewBag.CssClass);
+    var classes = "";
+    if (ViewBag.CssClass != null)
+    {
+        classes = String.Join(" ", ViewBag.CssClass);
+    }
 }
 <div class="submission id-@Model.ID @classes link @submissionClass" data-fullname="@Model.ID" data-ups="@Model.UpCount" data-downs="@Model.DownCount">
     <p class="parent"></p>

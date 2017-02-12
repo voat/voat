@@ -78,7 +78,7 @@
                     </li>
                 }
             }
-            if (submission != null && !submission.ArchiveDate.HasValue)
+            if (submission == null || (submission != null && !submission.ArchiveDate.HasValue))
             {
                 <li>
                     <a class="" href="javascript:void(0)" onclick="return reply(@Model.ID, @Model.SubmissionID)">reply</a>

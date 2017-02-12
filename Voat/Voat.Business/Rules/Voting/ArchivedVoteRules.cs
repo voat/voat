@@ -12,15 +12,21 @@ namespace Voat.Rules.Voting
     {
         public ArchivedVoteCommentRule() : base("Archvied Vote Rule", "2.9.1", RuleScope.Vote)
         {
+            RequiredContext.Add("Submission", typeof(Domain.Models.Submission));
         }
 
         protected override RuleOutcome EvaluateRule(VoatRuleContext context)
         {
-            var submission = context.PropertyBag.Submission;
+
+            Domain.Models.Submission submission = context.PropertyBag.Submission;
 
             if (submission.ArchiveDate != null)
             {
                 return CreateOutcome(RuleResult.Denied, "Archived Submissions do not allow voting");
+            }
+            if (submission.IsDeleted)
+            {
+                return CreateOutcome(RuleResult.Denied, "Deleted Submissions do not allow voting");
             }
             return base.EvaluateRule(context);
         }

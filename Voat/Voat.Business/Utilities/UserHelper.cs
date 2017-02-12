@@ -234,8 +234,8 @@ namespace Voat.Utilities
                         .Take(3)
                         .ToList();
 
-                    var linkSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 2 && !a.IsDeleted);
-                    var messageSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 1 && !a.IsDeleted);
+                    var linkSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 2 && !a.IsDeleted && !a.IsAnonymized);
+                    var messageSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 1 && !a.IsDeleted && !a.IsAnonymized);
 
                     // get 5 highest rated submissions
                     var highestRatedSubmissions = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)

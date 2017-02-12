@@ -962,7 +962,6 @@ namespace Voat.Data
                     //query = (from x in _db.Submissions
                     //         join defaults in _db.DefaultSubverses on x.Subverse equals defaults.Subverse
                     //         select x);
-
                     break;
                 case AGGREGATE_SUBVERSE.ANY:
                     //allowing subverse marked private to not be filtered
@@ -997,7 +996,7 @@ namespace Voat.Data
                     //2. Don't show private subs
                     //3. Don't show NSFW subs if nsfw isn't enabled in profile, if they are logged in
                     //4. Don't show blocked subs if logged in // not implemented
-                    query.Where = "sub.MinCCPForDownvote = 0 AND sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0 AND s.ArchiveDate IS NULL";
+                    query.Where = "sub.MinCCPForDownvote = 0 AND sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0";
                     if (!nsfw)
                     {
                         query.Where += " AND sub.IsAdult = 0 AND s.IsAdult = 0";
@@ -1883,6 +1882,24 @@ namespace Voat.Data
             return data;
         }
 
+        private async Task ResetVotes(ContentType contentType, int id, Vote voteStatus, Vote voteValue)
+        {
+            var u = new DapperUpdate();
+            switch (contentType)
+            {
+                case ContentType.Comment:
+                    u.Update = @"UPDATE v SET v.VoteValue = @VoteValue FROM CommentVoteTracker v
+                                INNER JOIN Comment c WITH (NOLOCK) ON c.ID = v.CommentID
+                                INNER JOIN Submission s WITH (NOLOCK) ON c.SubmissionID = s.ID";
+                    u.Where = "v.CommentID = @ID AND v.VoteStatus = @VoteStatus AND s.ArchiveDate IS NULL";
+                    break;
+                default:
+                    throw new NotImplementedException($"Method not implemented for ContentType: {contentType.ToString()}");
+                    break;
+            }
+            int count = await _db.Database.Connection.ExecuteAsync(u.ToString(), new { ID = id, VoteStatus = (int)voteStatus, VoteValue = (int)voteValue });
+        }
+
         public async Task<CommandResponse<Data.Models.Comment>> DeleteComment(int commentID, string reason = null)
         {
             DemandAuthentication();
@@ -1899,10 +1916,17 @@ namespace Voat.Data
                     // delete comment if the comment author is currently logged in user
                     if (comment.UserName == User.Identity.Name)
                     {
+                        //User Deletion
                         comment.IsDeleted = true;
                         comment.Content = UserDeletedContentMessage();
                         comment.FormattedContent = Formatting.FormatMessage(comment.Content);
                         await _db.SaveChangesAsync().ConfigureAwait(false);
+
+                        //User Deletions remove UpVoted CCP - This is one way ccp farmers accomplish their acts
+                        if (comment.UpCount > comment.DownCount)
+                        {
+                            await ResetVotes(ContentType.Comment, comment.ID, Vote.Up, Vote.None).ConfigureAwait(false);
+                        }
                     }
 
                     // delete comment if delete request is issued by subverse moderator
