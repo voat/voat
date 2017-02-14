@@ -50,21 +50,22 @@ namespace Voat.Controllers
             var viewModel = new SubverseSettingsViewModel
             {
                 Name = subverse.Name,
-                Type = subverse.Type,
-                SubmissionText = subverse.SubmissionText,
+                //Type = subverse.Type,
+                //SubmissionText = subverse.SubmissionText,
                 Description = subverse.Description,
                 SideBar = subverse.SideBar,
                 Stylesheet = subverse.Stylesheet,
-                IsDefaultAllowed = subverse.IsDefaultAllowed,
-                SubmitLinkLabel = subverse.SubmitLinkLabel,
-                SubmitPostLabel = subverse.SubmitPostLabel,
+                //IsDefaultAllowed = subverse.IsDefaultAllowed,
+                //SubmitLinkLabel = subverse.SubmitLinkLabel,
+                //SubmitPostLabel = subverse.SubmitPostLabel,
                 IsAdult = subverse.IsAdult,
                 IsPrivate = subverse.IsPrivate,
                 IsThumbnailEnabled = subverse.IsThumbnailEnabled,
                 ExcludeSitewideBans = subverse.ExcludeSitewideBans,
                 IsAuthorizedOnly = subverse.IsAuthorizedOnly,
                 IsAnonymized = subverse.IsAnonymized,
-                MinCCPForDownvote = subverse.MinCCPForDownvote
+                MinCCPForDownvote = subverse.MinCCPForDownvote,
+                LastUpdateDate = subverse.LastUpdateDate
             };
 
             ViewBag.SelectedSubverse = string.Empty;
@@ -131,18 +132,24 @@ namespace Voat.Controllers
                     }
 
                     existingSubverse.IsAdult = updatedModel.IsAdult;
-                    existingSubverse.IsPrivate = updatedModel.IsPrivate;
+                  
                     existingSubverse.IsThumbnailEnabled = updatedModel.IsThumbnailEnabled;
                     existingSubverse.IsAuthorizedOnly = updatedModel.IsAuthorizedOnly;
                     existingSubverse.ExcludeSitewideBans = updatedModel.ExcludeSitewideBans;
-                    existingSubverse.MinCCPForDownvote = updatedModel.MinCCPForDownvote;
+
+                    //Only update if time lock has expired
+                    if (existingSubverse.LastUpdateDate == null || (Repository.CurrentDate.Subtract(existingSubverse.LastUpdateDate.Value) > TimeSpan.FromHours(Settings.SubverseUpdateTimeLockInHours)))
+                    {
+                        existingSubverse.MinCCPForDownvote = updatedModel.MinCCPForDownvote;
+                        existingSubverse.IsPrivate = updatedModel.IsPrivate;
+                    }
 
                     // these properties are currently not implemented but they can be saved and edited for future use
-                    existingSubverse.Type = updatedModel.Type;
-                    existingSubverse.SubmitLinkLabel = updatedModel.SubmitLinkLabel;
-                    existingSubverse.SubmitPostLabel = updatedModel.SubmitPostLabel;
-                    existingSubverse.SubmissionText = updatedModel.SubmissionText;
-                    existingSubverse.IsDefaultAllowed = updatedModel.IsDefaultAllowed;
+                    //existingSubverse.Type = updatedModel.Type;
+                    //existingSubverse.SubmitLinkLabel = updatedModel.SubmitLinkLabel;
+                    //existingSubverse.SubmitPostLabel = updatedModel.SubmitPostLabel;
+                    //existingSubverse.SubmissionText = updatedModel.SubmissionText;
+                    //existingSubverse.IsDefaultAllowed = updatedModel.IsDefaultAllowed;
 
                     if (existingSubverse.IsAnonymized == true && updatedModel.IsAnonymized == false)
                     {
@@ -156,6 +163,7 @@ namespace Voat.Controllers
                         existingSubverse.IsAnonymized = updatedModel.IsAnonymized;
                     }
 
+                    existingSubverse.LastUpdateDate = Repository.CurrentDate;
                     await _db.SaveChangesAsync();
 
                     //purge new minified CSS

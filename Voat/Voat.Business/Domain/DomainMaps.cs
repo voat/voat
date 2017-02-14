@@ -208,7 +208,7 @@ namespace Voat.Domain
                     CreationDate = subverse.CreationDate,
                     SubscriberCount = (subverse.SubscriberCount == null ? 0 : subverse.SubscriberCount.Value),
                     Sidebar = subverse.SideBar,
-                    Type = subverse.Type,
+                    //Type = subverse.Type,
                     IsAnonymized = subverse.IsAnonymized,
                     IsAdult = subverse.IsAdult,
 

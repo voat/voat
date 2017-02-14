@@ -71,14 +71,8 @@
 
                
 
-                <div class="form-group">
-                    @Html.Label("Set private (exclude the subverse from showing in /v/all)", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.IsPrivate, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.IsPrivate, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
+               
+               
                 <div class="form-group">
                     @Html.Label("Rated adult", htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
@@ -131,75 +125,48 @@
                         </p>
                     </div>
                 </div>
-
+                <div class="alert-title">Time Delayed Settings</div>
+                <div class="form-group">
+                    <div class="control-label col-md-2"></div>
+                    <div class="col-md-9">
+                        @{
+                            var hoursLeft = (Model.LastUpdateDate == null ? 0 : Settings.SubverseUpdateTimeLockInHours - DateTime.UtcNow.Subtract(Model.LastUpdateDate.Value).TotalHours);
+                            if (hoursLeft > 0)
+                            {
+                                <p>These settings are locked from changes for an additional @Math.Round(hoursLeft, 0) hour(s).</p>
+                            }
+                            else
+                            {
+                                <p>You can change these settings.</p>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.Label("Set private", htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.IsPrivate, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.IsPrivate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="control-label col-md-2"></div>
+                    <div class="col-md-9">
+                        WARNING: If subverse is private, this subverse will be hidden from /v/all and votes will not increase user SCP/CCP.
+                    </div>
+                </div>
                 <div class="form-group">
                     @Html.Label("Minimum CCP required for downvoting", htmlAttributes: new {@class = "control-label col-md-2"})
-                    <div class="col-md-10">
+                    <div class="col-md-1">
                         @Html.TextBoxFor(model => model.MinCCPForDownvote, new {@class = "form-control"})
-                        @Html.ValidationMessageFor(model => model.MinCCPForDownvote, "", new {@class = "text-danger"})
                     </div>
+                    @Html.ValidationMessageFor(model => model.MinCCPForDownvote, "", new { @class = "text-danger" })
                 </div>
 
                 <div class="form-group">
                     <div class="control-label col-md-2"></div>
                     <div class="col-md-9">
-                        WARNING: if you set minimum CCP to a value higher than 0, your subverse will be hidden from /v/all.
-                    </div>
-                </div>
-
-                <hr />
-                <div class="alert alert-warning">
-                    <p>
-                        All settings beyond this point can be edited and saved. However, these properties are not yet implemented and changes made here
-                        will not have any real effect.
-                    </p>
-                </div>
-                <hr />
-
-                <div class="form-group">
-                    @Html.Label("Message submissions text", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextAreaFor(model => model.SubmissionText, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.SubmissionText, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    @Html.Label("Subverse type", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.Type, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="control-label col-md-2"></div>
-                    <div class="col-md-9">
-                        Confused? Enter "link" (without the quotes) if you want to accept link and self type submissions. Enter "self" if you only want to accept self type submissions.
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    @Html.Label("Label for submitting new linkpost", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.SubmitLinkLabel, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.SubmitLinkLabel, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    @Html.Label("Label for submitting new selfpost", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(model => model.SubmitPostLabel, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.SubmitPostLabel, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    @Html.Label("Allow default", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.IsDefaultAllowed, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.IsDefaultAllowed, "", new { @class = "text-danger" })
+                        WARNING: If minimum CCP is higher than 0, this subverse will be hidden from /v/all and votes will not increase user SCP/CCP.
                     </div>
                 </div>
 

@@ -351,7 +351,14 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.SiteSlogan, "Voat - have your say");
             }
         }
-
+        public static int SubverseUpdateTimeLockInHours
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.SubverseUpdateTimeLockInHours, 48);
+            }
+        }
+        
         public static bool UseContentDeliveryNetwork
         {
             get

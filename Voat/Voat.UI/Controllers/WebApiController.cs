@@ -439,7 +439,7 @@ namespace Voat.Controllers
                 Sidebar = subverse.SideBar,
                 SubscriberCount = subscriberCount,
                 Title = subverse.Title,
-                Type = subverse.Type
+                //Type = subverse.Type
             };
 
             return resultModel;

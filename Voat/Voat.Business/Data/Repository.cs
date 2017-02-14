@@ -511,6 +511,14 @@ namespace Voat.Data
             }
         }
 
+        private int GetVoteValue(Subverse subverse, Data.Models.Submission submission, Vote voteStatus)
+        {
+            if (subverse.IsPrivate || subverse.MinCCPForDownvote > 0 || submission.IsAnonymized)
+            {
+                return 0;
+            }
+            return (int)voteStatus;
+        }
         private int GetVoteValue(string sourceUser, string targetUser, ContentType contentType, int id, int voteStatus)
         {
             var q = new DapperQuery();
@@ -556,7 +564,7 @@ namespace Voat.Data
                                 Description = x.Description,
                                 IsAdult = x.IsAdult,
                                 Title = x.Title,
-                                Type = x.Type,
+                                //Type = x.Type,
                                 Sidebar = x.SideBar
                             }).ToList();
             return defaults;
@@ -574,7 +582,7 @@ namespace Voat.Data
                             Description = x.Description,
                             IsAdult = x.IsAdult,
                             Title = x.Title,
-                            Type = x.Type,
+                            //Type = x.Type,
                             Sidebar = x.SideBar
                         }).Take(count).ToList();
             return subs;
@@ -592,7 +600,7 @@ namespace Voat.Data
                             Description = x.Description,
                             IsAdult = x.IsAdult,
                             Title = x.Title,
-                            Type = x.Type,
+                            //Type = x.Type,
                             Sidebar = x.SideBar
                         }
                         ).Take(count).ToList();
@@ -612,7 +620,7 @@ namespace Voat.Data
                             Description = x.Description,
                             IsAdult = x.IsAdult,
                             Title = x.Title,
-                            Type = x.Type,
+                            //Type = x.Type,
                             Sidebar = x.SideBar
                         }
                         ).Take(count).ToList();
@@ -686,7 +694,7 @@ namespace Voat.Data
                     Description = description,
                     SideBar = sidebar,
                     CreationDate = Repository.CurrentDate,
-                    Type = "link",
+                    //Type = "link",
                     IsThumbnailEnabled = true,
                     IsAdult = false,
                     IsPrivate = false,
@@ -1482,7 +1490,7 @@ namespace Voat.Data
             newSubmission.SubmissionVoteTrackers.Add(new SubmissionVoteTracker() {
                 UserName = newSubmission.UserName,
                 VoteStatus = (int)Vote.Up,
-                VoteValue = (int)Vote.Up,
+                VoteValue = GetVoteValue(subverseObject, newSubmission, Vote.Up),
                 IPAddress = null,
                 CreationDate = Repository.CurrentDate,
             });
@@ -5022,7 +5030,7 @@ namespace Voat.Data
                 return CommandResponse.FromStatus(Status.Error, "Confirmation UserName does not match");
             }
 
-            if (options.UserName == User.Identity.Name)
+            if (User.Identity.Name.IsEqual(options.UserName))
             {
 
                 var userName = User.Identity.Name;
@@ -5038,6 +5046,18 @@ namespace Voat.Data
                     var userAccount = userManager.Find(options.UserName, options.CurrentPassword);
                     if (userAccount != null)
                     {
+
+                        //Verify Email before proceeding
+                        var setRecoveryEmail = !String.IsNullOrEmpty(options.RecoveryEmailAddress) && options.RecoveryEmailAddress.IsEqual(options.ConfirmRecoveryEmailAddress);
+                        if (setRecoveryEmail)
+                        {
+                            var userWithEmail = userManager.FindByEmail(options.RecoveryEmailAddress);
+                            if (userWithEmail != null && userWithEmail.UserName != userAccount.UserName)
+                            {
+                                return CommandResponse.FromStatus(Status.Error, "This email address is in use, please provide a unique address");
+                            }
+                        }
+
                         List<DapperBase> statements = new List<DapperBase>();
                         var deleteText = "Account Deleted By User";
                         //Comments
@@ -5178,7 +5198,7 @@ namespace Voat.Data
                         var userID = userAccount.Id;
 
                         //Recovery
-                        if (!String.IsNullOrEmpty(options.RecoveryEmailAddress) && options.RecoveryEmailAddress.IsEqual(options.ConfirmRecoveryEmailAddress))
+                        if (setRecoveryEmail)
                         {
                             //Account is recoverable but locked for x days
                             var endLockOutDate = CurrentDate.AddDays(3 * 30);

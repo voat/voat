@@ -34,24 +34,8 @@ namespace Voat.Models.ViewModels
         [AllowHtml]
         public string SideBar { get; set; }
 
-        [StringLength(500, ErrorMessage = "The submission text is limited to 1024 characters.")]
-        public string SubmissionText { get; set; }
-
-        [StringLength(10, ErrorMessage = "The subverse type limited to 10 characters.")]
-        [RegularExpression("link|self", ErrorMessage = "Please type link for link and self posts only or, type self for self posts only.")]
-        public string Type { get; set; }
-
-        [StringLength(50, ErrorMessage = "The label for new link submissions is limited to 50 characters.")]
-        public string SubmitLinkLabel { get; set; }
-
-        [StringLength(50, ErrorMessage = "The label for new self submissions is limited to 50 characters.")]
-        public string SubmitPostLabel { get; set; }
-
         [Required(ErrorMessage = "This setting is required.")]
         public bool IsAdult { get; set; }
-
-        [Required(ErrorMessage = "This setting is required.")]
-        public bool IsDefaultAllowed { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]
         public bool IsPrivate { get; set; }
@@ -72,5 +56,6 @@ namespace Voat.Models.ViewModels
         [Range(0, 10000, ErrorMessage = "Minimum CCP value must be between 0 and 10000")]
         public int MinCCPForDownvote { get; set; }
 
+        public DateTime? LastUpdateDate { get; set; }
     }
 }

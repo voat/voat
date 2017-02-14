@@ -27,7 +27,7 @@ namespace Voat.Domain.Models
 
         [Required(ErrorMessage = "Confirm your UserName here")]
         [Display(Name = "Confirm UserName")]
-        [Compare("UserName", ErrorMessage = "UserName does not match")]
+        [Compare("UserName", ErrorMessage = "Confirmation UserName does not match")]
         public string ConfirmUserName { get; set; }
 
         [Required(ErrorMessage = "Current password is required")]

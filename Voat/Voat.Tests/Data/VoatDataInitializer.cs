@@ -70,7 +70,7 @@ namespace Voat.Tests.Repository
                 Title = "v/unit",
                 Description = "Unit test Subverse",
                 SideBar = "For Unit Testing",
-                Type = "link",
+                //Type = "link",
                 IsAnonymized = false,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
                 IsAdminDisabled = false,
@@ -83,7 +83,7 @@ namespace Voat.Tests.Repository
                 Title = "v/anon",
                 Description = "Anonymous Subverse",
                 SideBar = "For Anonymous Testing",
-                Type = "link",
+               // Type = "link",
                 IsAnonymized = true,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
                 IsAdminDisabled = false,
@@ -97,7 +97,7 @@ namespace Voat.Tests.Repository
                 Title = "v/minCCP",
                 Description = "Min CCP for Testing",
                 SideBar = "Min CCP for Testing",
-                Type = "link",
+                //Type = "link",
                 IsAnonymized = false,
                 MinCCPForDownvote = 5000,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
@@ -112,7 +112,7 @@ namespace Voat.Tests.Repository
                 Title = "v/private",
                 Description = "Private for Testing",
                 SideBar = "Private for Testing",
-                Type = "link",
+                //Type = "link",
                 IsAnonymized = false,
                 IsAuthorizedOnly = false,
                 IsPrivate = true,
@@ -128,7 +128,7 @@ namespace Voat.Tests.Repository
                 Title = "v/AskVoat",
                 Description = "Ask Voat.",
                 SideBar = "Ask Me",
-                Type = "link",
+                //Type = "link",
                 IsAnonymized = false,
                 IsAuthorizedOnly = false,
                 IsPrivate = false,
@@ -144,7 +144,7 @@ namespace Voat.Tests.Repository
                 Title = "v/whatever",
                 Description = "What Ever",
                 SideBar = "What Ever goes here",
-                Type = "link",
+               // Type = "link",
                 IsAnonymized = false,
                 IsAuthorizedOnly = false,
                 IsPrivate = false,
@@ -160,7 +160,7 @@ namespace Voat.Tests.Repository
                 Title = "v/news",
                 Description = "News",
                 SideBar = "News",
-                Type = "link",
+                //Type = "link",
                 IsAnonymized = false,
                 IsAuthorizedOnly = false,
                 IsPrivate = false,
@@ -176,7 +176,7 @@ namespace Voat.Tests.Repository
                 Title = "v/AuthorizedOnly",
                 Description = "Authorized Only",
                 SideBar = "Authorized Only",
-                Type = "link",
+                //Type = "link",
                 IsAnonymized = false,
                 IsAuthorizedOnly = true,
                 IsPrivate = false,
@@ -192,7 +192,7 @@ namespace Voat.Tests.Repository
                 Title = "v/NSFW",
                 Description = "NSFW Only",
                 SideBar = "NSFW Only",
-                Type = "link",
+                //Type = "link",
                 IsAdult = true,
                 IsAnonymized = false,
                 IsAuthorizedOnly = false,
@@ -208,7 +208,7 @@ namespace Voat.Tests.Repository
                 Title = "v/AllowAnon",
                 Description = "AllowAnon",
                 SideBar = "AllowAnon",
-                Type = "link",
+                //Type = "link",
                 IsAdult = false,
                 IsAnonymized = null, //allows users to submit anon/non-anon content
                 IsAuthorizedOnly = false,
@@ -456,7 +456,7 @@ namespace Voat.Tests.Repository
 
             #region Disabled Test Data
 
-            context.Subverses.Add(new Subverse() { Name = "Disabled", Title = "Disabled", IsAdminDisabled = true, CreatedBy = "unit", CreationDate = DateTime.Now.AddDays(-100), SideBar = "We will never be disabled", Type = "link" });
+            context.Subverses.Add(new Subverse() { Name = "Disabled", Title = "Disabled", IsAdminDisabled = true, CreatedBy = "unit", CreationDate = DateTime.Now.AddDays(-100), SideBar = "We will never be disabled"});
 
             context.SaveChanges();
 
@@ -484,7 +484,7 @@ namespace Voat.Tests.Repository
                     Title = $"v/{subverse}",
                     Description = "Unit test Sort Testing",
                     SideBar = "For Sort Testing",
-                    Type = "link",
+                    //Type = "link",
                     IsAnonymized = false,
                     CreationDate = DateTime.UtcNow.AddDays(-70),
                     IsAdminDisabled = false

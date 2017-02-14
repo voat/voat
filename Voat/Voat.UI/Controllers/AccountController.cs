@@ -327,7 +327,7 @@ namespace Voat.Controllers
         // POST: /Account/DeleteAccount
         [Authorize]
         [HttpPost]
-        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        //[PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(Domain.Models.DeleteAccountOptions model)
         {
@@ -345,9 +345,8 @@ namespace Voat.Controllers
                 }
             }
             return View(model);
-        }
+        } 
 
-        // GET: /Account/UserPreferencesAbout
         [Authorize]
         public ActionResult GetUserPreferencesAbout()
         {
