@@ -50,7 +50,7 @@
 
                 <div class="alert-title">Delete your account</div>
 
-                @Html.Partial("_DeleteAccount", new DeleteAccountViewModel())
+                @Html.ActionLink("Go To Delete Page", "Delete", null, new { @class= "btn-whoaverse" } )
             </div>
             @section PageScripts {
                 @Scripts.Render("~/bundles/jqueryval")

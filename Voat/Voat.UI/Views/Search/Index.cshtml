@@ -60,34 +60,11 @@
             @{
                 int currentPageNumber = Model.PageIndex;
                 int counterCont = (currentPageNumber) * 25;
-
-                int counter = counterCont + 1;
-                string submissionClass = "";
             }
 
             @foreach (var submission in Model)
             {
-                //type 2 = link
-                //type 1 = message
-                if (submission.Type == Voat.Domain.Models.SubmissionType.Text)
-                {
-                    submissionClass = "self";
-                }
-                else
-                {
-                    submissionClass = "";
-                }
-
-                <div class="submission id-@submission.ID even link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.UpCount" data-downs="@submission.DownCount">
-                    <p class="parent"></p>
-
-                    @Html.Partial("_VotingIconsSubmission", submission)
-                    @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
-
-                    <div class="child"></div>
-                    <div class="clearleft">@*IE6fix*@</div>
-                </div>
-                counter++;
+                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
             }
         </div>
 

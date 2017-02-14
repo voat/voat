@@ -20,7 +20,11 @@ using System.Data.Entity;
 using Voat.Caching;
 using Dapper;
 using Voat.Configuration;
-
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Voat.Data
 {
@@ -1419,11 +1423,11 @@ namespace Voat.Data
             }
 
             //Save submission
-            Models.Submission m = new Models.Submission();
-            m.UpCount = 1; //https://voat.co/v/PreviewAPI/comments/877596
-            m.UserName = User.Identity.Name;
-            m.CreationDate = CurrentDate;
-            m.Subverse = subverseObject.Name;
+            Models.Submission newSubmission = new Models.Submission();
+            newSubmission.UpCount = 1; //https://voat.co/v/PreviewAPI/comments/877596
+            newSubmission.UserName = User.Identity.Name;
+            newSubmission.CreationDate = CurrentDate;
+            newSubmission.Subverse = subverseObject.Name;
 
             //TODO: Should be in rule object
             //If IsAnonymized is NULL, this means subverse allows users to submit either anon or non-anon content
@@ -1434,11 +1438,11 @@ namespace Voat.Data
                 {
                     return MapRuleOutCome<Models.Submission>(new RuleOutcome(RuleResult.Denied, "Anon Submission Rule", "9.1", "Subverse does not allow anon content"), null);
                 }
-                m.IsAnonymized = subverseObject.IsAnonymized.Value;
+                newSubmission.IsAnonymized = subverseObject.IsAnonymized.Value;
             }
             else
             {
-                m.IsAnonymized = userSubmission.IsAnonymized;
+                newSubmission.IsAnonymized = userSubmission.IsAnonymized;
             }
 
             //TODO: Determine if subverse is marked as adult or has NSFW in title
@@ -1446,45 +1450,53 @@ namespace Voat.Data
             {
                 userSubmission.IsAdult = true;
             }
-            m.IsAdult = userSubmission.IsAdult;
+            newSubmission.IsAdult = userSubmission.IsAdult;
 
             //1: Text, 2: Link
-            m.Type = (int)userSubmission.Type;
+            newSubmission.Type = (int)userSubmission.Type;
 
             if (userSubmission.Type == SubmissionType.Text)
             {
                 if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
                 {
-                    userSubmission.Content = ContentProcessor.Instance.Process(userSubmission.Content, ProcessingStage.InboundPreSave, m);
+                    userSubmission.Content = ContentProcessor.Instance.Process(userSubmission.Content, ProcessingStage.InboundPreSave, newSubmission);
                 }
 
-                m.Title = userSubmission.Title;
-                m.Content = userSubmission.Content;
-                m.FormattedContent = Formatting.FormatMessage(userSubmission.Content, true);
+                newSubmission.Title = userSubmission.Title;
+                newSubmission.Content = userSubmission.Content;
+                newSubmission.FormattedContent = Formatting.FormatMessage(userSubmission.Content, true);
             }
             else
             {
-                m.Title = userSubmission.Title;
-                m.Url = userSubmission.Url;
+                newSubmission.Title = userSubmission.Title;
+                newSubmission.Url = userSubmission.Url;
 
                 if (subverseObject.IsThumbnailEnabled)
                 {
                     // try to generate and assign a thumbnail to submission model
-                    m.Thumbnail = await ThumbGenerator.GenerateThumbFromWebpageUrl(userSubmission.Url).ConfigureAwait(false);
+                    newSubmission.Thumbnail = await ThumbGenerator.GenerateThumbFromWebpageUrl(userSubmission.Url).ConfigureAwait(false);
                 }
             }
 
-            _db.Submissions.Add(m);
+            //Add User Vote to Submission
+            newSubmission.SubmissionVoteTrackers.Add(new SubmissionVoteTracker() {
+                UserName = newSubmission.UserName,
+                VoteStatus = (int)Vote.Up,
+                VoteValue = (int)Vote.Up,
+                IPAddress = null,
+                CreationDate = Repository.CurrentDate,
+            });
+            _db.Submissions.Add(newSubmission);
 
             await _db.SaveChangesAsync().ConfigureAwait(false);
 
             //This sends notifications by parsing content
             if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
             {
-                ContentProcessor.Instance.Process(String.Concat(m.Title, " ", m.Content), ProcessingStage.InboundPostSave, m);
+                ContentProcessor.Instance.Process(String.Concat(newSubmission.Title, " ", newSubmission.Content), ProcessingStage.InboundPostSave, newSubmission);
             }
 
-            return CommandResponse.Successful(Selectors.SecureSubmission(m));
+            return CommandResponse.Successful(Selectors.SecureSubmission(newSubmission));
         }
 
         [Authorize]
@@ -4150,6 +4162,7 @@ namespace Voat.Data
         }
 
         #endregion Moderator Functions
+
         #region RuleReports
        
         public async Task<IEnumerable<Data.Models.RuleSet>> GetRuleSets(string subverse, ContentType? contentType)
@@ -4316,6 +4329,7 @@ namespace Voat.Data
         }
 
         #endregion
+        
         #region Admin Functions
 
         //public void SaveAdminLogEntry(AdminLog log) {
@@ -4962,6 +4976,244 @@ namespace Voat.Data
 
         }
 
+        #endregion
+
+        #region User
+
+        public async Task<CommandResponse> DeleteAccount(DeleteAccountOptions options)
+        {
+            DemandAuthentication();
+
+            //if (!User.Identity.Name.IsEqual(model.UserName))
+            //{
+            //    return RedirectToAction("Manage", new { message = ManageMessageId.UserNameMismatch });
+            //}
+            //else
+            //{
+            //    // require users to enter their password in order to execute account delete action
+            //    var user = UserManager.Find(User.Identity.Name, model.CurrentPassword);
+
+            //    if (user != null)
+            //    {
+            //        // execute delete action
+            //        if (UserHelper.DeleteUser(User.Identity.Name))
+            //        {
+            //            // delete email address and set password to something random
+            //            UserManager.SetEmail(User.Identity.GetUserId(), null);
+
+            //            string randomPassword = "";
+            //            using (SHA512 shaM = new SHA512Managed())
+            //            {
+            //                randomPassword = Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(Path.GetRandomFileName())));
+            //            }
+
+            //            UserManager.ChangePassword(User.Identity.GetUserId(), model.CurrentPassword, randomPassword);
+
+            //            AuthenticationManager.SignOut();
+            //            return View("~/Views/Account/AccountDeleted.cshtml");
+            //        }
+
+            //        // something went wrong when deleting user account
+            //        return View("~/Views/Error/Error.cshtml");
+            //    }
+            //}
+            if (!options.UserName.IsEqual(options.ConfirmUserName))
+            {
+                return CommandResponse.FromStatus(Status.Error, "Confirmation UserName does not match");
+            }
+
+            if (options.UserName == User.Identity.Name)
+            {
+
+                var userName = User.Identity.Name;
+
+                //ensure banned user blocked from operation
+                if (_db.BannedUsers.Any(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return CommandResponse.FromStatus(Status.Denied, "User is Globally Banned");
+                }
+
+                using (var userManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
+                {
+                    var userAccount = userManager.Find(options.UserName, options.CurrentPassword);
+                    if (userAccount != null)
+                    {
+                        List<DapperBase> statements = new List<DapperBase>();
+                        var deleteText = "Account Deleted By User";
+                        //Comments
+                        switch (options.Comments)
+                        {
+                            case DeleteOption.Anonymize:
+                                var a = new DapperUpdate();
+                                a.Update = "Update c SET c.IsAnonymized = 1 FROM Comment c WHERE c.UserName = @UserName";
+                                a.Parameters = new DynamicParameters(new { UserName = userName });
+                                statements.Add(a);
+                                break;
+                            case DeleteOption.Delete:
+                                var d = new DapperUpdate();
+                                d.Update = $"Update c SET c.IsDeleted = 1, Content = '{deleteText}' FROM Comment c WHERE c.UserName = @UserName";
+                                d.Parameters = new DynamicParameters(new { UserName = userName });
+                                statements.Add(d);
+                                break;
+                        }
+                        //Text Submissions
+                        switch (options.TextSubmissions)
+                        {
+                            case DeleteOption.Anonymize:
+                                var a = new DapperUpdate();
+                                a.Update = $"Update s SET s.IsAnonymized = 1 FROM Submission s WHERE s.UserName = @UserName AND s.Type = {(int)SubmissionType.Text}";
+                                a.Parameters = new DynamicParameters(new { UserName = userName });
+                                statements.Add(a);
+                                break;
+                            case DeleteOption.Delete:
+                                var d = new DapperUpdate();
+                                d.Update = $"Update s SET s.IsDeleted = 1, s.Title = '{deleteText}', s.Content = '{deleteText}' FROM Submission s WHERE s.UserName = @UserName AND s.Type = {(int)SubmissionType.Text}";
+                                d.Parameters = new DynamicParameters(new { UserName = userName });
+                                statements.Add(d);
+                                break;
+                        }
+                        //Link Submissions
+                        switch (options.LinkSubmissions)
+                        {
+                            case DeleteOption.Anonymize:
+                                var a = new DapperUpdate();
+                                a.Update = $"Update s SET s.IsAnonymized = 1 FROM Submission s WHERE s.UserName = @UserName AND s.Type = {(int)SubmissionType.Link}";
+                                a.Parameters = new DynamicParameters(new { UserName = userName });
+                                statements.Add(a);
+                                break;
+                            case DeleteOption.Delete:
+                                var d = new DapperUpdate();
+                                d.Update = $"Update s SET s.IsDeleted = 1, s.Title = '{deleteText}', s.Url = 'https://{Settings.SiteDomain}' FROM Submission s WHERE s.UserName = @UserName AND s.Type = {(int)SubmissionType.Link}";
+                                d.Parameters = new DynamicParameters(new { UserName = userName });
+                                statements.Add(d);
+                                break;
+                        }
+
+                        // resign from all moderating positions
+                        _db.SubverseModerators.RemoveRange(_db.SubverseModerators.Where(m => m.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase)));
+                        var u = new DapperDelete();
+                        u.Delete = "DELETE m FROM SubverseModerator m";
+                        u.Where = "m.UserName = @UserName";
+                        u.Parameters = new DynamicParameters(new { UserName = userName });
+                        statements.Add(u);
+
+                        //Messages
+                        u = new DapperDelete();
+                        u.Delete = "DELETE m FROM [Message] m";
+                        u.Where = $"((m.Recipient = @UserName AND m.RecipientType = {(int)IdentityType.User} AND m.Type IN @RecipientTypes))";
+                        u.Parameters = new DynamicParameters(new
+                        {
+                            UserName = userName,
+                            RecipientTypes = new int[] {
+                                (int)MessageType.CommentMention,
+                                (int)MessageType.CommentReply,
+                                (int)MessageType.SubmissionMention,
+                                (int)MessageType.SubmissionReply,
+                            }
+                        });
+                        statements.Add(u);
+
+                        //Start Update Tasks
+                        //TODO: Run this in better 
+                        //var updateTasks = statements.Select(x => Task.Factory.StartNew(() => { _db.Database.Connection.ExecuteAsync(x.ToString(), x.Parameters); }));
+
+                        foreach (var statement in statements)
+                        {
+                            await _db.Database.Connection.ExecuteAsync(statement.ToString(), statement.Parameters);
+                        }
+                    
+
+                    // delete user preferences
+                    var userPrefs = _db.UserPreferences.Find(userName);
+                        if (userPrefs != null)
+                        {
+                            // delete short bio
+                            userPrefs.Bio = null;
+
+                            // delete avatar
+                            if (userPrefs.Avatar != null)
+                            {
+                                var avatarFilename = userPrefs.Avatar;
+                                if (Settings.UseContentDeliveryNetwork)
+                                {
+                                    // try to delete from CDN
+                                    CloudStorageUtility.DeleteBlob(avatarFilename, "avatars");
+                                }
+                                else
+                                {
+                                    // try to remove from local FS
+                                    string tempAvatarLocation = Settings.DestinationPathAvatars + '\\' + userName + ".jpg";
+
+                                    // the avatar file was not found at expected path, abort
+                                    if (FileSystemUtility.FileExists(tempAvatarLocation, Settings.DestinationPathAvatars))
+                                    {
+                                        File.Delete(tempAvatarLocation);
+                                    }
+                                    // exec delete
+                                }
+                                //reset avatar
+                                userPrefs.Avatar = null;
+                            }
+                        }
+
+                        // UNDONE: keep this updated as new features are added (delete sets etc)
+                        // username will stay permanently reserved to prevent someone else from registering it and impersonating
+                        await _db.SaveChangesAsync().ConfigureAwait(false);
+
+                        //Modify User Account
+
+                        //            UserManager.SetEmail(User.Identity.GetUserId(), null);
+
+                        //            string randomPassword = "";
+                        //            using (SHA512 shaM = new SHA512Managed())
+                        //            {
+                        //                randomPassword = Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(Path.GetRandomFileName())));
+                        //            }
+
+                        //            UserManager.ChangePassword(User.Identity.GetUserId(), model.CurrentPassword, randomPassword);
+
+                        //            AuthenticationManager.SignOut();
+                        //            return View("~/Views/Account/AccountDeleted.cshtml");
+
+                        var userID = userAccount.Id;
+
+                        //Recovery
+                        if (!String.IsNullOrEmpty(options.RecoveryEmailAddress) && options.RecoveryEmailAddress.IsEqual(options.ConfirmRecoveryEmailAddress))
+                        {
+                            //Account is recoverable but locked for x days
+                            var endLockOutDate = CurrentDate.AddDays(3 * 30);
+
+                            userAccount.Email = options.RecoveryEmailAddress;
+                            userAccount.LockoutEnabled = true;
+                            userAccount.LockoutEndDateUtc = endLockOutDate;
+                            //await userManager.SetEmailAsync(userID, options.RecoveryEmailAddress);
+                            //await userManager.SetLockoutEnabledAsync(userID, true);
+                            //await userManager.SetLockoutEndDateAsync(userID, CurrentDate.AddDays(3 * 30));
+                        }
+                        else
+                        {
+                            userAccount.Email = null;
+                            //await userManager.SetEmailAsync(userID, null);
+                        }
+                        await userManager.UpdateAsync(userAccount).ConfigureAwait(false);
+
+                        //Password
+                        string randomPassword = "";
+                        using (SHA512 shaM = new SHA512Managed())
+                        {
+                            randomPassword = Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(Path.GetRandomFileName())));
+                        }
+                        await userManager.ChangePasswordAsync(userID, options.CurrentPassword, randomPassword).ConfigureAwait(false);
+
+                        //await Task.WhenAll(updateTasks).ConfigureAwait(false);
+
+                        return CommandResponse.FromStatus(Status.Success);
+                    }
+                }
+            }
+            // user account could not be found
+            return CommandResponse.FromStatus(Status.Error, "User Account Not Found");
+        }
         #endregion
     }
 }

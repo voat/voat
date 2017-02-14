@@ -567,7 +567,7 @@
     <Content Include="Views\Error\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\About\About.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\~Index.cshtml" />
     <Content Include="Views\Account\_ChangeAccountSettings.cshtml" />
     <Content Include="Views\Account\_RemoveAccountPartial.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
@@ -605,7 +605,6 @@
     <Content Include="Views\About\Intro.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarSubmissionInfo.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarUserInfo.cshtml" />
-    <Content Include="Views\Account\_DeleteAccount.cshtml" />
     <Content Include="Views\Account\AccountDeleted.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmissionLink.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmissionSelf.cshtml" />
@@ -655,7 +654,7 @@
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonFlair.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSticky.cshtml" />
     <Content Include="Views\Account\_UserPreferencesAbout.cshtml" />
-    <Content Include="Views\Home\IndexV2.cshtml" />
+    <Content Include="Views\Home\~IndexV2.cshtml" />
     <Content Include="Views\Sets\_SetTitle.cshtml" />
     <Content Include="Views\Sets\_SingleSet.cshtml" />
     <Content Include="Views\Sets\Index.cshtml" />
@@ -735,6 +734,7 @@
     <Content Include="Views\Shared\EditorTemplates\Boolean.cshtml" />
     <Content Include="Views\Report\Reports.cshtml" />
     <Content Include="Views\Report\UserReportDialog.cshtml" />
+    <Content Include="Views\Account\Delete.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

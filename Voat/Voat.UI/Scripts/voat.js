@@ -63,6 +63,7 @@ $(document).ready(function () {
                 //data: $form.serialize(),
                 error: function (xhr, status, error) {
                     var msg = getErrorMessage(error);
+                    //TODO: Why is this here? I know I did this but why? WHY!? Please find my why.
                     alert(msg);
                 },
                 success: function (response) {

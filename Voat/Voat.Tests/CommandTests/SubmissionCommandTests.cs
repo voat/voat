@@ -48,6 +48,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsNotNull(r.Response, "Expecting a non null response");
             Assert.AreNotEqual(0, r.Response.ID);
         }
+
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void CreateSubmissionTrapJSInUrl()
@@ -60,6 +61,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsFalse(r.Success, r.Message);
             Assert.AreEqual(r.Message, "The url you are trying to submit is invalid");
         }
+
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void CreateSubmissionTrapJSMarkdown()

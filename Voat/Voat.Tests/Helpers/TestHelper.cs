@@ -1,4 +1,6 @@
-﻿using System.Security.Principal;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Security.Principal;
+using Voat.Domain.Command;
 
 namespace Voat.Tests
 {
@@ -29,6 +31,36 @@ namespace Voat.Tests
                 System.Threading.Thread.CurrentPrincipal = p;
             }
         }
-       
+
+
+        public static class ContentCreation {
+
+            public static Domain.Models.Submission CreateSubmission(string userName, Domain.Models.UserSubmission submission)
+            {
+                TestHelper.SetPrincipal(userName);
+
+                var cmd = new CreateSubmissionCommand(submission);
+
+                var r = cmd.Execute().Result;
+
+                Assert.IsNotNull(r, "Response is null");
+                Assert.IsTrue(r.Success, r.Message);
+                Assert.IsNotNull(r.Response, "Expecting a non null response");
+                Assert.AreNotEqual(0, r.Response.ID);
+
+                return r.Response;
+            }
+
+            public static Domain.Models.Comment CreateComment(string userName, int submissionID, string content,  int? parentCommentID = null)
+            {
+                TestHelper.SetPrincipal(userName);
+                var cmd = new CreateCommentCommand(submissionID, parentCommentID, content);
+                var c = cmd.Execute().Result;
+                Assert.IsTrue(c.Success);
+                Assert.IsNotNull(c.Response);
+                Assert.AreNotEqual(0, c.Response.ID);
+                return c.Response;
+            }
+        }
     }
 }

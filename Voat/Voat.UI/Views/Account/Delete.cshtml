@@ -1,0 +1,153 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@model Voat.Domain.Models.DeleteAccountOptions
+@{ 
+    var userData = Voat.Domain.UserData.GetContextUserData();
+    var isLoved = userData.Information.CommentPoints.Sum > 0 && userData.Information.CommentPoints.Sum > 0;
+
+
+}
+<style type="text/css">
+    select.form-control {
+    font-size: 13px;
+    line-height: 100%;
+    padding: 6px;
+    width: 100%;
+    background: none;
+    color: #dfdfdf;
+    background-color: #333;
+}
+    .normal ul {
+       list-style-type: initial; 
+       list-style-position: inside; 
+       margin-left:1.5em;
+    }
+    .normal li {
+        list-style-type:square;
+        margin-left:1.5em;
+    }
+</style>
+
+<div id="container" class="page-userprofile">
+    @Html.Partial("~/Views/Shared/Sidebars/_SidebarUserInfo.cshtml")
+    <div class="content" role="main">
+        <div class="row nomargin">
+            <div class="well col-md-12">
+                @using (Html.BeginForm("Delete", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form", autocomplete = "off" }))
+                {
+                    <div class="alert-title">Delete Your Account</div>
+                    <div class="form-group">
+                        <p>Confirm your creds so we know you are legit o_O</p>
+                    </div>
+                    @* Attempt to trick autocomplete browser functionality to pre-populate this field instead, in an attempt to prevent accidental account deletion *@
+                    <input id="autoCompletePasswordHolder" type="password" style="display:none" />
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary()
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.UserName, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-5">
+                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", autocomplete = "off" })
+                            @Html.ValidationMessageFor(model => model.UserName)
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ConfirmUserName, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-5">
+                            @Html.TextBoxFor(m => m.ConfirmUserName, new { @class = "form-control", autocomplete = "off" })
+                            @Html.ValidationMessageFor(model => model.ConfirmUserName)
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CurrentPassword, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-3">
+                            @Html.PasswordFor(m => m.CurrentPassword, new { @class = "form-control", autocomplete = "off" })
+                        </div>
+                    </div>
+                    <div class="alert-title">Reason (Optional)</div>
+                    <div class="form-group">
+                        <p>Tell us why we suck so we can suck less.</p>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Reason, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-8">
+                            @Html.TextBoxFor(m => m.Reason, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Reason)
+                        </div>
+                    </div>
+                    <div class="alert-title">Delete Options</div>
+                    <div class="form-group">
+                        <p>You have been with us @Voat.Common.Age.ToRelative(userData.Information.RegistrationDate)!</p>
+                        @if (userData.Information.CommentPoints.UpCount > 100 && userData.Information.CommentPoints.UpCount > 100)
+                        {
+                            <p>Your comments were upped @userData.Information.CommentPoints.UpCount times by fellow @String.Format("{0}ers",Settings.SiteName) and your submissions @userData.Information.SubmissionPoints.UpCount times!</p>
+                        }
+                        <p>You have three choices regarding your content:</p>
+                        <ul class="normal">
+                            <li>Leave As Is<p>Remain famous and remembered</p></li>
+                            <li>Anonymize<p>Mark content as anonymously submitted - Loose fame but earn respect</p></li>
+                            <li>Delete<p>Scorched earth strategy - Nuke it all</p></li>
+                        </ul>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TextSubmissions, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-3">
+                            @Html.EnumDropDownListFor(m => m.TextSubmissions, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.TextSubmissions)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.LinkSubmissions, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-3">
+                            @Html.EnumDropDownListFor(m => m.LinkSubmissions, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.LinkSubmissions)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Comments, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-3">
+                            @Html.EnumDropDownListFor(m => m.Comments, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Comments)
+                        </div>
+                    </div>
+                    <div class="alert-title">Account Recovery (Optional)</div>
+                    <div class="form-group">
+                        <p>If you ever want to come back you can leave an email address to recover your account. Forever is a long time...</p>
+                        <p>Your account will be locked for 3 months though (this is the delete page after all)</p>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.RecoveryEmailAddress, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-3">
+                            @Html.TextBoxFor(m => m.RecoveryEmailAddress, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.RecoveryEmailAddress)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ConfirmRecoveryEmailAddress, new { @class = "col-md-4 control-label" })
+                        <div class="col-md-3">
+                            @Html.TextBoxFor(m => m.ConfirmRecoveryEmailAddress, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ConfirmRecoveryEmailAddress)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-3">
+                            <input type="submit" value="Delete" class="btn-whoaverse" />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
