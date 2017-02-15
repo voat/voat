@@ -13,27 +13,23 @@ All Rights Reserved.
 */
 
 //using Microsoft.AspNet.SignalR;
-using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Voat.Caching;
-using Voat.Configuration;
-using Voat.Data;
+using Voat.Common;
 using Voat.Data.Models;
-using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
-using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.UI.Utilities;
 using Voat.Utilities;
-using Voat.Utilities.Components;
 
 namespace Voat.Controllers
 {
@@ -47,7 +43,13 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<JsonResult> VoteComment(int commentId, int typeOfVote)
         {
-            var cmd = new CommentVoteCommand(commentId, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
+            var comment = await _db.Comments.FirstOrDefaultAsync();
+            if (comment == null)
+            {
+                throw new VoatNotFoundException("Comment with ID {0} not found.", commentId.ToString());
+            }
+
+            var cmd = new CommentVoteCommand(commentId, comment.SubmissionID, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
             var result = await cmd.Execute();
             return Json(result);
         }
