@@ -1064,7 +1064,59 @@ VidmeExpando.prototype.process = function (source) {
 /* Imgur Album */
 var ImgurAlbumExpando = function (options) {
     IFrameEmbedderExpando.call(this, /imgur\.com\/a\/(\w+)\/?/i, options);
-    this.getSrcUrl = function (id, fun) { fun('//imgur.com/a/' + id + '/embed'); };
+    this.hook = function (source, description, iFrameSettings) {
+
+        var target = this.options.targetFunc(source);
+
+        if (LinkExpando.isHooked(target)) {
+            return;
+        } else {
+            LinkExpando.isHooked(target, true);
+        }
+
+        var id = this.getId(source.prop('href'));
+        if (!id) {
+            return;
+        }
+
+        target.prop('title', description);
+
+        var me = this;
+        target.on('click',
+            function (event) {
+                event.preventDefault();
+
+                var target = me.options.targetFunc($(event.target));
+                var displayDiv = me.options.destinationFunc(target);
+                if (!LinkExpando.isLoaded(target)) {
+
+                    if (me.options.loading) {
+                        me.options.loading(target);
+                    }
+
+                    var funDisplay = function () {
+                        var embedCode = '<blockquote class="imgur-embed-pub" lang="en" data-id="a/' + id + '"><a href="//imgur.com/' + id + '">Imgur Album</a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>'
+                        displayDiv.empty().html(embedCode);
+                        LinkExpando.setDirectLink(displayDiv, description, source.prop('href'));
+                        LinkExpando.isLoaded(target, true);
+                    };
+
+                    funDisplay();
+
+                }
+                LinkExpando.isVisible(target, !LinkExpando.isVisible(target));
+                me.options.toggle(target);
+                me.options.destinationFunc(target).slideToggle(400, function () {
+                    if (!LinkExpando.isVisible(target) && LinkExpando.isLoaded(target)) {
+                        displayDiv.empty();
+                        LinkExpando.isLoaded(target, false);
+                    }
+                });
+            });
+        if (me.options.setTags) {
+            LinkExpando.setTag(target, description);
+        }
+    }
 };
 ImgurAlbumExpando.prototype = new IFrameEmbedderExpando();
 ImgurAlbumExpando.prototype.constructor = ImgurAlbumExpando;
