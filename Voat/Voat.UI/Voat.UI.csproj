@@ -413,6 +413,7 @@
     <Content Include="Graphics\Badges\beta_user.png" />
     <Content Include="Graphics\Badges\brain.png" />
     <Content Include="Graphics\Badges\bug_punisher.png" />
+    <Content Include="Graphics\Badges\founder.png" />
     <Content Include="Graphics\Badges\mb.png" />
     <Content Include="Graphics\Badges\putts_fav.png" />
     <Content Include="Graphics\Badges\whoaverse.png" />
