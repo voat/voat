@@ -57,6 +57,7 @@ namespace Voat.Utilities
         // generate a thumbnail while removing transparency and preserving aspect ratio
         public static async Task<string> GenerateThumbFromImageUrl(string imageUrl, int timeoutInMilliseconds = 3000)
         {
+            //TODO: Return NULL if file lenght is zero as thumbnail did not generate to local disk
             var randomFileName = GenerateRandomFilename();
             var tempPath = Path.Combine(DestinationPathThumbs, $"{randomFileName}.jpg");
 
@@ -68,19 +69,22 @@ namespace Voat.Utilities
                 originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(tempPath, 90);
             }
 
-            // call upload to storage method if CDN config is enabled
-            if (Settings.UseContentDeliveryNetwork)
+            if (FileSystemUtility.FileExists(tempPath, DestinationPathThumbs))
             {
-                if (FileSystemUtility.FileExists(tempPath, DestinationPathThumbs))
+                // call upload to storage method if CDN config is enabled
+                if (Settings.UseContentDeliveryNetwork)
                 {
                     await CloudStorageUtility.UploadBlobToStorageAsync(tempPath, "thumbs");
-
                     // delete local file after uploading to CDN
                     File.Delete(tempPath);
                 }
+                return Path.GetFileName(tempPath);
+            }
+            else
+            {
+                return null;
             }
 
-            return Path.GetFileName(tempPath);
         }
 
         // store uploaded avatar

@@ -44,15 +44,15 @@ namespace Voat.Tests.Repository
             {
                 string name = "whatever";
 
-                TestHelper.SetPrincipal("TestUser1");
+                TestHelper.SetPrincipal("TestUser01");
                 db.Block(DomainType.Subverse, name);
 
-                var blocks = db.GetBlockedSubverses("TestUser1");
+                var blocks = db.GetBlockedSubverses("TestUser01");
                 Assert.IsNotNull(blocks);
                 Assert.IsTrue(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
 
                 db.Unblock(DomainType.Subverse, name);
-                blocks = db.GetBlockedSubverses("TestUser1");
+                blocks = db.GetBlockedSubverses("TestUser01");
                 Assert.IsNotNull(blocks);
                 Assert.IsFalse(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
             }
@@ -77,7 +77,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                TestHelper.SetPrincipal("TestUser1");
+                TestHelper.SetPrincipal("TestUser01");
                 db.Block(DomainType.Subverse, "happyhappyjoyjoy");
             }
         }
@@ -89,7 +89,7 @@ namespace Voat.Tests.Repository
             using (var db = new Voat.Data.Repository())
             {
                 string name = "whatever";
-                string userName = "TestUser2";
+                string userName = "TestUser02";
 
                 TestHelper.SetPrincipal(userName);
 
@@ -114,7 +114,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                TestHelper.SetPrincipal("TestUser1");
+                TestHelper.SetPrincipal("TestUser01");
 
                 var response = await db.PostSubmission(new UserSubmission()
                 {
@@ -210,7 +210,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                TestHelper.SetPrincipal("TestUser1");
+                TestHelper.SetPrincipal("TestUser01");
 
                 var m = await db.PostSubmission(new UserSubmission()
                 {

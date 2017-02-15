@@ -130,7 +130,11 @@ namespace Voat.Data
 
         public string AppendClause(string currentValue, string appendValue, string seperator)
         {
-            return currentValue + (String.IsNullOrEmpty(currentValue) ? appendValue : seperator + appendValue);
+            if (!String.IsNullOrEmpty(appendValue))
+            {
+                return currentValue + (String.IsNullOrEmpty(currentValue) ? appendValue : seperator + appendValue);
+            }
+            return currentValue;
         }
         public override string ToString()
         {

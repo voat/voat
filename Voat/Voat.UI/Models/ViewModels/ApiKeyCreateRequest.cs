@@ -28,9 +28,8 @@ namespace Voat.Models.ViewModels
 
         [Display(Name = "OAuth Redirect Url")]
         [StringLength(500)]
-        [Url(ErrorMessage = "Please enter a valid http, https, or ftp URL.")]
+        [RegularExpression(Utilities.CONSTANTS.URI_LINK_REGEX_UI, ErrorMessage = "URI must conform to standard protocols")]
         public string RedirectUrl { get; set; }
         
-
     }
 }

@@ -166,10 +166,12 @@
     <Compile Include="CommandTests\CommentDeleteWorkFlowTests.cs" />
     <Compile Include="CommandTests\CreateSubverseTests.cs" />
     <Compile Include="CommandTests\ModeratorCommandTests.cs" />
+    <Compile Include="CommandTests\RuleReportTests.cs" />
     <Compile Include="CommandTests\SendMessageCommandTests.cs" />
     <Compile Include="CommandTests\SubmissionCommandTests.cs" />
     <Compile Include="CommandTests\UserCommandTests.cs" />
     <Compile Include="CommandTests\VoteCommandTests.cs" />
+    <Compile Include="CommandTests\VoteValueCommandTests.cs" />
     <Compile Include="ControllerTests\Base\Mock.cs" />
     <Compile Include="ControllerTests\HomeControllerTests.cs" />
     <Compile Include="Data\UNIT_TEST_CONSTANTS.cs" />

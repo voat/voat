@@ -301,11 +301,11 @@
     <Compile Include="Controllers\DomainsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HtmlElementsController.cs" />
-    <Compile Include="Controllers\ManagementController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\ModLogController.cs" />
     <Compile Include="Controllers\NavController.cs" />
     <Compile Include="Controllers\SetsController.cs" />
+    <Compile Include="Controllers\SubverseModerationController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
@@ -318,6 +318,7 @@
     <Compile Include="Models\ViewModels\ErrorViewModel.cs" />
     <Compile Include="Models\ViewModels\MessageContextViewModel.cs" />
     <Compile Include="Models\ViewModels\ModeratorDeleteViewModels.cs" />
+    <Compile Include="Models\ViewModels\ReportHeader.cs" />
     <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleSetViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleDefaultSetViewModel.cs" />
@@ -412,6 +413,7 @@
     <Content Include="Graphics\Badges\beta_user.png" />
     <Content Include="Graphics\Badges\brain.png" />
     <Content Include="Graphics\Badges\bug_punisher.png" />
+    <Content Include="Graphics\Badges\founder.png" />
     <Content Include="Graphics\Badges\mb.png" />
     <Content Include="Graphics\Badges\putts_fav.png" />
     <Content Include="Graphics\Badges\whoaverse.png" />
@@ -566,7 +568,7 @@
     <Content Include="Views\Error\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\About\About.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\~Index.cshtml" />
     <Content Include="Views\Account\_ChangeAccountSettings.cshtml" />
     <Content Include="Views\Account\_RemoveAccountPartial.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
@@ -604,7 +606,6 @@
     <Content Include="Views\About\Intro.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarSubmissionInfo.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarUserInfo.cshtml" />
-    <Content Include="Views\Account\_DeleteAccount.cshtml" />
     <Content Include="Views\Account\AccountDeleted.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmissionLink.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileSubmissionSelf.cshtml" />
@@ -654,7 +655,7 @@
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonFlair.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSticky.cshtml" />
     <Content Include="Views\Account\_UserPreferencesAbout.cshtml" />
-    <Content Include="Views\Home\IndexV2.cshtml" />
+    <Content Include="Views\Home\~IndexV2.cshtml" />
     <Content Include="Views\Sets\_SetTitle.cshtml" />
     <Content Include="Views\Sets\_SingleSet.cshtml" />
     <Content Include="Views\Sets\Index.cshtml" />
@@ -674,7 +675,6 @@
     <Content Include="Views\Subverses\Admin\SubverseBans.cshtml" />
     <Content Include="Views\Subverses\Admin\AddBan.cshtml" />
     <Content Include="Views\Subverses\Admin\RemoveBan.cshtml" />
-    <Content Include="Views\Management\Dashboard.cshtml" />
     <Content Include="Views\Subverses\Admin\_ModeratorInvitations.cshtml" />
     <Content Include="Views\Subverses\Admin\RecallModeratorInvitation.cshtml" />
     <Content Include="Views\Shared\Comments\_CommentSegment.cshtml" />
@@ -733,6 +733,9 @@
     <Content Include="Views\Shared\_SearchBox.cshtml" />
     <Content Include="Views\Shared\Submissions\_Flair.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Boolean.cshtml" />
+    <Content Include="Views\Report\Reports.cshtml" />
+    <Content Include="Views\Report\UserReportDialog.cshtml" />
+    <Content Include="Views\Account\Delete.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -766,7 +769,9 @@
       <Name>Voat.RulesEngine</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\SubverseModeration\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

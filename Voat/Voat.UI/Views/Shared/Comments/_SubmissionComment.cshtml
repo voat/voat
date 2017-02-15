@@ -53,7 +53,8 @@
     {
         @Html.Partial("_votingIconsComment", Model,
             new ViewDataDictionary {
-                { "collapsedStyle", uncollapsedComment }
+                { "collapsedStyle", uncollapsedComment },
+                { "Submission", ViewBag.Submission }
             })
     }
 
@@ -84,7 +85,7 @@
             {
                 <span>(last edited <time title="@Model.LastEditDate" datetime="@Model.LastEditDate">@Age.ToRelative(Model.LastEditDate.Value)</time>&#32;ago)</span>
             }
-            &nbsp;<a href="#" class="expand" style="@showIfParent" onclick="return toggleComment(@Model.ID)">(show children)</a>
+            &nbsp;<a href="#" class="expand" style="@showIfParent" onclick="return toggleComment(@Model.ID)">(show)</a>
         </div>
         <div class="noncollapsed" id="@Model.ID" style="@uncollapsedComment">
             <p class="tagline">
@@ -127,22 +128,22 @@
                         <span class="userattrs"></span>
                     }
 
-                    <span class="score dislikes">
-                        <span class="number">@Model.DownCount</span> points
-                    </span>
-                    <span class="score unvoted">
-                        <span class="number">@Model.Sum</span> points
-                    </span>
-                    <span class="score likes">
-                        <span class="number">@Model.UpCount</span> points
-                    </span>
-                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
+                    
                 }
                 else
                 {
                     <span class="userattrs">[deleted]</span>
                 }
-
+                <span class="score dislikes">
+                    <span class="number">@Model.DownCount</span> points
+                </span>
+                <span class="score unvoted">
+                    <span class="number">@Model.Sum</span> points
+                </span>
+                <span class="score likes">
+                    <span class="number">@Model.UpCount</span> points
+                </span>
+                <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
                 <time title="@Model.CreationDate" datetime="@Model.CreationDate">@Age.ToRelative(Model.CreationDate)</time>&#32;ago&nbsp;
                 @if (Model.LastEditDate.HasValue)
                 {
@@ -186,7 +187,7 @@
                         <div class="usertext-buttons">
                             <input value="Save" class="btn-whoaverse-paging" type="submit">
                             <input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement.parentElement).find('#Content'),$(this.parentElement.parentElement).find('#submission-preview-area'))">
-                            <button class="btn-whoaverse-paging" onclick="removeeditform(@Model.ID)" type="button">Cancel</button>
+                            <button class="btn-whoaverse-paging" onclick="removeEditForm(@Model.ID)" type="button">Cancel</button>
                         </div>
                         <div class="panel panel-default" id="submission-preview-area" style="display: none">
                             <div class="panel-heading">
@@ -208,7 +209,8 @@
             @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", Model,
                new ViewDataDictionary()
                {
-                   { "ModeratorList", ViewBag.ModeratorList }
+                   { "ModeratorList", ViewBag.ModeratorList },
+                   { "Submission", ViewBag.Submission }
                })
         </div>
     </div>

@@ -10,11 +10,16 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@{
-    int commentId = Convert.ToInt32(ViewData["CommentId"]);
-}
+@model Voat.Domain.Models.NestedComment
 
 <li>
+    <span class="option main active">
+        <a href="javascript:void(0)" class="togglebutton report-button" onclick="return getReportDialog(this, '@Model.Subverse', 'comment', @Model.ID)">report</a>
+    </span>
+</li>
+
+
+@*<li>
     <form class="toggle report-button active" action="#" method="get">
         <input class="active" name="executed" value="reported" type="hidden">
         <span class="option main active">
@@ -24,4 +29,4 @@
             are you sure?  <a href="javascript:void(0)" class="yes" onclick="reportContent(this, 'comment', @commentId)">yes</a> / <a href="javascript:void(0)" class="no" onclick="return toggleback(this)">no</a>
         </span>
     </form>
-</li>
+</li>*@

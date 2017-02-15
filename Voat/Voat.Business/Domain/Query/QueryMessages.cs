@@ -14,7 +14,7 @@ namespace Voat.Domain.Query
         protected MessageState _state;
         protected bool _markAsRead;
         protected MessageTypeFlag _type;
-        protected SearchOptions _options = SearchOptions.Default;
+        protected SearchOptions _options = new SearchOptions(100);
         //private int _pageNumber = 0;
         //private int _pageCount = 25;
 

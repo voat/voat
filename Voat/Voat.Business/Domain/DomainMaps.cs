@@ -6,6 +6,7 @@ using System.Threading;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Models;
+using Voat.Domain.Query;
 using Voat.Utilities;
 
 namespace Voat.Domain
@@ -164,6 +165,7 @@ namespace Voat.Domain
                     IsDeleted = submission.IsDeleted,
                     Rank = submission.Rank,
                     RelativeRank = submission.RelativeRank,
+                    ArchiveDate = submission.ArchiveDate
                 };
 
                 //add flair if present
@@ -175,7 +177,10 @@ namespace Voat.Domain
                 {
                     result.Attributes.Add(new ContentAttribute() { ID = -1, Type = AttributeType.Data, Name = "NSFW", CssClass = "linkflairlabel" });
                 }
-
+                if (result.ArchiveDate.HasValue)
+                {
+                    result.Attributes.Add(new ContentAttribute() { ID = -1, Type = AttributeType.Data, Name = "Archived", CssClass = "linkflairlabel" });
+                }
             }
             return result;
         }
@@ -203,7 +208,7 @@ namespace Voat.Domain
                     CreationDate = subverse.CreationDate,
                     SubscriberCount = (subverse.SubscriberCount == null ? 0 : subverse.SubscriberCount.Value),
                     Sidebar = subverse.SideBar,
-                    Type = subverse.Type,
+                    //Type = subverse.Type,
                     IsAnonymized = subverse.IsAnonymized,
                     IsAdult = subverse.IsAdult,
 
@@ -274,7 +279,7 @@ namespace Voat.Domain
             return result;
         }
 
-        public static NestedComment Map(this usp_CommentTree_Result treeComment, string submissionOwnerName, IEnumerable<VoteValue> commentVotes = null)
+        public static NestedComment Map(this usp_CommentTree_Result treeComment, string submissionOwnerName, IEnumerable<VoteValue> commentVotes = null, IEnumerable<BlockedItem> userBlocks = null)
         {
             NestedComment result = null;
             if (treeComment != null)
@@ -299,7 +304,7 @@ namespace Voat.Domain
                 result.IsSubmitter = (treeComment.UserName == submissionOwnerName);
 
                 //Set User State and secure comment
-                HydrateUserData(result, false, commentVotes);
+                HydrateUserData(result, false, commentVotes, userBlocks);
             }
             return result;
         }
@@ -407,10 +412,12 @@ namespace Voat.Domain
                     using (var repo = new Repository())
                     {
                         var votes = repo.UserVoteStatus(userName, ContentType.Comment, comments.Select(x => x.ID).ToArray());
+                        var q = new QueryUserBlocks();
+                        var blockedUsers = q.Execute().Where(x => x.Type == DomainType.User);
 
                         foreach (var comment in comments)
                         {
-                            HydrateUserData(comment, false, votes);
+                            HydrateUserData(comment, false, votes, blockedUsers);
                             //comment.IsOwner = comment.UserName == userName;
                             //var voteValue = votes.FirstOrDefault(x => x.ID == comment.ID);
                             //comment.Vote = (voteValue == null ? 0 : voteValue.Value);
@@ -421,7 +428,7 @@ namespace Voat.Domain
                 }
             }
         }
-        public static void HydrateUserData(Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<VoteValue> commentVotes = null)
+        public static void HydrateUserData(Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<VoteValue> commentVotes = null, IEnumerable<BlockedItem> userBlocks = null)
         {
             if (comment != null)
             {
@@ -443,7 +450,11 @@ namespace Voat.Domain
                             comment.Vote = repo.UserVoteStatus(userName, ContentType.Comment, comment.ID);
                         }
                     }
-
+                    //collapse comment threads when user is blocked
+                    if (!comment.IsAnonymized && userBlocks != null && userBlocks.Any())
+                    {
+                        comment.IsCollapsed = userBlocks.Any(x => comment.UserName.IsEqual(x.Name));
+                    }
                     comment.IsSaved = false;
                     comment.IsSaved = UserHelper.IsSaved(ContentType.Comment, comment.ID);
                 }

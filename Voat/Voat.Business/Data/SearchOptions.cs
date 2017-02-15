@@ -374,7 +374,7 @@ namespace Voat.Data
         }
         
         /// <summary>
-        /// [NEW] The page in which to retrieve. This value simply overriddes 'Index' and calculates it for you. How nice are we? Fairly nice I must say. Paging starts on page 1 not page 0.
+        /// The page in which to retrieve.
         /// </summary>
         [JsonProperty("page")]
         [DataMember(Name = "page")]

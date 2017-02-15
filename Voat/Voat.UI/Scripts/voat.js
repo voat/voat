@@ -63,6 +63,7 @@ $(document).ready(function () {
                 //data: $form.serialize(),
                 error: function (xhr, status, error) {
                     var msg = getErrorMessage(error);
+                    //TODO: Why is this here? I know I did this but why? WHY!? Please find my why.
                     alert(msg);
                 },
                 success: function (response) {
@@ -636,6 +637,16 @@ function replyToCommentNotification(commentId, submissionId) {
     $.validator.unobtrusive.parse(form);
 }
 
+function getErrorObject(arguments) {
+    var request = arguments[2];
+    if (request.responseJSON) {
+        if (request.responseJSON.success === false) {
+            return request.responseJSON;
+        }
+    }
+    return null;
+}
+
 //attempting to clean up client side error handling
 function getErrorMessage(error, defaultMessage)
 {
@@ -653,7 +664,7 @@ function getErrorMessage(error, defaultMessage)
     return msg;
 }
 // post comment reply form through ajax
-function postCommentAjax(senderButton, parentCommentID) {
+function submitComment(senderButton, parentCommentID) {
     var $form = $(senderButton).parents('form');
     $form.find("#errorMessage").toggle(false);
 
@@ -666,30 +677,38 @@ function postCommentAjax(senderButton, parentCommentID) {
             url: $form.attr('action'),
             data: $form.serialize(),
             error: function (xhr, status, error) {
-                var msg = getErrorMessage(error);
                 // comment failed, likely cause: user triggered anti-spam throttle
                 $form.find("#submitbutton").val("Submit comment");
                 $form.find("#submitbutton").prop('disabled', false);
-                $form.find("#errorMessage").html(msg);
+                $form.find("#errorMessage").html("An unexpected error happened");
                 $form.find("#errorMessage").toggle(true);
             },
             success: function (response) {
 
-                if (parentCommentID) {
-                    removereplyform(parentCommentID);
-                    $(".id-" + parentCommentID).append(response);
-                    //notify UI framework of DOM insertion async
-                    window.setTimeout(function () { UI.Notifications.raise('DOM', $('.id-' + parentCommentID).last('div')); });
-                } else {
-                    $(".sitetable.nestedlisting > #no-comments").remove();
-                    $(".sitetable.nestedlisting").prepend(response);
-                    // reset submit button
+                var errorObj = getErrorObject(arguments);
+
+                if (errorObj) {
                     $form.find("#submitbutton").val("Submit comment");
                     $form.find("#submitbutton").prop('disabled', false);
-                    // reset textbox
-                    $form.find("#Content").val("");
-                    //notify UI framework of DOM insertion async
-                    window.setTimeout(function () { UI.Notifications.raise('DOM', $('.sitetable.nestedlisting').first()); });
+                    $form.find("#errorMessage").html(errorObj.error.message);
+                    $form.find("#errorMessage").toggle(true);
+                } else {
+                    if (parentCommentID) {
+                        removereplyform(parentCommentID);
+                        $(".id-" + parentCommentID).append(response);
+                        //notify UI framework of DOM insertion async
+                        window.setTimeout(function () { UI.Notifications.raise('DOM', $('.id-' + parentCommentID).last('div')); });
+                    } else {
+                        $(".sitetable.nestedlisting > #no-comments").remove();
+                        $(".sitetable.nestedlisting").prepend(response);
+                        // reset submit button
+                        $form.find("#submitbutton").val("Submit comment");
+                        $form.find("#submitbutton").prop('disabled', false);
+                        // reset textbox
+                        $form.find("#Content").val("");
+                        //notify UI framework of DOM insertion async
+                        window.setTimeout(function () { UI.Notifications.raise('DOM', $('.sitetable.nestedlisting').first()); });
+                    }
                 }
             }
         });
@@ -821,7 +840,7 @@ function removereplyform(parentcommentid) {
 }
 
 // remove edit form for given parent id and replace it with original comment
-function removeeditform(parentcommentid) {
+function removeEditForm(parentcommentid) {
     $("#" + parentcommentid).find(".usertext-body").show();
     $("#" + parentcommentid).find(".usertext-edit").hide();
 }
@@ -890,12 +909,17 @@ function editcommentsubmit(commentid) {
             $('#commenteditform-' + commentid + " span.field-validation-error").html(msg);
         },
         success: function (data) {
-            $("#" + commentid).find('.md').html(data.response);
 
-            removeeditform(commentid);
+            var errorObj = getErrorObject(arguments);
 
-            //notify UI framework of DOM insertion async
-            window.setTimeout(function () { UI.Notifications.raise('DOM', $('#' + commentid)); });
+            if (errorObj) {
+                $('#commenteditform-' + commentid + " span.field-validation-error").html(errorObj.error.message);
+            } else {
+                $("#" + commentid).find('.md').html(data.response);
+                removeEditForm(commentid);
+                //notify UI framework of DOM insertion async
+                window.setTimeout(function () { UI.Notifications.raise('DOM', $('#' + commentid)); });
+            }
         }
     });
 
@@ -923,7 +947,7 @@ function deletecomment(commentid) {
     //hide "are you sure" option
     toggleback(commentid);
 
-    removeeditform(commentid);
+    removeEditForm(commentid);
 
     //execute POST call to remove comment from database
     deletecommentsubmit(commentid);
@@ -941,7 +965,7 @@ function deletecommentsubmit(commentid) {
         datatype: "json"
     });
 
-    removeeditform(commentid);
+    removeEditForm(commentid);
     return false;
 }
 
@@ -968,6 +992,91 @@ function deletesubmission(senderButton, submissionid) {
     });
 }
 
+function getReportDialog(sender, subverse, type, id) {
+    //"v/{subverse}/about/reports/{type}/{id}/dialog"
+    var urlComplete = "/v/" + subverse + "/about/reports/" + type + "/" + id + "/dialog?nocache=" + cachePrevention();
+
+    $.ajax({
+        type: "GET",
+        url: urlComplete,
+        success: function (arg1, request, value) {
+            $(sender).hide();
+            $(sender).parents('div').first().append(arg1);
+        },
+        error: function (error) {
+            $(sender).text("Oops... a problem");
+            //Something bad happened
+        }
+    });
+    //$(obj).parent().parent().find('.option, .main').toggleClass("active");
+    return false;
+}
+function cancelReportDialog(sender) {
+
+    //remove report form
+    var reportForm = $(sender).parents(".reportDialog").first()
+    var toggleButton = reportForm.parent().find('.togglebutton');
+    toggleButton.show();
+    reportForm.remove();
+
+    return false;
+}
+function sendReport(sender) {
+
+    var $form = $(sender).parents('form');
+
+    $.ajax({
+        type: "POST",
+        url: $form.attr('action'),
+        data: $form.serialize(),
+        error: function (xhr, status, error) {
+    
+        },
+        success: function (response) {
+
+            var errorObj = getErrorObject(arguments);
+            var reportForm = $(sender).parents(".reportDialog").first()
+            if (errorObj) {
+                var errorControl = reportForm.find(".error");
+
+                errorControl.text(errorObj.error.message);
+                errorControl.show();
+                //toggleButton.text("report failed");
+                
+            } else {
+                var toggleButton = reportForm.parent().find('.report-button');
+                toggleButton.show();
+                reportForm.remove();
+                toggleButton.text("thank you!");
+            }
+        }
+    });
+    return false;
+}
+function markReportAsReviewed(sender, subverse, type, id) {
+    //var $form = $(sender).parents('form');
+    //"v/{subverse}/about/reports/{type}/{id}/mark"
+    var urlComplete = "/v/" + subverse + "/about/reports/" + type + "/" + id + "/mark";
+
+    $.ajax({
+        type: "POST",
+        url: urlComplete,
+        error: function (xhr, status, error) {
+            $(sender).parents(".contentReport").remove();
+        },
+        success: function (response) {
+
+            var errorObj = getErrorObject(arguments);
+
+            if (errorObj) {
+                sender.text(errorObj.error.message);
+            } else {
+                $(sender).parents(".contentReport").remove();
+            }
+        }
+    });
+    return false;
+}
 // toggle are you sure question for comment deletion
 function toggle(obj, commentid) {
     $(obj).parent().parent().find('.option, .main').toggleClass("active");

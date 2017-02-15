@@ -16,7 +16,14 @@ namespace Voat.Utilities
         public const string NSFW_FLAG = "nsfw|nsfl";
 
         public const string SET_REGEX = SUBVERSE_REGEX + @"\-" + USER_NAME_REGEX;
-        public const string HTTP_LINK_REGEX = @"([hH][tT]|[fF])[tT][pP]([sS]?)(\:|%3[aA])(\/\/|%2[fF]%2[fF])(?<fullDomain>([wW]{3}\.)?(?<domain>[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*))(:(0-9)*)*(\/?)(?<query>[a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_=!@:\(\)]*)(?<![\.\?\-_\,]|\s{1,})";
+
+        //matches url after protocol 
+        private const string PROTOCOL_LESS_LINK_REGEX = @"(\:|%3[aA])(\/\/|%2[fF]%2[fF])(?<fullDomain>([wW]{3}\.)?(?<domain>[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*))(:(0-9)*)*(\/?)(?<query>[a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_=!@:\(\)]*)(?<![\.\?\-_\,]|\s{1,})";
+
+        public const string HTTP_LINK_REGEX = @"(?<protocol>([hH][tT]|[fF])[tT][pP]([sS]?))" + PROTOCOL_LESS_LINK_REGEX;
+
+        //used for apps OAuth redirects - no named capture or backtracking in js regex
+        public const string URI_LINK_REGEX_UI = @"([a-zA-Z0-9_-]+)(\:|%3[aA])(\/\/|%2[fF]%2[fF])([wW]{3}\.)?[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)[a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_=!@:\(\)]*";
 
         public const string SUBVERSE_LINK_REGEX_SHORT = @"(/?v/)(?'sub'[a-zA-Z0-9]+)";
         public const string SUBVERSE_LINK_REGEX_FULL = @"((/?v/)(?'sub'[a-zA-Z0-9]+((/(new|top(\?time=(day|week|month|year|all))?|comments/\d+(/\d+(?:/\d+(?:\d+)?)?)?)))?)(?'anchor'#(?:\d+|submissionTop))?)";

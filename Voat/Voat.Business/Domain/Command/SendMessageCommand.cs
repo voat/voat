@@ -9,19 +9,21 @@ namespace Voat.Domain.Command
         private SendMessage _message;
         private bool _forceSend;
         private bool _ensureUserExists;
+        private bool _isAnonymized;
 
-        public SendMessageCommand(SendMessage message, bool forceSend = false, bool ensureUserExists = false)
+        public SendMessageCommand(SendMessage message, bool forceSend = false, bool ensureUserExists = false, bool isAnonymized = false)
         {
             this._message = message;
             this._forceSend = forceSend;
             this._ensureUserExists = ensureUserExists;
+            this._isAnonymized = isAnonymized;
         }
 
         protected override async Task<CommandResponse<Message>> ProtectedExecute()
         {
             using (var repo = new Repository())
             {
-                return await repo.SendMessage(_message, _forceSend, _ensureUserExists).ConfigureAwait(false);
+                return await repo.SendMessage(_message, _forceSend, _ensureUserExists, _isAnonymized).ConfigureAwait(false);
             }
         }
     }

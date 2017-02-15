@@ -27,13 +27,8 @@ else
             <div class="alert alert-info">Are you sure you want to delete this post from <b>v/@submission.Subverse</b>?</div>
 
 
-            <div class="submission id-@submission.ID link" data-fullname="@submission.ID" data-ups="@submission.UpCount" data-downs="@submission.DownCount">
-                <p class="parent"></p>
-                @Html.Partial("_VotingIconsSubmission", submission)
-                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
-                <div class="child"></div>
-                <div class="clearleft">@*IE6fix*@</div>
-            </div>
+            @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
+
             <hr />
 
             <div class="alert alert-info">Delete Post</div>

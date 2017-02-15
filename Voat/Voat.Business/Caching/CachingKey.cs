@@ -97,7 +97,7 @@ namespace Voat.Caching
         }
         public static string UserOverview(string userName)
         {
-            return String.Format("User:Profile:Overview:{0}", userName);
+            return String.Format("User:Overview:{0}", userName);
         }
         public static string UserSavedItems(ContentType type, string userName)
         {

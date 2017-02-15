@@ -23,7 +23,10 @@ else
 {
     <span id="nsfwflair" class="flair linkflairlabel" title="Not Safe For Work">NSFW</span>
 }
-
+@if (Model.ArchiveDate.HasValue)
+{
+    <span id="archivedflair" class="flair linkflairlabel" title="Archived Submission">Archived</span>
+}
 @if (Model.IsAnonymized)
 {
     <span id="anonflair" class="flair linkflairlabel" title="Anonymized Submission">Anon</span>

@@ -16,12 +16,13 @@ namespace Voat.Domain.Models
     }
 
     [Flags]
-
+    [DatabaseMappedValue]
     //Don't change these values
     public enum ContentType
     {
         Submission = 1,
         Comment = 2,
+        User = 4
         //Set = 4
     }
 
@@ -62,12 +63,14 @@ namespace Voat.Domain.Models
         All = Unread | Read,
     }
     //DO NOT CHANGE THESE VALUES - ALIGNS WITH DB
+    [DatabaseMappedValue]
     public enum IdentityType
     {
         User = 1,
         Subverse = 2
     }
     //DO NOT CHANGE THESE VALUES - ALIGNS WITH DB
+    [DatabaseMappedValue]
     public enum MessageType
     {
         Private = 1,
@@ -295,6 +298,7 @@ namespace Voat.Domain.Models
         Year
     }
     //DO NOT CHANGE THESE VALUES - ALIGNS WITH DB
+    [DatabaseMappedValue]
     public enum SubmissionType
     {
         Text = 1,
@@ -311,7 +315,7 @@ namespace Voat.Domain.Models
         Admin = 2147483646,
         DelegateAdmin = 10000
     }
-
+    [DatabaseMappedValue]
     public enum ModeratorLevel
     {
         Owner = 1,
@@ -336,6 +340,15 @@ namespace Voat.Domain.Models
         InviteMods,
         RemoveMods,
         AssignStickies,
-        DistinguishContent
+        DistinguishContent,
+        AccessReports,
+        MarkReports
+    }
+
+    public enum ReviewStatus
+    {
+        Any,
+        Reviewed,
+        Unreviewed
     }
 }

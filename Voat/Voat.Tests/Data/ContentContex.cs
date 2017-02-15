@@ -24,7 +24,7 @@ namespace Voat.Tests.Repository
             int start = 0;
             int end = 50;
 
-            var userName = String.Format(UNIT_TEST_CONSTANTS.UNIT_TEST_USER_TEMPLATE, "0");
+            var userName = String.Format(UNIT_TEST_CONSTANTS.UNIT_TEST_USER_TEMPLATE, "0".PadLeft(2, '0'));
 
             if (context != null)
             {
@@ -42,7 +42,7 @@ namespace Voat.Tests.Repository
             {
                 numeric = start;
             }
-            userName = String.Format(UNIT_TEST_CONSTANTS.UNIT_TEST_USER_TEMPLATE, numeric.ToString());
+            userName = String.Format(UNIT_TEST_CONSTANTS.UNIT_TEST_USER_TEMPLATE, numeric.ToString().PadLeft(2, '0'));
 
             TestHelper.SetPrincipal(userName);
             if (createData)

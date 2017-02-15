@@ -16,7 +16,7 @@
 
 @{
     string subverseAge = Age.ToRelative(Model.CreationDate);
-    string subverseOwner = "youcanclaimthissub";
+    string subverseOwner = "YouCanClaimThisSub";
 
     if (String.IsNullOrEmpty(Model.CreatedBy))
     {
@@ -35,7 +35,7 @@
 
 <div class="side">
     @Html.Partial("_SearchBox", new SearchViewModel(), new ViewDataDictionary { { "SelectedSubverse", Model.Name } })
-    @Html.Partial("~/Views/Shared/Sidebars/_SideBarSubmissionInfo.cshtml")
+    @Html.Partial("~/Views/Shared/Sidebars/_SideBarSubmissionInfo.cshtml", (Voat.Domain.Models.Submission)ViewBag.Submission)
     <div class="spacer">
         <a href="/v/@Model.Name/submit?linkpost=true" class="btn-whoaverse btn-block contribute submit-link">
             Share a link

@@ -32,6 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Voat.Business.XML</DocumentationFile>
+    <NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -157,6 +158,7 @@
     <Compile Include="Caching\Handlers\NullCacheHandler.cs" />
     <Compile Include="Caching\Handlers\RedisCacheHandler.cs" />
     <Compile Include="Caching\ICacheHandler.cs" />
+    <Compile Include="Common\DatabaseMappedValueAttribute.cs" />
     <Compile Include="Common\LockStore.cs" />
     <Compile Include="Configuration\ArgumentParser.cs" />
     <Compile Include="Configuration\JsonSettings.cs" />
@@ -166,6 +168,8 @@
     <Compile Include="Data\Selectors.cs" />
     <Compile Include="Domain\Command\Base\QueuedCommand.cs" />
     <Compile Include="Domain\Command\CreateSubverseCommand.cs" />
+    <Compile Include="Domain\Command\DeleteAccountCommand.cs" />
+    <Compile Include="Domain\Command\LogRequestCommand.cs" />
     <Compile Include="Domain\Command\LogVisitCommand.cs" />
     <Compile Include="Domain\Command\MarkMessageCommand.cs" />
     <Compile Include="Domain\Command\Base\Command.cs" />
@@ -197,11 +201,14 @@
     <Compile Include="Domain\Models\Comment\CommentSegment.cs" />
     <Compile Include="Domain\Models\Comment\NestedComment.cs" />
     <Compile Include="Domain\Models\Comment\SubmissionComment.cs" />
+    <Compile Include="Domain\Models\DeleteAccountOptions.cs" />
     <Compile Include="Domain\Models\Flair.cs" />
     <Compile Include="Domain\Models\FriendlyEnumNames.cs" />
     <Compile Include="Domain\Models\Message.cs" />
     <Compile Include="Domain\Models\MessageCounts.cs" />
     <Compile Include="Domain\Models\RemovalBase.cs" />
+    <Compile Include="Domain\Models\Reports\ContentItem.cs" />
+    <Compile Include="Domain\Models\Reports\ContentUserReport.cs" />
     <Compile Include="Domain\Models\Stylesheet.cs" />
     <Compile Include="Domain\Models\SubverseBannedUser.cs" />
     <Compile Include="Domain\Models\SubverseModerator.cs" />
@@ -299,6 +306,7 @@
     <Compile Include="Rules\Posting\EditCommentBannedDomainRule.cs" />
     <Compile Include="Rules\Posting\EditSubmissionBannedDomainRule.cs" />
     <Compile Include="Rules\Posting\EditSubmissionFilterRule.cs" />
+    <Compile Include="Rules\Posting\PostCommentArchiveRule.cs" />
     <Compile Include="Rules\Posting\PostCommentBannedRule.cs" />
     <Compile Include="Rules\Posting\PostCommentCCPRule.cs" />
     <Compile Include="Rules\Posting\PostCommentRule.cs" />
@@ -315,6 +323,7 @@
     <Compile Include="Rules\VoatRuleException.cs" />
     <Compile Include="Rules\VoatRulesEngine.cs" />
     <Compile Include="Configuration\Settings.cs" />
+    <Compile Include="Rules\Voting\ArchivedVoteRules.cs" />
     <Compile Include="Rules\Voting\DownVoteCommentAgeRule.cs" />
     <Compile Include="Rules\Voting\DownVoteCommentMeanieRule.cs" />
     <Compile Include="Rules\Voting\DownVoteRule.cs" />

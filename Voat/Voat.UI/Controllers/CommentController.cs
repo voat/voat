@@ -39,8 +39,6 @@ namespace Voat.Controllers
 {
     public class CommentController : BaseController
     {
-        private readonly voatEntities _db = new voatEntities();
-
         // POST: votecomment/{commentId}/{typeOfVote}
         [HttpPost]
         [Authorize]
@@ -59,43 +57,14 @@ namespace Voat.Controllers
         {
             var cmd = new SaveCommand(Domain.Models.ContentType.Comment, commentId);
             var response = await cmd.Execute();
-            //Saving.SaveSubmission(messageId, loggedInUser);
-
             if (response.Success)
             {
-                return Json("Saving ok", JsonRequestBehavior.AllowGet);
+                return Json(new { success = true });
             }
             else
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
+                return JsonError(response.Message);
             }
-        }
-        private List<CommentVoteTracker> UserCommentVotesBySubmission(int submissionID)
-        {
-            List<CommentVoteTracker> vCache = new List<CommentVoteTracker>();
-
-            if (User.Identity.IsAuthenticated)
-            {
-                vCache = (from cv in _db.CommentVoteTrackers.AsNoTracking()
-                          join c in _db.Comments on cv.CommentID equals c.ID
-                          where c.SubmissionID == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
-                          select cv).ToList();
-            }
-            return vCache;
-        }
-
-        private List<CommentSaveTracker> UserSavedCommentsBySubmission(int submissionID)
-        {
-            List<CommentSaveTracker> vCache = new List<CommentSaveTracker>();
-
-            if (User.Identity.IsAuthenticated)
-            {
-                vCache = (from cv in _db.CommentSaveTrackers.AsNoTracking()
-                          join c in _db.Comments on cv.CommentID equals c.ID
-                          where c.SubmissionID == submissionID && cv.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase) && !c.IsDeleted
-                          select cv).ToList();
-            }
-            return vCache;
         }
 
         // GET: Renders Primary Submission Comments Page
@@ -242,11 +211,6 @@ namespace Voat.Controllers
             ViewBag.Subverse = subverse;
             ViewBag.Submission = submission;
 
-            //Temp cache user votes for this thread
-            ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
-            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
-            //ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
-
             var SortingMode = (sort == null ? "top" : sort).ToLower();
             ViewBag.SortingMode = SortingMode;
 
@@ -296,11 +260,6 @@ namespace Voat.Controllers
             ViewBag.Subverse = subverse;
             ViewBag.Submission = submission;
 
-            //Temp cache user votes for this thread
-            ViewBag.VoteCache = UserCommentVotesBySubmission(submission.ID);
-            ViewBag.SavedCommentCache = UserSavedCommentsBySubmission(submission.ID);
-            //ViewBag.CCP = Karma.CommentKarma(User.Identity.Name);
-
             var SortingMode = (sort == null ? "top" : sort).ToLower();
             ViewBag.SortingMode = SortingMode;
 
@@ -323,12 +282,15 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SubmitComment([Bind(Include = "ID, Content, SubmissionID, ParentID")] Data.Models.Comment commentModel)
         {
+
+            //return JsonError("This is an error message");
+
             if (!ModelState.IsValid)
             {
                 //Model isn't valid, can include throttling
                 if (Request.IsAjaxRequest())
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ModelState.GetFirstErrorMessage());
+                    return JsonError(ModelState.GetFirstErrorMessage());
                 }
                 else
                 {
@@ -364,7 +326,7 @@ namespace Voat.Controllers
                 }
                 else
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, result.Message);
+                    return JsonError(result.Message);
                 }
             }
         }
@@ -387,71 +349,13 @@ namespace Voat.Controllers
                 }
                 else
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, result.Message);
+                    return JsonError(result.Message);
                 }
             }
             else
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return JsonError(ModelState.GetFirstErrorMessage());
             }
-
-                //    var existingComment = _db.Comments.Find(commentModel.ID);
-
-                //    if (existingComment != null)
-                //    {
-                //        if (existingComment.UserName.Trim() == User.Identity.Name && !existingComment.IsDeleted)
-                //        {
-
-                //            bool containsBannedDomain = BanningUtility.ContentContainsBannedDomain(existingComment.Submission.Subverse, commentModel.Content);
-                //            if (containsBannedDomain)
-                //            {
-                //                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Comment contains links to banned domain(s).");
-                //            }
-
-                //            existingComment.LastEditDate = Repository.CurrentDate;
-                //            existingComment.Content = commentModel.Content;
-
-                //            if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
-                //            {
-                //                existingComment.Content = ContentProcessor.Instance.Process(existingComment.Content, ProcessingStage.InboundPreSave, existingComment);
-                //            }
-
-                //            //save fully formatted content 
-                //            var formattedComment = Voat.Utilities.Formatting.FormatMessage(existingComment.Content);
-                //            existingComment.FormattedContent = formattedComment;
-
-                //            await _db.SaveChangesAsync();
-
-                //            //HACK: Update comment in cache - to be replaced with EditCommentCommand in future
-                //            string key = CachingKey.CommentTree(existingComment.SubmissionID.Value);
-                //            if (CacheHandler.Instance.Exists(key))
-                //            {
-                //                CacheHandler.Instance.Replace<usp_CommentTree_Result>(key, existingComment.ID, x => {
-                //                    x.Content = existingComment.Content;
-                //                    x.FormattedContent = existingComment.FormattedContent;
-                //                    return x;
-                //                });
-                //            }
-
-                //            if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
-                //            {
-                //                ContentProcessor.Instance.Process(existingComment.Content, ProcessingStage.InboundPostSave, existingComment);
-                //            }
-
-                //            //return the formatted comment so that it can replace the existing html comment which just got modified
-                //            return Json(new { response = formattedComment });
-                //        }
-                //        return Json("Unauthorized edit.", JsonRequestBehavior.AllowGet);
-                //    }
-                //}
-
-                //if (Request.IsAjaxRequest())
-                //{
-                //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                //}
-
-                //return Json("Unauthorized edit or comment not found - comment ID was.", JsonRequestBehavior.AllowGet);
-            
         }
         // POST: deletecomment
         [HttpPost]
@@ -482,98 +386,44 @@ namespace Voat.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-
-            //var commentToDelete = _db.Comments.Find(commentId);
-
-            //if (commentToDelete != null && !commentToDelete.IsDeleted)
-            //{
-            //    var commentSubverse = commentToDelete.Submission.Subverse;
-
-            //    // delete comment if the comment author is currently logged in user
-            //    if (commentToDelete.UserName == User.Identity.Name)
-            //    {
-            //        commentToDelete.IsDeleted = true;
-            //        commentToDelete.Content = "deleted by author at " + Repository.CurrentDate;
-            //        await _db.SaveChangesAsync();
-            //    }
-
-            //    // delete comment if delete request is issued by subverse moderator
-            //    else if (UserHelper.IsUserSubverseModerator(User.Identity.Name, commentSubverse))
-            //    {
-
-            //        // notify comment author that his comment has been deleted by a moderator
-            //        var message = new Domain.Models.SendMessage()
-            //        {
-            //            Sender = $"v/{commentSubverse}",
-            //            Recipient = commentToDelete.UserName,
-            //            Subject = "Your comment has been deleted by a moderator",
-            //            Message =  "Your [comment](/v/" + commentSubverse + "/comments/" + commentToDelete.SubmissionID + "/" + commentToDelete.ID + ") has been deleted by: " +
-            //                        "/u/" + User.Identity.Name + " on: " + Repository.CurrentDate + "  " + Environment.NewLine +
-            //                        "Original comment content was: " + Environment.NewLine +
-            //                        "---" + Environment.NewLine +
-            //                        commentToDelete.Content
-            //        };
-            //        var cmd = new SendMessageCommand(message);
-            //        await cmd.Execute();
-
-            //        commentToDelete.IsDeleted = true;
-
-            //        // move the comment to removal log
-            //        var removalLog = new CommentRemovalLog
-            //        {
-            //            CommentID = commentToDelete.ID,
-            //            Moderator = User.Identity.Name,
-            //            Reason = "This feature is not yet implemented",
-            //            CreationDate = Repository.CurrentDate
-            //        };
-
-            //        _db.CommentRemovalLogs.Add(removalLog);
-
-            //        commentToDelete.Content = "deleted by a moderator at " + Repository.CurrentDate;
-            //        await _db.SaveChangesAsync();
-            //    }
-
-            //}
-            //if (Request.IsAjaxRequest())
-            //{
-            //    return new HttpStatusCodeResult(HttpStatusCode.OK);
-            //}
-            //var url = Request.UrlReferrer.AbsolutePath;
-            //return Redirect(url);
         }
+
+        #region MOVE TO SubverseModeration CONTROLLER
 
         // POST: comments/distinguish/{commentId}
         [Authorize]
         public JsonResult DistinguishComment(int commentId)
         {
-            var commentToDistinguish = _db.Comments.Find(commentId);
-
-            if (commentToDistinguish != null)
+            using (var _db = new voatEntities())
             {
-                // check to see if request came from comment author
-                if (User.Identity.Name == commentToDistinguish.UserName)
+                var commentToDistinguish = _db.Comments.Find(commentId);
+
+                if (commentToDistinguish != null)
                 {
-                    // check to see if comment author is also sub mod or sub admin for comment sub
-                    if (ModeratorPermission.HasPermission(User.Identity.Name, commentToDistinguish.Submission.Subverse, ModeratorAction.DistinguishContent))
+                    // check to see if request came from comment author
+                    if (User.Identity.Name == commentToDistinguish.UserName)
                     {
-                        // mark the comment as distinguished and save to db
-                        if (commentToDistinguish.IsDistinguished)
+                        // check to see if comment author is also sub mod or sub admin for comment sub
+                        if (ModeratorPermission.HasPermission(User.Identity.Name, commentToDistinguish.Submission.Subverse, ModeratorAction.DistinguishContent))
                         {
-                            commentToDistinguish.IsDistinguished = false;
+                            // mark the comment as distinguished and save to db
+                            if (commentToDistinguish.IsDistinguished)
+                            {
+                                commentToDistinguish.IsDistinguished = false;
+                            }
+                            else
+                            {
+                                commentToDistinguish.IsDistinguished = true;
+                            }
+
+                            _db.SaveChangesAsync();
+
+                            //Update Cache
+                            CacheHandler.Instance.DictionaryReplace<int, usp_CommentTree_Result>(CachingKey.CommentTree(commentToDistinguish.SubmissionID.Value), commentToDistinguish.ID, x => { x.IsDistinguished = commentToDistinguish.IsDistinguished; return x; }, true);
+
+                            Response.StatusCode = 200;
+                            return Json("Distinguish flag changed.", JsonRequestBehavior.AllowGet);
                         }
-                        else
-                        {
-                            commentToDistinguish.IsDistinguished = true;
-                        }
-
-                        _db.SaveChangesAsync();
-
-                        //Update Cache
-                        CacheHandler.Instance.DictionaryReplace<int, usp_CommentTree_Result>(CachingKey.CommentTree(commentToDistinguish.SubmissionID.Value), commentToDistinguish.ID, x => { x.IsDistinguished = commentToDistinguish.IsDistinguished; return x; }, true);
-
-                        Response.StatusCode = 200;
-                        return Json("Distinguish flag changed.", JsonRequestBehavior.AllowGet);
                     }
                 }
             }
@@ -581,8 +431,6 @@ namespace Voat.Controllers
             Response.StatusCode = (int)HttpStatusCode.BadRequest;
             return Json("Unauthorized distinguish attempt.", JsonRequestBehavior.AllowGet);
         }
-
-
 
         [HttpGet]
         [Authorize]
@@ -646,5 +494,6 @@ namespace Voat.Controllers
 
         }
 
+        #endregion 
     }
 }

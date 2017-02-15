@@ -49,19 +49,7 @@
                             <p>@logItem.Moderator removed @Age.ToRelative(logItem.CreationDate) ago on @logItem.CreationDate</p>
                             <p>"@logItem.Reason"</p>
                         </div>
-
-                        // type 2 = link, type 1 = message
-                        submissionClass = logItem.Submission.Type == 1 ? "self" : "";
-
-                        <div class="submission id-@logItem.Submission.ID link @submissionClass" data-fullname="@logItem.Submission.ID" data-ups="@logItem.Submission.UpCount" data-downs="@logItem.Submission.DownCount">
-                            <p class="parent"></p>
-
-                            @Html.Partial("_votingIconsSubmission", submission)
-                            @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
-
-                            <div class="child"></div>
-                            <div class="clearleft">@*IE6fix*@</div>
-                        </div>
+                        @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
                     }
                 </div>
             }

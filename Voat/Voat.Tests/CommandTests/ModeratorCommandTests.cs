@@ -26,7 +26,7 @@ namespace Voat.Tests.CommandTests
                     Title = "v/modPerms",
                     Description = "Test Mod Perms",
                     SideBar = "Test Mod Perms",
-                    Type = "link",
+                    //Type = "link",
                     IsAnonymized = false,
                     CreationDate = DateTime.UtcNow.AddDays(-7),
                 });

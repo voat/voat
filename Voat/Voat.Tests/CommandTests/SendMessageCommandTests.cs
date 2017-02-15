@@ -28,7 +28,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new SendMessageCommand(new Domain.Models.SendMessage() { Recipient = "Do you like chocolate", Message = id, Subject = "All That Matters" }, false, false);
             var response = await cmd.Execute();
 
-            Assert.IsTrue(response.Success, "Expecting success");
+            Assert.IsTrue(response.Success, response.Message);
             Assert.AreEqual(null, response.Response, "Expecting null return payload");
             using (var db = new voatEntities())
             {
@@ -116,7 +116,7 @@ namespace Voat.Tests.CommandTests
             var response = await cmd.Execute();
 
             Assert.IsNotNull(response, "Response is null");
-            Assert.IsTrue(response.Success, response.Status.ToString());
+            Assert.IsTrue(response.Success, response.Message);
 
             using (var db = new voatEntities())
             {
@@ -174,7 +174,7 @@ namespace Voat.Tests.CommandTests
             var firstMessage = response.Response;
 
             Assert.IsNotNull(response, "Response is null");
-            Assert.IsTrue(response.Success, response.Status.ToString());
+            Assert.IsTrue(response.Success, response.Message);
 
             //Ensure first msg is in db
             using (var db = new voatEntities())
@@ -260,7 +260,7 @@ namespace Voat.Tests.CommandTests
             var response = await cmd.Execute();
 
             Assert.IsNotNull(response, "Response is null");
-            Assert.IsTrue(response.Success, response.Status.ToString());
+            Assert.IsTrue(response.Success, response.Message);
 
             using (var db = new voatEntities())
             {
@@ -374,7 +374,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Messaging")]
         public async Task SendCommentNotificationMessage_AnonSub()
         {
-            await TestCommentNotification("anon", "TestUser3", "TestUser4");
+            await TestCommentNotification("anon", "TestUser03", "TestUser04");
         }
 
         [TestMethod]
@@ -383,7 +383,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Messaging")]
         public async Task SendUserMentionNotificationMessage_Anon()
         {
-            await TestUserMentionNotification("anon", "UnitTestUser8", "UnitTestUser9", "UnitTestUser11");
+            await TestUserMentionNotification("anon", "UnitTestUser08", "UnitTestUser09", "UnitTestUser11");
         }
 
         [TestMethod]
@@ -392,7 +392,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Messaging")]
         public async Task SendUserMentionNotificationMessage()
         {
-            await TestUserMentionNotification("unit", "UnitTestUser5", "UnitTestUser10", "UnitTestUser7");
+            await TestUserMentionNotification("unit", "UnitTestUser05", "UnitTestUser10", "UnitTestUser07");
         }
         
         #region HelperMethods
@@ -450,7 +450,7 @@ namespace Voat.Tests.CommandTests
 
             //Post submission as TestUser1
             TestHelper.SetPrincipal(user1);
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = sub, Title = "I love you more than butter in my coffee", Content = $"Did you hear that @{user2}?" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = sub, Title = "I love you more than butter in my coffee", Content = $"Did you hear that @{user2} or /u/{user2}?" });
             var response = await cmd.Execute();
             Assert.IsTrue(response.Success, "Expected post submission to return true");
             var submission = response.Response;

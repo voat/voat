@@ -53,96 +53,6 @@ namespace Voat.Utilities
             return null;
         }
 
-        // delete a user account and all history: comments, posts and votes
-        public static bool DeleteUser(string userName)
-        {
-            using (var db = new voatEntities())
-            {
-                using (var tmpUserManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
-                {
-                    var tmpuser = tmpUserManager.FindByName(userName);
-                    if (tmpuser != null)
-                    {
-                        // remove voting history for submisions
-                        db.SubmissionVoteTrackers.RemoveRange(db.SubmissionVoteTrackers.Where(x => x.UserName == userName));
-
-                        // remove voting history for comments
-                        db.CommentVoteTrackers.RemoveRange(db.CommentVoteTrackers.Where(x => x.UserName == userName));
-
-                        // remove all comments
-                        var comments = db.Comments.Where(c => c.UserName == userName).ToList();
-                        foreach (Comment c in comments)
-                        {
-                            c.IsDeleted = true;
-                            c.Content = "deleted by user";
-                        }
-                        db.SaveChanges();
-
-                        // remove all submissions
-                        var submissions = db.Submissions.Where(c => c.UserName == userName).ToList();
-                        foreach (var s in submissions)
-                        {
-                            s.Title = "deleted by user";
-                            if (s.Type == 1)
-                            {
-                                s.IsDeleted = true;
-                                s.Content = "deleted by user";
-                            }
-                            else
-                            {
-                                s.IsDeleted = true;
-                                s.Url = "http://voat.co";
-                            }
-                        }
-
-                        // resign from all moderating positions
-                        db.SubverseModerators.RemoveRange(db.SubverseModerators.Where(m => m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)));
-
-                        // delete user preferences
-                        var userPrefs = db.UserPreferences.Find(userName);
-                        if (userPrefs != null)
-                        {
-                            // delete short bio
-                            userPrefs.Bio = null;
-
-                            // delete avatar
-                            if (userPrefs.Avatar != null)
-                            {
-                                var avatarFilename = userPrefs.Avatar;
-                                if (Settings.UseContentDeliveryNetwork)
-                                {
-                                    // try to delete from CDN
-                                    CloudStorageUtility.DeleteBlob(avatarFilename, "avatars");
-                                }
-                                else
-                                {
-                                    // try to remove from local FS
-                                    string tempAvatarLocation = Settings.DestinationPathAvatars + '\\' + userName + ".jpg";
-
-                                    // the avatar file was not found at expected path, abort
-                                    if (!FileSystemUtility.FileExists(tempAvatarLocation, Settings.DestinationPathAvatars))
-                                        return false;
-
-                                    // exec delete
-                                    File.Delete(tempAvatarLocation);
-                                }
-                            }
-                        }
-
-                        // UNDONE: keep this updated as new features are added (delete sets etc)
-                        // username will stay permanently reserved to prevent someone else from registering it and impersonating
-
-                        db.SaveChanges();
-
-                        return true;
-                    }
-
-                    // user account could not be found
-                    return false;
-                }
-            }
-        }
-
         // check which theme style user selected
         public static void SetUserStylePreferenceCookie(string theme)
         {
@@ -226,8 +136,8 @@ namespace Voat.Utilities
                         .Take(3)
                         .ToList();
 
-                    var linkSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 2 && !a.IsDeleted);
-                    var messageSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 1 && !a.IsDeleted);
+                    var linkSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 2 && !a.IsDeleted && !a.IsAnonymized);
+                    var messageSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 1 && !a.IsDeleted && !a.IsAnonymized);
 
                     // get 5 highest rated submissions
                     var highestRatedSubmissions = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)

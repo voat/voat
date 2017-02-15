@@ -46,16 +46,27 @@ namespace Voat.Domain.Command
 
         #region Static Helpers
 
+        private static string DefaultDescription(Status status)
+        {
+            return $"Operation Result: {status.ToString()}";
+        }
+
         public static CommandResponse FromStatus(Status status, string description)
         {
             return new CommandResponse(status, description);
         }
-
+        public static CommandResponse FromStatus(Status status)
+        {
+            return new CommandResponse(status, DefaultDescription(status));
+        }
         public static CommandResponse<R> FromStatus<R>(R response, Status status, string description)
         {
             return new CommandResponse<R>(response, status, description);
         }
-
+        public static CommandResponse<R> FromStatus<R>(R response, Status status)
+        {
+            return new CommandResponse<R>(response, status, DefaultDescription(status));
+        }
         //public static CommandResponse<R> Denied<R>(R response, string description)
         //{
         //    return new CommandResponse<R>(response, Status.Denied, description);

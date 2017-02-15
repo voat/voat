@@ -14,6 +14,22 @@ namespace Voat.Tests.Utils
 
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Extentions")]
+        public void EnsureRangeTests()
+        {
+            Assert.AreEqual(10, 10.EnsureRange(0, 20));
+            Assert.AreEqual(10, 10.EnsureRange(10, 20));
+            Assert.AreEqual(15, 10.EnsureRange(15, 20));
+            Assert.AreEqual(5, 10.EnsureRange(0, 5));
+            Assert.AreEqual(-10, 10.EnsureRange(-20, -10));
+
+            Assert.AreEqual(1.1, 0.9.EnsureRange(1.1, 1.9));
+            Assert.AreEqual(1.2, 1.2.EnsureRange(1.1, 1.9));
+            Assert.AreEqual(1.9, 2.7.EnsureRange(1.1, 1.9));
+
+        }
+
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("Extentions")]
         public void Null_IsEqual_1()
         {
             string before = null;

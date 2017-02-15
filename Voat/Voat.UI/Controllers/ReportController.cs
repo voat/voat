@@ -25,6 +25,7 @@ using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Models;
+using Voat.Models.ViewModels;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 
@@ -32,176 +33,252 @@ namespace Voat.Controllers
 {
     public class ReportController : BaseController
     {
-        private readonly voatEntities _db = new voatEntities();
+        #region NEW CODE
+        
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult> Reports(string subverse, Domain.Models.ContentType? type = null, int days = 1, Domain.Models.ReviewStatus status = Domain.Models.ReviewStatus.Unreviewed, int[] ruleid = null)
+        {
+            days = days.EnsureRange(1, 7);
 
-        private TimeSpan contentReportTimeOut = TimeSpan.FromHours(6);
-        private TimeSpan contentUserCountTimeOut = TimeSpan.FromHours(2);
+            if (subverse.IsEqual("all"))
+            {
+                subverse = null;
+            }
+            else
+            {
+                //check perms
+                if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.AccessReports))
+                {
+                    return UnAuthorizedErrorView();
+                }
+            }
 
-        // POST: ReportContent
+            using (var repo = new Repository())
+            {
+                var data = await repo.GetRuleReports(subverse, type, days * 24, status, ruleid);
+                ViewBag.Days = days;
+                ViewBag.RuleID = ruleid;
+                ViewBag.ReviewStatus = status;
+                return View(data);
+            }
+        }
+
+        [Authorize]
+        public async Task<ActionResult> Mark(string subverse, ContentType type, int id)
+        {
+            //TODO: Move into Query
+            using (var repo = new Repository())
+            {
+                var result = await repo.MarkReportsAsReviewed(subverse, type, id);
+                return JsonResult(result);
+            }
+        }
+
+        [Authorize]
+        public async Task<ActionResult> UserReportDialog(string subverse, ContentType type, int id)
+        {
+            //TODO: Move into Query
+            using (var repo = new Repository())
+            {
+                var data = await repo.GetRuleSets(subverse, type);
+                return PartialView(new Models.ViewModels.ReportContentModel() { Subverse = subverse, ContentType = type, ID = id, Rules = data });
+            }
+        }
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public async Task<ActionResult> ReportContent(ContentType type, int id)
+        public async Task<ActionResult> ReportContent(ReportContentModel model)
         {
-            ActionResult result = null;
-            switch (type)
+            if (ModelState.IsValid)
             {
-                case ContentType.Comment:
-                    result = await ReportComment(id);
-                    break;
-                case ContentType.Submission:
-                    result = await ReportSubmission(id);
-                    break;
-                default:
-                    result = new EmptyResult();
-                    break;
-            }
-            return result;
-        }
-
-        public async Task<ActionResult> ReportSubmission(int id)
-        {
-            var s = _db.Submissions.Find(id);
-
-            if (s != null)
-            {
-                // prepare report headers
-                var subverse = s.Subverse;
-
-                //don't allow banned users to send reports
-                if (!UserHelper.IsUserBannedFromSubverse(User.Identity.Name, subverse) && !UserHelper.IsUserGloballyBanned(User.Identity.Name))
+                using (var repo = new Repository())
                 {
-                    var reportTimeStamp = Repository.CurrentDate.ToString(CultureInfo.InvariantCulture);
-                    try
-                    {
-                        string cacheKeyReport = CachingKey.ReportKey(ContentType.Submission, id);
-
-                        //see if comment has been reported before
-                        if (CacheHandler.Instance.Retrieve<object>(cacheKeyReport) == null)
-                        {
-                            //mark comment in cache as having been reported
-                            CacheHandler.Instance.Register(cacheKeyReport, new Func<object>(() => { return new object(); }), contentReportTimeOut, -1);
-
-
-                            string userName = User.Identity.Name;
-                            string cacheKeyUserReportCount = CachingKey.ReportCountUserKey(ContentType.Submission, userName);
-                            int reportsPerUserThreshold = 5;
-
-                            var reportCountViaUser = CacheHandler.Instance.Retrieve<int?>(cacheKeyUserReportCount);
-                            //ensure user is below reporting threshold
-                            if (reportCountViaUser == null || reportCountViaUser.Value <= reportsPerUserThreshold)
-                            {
-                                //add or update cache with current user reports
-                                if (reportCountViaUser.HasValue)
-                                {
-                                    CacheHandler.Instance.Replace<int?>(cacheKeyUserReportCount, new Func<int?, int?>((x) => { return (int?)(x.Value + 1); }), contentUserCountTimeOut);
-                                }
-                                else
-                                {
-                                    CacheHandler.Instance.Register<int?>(cacheKeyUserReportCount, new Func<int?>(() => { return (int?)1; }), contentUserCountTimeOut, -1);
-                                }
-
-                                string body = String.Format("This submission has been reported:\r\n\r\nhttps://voat.co/v/{0}/{1}\r\n\r\n\r\nReport Spammers to v/ReportSpammers.", s.Subverse, s.ID);
-
-                                var message = new Domain.Models.SendMessage()
-                                {
-                                    Sender = userName,
-                                    Recipient = $"v/{subverse}",
-                                    Subject = "Submission Spam Report",
-                                    Message = body
-                                };
-                                var cmd = new SendMessageCommand(message, true);
-                                await cmd.Execute();
-
-                                //MesssagingUtility.SendPrivateMessage(commentToReport.IsAnonymized ? "Anon" : userName, String.Format("v/{0}", commentSubverse), "Comment Spam Report", body);
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        return new HttpStatusCodeResult(HttpStatusCode.ServiceUnavailable, "Service Unavailable");
-                    }
+                    var result = await repo.SaveRuleReport(model.ContentType, model.ID, model.RuleSetID.Value);
+                    return JsonResult(result);
                 }
             }
             else
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Bad Request");
+                PreventSpamAttribute.Reset();
+                return JsonError(ModelState.GetFirstErrorMessage());
             }
-
-            return new HttpStatusCodeResult(HttpStatusCode.OK, "OK");
         }
-    
-        public async Task<ActionResult> ReportComment(int id)
-        {
-            var comment = _db.Comments.Find(id);
+        #endregion
 
-            if (comment != null)
-            {
-                // prepare report headers
-                var subverse = comment.Submission.Subverse;
+        //#region OLD CODE
+        //private readonly voatEntities _db = new voatEntities();
 
-                //don't allow banned users to send reports
-                if (!UserHelper.IsUserBannedFromSubverse(User.Identity.Name, subverse) && !UserHelper.IsUserGloballyBanned(User.Identity.Name))
-                {
-                    var reportTimeStamp = Repository.CurrentDate.ToString(CultureInfo.InvariantCulture);
-                    try
-                    {
-                        string cacheKeyReport = CachingKey.ReportKey(ContentType.Comment, id);
+        //private TimeSpan contentReportTimeOut = TimeSpan.FromHours(6);
+        //private TimeSpan contentUserCountTimeOut = TimeSpan.FromHours(2);
 
-                        //see if comment has been reported before
-                        if (CacheHandler.Instance.Retrieve<object>(cacheKeyReport) == null)
-                        {
-                            //mark comment in cache as having been reported
-                            CacheHandler.Instance.Register(cacheKeyReport, new Func<object>(() => { return new object(); }), contentReportTimeOut, -1);
+        ////// POST: ReportContent
+        ////[HttpPost]
+        ////[Authorize]
+        ////[VoatValidateAntiForgeryToken]
+        ////[PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        ////public async Task<ActionResult> ReportContent(ContentType type, int id)
+        ////{
+        ////    ActionResult result = null;
+        ////    switch (type)
+        ////    {
+        ////        case ContentType.Comment:
+        ////            result = await ReportComment(id);
+        ////            break;
+        ////        case ContentType.Submission:
+        ////            result = await ReportSubmission(id);
+        ////            break;
+        ////        default:
+        ////            result = new EmptyResult();
+        ////            break;
+        ////    }
+        ////    return result;
+        ////}
 
-                                
-                            string userName = User.Identity.Name;
-                            string cacheKeyUserReportCount = CachingKey.ReportCountUserKey(ContentType.Comment, userName);
-                            int reportsPerUserThreshold = 5;
+        //public async Task<ActionResult> ReportSubmission(int id)
+        //{
+        //    var s = _db.Submissions.Find(id);
 
-                            var reportCountViaUser = CacheHandler.Instance.Retrieve<int?>(cacheKeyUserReportCount);
-                            //ensure user is below reporting threshold
-                            if (reportCountViaUser == null || reportCountViaUser.Value <= reportsPerUserThreshold)
-                            {
-                                //add or update cache with current user reports
-                                if (reportCountViaUser.HasValue)
-                                {
-                                    CacheHandler.Instance.Replace<int?>(cacheKeyUserReportCount, new Func<int?, int?>((x) => { return (int?)(x.Value + 1); }), contentUserCountTimeOut);
-                                }
-                                else
-                                {
-                                    CacheHandler.Instance.Register<int?>(cacheKeyUserReportCount, new Func<int?>(() => { return (int?)1; }), contentUserCountTimeOut, -1);
-                                }
+        //    if (s != null)
+        //    {
+        //        // prepare report headers
+        //        var subverse = s.Subverse;
 
-                                string body = String.Format("This comment has been reported:\r\n\r\nhttps://voat.co/v/{0}/{1}/{2}?context=10\r\n\r\n\r\nReport Spammers to v/ReportSpammers.", subverse, comment.SubmissionID, id);
+        //        //don't allow banned users to send reports
+        //        if (!UserHelper.IsUserBannedFromSubverse(User.Identity.Name, subverse) && !UserHelper.IsUserGloballyBanned(User.Identity.Name))
+        //        {
+        //            var reportTimeStamp = Repository.CurrentDate.ToString(CultureInfo.InvariantCulture);
+        //            try
+        //            {
+        //                string cacheKeyReport = CachingKey.ReportKey(ContentType.Submission, id);
 
-                                var message = new Domain.Models.SendMessage()
-                                {
-                                    Sender = userName,
-                                    Recipient = $"v/{subverse}",
-                                    Subject = "Comment Spam Report",
-                                    Message = body
-                                };
-                                var cmd = new SendMessageCommand(message, true);
-                                await cmd.Execute();
+        //                //see if comment has been reported before
+        //                if (CacheHandler.Instance.Retrieve<object>(cacheKeyReport) == null)
+        //                {
+        //                    //mark comment in cache as having been reported
+        //                    CacheHandler.Instance.Register(cacheKeyReport, new Func<object>(() => { return new object(); }), contentReportTimeOut, -1);
 
-                                //MesssagingUtility.SendPrivateMessage(commentToReport.IsAnonymized ? "Anon" : userName, String.Format("v/{0}", commentSubverse), "Comment Spam Report", body);
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        return new HttpStatusCodeResult(HttpStatusCode.ServiceUnavailable, "Service Unavailable");
-                    }
-                }
-            }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Bad Request");
-            }
 
-            return new HttpStatusCodeResult(HttpStatusCode.OK, "OK");
-        }
+        //                    string userName = User.Identity.Name;
+        //                    string cacheKeyUserReportCount = CachingKey.ReportCountUserKey(ContentType.Submission, userName);
+        //                    int reportsPerUserThreshold = 5;
+
+        //                    var reportCountViaUser = CacheHandler.Instance.Retrieve<int?>(cacheKeyUserReportCount);
+        //                    //ensure user is below reporting threshold
+        //                    if (reportCountViaUser == null || reportCountViaUser.Value <= reportsPerUserThreshold)
+        //                    {
+        //                        //add or update cache with current user reports
+        //                        if (reportCountViaUser.HasValue)
+        //                        {
+        //                            CacheHandler.Instance.Replace<int?>(cacheKeyUserReportCount, new Func<int?, int?>((x) => { return (int?)(x.Value + 1); }), contentUserCountTimeOut);
+        //                        }
+        //                        else
+        //                        {
+        //                            CacheHandler.Instance.Register<int?>(cacheKeyUserReportCount, new Func<int?>(() => { return (int?)1; }), contentUserCountTimeOut, -1);
+        //                        }
+
+        //                        string body = String.Format("This submission has been reported:\r\n\r\nhttps://voat.co/v/{0}/{1}\r\n\r\n\r\nReport Spammers to v/ReportSpammers.", s.Subverse, s.ID);
+
+        //                        var message = new Domain.Models.SendMessage()
+        //                        {
+        //                            Sender = userName,
+        //                            Recipient = $"v/{subverse}",
+        //                            Subject = "Submission Spam Report",
+        //                            Message = body
+        //                        };
+        //                        var cmd = new SendMessageCommand(message, true);
+        //                        await cmd.Execute();
+
+        //                        //MesssagingUtility.SendPrivateMessage(commentToReport.IsAnonymized ? "Anon" : userName, String.Format("v/{0}", commentSubverse), "Comment Spam Report", body);
+        //                    }
+        //                }
+        //            }
+        //            catch (Exception)
+        //            {
+        //                return new HttpStatusCodeResult(HttpStatusCode.ServiceUnavailable, "Service Unavailable");
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Bad Request");
+        //    }
+
+        //    return new HttpStatusCodeResult(HttpStatusCode.OK, "OK");
+        //}
+
+        //public async Task<ActionResult> ReportComment(int id)
+        //{
+        //    var comment = _db.Comments.Find(id);
+
+        //    if (comment != null)
+        //    {
+        //        // prepare report headers
+        //        var subverse = comment.Submission.Subverse;
+
+        //        //don't allow banned users to send reports
+        //        if (!UserHelper.IsUserBannedFromSubverse(User.Identity.Name, subverse) && !UserHelper.IsUserGloballyBanned(User.Identity.Name))
+        //        {
+        //            var reportTimeStamp = Repository.CurrentDate.ToString(CultureInfo.InvariantCulture);
+        //            try
+        //            {
+        //                string cacheKeyReport = CachingKey.ReportKey(ContentType.Comment, id);
+
+        //                //see if comment has been reported before
+        //                if (CacheHandler.Instance.Retrieve<object>(cacheKeyReport) == null)
+        //                {
+        //                    //mark comment in cache as having been reported
+        //                    CacheHandler.Instance.Register(cacheKeyReport, new Func<object>(() => { return new object(); }), contentReportTimeOut, -1);
+
+
+        //                    string userName = User.Identity.Name;
+        //                    string cacheKeyUserReportCount = CachingKey.ReportCountUserKey(ContentType.Comment, userName);
+        //                    int reportsPerUserThreshold = 5;
+
+        //                    var reportCountViaUser = CacheHandler.Instance.Retrieve<int?>(cacheKeyUserReportCount);
+        //                    //ensure user is below reporting threshold
+        //                    if (reportCountViaUser == null || reportCountViaUser.Value <= reportsPerUserThreshold)
+        //                    {
+        //                        //add or update cache with current user reports
+        //                        if (reportCountViaUser.HasValue)
+        //                        {
+        //                            CacheHandler.Instance.Replace<int?>(cacheKeyUserReportCount, new Func<int?, int?>((x) => { return (int?)(x.Value + 1); }), contentUserCountTimeOut);
+        //                        }
+        //                        else
+        //                        {
+        //                            CacheHandler.Instance.Register<int?>(cacheKeyUserReportCount, new Func<int?>(() => { return (int?)1; }), contentUserCountTimeOut, -1);
+        //                        }
+
+        //                        string body = String.Format("This comment has been reported:\r\n\r\nhttps://voat.co/v/{0}/{1}/{2}?context=10\r\n\r\n\r\nReport Spammers to v/ReportSpammers.", subverse, comment.SubmissionID, id);
+
+        //                        var message = new Domain.Models.SendMessage()
+        //                        {
+        //                            Sender = userName,
+        //                            Recipient = $"v/{subverse}",
+        //                            Subject = "Comment Spam Report",
+        //                            Message = body
+        //                        };
+        //                        var cmd = new SendMessageCommand(message, true);
+        //                        await cmd.Execute();
+
+        //                        //MesssagingUtility.SendPrivateMessage(commentToReport.IsAnonymized ? "Anon" : userName, String.Format("v/{0}", commentSubverse), "Comment Spam Report", body);
+        //                    }
+        //                }
+        //            }
+        //            catch (Exception)
+        //            {
+        //                return new HttpStatusCodeResult(HttpStatusCode.ServiceUnavailable, "Service Unavailable");
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Bad Request");
+        //    }
+
+        //    return new HttpStatusCodeResult(HttpStatusCode.OK, "OK");
+        //}
+        //#endregion 
     }
 }

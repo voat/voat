@@ -53,108 +53,121 @@
         submissionDomain = UrlUtility.GetDomainFromUri(Model.Url);
         submissionDomainHref = "/domains/" + submissionDomain;
     }
-}
-
-@{
-
-    if (Model.ThumbnailUrl != null)
+    var submissionClass = Model.Type == Voat.Domain.Models.SubmissionType.Text ? "self" : "";
+    var classes = "";
+    if (ViewBag.CssClass != null)
     {
-        if (routeActiveSubverse != null)
-        {
-            if (Model.IsAdult && (Model.Subverse.ToLower() != routeActiveSubverse.ToLower() || !showNSFWThumbs))
-            {
-                <a class="thumbnail nsfw may-blank" href="@Model.Url" rel="nofollow" target="@ahrefTarget"></a>
-            }
-            else
-            {
-                <a class="thumbnail may-blank" href="@Model.Url" target="@ahrefTarget">
-                    <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
-                </a>
-            }
-        }
-        else
-        {
-            if (Model.IsAdult)
-            {
-                <a class="thumbnail nsfw may-blank" href="@Model.Url" rel="nofollow" target="@ahrefTarget"></a>
-            }
-            else
-            {
-                <a class="thumbnail may-blank" href="@Model.Url" target="@ahrefTarget">
-                    <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
-                </a>
-            }
-        }
+        classes = String.Join(" ", ViewBag.CssClass);
     }
+}
+<div class="submission id-@Model.ID @classes link @submissionClass" data-fullname="@Model.ID" data-ups="@Model.UpCount" data-downs="@Model.DownCount">
+    <p class="parent"></p>
 
-    <div class="entry unvoted">
-        <p class="title">
-            
-            @Html.Partial("~/Views/Shared/Submissions/_Flair.cshtml", Model)
+    @Html.Partial("_VotingIconsSubmission", Model)
+    
+    @{
 
-            <a class="title may-blank " href="@titleUrl" tabindex="1" title="@Model.Title" target="@ahrefTarget">@Model.Title</a>
-            <span class="domain">(<a href="@submissionDomainHref">@submissionDomain</a>)</span>
-        </p>
-
-        @if (Model.IsDeleted)
+        if (Model.ThumbnailUrl != null)
         {
-            <p class="tagline">
-                submitted <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time> ago by
-                <span class="userattrs">[deleted]</span> to <a href="/v/@Model.Subverse" class="subverse hover may-blank">@Model.Subverse</a>
-            </p>
-        }
-        else
-        {
-            if (!String.IsNullOrEmpty(Model.Content))
+            if (routeActiveSubverse != null)
             {
-                <div title="Toggle Self Text" class="expando-button collapsed selftext" onclick="loadSelfText(this, @Model.ID)"></div>
+                if (Model.IsAdult && (Model.Subverse.ToLower() != routeActiveSubverse.ToLower() || !showNSFWThumbs))
+                {
+                    <a class="thumbnail nsfw may-blank" href="@Model.Url" rel="nofollow" target="@ahrefTarget"></a>
+                }
+                else
+                {
+                    <a class="thumbnail may-blank" href="@Model.Url" target="@ahrefTarget">
+                        <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
+                    </a>
+                }
             }
-            if (Model.IsAnonymized || anonymizedSubverse)
+            else
+            {
+                if (Model.IsAdult)
+                {
+                    <a class="thumbnail nsfw may-blank" href="@Model.Url" rel="nofollow" target="@ahrefTarget"></a>
+                }
+                else
+                {
+                    <a class="thumbnail may-blank" href="@Model.Url" target="@ahrefTarget">
+                        <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
+                    </a>
+                }
+            }
+        }
+
+        <div class="entry unvoted">
+            <p class="title">
+
+                @Html.Partial("~/Views/Shared/Submissions/_Flair.cshtml", Model)
+
+                <a class="title may-blank " href="@titleUrl" tabindex="1" title="@Model.Title" target="@ahrefTarget">@Model.Title</a>
+                <span class="domain">(<a href="@submissionDomainHref">@submissionDomain</a>)</span>
+            </p>
+
+            @if (Model.IsDeleted)
             {
                 <p class="tagline">
-                    submitted <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time> ago by <a href="#" class="author may-blank">@Model.ID</a>
-                    <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subverse hover may-blank">@Model.Subverse</a>
-                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
+                    submitted <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time> ago by
+                    <span class="userattrs">[deleted]</span> to <a href="/v/@Model.Subverse" class="subverse hover may-blank">@Model.Subverse</a>
                 </p>
             }
             else
             {
-                <p class="tagline">
-                    submitted <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time> ago by <a href="/user/@Model.UserName" class="author may-blank userinfo" data-username="@Model.UserName">@Model.UserName</a>
-                    <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subverse hover may-blank">@Model.Subverse</a>
-                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
-                </p>
+                if (!String.IsNullOrEmpty(Model.Content))
+                {
+                    <div title="Toggle Self Text" class="expando-button collapsed selftext" onclick="loadSelfText(this, @Model.ID)"></div>
+                }
+                if (Model.IsAnonymized || anonymizedSubverse)
+                {
+                    <p class="tagline">
+                        submitted <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time> ago by <a href="#" class="author may-blank">@Model.ID</a>
+                        <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subverse hover may-blank">@Model.Subverse</a>
+                        <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
+                    </p>
+                }
+                else
+                {
+                    <p class="tagline">
+                        submitted <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time> ago by <a href="/user/@Model.UserName" class="author may-blank userinfo" data-username="@Model.UserName">@Model.UserName</a>
+                        <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subverse hover may-blank">@Model.Subverse</a>
+                        <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
+                    </p>
+                }
             }
-        }
 
-        <ul class="flat-list buttons">
-            <li class="first">
-                <a href="@commentsUrl" class="comments may-blank">@Formatting.PluralizeIt(Model.CommentCount, "comment", "discuss")</a>
-            </li>
-            @if (User.Identity.IsAuthenticated)
+            <ul class="flat-list buttons">
+                <li class="first">
+                    <a href="@commentsUrl" class="comments may-blank">@Formatting.PluralizeIt(Model.CommentCount, "comment", "discuss")</a>
+                </li>
+                @if (User.Identity.IsAuthenticated)
             {
                 if (!Model.IsDeleted)
                 {
-                    <li>
-                        @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } })
-                    </li>
-                    if (!string.IsNullOrEmpty(routeActiveSubverse) && routeActiveSubverse == "all")
-                    {
                         <li>
-                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonBlockSubverse.cshtml", Model, new ViewDataDictionary { { "subverseName", Model.Subverse } })
+                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } })
                         </li>
+                        if (!string.IsNullOrEmpty(routeActiveSubverse) && routeActiveSubverse == "all")
+                        {
+                            <li>
+                                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonBlockSubverse.cshtml", Model, new ViewDataDictionary { { "subverseName", Model.Subverse } })
+                            </li>
+                        }
                     }
                 }
-            }
-        </ul>
-        <div class="expando" style="display: none">
-            <form style="" novalidate="novalidate" class="usertext" action="#">
-                <div class="usertext-body may-blank-within">
-                    <div class="md">
-                        Loading magic stuff...
+            </ul>
+            <div class="expando" style="display: none">
+                <form style="" novalidate="novalidate" class="usertext" action="#">
+                    <div class="usertext-body may-blank-within">
+                        <div class="md">
+                            Loading magic stuff...
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
-}
+    }
+    <div class="child"></div>
+    <div class="clearleft">@*IE6fix*@</div>
+</div>

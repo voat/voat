@@ -29,7 +29,7 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Anon"), TestCategory("Comment"), TestCategory("Comment.Segment")]
         public void CommentSegment_Anon()
         {
-            TestHelper.SetPrincipal("TestUser1");
+            TestHelper.SetPrincipal("TestUser01");
             var q = new QueryCommentSegment(_submissionID, null, 0, CommentSortAlgorithm.New);
             var r = q.Execute();
             Assert.IsNotNull(r, "Query returned null");
@@ -53,7 +53,7 @@ namespace Voat.Tests.QueryTests
                 commentID = nestedcomment.ID;
             }
 
-            TestHelper.SetPrincipal("TestUser1");
+            TestHelper.SetPrincipal("TestUser01");
             var q = new QueryCommentContext(_submissionID, commentID, 0, CommentSortAlgorithm.New);
             var r = q.Execute();
             Assert.IsNotNull(r, "Query returned null");

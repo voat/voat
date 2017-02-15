@@ -59,6 +59,10 @@ namespace Voat.Configuration
         public const string SiteName = "siteName";
         public const string SiteSlogan = "siteSlogan";
         public const string Origin = "origin";
+        public const string SearchDisabled = "searchDisabled";
+
+        public const string SubverseUpdateTimeLockInHours = "subverseUpdateTimeLockInHours";
+        
 
         public const string UseContentDeliveryNetwork = "useContentDeliveryNetwork";
     }
@@ -151,6 +155,9 @@ namespace Voat.Configuration
 
                 SetValueIfPresent<bool>(CONFIGURATION.ApiKeyCreationEnabled, section[CONFIGURATION.ApiKeyCreationEnabled]);
                 SetValueIfPresent<bool>(CONFIGURATION.CaptchaDisabled, section[CONFIGURATION.CaptchaDisabled]);
+                SetValueIfPresent<bool>(CONFIGURATION.SearchDisabled, section[CONFIGURATION.SearchDisabled]);
+                SetValueIfPresent<int>(CONFIGURATION.SubverseUpdateTimeLockInHours, section[CONFIGURATION.SubverseUpdateTimeLockInHours]);
+
 
                 SetValueIfPresent<Domain.Models.Origin>(CONFIGURATION.Origin, section[CONFIGURATION.Origin]);
 

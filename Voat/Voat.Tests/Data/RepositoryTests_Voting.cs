@@ -24,6 +24,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Voat.Domain.Command;
 using Voat.Utilities;
 
@@ -43,22 +44,22 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Comment")]
-        public void Comment_Down()
+        public async Task Comment_Down()
         {
             using (var db = new Voat.Data.Repository())
             {
-                var x = db.GetComment(context.CommentID);
+                var x = await db.GetComment(context.CommentID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
                 string userName = "User500CCP";
                 TestHelper.SetPrincipal(userName, null); //This user has one comment with 101 likes
 
                 var response = db.VoteComment(context.CommentID, -1, IpHash.CreateHash("127.0.0.1"));
-                Assert.IsTrue(response.Success, "Vote was not successfull");
+                Assert.IsTrue(response.Success, response.Message);
                 Assert.AreEqual(-1, response.RecordedValue, "Vote was not successfull");
 
                 //refresh comment 
-                x = db.GetComment(context.CommentID);
+                x = await db.GetComment(context.CommentID);
 
                 Assert.AreEqual(ups, x.UpCount);
                 Assert.AreEqual((downs + 1), x.DownCount);
@@ -73,7 +74,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                TestHelper.SetPrincipal("TestUser3", null); //Random User has no CCP
+                TestHelper.SetPrincipal("TestUser03", null); //Random User has no CCP
 
                 var response = db.VoteComment(context.CommentID, -1, IpHash.CreateHash("127.0.0.1"));
 
@@ -83,11 +84,11 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Comment")]
-        public void Comment_Reset_Default()
+        public async Task Comment_Reset_Default()
         {
             using (var db = new Voat.Data.Repository())
             {
-                var x = db.GetComment(context.CommentID);
+                var x = await db.GetComment(context.CommentID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
 
@@ -96,7 +97,7 @@ namespace Voat.Tests.Repository
                 var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
                 
                 //refresh comment 
-                x = db.GetComment(context.CommentID);
+                x = await db.GetComment(context.CommentID);
 
                 Assert.IsTrue(response.Success, response.ToString());
                 Assert.AreEqual(1, response.RecordedValue, "Vote value incorrect");
@@ -112,7 +113,7 @@ namespace Voat.Tests.Repository
                 //Assert.IsTrue(response.Successfull);
                 
                 //refresh comment 
-                x = db.GetComment(context.CommentID);
+                x = await db.GetComment(context.CommentID);
 
                 Assert.AreEqual(ups, x.UpCount, "Final Up Count off");
                 Assert.AreEqual(downs, x.DownCount, "Final Down Count off");
@@ -121,11 +122,11 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Comment")]
-        public void Comment_Reset_NoRevoke()
+        public async Task Comment_Reset_NoRevoke()
         {
             using (var db = new Voat.Data.Repository())
             {
-                var x = db.GetComment(context.CommentID);
+                var x = await db.GetComment(context.CommentID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
 
@@ -134,7 +135,7 @@ namespace Voat.Tests.Repository
                 var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
 
                 //refresh comment 
-                x = db.GetComment(context.CommentID);
+                x = await db.GetComment(context.CommentID);
 
                 Assert.IsTrue(response.Success, response.ToString());
                 Assert.AreEqual(1, response.RecordedValue, "Vote value incorrect");
@@ -150,11 +151,11 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Comment")]
-        public void Comment_Up()
+        public async Task Comment_Up()
         {
             using (var db = new Voat.Data.Repository())
             {
-                var x = db.GetComment(context.CommentID);
+                var x = await db.GetComment(context.CommentID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
                 string userName = "User50CCP";
@@ -163,7 +164,7 @@ namespace Voat.Tests.Repository
                 var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
                 
                 //refresh comment 
-                x = db.GetComment(context.CommentID);
+                x = await db.GetComment(context.CommentID);
 
                 Assert.IsTrue(response.Success, response.ToString());
                 Assert.AreEqual(1, response.RecordedValue, "Vote value incorrect");
@@ -232,7 +233,7 @@ namespace Voat.Tests.Repository
 
                 var response = db.VoteSubmission(context.SubmissionID, -1, IpHash.CreateHash("127.0.0.1"));
 
-                Assert.AreEqual(Status.Success, response.Status, "Vote was not successfull");
+                Assert.AreEqual(Status.Success, response.Status, response.Message);
                 Assert.AreEqual(-1, response.RecordedValue, "Recorded value off");
 
 
@@ -255,7 +256,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                TestHelper.SetPrincipal("TestUser3", null); //Random User has no CCP
+                TestHelper.SetPrincipal("TestUser03", null); //Random User has no CCP
 
                 var response = db.VoteSubmission(context.SubmissionID, -1, IpHash.CreateHash("127.0.0.1"));
 

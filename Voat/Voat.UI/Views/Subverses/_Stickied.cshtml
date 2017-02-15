@@ -12,7 +12,7 @@
 
 @model Voat.Domain.Models.Submission
 
-<div class="submission id-@Model.ID even link stickied" data-fullname="@Model.ID" data-ups="@Model.UpCount" data-downs="@Model.DownCount">
+<div class="submission id-@Model.ID link stickied" data-fullname="@Model.ID" data-ups="@Model.UpCount" data-downs="@Model.DownCount">
     <p class="parent"></p>
 
     @Html.Partial("_VotingIconsSubmission", Model)    

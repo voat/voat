@@ -54,7 +54,7 @@
     }
 
     <div id="about-main" class="" role="main">
-        <div class="md single-notification">
+        <div class="md">
             @if (Model.Count > 0)
             {
                 <p>Displaying @Model.Count message(s).</p>
@@ -158,22 +158,25 @@
                             case Voat.Domain.Models.MessageType.SubmissionMention:
 
                                 var submission = message.Submission;
-
-                                <div id="messageContainer-@message.ID" class="entry">
-                                    <div class="panel panel-default @(unreadCssClass)">
-                                        <div class="panel panel-heading">
-                                            <b>@submission.Title</b>
-                                        </div>
-
-                                        <div class="panel-message-body">
-                                            <div class="submission id-@submission.ID link" data-fullname="@submission.ID" data-ups="@submission.UpCount" data-downs="@submission.DownCount">
-                                                <p class="parent"></p>
-                                                @Html.Partial("_votingIconsSubmission", submission)
-                                                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
+                                try
+                                {
+                                    
+                                    <div id="messageContainer-@message.ID" class="entry">
+                                        <div class="panel panel-default @(unreadCssClass)">
+                                            <div class="panel panel-heading">
+                                                <b>@submission.Title</b>
+                                            </div>
+                                            <div class="panel-message-body">
+                                                   @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission, new ViewDataDictionary() { { "CssClass", new string[] { "" } } })
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                }
+                                catch (Exception ex)
+                                {
+                                    //catch traps when comment/submission was deleted as is the case with deleted subverses
+                                    Voat.Utilities.Components.EventLogger.Instance.Log(ex, new { message = message }, null);
+                                }
                                 break;
                             case Voat.Domain.Models.MessageType.CommentMention:
                             case Voat.Domain.Models.MessageType.CommentReply:
@@ -218,6 +221,7 @@
                                 }
                                 catch (Exception ex)
                                 {
+                                    //catch traps when comment/submission was deleted as is the case with deleted subverses
                                     Voat.Utilities.Components.EventLogger.Instance.Log(ex, new { message = message }, null);
                                 }
 

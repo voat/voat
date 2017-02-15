@@ -77,8 +77,37 @@ namespace Voat.Rules
 
         protected override object GetMissingValue(string name)
         {
+            //TODO: This lazy loading needs to be optimized and rewritten. I. Don't. Like. This.
             switch (name)
             {
+                case "Comment":
+                    if (CommentID != null)
+                    {
+                        var cmdComment = new QueryComment(CommentID.Value);
+                        var comment = cmdComment.Execute();
+                        PropertyBag.Comment = comment;
+
+                        return comment;
+                    }
+                    break;
+                case "Submission":
+                    if (SubmissionID != null)
+                    {
+                        var cmd = new QuerySubmission(SubmissionID.Value);
+                        var submission = cmd.Execute();
+                        return submission;
+                    }
+                    if (CommentID != null)
+                    {
+                        var cmdComment = new QueryComment(CommentID.Value);
+                        var comment = cmdComment.Execute();
+                        PropertyBag.Comment = comment;
+
+                        var cmd = new QuerySubmission(comment.SubmissionID.Value);
+                        var submission = cmd.Execute();
+                        return submission;
+                    }
+                    break;
                 case "Subverse":
                     if (SubmissionID != null)
                     {

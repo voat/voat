@@ -32,20 +32,9 @@ namespace Voat.Data.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string SideBar { get; set; }
-        public string SubmissionText { get; set; }
-        public string Language { get; set; }
-        public string Type { get; set; }
-        public string SubmitLinkLabel { get; set; }
-        public string SubmitPostLabel { get; set; }
-        public string SpamFilterLink { get; set; }
-        public string SpamFilterPost { get; set; }
-        public string SpamFilterComment { get; set; }
         public bool IsAdult { get; set; }
-        public bool IsDefaultAllowed { get; set; }
         public bool IsThumbnailEnabled { get; set; }
         public bool ExcludeSitewideBans { get; set; }
-        public Nullable<bool> IsTrafficStatsPublic { get; set; }
-        public Nullable<int> MinutesToHideComments { get; set; }
         public System.DateTime CreationDate { get; set; }
         public string Stylesheet { get; set; }
         public Nullable<int> SubscriberCount { get; set; }
@@ -57,6 +46,7 @@ namespace Voat.Data.Models
         public bool IsAdminPrivate { get; set; }
         public Nullable<bool> IsAdminDisabled { get; set; }
         public string CreatedBy { get; set; }
+        public Nullable<System.DateTime> LastUpdateDate { get; set; }
     
         public virtual DefaultSubverse DefaultSubverse { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

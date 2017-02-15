@@ -42,13 +42,8 @@
                 {
                     submissionClass = "";
                 }
-                <div class="submission id-@submission.ID odd link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.UpCount" data-downs="@submission.DownCount">
-                    <p class="parent"></p>
-                    @Html.Partial("_VotingIconsSubmission", Voat.Domain.DomainMaps.Map(submission))
-                    @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", Voat.Domain.DomainMaps.Map(submission))
-                    <div class="child"></div>
-                    <div class="clearleft">@*IE6fix*@</div>
-                </div>
+                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", Voat.Domain.DomainMaps.Map(submission), new ViewDataDictionary() { { "CssClass", new string[] { submissionClass } } })
+                
             }
             if (comment != null)
             {

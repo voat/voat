@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using System.ComponentModel.DataAnnotations;
 using System.Web;
+using Voat.Domain.Models;
 
 namespace Voat.Models.ViewModels
 {
@@ -45,22 +46,7 @@ namespace Voat.Models.ViewModels
         public string ConfirmPassword { get; set; }
     }
 
-    public class DeleteAccountViewModel
-    {
-        [Required(ErrorMessage = "Please type your UserName")]        
-        [Display(Name = "UserName")]
-        public string UserName { get; set; }
 
-        [Required(ErrorMessage = "Confirm your UserName here")]
-        [Display(Name = "Confirm UserName")]
-        [Compare("UserName", ErrorMessage = "UserName does not match")]
-        public string ConfirmUserName { get; set; }
-
-        [Required(ErrorMessage = "Current password is required")]
-        [DataType(DataType.Password)]
-        [Display(Name = "Current password")]
-        public string CurrentPassword { get; set; }
-    }
 
     public class UserPreferencesViewModel
     {

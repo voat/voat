@@ -319,51 +319,34 @@ namespace Voat.Controllers
 
         // POST: /Account/DeleteAccount
         [Authorize]
+        public ActionResult Delete()
+        {
+            return View();
+        }
+
+        // POST: /Account/DeleteAccount
+        [Authorize]
         [HttpPost]
-        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        //[PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
-        public ActionResult DeleteAccount(DeleteAccountViewModel model)
+        public async Task<ActionResult> Delete(Domain.Models.DeleteAccountOptions model)
         {
             if (ModelState.IsValid)
             {
-                if (!User.Identity.Name.IsEqual(model.UserName))
+                var cmd = new Domain.Command.DeleteAccountCommand(model);
+                var response = await cmd.Execute();
+                if (response.Success)
                 {
-                    return RedirectToAction("Manage", new { message = ManageMessageId.UserNameMismatch });
+                    return View("~/Views/Account/AccountDeleted.cshtml");
                 }
                 else
                 {
-                    // require users to enter their password in order to execute account delete action
-                    var user = UserManager.Find(User.Identity.Name, model.CurrentPassword);
-
-                    if (user != null)
-                    {
-                        // execute delete action
-                        if (UserHelper.DeleteUser(User.Identity.Name))
-                        {
-                            // delete email address and set password to something random
-                            UserManager.SetEmail(User.Identity.GetUserId(), null);
-
-                            string randomPassword = "";
-                            using (SHA512 shaM = new SHA512Managed())
-                            {
-                                randomPassword = Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(Path.GetRandomFileName())));
-                            }
-
-                            UserManager.ChangePassword(User.Identity.GetUserId(), model.CurrentPassword, randomPassword);
-
-                            AuthenticationManager.SignOut();
-                            return View("~/Views/Account/AccountDeleted.cshtml");
-                        }
-
-                        // something went wrong when deleting user account
-                        return View("~/Views/Error/Error.cshtml");
-                    }
+                    ModelState.AddModelError("", response.Message);
                 }
             }
-            return RedirectToAction("Manage", new { message = ManageMessageId.WrongPassword });
-        }
+            return View(model);
+        } 
 
-        // GET: /Account/UserPreferencesAbout
         [Authorize]
         public ActionResult GetUserPreferencesAbout()
         {

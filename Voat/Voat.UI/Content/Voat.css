@@ -33,7 +33,7 @@
     background: #F8F8F8;
 }
 
-.highlightedComment {
+.highlight, .highlightedComment {
     background: #E7F7FF !important;
     border: 1px dashed #4B96C4 !important;
 }
@@ -3269,4 +3269,17 @@ select.form-control {
 .sorting-thingy {
     border-bottom: 1px solid;
     border-color: #d3d3d3;
+}
+
+.reportDialog {
+    
+    padding: 20px;
+}
+
+    .reportDialog ul li {
+        display:block;
+    }
+
+.hidden {
+    visibility: hidden;
 }

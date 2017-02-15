@@ -87,7 +87,7 @@
             }
         }
 
-        @if (User.Identity.IsAuthenticated)
+        @if (!submission.ArchiveDate.HasValue && User.Identity.IsAuthenticated)
         //if user logged in, show add comment form
         {
             @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", submission.ID } })
@@ -97,8 +97,8 @@
 
         @Html.Partial("~/Views/Shared/Comments/_CommentTree.cshtml", Model, new ViewDataDictionary {
                     { "ModeratorList", ViewBag.ModeratorList },
-                    { "SavedCommentCache", ViewBag.SavedCommentCache },
-                    { "VoteCache", ViewBag.VoteCache },
+                    //{ "SavedCommentCache", ViewBag.SavedCommentCache },
+                    //{ "VoteCache", ViewBag.VoteCache },
                     { "SortingMode", ViewBag.SortingMode },
                     { "NestingCount", 0 },
                     { "StartingCommentId", ViewBag.StartingCommentId },

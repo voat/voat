@@ -19,6 +19,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Voat.Caching;
+using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Query;
@@ -37,6 +38,10 @@ namespace Voat.Controllers
         [PreventSpam]
         public async Task<ActionResult> SearchResults(int? page, string q, string l, string sub)
         {
+            if (Settings.SearchDisabled)
+            {
+                return base.GenericErrorView(new Models.ViewModels.ErrorViewModel() { Title = "Search Disabled", Description = "Sorry, search is currently disabled. :(", FooterMessage = "Tune in for The People vs. Search court case" });
+            }
             //sanitize
             q = q.TrimSafe();
 

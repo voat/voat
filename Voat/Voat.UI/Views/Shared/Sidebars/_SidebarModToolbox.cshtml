@@ -56,6 +56,12 @@
                                 <a href="/v/@Model.Name/about/bans/">subverse bans</a>
                             </li>
                         }
+                        @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.AccessReports))
+                        {
+                            <li>
+                                <a href="/v/@Model.Name/about/reports/">user reports</a>
+                            </li>
+                        }
                         @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.ReadMail))
                         {
                             <li>
