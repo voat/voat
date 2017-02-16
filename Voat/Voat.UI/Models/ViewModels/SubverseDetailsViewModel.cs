@@ -21,7 +21,7 @@ namespace Voat.Models.ViewModels
         public string Name { get; set; }
         public string Description { get; set; }
         public string Title { get; set; }
-        public DateTime Creation_date { get; set; }        
+        public DateTime CreationDate { get; set; }        
         public int? Subscribers { get; set; }
     }
 }

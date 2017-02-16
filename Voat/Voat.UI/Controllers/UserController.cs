@@ -244,7 +244,7 @@ namespace Voat.Controllers
                                                                                 Name = c.Name,
                                                                                 Title = c.Title,
                                                                                 Description = c.Description,
-                                                                                Creation_date = c.CreationDate,
+                                                                                CreationDate = c.CreationDate,
                                                                                 Subscribers = c.SubscriberCount
                                                                             };
 

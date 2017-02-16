@@ -707,7 +707,7 @@ namespace Voat.Data
                 _db.Subverses.Add(subverse);
                 await _db.SaveChangesAsync().ConfigureAwait(false);
 
-                await SubscribeUser(DomainType.Subverse, SubscriptionAction.Subscribe, subverse.Name).ConfigureAwait(false);
+                await SubscribeUser(new DomainReference(DomainType.Subverse, subverse.Name), SubscriptionAction.Subscribe).ConfigureAwait(false);
 
 
                 // register user as the owner of the newly created subverse
@@ -908,9 +908,9 @@ namespace Voat.Data
             return results;
         }
 
-        public async Task<IEnumerable<Data.Models.Submission>> GetSubmissionsDapper(string name, DomainType type, SearchOptions options)
+        public async Task<IEnumerable<Data.Models.Submission>> GetSubmissionsDapper(string name, DomainType type, SearchOptions options, string ownerName = null)
         {
-            if (type != DomainType.Subverse)
+            if (!(type == DomainType.Subverse || type == DomainType.Set))
             {
                 throw new NotImplementedException($"DomainType {type.ToString()} not implemented using this pipeline");
             }
@@ -942,159 +942,172 @@ namespace Voat.Data
                 userData = new UserData(User.Identity.Name);
                 userName = userData.UserName;
             }
+            switch (type) {
+                case DomainType.Subverse:
+           
+                    bool filterBlockedSubverses = false;
 
-            bool filterBlockedSubverses = false;
+                    switch (name.ToLower())
+                    {
+                        //Match Aggregate Subs
+                        case AGGREGATE_SUBVERSE.FRONT:
+                            query.Append(x => x.Select, "INNER JOIN SubverseSubscription ss WITH (NOLOCK) ON s.Subverse = ss.Subverse");
+                            query.Append(x => x.Where, "s.ArchiveDate IS NULL AND s.IsDeleted = 0 AND ss.UserName = @UserName");
 
-            switch (name.ToLower())
-            {
-                //Match Aggregate Subs
-                case AGGREGATE_SUBVERSE.FRONT:
-                    query.Append(x => x.Select, "INNER JOIN SubverseSubscription ss WITH (NOLOCK) ON s.Subverse = ss.Subverse");
-                    query.Append(x => x.Where, "s.ArchiveDate IS NULL AND s.IsDeleted = 0 AND ss.UserName = @UserName");
-
-                    //query = (from x in _db.Submissions
-                    //         join subscribed in _db.SubverseSubscriptions on x.Subverse equals subscribed.Subverse
-                    //         where subscribed.UserName == User.Identity.Name
-                    //         select x);
+                            //query = (from x in _db.Submissions
+                            //         join subscribed in _db.SubverseSubscriptions on x.Subverse equals subscribed.Subverse
+                            //         where subscribed.UserName == User.Identity.Name
+                            //         select x);
                    
-                    break;
-                case AGGREGATE_SUBVERSE.DEFAULT:
-                    //if no user or user has no subscriptions or logged in user requests default page
-                    query.Append(x => x.Select, "INNER JOIN DefaultSubverse ss WITH (NOLOCK) ON s.Subverse = ss.Subverse");
+                            break;
+                        case AGGREGATE_SUBVERSE.DEFAULT:
+                            //if no user or user has no subscriptions or logged in user requests default page
+                            query.Append(x => x.Select, "INNER JOIN DefaultSubverse ss WITH (NOLOCK) ON s.Subverse = ss.Subverse");
 
-                    if (Settings.IsVoatBranded)
-                    {
-                        //This is a modification Voat uses in the default page
-                        query.Append(x => x.Where, "(s.UpCount - s.DownCount >= 20) AND ABS(DATEDIFF(HH, s.CreationDate, GETUTCDATE())) <= 24");
-                    }
+                            if (Settings.IsVoatBranded)
+                            {
+                                //This is a modification Voat uses in the default page
+                                query.Append(x => x.Where, "(s.UpCount - s.DownCount >= 20) AND ABS(DATEDIFF(HH, s.CreationDate, GETUTCDATE())) <= 24");
+                            }
 
-                    //sort default by relative rank
-                    options.Sort = Domain.Models.SortAlgorithm.RelativeRank;
+                            //sort default by relative rank
+                            options.Sort = Domain.Models.SortAlgorithm.RelativeRank;
 
-                    //query = (from x in _db.Submissions
-                    //         join defaults in _db.DefaultSubverses on x.Subverse equals defaults.Subverse
-                    //         select x);
-                    break;
-                case AGGREGATE_SUBVERSE.ANY:
-                    //allowing subverse marked private to not be filtered
-                    //Should subs marked as private be excluded from an ANY query? I don't know.
-                    //query.Where = "sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0";
-                    query.Where = "sub.IsAdminPrivate = 0";
-                    //query = (from x in _db.Submissions
-                    //         where
-                    //         !x.Subverse1.IsAdminPrivate
-                    //         && !x.Subverse1.IsPrivate
-                    //         && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value)
-                    //         select x);
-                    break;
+                            //query = (from x in _db.Submissions
+                            //         join defaults in _db.DefaultSubverses on x.Subverse equals defaults.Subverse
+                            //         select x);
+                            break;
+                        case AGGREGATE_SUBVERSE.ANY:
+                            //allowing subverse marked private to not be filtered
+                            //Should subs marked as private be excluded from an ANY query? I don't know.
+                            //query.Where = "sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0";
+                            query.Where = "sub.IsAdminPrivate = 0";
+                            //query = (from x in _db.Submissions
+                            //         where
+                            //         !x.Subverse1.IsAdminPrivate
+                            //         && !x.Subverse1.IsPrivate
+                            //         && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value)
+                            //         select x);
+                            break;
 
-                case AGGREGATE_SUBVERSE.ALL:
-                case "all":
-                    filterBlockedSubverses = true;
-                    ////Controller logic:
-                    //IQueryable<Submission> submissionsFromAllSubversesByDate = 
-                    //(from message in _db.Submissions
-                    //join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                    //where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.MinCCPForDownvote == 0
-                    //where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-                    //where !subverse.IsAdminDisabled.Value
-                    //where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(userName)
-                    //select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
+                        case AGGREGATE_SUBVERSE.ALL:
+                        case "all":
+                            filterBlockedSubverses = true;
+                            ////Controller logic:
+                            //IQueryable<Submission> submissionsFromAllSubversesByDate = 
+                            //(from message in _db.Submissions
+                            //join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                            //where !message.IsArchived && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.MinCCPForDownvote == 0
+                            //where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                            //where !subverse.IsAdminDisabled.Value
+                            //where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(userName)
+                            //select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
 
-                    nsfw = (User.Identity.IsAuthenticated ? userData.Preferences.EnableAdultContent : false);
+                            nsfw = (User.Identity.IsAuthenticated ? userData.Preferences.EnableAdultContent : false);
 
-                    //v/all has certain conditions
-                    //1. Only subs that have a MinCCP of zero
-                    //2. Don't show private subs
-                    //3. Don't show NSFW subs if nsfw isn't enabled in profile, if they are logged in
-                    //4. Don't show blocked subs if logged in // not implemented
-                    query.Where = "sub.MinCCPForDownvote = 0 AND sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0";
-                    if (!nsfw)
-                    {
-                        query.Where += " AND sub.IsAdult = 0 AND s.IsAdult = 0";
-                    }
+                            //v/all has certain conditions
+                            //1. Only subs that have a MinCCP of zero
+                            //2. Don't show private subs
+                            //3. Don't show NSFW subs if nsfw isn't enabled in profile, if they are logged in
+                            //4. Don't show blocked subs if logged in // not implemented
+                            query.Where = "sub.MinCCPForDownvote = 0 AND sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0";
+                            if (!nsfw)
+                            {
+                                query.Where += " AND sub.IsAdult = 0 AND s.IsAdult = 0";
+                            }
 
-                    //query = (from x in _db.Submissions
-                    //         where x.Subverse1.MinCCPForDownvote == 0
-                    //                && (!x.Subverse1.IsAdminPrivate && !x.Subverse1.IsPrivate && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value))
-                    //                && (x.Subverse1.IsAdult && nsfw || !x.Subverse1.IsAdult)
-                    //         select x);
-                    break;
+                            //query = (from x in _db.Submissions
+                            //         where x.Subverse1.MinCCPForDownvote == 0
+                            //                && (!x.Subverse1.IsAdminPrivate && !x.Subverse1.IsPrivate && !(x.Subverse1.IsAdminDisabled.HasValue && x.Subverse1.IsAdminDisabled.Value))
+                            //                && (x.Subverse1.IsAdult && nsfw || !x.Subverse1.IsAdult)
+                            //         select x);
+                            break;
 
-                //for regular subverse queries
-                default:
+                        //for regular subverse queries
+                        default:
 
-                    if (!SubverseExists(name))
-                    {
-                        throw new VoatNotFoundException("Subverse '{0}' not found.", name);
-                    }
+                            if (!SubverseExists(name))
+                            {
+                                throw new VoatNotFoundException("Subverse '{0}' not found.", name);
+                            }
 
-                    ////Controller Logic:
-                    //IQueryable<Submission> submissionsFromASubverseByDate = 
-                    //    (from message in _db.Submissions
-                    //    join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                    //    where !message.IsDeleted && message.Subverse == subverseName
-                    //    where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-                    //    where !(from bu in _db.SubverseBans where bu.Subverse == subverse.Name select bu.UserName).Contains(message.UserName)
-                    //    select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
+                            ////Controller Logic:
+                            //IQueryable<Submission> submissionsFromASubverseByDate = 
+                            //    (from message in _db.Submissions
+                            //    join subverse in _db.Subverses on message.Subverse equals subverse.Name
+                            //    where !message.IsDeleted && message.Subverse == subverseName
+                            //    where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
+                            //    where !(from bu in _db.SubverseBans where bu.Subverse == subverse.Name select bu.UserName).Contains(message.UserName)
+                            //    select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
 
-                    name = ToCorrectSubverseCasing(name);
-                    query.Where = "s.Subverse = @Subverse";
+                            name = ToCorrectSubverseCasing(name);
+                            query.Where = "s.Subverse = @Subverse";
 
-                    //Filter out stickies in subs
-                    query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = s.Subverse)");
+                            //Filter out stickies in subs
+                            query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = s.Subverse)");
                     
-                    //query = (from x in _db.Submissions
-                    //         where (x.Subverse == subverse || subverse == null)
-                    //         select x);
+                            //query = (from x in _db.Submissions
+                            //         where (x.Subverse == subverse || subverse == null)
+                            //         select x);
+                            break;
+                    }
+                    //Filter out stickies
+                    switch (name.ToLower())
+                    {
+                        //Match Aggregate Subs
+                        case AGGREGATE_SUBVERSE.FRONT:
+                        case AGGREGATE_SUBVERSE.DEFAULT:
+                        case AGGREGATE_SUBVERSE.ANY:
+                        case AGGREGATE_SUBVERSE.ALL:
+                        case "all":
+
+                            query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = 'announcements')");
+
+                            break;
+                        //for regular subverse queries
+                        default:
+
+                            //Filter out stickies in subs
+                            query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = s.Subverse)");
+                            break;
+                    }
+
+
+                    
+
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        if (filterBlockedSubverses)
+                        {
+                            //query = query.Where(s => !_db.UserBlockedSubverses.Where(b =>
+                            //    b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                            //    && b.Subverse.Equals(s.Subverse, StringComparison.OrdinalIgnoreCase)).Any());
+
+                            //filter blocked subs
+                            query.Append(x => x.Where, "s.Subverse NOT IN (SELECT b.Subverse FROM UserBlockedSubverse b WITH (NOLOCK) WHERE b.UserName = @UserName)");
+                        }
+
+
+                        //filter blocked users (Currently commented out do to a collation issue)
+                        //query = query.Where(s => !_db.UserBlockedUsers.Where(b =>
+                        //    b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                        //    && s.UserName.Equals(b.BlockUser, StringComparison.OrdinalIgnoreCase)
+                        //    ).Any());
+
+                        //filter global banned users
+                        //query = query.Where(s => !_db.BannedUsers.Where(b => b.UserName.Equals(s.UserName, StringComparison.OrdinalIgnoreCase)).Any());
+                    }
+                    break;
+
+                case DomainType.Set:
+
+                    query.Append(x => x.Select, "INNER JOIN [dbo].[SubverseSetList] sl WITH (NOLOCK) ON sub.ID = sl.SubverseID INNER JOIN [dbo].[SubverseSet] st WITH (NOLOCK) ON sl.SubverseSetID = st.ID");
+                    query.Append(x => x.Where, "st.Name = 'Default' AND st.UserName IS NULL");
+
                     break;
             }
-            //Filter out stickies
-            switch (name.ToLower())
-            {
-                //Match Aggregate Subs
-                case AGGREGATE_SUBVERSE.FRONT:
-                case AGGREGATE_SUBVERSE.DEFAULT:
-                case AGGREGATE_SUBVERSE.ANY:
-                case AGGREGATE_SUBVERSE.ALL:
-                case "all":
-
-                    query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = 'announcements')");
-
-                    break;
-                //for regular subverse queries
-                default:
-
-                    //Filter out stickies in subs
-                    query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = s.Subverse)");
-                    break;
-            }
-
 
             query.Append(x => x.Where, "s.IsDeleted = 0");
-
-            if (User.Identity.IsAuthenticated)
-            {
-                if (filterBlockedSubverses)
-                {
-                    //query = query.Where(s => !_db.UserBlockedSubverses.Where(b =>
-                    //    b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
-                    //    && b.Subverse.Equals(s.Subverse, StringComparison.OrdinalIgnoreCase)).Any());
-
-                    //filter blocked subs
-                    query.Append(x => x.Where, "s.Subverse NOT IN (SELECT b.Subverse FROM UserBlockedSubverse b WITH (NOLOCK) WHERE b.UserName = @UserName)");
-                }
-
-
-                //filter blocked users (Currently commented out do to a collation issue)
-                //query = query.Where(s => !_db.UserBlockedUsers.Where(b =>
-                //    b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
-                //    && s.UserName.Equals(b.BlockUser, StringComparison.OrdinalIgnoreCase)
-                //    ).Any());
-
-                //filter global banned users
-                //query = query.Where(s => !_db.BannedUsers.Where(b => b.UserName.Equals(s.UserName, StringComparison.OrdinalIgnoreCase)).Any());
-            }
 
             //TODO: Re-implement this logic
             //HACK: Warning, Super hacktastic
@@ -3304,11 +3317,11 @@ namespace Voat.Data
                         where x.UserName == userName
                         select new DomainReference() { Name = x.Subverse, Type = DomainType.Subverse }).ToList();
 
-            var sets = (from x in _db.UserSetSubscriptions
-                        where x.UserName == userName
-                        select new DomainReference() { Name = x.UserSet.Name, Type = DomainType.Set }).ToList();
+            //var sets = (from x in _db.UserSetSubscriptions
+            //            where x.UserName == userName
+            //            select new DomainReference() { Name = x.UserSet.Name, Type = DomainType.Set }).ToList();
 
-            subs.AddRange(sets);
+            //subs.AddRange(sets);
 
             return subs;
         }
@@ -3779,13 +3792,16 @@ namespace Voat.Data
         //    return s;
         //}
 
-        public async Task<CommandResponse> SubscribeUser(DomainType domainType, SubscriptionAction action, string subscriptionName)
+        [Authorize]
+        public async Task<CommandResponse> SubscribeUser(DomainReference domainReference, SubscriptionAction action)
         {
-            switch (domainType)
+            DemandAuthentication();
+
+            switch (domainReference.Type)
             {
                 case DomainType.Subverse:
 
-                    var subverse = GetSubverseInfo(subscriptionName);
+                    var subverse = GetSubverseInfo(domainReference.Name);
                     if (subverse == null)
                     {
                         return CommandResponse.FromStatus(Status.Denied, "Subverse does not exist");
@@ -3794,58 +3810,76 @@ namespace Voat.Data
                     {
                         return CommandResponse.FromStatus(Status.Denied, "Subverse is disabled");
                     }
+                    var countChanged = false;
 
                     if (action == SubscriptionAction.Subscribe)
                     {
-                        if (!_db.SubverseSubscriptions.Any(x => x.Subverse.Equals(subscriptionName, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)))
+                        if (!_db.SubverseSubscriptions.Any(x => x.Subverse.Equals(domainReference.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)))
                         {
-                            var sub = new SubverseSubscription { UserName = User.Identity.Name, Subverse = subscriptionName };
+                            var sub = new SubverseSubscription { UserName = User.Identity.Name, Subverse = domainReference.Name };
                             _db.SubverseSubscriptions.Add(sub);
+                            countChanged = true;
                         }
                     }
                     else
                     {
-                        var sub = _db.SubverseSubscriptions.FirstOrDefault(x => x.Subverse.Equals(subscriptionName, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+                        var sub = _db.SubverseSubscriptions.FirstOrDefault(x => x.Subverse.Equals(domainReference.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
                         if (sub != null)
                         {
                             _db.SubverseSubscriptions.Remove(sub);
+                            countChanged = true;
                         }
                     }
 
                     await _db.SaveChangesAsync().ConfigureAwait(false);
-
-                    await UpdateSubverseSubscriberCount(subscriptionName, action).ConfigureAwait(false);
+                    if (countChanged)
+                    {
+                        await UpdateSubverseSubscriberCount(domainReference, action).ConfigureAwait(false);
+                    }
 
                     break;
 
                 default:
-                    throw new NotImplementedException(String.Format("{0} subscriptions not implemented yet", domainType));
+                    throw new NotImplementedException(String.Format("{0} subscriptions not implemented yet", domainReference.Type));
                     break;
             }
             return CommandResponse.Successful();
         }
 
-        private async Task UpdateSubverseSubscriberCount(string subverse, SubscriptionAction action)
+        private async Task UpdateSubverseSubscriberCount(DomainReference domainReference, SubscriptionAction action)
         {
-            // record new subscription in subverse table subscribers field
-            Subverse sub = _db.Subverses.Find(subverse);
-            if (sub != null)
-            {
-                //We have nulls in db, don't ask me how.
-                if (sub.SubscriberCount == null)
-                {
-                    sub.SubscriberCount = 0;
-                }
+            int incrementValue = action == SubscriptionAction.Subscribe ? 1 : -1;
+            var u = new DapperUpdate();
 
-                if (action == SubscriptionAction.Subscribe)
-                {
-                    sub.SubscriberCount = Math.Max(0, sub.SubscriberCount.Value + 1);
-                }
-                else
-                {
-                    sub.SubscriberCount = Math.Max(0, sub.SubscriberCount.Value - 1);
-                }
+            switch (domainReference.Type)
+            {
+                case DomainType.Subverse:
+
+                    u.Update = "UPDATE s SET SubscriberCount = (SubscriberCount + @IncrementValue) FROM Subverse s";
+                    u.Where = "s.Name = @Name";
+                    u.Parameters = new DynamicParameters(new { Name = domainReference.Name, IncrementValue = incrementValue });
+                    
+                    break;
+                case DomainType.Set:
+                    u.Update = "UPDATE s SET SubscriberCount = (SubscriberCount + @IncrementValue) FROM SubverseSet s";
+                    u.Where = "s.Name = @Name";
+
+                    if (!String.IsNullOrEmpty(domainReference.OwnerName))
+                    {
+                        u.Append(x => x.Where, "s.OwnerName = @OwnerName");
+                    }
+                    else
+                    {
+                        u.Append(x => x.Where, "s.OwnerName IS NULL");
+                    }
+                    u.Parameters = new DynamicParameters(new { Name = domainReference.Name, IncrementValue = incrementValue, OwnerName = domainReference.OwnerName });
+                    break;
+                case DomainType.User:
+                    throw new NotImplementedException("User subscriber count not implemented");
+                    break;
             }
+            
+            
             await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
@@ -5234,6 +5268,33 @@ namespace Voat.Data
             // user account could not be found
             return CommandResponse.FromStatus(Status.Error, "User Account Not Found");
         }
+        #endregion
+
+        #region Sets
+
+
+        public int? GetSetID(string name, string ownerName, SetType type, bool createIfMissing = false)
+        {
+
+            var q = new DapperQuery();
+            q.Select = "SELECT subSet.ID FROM SubverseSet subSet";
+            q.Where = "subSet.Name = @Name AND subSet.Type = @Type";
+
+            if (!String.IsNullOrEmpty(ownerName))
+            {
+                q.Append(x => x.Where, "subSet.OwnerName = @OwnerName");
+            }
+            else
+            {
+                q.Append(x => x.Where, "subSet.OwnerName IS NULL");
+            }
+
+            q.Parameters = new DynamicParameters(new { Name = name, OwnerName = ownerName, Type = (int)type });
+            var id = _db.Database.Connection.ExecuteScalar<int?>(q.ToString(), q.Parameters);
+            return id;
+
+        }
+
         #endregion
     }
 }

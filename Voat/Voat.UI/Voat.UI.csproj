@@ -304,7 +304,7 @@
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\ModLogController.cs" />
     <Compile Include="Controllers\NavController.cs" />
-    <Compile Include="Controllers\SetsController.cs" />
+    <Compile Include="Controllers\SetController.cs" />
     <Compile Include="Controllers\SubverseModerationController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="MessagingHub.cs" />
@@ -568,7 +568,6 @@
     <Content Include="Views\Error\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\About\About.cshtml" />
-    <Content Include="Views\Home\~Index.cshtml" />
     <Content Include="Views\Account\_ChangeAccountSettings.cshtml" />
     <Content Include="Views\Account\_RemoveAccountPartial.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
@@ -655,23 +654,10 @@
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonFlair.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSticky.cshtml" />
     <Content Include="Views\Account\_UserPreferencesAbout.cshtml" />
-    <Content Include="Views\Home\~IndexV2.cshtml" />
-    <Content Include="Views\Sets\_SetTitle.cshtml" />
-    <Content Include="Views\Sets\_SingleSet.cshtml" />
-    <Content Include="Views\Sets\Index.cshtml" />
-    <Content Include="Views\Sets\MySets.cshtml" />
-    <Content Include="Views\Sets\_PopularSets.cshtml" />
-    <Content Include="Views\Sets\EditSet.cshtml" />
     <Content Include="Views\Shared\_MarkdownEditor.cshtml" />
-    <Content Include="Views\Sets\Sets.cshtml" />
-    <Content Include="Views\Sets\_SetDetails.cshtml" />
     <Content Include="Views\Shared\_MostViewedSubmissions.cshtml" />
-    <Content Include="Views\Sets\_SingleSetPage.cshtml" />
     <Content Include="Views\Welcome\_FirstTimeVisitorWelcome.cshtml" />
-    <Content Include="Views\Sets\CreateSet.cshtml" />
-    <Content Include="Views\Sets\ManageMySets.cshtml" />
     <Content Include="Views\Error\UnAuthorized.cshtml" />
-    <Content Include="Views\AjaxViews\_SubverseInfo.cshtml" />
     <Content Include="Views\Subverses\Admin\SubverseBans.cshtml" />
     <Content Include="Views\Subverses\Admin\AddBan.cshtml" />
     <Content Include="Views\Subverses\Admin\RemoveBan.cshtml" />
@@ -770,6 +756,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Views\Sets\" />
     <Folder Include="Views\SubverseModeration\" />
   </ItemGroup>
   <PropertyGroup>

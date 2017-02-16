@@ -7,22 +7,20 @@ namespace Voat.Domain.Command
 {
     public class SubscriptionCommand : CacheCommand<CommandResponse>
     {
-        protected DomainType _domainType;
         protected SubscriptionAction _action;
-        protected string _name;
+        protected DomainReference _domainReference;
 
-        public SubscriptionCommand(DomainType domainType, SubscriptionAction action, string subscriptionItemName)
+        public SubscriptionCommand(DomainReference domainReference, SubscriptionAction action)
         {
-            _domainType = domainType;
             _action = action;
-            _name = subscriptionItemName;
+            _domainReference = domainReference;
         }
 
         protected override async Task<CommandResponse> CacheExecute()
         {
             using (var repo = new Repository())
             {
-                await repo.SubscribeUser(_domainType, _action, _name);
+                await repo.SubscribeUser(_domainReference, _action);
             }
             return CommandResponse.Successful();
         }

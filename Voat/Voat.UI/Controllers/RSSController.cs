@@ -78,7 +78,7 @@ namespace Voat.Controllers
 
             subverseName = String.IsNullOrEmpty(subverseName) ? AGGREGATE_SUBVERSE.ALL : subverseName;
 
-            var q = new QuerySubmissions(subverseName, new Data.SearchOptions());
+            var q = new QuerySubmissions(subverseName, Domain.Models.DomainType.Subverse, new Data.SearchOptions());
             var submissions = await q.ExecuteAsync();
 
             var feed = new SyndicationFeed("Voat", "Have your say", new Uri("http://www.voat.co"))

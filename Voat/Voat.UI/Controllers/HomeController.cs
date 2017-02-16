@@ -173,73 +173,73 @@ namespace Voat.Controllers
         }
 
         // GET: /v2
-        public ActionResult IndexV2(int? page)
-        {
-            if (Settings.SetsDisabled)
-            {
-                return RedirectToAction("UnAuthorized", "Error");
-            }
+        //public ActionResult IndexV2(int? page)
+        //{
+        //    if (Settings.SetsDisabled)
+        //    {
+        //        return RedirectToAction("UnAuthorized", "Error");
+        //    }
 
-            ViewBag.SelectedSubverse = "frontpage";
-            var submissions = new List<SetSubmission>();
+        //    ViewBag.SelectedSubverse = "frontpage";
+        //    var submissions = new List<SetSubmission>();
 
-            var frontPageResultModel = new SetFrontpageViewModel();
+        //    var frontPageResultModel = new SetFrontpageViewModel();
 
-            // show user sets
-            // get names of each set that user is subscribed to
-            // for each set name, get list of subverses that define the set
-            // for each subverse, get top ranked submissions
-            if (User.Identity.IsAuthenticated && UserHelper.SetsSubscriptionCount(User.Identity.Name) > 0)
-            {
-                var userSetSubscriptions = _db.UserSetSubscriptions.Where(usd => usd.UserName == User.Identity.Name);
-                var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
+        //    // show user sets
+        //    // get names of each set that user is subscribed to
+        //    // for each set name, get list of subverses that define the set
+        //    // for each subverse, get top ranked submissions
+        //    if (User.Identity.IsAuthenticated && UserHelper.SetsSubscriptionCount(User.Identity.Name) > 0)
+        //    {
+        //        var userSetSubscriptions = _db.UserSetSubscriptions.Where(usd => usd.UserName == User.Identity.Name);
+        //        var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
 
-                foreach (var set in userSetSubscriptions)
-                {
-                    UserSetSubscription setId = set;
-                    var userSetDefinition = _db.UserSetLists.Where(st => st.UserSetID == setId.UserSetID);
+        //        foreach (var set in userSetSubscriptions)
+        //        {
+        //            UserSetSubscription setId = set;
+        //            var userSetDefinition = _db.UserSetLists.Where(st => st.UserSetID == setId.UserSetID);
 
-                    foreach (var subverse in userSetDefinition)
-                    {
-                        // get top ranked submissions
-                        var submissionsExcludingBlockedSubverses = SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Submissions, subverse.UserSet.Name, 2, 0)
-                            .Where(x => !blockedSubverses.Contains(x.Subverse));
-                        submissions.AddRange(submissionsExcludingBlockedSubverses);
-                    }
-                }
+        //            foreach (var subverse in userSetDefinition)
+        //            {
+        //                // get top ranked submissions
+        //                var submissionsExcludingBlockedSubverses = SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Submissions, subverse.UserSet.Name, 2, 0)
+        //                    .Where(x => !blockedSubverses.Contains(x.Subverse));
+        //                submissions.AddRange(submissionsExcludingBlockedSubverses);
+        //            }
+        //        }
 
-                frontPageResultModel.HasSetSubscriptions = true;
-                frontPageResultModel.UserSets = userSetSubscriptions;
-                frontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
+        //        frontPageResultModel.HasSetSubscriptions = true;
+        //        frontPageResultModel.UserSets = userSetSubscriptions;
+        //        frontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
 
-                return View("~/Views/Home/IndexV2.cshtml", frontPageResultModel);
-            }
+        //        return View("~/Views/Home/IndexV2.cshtml", frontPageResultModel);
+        //    }
 
-            // show default sets since user is not logged in or has no set subscriptions
-            // get names of default sets
-            // for each set name, get list of subverses
-            // for each subverse, get top ranked submissions
-            var defaultSets = _db.UserSets.Where(ds => ds.IsDefault && ds.UserSetLists.Any());
-            var defaultFrontPageResultModel = new SetFrontpageViewModel();
+        //    // show default sets since user is not logged in or has no set subscriptions
+        //    // get names of default sets
+        //    // for each set name, get list of subverses
+        //    // for each subverse, get top ranked submissions
+        //    var defaultSets = _db.UserSets.Where(ds => ds.IsDefault && ds.UserSetLists.Any());
+        //    var defaultFrontPageResultModel = new SetFrontpageViewModel();
 
-            foreach (var set in defaultSets)
-            {
-                UserSet setId = set;
-                var defaultSetDefinition = _db.UserSetLists.Where(st => st.UserSetID == setId.ID);
+        //    foreach (var set in defaultSets)
+        //    {
+        //        UserSet setId = set;
+        //        var defaultSetDefinition = _db.UserSetLists.Where(st => st.UserSetID == setId.ID);
 
-                foreach (var subverse in defaultSetDefinition)
-                {
-                    // get top ranked submissions
-                    submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Submissions, set.Name, 2, 0));
-                }
-            }
+        //        foreach (var subverse in defaultSetDefinition)
+        //        {
+        //            // get top ranked submissions
+        //            submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Submissions, set.Name, 2, 0));
+        //        }
+        //    }
 
-            defaultFrontPageResultModel.DefaultSets = defaultSets;
-            defaultFrontPageResultModel.HasSetSubscriptions = false;
-            defaultFrontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
+        //    defaultFrontPageResultModel.DefaultSets = defaultSets;
+        //    defaultFrontPageResultModel.HasSetSubscriptions = false;
+        //    defaultFrontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
 
-            return View("~/Views/Home/IndexV2.cshtml", defaultFrontPageResultModel);
-        }
+        //    return View("~/Views/Home/IndexV2.cshtml", defaultFrontPageResultModel);
+        //}
 
         // GET: /about
         public ActionResult About(string pagetoshow)

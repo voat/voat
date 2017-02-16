@@ -21,9 +21,7 @@ namespace Voat.Domain.Models
     public enum ContentType
     {
         Submission = 1,
-        Comment = 2,
-        User = 4
-        //Set = 4
+        Comment = 2
     }
 
     public enum SubscriptionAction
@@ -350,5 +348,14 @@ namespace Voat.Domain.Models
         Any,
         Reviewed,
         Unreviewed
+    }
+
+    [DatabaseMappedValue()]
+    public enum SetType
+    {
+        Normal = 1,
+        Front = 2,
+        Following = 3,
+        Blocked = 4
     }
 }

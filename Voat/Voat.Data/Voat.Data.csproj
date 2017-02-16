@@ -173,6 +173,15 @@
     <Compile Include="Models\SubverseModerator.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\SubverseSet.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SubverseSetList.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SubverseSetSubscription.cs">
+      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\SubverseSubscription.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
@@ -189,18 +198,6 @@
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UserPreference.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\UserSet.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\UserSetList.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\UserSetSubscription.cs">
-      <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\UserVisit.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\usp_CommentTree_Result.cs">

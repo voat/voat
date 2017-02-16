@@ -25,7 +25,6 @@ namespace Voat.Data.Models
             this.SubverseBans = new HashSet<SubverseBan>();
             this.SubverseFlairs = new HashSet<SubverseFlair>();
             this.UserBlockedSubverses = new HashSet<UserBlockedSubverse>();
-            this.UserSetLists = new HashSet<UserSetList>();
         }
     
         public string Name { get; set; }
@@ -47,6 +46,7 @@ namespace Voat.Data.Models
         public Nullable<bool> IsAdminDisabled { get; set; }
         public string CreatedBy { get; set; }
         public Nullable<System.DateTime> LastUpdateDate { get; set; }
+        public int ID { get; set; }
     
         public virtual DefaultSubverse DefaultSubverse { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -65,7 +65,5 @@ namespace Voat.Data.Models
         public virtual ICollection<SubverseFlair> SubverseFlairs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserBlockedSubverse> UserBlockedSubverses { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<UserSetList> UserSetLists { get; set; }
     }
 }

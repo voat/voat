@@ -12,27 +12,26 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class UserSet
+    public partial class SubverseSet
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public UserSet()
+        public SubverseSet()
         {
-            this.UserSetLists = new HashSet<UserSetList>();
-            this.UserSetSubscriptions = new HashSet<UserSetSubscription>();
+            this.SubverseSetLists = new HashSet<SubverseSetList>();
+            this.SubverseSetSubscriptions = new HashSet<SubverseSetSubscription>();
         }
     
         public int ID { get; set; }
         public string Name { get; set; }
+        public string UserName { get; set; }
         public string Description { get; set; }
-        public string CreatedBy { get; set; }
-        public System.DateTime CreationDate { get; set; }
-        public bool IsPublic { get; set; }
+        public int Type { get; set; }
         public int SubscriberCount { get; set; }
-        public bool IsDefault { get; set; }
+        public System.DateTime CreationDate { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<UserSetList> UserSetLists { get; set; }
+        public virtual ICollection<SubverseSetList> SubverseSetLists { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<UserSetSubscription> UserSetSubscriptions { get; set; }
+        public virtual ICollection<SubverseSetSubscription> SubverseSetSubscriptions { get; set; }
     }
 }

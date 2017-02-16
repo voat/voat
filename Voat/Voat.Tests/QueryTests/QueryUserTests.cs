@@ -69,7 +69,7 @@ namespace Voat.Tests.QueryTests
             VoatDataInitializer.CreateUser(subUserName);
 
             TestHelper.SetPrincipal(subUserName);
-            var cmd = new SubscriptionCommand(Domain.Models.DomainType.Subverse, Domain.Models.SubscriptionAction.Subscribe, "unit");
+            var cmd = new SubscriptionCommand(new DomainReference(DomainType.Subverse, "unit"), Domain.Models.SubscriptionAction.Subscribe);
             var x = await cmd.Execute();
 
             userData = new Domain.UserData(subUserName);

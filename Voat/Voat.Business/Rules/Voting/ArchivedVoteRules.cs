@@ -10,7 +10,7 @@ namespace Voat.Rules.Voting
     [RuleDiscovery("Approved if submission is not archived", "approved = (!submission.IsArchived)")]
     public class ArchivedVoteCommentRule : VoatRule
     {
-        public ArchivedVoteCommentRule() : base("Archvied Vote Rule", "2.9.1", RuleScope.Vote)
+        public ArchivedVoteCommentRule() : base("Archived Vote Rule", "2.9.1", RuleScope.Vote)
         {
             RequiredContext.Add("Submission", typeof(Domain.Models.Submission));
         }

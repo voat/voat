@@ -149,13 +149,13 @@ namespace Voat.Controllers
             return RedirectToRoute("SubverseIndex", new { subverse = subversetoshow, previewMode = previewMode });
         }
 
-        // GET: subverse basic info used for V2 sets layout
-        public ActionResult SubverseBasicInfo(int setId, string subverseName)
-        {
-            var userSetDefinition = _db.UserSetLists.FirstOrDefault(s => s.UserSetID == setId && s.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
+        //// GET: subverse basic info used for V2 sets layout
+        //public ActionResult SubverseBasicInfo(int setId, string subverseName)
+        //{
+        //    var userSetDefinition = _db.UserSetLists.FirstOrDefault(s => s.UserSetID == setId && s.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
 
-            return PartialView("~/Views/AjaxViews/_SubverseInfo.cshtml", userSetDefinition);
-        }
+        //    return PartialView("~/Views/AjaxViews/_SubverseInfo.cshtml", userSetDefinition);
+        //}
 
         // GET: basic info about a user
         [OutputCache(Duration = 600, VaryByParam = "*")]

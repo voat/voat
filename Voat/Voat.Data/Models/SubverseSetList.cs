@@ -12,13 +12,13 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class UserSetList
+    public partial class SubverseSetList
     {
         public int ID { get; set; }
-        public int UserSetID { get; set; }
-        public string Subverse { get; set; }
+        public int SubverseSetID { get; set; }
+        public int SubverseID { get; set; }
+        public System.DateTime CreationDate { get; set; }
     
-        public virtual Subverse Subverse1 { get; set; }
-        public virtual UserSet UserSet { get; set; }
+        public virtual SubverseSet SubverseSet { get; set; }
     }
 }

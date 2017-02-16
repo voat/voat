@@ -193,7 +193,7 @@ namespace Voat.Controllers
                                                                            Name = c.Name,
                                                                            Title = c.Title,
                                                                            Description = c.Description,
-                                                                           Creation_date = c.CreationDate,
+                                                                           CreationDate = c.CreationDate,
                                                                            Subscribers = c.SubscriberCount
                                                                        };
 
@@ -410,7 +410,7 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<JsonResult> Subscribe(string subverseName)
         {
-            var cmd = new SubscriptionCommand(Domain.Models.DomainType.Subverse, Domain.Models.SubscriptionAction.Subscribe, subverseName);
+            var cmd = new SubscriptionCommand(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverseName), Domain.Models.SubscriptionAction.Subscribe);
             var r = await cmd.Execute();
             if (r.Success)
             {
@@ -430,7 +430,7 @@ namespace Voat.Controllers
 
             //Voat.Utilities.UserHelper.UnSubscribeFromSubverse(loggedInUser, subverseName);
             //return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
-            var cmd = new SubscriptionCommand(Domain.Models.DomainType.Subverse, Domain.Models.SubscriptionAction.Unsubscribe, subverseName);
+            var cmd = new SubscriptionCommand(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverseName), Domain.Models.SubscriptionAction.Unsubscribe);
             var r = await cmd.Execute();
             if (r.Success)
             {
@@ -634,7 +634,7 @@ namespace Voat.Controllers
                 }
 
 
-                var q = new QuerySubmissions(subverse, options);
+                var q = new QuerySubmissions(subverse, Domain.Models.DomainType.Subverse, options);
                 var results = await q.ExecuteAsync().ConfigureAwait(false);
 
                 pageList = new PaginatedList<Domain.Models.Submission>(results, options.Page, options.Count, -1);

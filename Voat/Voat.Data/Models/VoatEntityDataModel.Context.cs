@@ -51,9 +51,6 @@ namespace Voat.Data.Models
         public virtual DbSet<UserBadge> UserBadges { get; set; }
         public virtual DbSet<UserBlockedSubverse> UserBlockedSubverses { get; set; }
         public virtual DbSet<UserPreference> UserPreferences { get; set; }
-        public virtual DbSet<UserSet> UserSets { get; set; }
-        public virtual DbSet<UserSetList> UserSetLists { get; set; }
-        public virtual DbSet<UserSetSubscription> UserSetSubscriptions { get; set; }
         public virtual DbSet<ViewStatistic> ViewStatistics { get; set; }
         public virtual DbSet<ApiClient> ApiClients { get; set; }
         public virtual DbSet<ApiLog> ApiLogs { get; set; }
@@ -63,12 +60,14 @@ namespace Voat.Data.Models
         public virtual DbSet<ApiPermissionPolicy> ApiPermissionPolicies { get; set; }
         public virtual DbSet<UserBlockedUser> UserBlockedUsers { get; set; }
         public virtual DbSet<Ad> Ads { get; set; }
-        public virtual DbSet<UserVisit> UserVisits { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Filter> Filters { get; set; }
         public virtual DbSet<RuleReport> RuleReports { get; set; }
         public virtual DbSet<RuleSet> RuleSets { get; set; }
         public virtual DbSet<UserContribution> UserContributions { get; set; }
+        public virtual DbSet<SubverseSet> SubverseSets { get; set; }
+        public virtual DbSet<SubverseSetList> SubverseSetLists { get; set; }
+        public virtual DbSet<SubverseSetSubscription> SubverseSetSubscriptions { get; set; }
     
         public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
         {

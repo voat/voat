@@ -35,8 +35,8 @@ namespace Voat.Models.ViewModels
         // set subscriber count
         public int Subscribers { get; set; }
 
-        // list of subverses which define the set
-        public List<UserSetList> SubversesList { get; set; }
+        //// list of subverses which define the set
+        //public List<UserSetList> SubversesList { get; set; }
 
         // list of top submissions from single set
         public List<SetSubmission> SubmissionsList { get; set; }

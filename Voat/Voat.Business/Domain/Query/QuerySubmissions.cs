@@ -7,52 +7,24 @@ using Voat.Domain.Models;
 
 namespace Voat.Domain.Query
 {
-    //public class QuerySubmissions : CachedQuery<IEnumerable<Domain.Models.Submission>>
-    //{
-    //    protected SearchOptions _options;
-    //    protected string _subverse;
-
-    //    public QuerySubmissions(string subverse, SearchOptions options, CachePolicy policy = null) : base(policy)
-    //    {
-    //        this._options = options;
-    //        this._subverse = subverse;
-    //    }
-
-    //    public override string CacheKey
-    //    {
-    //        get
-    //        {
-    //            return String.Format("{0}-{1}&userName={2}", _subverse, _options.ToString(), UserName ?? "default");
-    //        }
-    //    }
-
-    //    protected override async Task<IEnumerable<Domain.Models.Submission>> GetData()
-    //    {
-    //        using (var db = new Repository())
-    //        {
-    //            var result = await db.GetSubmissionsDapper(this._subverse, this._options).ConfigureAwait(false);
-    //            return result.Map();
-    //        }
-    //    }
-    //}
-    //This is an incremental port because the UI Views support Data.Models.Submission and not Domain.Models.Submission. 
-    //After this code is tested, this class usage and related views will be converted to handle the QuerySubmissions object
-    //which returns Domain.Models.Submission objects
     public class QuerySubmissions : CachedQuery<IEnumerable<Domain.Models.Submission>>
     {
         protected SearchOptions _options;
-        protected string _subverse;
+        protected string _name;
+        protected DomainType _type;
         private bool _populateUserData = true;
+        protected string _contextUserName;
 
-        public QuerySubmissions(string subverse, SearchOptions options) : this(subverse, options, CachePolicy.None)
+        public QuerySubmissions(string name, DomainType type, SearchOptions options, string userName = null) : this(name, type, options, CachePolicy.None, userName)
         {
-            this._options = options;
-            this._subverse = subverse;
+            
         }
-        public QuerySubmissions(string subverse, SearchOptions options, CachePolicy policy) : base(policy)
+        public QuerySubmissions(string name, DomainType type, SearchOptions options,  CachePolicy policy, string userName = null) : base(policy)
         {
             this._options = options;
-            this._subverse = subverse;
+            this._name = name;
+            this._type = type;
+            this._contextUserName = userName;
         }
         //Since all submission queries will run through this we need to control caching times here
         public override CachePolicy CachingPolicy
@@ -65,7 +37,7 @@ namespace Voat.Domain.Query
                     {
                         return new CachePolicy(TimeSpan.FromMinutes(3));
                     }
-                    else if (IsUserVolatileCache(UserName, _subverse))
+                    else if (IsUserVolatileCache(UserName, _name))
                     {
                         return new CachePolicy(TimeSpan.FromMinutes(6));
                     }
@@ -107,12 +79,12 @@ namespace Voat.Domain.Query
             get
             {
                 string userName = UserName;
-                if (!IsUserVolatileCache(userName, _subverse))
+                if (!IsUserVolatileCache(userName, _name))
                 {
                     userName = "_"; //< it looks like an emoji, how cute.
                 }
 
-                return String.Format("{0}:{1}:{2}", _subverse, userName, _options.ToString(true));
+                return String.Format("{0}:{1}:{2}", _name, userName, _options.ToString(true));
             }
         }
 
@@ -138,7 +110,7 @@ namespace Voat.Domain.Query
         {
             using (var db = new Repository())
             {
-                var result = await db.GetSubmissionsDapper(this._subverse, DomainType.Subverse, this._options).ConfigureAwait(false);
+                var result = await db.GetSubmissionsDapper(this._name, this._type, this._options, this._contextUserName).ConfigureAwait(false);
                 return result.Map();
             }
         }

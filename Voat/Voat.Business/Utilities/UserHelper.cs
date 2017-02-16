@@ -197,34 +197,34 @@ namespace Voat.Utilities
             }
         }
        
-        // check if a given user is subscribed to a given set
-        public static bool IsUserSubscribedToSet(string userName, string setName)
-        {
-            using (var db = new voatEntities())
-            {
-                var result = db.UserSetSubscriptions.FirstOrDefault(s => s.UserSet.Name == setName && s.UserName == userName);
-                return result != null;
-            }
-        }
-        //[Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
-        // check if a given user is owner of a given set
-        public static bool IsUserSetOwner(string userName, int setId)
-        {
-            using (var db = new voatEntities())
-            {
-                var result = db.UserSets.FirstOrDefault(s => s.ID == setId && s.CreatedBy == userName);
-                return result != null;
-            }
-        }
+        //// check if a given user is subscribed to a given set
+        //public static bool IsUserSubscribedToSet(string userName, string setName)
+        //{
+        //    using (var db = new voatEntities())
+        //    {
+        //        var result = db.UserSetSubscriptions.FirstOrDefault(s => s.UserSet.Name == setName && s.UserName == userName);
+        //        return result != null;
+        //    }
+        //}
+        ////[Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
+        //// check if a given user is owner of a given set
+        //public static bool IsUserSetOwner(string userName, int setId)
+        //{
+        //    using (var db = new voatEntities())
+        //    {
+        //        var result = db.UserSets.FirstOrDefault(s => s.ID == setId && s.CreatedBy == userName);
+        //        return result != null;
+        //    }
+        //}
 
-        // return sets subscription count for a given user
-        public static int SetsSubscriptionCount(string userName)
-        {
-            using (var db = new voatEntities())
-            {
-                return db.UserSetSubscriptions.Count(s => s.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
-            }
-        }
+        //// return sets subscription count for a given user
+        //public static int SetsSubscriptionCount(string userName)
+        //{
+        //    using (var db = new voatEntities())
+        //    {
+        //        return db.UserSetSubscriptions.Count(s => s.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
+        //    }
+        //}
 
 
         // subscribe to a set

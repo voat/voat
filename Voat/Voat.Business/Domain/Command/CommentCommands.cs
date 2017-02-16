@@ -96,7 +96,7 @@ namespace Voat.Domain.Command
                 //Prevent key-ed entries if parent isn't in cache with expiration date
                 if (CacheHandler.Instance.Exists(key))
                 {
-                    var treeItem = result.Response.MapToTree();
+                    //var treeItem = result.Response.MapToTree();
 
                     CacheHandler.Instance.DictionaryReplace<int, usp_CommentTree_Result>(key, result.Response.ID, x =>
                     {

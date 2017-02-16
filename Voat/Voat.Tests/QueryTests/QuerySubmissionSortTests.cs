@@ -33,7 +33,7 @@ namespace Voat.Tests.QueryTests
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.RelativeRank;
-            var q = new QuerySubmissions(subverse, s);
+            var q = new QuerySubmissions(subverse, Domain.Models.DomainType.Subverse, s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
@@ -59,7 +59,7 @@ namespace Voat.Tests.QueryTests
         public void Search_Sort_Rank() {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Rank;
-            var q = new QuerySubmissions(subverse, s);
+            var q = new QuerySubmissions(subverse, Domain.Models.DomainType.Subverse, s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
@@ -73,7 +73,7 @@ namespace Voat.Tests.QueryTests
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.New;
-            var q = new QuerySubmissions(subverse, s);
+            var q = new QuerySubmissions(subverse, Domain.Models.DomainType.Subverse, s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
@@ -86,7 +86,7 @@ namespace Voat.Tests.QueryTests
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Top;
-            var q = new QuerySubmissions(subverse, s);
+            var q = new QuerySubmissions(subverse, Domain.Models.DomainType.Subverse, s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
@@ -99,7 +99,7 @@ namespace Voat.Tests.QueryTests
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Bottom;
-            var q = new QuerySubmissions(subverse, s);
+            var q = new QuerySubmissions(subverse, Domain.Models.DomainType.Subverse, s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
@@ -113,7 +113,7 @@ namespace Voat.Tests.QueryTests
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Viewed;
-            var q = new QuerySubmissions(subverse, s);
+            var q = new QuerySubmissions(subverse, Domain.Models.DomainType.Subverse, s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
@@ -126,7 +126,7 @@ namespace Voat.Tests.QueryTests
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Intensity;
-            var q = new QuerySubmissions(subverse, s);
+            var q = new QuerySubmissions(subverse, Domain.Models.DomainType.Subverse, s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
