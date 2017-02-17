@@ -487,6 +487,25 @@
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css.bundle" />
     <Content Include="gizmo\src\js\jquery.swipebox.min.js.map" />
     <None Include="bundleconfig.json" />
+    <None Include="Content\Sass\Voat-Dark.scss">
+      <Compile>True</Compile>
+      <Minify>True</Minify>
+      <OutputFolder>..</OutputFolder>
+      <IgnoreWarnings>True</IgnoreWarnings>
+      <IgnoreErrors>True</IgnoreErrors>
+      <CompileStyle>Nested</CompileStyle>
+      <DebugInfo>False</DebugInfo>
+    </None>
+    <None Include="Content\Sass\Voat.scss">
+      <Compile>True</Compile>
+      <Minify>True</Minify>
+      <OutputFolder>..</OutputFolder>
+      <IgnoreWarnings>True</IgnoreWarnings>
+      <IgnoreErrors>True</IgnoreErrors>
+      <CompileStyle>Nested</CompileStyle>
+      <DebugInfo>False</DebugInfo>
+    </None>
+    <None Include="Content\Sass\_Base.scss" />
     <None Include="Properties\PublishProfiles\local fs.pubxml" />
     <None Include="Properties\PublishProfiles\File System.pubxml" />
     <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
