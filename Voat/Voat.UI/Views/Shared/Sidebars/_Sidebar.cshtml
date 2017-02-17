@@ -75,11 +75,11 @@
 
                 if (userData.IsUserBlockingSubverse(ViewBag.SelectedSubverse))
                 {
-                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-unblocksubverse" onclick="return toggleBlockSubverse(this, '@Model.Name')">unblock</button>
+                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-unblocksubverse" onclick="return blockSubverseToggle(this, '@Model.Name')">unblock</button>
                 }
                 else
                 {
-                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-blocksubverse" onclick="return toggleBlockSubverse(this, '@Model.Name')">block</button>
+                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-blocksubverse" onclick="return blockSubverseToggle(this, '@Model.Name')">block</button>
                 }
             }
             else

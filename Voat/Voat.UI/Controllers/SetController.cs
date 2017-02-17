@@ -35,18 +35,45 @@ namespace Voat.Controllers
     public class SetController : BaseController
     {
 
-        public async Task<ActionResult> Index(string setName, string userName)
+        public async Task<ActionResult> Index(string name, string userName)
         {
             var options = new SearchOptions(Request.Url.Query);
 
-            var q = new QuerySubmissions(setName, Domain.Models.DomainType.Set, options, userName);
+            var q = new QuerySubmissions(name, Domain.Models.DomainType.Set, options, userName);
             var result = await q.ExecuteAsync();
 
             var model = new SubmissionListViewModel();
-            model.Submissions = new Utilities.PaginatedList<Domain.Models.Submission>(result, 1, 25);
-            model.Subverse = setName;
+            model.Submissions = new Utilities.PaginatedList<Domain.Models.Submission>(result, options.Page, options.Count);
+            model.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Set, name);
+            model.Sort = options.Sort;
+            model.Span = options.Span;
 
             return View("~/Views/Subverses/SubverseIndex.cshtml", model);
+        }
+
+        [Authorize]
+        public async Task<ActionResult> Edit(string name, string userName)
+        {
+            using (var repo = new Repository())
+            {
+                var set = repo.GetSet(name, userName);
+                if (set == null)
+                {
+                    return GenericErrorView(new ErrorViewModel() { Title = "Can't find this set", Description = "Maybe it's gone?", FooterMessage = "Probably yeah" });
+                }
+                var options = new SearchOptions(Request.QueryString);
+                options.Count = 50;
+
+                var setList = await repo.GetSetListDescription(set.ID, options.Page);
+                var model = new SetViewModel();
+                model.Set = set;
+                model.List = new PaginatedList<Domain.Models.SubverseSubscriptionDetail>(setList, options.Page, options.Count);
+                model.List.RouteName = "EditSet";
+
+                return View(model);
+
+            }
+            
         }
 
         #region OLD CODE

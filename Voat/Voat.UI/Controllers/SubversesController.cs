@@ -170,36 +170,39 @@ namespace Voat.Controllers
         }
 
         [Authorize]
-        public ViewResult SubversesSubscribed(int? page)
+        public ActionResult SubversesSubscribed(int? page)
         {
-            ViewBag.SelectedSubverse = "subverses";
-            ViewBag.SubversesView = "subscribed";
-            const int pageSize = 25;
-            int pageNumber = (page ?? 0);
 
-            if (pageNumber < 0)
-            {
-                return NotFoundErrorView();
-            }
+            return RedirectToAction("Edit", "Set", new { name = Domain.Models.SetType.Front.ToString(), userName = User.Identity.Name  });
 
-            // get a list of subcribed subverses with details and order by subverse names, ascending
-            IQueryable<SubverseDetailsViewModel> subscribedSubverses = from c in _db.Subverses
-                                                                       join a in _db.SubverseSubscriptions
-                                                                       on c.Name equals a.Subverse
-                                                                       where a.UserName.Equals(User.Identity.Name)
-                                                                       orderby a.Subverse ascending
-                                                                       select new SubverseDetailsViewModel
-                                                                       {
-                                                                           Name = c.Name,
-                                                                           Title = c.Title,
-                                                                           Description = c.Description,
-                                                                           CreationDate = c.CreationDate,
-                                                                           Subscribers = c.SubscriberCount
-                                                                       };
+            //ViewBag.SelectedSubverse = "subverses";
+            //ViewBag.SubversesView = "subscribed";
+            //const int pageSize = 25;
+            //int pageNumber = (page ?? 0);
 
-            var paginatedSubscribedSubverses = new PaginatedList<SubverseDetailsViewModel>(subscribedSubverses, page ?? 0, pageSize);
+            //if (pageNumber < 0)
+            //{
+            //    return NotFoundErrorView();
+            //}
 
-            return View("SubscribedSubverses", paginatedSubscribedSubverses);
+            //// get a list of subcribed subverses with details and order by subverse names, ascending
+            //IQueryable<SubverseDetailsViewModel> subscribedSubverses = from c in _db.Subverses
+            //                                                           join a in _db.SubverseSubscriptions
+            //                                                           on c.Name equals a.Subverse
+            //                                                           where a.UserName.Equals(User.Identity.Name)
+            //                                                           orderby a.Subverse ascending
+            //                                                           select new SubverseDetailsViewModel
+            //                                                           {
+            //                                                               Name = c.Name,
+            //                                                               Title = c.Title,
+            //                                                               Description = c.Description,
+            //                                                               CreationDate = c.CreationDate,
+            //                                                               Subscribers = c.SubscriberCount
+            //                                                           };
+
+            //var paginatedSubscribedSubverses = new PaginatedList<SubverseDetailsViewModel>(subscribedSubverses, page ?? 0, pageSize);
+
+            //return View("SubscribedSubverses", paginatedSubscribedSubverses);
         }
 
         // GET: sidebar for selected subverse
@@ -585,7 +588,7 @@ namespace Voat.Controllers
                     {
                         // selected subverse is ALL, show submissions from all subverses, sorted by rank
                         viewProperties.Title = "all subverses";
-                        viewProperties.Subverse = "all";
+                        viewProperties.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "all");
                         subverse = AGGREGATE_SUBVERSE.ALL;
                         //ViewBag.SelectedSubverse = "all";
                         //ViewBag.Title = "all subverses";
@@ -629,7 +632,7 @@ namespace Voat.Controllers
                         }
                     }
 
-                    viewProperties.Subverse = subverseObject.Name;
+                    viewProperties.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse,  subverseObject.Name);
                     viewProperties.Title = subverseObject.Description;
                 }
 
@@ -639,7 +642,7 @@ namespace Voat.Controllers
 
                 pageList = new PaginatedList<Domain.Models.Submission>(results, options.Page, options.Count, -1);
                 viewProperties.Submissions = pageList;
-                viewProperties.Subverse = subverse;
+                viewProperties.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse);
 
                 //Backwards compat with Views
                 if (subverse == AGGREGATE_SUBVERSE.FRONT || subverse == AGGREGATE_SUBVERSE.DEFAULT)

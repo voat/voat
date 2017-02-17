@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain;
@@ -205,7 +206,7 @@ namespace Voat.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<ViewResult> Blocked(Domain.Models.DomainType blockType, int? page)
+        public async Task<ActionResult> Blocked(Domain.Models.DomainType blockType, int? page)
         {
 
             switch (blockType) {
@@ -222,35 +223,40 @@ namespace Voat.Controllers
                 case Domain.Models.DomainType.Subverse:
                 default:
 
-                    //Original Code below, leaving as is bc it works
-                    ViewBag.SelectedSubverse = "subverses";
-                    ViewBag.SubversesView = "blocked";
-                    const int pageSize = 25;
-                    int pageNumber = (page ?? 0);
+                    return RedirectToAction("Edit", "Set", new RouteValueDictionary() {
+                        { "name", Domain.Models.SetType.Blocked.ToString() },
+                        { "userName", User.Identity.Name }
+                    });
 
-                    if (pageNumber < 0)
-                    {
-                        return NotFoundErrorView();
-                    }
-                    string userName = User.Identity.Name;
-                    // get a list of user blocked subverses with details and order by subverse name, ascending
-                    IQueryable<SubverseDetailsViewModel> blockedSubverses = from c in _db.Subverses
-                                                                            join a in _db.UserBlockedSubverses
-                                                                            on c.Name equals a.Subverse
-                                                                            where a.UserName.Equals(userName)
-                                                                            orderby a.Subverse ascending
-                                                                            select new SubverseDetailsViewModel
-                                                                            {
-                                                                                Name = c.Name,
-                                                                                Title = c.Title,
-                                                                                Description = c.Description,
-                                                                                CreationDate = c.CreationDate,
-                                                                                Subscribers = c.SubscriberCount
-                                                                            };
+                    ////Original Code below, leaving as is bc it works
+                    //ViewBag.SelectedSubverse = "subverses";
+                    //ViewBag.SubversesView = "blocked";
+                    //const int pageSize = 25;
+                    //int pageNumber = (page ?? 0);
 
-                    var paginatedBlockedSubverses = new PaginatedList<SubverseDetailsViewModel>(blockedSubverses, page ?? 0, pageSize);
+                    //if (pageNumber < 0)
+                    //{
+                    //    return NotFoundErrorView();
+                    //}
+                    //string userName = User.Identity.Name;
+                    //// get a list of user blocked subverses with details and order by subverse name, ascending
+                    //IQueryable<SubverseDetailsViewModel> blockedSubverses = from c in _db.Subverses
+                    //                                                        join a in _db.UserBlockedSubverses
+                    //                                                        on c.Name equals a.Subverse
+                    //                                                        where a.UserName.Equals(userName)
+                    //                                                        orderby a.Subverse ascending
+                    //                                                        select new SubverseDetailsViewModel
+                    //                                                        {
+                    //                                                            Name = c.Name,
+                    //                                                            Title = c.Title,
+                    //                                                            Description = c.Description,
+                    //                                                            CreationDate = c.CreationDate,
+                    //                                                            Subscribers = c.SubscriberCount
+                    //                                                        };
 
-                    return View("BlockedSubverses", paginatedBlockedSubverses);
+                    //var paginatedBlockedSubverses = new PaginatedList<SubverseDetailsViewModel>(blockedSubverses, page ?? 0, pageSize);
+
+                    //return View("BlockedSubverses", paginatedBlockedSubverses);
 
                     break;
 

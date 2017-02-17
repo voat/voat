@@ -13,9 +13,7 @@
     All Rights Reserved.
 *@
 
-@model PagedList.IPagedList<Voat.Domain.Models.Message>
-
-@using PagedList.Mvc;
+@model PaginatedList<Voat.Domain.Models.Message>
 
 @{
 
@@ -237,8 +235,5 @@
             }
         </div>
     </div>
-    @if (Model.PageCount > 1)
-    {
-        @Html.PagedListPager(Model, page => Url.Action((string)Request.RequestContext.RouteData.Values["action"], new { page = (page - 1) }), VoatPagerOptions.PagedListRenderOptions())
-    }
+    @Html.DisplayFor(model => Model, "IPaginatedList")
 </div>

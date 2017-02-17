@@ -14,7 +14,7 @@ namespace Voat.Models.ViewModels
 
         public string UrlAction { get; set; }
 
-        public string Subverse { get; set; }
+        public Domain.Models.DomainReference Context { get; set; }
         public Domain.Models.SortAlgorithm? Sort { get; set; }
         public Domain.Models.SortSpan? Span { get; set; }
 
@@ -24,7 +24,13 @@ namespace Voat.Models.ViewModels
         {
             get
             {
-                return !(String.IsNullOrEmpty(Subverse) || Subverse.IsEqual("user") || Subverse.IsEqual("all") || AGGREGATE_SUBVERSE.IsAggregate(Subverse));
+                if (Context.Type == Domain.Models.DomainType.Subverse)
+                {
+                    var subverse = Context.Name;
+                    return !(String.IsNullOrEmpty(subverse) || subverse.IsEqual("user") || subverse.IsEqual("all") || AGGREGATE_SUBVERSE.IsAggregate(subverse));
+
+                }
+                return false;
             }
         }
     }

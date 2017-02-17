@@ -908,8 +908,13 @@ namespace Voat.Data
             return results;
         }
 
-        public async Task<IEnumerable<Data.Models.Submission>> GetSubmissionsDapper(string name, DomainType type, SearchOptions options, string ownerName = null)
+        public async Task<IEnumerable<Data.Models.Submission>> GetSubmissionsDapper(DomainReference domainReference, SearchOptions options)
         {
+            //backwards compat with function body
+            var type = domainReference.Type;
+            var name = domainReference.Name;
+            var ownerName = domainReference.OwnerName;
+
             if (!(type == DomainType.Subverse || type == DomainType.Set))
             {
                 throw new NotImplementedException($"DomainType {type.ToString()} not implemented using this pipeline");
@@ -1041,7 +1046,7 @@ namespace Voat.Data
                             //    select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
 
                             name = ToCorrectSubverseCasing(name);
-                            query.Where = "s.Subverse = @Subverse";
+                            query.Where = "s.Subverse = @Name";
 
                             //Filter out stickies in subs
                             query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = s.Subverse)");
@@ -1102,8 +1107,19 @@ namespace Voat.Data
                 case DomainType.Set:
 
                     query.Append(x => x.Select, "INNER JOIN [dbo].[SubverseSetList] sl WITH (NOLOCK) ON sub.ID = sl.SubverseID INNER JOIN [dbo].[SubverseSet] st WITH (NOLOCK) ON sl.SubverseSetID = st.ID");
-                    query.Append(x => x.Where, "st.Name = 'Default' AND st.UserName IS NULL");
-
+                    query.Append(x => x.Where, "st.Name = @Name");
+                    if (String.IsNullOrEmpty(ownerName))
+                    {
+                        query.Append(x => x.Where, "st.UserName IS NULL");
+                    }
+                    else
+                    {
+                        query.Append(x => x.Where, "st.UserName = @OwnerName");
+                    }
+                    if (!String.IsNullOrEmpty(userName) && !userName.IsEqual(ownerName))
+                    {
+                        query.Append(x => x.Where, "st.IsPublic = 1");
+                    }
                     break;
             }
 
@@ -1139,7 +1155,7 @@ namespace Voat.Data
             //Filter out all disabled subs
             query.Append(x => x.Where, "sub.IsAdminDisabled = 0");
             
-            query.Parameters = (new { StartDate = startDate, EndDate = endDate, Subverse = name, UserName = userName, Phrase = options.Phrase}).ToDynamicParameters();
+            query.Parameters = (new { StartDate = startDate, EndDate = endDate, Name = name, UserName = userName, Phrase = options.Phrase, OwnerName = ownerName}).ToDynamicParameters();
 
             //execute query
             var data = await _db.Database.Connection.QueryAsync<Data.Models.Submission>(query.ToString(), query.Parameters);
@@ -3313,9 +3329,19 @@ namespace Voat.Data
 
         public IEnumerable<DomainReference> GetSubscriptions(string userName)
         {
-            var subs = (from x in _db.SubverseSubscriptions
-                        where x.UserName == userName
-                        select new DomainReference() { Name = x.Subverse, Type = DomainType.Subverse }).ToList();
+
+            //TODO: Set Change - needs to retrun subs in user Front set instead.
+            var subs = (from x in _db.SubverseSets
+                        join y in _db.SubverseSetLists on x.ID equals y.SubverseSetID
+                        join s in _db.Subverses on y.SubverseID equals s.ID
+                        where x.Name == SetType.Front.ToString() && x.UserName == userName
+                        select new DomainReference() { Name = s.Name, Type = DomainType.Subverse }
+                        ).ToList();
+
+            //var subs = (from x in _db.SubverseSubscriptions
+            //            where x.UserName == userName
+            //            select new DomainReference() { Name = x.Subverse, Type = DomainType.Subverse }
+            //            ).ToList();
 
             //var sets = (from x in _db.UserSetSubscriptions
             //            where x.UserName == userName
@@ -3334,15 +3360,25 @@ namespace Voat.Data
             return blocked;
         }
 
-        public IList<BlockedItem> GetBlockedSubverses(string userName)
+        //SET: Backwards Compat
+        public async Task<IEnumerable<BlockedItem>> GetBlockedSubverses(string userName)
         {
-            var blocked = (from x in _db.UserBlockedSubverses
-                           where x.UserName == userName
-                           select new BlockedItem() {
-                               Name = x.Subverse,
-                               Type = DomainType.Subverse,
-                               CreationDate = x.CreationDate
-                           }).ToList();
+
+            var setList = await GetSetListDescription(SetType.Blocked.ToString(), userName);
+            var blocked = setList.Select(x => new BlockedItem()
+            {
+                Name = x.Name,
+                Type = DomainType.Subverse,
+                CreationDate = x.CreationDate
+            });
+
+            //var blocked = (from x in _db.UserBlockedSubverses
+            //               where x.UserName == userName
+            //               select new BlockedItem() {
+            //                   Name = x.Subverse,
+            //                   Type = DomainType.Subverse,
+            //                   CreationDate = x.CreationDate
+            //               }).ToList();
             return blocked;
         }
 
@@ -3800,7 +3836,7 @@ namespace Voat.Data
             switch (domainReference.Type)
             {
                 case DomainType.Subverse:
-
+                    
                     var subverse = GetSubverseInfo(domainReference.Name);
                     if (subverse == null)
                     {
@@ -3810,32 +3846,38 @@ namespace Voat.Data
                     {
                         return CommandResponse.FromStatus(Status.Denied, "Subverse is disabled");
                     }
-                    var countChanged = false;
 
-                    if (action == SubscriptionAction.Subscribe)
-                    {
-                        if (!_db.SubverseSubscriptions.Any(x => x.Subverse.Equals(domainReference.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            var sub = new SubverseSubscription { UserName = User.Identity.Name, Subverse = domainReference.Name };
-                            _db.SubverseSubscriptions.Add(sub);
-                            countChanged = true;
-                        }
-                    }
-                    else
-                    {
-                        var sub = _db.SubverseSubscriptions.FirstOrDefault(x => x.Subverse.Equals(domainReference.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
-                        if (sub != null)
-                        {
-                            _db.SubverseSubscriptions.Remove(sub);
-                            countChanged = true;
-                        }
-                    }
+                    var set = GetOrCreateSubverseSet(new SubverseSet() { Name = SetType.Front.ToString(), UserName = User.Identity.Name, Type = (int)SetType.Front });
 
-                    await _db.SaveChangesAsync().ConfigureAwait(false);
-                    if (countChanged)
-                    {
-                        await UpdateSubverseSubscriberCount(domainReference, action).ConfigureAwait(false);
-                    }
+                    var response = SetModifyListItem(set.ID, subverse.ID, action == SubscriptionAction.Subscribe ? true : false);
+
+
+                    //var countChanged = false;
+
+                    //if (action == SubscriptionAction.Subscribe)
+                    //{
+                    //    if (!_db.SubverseSubscriptions.Any(x => x.Subverse.Equals(domainReference.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)))
+                    //    {
+                    //        var sub = new SubverseSubscription { UserName = User.Identity.Name, Subverse = domainReference.Name };
+                    //        _db.SubverseSubscriptions.Add(sub);
+                    //        countChanged = true;
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    var sub = _db.SubverseSubscriptions.FirstOrDefault(x => x.Subverse.Equals(domainReference.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+                    //    if (sub != null)
+                    //    {
+                    //        _db.SubverseSubscriptions.Remove(sub);
+                    //        countChanged = true;
+                    //    }
+                    //}
+
+                    //await _db.SaveChangesAsync().ConfigureAwait(false);
+                    //if (countChanged)
+                    //{
+                    //    await UpdateSubverseSubscriberCount(domainReference, action).ConfigureAwait(false);
+                    //}
 
                     break;
 
@@ -4482,6 +4524,7 @@ namespace Voat.Data
         public CommandResponse<bool?> Block(DomainType domainType, string name, bool? block)
         {
             DemandAuthentication();
+
             var response = new CommandResponse<bool?>();
 
             using (var db = new voatEntities())
@@ -4495,22 +4538,26 @@ namespace Voat.Data
                         {
                             throw new VoatNotFoundException("Subverse '{0}' does not exist", name);
                         }
-
+                        //Add to user Block Set
                         //Set propercased name
                         name = exists.Name;
 
-                        var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.Subverse.ToLower() == name.ToLower() && n.UserName == User.Identity.Name);
-                        if (subverseBlock == null && ((block.HasValue && block.Value) || !block.HasValue))
-                        {
-                            db.UserBlockedSubverses.Add(new UserBlockedSubverse { UserName = User.Identity.Name, Subverse = name, CreationDate = Repository.CurrentDate });
-                            response.Response = true;
-                        }
-                        else if (subverseBlock != null && ((block.HasValue && !block.Value) || !block.HasValue))
-                        {
-                            db.UserBlockedSubverses.Remove(subverseBlock);
-                            response.Response = false;
-                        }
-                        db.SaveChanges();
+                        var set = GetOrCreateSubverseSet(new SubverseSet() { Name = SetType.Blocked.ToString(), UserName = User.Identity.Name, Type = (int)SetType.Blocked });
+
+                        response = SetModifyListItem(set.ID, exists.ID, block);
+
+                        //var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.Subverse.ToLower() == name.ToLower() && n.UserName == User.Identity.Name);
+                        //if (subverseBlock == null && ((block.HasValue && block.Value) || !block.HasValue))
+                        //{
+                        //    db.UserBlockedSubverses.Add(new UserBlockedSubverse { UserName = User.Identity.Name, Subverse = name, CreationDate = Repository.CurrentDate });
+                        //    response.Response = true;
+                        //}
+                        //else if (subverseBlock != null && ((block.HasValue && !block.Value) || !block.HasValue))
+                        //{
+                        //    db.UserBlockedSubverses.Remove(subverseBlock);
+                        //    response.Response = false;
+                        //}
+                        //db.SaveChanges();
                         break;
 
                     case DomainType.User:
@@ -5272,27 +5319,96 @@ namespace Voat.Data
 
         #region Sets
 
-
-        public int? GetSetID(string name, string ownerName, SetType type, bool createIfMissing = false)
+        public CommandResponse<bool?> SetModifyListItem(int setID, int subverseID, bool? toggle)
         {
+            CommandResponse<bool?> response = new CommandResponse<bool?>(true, Status.Success, "");
+
+            var setSubverse = _db.SubverseSetLists.FirstOrDefault(n => n.SubverseSetID == setID && n.SubverseID == subverseID);
+
+            if (setSubverse == null && ((toggle.HasValue && toggle.Value) || !toggle.HasValue))
+            {
+                _db.SubverseSetLists.Add(new SubverseSetList { SubverseSetID = setID, SubverseID = subverseID, CreationDate = CurrentDate});
+                response.Response = true;
+            }
+            else if (setSubverse != null && ((toggle.HasValue && !toggle.Value) || !toggle.HasValue))
+            {
+                _db.SubverseSetLists.Remove(setSubverse);
+                response.Response = false;
+            }
+            _db.SaveChanges();
+
+            return response;
+        }
+
+        public async Task<IEnumerable<SubverseSubscriptionDetail>> GetSetListDescription(string name, string userName, int page = 0 )
+        {
+            var set = GetSet(name, userName);
+            if (set != null)
+            {
+                return await GetSetListDescription(set.ID);
+            }
+            return Enumerable.Empty<SubverseSubscriptionDetail>();
+        }
+
+        public async Task<IEnumerable<SubverseSubscriptionDetail>> GetSetListDescription(int setID, int page = 0)
+        {
+            int count = 50;
 
             var q = new DapperQuery();
-            q.Select = "SELECT subSet.ID FROM SubverseSet subSet";
-            q.Where = "subSet.Name = @Name AND subSet.Type = @Type";
+            q.Select =
+                @"s.ID, s.Name, s.Title, s.Description, s.CreationDate, s.SubscriberCount, SubscriptionDate = sl.CreationDate
+                FROM SubverseSetList sl
+                INNER JOIN Subverse s ON (sl.SubverseID = s.ID)
+                ";
+            q.Where = "sl.SubverseSetID = @ID";
+            q.Parameters = new DynamicParameters(new { ID = setID });
+            q.SkipCount = page * count;
+            q.TakeCount = count;
+            q.OrderBy = "s.Name ASC";
 
-            if (!String.IsNullOrEmpty(ownerName))
+            var result = await _db.Database.Connection.QueryAsync<SubverseSubscriptionDetail>(q.ToString(), q.Parameters);
+            return result;
+        }
+
+        public SubverseSet GetOrCreateSubverseSet(SubverseSet setInfo)
+        {
+            var set = _db.SubverseSets.FirstOrDefault(x => x.Name.Equals(setInfo.Name, StringComparison.OrdinalIgnoreCase) && x.UserName == setInfo.UserName);
+            if (set == null)
             {
-                q.Append(x => x.Where, "subSet.OwnerName = @OwnerName");
+                _db.SubverseSets.Add(setInfo);
+                _db.SaveChanges();
+                return setInfo;
             }
             else
             {
-                q.Append(x => x.Where, "subSet.OwnerName IS NULL");
+                return set;
+            }
+        }
+        public SubverseSet GetSet(string name, string userName, SetType? type = null, bool createIfMissing = false)
+        {
+            var q = new DapperQuery();
+            q.Select = "SELECT * FROM SubverseSet subSet";
+            q.Where = "subSet.Name = @Name";
+
+            if (type.HasValue)
+            {
+                q.Append(x => x.Where, "subSet.Type = @Type");
             }
 
-            q.Parameters = new DynamicParameters(new { Name = name, OwnerName = ownerName, Type = (int)type });
-            var id = _db.Database.Connection.ExecuteScalar<int?>(q.ToString(), q.Parameters);
-            return id;
+            if (!String.IsNullOrEmpty(userName))
+            {
+                q.Append(x => x.Where, "subSet.UserName = @UserName");
+            }
+            else
+            {
+                q.Append(x => x.Where, "subSet.UserName IS NULL");
+            }
 
+            q.Parameters = new DynamicParameters(new { Name = name, UserName = userName, Type = (int?)type });
+
+            var set = _db.Database.Connection.QueryFirst<SubverseSet>(q.ToString(), q.Parameters);
+
+            return set;
         }
 
         #endregion

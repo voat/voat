@@ -288,13 +288,15 @@ namespace Voat
 
 
             #region User
-
+            // /user/blocked/subverse
             routes.MapRoute(
                name: "UserBlocks",
                url: "{pathPrefix}/blocked/{blockType}",
                defaults: new { controller = "User", action = "Blocked" },
                constraints: new { httpMethod = new HttpMethodConstraint("GET"), pathPrefix = "user|u", blockType = "user|subverse" }
             );
+
+            // /user/blocked/subverse
             routes.MapRoute(
               name: "BlockUserPost",
               url: "{pathPrefix}/blocked/{blockType}",
@@ -1210,14 +1212,21 @@ namespace Voat
                 //sets
                 routes.MapRoute(
                     name: "SetIndex",
-                    url: setSuffix + "/{setName}",
+                    url: setSuffix + "/{name}",
                     defaults: new { controller = "Set", action = "Index" }
                 );
 
                 //sets
                 routes.MapRoute(
+                    name: "EditSet",
+                    url: setSuffix + "/{name}/{userName}/edit",
+                    defaults: new { controller = "Set", action = "Edit" }
+                );
+
+                //sets
+                routes.MapRoute(
                     name: "SetIndexUser",
-                    url: setSuffix + "/{setName}/{userName}",
+                    url: setSuffix + "/{name}/{userName}",
                     defaults: new { controller = "Set", action = "Index" }
                 );
 

@@ -16,8 +16,9 @@ using Voat.Utilities;
 
 namespace Voat.Models.ViewModels
 {
+
+    //This class is used in username hover popup on UI
     public class BasicUserInfo
-        
     {
         private string _bio = null;
 

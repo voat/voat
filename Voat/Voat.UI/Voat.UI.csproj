@@ -149,12 +149,6 @@
     <Reference Include="OpenGraph-Net">
       <HintPath>..\packages\OpenGraph-Net.1.2.0.1\lib\net45\OpenGraph-Net.dll</HintPath>
     </Reference>
-    <Reference Include="PagedList">
-      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
-    </Reference>
-    <Reference Include="PagedList.Mvc">
-      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
-    </Reference>
     <Reference Include="RouteDebugger">
       <HintPath>..\packages\routedebugger.2.1.4.0\lib\net40\RouteDebugger.dll</HintPath>
     </Reference>
@@ -319,10 +313,8 @@
     <Compile Include="Models\ViewModels\MessageContextViewModel.cs" />
     <Compile Include="Models\ViewModels\ModeratorDeleteViewModels.cs" />
     <Compile Include="Models\ViewModels\ReportHeader.cs" />
-    <Compile Include="Models\ViewModels\SetDetailsViewModel.cs" />
-    <Compile Include="Models\ViewModels\SingleSetViewModel.cs" />
+    <Compile Include="Models\ViewModels\SetViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleDefaultSetViewModel.cs" />
-    <Compile Include="Models\ViewModels\SetFrontpageViewModel.cs" />
     <Compile Include="Models\SetSubmission.cs" />
     <Compile Include="Models\ViewModels\CreateSubmissionViewModel.cs" />
     <Compile Include="Models\ViewModels\SubmissionListViewModel.cs" />
@@ -371,7 +363,6 @@
     <Compile Include="Utils\RSSUtility.cs" />
     <Compile Include="Utils\SessionTracker.cs" />
     <Compile Include="Utils\SetsUtility.cs" />
-    <Compile Include="Utils\PagerOptions.cs" />
     <Compile Include="Utils\VoatExceptionLogger.cs" />
     <Compile Include="Utils\VoatValidateAntiForgeryTokenAttribute.cs" />
   </ItemGroup>
@@ -391,6 +382,7 @@
     <Content Include="Content\ui-themes\autocomplete\core.css" />
     <Content Include="Content\ui-themes\autocomplete\menu.css" />
     <Content Include="Content\ui-themes\autocomplete\theme.css" />
+    <Content Include="Content\Voat-Light.css" />
     <Content Include="ddos.min.htm">
       <DependentUpon>ddos.htm</DependentUpon>
     </Content>
@@ -427,7 +419,6 @@
     <Content Include="Graphics\Icons\apple-touch-icon-precomposed.png" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\markdownEditor.css" />
-    <Content Include="Content\PagedList.css" />
     <Content Include="Graphics\Badges\donor_level_2.png" />
     <Content Include="Graphics\Badges\voat_cakeday.png" />
     <Content Include="Graphics\edit.png" />
@@ -487,6 +478,33 @@
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css.bundle" />
     <Content Include="gizmo\src\js\jquery.swipebox.min.js.map" />
     <None Include="bundleconfig.json" />
+    <Content Include="Content\Sass\_Base.scss">
+      <Compile>False</Compile>
+      <Minify>True</Minify>
+      <OutputFolder>..</OutputFolder>
+      <IgnoreWarnings>True</IgnoreWarnings>
+      <IgnoreErrors>True</IgnoreErrors>
+      <CompileStyle>Nested</CompileStyle>
+      <DebugInfo>False</DebugInfo>
+    </Content>
+    <Content Include="Content\Sass\Voat-Dark.scss">
+      <Compile>True</Compile>
+      <Minify>True</Minify>
+      <OutputFolder>..</OutputFolder>
+      <IgnoreWarnings>True</IgnoreWarnings>
+      <IgnoreErrors>True</IgnoreErrors>
+      <CompileStyle>Nested</CompileStyle>
+      <DebugInfo>False</DebugInfo>
+    </Content>
+    <Content Include="Content\Sass\Voat-Light.scss">
+      <Compile>True</Compile>
+      <Minify>True</Minify>
+      <OutputFolder>..</OutputFolder>
+      <IgnoreWarnings>True</IgnoreWarnings>
+      <IgnoreErrors>True</IgnoreErrors>
+      <CompileStyle>Nested</CompileStyle>
+      <DebugInfo>False</DebugInfo>
+    </Content>
     <None Include="Properties\PublishProfiles\local fs.pubxml" />
     <None Include="Properties\PublishProfiles\File System.pubxml" />
     <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
@@ -692,9 +710,8 @@
     <Content Include="Views\Subverses\SubversesBlockedByUser.cshtml" />
     <Content Include="Views\Chat\Index.cshtml" />
     <Content Include="Views\Chat\_Layout.cshtml" />
-    <Content Include="Views\User\BlockedSubverses.cshtml" />
     <Content Include="Views\User\BlockedUsers.cshtml" />
-    <Content Include="Views\User\_BlockedSubverseDetails.cshtml" />
+    <Content Include="Views\Shared\_SubverseSubscriptionDetail.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonModeratorDelete.cshtml" />
     <Content Include="Views\Submissions\ModeratorDelete.cshtml" />
     <Content Include="Views\Comment\ModeratorDelete.cshtml" />
@@ -722,6 +739,8 @@
     <Content Include="Views\Report\Reports.cshtml" />
     <Content Include="Views\Report\UserReportDialog.cshtml" />
     <Content Include="Views\Account\Delete.cshtml" />
+    <Content Include="Views\Set\Edit.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\IPaginatedList.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -756,7 +775,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\Sets\" />
     <Folder Include="Views\SubverseModeration\" />
   </ItemGroup>
   <PropertyGroup>

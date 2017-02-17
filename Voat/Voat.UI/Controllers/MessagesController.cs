@@ -21,7 +21,7 @@ using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Domain;
 using Voat.Domain.Query;
-using PagedList;
+
 using Voat.Models.ViewModels;
 using System.Net;
 using System.Linq;
@@ -43,23 +43,7 @@ namespace Voat.Controllers
             base.OnActionExecuting(filterContext);
         }
 
-        private PagedList.StaticPagedList<T> FakePaging<T>(IEnumerable<T> result, int page, int pageSize)
-        {
-            
-            int currentCount = result.Count();
-            int fakeTotal = currentCount;
-            if (currentCount < pageSize)
-            {
-                //no future pages
-                fakeTotal = Math.Max((page),0) * pageSize + currentCount;
-            }
-            else
-            {
-                fakeTotal = (page + 1) * pageSize + 1;
-            }
-            return new StaticPagedList<T>(result, page + 1, pageSize, fakeTotal);
-
-        }
+       
 
         public async Task<ActionResult> Index(int? page = null)
         {
@@ -108,7 +92,7 @@ namespace Voat.Controllers
 
             var result = await q.ExecuteAsync();
 
-            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
+            var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
 
             return View("Index", pagedList);
 
@@ -124,7 +108,7 @@ namespace Voat.Controllers
             q.PageNumber = SetPage(page);
             var result = await q.ExecuteAsync();
 
-            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
+            var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
 
             return View("Index", pagedList);
 
@@ -147,7 +131,7 @@ namespace Voat.Controllers
 
             var result = await q.ExecuteAsync();
 
-            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
+            var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
 
             return View("Index", pagedList);
 
@@ -169,7 +153,7 @@ namespace Voat.Controllers
             q.PageNumber = SetPage(page);
 
             var result = await q.ExecuteAsync();
-            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
+            var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
 
             return View("Index", pagedList);
         }
@@ -416,7 +400,7 @@ namespace Voat.Controllers
             q.PageNumber = SetPage(page);
             var result = await q.ExecuteAsync();
 
-            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
+            var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
             return View("Index", pagedList);
         }
 

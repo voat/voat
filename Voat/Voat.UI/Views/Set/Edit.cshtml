@@ -1,0 +1,49 @@
+﻿
+@model Voat.Models.ViewModels.SetViewModel
+
+
+@{
+    ViewBag.Title = "subverses";
+    string urlaction = "";
+
+    if (ViewBag.SubversesView == "blocked")
+    {
+        urlaction = "BlockedSubverses";
+    }
+    else
+    {
+        urlaction = "new";
+    }
+}
+
+<style type="text/css">
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
+</style>
+
+<div id="container">
+    <div role="main">
+
+        <div class="alert-notice">
+            <p>@Model.Set.Name: @Model.Set.Description</p>
+        </div>
+
+        <div class="sitetable linklisting">
+            @using (var enumerator = Model.List.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    <div class="row">
+                        <div class="col-md-6">@Html.Partial("_SubverseSubscriptionDetail", enumerator.Current, new ViewDataDictionary() { { "Set", Model.Set } })</div>
+                        @if (enumerator.MoveNext())
+                        {
+                            <div class="col-md-6">@Html.Partial("_SubverseSubscriptionDetail", enumerator.Current, new ViewDataDictionary() { { "Set", Model.Set } })</div>
+                        }
+                    </div>
+                }
+            }
+        </div>
+        @Html.DisplayFor(model => Model.List, "IPaginatedList")
+    </div>
+</div>

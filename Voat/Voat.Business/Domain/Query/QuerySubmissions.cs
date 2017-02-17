@@ -10,10 +10,13 @@ namespace Voat.Domain.Query
     public class QuerySubmissions : CachedQuery<IEnumerable<Domain.Models.Submission>>
     {
         protected SearchOptions _options;
-        protected string _name;
-        protected DomainType _type;
         private bool _populateUserData = true;
-        protected string _contextUserName;
+
+        protected DomainReference _domainReference;
+
+        //protected string _name;
+        //protected DomainType _type;
+        //protected string _contextUserName;
 
         public QuerySubmissions(string name, DomainType type, SearchOptions options, string userName = null) : this(name, type, options, CachePolicy.None, userName)
         {
@@ -22,9 +25,8 @@ namespace Voat.Domain.Query
         public QuerySubmissions(string name, DomainType type, SearchOptions options,  CachePolicy policy, string userName = null) : base(policy)
         {
             this._options = options;
-            this._name = name;
-            this._type = type;
-            this._contextUserName = userName;
+            this._domainReference = new DomainReference(type, name, userName);
+
         }
         //Since all submission queries will run through this we need to control caching times here
         public override CachePolicy CachingPolicy
@@ -37,7 +39,7 @@ namespace Voat.Domain.Query
                     {
                         return new CachePolicy(TimeSpan.FromMinutes(3));
                     }
-                    else if (IsUserVolatileCache(UserName, _name))
+                    else if (IsUserVolatileCache(UserName, _domainReference.Name))
                     {
                         return new CachePolicy(TimeSpan.FromMinutes(6));
                     }
@@ -79,12 +81,12 @@ namespace Voat.Domain.Query
             get
             {
                 string userName = UserName;
-                if (!IsUserVolatileCache(userName, _name))
+                if (!IsUserVolatileCache(userName, _domainReference.Name))
                 {
                     userName = "_"; //< it looks like an emoji, how cute.
                 }
 
-                return String.Format("{0}:{1}:{2}", _name, userName, _options.ToString(true));
+                return String.Format("{0}:{1}:{2}", _domainReference.Name, userName, _options.ToString(true));
             }
         }
 
@@ -110,7 +112,7 @@ namespace Voat.Domain.Query
         {
             using (var db = new Repository())
             {
-                var result = await db.GetSubmissionsDapper(this._name, this._type, this._options, this._contextUserName).ConfigureAwait(false);
+                var result = await db.GetSubmissionsDapper(this._domainReference, this._options).ConfigureAwait(false);
                 return result.Map();
             }
         }

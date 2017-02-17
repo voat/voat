@@ -128,16 +128,16 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
-    $('#share-a-link-overlay').on('dragleave', function (e) {
-        if (e.originalEvent.pageX < 10 || e.originalEvent.pageY < 10 || $(window).width() - e.originalEvent.pageX < 10 || $(window).height - e.originalEvent.pageY < 10) {
-            $("#share-a-link-overlay").hide();
-        }
-    });
+    //$('#share-a-link-overlay').on('dragleave', function (e) {
+    //    if (e.originalEvent.pageX < 10 || e.originalEvent.pageY < 10 || $(window).width() - e.originalEvent.pageX < 10 || $(window).height - e.originalEvent.pageY < 10) {
+    //        $("#share-a-link-overlay").hide();
+    //    }
+    //});
 
-    $('#share-a-link-overlay').on('dragover', function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-    });
+    //$('#share-a-link-overlay').on('dragover', function (e) {
+    //    e.stopPropagation();
+    //    e.preventDefault();
+    //});
 
     // tooltipster wireup
     wireTooltips();
@@ -249,36 +249,36 @@ function wireTooltips() {
     });
 }
 
-// a function which handles mouse drop events (sharing links by dragging and dropping)
-function dropFunction(event) {
-    event.stopPropagation();
-    event.preventDefault();
+//// a function which handles mouse drop events (sharing links by dragging and dropping)
+//function dropFunction(event) {
+//    event.stopPropagation();
+//    event.preventDefault();
 
-    var droppedData = event.dataTransfer.getData('text/html');
+//    var droppedData = event.dataTransfer.getData('text/html');
 
-    var url;
-    if ($(droppedData).children().length > 0) {
-        url = $(droppedData).attr('href');
-    } else {
-        url = $(droppedData).attr('href');
-    }
+//    var url;
+//    if ($(droppedData).children().length > 0) {
+//        url = $(droppedData).attr('href');
+//    } else {
+//        url = $(droppedData).attr('href');
+//    }
 
-    // dropped data did not contain a HREF element, try to see if it has a SRC element instead
-    if (url != null) {
-        window.location.replace("/submit?linkpost=true&url=" + url);
-    } else {
-        url = $(droppedData).attr('src');
-        if (url != null) {
-            window.location.replace("/submit?linkpost=true&url=" + url);
-        }
-    }
+//    // dropped data did not contain a HREF element, try to see if it has a SRC element instead
+//    if (url != null) {
+//        window.location.replace("/submit?linkpost=true&url=" + url);
+//    } else {
+//        url = $(droppedData).attr('src');
+//        if (url != null) {
+//            window.location.replace("/submit?linkpost=true&url=" + url);
+//        }
+//    }
 
-    $("#share-a-link-overlay").hide();
-}
+//    $("#share-a-link-overlay").hide();
+//}
 
-function click_voting() {
-    $(this).toggleClass("arrow upmod login-required");
-}
+//function click_voting() {
+//    $(this).toggleClass("arrow upmod login-required");
+//}
 
 function mustLogin() {
     $('#mustbeloggedinModal').modal();
@@ -1084,7 +1084,7 @@ function toggle(obj, commentid) {
 }
 
 // toggle are you sure question for subverse block action
-function toggleblocksubverse(obj) {
+function blockSubverseToggle(obj) {
     $(obj).parent().parent().find('.option, .error').toggleClass("active");
     return false;
 }
@@ -1130,7 +1130,7 @@ function togglesubmission(obj, submissionid) {
 }
 
 // togle back are you sure question for submission deletion
-function togglesubmissionback(obj) {
+function toggleSubmissionBack(obj) {
     $(obj).parent().parent().find('.option, .error').toggleClass("active");
     return false;
 }
@@ -1163,7 +1163,10 @@ function subscribe(obj, subverseName) {
         }
     });
 }
+//function setSubscribeToggle(obje, setID, subverseName)
+//{
 
+//}
 // unsubscribe from subverse
 function unsubscribe(obj, subverseName) {
     //This is the famous undefined subscription bug - DO NOT ERASE - THIS IS VOAT FAMOUS - ATTN DAN.F. I found it first!
@@ -1186,99 +1189,212 @@ function unsubscribe(obj, subverseName) {
         }
     });
 }
+// *************************** SET **************************************
 
-// subscribe to set
-function subscribeToSet(obj, setId) {
-    $(obj).attr("onclick", "unsubscribe(this)");
-    $(obj).html("unsubscribe");
+//// subscribe to set
+//function subscribeToSet(obj, setId) {
+//    $(obj).attr("onclick", "unsubscribe(this)");
+//    $(obj).html("unsubscribe");
 
-    // call the set subscribe API
-    $.ajax({
-        type: "POST",
-        url: "/subscribetoset/" + setId,
-        success: function () {
-            var numberOfSubscribers = +($('#subscribercount').html());
-            numberOfSubscribers++;
-            $('#subscribercount').html(numberOfSubscribers);
-        },
-        error: function () {
-            alert('Something went wrong while sending a set subscription request.');
-        }
-    });
-}
+//    // call the set subscribe API
+//    $.ajax({
+//        type: "POST",
+//        url: "/subscribetoset/" + setId,
+//        success: function () {
+//            var numberOfSubscribers = +($('#subscribercount').html());
+//            numberOfSubscribers++;
+//            $('#subscribercount').html(numberOfSubscribers);
+//        },
+//        error: function () {
+//            alert('Something went wrong while sending a set subscription request.');
+//        }
+//    });
+//}
 
-// unsubscribe from set
-function unsubscribeFromSet(obj, setId) {
-    $(obj).attr("onclick", "subscribe(this)");
-    $(obj).html("subscribe");
+//// unsubscribe from set
+//function unsubscribeFromSet(obj, setId) {
+//    $(obj).attr("onclick", "subscribe(this)");
+//    $(obj).html("subscribe");
 
-    // call the unsubscribe API
-    $.ajax({
-        type: "POST",
-        url: "/unsubscribefromset/" + setId,
-        success: function () {
-            var numberOfSubscribers = +($('#subscriberCount').html());
-            numberOfSubscribers--;
-            $('#subscriberCount').html(numberOfSubscribers);
-        },
-        error: function () {
-            alert('Something went wrong while sending unsubscription request.');
-        }
-    });
-}
+//    // call the unsubscribe API
+//    $.ajax({
+//        type: "POST",
+//        url: "/unsubscribefromset/" + setId,
+//        success: function () {
+//            var numberOfSubscribers = +($('#subscriberCount').html());
+//            numberOfSubscribers--;
+//            $('#subscriberCount').html(numberOfSubscribers);
+//        },
+//        error: function () {
+//            alert('Something went wrong while sending unsubscription request.');
+//        }
+//    });
+//}
 
-// remove a subverse from a set
-function removeSubFromSet(obj, setId, subverseName) {
-    $(obj).html("Hold on...");
+//// remove a subverse from a set
+//function removeSubFromSet(obj, setId, subverseName) {
+//    $(obj).html("Hold on...");
 
-    // call remove subverse from set API
-    $.ajax({
-        type: "POST",
-        url: "/sets/removesubverse/" + setId + "/" + subverseName,
-        success: function () {
-            // remove the remove button along with sub info
-            $("#subverse-" + subverseName).remove();
-        },
-        error: function () {
-            $(obj).html("Something went wrong.");
-        }
-    });
-}
+//    // call remove subverse from set API
+//    $.ajax({
+//        type: "POST",
+//        url: "/sets/removesubverse/" + setId + "/" + subverseName,
+//        success: function () {
+//            // remove the remove button along with sub info
+//            $("#subverse-" + subverseName).remove();
+//        },
+//        error: function () {
+//            $(obj).html("Something went wrong.");
+//        }
+//    });
+//}
 
-// add a subverse to a set
-function addSubToSet(obj, setId) {
-    $(obj).html("Hold on...");
-    var subverseName = $("#Subverse").val();
+//// add a subverse to a set
+//function addSubToSet(obj, setId) {
+//    $(obj).html("Hold on...");
+//    var subverseName = $("#Subverse").val();
 
-    if (!subverseName) {
-        $(obj).html("Add this subverse to set");
-        $("#status").html("please enter a subverse name to add");
-        $("#status").show();
-        return;
-    }
+//    if (!subverseName) {
+//        $(obj).html("Add this subverse to set");
+//        $("#status").html("please enter a subverse name to add");
+//        $("#status").show();
+//        return;
+//    }
 
-    // call add subverse to set API
-    $.ajax({
-        type: "POST",
-        url: "/sets/addsubverse/" + setId + "/" + subverseName,
-        success: function () {
-            var subverseInfo = $.get(
-                "/ajaxhelpers/setsubverseinfo/" + setId + "/" + subverseName,
-                null,
-                function (data) {
-                    $("#subverselisting").append(data);
-                    $("#status").hide();
-                    $(obj).html("Add this subverse to set");
-                }
-             );
-        },
-        error: function () {
-            $("#status").html("Subverse probably does not exist.");
-            $("#status").show();
-            $(obj).html("Add this subverse to set");
-        }
-    });
-}
+//    // call add subverse to set API
+//    $.ajax({
+//        type: "POST",
+//        url: "/sets/addsubverse/" + setId + "/" + subverseName,
+//        success: function () {
+//            var subverseInfo = $.get(
+//                "/ajaxhelpers/setsubverseinfo/" + setId + "/" + subverseName,
+//                null,
+//                function (data) {
+//                    $("#subverselisting").append(data);
+//                    $("#status").hide();
+//                    $(obj).html("Add this subverse to set");
+//                }
+//             );
+//        },
+//        error: function () {
+//            $("#status").html("Subverse probably does not exist.");
+//            $("#status").show();
+//            $(obj).html("Add this subverse to set");
+//        }
+//    });
+//}
+
+//// a function to fetch 1 page for a set and append to the bottom of the given set
+//var loadMoreSetRequest;
+//function loadMoreSetItems(obj, setId) {
+//    if (loadMoreSetRequest) { return; }
+//    $(obj).html("Sit tight...");
+
+//    // try to see if this request is a subsequent request
+//    var currentPage = $("#set-" + setId + "-page").html();
+//    if (currentPage == null) {
+//        currentPage = 1;
+//    } else {
+//        currentPage++;
+//    }
+
+//    loadMoreSetRequest = $.ajax({
+//        url: "/set/" + setId + "/" + currentPage + "/",
+//        success: function (data) {
+//            $("#set-" + setId + "-page").remove();
+//            $("#set-" + setId + "-container").append(data);
+//            $(obj).html("load more &#9660;");
+//        },
+//        error: function () {
+//            {
+//                $(obj).html("That's it. There was nothing else to show.");
+//            }
+//        },
+//        complete: function () {
+//            loadMoreSetRequest = null;
+//        }
+//    });
+//}
+
+//// a function to change set title name
+//function changeSetName() {
+//    $('#setName').removeAttr("onclick");
+//    $('#setName').hide();
+
+//    // show textbox
+//    $('#newSetName').show();
+//    $('#newSetNameEditBox').focus();
+
+//    $('#newSetNameEditBox').on('keypress', function (e) {
+//        if (e.keyCode === 13) {
+//            $('#setName').html($('#newSetNameEditBox').val());
+
+//            $('#setName').bind('click', changeSetName);
+//            $('#newSetName').hide();
+//            $('#setName').show();
+//        }
+//    });
+//}
+
+//function cancelSetTitleChange() {
+//    $('#setName').bind('click', changeSetName);
+//    $('#newSetName').hide();
+//    $('#setName').show();
+//}
+
+//function saveSetTitle(obj, setId) {
+//    $(obj).html('Please wait...');
+
+//    $.ajax({
+//        type: "POST",
+//        url: "/sets/modify/" + setId + "/" + $('#newSetNameEditBox').val(),
+//        success: function () {
+//            $('#setName').html($('#newSetNameEditBox').val());
+//            $('#setName').bind('click', changeSetName);
+//            $('#newSetName').hide();
+//            $('#setName').show();
+
+//            $(obj).html('Save');
+//        },
+//        error: function () {
+//            $(obj).html('Max 20 characters');
+//        }
+//    });
+//}
+
+//// a function to ask the user to confirm permanent set deletion request
+//function deleteSet(obj, setId) {
+//    $(obj).html("Are you sure?");
+
+//    $(obj).bind({
+//        click: function () {
+//            deleteSetExecute(obj, setId);
+//        }
+//    });
+
+//    return false;
+//}
+
+//// a function to permanently delete a given set
+//function deleteSetExecute(obj, setId) {
+//    $(obj).html('Please wait...');
+
+//    $.ajax({
+//        type: "POST",
+//        url: "/sets/delete/" + setId,
+//        success: function () {
+//            // remove the set from view
+//            $("#set-" + setId).remove();
+//        },
+//        error: function () {
+//            $(obj).html('Nope.');
+//        }
+//    });
+//}
+
+
+
+
 
 // a function to load content of a self post and append it to calling object
 function loadSelfText(obj, messageId) {
@@ -1301,29 +1417,6 @@ function loadSelfText(obj, messageId) {
 
     // toggle message content display
     $(obj).parent().find(".expando").toggle();
-}
-
-//// a function to embed a video via expando
-//[Obsolete - Remove once UI Expandos are tested]
-function loadVideoPlayer(obj, messageId) {
-
-    $(obj).toggleClass("collapsed");
-    $(obj).toggleClass("expanded");
-
-    // fetch message content and append under class md
-    var messageContent = $.get(
-        "/ajaxhelpers/videoplayer/" + messageId,
-        null,
-        function (data) {
-            $(obj).parent().find(".expando").nextAll().find(".videoplayer").html(data);
-            window.setTimeout(function () {
-                UI.Notifications.raise('iFrameLoaded', $(obj).parent().find(".expando").nextAll().find(".videoplayer"));
-            });
-        }
-     );
-
-    // note: the nextnextnextnext thing is ugly, feel free to write a cleaner solution. Thanks!
-    $(obj).parent().find(".expando").next().next().next().toggle();
 }
 
 // function to post delete private message request to messaging controller and remove deleted message DOM
@@ -1532,37 +1625,6 @@ function showMessagePreview(senderButton, messageContent, previewArea) {
     return false;
 }
 
-// a function to fetch 1 page for a set and append to the bottom of the given set
-var loadMoreSetRequest;
-function loadMoreSetItems(obj, setId) {
-    if (loadMoreSetRequest) { return; }
-    $(obj).html("Sit tight...");
-
-    // try to see if this request is a subsequent request
-    var currentPage = $("#set-" + setId + "-page").html();
-    if (currentPage == null) {
-        currentPage = 1;
-    } else {
-        currentPage++;
-    }
-
-    loadMoreSetRequest = $.ajax({
-        url: "/set/" + setId + "/" + currentPage + "/",
-        success: function (data) {
-            $("#set-" + setId + "-page").remove();
-            $("#set-" + setId + "-container").append(data);
-            $(obj).html("load more &#9660;");
-        },
-        error: function () {
-            {
-                $(obj).html("That's it. There was nothing else to show.");
-            }
-        },
-        complete: function () {
-            loadMoreSetRequest = null;
-        }
-    });
-}
 
 // a function that toggles the visibility of the comment/submission/message source textarea
 function toggleSource(senderButton) {
@@ -1574,82 +1636,6 @@ function toggleSource(senderButton) {
     } else {
         senderButton.text = "source";
     }
-}
-
-// a function to change set title name
-function changeSetName() {
-    $('#setName').removeAttr("onclick");
-    $('#setName').hide();
-
-    // show textbox
-    $('#newSetName').show();
-    $('#newSetNameEditBox').focus();
-
-    $('#newSetNameEditBox').on('keypress', function (e) {
-        if (e.keyCode === 13) {
-            $('#setName').html($('#newSetNameEditBox').val());
-
-            $('#setName').bind('click', changeSetName);
-            $('#newSetName').hide();
-            $('#setName').show();
-        }
-    });
-}
-
-function cancelSetTitleChange() {
-    $('#setName').bind('click', changeSetName);
-    $('#newSetName').hide();
-    $('#setName').show();
-}
-
-function saveSetTitle(obj, setId) {
-    $(obj).html('Please wait...');
-
-    $.ajax({
-        type: "POST",
-        url: "/sets/modify/" + setId + "/" + $('#newSetNameEditBox').val(),
-        success: function () {
-            $('#setName').html($('#newSetNameEditBox').val());
-            $('#setName').bind('click', changeSetName);
-            $('#newSetName').hide();
-            $('#setName').show();
-
-            $(obj).html('Save');
-        },
-        error: function () {
-            $(obj).html('Max 20 characters');
-        }
-    });
-}
-
-// a function to ask the user to confirm permanent set deletion request
-function deleteSet(obj, setId) {
-    $(obj).html("Are you sure?");
-
-    $(obj).bind({
-        click: function () {
-            deleteSetExecute(obj, setId);
-        }
-    });
-
-    return false;
-}
-
-// a function to permanently delete a given set
-function deleteSetExecute(obj, setId) {
-    $(obj).html('Please wait...');
-
-    $.ajax({
-        type: "POST",
-        url: "/sets/delete/" + setId,
-        success: function () {
-            // remove the set from view
-            $("#set-" + setId).remove();
-        },
-        error: function () {
-            $(obj).html('Nope.');
-        }
-    });
 }
 
 // a function to fetch 1 comment bucket for a submission and append to the bottom of the page
@@ -1694,35 +1680,35 @@ function cachePrevention() {
     });
     return v;
 }
-// a function to fetch 1 comment bucket for a submission and append to the bottom of the page
-var loadCommentsRequest;
-function loadMoreComments(obj, submissionId) {
-    if (loadCommentsRequest) { return; }
-    $(obj).html("Sit tight...");
+//// a function to fetch 1 comment bucket for a submission and append to the bottom of the page
+//var loadCommentsRequest;
+//function loadMoreComments(obj, submissionId) {
+//    if (loadCommentsRequest) { return; }
+//    $(obj).html("Sit tight...");
 
-    // try to see if this request is a subsequent request
-    var currentPage = $("#comments-" + submissionId + "-page").html();
-    if (currentPage == null) {
-        currentPage = 1;
-    } else {
-        currentPage++;
-    }
-    loadCommentsRequest = $.ajax({
-        url: "/comments/" + submissionId + "/" + currentPage + "/",
-        success: function (data) {
-            $("#comments-" + submissionId + "-page").remove();
-            $(obj).before(data);
-            window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent()); });
-            $(obj).html("load more &#9660;");
-        },
-        error: function () {
-            $(obj).html("That's it. There was nothing else to show. Phew. This was hard.");
-        },
-        complete: function () {
-            loadCommentsRequest = null;
-        }
-    });
-}
+//    // try to see if this request is a subsequent request
+//    var currentPage = $("#comments-" + submissionId + "-page").html();
+//    if (currentPage == null) {
+//        currentPage = 1;
+//    } else {
+//        currentPage++;
+//    }
+//    loadCommentsRequest = $.ajax({
+//        url: "/comments/" + submissionId + "/" + currentPage + "/",
+//        success: function (data) {
+//            $("#comments-" + submissionId + "-page").remove();
+//            $(obj).before(data);
+//            window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent()); });
+//            $(obj).html("load more &#9660;");
+//        },
+//        error: function () {
+//            $(obj).html("That's it. There was nothing else to show. Phew. This was hard.");
+//        },
+//        complete: function () {
+//            loadCommentsRequest = null;
+//        }
+//    });
+//}
 
 // a function to fetch the parent of a comment.
 function goToParent(event, parentId) {
@@ -1734,6 +1720,7 @@ function goToParent(event, parentId) {
         window.location.hash = "#" + parentId;
     }
 }
+// ********************************** CHAT ****************************************
 
 // a function to scroll chat box content up
 function scrollChatToBottom() {
@@ -1813,7 +1800,7 @@ function toggleSaveComment(commentId) {
 }
 
 // a function to submit subverse block/unblock request
-function toggleBlockSubverse(obj, subverseName) {
+function blockSubverseToggle(obj, subverseName) {
     $(obj).toggleClass("btn-blocksubverse btn-unblocksubverse");
     var blockButton = $(obj);
     if (blockButton.exists()) {
@@ -1827,7 +1814,7 @@ function toggleBlockSubverse(obj, subverseName) {
         postBlock('subverse', subverseName);
     }
 }
-function toggleBlockUser(obj, name) {
+function blockUserToggle(obj, name) {
     $(obj).toggleClass("btn-blocksubverse btn-unblocksubverse");
     var blockButton = $(obj);
     if (blockButton.exists()) {

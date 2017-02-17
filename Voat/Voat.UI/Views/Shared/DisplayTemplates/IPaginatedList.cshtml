@@ -1,0 +1,20 @@
+﻿
+@model Voat.Utilities.IPaginatedList
+@{
+    <div class="pagination-container">
+        <ul>
+            @if (Model.HasPreviousPage)
+            {
+                <li class="btn-whoaverse-paging">
+                    @Html.ActionLink("< prev", (string)Request.RequestContext.RouteData.Values["action"], new { page = (Model.PageIndex - 1) })
+                </li>
+            }
+            @if (Model.HasNextPage)
+            {
+                <li class="btn-whoaverse-paging">
+                    @Html.ActionLink("next >", (string)Request.RequestContext.RouteData.Values["action"], new { page = (Model.PageIndex + 1) })
+                </li>
+            }
+        </ul>
+    </div>
+}

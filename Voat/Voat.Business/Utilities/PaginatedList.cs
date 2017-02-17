@@ -18,7 +18,7 @@ using System.Linq;
 
 namespace Voat.Utilities
 {
-    public class PaginatedList<T> : List<T>
+    public class PaginatedList<T> : List<T>, IPaginatedList
     {
         public int PageIndex { get; private set; }
 
@@ -27,6 +27,24 @@ namespace Voat.Utilities
         public int TotalCount { get; private set; }
 
         public int TotalPages { get; private set; }
+
+        public string RouteName { get; set; }
+
+        public bool HasPreviousPage
+        {
+            get
+            {
+                return (PageIndex > 0);
+            }
+        }
+
+        public bool HasNextPage
+        {
+            get
+            {
+                return (PageIndex + 1 < TotalPages);
+            }
+        }
 
         public PaginatedList(IQueryable<T> source, int pageIndex, int pageSize)
         {
@@ -73,20 +91,6 @@ namespace Voat.Utilities
             AddRange(source);
         }
         
-        public bool HasPreviousPage
-        {
-            get
-            {
-                return (PageIndex > 0);
-            }
-        }
-
-        public bool HasNextPage
-        {
-            get
-            {
-                return (PageIndex + 1 < TotalPages);
-            }
-        }
+      
     }
 }

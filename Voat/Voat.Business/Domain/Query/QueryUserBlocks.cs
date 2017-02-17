@@ -37,7 +37,7 @@ namespace Voat.Domain.Query
         {
             using (var db = new Repository())
             {
-                var blockedSubs = db.GetBlockedSubverses(_userName);
+                var blockedSubs = await db.GetBlockedSubverses(_userName);
                 var blockedUsers = db.GetBlockedUsers(_userName);
                 var blocked = blockedSubs.Concat(blockedUsers).ToList();
                 return blocked;

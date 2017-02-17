@@ -19,7 +19,6 @@ namespace Voat.Models
 {
     public class AddSubverse
     {
-        public int Id { get; set; }
 
         //any upper or lower case alphabetic or numeric character, no spaces or special characters, length: 20
         [RegularExpression(@"^[a-zA-Z0-9]*$", ErrorMessage = "Sorry, no spaces or special characters, max 20 characters")]
@@ -31,37 +30,11 @@ namespace Voat.Models
         [Required(ErrorMessage = "Title is required. Has to be calculated")]
         public string Title { get; set; }
 
-        public string Type { get; set; }
         public string Sidebar { get; set; }
-        public string Submission_text { get; set; }
-        public string Language { get; set; }        
-        public string Label_submit_new_link { get; set; }
-        public string Label_sumit_new_selfpost { get; set; }
-        public string Spam_filter_links { get; set; }
-        public string Spam_filter_selfpost { get; set; }
-        public string Spam_filter_comments { get; set; }       
  
-        [Required(ErrorMessage = "This setting is required.")]        
-        public bool Rated_adult { get; set; }
-
-        [Required(ErrorMessage = "This setting is required.")]        
-        public bool Allow_default { get; set; }
-
-        [Required(ErrorMessage = "This setting is required.")]
-        public bool Enable_thumbnails { get; set; }
-
-        [Required(ErrorMessage = "This setting is required.")]
-        public bool Private_subverse { get; set; }
-
-        public Nullable<int> Exclude_sitewide_bans { get; set; }
-        public Nullable<int> Traffic_stats_public { get; set; }
-        public Nullable<int> Minutes_to_hide_comments { get; set; }        
-        public DateTime Creation_date { get; set; }
-
         [Required(ErrorMessage = "Please describe what your subverse is about")]
         [StringLength(500, ErrorMessage = "The description length is limited to 500 characters")]
         public string Description { get; set; }
-        public string Owner { get; set; }
         
     }
 }

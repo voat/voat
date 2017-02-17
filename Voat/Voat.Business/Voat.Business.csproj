@@ -213,6 +213,7 @@
     <Compile Include="Domain\Models\SubverseBannedUser.cs" />
     <Compile Include="Domain\Models\SubverseModerator.cs" />
     <Compile Include="Domain\Models\SubverseSubmissionSetting.cs" />
+    <Compile Include="Domain\Models\SubverseSubscriptionDetail.cs" />
     <Compile Include="Domain\Models\UserDefinition.cs" />
     <Compile Include="Domain\Models\UserSet.cs" />
     <Compile Include="Domain\Models\VoteValue.cs" />
@@ -351,6 +352,7 @@
     <Compile Include="Utilities\FilterUtility.cs" />
     <Compile Include="Utilities\Formatting.cs" />
     <Compile Include="Utilities\HashHandler.cs" />
+    <Compile Include="Utilities\IPaginatedList.cs" />
     <Compile Include="Utilities\IpHashUtility.cs" />
     <Compile Include="Utilities\JsonUnprintableCharConverter.cs" />
     <Compile Include="Utilities\Karma.cs" />

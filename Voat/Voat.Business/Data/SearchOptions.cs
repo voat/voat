@@ -60,6 +60,23 @@ namespace Voat.Data
         private IEnumerable<KeyValuePair<string, string>> _queryStrings = null;
         private List<KeyValuePair<string, string>> _unknownPairs = new List<KeyValuePair<string, string>>();
 
+        //TODO: Needs to return IEnumerable<> but unit tests need updated
+        public static IList<KeyValuePair<string, string>> ParseQuery(NameValueCollection nameValueCollection)
+        {
+            List<KeyValuePair<string, string>> pairs = new List<KeyValuePair<string, string>>();
+
+            if (nameValueCollection != null && nameValueCollection.Count > 0)
+            {
+                foreach (var key in nameValueCollection.Keys)
+                {
+                    pairs.Add(new KeyValuePair<string, string>(key.ToString(), nameValueCollection[key.ToString()]));
+                }
+            }
+
+            return pairs;
+        }
+
+        //TODO: Needs to return IEnumerable<> but unit tests need updated
         public static IList<KeyValuePair<string, string>> ParseQuery(string queryString, bool urlDecodeValues = true)
         {
             List<KeyValuePair<string, string>> pairs = new List<KeyValuePair<string, string>>();
@@ -114,7 +131,10 @@ namespace Voat.Data
         {
 
         }
+        public SearchOptions(NameValueCollection nameValueCollection, int? maxPageCount = null, bool useRelativeDateSpans = true) : this(SearchOptions.ParseQuery(nameValueCollection), maxPageCount, useRelativeDateSpans)
+        {
 
+        }
         public SearchOptions(IEnumerable<KeyValuePair<string, string>> queryStrings, int? maxPageCount = null, bool useRelativeDateSpans = true) : this(maxPageCount, useRelativeDateSpans)
         {
             //TODO: Make sure the querystrings passed into this method from controller are url decoded values

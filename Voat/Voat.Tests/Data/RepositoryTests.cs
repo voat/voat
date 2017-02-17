@@ -38,7 +38,7 @@ namespace Voat.Tests.Repository
     {
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Block"), TestCategory("Repository.Block.Subverse")]
-        public void Block_Subverse()
+        public async Task Block_Subverse()
         {
             using (var db = new Voat.Data.Repository())
             {
@@ -47,12 +47,12 @@ namespace Voat.Tests.Repository
                 TestHelper.SetPrincipal("TestUser01");
                 db.Block(DomainType.Subverse, name);
 
-                var blocks = db.GetBlockedSubverses("TestUser01");
+                var blocks = await db.GetBlockedSubverses("TestUser01");
                 Assert.IsNotNull(blocks);
                 Assert.IsTrue(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
 
                 db.Unblock(DomainType.Subverse, name);
-                blocks = db.GetBlockedSubverses("TestUser01");
+                blocks = await db.GetBlockedSubverses("TestUser01");
                 Assert.IsNotNull(blocks);
                 Assert.IsFalse(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
             }
@@ -84,7 +84,7 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Block"), TestCategory("Repository.Block.Subverse")]
-        public void Block_Subverse_Toggle()
+        public async Task Block_Subverse_Toggle()
         {
             using (var db = new Voat.Data.Repository())
             {
@@ -95,13 +95,13 @@ namespace Voat.Tests.Repository
 
                 db.Block(DomainType.Subverse, name, null);
 
-                var blocks = db.GetBlockedSubverses(userName);
+                var blocks = await db.GetBlockedSubverses(userName);
                 Assert.IsNotNull(blocks);
                 Assert.IsTrue(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
 
                 db.Block(DomainType.Subverse, name, null);
 
-                blocks = db.GetBlockedSubverses(userName);
+                blocks = await db.GetBlockedSubverses(userName);
                 Assert.IsNotNull(blocks);
                 Assert.IsFalse(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
             }
@@ -159,7 +159,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                var s = await db.GetSubmissionsDapper("unit", DomainType.Subverse, new SearchOptions()).ConfigureAwait(false);
+                var s = await db.GetSubmissionsDapper(new DomainReference(DomainType.Subverse, "unit"), new SearchOptions()).ConfigureAwait(false);
                 Assert.IsTrue(s.Any());
             }
         }
@@ -171,7 +171,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                var anon_sub = await db.GetSubmissionsDapper("anon", DomainType.Subverse, SearchOptions.Default).ConfigureAwait(false);
+                var anon_sub = await db.GetSubmissionsDapper(new DomainReference(DomainType.Subverse, "anon"), SearchOptions.Default).ConfigureAwait(false);
                 var first = anon_sub.OrderBy(x => x.CreationDate).First();
                 Assert.IsNotNull(first, "no anon submissions found");
                 Assert.AreEqual("First Anon Post", first.Title);
