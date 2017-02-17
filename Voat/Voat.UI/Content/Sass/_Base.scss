@@ -910,7 +910,13 @@ a.btn-whoaverse {
         color: $color-35;
     }
     select.form-control {
-        padding: 0 12px;
+        font-size: 13px;
+        line-height: 100%;
+        padding: 6px;
+        width: auto;
+        background: none;
+        color: #dfdfdf;
+        background-color: #333
     }
 
 /* ! Body : WVSprites
@@ -2625,6 +2631,15 @@ textarea.form-control {
     line-height: 140%;
     padding: 8px;
 }
+
+input[type=checkbox].form-control {
+    font-size: 13px;
+    line-height: 100%;
+    padding: 6px;
+    width: 20px;
+    background: none;
+}
+
 
 /* ! Register
 -------------------------------------------------------------------------------- */
