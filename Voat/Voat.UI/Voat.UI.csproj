@@ -427,7 +427,6 @@
     <Content Include="Graphics\Icons\apple-touch-icon-precomposed.png" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\markdownEditor.css" />
-    <Content Include="Content\PagedList.css" />
     <Content Include="Graphics\Badges\donor_level_2.png" />
     <Content Include="Graphics\Badges\voat_cakeday.png" />
     <Content Include="Graphics\edit.png" />

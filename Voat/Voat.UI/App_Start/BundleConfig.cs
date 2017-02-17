@@ -48,7 +48,6 @@ namespace Voat
                       "~/Content/Site.css",
                       "~/Content/tooltipster.css",
                       "~/Content/Voat.css",
-                      "~/Content/PagedList.css",
                       "~/Content/markdownEditor.css"
                       ));
 
@@ -57,7 +56,6 @@ namespace Voat
                       "~/Content/Site.css",
                       "~/Content/tooltipster.css",
                       "~/Content/Voat-Dark.css",
-                      "~/Content/PagedList.css",
                       "~/Content/markdownEditor.css"
                       ));
             #endregion
