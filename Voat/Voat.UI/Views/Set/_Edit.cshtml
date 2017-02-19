@@ -1,0 +1,24 @@
+﻿
+
+@model Voat.Models.ViewModels.SetViewModel
+
+
+@if (!Model.Permissions.EditProperties)
+{
+    @Html.DisplayFor(x => Model.Set)
+}
+else
+{
+
+    @Html.Partial("_Update", Model.Set)
+
+    if (Model.Permissions.Delete)
+    {
+        using (Html.BeginForm("Delete", "Set", FormMethod.Post, new { @class = "form-horizontal", role = "form"}))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary()
+            <input type="submit" value="Delete" class="btn-whoaverse" />
+        }
+    }
+}

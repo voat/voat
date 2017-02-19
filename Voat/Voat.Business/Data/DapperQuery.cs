@@ -26,6 +26,8 @@ namespace Voat.Data
 
         public string GroupBy { get; set; }
 
+        public string Having { get; set; }
+
         public string OrderBy { get; set; }
 
         protected string FormattedSelect
@@ -47,7 +49,7 @@ namespace Voat.Data
         public int? TakeCount { get; set; }
         public override string ToString()
         {
-            var q = $"{EnsureStartsWith(FormattedSelect, "SELECT ")} {EnsureStartsWith(Where, "WHERE ")} {EnsureStartsWith(GroupBy, "GROUP BY ")} {EnsureStartsWith(OrderBy, "ORDER BY ")}";
+            var q = $"{EnsureStartsWith(FormattedSelect, "SELECT ")} {EnsureStartsWith(Where, "WHERE ")} {EnsureStartsWith(GroupBy, "GROUP BY ")} {EnsureStartsWith(Having, "HAVING ")} {EnsureStartsWith(OrderBy, "ORDER BY ")}";
             if (TakeCount.HasValue && TakeCount.Value > 0)
             {
                 q += String.Format(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", (SkipCount.HasValue ? SkipCount.Value : 0).ToString(), TakeCount.Value.ToString());
@@ -73,6 +75,9 @@ namespace Voat.Data
                     break;
                 case "groupby":
                     GroupBy = AppendClause(GroupBy, appendClause, ", ");
+                    break;
+                case "having":
+                    Having = AppendClause(Having, appendClause, " AND ");
                     break;
             }
         }

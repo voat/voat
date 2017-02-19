@@ -93,10 +93,10 @@ namespace Voat.Controllers
 
             var viewProperties = new SubmissionListViewModel();
             viewProperties.Submissions = paginatedSubmissions;
-            viewProperties.UrlAction = "DomainIndex";
+            viewProperties.Submissions.RouteName = "DomainIndex";
 
             viewProperties.Title = "Domain: " + domainname;
-            return View("~/Views/Subverses/SubverseIndex.cshtml", viewProperties);
+            return View("SubmissionList", viewProperties);
         }
         
     }

@@ -37,7 +37,13 @@ namespace Voat.Controllers
                 return NotFoundErrorView();
             }
             ViewBag.UserName = originalUserName;
-
+            ViewBag.NavigationViewModel = new NavigationViewModel()
+            {
+                MenuType = MenuType.UserProfile,
+                Name = originalUserName,
+                BasePath = "/user/" + originalUserName,
+                Description = originalUserName + "'s Overview",
+            };
             return View();
         }
         public async  Task<ActionResult> Comments(string userName, int? page = null)
@@ -73,7 +79,13 @@ namespace Voat.Controllers
             //                    select c;
 
             var paged = new PaginatedList<Domain.Models.SubmissionComment>(comments, page ?? 0, PAGE_SIZE, -1);
-
+            ViewBag.NavigationViewModel = new NavigationViewModel()
+            {
+                MenuType = MenuType.UserProfile,
+                Name = originalUserName,
+                BasePath = "/user/" + originalUserName,
+                Description = originalUserName + "'s Comments",
+            };
             return View(paged);
         }
         public async Task<ActionResult> Submissions(string userName, int? page = null)
@@ -104,6 +116,14 @@ namespace Voat.Controllers
             var data = await q.ExecuteAsync();
 
             var paged = new PaginatedList<Domain.Models.Submission>(data, page ?? 0, PAGE_SIZE, -1);
+
+            ViewBag.NavigationViewModel = new NavigationViewModel()
+            {
+                MenuType = MenuType.UserProfile,
+                Name = originalUserName,
+                BasePath = "/user/" + originalUserName,
+                Description = originalUserName + "'s Submissions",
+            };
 
             return View(paged);
         }
@@ -153,6 +173,14 @@ namespace Voat.Controllers
             var mergedSubmissionsAndComments = savedSubmissions.Concat(savedComments).OrderByDescending(s => s.SaveDateTime).AsQueryable();
 
             var paginatedUserSubmissionsAndComments = new PaginatedList<SavedItem>(mergedSubmissionsAndComments, page ?? 0, PAGE_SIZE);
+
+            ViewBag.NavigationViewModel = new NavigationViewModel() {
+                MenuType = MenuType.UserProfile,
+                Name = originalUserName,
+                BasePath = "/user/" + originalUserName,
+                Description = originalUserName + "'s Saved",
+            };
+
             return View(paginatedUserSubmissionsAndComments);
         }
 
@@ -223,7 +251,7 @@ namespace Voat.Controllers
                 case Domain.Models.DomainType.Subverse:
                 default:
 
-                    return RedirectToAction("Edit", "Set", new RouteValueDictionary() {
+                    return RedirectToAction("Details", "Set", new RouteValueDictionary() {
                         { "name", Domain.Models.SetType.Blocked.ToString() },
                         { "userName", User.Identity.Name }
                     });
@@ -262,6 +290,36 @@ namespace Voat.Controllers
 
             }
             
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult> Sets(string userName)
+        {
+
+            var originalUserName = UserHelper.OriginalUsername(userName);
+
+            if (String.IsNullOrEmpty(originalUserName))
+            {
+                return NotFoundErrorView();
+            }
+
+            ViewBag.UserName = originalUserName;
+
+            ViewBag.NavigationViewModel = new NavigationViewModel()
+            {
+                MenuType = MenuType.UserProfile,
+                Name = originalUserName,
+                BasePath = "/user/" + originalUserName,
+                Description = originalUserName + "'s Sets",
+            };
+
+            //TODO: Move to query
+            using (var repo = new Repository())
+            {
+                var setList = await repo.GetUserSets(originalUserName);
+                return View(setList.Map());
+            }
         }
         #endregion
     }

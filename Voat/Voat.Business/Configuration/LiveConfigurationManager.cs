@@ -35,7 +35,7 @@ namespace Voat.Configuration
         public const string HourlyPostingQuotaPerSub = "hourlyPostingQuotaPerSub";
         public const string LegacyApiEnabled = "legacyApiEnabled";
         public const string MaxAllowedAccountsFromSingleIP = "maxAllowedAccountsFromSingleIP";
-        public const string MaximumOwnedSets = "maximumOwnedSets";
+        
         public const string MaximumOwnedSubs = "maximumOwnedSubs";
         
         public const string MinimumAccountAgeInDaysForSubverseCreation = "minimumAccountAgeInDaysForSubverseCreation";
@@ -49,7 +49,13 @@ namespace Voat.Configuration
         public const string RedirectToSiteDomain = "redirectToSiteDomain";
         public const string RecaptchaPublicKey = "recaptchaPublicKey";
         public const string RegistrationDisabled = "registrationDisabled";
+
+        //Sets
         public const string SetsDisabled = "setsDisabled";
+        public const string SetCreationDisabled = "setCreationDisabled";
+        public const string MaximumOwnedSets = "maximumOwnedSets";
+        public const string MaximumSetSubverseCount = "maximumSetSubverseCount";
+
         public const string SignalRDisabled = "signalrDisabled";
         public const string SiteDescription = "siteDescription";
         public const string SiteDisabled = "siteDisabled";
@@ -121,7 +127,7 @@ namespace Voat.Configuration
                 SetValueIfPresent<string>(CONFIGURATION.FooterText, section[CONFIGURATION.FooterText]);
                 
                 SetValueIfPresent<int>(CONFIGURATION.MaximumOwnedSubs, section[CONFIGURATION.MaximumOwnedSubs]);
-                SetValueIfPresent<int>(CONFIGURATION.MaximumOwnedSets, section[CONFIGURATION.MaximumOwnedSets]);
+                
                 SetValueIfPresent<int>(CONFIGURATION.DailyPostingQuotaPerSub, section[CONFIGURATION.DailyPostingQuotaPerSub]);
                 SetValueIfPresent<int>(CONFIGURATION.HourlyPostingQuotaPerSub, section[CONFIGURATION.HourlyPostingQuotaPerSub]);
                 SetValueIfPresent<int>(CONFIGURATION.HourlyGlobalPostingQuota, section[CONFIGURATION.HourlyGlobalPostingQuota]);
@@ -143,7 +149,14 @@ namespace Voat.Configuration
 
                 SetValueIfPresent<bool>(CONFIGURATION.ForceHTTPS, section[CONFIGURATION.ForceHTTPS]);
                 SetValueIfPresent<bool>(CONFIGURATION.SignalRDisabled, section[CONFIGURATION.SignalRDisabled]);
+
+                //Sets
                 SetValueIfPresent<bool>(CONFIGURATION.SetsDisabled, section[CONFIGURATION.SetsDisabled]);
+                SetValueIfPresent<bool>(CONFIGURATION.SetCreationDisabled, section[CONFIGURATION.SetCreationDisabled]);
+                SetValueIfPresent<int>(CONFIGURATION.MaximumSetSubverseCount, section[CONFIGURATION.MaximumSetSubverseCount]);
+                SetValueIfPresent<int>(CONFIGURATION.MaximumOwnedSets, section[CONFIGURATION.MaximumOwnedSets]);
+
+
                 SetValueIfPresent<bool>(CONFIGURATION.CacheDisabled, section[CONFIGURATION.CacheDisabled]);
                 SetValueIfPresent<bool>(CONFIGURATION.RegistrationDisabled, section[CONFIGURATION.RegistrationDisabled]);
                 SetValueIfPresent<bool>(CONFIGURATION.RedirectToSiteDomain, section[CONFIGURATION.RedirectToSiteDomain]);

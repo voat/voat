@@ -14,7 +14,7 @@
 
 @{
     ViewBag.Title = Model.Title;
-    string urlAction = String.IsNullOrEmpty(Model.UrlAction) ? (Model.Context.Type == Voat.Domain.Models.DomainType.Subverse && (Model.Context.Name == AGGREGATE_SUBVERSE.DEFAULT || Model.Context.Name == AGGREGATE_SUBVERSE.FRONT)) ? "FrontIndex" : "SubverseIndex" : Model.UrlAction;
+    
 }
 
 @section PageHeader {
@@ -44,11 +44,11 @@
         @if (Model.Context.Type == Voat.Domain.Models.DomainType.Subverse && Model.Sort == Voat.Domain.Models.SortAlgorithm.Top)
         {
             <div id="sortingThingy" class="sorting-thingy">
-                @Html.RouteLink("day", urlAction, new { subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "day" }) | 
-                @Html.RouteLink("week", urlAction, new {subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "week" }) | 
-                @Html.RouteLink("month", urlAction, new { subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "month"}) |
-                @Html.RouteLink("year", urlAction, new { subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "year"}) |
-                @Html.RouteLink("all", urlAction, new { subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "all"})
+                @Html.RouteLink("day", Model.Submissions.RouteName, new { subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "day" }) | 
+                @Html.RouteLink("week", Model.Submissions.RouteName, new {subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "week" }) | 
+                @Html.RouteLink("month", Model.Submissions.RouteName, new { subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "month"}) |
+                @Html.RouteLink("year", Model.Submissions.RouteName, new { subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "year"}) |
+                @Html.RouteLink("all", Model.Submissions.RouteName, new { subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "all"})
             </div>
         }
         <div class="sitetable linklisting">
@@ -87,7 +87,7 @@
                 @if (Model.Submissions.HasPreviousPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("‹ prev", urlAction, new {
+                        @Html.RouteLink("‹ prev", Model.Submissions.RouteName, new {
                        page = (Model.Submissions.PageIndex - 1),
                        sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()),
                        time = (Model.Span == null ? "" : Model.Span.ToString().ToLower()),
@@ -99,7 +99,7 @@
                 @if (Model.Submissions.HasNextPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("next ›", urlAction, new {
+                        @Html.RouteLink("next ›", Model.Submissions.RouteName, new {
                        page = (Model.Submissions.PageIndex + 1),
                        sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()),
                        time = (Model.Span == null ? "" : Model.Span.ToString().ToLower()),

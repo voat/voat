@@ -21,18 +21,17 @@
     var actionName = ViewBag.ButtonName == null ? "remove" : ViewBag.ButtonName;
     var unActionName = "un" + actionName;
 
-}
+    var setViewModel = (Voat.Models.ViewModels.SetViewModel)ViewBag.SetViewModel;
 
-<div class="midcol">
-    @if (User.Identity.IsAuthenticated)
-    {
-        <button type="button" onclick="return blockSubverseToggle(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-sub">@actionName</button>
-    }
-    else
-    {
-        <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-sub" onclick="mustLogin();">block</button>
-    }
-</div>
+    System.Diagnostics.Debug.Assert(setViewModel != null, "setViewModel is required");
+
+}
+@if (setViewModel.Permissions.EditList)
+{
+    <div class="midcol">
+        <button type="button" onclick="return setSubverseToggle(this, '@setViewModel.Set.Name', '@User.Identity.Name', '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-sub">@actionName</button>
+    </div>
+}
 
 <div class="entry">
     <p class="titlerow">

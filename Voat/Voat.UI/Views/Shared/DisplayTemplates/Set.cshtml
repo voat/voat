@@ -1,0 +1,49 @@
+﻿@model Voat.Domain.Models.Set
+
+@{
+    var perms = Voat.Domain.Models.SetPermission.GetPermissions(Model, User.Identity);
+    var userName = Settings.SiteName;
+    if (!String.IsNullOrEmpty(Model.UserName))
+    {
+        userName = Model.UserName;
+    }
+    bool showDetails = ViewBag.ShowDetailButton == null ? false : ViewBag.ShowDetailButton;
+}
+
+
+<div class="entry" style="padding-bottom:15px;">
+    <p class="titlerow">
+        <a class="h4" href="/s/@Model.Name/@Model.UserName">@Model.Name</a>
+    </p>
+    <div class="well well-lg subversedescriptionbox">
+        <div class="md">
+            @if (!String.IsNullOrWhiteSpace(Model.Description))
+            {
+                <p class="subversedescriptionboxcontent">@Model.Description</p>
+            }
+            else
+            {
+                <p class="subversedescriptionboxcontent">No description available.</p>
+            }
+        </div>
+    </div>
+    <p class="">
+        <span class="">
+            <span id="subscribercount" class="number">@Formatting.PluralizeIt(Model.SubscriberCount, "subscriber")</span>
+            <span class="word">, a @(Model.IsPublic ? "public" : "private") set created @Age.ToRelative(Model.CreationDate) ago by @userName</span>
+        </span>
+    </p>
+    @if (User.Identity.IsAuthenticated && Model.Type == Voat.Domain.Models.SetType.Normal && Model.IsPublic)
+    {
+        <div class="midcol">
+            <button type="button" onclick="" class="btn-whoaverse btn-sub">subscribe</button>
+        </div>
+    }
+    @if (showDetails && (perms.View || perms.EditList || perms.EditProperties))
+    {
+        <div>
+            <a class="btn-whoaverse" href="/s/@Model.Name/@Model.UserName/about/details">Details</a>
+        </div>
+    }
+
+</div>

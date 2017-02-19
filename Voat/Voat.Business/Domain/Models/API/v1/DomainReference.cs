@@ -27,6 +27,8 @@ namespace Voat.Domain.Models
         /// Specifies the owner name of the domain object. Used with Sets.
         /// </summary>
         public string OwnerName { get; set; }
+
+       
     }
 
     public class BlockedItem : DomainReference

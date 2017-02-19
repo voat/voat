@@ -28,7 +28,7 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal("TestUser500CCP");
             var cmd = new CreateSubverseCommand(null, "Some title", null);
             var response = await cmd.Execute();
-            Assert.AreEqual(Status.Denied, response.Status);
+            Assert.AreEqual(Status.Denied, response.Status, response.Message);
         }
         [TestMethod]
         [TestCategory("Command"), TestCategory("Command.Subverse")]
@@ -37,7 +37,7 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal("TestUser500CCP");
             var cmd = new CreateSubverseCommand("", "Some title", null);
             var response = await cmd.Execute();
-            Assert.AreEqual(Status.Denied, response.Status);
+            Assert.AreEqual(Status.Denied, response.Status, response.Message);
         }
         [TestMethod]
         [TestCategory("Command"), TestCategory("Command.Subverse")]
@@ -46,7 +46,7 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal("TestUser500CCP");
             var cmd = new CreateSubverseCommand("    ", "Some title", null);
             var response = await cmd.Execute();
-            Assert.AreEqual(Status.Denied, response.Status);
+            Assert.AreEqual(Status.Denied, response.Status, response.Message);
         }
         [TestMethod]
         [TestCategory("Command"), TestCategory("Command.Subverse")]
@@ -55,7 +55,7 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal("TestUser500CCP");
             var cmd = new CreateSubverseCommand("My Subverse", "Some title", null);
             var response = await cmd.Execute();
-            Assert.AreEqual(Status.Denied, response.Status);
+            Assert.AreEqual(Status.Denied, response.Status, response.Message);
         }
 
         [TestMethod]
@@ -92,7 +92,7 @@ namespace Voat.Tests.CommandTests
             var description = "Some Description";
             var cmd = new CreateSubverseCommand(name, title, description);
             var response = await cmd.Execute();
-            Assert.AreEqual(Status.Denied, response.Status);
+            Assert.AreEqual(Status.Denied, response.Status, response.Message);
 
             //using (var db = new voatEntities())
             //{

@@ -47,9 +47,7 @@ namespace Voat.Data.Models
         public virtual DbSet<SubverseBan> SubverseBans { get; set; }
         public virtual DbSet<SubverseFlair> SubverseFlairs { get; set; }
         public virtual DbSet<SubverseModerator> SubverseModerators { get; set; }
-        public virtual DbSet<SubverseSubscription> SubverseSubscriptions { get; set; }
         public virtual DbSet<UserBadge> UserBadges { get; set; }
-        public virtual DbSet<UserBlockedSubverse> UserBlockedSubverses { get; set; }
         public virtual DbSet<UserPreference> UserPreferences { get; set; }
         public virtual DbSet<ViewStatistic> ViewStatistics { get; set; }
         public virtual DbSet<ApiClient> ApiClients { get; set; }

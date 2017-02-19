@@ -26,7 +26,7 @@ namespace Voat.Utilities
         public const string URI_LINK_REGEX_UI = @"([a-zA-Z0-9_-]+)(\:|%3[aA])(\/\/|%2[fF]%2[fF])([wW]{3}\.)?[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)[a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_=!@:\(\)]*";
 
         public const string SUBVERSE_LINK_REGEX_SHORT = @"(/?v/)(?'sub'[a-zA-Z0-9]+)";
-        public const string SUBVERSE_LINK_REGEX_FULL = @"((/?v/)(?'sub'[a-zA-Z0-9]+((/(new|top(\?time=(day|week|month|year|all))?|comments/\d+(/\d+(?:/\d+(?:\d+)?)?)?)))?)(?'anchor'#(?:\d+|submissionTop))?)";
+        public const string SUBVERSE_LINK_REGEX_FULL = @"((/?v/)(?'sub'[a-zA-Z0-9]+((/(new|top(\?time=(day|week|month|year|all))?|(comments/)?\d+(/\d+(?:/\d+(?:\d+)?)?)?)))?)(?'anchor'#(?:\d+|submissionTop))?)";
 
         public static string USER_HOT_LINK_REGEX
         {

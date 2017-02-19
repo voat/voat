@@ -12,10 +12,10 @@ using Voat.Utilities;
 namespace Voat.Rules
 {
     [RuleDiscovery("Approves a subverse creation if conditions are valid.", "approved = (command.IsValid())")]
-    public class CreateSubverseNameRule : VoatRule
+    public class CreateSubverseRule : VoatRule
     {
-        public CreateSubverseNameRule()
-            : base("Subverse Name", "8.0", RuleScope.CreateSubverse)
+        public CreateSubverseRule()
+            : base("Subverse Create", "8.0", RuleScope.CreateSubverse)
         {
         }
 

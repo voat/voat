@@ -165,6 +165,7 @@
     <Compile Include="Configuration\RuntimeState.cs" />
     <Compile Include="Data\AGGREGATE_SUBVERSE.cs" />
     <Compile Include="Data\DapperQuery.cs" />
+    <Compile Include="Data\Repository\Repository_Set.cs" />
     <Compile Include="Data\Selectors.cs" />
     <Compile Include="Domain\Command\Base\QueuedCommand.cs" />
     <Compile Include="Domain\Command\CreateSubverseCommand.cs" />
@@ -185,6 +186,7 @@
     <Compile Include="Domain\Command\ReportContentCommand.cs" />
     <Compile Include="Domain\Command\SaveCommand.cs" />
     <Compile Include="Domain\Command\SendMessageCommand.cs" />
+    <Compile Include="Domain\Command\SetSubverseCommand.cs" />
     <Compile Include="Domain\Command\SubmissionCommands.cs" />
     <Compile Include="Domain\Command\SubscriptionCommand.cs" />
     <Compile Include="Domain\Command\SubverseBanCommand.cs" />
@@ -209,13 +211,14 @@
     <Compile Include="Domain\Models\RemovalBase.cs" />
     <Compile Include="Domain\Models\Reports\ContentItem.cs" />
     <Compile Include="Domain\Models\Reports\ContentUserReport.cs" />
+    <Compile Include="Domain\Models\Set.cs" />
+    <Compile Include="Domain\Models\SetPermission.cs" />
     <Compile Include="Domain\Models\Stylesheet.cs" />
     <Compile Include="Domain\Models\SubverseBannedUser.cs" />
     <Compile Include="Domain\Models\SubverseModerator.cs" />
     <Compile Include="Domain\Models\SubverseSubmissionSetting.cs" />
     <Compile Include="Domain\Models\SubverseSubscriptionDetail.cs" />
     <Compile Include="Domain\Models\UserDefinition.cs" />
-    <Compile Include="Domain\Models\UserSet.cs" />
     <Compile Include="Domain\Models\VoteValue.cs" />
     <Compile Include="Domain\Query\Base\BaseQueryCommentSegment.cs" />
     <Compile Include="Domain\Query\Base\CachedQuery.cs" />
@@ -236,6 +239,7 @@
     <Compile Include="Domain\Query\QueryModLogRemovedSubmissions.cs" />
     <Compile Include="Domain\Query\QueryNewestSubverses.cs" />
     <Compile Include="Domain\Query\QueryComments.cs" />
+    <Compile Include="Domain\Query\QueryRandomSubverse.cs" />
     <Compile Include="Domain\Query\QuerySticky.cs" />
     <Compile Include="Domain\Query\QuerySubmission.cs" />
     <Compile Include="Domain\Query\QuerySubmissions.cs" />
@@ -260,10 +264,9 @@
     <Compile Include="Domain\Query\QueryUserInformation.cs" />
     <Compile Include="Domain\Query\QueryUserRecord.cs" />
     <Compile Include="Domain\Query\QueryUserSaves.cs" />
-    <Compile Include="Domain\Query\QueryUserSet.cs" />
     <Compile Include="Domain\Query\QueryUserSubscriptions.cs" />
     <Compile Include="Domain\Query\Selectors.cs" />
-    <Compile Include="Data\Repository.cs" />
+    <Compile Include="Data\Repository\Repository.cs" />
     <Compile Include="Domain\Models\API\Legacy\ApiBadge.cs" />
     <Compile Include="Domain\Models\API\Legacy\ApiComment.cs" />
     <Compile Include="Domain\Models\API\Legacy\ApiMessage.cs" />
@@ -319,6 +322,7 @@
     <Compile Include="Rules\Posting\PostSubmissionRecentlySubmittedRule.cs" />
     <Compile Include="Rules\Posting\PostSubmissionValidityRule.cs" />
     <Compile Include="Rules\RuleInformationWithOutcome.cs" />
+    <Compile Include="Rules\Set\CreateSetRule.cs" />
     <Compile Include="Rules\Subverse\CreateSubverseRule.cs" />
     <Compile Include="Rules\VoatRuleContext.cs" />
     <Compile Include="Rules\VoatRuleException.cs" />

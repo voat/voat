@@ -311,7 +311,20 @@ namespace Voat
             //   constraints: new {  }
             //);
 
-         
+            routes.MapRoute(
+                 name: "UserSetCreate",
+                 url: "{pathPrefix}/{userName}/sets/create",
+                 defaults: new { controller = "Set", action = "Create" },
+                 constraints: new { pathPrefix = "user|u" }
+           );
+
+            routes.MapRoute(
+                  name: "UserSets",
+                  url: "{pathPrefix}/{userName}/sets",
+                  defaults: new { controller = "User", action = "Sets" },
+                  constraints: new { pathPrefix = "user|u" }
+            );
+
             routes.MapRoute(
                 name: "UserComments",
                 url: "{pathPrefix}/{userName}/comments",
@@ -1212,24 +1225,62 @@ namespace Voat
                 //sets
                 routes.MapRoute(
                     name: "SetIndex",
-                    url: setSuffix + "/{name}",
-                    defaults: new { controller = "Set", action = "Index" }
+                    url: setSuffix + "/{name}/{sort}",
+                    defaults: new {
+                        controller = "Set",
+                        action = "Index",
+                        sort = UrlParameter.Optional
+                    },
+                   constraints: new
+                   {
+                       sort = @"^$|new|hot|top"
+                   }
                 );
 
                 //sets
                 routes.MapRoute(
-                    name: "EditSet",
-                    url: setSuffix + "/{name}/{userName}/edit",
-                    defaults: new { controller = "Set", action = "Edit" }
+                   name: "SetDetailsSystem",
+                   url: setSuffix + "/{name}/about/details",
+                   defaults: new { controller = "Set", action = "Details", userName = (string)null }
+               );
+                routes.MapRoute(
+                    name: "SetDetails",
+                    url: setSuffix + "/{name}/{userName}/about/details",
+                    defaults: new { controller = "Set", action = "Details" }
+                );
+                routes.MapRoute(
+                   name: "EditSet",
+                   url: setSuffix + "/{name}/{userName}/about/edit",
+                   defaults: new { controller = "Set", action = "Edit" }
+                );
+
+                routes.MapRoute(
+                   name: "DeleteSet",
+                   url: setSuffix + "/{name}/{userName}/about/delete",
+                   defaults: new { controller = "Set", action = "Delete" }
                 );
 
                 //sets
                 routes.MapRoute(
                     name: "SetIndexUser",
-                    url: setSuffix + "/{name}/{userName}",
-                    defaults: new { controller = "Set", action = "Index" }
+                    url: setSuffix + "/{name}/{userName}/{sort}",
+                    defaults: new {
+                        controller = "Set",
+                        action = "Index",
+                        sort = UrlParameter.Optional
+                    },
+                    constraints: new
+                    {
+                        sort = @"^$|new|hot|top"
+                    }
                 );
-
+                
+                // /s/{name}/{userName}/{subverse}?action=Subscribe|Unsubscribe
+                routes.MapRoute(
+                    name: "SetSubListChange",
+                    url: setSuffix + "/{name}/{userName}/{subverse}",
+                    defaults: new { controller = "Set", action = "ListChange" }
+                );
 
                 //// /sets
                 //routes.MapRoute(

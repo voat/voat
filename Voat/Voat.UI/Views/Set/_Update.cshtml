@@ -1,0 +1,42 @@
+﻿
+
+@model Voat.Domain.Models.Set
+
+@using (Html.BeginForm("Update", "Set", FormMethod.Post, new { @class = "form-horizontal", role = "form", autocomplete = "off" }))
+{
+    <div class="alert-title">Set Properties</div>
+    <p class="titlerow">
+        <a class="h4" href="/s/@Model.Name/@Model.UserName">@Model.Name</a>
+    </p>
+
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    @Html.HiddenFor(m => m.ID)
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Name, new { @class = "col-md-4 control-label" })
+        <div class="col-md-5">
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control"})
+            @Html.ValidationMessageFor(model => model.Name)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Description, new { @class = "col-md-4 control-label" })
+        <div class="col-md-5">
+            @Html.TextBoxFor(m => m.Description, new { @class = "form-control"})
+            @Html.ValidationMessageFor(model => model.Description)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.IsPublic, new { @class = "col-md-4 control-label" })
+        <div class="col-md-3">
+            @Html.CheckBoxFor(m => m.IsPublic, new { @class = "form-control"})
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-4 col-md-3">
+            <input type="submit" value="Save" class="btn-whoaverse" />
+        </div>
+    </div>
+}
+

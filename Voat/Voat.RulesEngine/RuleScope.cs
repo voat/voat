@@ -40,7 +40,7 @@ namespace Voat.RulesEngine
         Subverse = 512,
         Profile = 1024,
         Message = 2048,
-        //Set = 2048
+        Set = 4096
     }
 
     /// <summary>
@@ -137,7 +137,13 @@ namespace Voat.RulesEngine
         /// <summary>
         /// Applies to creating a new subverse
         /// </summary>
-        CreateSubverse = RuleAction.Create | RuleArea.Subverse
+        CreateSubverse = RuleAction.Create | RuleArea.Subverse,
+
+
+         /// <summary>
+         /// Applies to creating a new set
+         /// </summary>
+        CreateSet = RuleAction.Create | RuleArea.Set,
 
         #endregion C-C-C-COMBOs
 

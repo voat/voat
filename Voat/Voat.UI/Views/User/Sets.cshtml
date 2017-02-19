@@ -1,0 +1,50 @@
+﻿
+@model IEnumerable<Voat.Domain.Models.Set>
+
+@{ 
+    //System.Diagnostics.Debug.Assert(ViewBag.UserName != null, "UserName is required");
+}
+
+<div id="container">
+    @Html.Partial("~/Views/Shared/Sidebars/_SidebarUserInfo.cshtml")
+
+    <div class="content" role="main">
+
+        @if (!Settings.SetCreationDisabled && User.Identity.IsAuthenticated && User.Identity.Name.IsEqual((string)ViewBag.UserName))
+        {
+            <a href="/user/@User.Identity.Name/sets/create">Create a Set</a>
+        }
+        <div class="alert-title">Sets for @ViewBag.UserName</div>
+        
+        @if (Model.Any())
+        {
+            <div class="sitetable linklisting">
+
+                @if (Model.Any())
+                {
+                    using (var enumerator = Model.GetEnumerator())
+                    {
+                        while (enumerator.MoveNext())
+                        {
+                            <div>
+                                <div class="col-md-6">@Html.DisplayFor(x => enumerator.Current, new { ShowDetailButton = true })</div>
+                                @if (enumerator.MoveNext())
+                                {
+                                    <div class="col-md-6">@Html.DisplayFor(x => enumerator.Current, new { ShowDetailButton = true })</div>
+                                }
+                            </div>
+                        }
+                    }
+                }
+                else
+                {
+                    <div>No subverses</div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>You no sets!</p>
+        }
+    </div>
+</div>

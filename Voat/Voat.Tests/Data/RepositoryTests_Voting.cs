@@ -48,7 +48,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                var x = await db.GetComment(context.CommentID);
+               var x = await db.GetComment(context.CommentID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
                 string userName = "User500CCP";

@@ -206,6 +206,7 @@
     <Compile Include="Utils\MiscUtilsTests.cs" />
     <Compile Include="Rules\RulesEngineTests.cs" />
     <Compile Include="Utils\RuntimeSettingTests.cs" />
+    <Compile Include="Utils\SetPermissionTests.cs" />
     <Compile Include="Utils\SubdomainForwardingTests.cs" />
     <Compile Include="Utils\AgeTests.cs" />
     <Compile Include="Utils\GenerateThumbnailTests.cs" />

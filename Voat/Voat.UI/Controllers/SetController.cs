@@ -29,30 +29,52 @@ using Voat.Configuration;
 using Voat.UI.Utilities;
 using Voat.Data;
 using Voat.Domain.Query;
+using Voat.Domain.Command;
+using Voat.Domain.Models;
+using Voat.Domain;
 
 namespace Voat.Controllers
 {
     public class SetController : BaseController
     {
 
-        public async Task<ActionResult> Index(string name, string userName)
+        public async Task<ActionResult> Index(string name, string userName, string sort)
         {
             var options = new SearchOptions(Request.Url.Query);
 
+            if (!String.IsNullOrEmpty(sort))
+            {
+                options.Sort = (SortAlgorithm)Enum.Parse(typeof(SortAlgorithm), sort, true);
+            }
+
+            //if (userName == "_")
+            //{
+            //    userName = null;
+            //}
+
             var q = new QuerySubmissions(name, Domain.Models.DomainType.Set, options, userName);
             var result = await q.ExecuteAsync();
-
+            
             var model = new SubmissionListViewModel();
             model.Submissions = new Utilities.PaginatedList<Domain.Models.Submission>(result, options.Page, options.Count);
-            model.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Set, name);
+            model.Submissions.RouteName = (String.IsNullOrEmpty(userName) ? "SetIndex" : "SetIndexUser");
+            model.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Set, name, userName);
             model.Sort = options.Sort;
             model.Span = options.Span;
 
-            return View("~/Views/Subverses/SubverseIndex.cshtml", model);
+            ViewBag.NavigationViewModel = new NavigationViewModel() {
+                Description = "Set Description Here",
+                Name = name,
+                MenuType = MenuType.Set,
+                BasePath = model.Context.BasePath(),
+                Sort = model.Sort
+            };
+
+            return View("SubmissionList", model);
         }
 
         [Authorize]
-        public async Task<ActionResult> Edit(string name, string userName)
+        public async Task<ActionResult> Details(string name, string userName)
         {
             using (var repo = new Repository())
             {
@@ -61,21 +83,124 @@ namespace Voat.Controllers
                 {
                     return GenericErrorView(new ErrorViewModel() { Title = "Can't find this set", Description = "Maybe it's gone?", FooterMessage = "Probably yeah" });
                 }
+
+                var perms = SetPermission.GetPermissions(set.Map(), User.Identity);
+
+                if (!perms.View)
+                {
+                    return GenericErrorView(new ErrorViewModel() { Title = "Set is Private", Description = "This set doesnt allow viewing it's properties", FooterMessage = "It's ok, I can't see it either" });
+                }
+
                 var options = new SearchOptions(Request.QueryString);
                 options.Count = 50;
 
                 var setList = await repo.GetSetListDescription(set.ID, options.Page);
+
                 var model = new SetViewModel();
-                model.Set = set;
+                model.Permissions = perms;
+                model.Set = set.Map();
                 model.List = new PaginatedList<Domain.Models.SubverseSubscriptionDetail>(setList, options.Page, options.Count);
                 model.List.RouteName = "EditSet";
 
                 return View(model);
-
             }
-            
         }
 
+        // /s/{set}/{owner}/{subverse}
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ListChange(string name, string userName, string subverse, [System.Web.Http.FromUri]Domain.Models.SubscriptionAction? action = null)
+        {
+            var cmd = new SetSubverseCommand(new DomainReference(DomainType.Set, name, userName), subverse, action);
+            var result = await cmd.Execute();
+            return JsonResult(result);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Delete(string name, string userName)
+        {
+
+            if (ModelState.IsValid)
+            {
+                //TODO: Transfer to Command
+                using (var repo = new Repository())
+                {
+                    var result = await repo.DeleteSet(new DomainReference(DomainType.Set, name, userName));
+
+                    if (result.Success)
+                    {
+                        if (Request.IsAjaxRequest())
+                        {
+                            return JsonResult(result);
+                        }
+                        else
+                        {
+                            return new RedirectToRouteResult("UserSets", new System.Web.Routing.RouteValueDictionary() { { "pathPrefix", "user" }, { "userName", User.Identity.Name } });
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", result.Message);
+                    }
+                }
+            }
+            return View();
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<ActionResult> Update(Set set)
+        {
+            if (ModelState.IsValid)
+            {
+                //TODO: Transfer to Command
+                using (var repo = new Repository())
+                {
+                    var result = await repo.CreateOrUpdateSet(set);
+                    return JsonResult(result);
+                }
+            }
+            return View(set);           
+        }
+
+        [Authorize]
+        public async Task<ActionResult> Create()
+        {
+            return View(new Set());
+        }
+        [HttpPost]
+        [Authorize]
+        [VoatValidateAntiForgeryToken]
+        public async Task<ActionResult> Create(Set set)
+        {
+            if (ModelState.IsValid)
+            {
+                //TODO: Transfer to Command
+                using (var repo = new Repository())
+                {
+                    var result = await repo.CreateOrUpdateSet(set);
+
+                    if (result.Success)
+                    {
+                        if (Request.IsAjaxRequest())
+                        {
+                            return JsonResult(result);
+                        }
+                        else
+                        {
+                            return new RedirectToRouteResult("SetDetails", new System.Web.Routing.RouteValueDictionary() { { "name", result.Response.Name }, { "userName", User.Identity.Name } });
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", result.Message);
+                    }
+                }
+            }
+            return View(set);       
+        }
         #region OLD CODE
         //private readonly voatEntities _db = new voatEntities();
 

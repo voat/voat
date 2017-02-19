@@ -6,6 +6,28 @@ namespace Voat
 {
     public static class Extensions
     {
+        public static string BasePath(this Domain.Models.DomainReference domainReference, Domain.Models.SortAlgorithm? sort = null)
+        {
+            string path = "";
+            if (domainReference != null)
+            {
+                switch (domainReference.Type)
+                {
+                    case Domain.Models.DomainType.Subverse:
+                        path = String.Format("/v/{0}/{1}", domainReference.Name, sort == null ? "" : sort.Value.ToString().ToLower());
+                        break;
+                    case Domain.Models.DomainType.Set:
+                        string p = (String.IsNullOrEmpty(domainReference.OwnerName) ? String.Format("{0}", domainReference.Name) : String.Format("{0}/{1}", domainReference.Name, domainReference.OwnerName));
+                        path = String.Format("/s/{0}/{1}", p, sort == null ? "" : sort.Value.ToString().ToLower());
+                        break;
+                    case Domain.Models.DomainType.User:
+                        path = String.Format("/u/{0}", domainReference.Name);
+                        break;
+                }
+            }
+            return path.TrimEnd('/');
+        }
+
         //I don't like this
         public static IEnumerable<T> GetEnumFlags<T>(this T value) where T : struct, IConvertible
         {

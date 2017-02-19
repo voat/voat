@@ -1,0 +1,72 @@
+﻿
+@model Voat.Models.ViewModels.SetViewModel
+
+
+@{
+    ViewBag.Title = "subverses";
+    string urlaction = "";
+
+    if (ViewBag.SubversesView == "blocked")
+    {
+        urlaction = "BlockedSubverses";
+    }
+    else
+    {
+        urlaction = "new";
+    }
+}
+
+<style type="text/css">
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
+</style>
+
+<div id="container">
+    <div role="main">
+
+        @Html.Partial("_Edit", Model)
+        <hr />
+        @if (Model.Permissions.EditList)
+        {
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Add a Subverse</label>
+                    <div class="col-md-5">
+                        <input type="text" id="subName" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-3">
+                        <input type="submit" value="Add" class="btn-whoaverse" onclick="javascript:setSubverseToggle($(this), '@Model.Set.Name', '@Model.Set.UserName', $('#subName').val(), '@Voat.Domain.Models.SubscriptionAction.Subscribe.ToString()');" />
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+        }
+        <div class="sitetable linklisting">
+            @if (Model.List.Any())
+            {
+                using (var enumerator = Model.List.GetEnumerator())
+                {
+                    while (enumerator.MoveNext())
+                    {
+                        <div class="row">
+                            <div class="col-md-6">@Html.Partial("_SubverseSubscriptionDetail", enumerator.Current, new ViewDataDictionary() { { "SetViewModel", Model } })</div>
+                            @if (enumerator.MoveNext())
+                            {
+                                <div class="col-md-6">@Html.Partial("_SubverseSubscriptionDetail", enumerator.Current, new ViewDataDictionary() { { "SetViewModel", Model } })</div>
+                            }
+                        </div>
+                    }
+                }
+            }
+            else
+            {
+                <div>No subverses</div>
+            }
+        </div>
+        @Html.DisplayFor(model => Model.List, "IPaginatedList")
+    </div>
+</div>

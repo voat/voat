@@ -312,6 +312,7 @@
     <Compile Include="Models\ViewModels\ErrorViewModel.cs" />
     <Compile Include="Models\ViewModels\MessageContextViewModel.cs" />
     <Compile Include="Models\ViewModels\ModeratorDeleteViewModels.cs" />
+    <Compile Include="Models\ViewModels\NavigationViewModel.cs" />
     <Compile Include="Models\ViewModels\ReportHeader.cs" />
     <Compile Include="Models\ViewModels\SetViewModel.cs" />
     <Compile Include="Models\ViewModels\SingleDefaultSetViewModel.cs" />
@@ -608,7 +609,7 @@
     <Content Include="Views\Error\404.cshtml" />
     <Content Include="Views\User\Comments.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileComment.cshtml" />
-    <Content Include="Views\Subverses\SubverseIndex.cshtml" />
+    <Content Include="Views\Shared\SubmissionList.cshtml" />
     <Content Include="Views\Help\SpeedyGonzales.cshtml" />
     <Content Include="Views\Subverses\Subverses.cshtml" />
     <Content Include="Views\Shared\_SubverseDetails.cshtml" />
@@ -629,8 +630,6 @@
     <Content Include="Views\Search\Index.cshtml" />
     <Content Include="Views\Help\Faq.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
-    <Content Include="Views\Subverses\SubscribedSubverses.cshtml" />
-    <Content Include="Views\Subverses\_SubscribedSubverseDetails.cshtml" />
     <Content Include="Views\Shared\Userprofile\_SidebarSubsUserModerates.cshtml" />
     <Content Include="Views\Error\DbNotResponding.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarComments.cshtml" />
@@ -707,7 +706,6 @@
     <Content Include="Views\ApiKeys\Edit.cshtml" />
     <Content Include="Views\ApiKeys\Index.cshtml" />
     <Content Include="Views\Home\Rules.cshtml" />
-    <Content Include="Views\Subverses\SubversesBlockedByUser.cshtml" />
     <Content Include="Views\Chat\Index.cshtml" />
     <Content Include="Views\Chat\_Layout.cshtml" />
     <Content Include="Views\User\BlockedUsers.cshtml" />
@@ -739,8 +737,14 @@
     <Content Include="Views\Report\Reports.cshtml" />
     <Content Include="Views\Report\UserReportDialog.cshtml" />
     <Content Include="Views\Account\Delete.cshtml" />
-    <Content Include="Views\Set\Edit.cshtml" />
+    <Content Include="Views\Set\Details.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\IPaginatedList.cshtml" />
+    <Content Include="Views\Set\_Edit.cshtml" />
+    <Content Include="Views\User\Sets.cshtml" />
+    <Content Include="Views\Set\Create.cshtml" />
+    <Content Include="Views\Set\_Update.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Set.cshtml" />
+    <Content Include="Views\Shared\Navigation\_SetMenu.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

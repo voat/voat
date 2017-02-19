@@ -406,8 +406,9 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" />
-          <Property Name="Description" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="500" />
           <Property Name="Type" Type="int" Nullable="false" />
+          <Property Name="IsPublic" Type="bit" Nullable="false" />
           <Property Name="SubscriberCount" Type="int" Nullable="false" />
           <Property Name="CreationDate" Type="smalldatetime" Nullable="false" />
         </EntityType>
@@ -429,14 +430,6 @@
           <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="CreationDate" Type="smalldatetime" Nullable="false" />
         </EntityType>
-        <EntityType Name="SubverseSubscription">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-        </EntityType>
         <EntityType Name="UserBadge">
           <Key>
             <PropertyRef Name="ID" />
@@ -444,15 +437,6 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="BadgeID" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-        </EntityType>
-        <EntityType Name="UserBlockedSubverse">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="UserBlockedUser">
@@ -747,21 +731,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_SubverseSetList_Set">
-          <End Role="SubverseSet" Type="Self.SubverseSet" Multiplicity="1" />
-          <End Role="SubverseSetList" Type="Self.SubverseSetList" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="SubverseSet">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="SubverseSetList">
-              <PropertyRef Name="SubverseSetID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <!--Errors Found During Generation:
-warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
-        <Association Name="FK_SubverseSetList_Subverse" />-->
         <Association Name="FK_SubverseSetSubscription_Set">
           <End Role="SubverseSet" Type="Self.SubverseSet" Multiplicity="1" />
           <End Role="SubverseSetSubscription" Type="Self.SubverseSetSubscription" Multiplicity="*" />
@@ -771,20 +740,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
             </Principal>
             <Dependent Role="SubverseSetSubscription">
               <PropertyRef Name="SubverseSetID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_SubverseSubscription_Subverse">
-          <End Role="Subverse" Type="Self.Subverse" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="SubverseSubscription" Type="Self.SubverseSubscription" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverse">
-              <PropertyRef Name="Name" />
-            </Principal>
-            <Dependent Role="SubverseSubscription">
-              <PropertyRef Name="Subverse" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -799,20 +754,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
             </Principal>
             <Dependent Role="UserBadge">
               <PropertyRef Name="BadgeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_UserBlockedSubverse_Subverse">
-          <End Role="Subverse" Type="Self.Subverse" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="UserBlockedSubverse" Type="Self.UserBlockedSubverse" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverse">
-              <PropertyRef Name="Name" />
-            </Principal>
-            <Dependent Role="UserBlockedSubverse">
-              <PropertyRef Name="Subverse" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -870,9 +811,7 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <EntitySet Name="SubverseSet" EntityType="Self.SubverseSet" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubverseSetList" EntityType="Self.SubverseSetList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubverseSetSubscription" EntityType="Self.SubverseSetSubscription" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="SubverseSubscription" EntityType="Self.SubverseSubscription" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserBadge" EntityType="Self.UserBadge" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="UserBlockedSubverse" EntityType="Self.UserBlockedSubverse" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserBlockedUser" EntityType="Self.UserBlockedUser" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserContribution" EntityType="Self.UserContribution" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserPreference" EntityType="Self.UserPreference" Schema="dbo" store:Type="Tables" />
@@ -949,25 +888,13 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
             <End Role="Subverse" EntitySet="Subverse" />
             <End Role="SubverseModerator" EntitySet="SubverseModerator" />
           </AssociationSet>
-          <AssociationSet Name="FK_SubverseSetList_Set" Association="Self.FK_SubverseSetList_Set">
-            <End Role="SubverseSet" EntitySet="SubverseSet" />
-            <End Role="SubverseSetList" EntitySet="SubverseSetList" />
-          </AssociationSet>
           <AssociationSet Name="FK_SubverseSetSubscription_Set" Association="Self.FK_SubverseSetSubscription_Set">
             <End Role="SubverseSet" EntitySet="SubverseSet" />
             <End Role="SubverseSetSubscription" EntitySet="SubverseSetSubscription" />
           </AssociationSet>
-          <AssociationSet Name="FK_SubverseSubscription_Subverse" Association="Self.FK_SubverseSubscription_Subverse">
-            <End Role="Subverse" EntitySet="Subverse" />
-            <End Role="SubverseSubscription" EntitySet="SubverseSubscription" />
-          </AssociationSet>
           <AssociationSet Name="FK_UserBadge_Badge" Association="Self.FK_UserBadge_Badge">
             <End Role="Badge" EntitySet="Badge" />
             <End Role="UserBadge" EntitySet="UserBadge" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UserBlockedSubverse_Subverse" Association="Self.FK_UserBlockedSubverse_Subverse">
-            <End Role="Subverse" EntitySet="Subverse" />
-            <End Role="UserBlockedSubverse" EntitySet="UserBlockedSubverse" />
           </AssociationSet>
           <AssociationSet Name="FK_ViewStatistic_Submission" Association="Self.FK_ViewStatistic_Submission">
             <End Role="Submission" EntitySet="Submission" />
@@ -1205,11 +1132,9 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <NavigationProperty Name="FeaturedSubverses" Relationship="Self.FK_Featuredsubs_Subverses" FromRole="Subverse" ToRole="FeaturedSubverse" />
           <NavigationProperty Name="StickiedSubmissions" Relationship="Self.FK_Stickiedsubmissions_Subverses" FromRole="Subverse" ToRole="StickiedSubmission" />
           <NavigationProperty Name="Submissions" Relationship="Self.FK_Messages_Subverses" FromRole="Subverse" ToRole="Submission" />
-          <NavigationProperty Name="SubverseSubscriptions" Relationship="Self.FK_Subscriptions_Subverses" FromRole="Subverse" ToRole="SubverseSubscription" />
           <NavigationProperty Name="SubverseModerators" Relationship="Self.FK_SubverseAdmins_Subverses" FromRole="Subverse" ToRole="SubverseModerator" />
           <NavigationProperty Name="SubverseBans" Relationship="Self.FK_SubverseBans_Subverses" FromRole="Subverse" ToRole="SubverseBan" />
           <NavigationProperty Name="SubverseFlairs" Relationship="Self.FK_Subverseflairsettings_Subverses1" FromRole="Subverse" ToRole="SubverseFlair" />
-          <NavigationProperty Name="UserBlockedSubverses" Relationship="Self.FK_UserBlockedSubverses_Subverses" FromRole="Subverse" ToRole="UserBlockedSubverse" />
           <Property Name="LastUpdateDate" Type="DateTime" Precision="0" />
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
@@ -1247,15 +1172,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <Property Name="CreationDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Subverse1" Relationship="Self.FK_SubverseAdmins_Subverses" FromRole="SubverseModerator" ToRole="Subverse" />
         </EntityType>
-        <EntityType Name="SubverseSubscription">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Subverse1" Relationship="Self.FK_Subscriptions_Subverses" FromRole="SubverseSubscription" ToRole="Subverse" />
-        </EntityType>
         <EntityType Name="UserBadge">
           <Key>
             <PropertyRef Name="ID" />
@@ -1265,16 +1181,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <Property Name="BadgeID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Badge" Relationship="Self.FK_Userbadges_Badges" FromRole="UserBadge" ToRole="Badge" />
-        </EntityType>
-        <EntityType Name="UserBlockedSubverse">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Subverse1" Relationship="Self.FK_UserBlockedSubverses_Subverses" FromRole="UserBlockedSubverse" ToRole="Subverse" />
-          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
         <EntityType Name="UserPreference">
           <Key>
@@ -1496,20 +1402,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Subscriptions_Subverses">
-          <End Role="Subverse" Type="Self.Subverse" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="SubverseSubscription" Type="Self.SubverseSubscription" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverse">
-              <PropertyRef Name="Name" />
-            </Principal>
-            <Dependent Role="SubverseSubscription">
-              <PropertyRef Name="Subverse" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_SubverseAdmins_Subverses">
           <End Role="Subverse" Type="Self.Subverse" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -1552,20 +1444,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_UserBlockedSubverses_Subverses">
-          <End Role="Subverse" Type="Self.Subverse" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="UserBlockedSubverse" Type="Self.UserBlockedSubverse" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverse">
-              <PropertyRef Name="Name" />
-            </Principal>
-            <Dependent Role="UserBlockedSubverse">
-              <PropertyRef Name="Subverse" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="voatEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Badges" EntityType="Self.Badge" />
           <EntitySet Name="BannedDomains" EntityType="Self.BannedDomain" />
@@ -1587,9 +1465,7 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <EntitySet Name="SubverseBans" EntityType="Self.SubverseBan" />
           <EntitySet Name="SubverseFlairs" EntityType="Self.SubverseFlair" />
           <EntitySet Name="SubverseModerators" EntityType="Self.SubverseModerator" />
-          <EntitySet Name="SubverseSubscriptions" EntityType="Self.SubverseSubscription" />
           <EntitySet Name="UserBadges" EntityType="Self.UserBadge" />
-          <EntitySet Name="UserBlockedSubverses" EntityType="Self.UserBlockedSubverse" />
           <EntitySet Name="UserPreferences" EntityType="Self.UserPreference" />
           <EntitySet Name="ViewStatistics" EntityType="Self.ViewStatistic" />
           <AssociationSet Name="FK_Userbadges_Badges" Association="Self.FK_Userbadges_Badges">
@@ -1648,10 +1524,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
             <End Role="Submission" EntitySet="Submissions" />
             <End Role="SubmissionVoteTracker" EntitySet="SubmissionVoteTrackers" />
           </AssociationSet>
-          <AssociationSet Name="FK_Subscriptions_Subverses" Association="Self.FK_Subscriptions_Subverses">
-            <End Role="Subverse" EntitySet="Subverses" />
-            <End Role="SubverseSubscription" EntitySet="SubverseSubscriptions" />
-          </AssociationSet>
           <AssociationSet Name="FK_SubverseAdmins_Subverses" Association="Self.FK_SubverseAdmins_Subverses">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="SubverseModerator" EntitySet="SubverseModerators" />
@@ -1663,10 +1535,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <AssociationSet Name="FK_Subverseflairsettings_Subverses1" Association="Self.FK_Subverseflairsettings_Subverses1">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="SubverseFlair" EntitySet="SubverseFlairs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UserBlockedSubverses_Subverses" Association="Self.FK_UserBlockedSubverses_Subverses">
-            <End Role="Subverse" EntitySet="Subverses" />
-            <End Role="UserBlockedSubverse" EntitySet="UserBlockedSubverses" />
           </AssociationSet>
           <FunctionImport Name="usp_CommentTree" ReturnType="Collection(Models.usp_CommentTree_Result)">
             <Parameter Name="SubmissionID" Mode="In" Type="Int32" />
@@ -1960,12 +1828,13 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="Type" Type="Int32" Nullable="false" />
           <Property Name="SubscriberCount" Type="Int32" Nullable="false" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="0" />
           <NavigationProperty Name="SubverseSetLists" Relationship="Models.FK_SubverseSetList_Set" FromRole="SubverseSet" ToRole="SubverseSetList" />
           <NavigationProperty Name="SubverseSetSubscriptions" Relationship="Models.FK_SubverseSetSubscription_Set" FromRole="SubverseSet" ToRole="SubverseSetSubscription" />
+          <Property Name="IsPublic" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="SubverseSetList">
           <Key>
@@ -2271,15 +2140,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="SubverseSubscriptions">
-            <EntityTypeMapping TypeName="Models.SubverseSubscription">
-              <MappingFragment StoreEntitySet="SubverseSubscription">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="UserBadges">
             <EntityTypeMapping TypeName="Models.UserBadge">
               <MappingFragment StoreEntitySet="UserBadge">
@@ -2287,16 +2147,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="BadgeID" ColumnName="BadgeID" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="UserBlockedSubverses">
-            <EntityTypeMapping TypeName="Models.UserBlockedSubverse">
-              <MappingFragment StoreEntitySet="UserBlockedSubverse">
-                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -2551,6 +2401,7 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <EntitySetMapping Name="SubverseSets">
             <EntityTypeMapping TypeName="Models.SubverseSet">
               <MappingFragment StoreEntitySet="SubverseSet">
+                <ScalarProperty Name="IsPublic" ColumnName="IsPublic" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
                 <ScalarProperty Name="SubscriberCount" ColumnName="SubscriberCount" />
                 <ScalarProperty Name="Type" ColumnName="Type" />

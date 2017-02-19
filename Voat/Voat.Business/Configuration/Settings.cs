@@ -203,6 +203,15 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.MaximumOwnedSubs, 10);
             }
         }
+
+        public static int MaximumSetSubverseCount
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.MaximumSetSubverseCount, 50);
+            }
+        }
+        
         public static int MinimumAccountAgeInDaysForSubverseCreation
         {
             get
@@ -295,7 +304,13 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.SetsDisabled, true);
             }
         }
-
+        public static bool SetCreationDisabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.SetCreationDisabled, true);
+            }
+        }
         public static bool SignalRDisabled
         {
             get

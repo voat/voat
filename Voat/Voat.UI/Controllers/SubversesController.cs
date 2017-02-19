@@ -173,7 +173,7 @@ namespace Voat.Controllers
         public ActionResult SubversesSubscribed(int? page)
         {
 
-            return RedirectToAction("Edit", "Set", new { name = Domain.Models.SetType.Front.ToString(), userName = User.Identity.Name  });
+            return RedirectToAction("Details", "Set", new { name = Domain.Models.SetType.Front.ToString(), userName = User.Identity.Name  });
 
             //ViewBag.SelectedSubverse = "subverses";
             //ViewBag.SubversesView = "subscribed";
@@ -310,11 +310,13 @@ namespace Voat.Controllers
         }
 
         // GET: fetch a random subbverse with x subscribers and x submissions
-        public ActionResult Random()
+        public async Task<ActionResult> Random()
         {
             try
             {
-                string randomSubverse = RandomSubverse(true);
+                var q = new QueryRandomSubverse(true);
+                var randomSubverse = await q.ExecuteAsync();
+
                 return RedirectToAction("SubverseIndex", "Subverses", new { subverse = randomSubverse });
             }
             catch (Exception ex)
@@ -324,11 +326,13 @@ namespace Voat.Controllers
         }
 
         // GET: fetch a random NSFW subbverse with x subscribers and x submissions
-        public ActionResult RandomNsfw()
+        public async Task<ActionResult> RandomNsfw()
         {
             try
             {
-                string randomSubverse = RandomSubverse(false);
+                var q = new QueryRandomSubverse(false);
+                var randomSubverse = await q.ExecuteAsync();
+
                 return RedirectToAction("SubverseIndex", "Subverses", new { subverse = randomSubverse });
             }
             catch (Exception ex)
@@ -398,16 +402,16 @@ namespace Voat.Controllers
 
         [Authorize]
 
-        // GET: list of subverses user is subscribed to, used in hover menu
-        public ActionResult ListOfSubversesUserIsSubscribedTo()
-        {
-            // show custom list of subverses in top menu
-            var listOfSubverses = _db.SubverseSubscriptions
-                .Where(s => s.UserName == User.Identity.Name)
-                .OrderBy(s => s.Subverse);
+        //// GET: list of subverses user is subscribed to, used in hover menu
+        //public ActionResult ListOfSubversesUserIsSubscribedTo()
+        //{
+        //    // show custom list of subverses in top menu
+        //    var listOfSubverses = _db.SubverseSubscriptions
+        //        .Where(s => s.UserName == User.Identity.Name)
+        //        .OrderBy(s => s.Subverse);
 
-            return PartialView("_ListOfSubscribedToSubverses", listOfSubverses);
-        }
+        //    return PartialView("_ListOfSubscribedToSubverses", listOfSubverses);
+        //}
 
         // POST: subscribe to a subverse
         [Authorize]
@@ -559,10 +563,9 @@ namespace Voat.Controllers
                 options.Span = span;
             }
 
-            //Null out defaults
-            viewProperties.Sort = options.Sort == Domain.Models.SortAlgorithm.Rank ? (Domain.Models.SortAlgorithm?)null : options.Sort;
-            viewProperties.Span = options.Span == Domain.Models.SortSpan.All ? (Domain.Models.SortSpan?)null : options.Span;
-           
+            viewProperties.Sort = options.Sort;
+            viewProperties.Span = options.Span;
+            var routeName = "SubverseIndex";
             try
             {
                 PaginatedList<Domain.Models.Submission> pageList = null;
@@ -634,15 +637,17 @@ namespace Voat.Controllers
 
                     viewProperties.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse,  subverseObject.Name);
                     viewProperties.Title = subverseObject.Description;
+                    routeName = "SubverseIndex";
                 }
 
 
                 var q = new QuerySubmissions(subverse, Domain.Models.DomainType.Subverse, options);
                 var results = await q.ExecuteAsync().ConfigureAwait(false);
 
-                pageList = new PaginatedList<Domain.Models.Submission>(results, options.Page, options.Count, -1);
-                viewProperties.Submissions = pageList;
                 viewProperties.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse);
+                pageList = new PaginatedList<Domain.Models.Submission>(results, options.Page, options.Count, -1);
+                pageList.RouteName = routeName;
+                viewProperties.Submissions = pageList;
 
                 //Backwards compat with Views
                 if (subverse == AGGREGATE_SUBVERSE.FRONT || subverse == AGGREGATE_SUBVERSE.DEFAULT)
@@ -659,7 +664,7 @@ namespace Voat.Controllers
                 }
                 ViewBag.SortingMode = sort;
                 
-                return View(viewProperties);
+                return View("SubmissionList", viewProperties);
             }
             catch (Exception ex)
             {
@@ -681,7 +686,7 @@ namespace Voat.Controllers
                                                                                    where message.ArchiveDate == null && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && message.CreationDate >= startDate && message.CreationDate <= Repository.CurrentDate
                                                                                    where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
                                                                                    where !subverse.IsAdminDisabled.Value
-                                                                                   where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
+                                                                                   //where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
                                                                                    select message).OrderByDescending(s => s.Views).DistinctBy(m => m.Subverse).Take(5).AsQueryable().AsNoTracking();
 
             return sfwSubmissionsFromAllSubversesByViews24Hours;
@@ -710,9 +715,13 @@ namespace Voat.Controllers
         }
 
         #region random subverse
-
+        [Obsolete("Original Random Sub Query", true)]
         public string RandomSubverse(bool sfw)
         {
+            throw new Exception("This method does not play nice with others");
+
+            #region Old Logic (Preserved for the Lulz)
+            /*
             // fetch a random subverse with minimum number of subscribers where last subverse activity was evident
             IQueryable<Subverse> subverse;
             if (sfw)
@@ -760,6 +769,9 @@ namespace Voat.Controllers
             } while (submissionCount == 0);
 
             return randomSubverse != null ? randomSubverse.Name : "all";
+            */
+
+            #endregion
         }
 
         #endregion random subverse

@@ -17,6 +17,8 @@
     var userData = Voat.Domain.UserData.GetContextUserData();
     System.Diagnostics.Debug.Assert(userData == null || userData.UserName == User.Identity.Name, "Context UserData and Identity UserName mismatch");
 
+    NavigationViewModel navModel = ViewBag.NavigationViewModel;
+
     string selectedSubverse = ViewBag.SelectedSubverse;
     var theme = UserHelper.UserStylePreference();
     var themeClass = theme == null || theme == "light" ? "light" : "dark";
@@ -152,49 +154,67 @@
                 </a>
 
                 <div id="show-menu-button"></div>
-
-                @if (ViewBag.PmView != null)
+                @if (navModel != null)
                 {
-                    Html.RenderAction("PmMenu", "Nav", new { selectedView = ViewBag.PmView, sortingMode = sortingMode });
+                    //New Navigation Model
+                    switch (navModel.MenuType)
+                    {
+                        case MenuType.Set:
+                            @Html.Partial("~/Views/Shared/Navigation/_SetMenu.cshtml", navModel)
+                            break;
+                        case MenuType.UserProfile:
+                            @Html.Partial("~/Views/Shared/Navigation/_UserProfileMenu.cshtml", navModel)
+                             break;
+                    }
                 }
-
-                @if (selectedSubverse != null)
+                else
                 {
-                    if (selectedSubverse.Equals("user"))
+                    //Old Navigation Model
+                    if (ViewBag.PmView != null)
                     {
-                        // render user profile tab menu
-                        Html.RenderAction("UserProfileMenu", "Nav", new { whattodisplay = ViewBag.whattodisplay, selectedUser = selectedUser });
+                        Html.RenderAction("PmMenu", "Nav", new { selectedView = ViewBag.PmView, sortingMode = sortingMode });
                     }
-                    else if (selectedSubverse.Equals("/"))
+
+                    if (selectedSubverse != null)
                     {
-                        // render frontpage tab menu
-                        Html.RenderAction("TabMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, action = ViewBag.action, frontpage = true });
-                    }
-                    else if (ViewBag.SelectedSubverse.Equals("domains"))
-                    {
-                        // render domains tab menu
-                        Html.RenderAction("DomainsMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, selectedDomain = ViewBag.selectedDomain });
-                    }
-                    else if (ViewBag.SelectedSubverse.Equals("subverses"))
-                    {
-                        // render browse subverses tab menu
-                        Html.RenderAction("SubversesMenu", "Nav", new { sortingMode = sortingMode, subversesView = ViewBag.SubversesView });
-                    }
-                    else if (ViewBag.SelectedSubverse.Equals(string.Empty))
-                    {
-                        // don't show tab menu
-                    }
-                    else
-                    {
-                        // render subverse tab menu
-                        Html.RenderAction("TabMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, action = ViewBag.action, selectedSubverseName = ViewBag.SelectedSubverse });
+                        if (selectedSubverse.Equals("user"))
+                        {
+                            // render user profile tab menu
+                            Html.RenderAction("UserProfileMenu", "Nav", new { whattodisplay = ViewBag.whattodisplay, selectedUser = selectedUser });
+                        }
+                        else if (selectedSubverse.Equals("/"))
+                        {
+                            // render frontpage tab menu
+                            Html.RenderAction("TabMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, action = ViewBag.action, frontpage = true });
+                        }
+                        else if (ViewBag.SelectedSubverse.Equals("domains"))
+                        {
+                            // render domains tab menu
+                            Html.RenderAction("DomainsMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, selectedDomain = ViewBag.selectedDomain });
+                        }
+                        else if (ViewBag.SelectedSubverse.Equals("subverses"))
+                        {
+                            // render browse subverses tab menu
+                            Html.RenderAction("SubversesMenu", "Nav", new { sortingMode = sortingMode, subversesView = ViewBag.SubversesView });
+                        }
+                        else if (ViewBag.SelectedSubverse.Equals(string.Empty))
+                        {
+                            // don't show tab menu
+                        }
+                        else
+                        {
+                            // render subverse tab menu
+                            Html.RenderAction("TabMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, action = ViewBag.action, selectedSubverseName = ViewBag.SelectedSubverse });
+                        }
                     }
                 }
 
                 @Html.Partial("_LoginPartial")
 
             </div>
+            
         </div>
+            
     </div>
 
     @* Must be logged in Modal *@
@@ -212,8 +232,8 @@
                         Registering is free and <strong>all you need is a username and password</strong>. We never ask you for your e-mail.
                         <div>
                             @if (routeController == "Comment" && routeAction == "Comments" && submissionID != null)
-                            {
-                                @Html.Partial("~/Views/Account/_LoginModal.cshtml", loginViewModel, new ViewDataDictionary { { "ReturnUrl", @Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "submissionID", submissionID } }) } })
+                        {
+                            @Html.Partial("~/Views/Account/_LoginModal.cshtml", loginViewModel, new ViewDataDictionary { { "ReturnUrl", @Url.RouteUrl("SubverseComments", new RouteValueDictionary { { "action", routeAction }, { "controller", routeController }, { "submissionID", submissionID } }) } })
                             }
                             else
                             {
@@ -235,9 +255,9 @@
     }
 
     @if (User.Identity.IsAuthenticated)
-    {
-        var userCCP = userData.Information.CommentPoints.Sum;
-        var scaledQuota = userCCP >= 20 ? Math.Max(Settings.DailyVotingQuota, (userCCP / 2)) : 10;
+                {
+                    var userCCP = userData.Information.CommentPoints.Sum;
+                    var scaledQuota = userCCP >= 20 ? Math.Max(Settings.DailyVotingQuota, (userCCP / 2)) : 10;
 
         @* Not enough comment contribution points Modal *@
         <div class="modal fade" id="notenoughccp" tabindex="-1" role="dialog" aria-labelledby="notenoughccplabel" aria-hidden="true">

@@ -20,11 +20,9 @@ namespace Voat.Data.Models
             this.FeaturedSubverses = new HashSet<FeaturedSubverse>();
             this.StickiedSubmissions = new HashSet<StickiedSubmission>();
             this.Submissions = new HashSet<Submission>();
-            this.SubverseSubscriptions = new HashSet<SubverseSubscription>();
             this.SubverseModerators = new HashSet<SubverseModerator>();
             this.SubverseBans = new HashSet<SubverseBan>();
             this.SubverseFlairs = new HashSet<SubverseFlair>();
-            this.UserBlockedSubverses = new HashSet<UserBlockedSubverse>();
         }
     
         public string Name { get; set; }
@@ -56,14 +54,10 @@ namespace Voat.Data.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Submission> Submissions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<SubverseSubscription> SubverseSubscriptions { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SubverseModerator> SubverseModerators { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SubverseBan> SubverseBans { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SubverseFlair> SubverseFlairs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<UserBlockedSubverse> UserBlockedSubverses { get; set; }
     }
 }

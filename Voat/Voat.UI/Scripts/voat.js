@@ -646,6 +646,19 @@ function getErrorObject(arguments) {
     }
     return null;
 }
+function getJsonResponse(arguments) {
+
+    var request = arguments[2];
+
+    if (request.responseJSON) {
+        return request.responseJSON;
+        //if (request.responseJSON.success === false) {
+        //    return request.responseJSON;
+        //}
+    }
+
+    return new { succces: true, data: request.responseText };
+}
 
 //attempting to clean up client side error handling
 function getErrorMessage(error, defaultMessage)
@@ -1139,6 +1152,34 @@ function toggleSubmissionBack(obj) {
 $.fn.exists = function () {
     return this.length !== 0;
 };
+
+function setSubverseToggle(obj, setName, userName, subverseName, action)
+{
+    //$(obj).html("unsubscribe");
+    //$(obj).toggleClass("btn-sub btn-unsub");
+    var actionQueryString = "";
+    if (action) {
+        actionQueryString = "?action=" + action;
+    }
+    var url = "/s/" + setName + '/' + userName + '/' + subverseName + actionQueryString;
+    // call the set subverse list API
+    $.ajax({
+        type: "POST",
+        url: url,
+        success: function () {
+            var response = new getJsonResponse(arguments);
+            if (response.success) {
+                alert("It worked!")
+            } else {
+                alert(response.error.message);
+            }
+        },
+        error: function () {
+            alert('Something went wrong while sending a subscription request.');
+        }
+    });
+
+}
 
 // subscribe to subverse
 function subscribe(obj, subverseName) {

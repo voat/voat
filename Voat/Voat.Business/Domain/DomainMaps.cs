@@ -184,6 +184,28 @@ namespace Voat.Domain
             }
             return result;
         }
+        public static IEnumerable<Domain.Models.Set> Map(this IEnumerable<Voat.Data.Models.SubverseSet> list)
+        {
+            var mapped = list.Select(x => x.Map()).ToList();
+            return mapped;
+        }
+        public static Domain.Models.Set Map(this Voat.Data.Models.SubverseSet subverseSet)
+        {
+            if (subverseSet != null)
+            {
+                var s = new Set();
+                s.ID = subverseSet.ID;
+                s.Name = subverseSet.Name;
+                s.Description = subverseSet.Description;
+                s.CreationDate = subverseSet.CreationDate;
+                s.Type = (SetType)subverseSet.Type;
+                s.UserName = subverseSet.UserName;
+                s.SubscriberCount = subverseSet.SubscriberCount;
+                s.IsPublic = subverseSet.IsPublic;
+                return s;
+            }
+            return null;
+        }
 
         public static Domain.Models.Comment Map(this Data.Models.Comment comment, string subverse, bool populateUserState = false)
         {

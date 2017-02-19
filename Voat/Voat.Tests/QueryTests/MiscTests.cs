@@ -16,19 +16,19 @@ namespace Voat.Tests.QueryTests
         public void TestSubmissionCacheVolatileLogic()
         {
             //No user
-            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, "news"));
-            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, Voat.Data.AGGREGATE_SUBVERSE.DEFAULT));
-            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, Voat.Data.AGGREGATE_SUBVERSE.ANY));
-            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, Voat.Data.AGGREGATE_SUBVERSE.FRONT));
-            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, Voat.Data.AGGREGATE_SUBVERSE.ALL));
-            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, "all"));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "news")));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, Voat.Data.AGGREGATE_SUBVERSE.DEFAULT)));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, Voat.Data.AGGREGATE_SUBVERSE.ANY)));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, Voat.Data.AGGREGATE_SUBVERSE.FRONT)));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, Voat.Data.AGGREGATE_SUBVERSE.ALL)));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache(null, new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "all")));
             //User
-            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache("UnitTest", "news"));
-            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache("UnitTest", Voat.Data.AGGREGATE_SUBVERSE.DEFAULT));
-            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache("UnitTest", Voat.Data.AGGREGATE_SUBVERSE.ANY));
-            Assert.AreEqual(true, QuerySubmissions.IsUserVolatileCache("UnitTest", Voat.Data.AGGREGATE_SUBVERSE.FRONT));
-            Assert.AreEqual(true, QuerySubmissions.IsUserVolatileCache("UnitTest", Voat.Data.AGGREGATE_SUBVERSE.ALL));
-            Assert.AreEqual(true, QuerySubmissions.IsUserVolatileCache("UnitTest", "all"));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache("UnitTest", new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "news")));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache("UnitTest", new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, Voat.Data.AGGREGATE_SUBVERSE.DEFAULT)));
+            Assert.AreEqual(false, QuerySubmissions.IsUserVolatileCache("UnitTest", new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, Voat.Data.AGGREGATE_SUBVERSE.ANY)));
+            Assert.AreEqual(true, QuerySubmissions.IsUserVolatileCache("UnitTest", new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, Voat.Data.AGGREGATE_SUBVERSE.FRONT)));
+            Assert.AreEqual(true, QuerySubmissions.IsUserVolatileCache("UnitTest", new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, Voat.Data.AGGREGATE_SUBVERSE.ALL)));
+            Assert.AreEqual(true, QuerySubmissions.IsUserVolatileCache("UnitTest", new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "all")));
         }
 
         [TestMethod]

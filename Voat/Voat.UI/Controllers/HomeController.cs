@@ -333,16 +333,26 @@ namespace Voat.Controllers
 
         // GET: list of subverses user is subscribed to for sidebar
         [ChildActionOnly]
-        public ActionResult SubversesUserIsSubscribedTo(string userName)
+        public async Task<ActionResult> SubversesUserIsSubscribedTo(string userName)
         {
             if (userName != null)
             {
-                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserIsSubscribedTo.cshtml", _db.SubverseSubscriptions
-                .Where(x => x.UserName == userName)
-                .Select(s => new SelectListItem { Value = s.Subverse })
-                .OrderBy(s => s.Value)
-                .ToList()
-                .AsEnumerable());
+                var q = new QueryUserSubscriptions(userName);
+                var result = await q.ExecuteAsync();
+                var subs = result[Domain.Models.DomainType.Subverse];
+                var selectList = subs.OrderBy(x => x).Select(x => new SelectListItem() { Value = x }).ToList();
+
+                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserIsSubscribedTo.cshtml",
+                    selectList
+                );
+
+                //return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserIsSubscribedTo.cshtml", 
+                //    _db.SubverseSubscriptions
+                //.Where(x => x.UserName == userName)
+                //.Select(s => new SelectListItem { Value = s.Subverse })
+                //.OrderBy(s => s.Value)
+                //.ToList()
+                //.AsEnumerable());
             }
             return new EmptyResult();
         }

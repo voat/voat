@@ -39,7 +39,7 @@ namespace Voat.Domain.Query
                     {
                         return new CachePolicy(TimeSpan.FromMinutes(3));
                     }
-                    else if (IsUserVolatileCache(UserName, _domainReference.Name))
+                    else if (IsUserVolatileCache(UserName, _domainReference))
                     {
                         return new CachePolicy(TimeSpan.FromMinutes(6));
                     }
@@ -60,18 +60,21 @@ namespace Voat.Domain.Query
                 base.CachingPolicy = value;
             }
         }
-        public static bool IsUserVolatileCache(string userName, string subverse)
+        public static bool IsUserVolatileCache(string userName, DomainReference domainReference)
         {
             bool result = false;
-            if (!String.IsNullOrEmpty(userName))
+            if (domainReference.Type == DomainType.Subverse)
             {
-                if (
-                    (subverse.IsEqual("all") || subverse.IsEqual(AGGREGATE_SUBVERSE.ALL))
-                    ||
-                    subverse.IsEqual(AGGREGATE_SUBVERSE.FRONT)
-                   )
+                if (!String.IsNullOrEmpty(userName))
                 {
-                    result = true;
+                    if (
+                        (domainReference.Name.IsEqual("all") || domainReference.Name.IsEqual(AGGREGATE_SUBVERSE.ALL))
+                        ||
+                        domainReference.Name.IsEqual(AGGREGATE_SUBVERSE.FRONT)
+                       )
+                    {
+                        result = true;
+                    }
                 }
             }
             return result;
@@ -80,13 +83,25 @@ namespace Voat.Domain.Query
         {
             get
             {
-                string userName = UserName;
-                if (!IsUserVolatileCache(userName, _domainReference.Name))
+                if (_domainReference.Type == DomainType.Subverse)
                 {
-                    userName = "_"; //< it looks like an emoji, how cute.
+                    string userName = UserName;
+                    if (!IsUserVolatileCache(userName, _domainReference))
+                    {
+                        userName = "_"; //< it looks like an emoji, how cute.
+                    }
+                    return String.Format("{0}:{1}:{2}:{3}", _domainReference.Type, _domainReference.Name, userName, _options.ToString(true));
                 }
+                else
+                {
+                    string userName = "_";
+                    if (!String.IsNullOrEmpty(_domainReference.OwnerName))
+                    {
+                        userName = _domainReference.OwnerName;
+                    }
 
-                return String.Format("{0}:{1}:{2}", _domainReference.Name, userName, _options.ToString(true));
+                    return String.Format("{0}:{1}:{2}:{3}", _domainReference.Type, _domainReference.Name, userName, _options.ToString(true));
+                }
             }
         }
 
