@@ -82,7 +82,24 @@
             }
         </div>
 
-        <div class="pagination-container">
+        @{
+            Model.Submissions.RouteData = Request.RequestContext.RouteData.Values;
+            if (Model.Sort != null)
+            {
+                Model.Submissions.RouteData["sort"] = Model.Sort.ToString().ToLower();
+            }
+            if (Model.Span != null)
+            {
+                Model.Submissions.RouteData["time"] = Model.Span.ToString().ToLower();
+            }
+            if (!String.IsNullOrEmpty(Request.QueryString["frontpage"]))
+            {
+                Model.Submissions.RouteData["frontpage"] = Request.QueryString["frontpage"];
+            }
+        }
+        @Html.DisplayFor(model => Model.Submissions, "IPaginatedList")
+
+        @*<div class="pagination-container">
             <ul>
                 @if (Model.Submissions.HasPreviousPage)
                 {
@@ -108,7 +125,7 @@
                     </li>
                 }
             </ul>
-        </div>
+        </div>*@
 
         @if (!Model.IsActualSubverse)
         {

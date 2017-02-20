@@ -14,6 +14,7 @@ All Rights Reserved.
 
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 
 namespace Voat.Utilities
@@ -29,6 +30,7 @@ namespace Voat.Utilities
         public int TotalPages { get; private set; }
 
         public string RouteName { get; set; }
+        public System.Web.Routing.RouteValueDictionary RouteData { get; set; } 
 
         public bool HasPreviousPage
         {

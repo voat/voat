@@ -244,6 +244,15 @@ namespace Voat.Controllers
 
                     var userBlocks = blocks.Where(x => x.Type == Domain.Models.DomainType.User).OrderBy(x => x.Name);
 
+                    var originalUserName = User.Identity.Name;
+                    ViewBag.NavigationViewModel = new NavigationViewModel()
+                    {
+                        MenuType = MenuType.UserProfile,
+                        Name = originalUserName,
+                        BasePath = "/user/" + originalUserName,
+                        Description = originalUserName + "'s Blocked Users",
+                    };
+
                     return View("BlockedUsers", userBlocks);
 
                     break;

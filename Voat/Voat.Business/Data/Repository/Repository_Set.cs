@@ -32,6 +32,7 @@ namespace Voat.Data
     public partial class Repository 
     {
         #region Sets
+        //TODO: Make subverse an array and process multiple additions
         [Authorize]
         public async Task<CommandResponse<bool?>> SetSubverseListChange(DomainReference setReference, string subverse, SubscriptionAction? action)
         {
@@ -201,7 +202,9 @@ namespace Voat.Data
                 if (set == null)
                 {
                     setInfo.CreationDate = CurrentDate;
+                    setInfo.SubscriberCount = 1;
                     db.SubverseSets.Add(setInfo);
+                    setInfo.SubverseSetSubscriptions.Add(new SubverseSetSubscription() { UserName = setInfo.UserName, CreationDate = CurrentDate });
                     db.SaveChanges();
                     return setInfo;
                 }
@@ -294,10 +297,27 @@ namespace Voat.Data
             }
             else
             {
-                if (Settings.SetCreationDisabled)
+                //Validation - MOVE TO RULES SYSTEM MAYBE
+                if (Settings.SetCreationDisabled || Settings.MaximumOwnedSets <= 0)
                 {
                     return CommandResponse.FromStatus<SubverseSet>(null, Status.Denied, "Set creation is currently disabled");
                 }
+
+                if (Settings.MaximumOwnedSets > 0)
+                {
+                    var d = new DapperQuery();
+                    d.Select = "SELECT COUNT(*) FROM SubverseSet subSet";
+                    d.Where = "subSet.Type = @Type AND subSet.UserName = @UserName";
+                    d.Parameters.Add("Type", (int)SetType.Normal);
+                    d.Parameters.Add("UserName", User.Identity.Name);
+
+                    var setCount = _db.Database.Connection.ExecuteScalar<int>(d.ToString(), d.Parameters);
+                    if (setCount >= Settings.MaximumOwnedSets)
+                    {
+                        return CommandResponse.FromStatus<SubverseSet>(null, Status.Denied, $"Sorry, Users are limited to {Settings.MaximumOwnedSets} sets and you currently have {setCount}");
+                    }
+                }
+
 
                 //Create new set
                 try

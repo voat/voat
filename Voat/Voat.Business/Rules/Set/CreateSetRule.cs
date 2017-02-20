@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Voat.Data;
+using Voat.Domain.Models;
 using Voat.RulesEngine;
 using Voat.Utilities;
 
@@ -32,7 +33,13 @@ namespace Voat.Rules
             {
                 return base.CreateOutcome(RuleResult.Denied, "Set name does not conform to naming requirements");
             }
-            
+            //Ensure Name is not used for system sets 
+            var systemSets = Enum.GetNames(typeof(SetType));
+            if (systemSets.Any(x => x.IsEqual(set.Name)))
+            {
+                return base.CreateOutcome(RuleResult.Denied, "Set name is in restricted list");
+            }
+
             ////Age
             //var registrationDate = context.UserData.Information.RegistrationDate;
             //int accountAgeInDays = Repository.CurrentDate.Subtract(registrationDate).Days;

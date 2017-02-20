@@ -63,15 +63,16 @@
                             @Html.ValidationMessageFor(model => model.ConfirmPassword)
                         </div>
                     </div>
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Are you a human?</div>
-                        <div class="panel-body">
-                            <p>Please solve the reCAPTCHA challenge below:</p>
-                        </div>
-                    </div>
+
 
                     if (!Settings.CaptchaDisabled)
                     {
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Are you a human?</div>
+                            <div class="panel-body">
+                                <p>Please solve the reCAPTCHA challenge below:</p>
+                            </div>
+                        </div>
                         <div class="panel panel-default">
                             @{Html.RenderPartial("_Captcha");}
                         </div>

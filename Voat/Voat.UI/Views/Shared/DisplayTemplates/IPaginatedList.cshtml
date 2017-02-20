@@ -1,18 +1,46 @@
 ﻿
 @model Voat.Utilities.IPaginatedList
+
 @{
+    if (Model.RouteData == null)
+    {
+        Model.RouteData = new RouteValueDictionary();
+    }
+    var routeLink = false;
+    if (!String.IsNullOrEmpty(Model.RouteName))
+    {
+        routeLink = true;
+    }
+    var viewDic = ViewBag;
+
     <div class="pagination-container">
         <ul>
             @if (Model.HasPreviousPage)
             {
+                Model.RouteData["page"] = Model.PageIndex - 1;
                 <li class="btn-whoaverse-paging">
-                    @Html.ActionLink("< prev", (string)Request.RequestContext.RouteData.Values["action"], new { page = (Model.PageIndex - 1) })
+                    @if (routeLink)
+                    {
+                        @Html.RouteLink("< prev", Model.RouteName, Model.RouteData)
+                    }
+                    else
+                    {
+                        @Html.ActionLink("< prev", (string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)
+                    }
                 </li>
             }
             @if (Model.HasNextPage)
             {
+                Model.RouteData["page"] = Model.PageIndex + 1;
                 <li class="btn-whoaverse-paging">
-                    @Html.ActionLink("next >", (string)Request.RequestContext.RouteData.Values["action"], new { page = (Model.PageIndex + 1) })
+                    @if (routeLink)
+                    {
+                        @Html.RouteLink("next >", Model.RouteName, Model.RouteData)
+                    }
+                    else
+                    {
+                        @Html.ActionLink("next >", (string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)
+                    }
                 </li>
             }
         </ul>

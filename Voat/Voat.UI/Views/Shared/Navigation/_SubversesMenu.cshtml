@@ -11,94 +11,14 @@
     All Rights Reserved.*@
 
 @{
-    var classHot = "";
-    var classActive = "";
-    var classNew = "";
-    var classSearch = "";
-    var classSubscribed = "";
-    var classBlocked = "";
-
-    string subversesView = ViewBag.SubversesView;
-    string sortingMode = ViewBag.sortingMode;
-
-    switch (sortingMode)
-    {
-        case "new":
-            classNew = "selected";
-            classActive = "disabled";
-            classHot = "disabled";
-            classSubscribed = "disabled";
-            classSearch = "disabled";
-            classBlocked = "disabled";
-            break;
-        case "active":
-            classActive = "selected";
-            classNew = "disabled";
-            classHot = "disabled";
-            classSubscribed = "disabled";
-            classSearch = "disabled";
-            classBlocked = "disabled";
-            break;
-        case "search":
-            classSearch = "selected";
-            classActive = "disabled";
-            classNew = "disabled";
-            classHot = "disabled";
-            classSubscribed = "disabled";
-            classBlocked = "disabled";
-            break;
-        case "blocked":
-            classSearch = "disabled";
-            classActive = "disabled";
-            classNew = "disabled";
-            classHot = "disabled";
-            classSubscribed = "disabled";
-            classBlocked = "selected";
-            break;
-        default:
-            classHot = "selected";
-            classNew = "disabled";
-            classActive = "disabled";
-            classSearch = "disabled";
-            classSubscribed = "disabled";
-            classBlocked = "disabled";
-            break;
-    }
-
-    if (subversesView != null)
-    {
-        switch (subversesView)
-        {
-            case "search":
-                classSearch = "selected";
-                classHot = "disabled";
-                classNew = "disabled";
-                classSubscribed = "disabled";
-                classBlocked = "disabled";
-                break;
-            case "blocked":
-                classSearch = "disabled";
-                classHot = "disabled";
-                classNew = "disabled";
-                classSubscribed = "disabled";
-                classBlocked = "selected";
-                break;
-            default:
-                classSubscribed = "selected";
-                classHot = "disabled";
-                classNew = "disabled";
-                classSearch = "disabled";
-                classBlocked = "disabled";
-                break;
-        }
-    }
+    var url = Request.Url.AbsolutePath.ToLower().TrimEnd('/');
 }
 
 <ul class="tabmenu">
-    <li class="@classHot"><a href="/subverses">Popular</a></li>
-    <li class="@classActive"><a href="/subverses/active">Active</a></li>
-    <li class="@classNew"><a href="/subverses/new">New</a></li>
-    <li class="@classSubscribed"><a href="/subverses/subscribed">Subscribed</a></li>
-    <li class="@classBlocked"><a href="/user/blocked/subverse">Blocked</a></li>
-    <li class="@classSearch"><a href="/subverses/search">Search</a></li>
+    <li class='@(url.EndsWith("subverses") ? "selected" : "disabled")'><a href="/subverses">Popular</a></li>
+    <li class='@(url.EndsWith("subverses/active") ? "selected" : "disabled")'><a href="/subverses/active">Active</a></li>
+    <li class='@(url.EndsWith("subverses/new") ? "selected" : "disabled")'><a href="/subverses/new">New</a></li>
+    <li class='@(url.Contains("s/front/") ? "selected" : "disabled")'><a href="/subverses/subscribed">Subscribed</a></li>
+    <li class='@(url.Contains("s/blocked/") ? "selected" : "disabled")'><a href="/user/blocked/subverse">Blocked</a></li>
+    <li class='@(url.EndsWith("subverses/search") ? "selected" : "disabled")'><a href="/subverses/search">Search</a></li>
 </ul>

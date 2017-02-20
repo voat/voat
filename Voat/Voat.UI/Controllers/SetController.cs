@@ -81,7 +81,19 @@ namespace Voat.Controllers
                 var set = repo.GetSet(name, userName);
                 if (set == null)
                 {
-                    return GenericErrorView(new ErrorViewModel() { Title = "Can't find this set", Description = "Maybe it's gone?", FooterMessage = "Probably yeah" });
+                    //Since system sets are not created until needed we show a slightly better error message for front/blocked.
+                    if (name.IsEqual(SetType.Front.ToString()))
+                    {
+                        return GenericErrorView(new ErrorViewModel() { Title = "No Subscriptions!", Description = "You don't have any subscriptions so we have to show you this instead", FooterMessage = "Subscribe to a subverse silly" });
+                    }
+                    else if (name.IsEqual(SetType.Blocked.ToString()))
+                    {
+                        return GenericErrorView(new ErrorViewModel() { Title = "No Blocked Subs!", Description = "You don't have any blocked subs. Golf clap.", FooterMessage = "Block subs and this page will change" });
+                    }
+                    else
+                    {
+                        return GenericErrorView(new ErrorViewModel() { Title = "Can't find this set", Description = "Maybe it's gone?", FooterMessage = "Probably yeah" });
+                    }
                 }
 
                 var perms = SetPermission.GetPermissions(set.Map(), User.Identity);
@@ -100,7 +112,15 @@ namespace Voat.Controllers
                 model.Permissions = perms;
                 model.Set = set.Map();
                 model.List = new PaginatedList<Domain.Models.SubverseSubscriptionDetail>(setList, options.Page, options.Count);
-                model.List.RouteName = "EditSet";
+                model.List.RouteName = "SetDetails";
+
+                ViewBag.NavigationViewModel = new NavigationViewModel() {
+                    Name = set.Name,
+                    Description = set.Description,
+                    BasePath = "",
+                    MenuType = (set.Type == (int)SetType.Front || set.Type == (int)SetType.Blocked ?  MenuType.SubverseDiscovery : MenuType.Set)
+                };
+
 
                 return View(model);
             }

@@ -1155,30 +1155,40 @@ $.fn.exists = function () {
 
 function setSubverseToggle(obj, setName, userName, subverseName, action)
 {
-    //$(obj).html("unsubscribe");
-    //$(obj).toggleClass("btn-sub btn-unsub");
-    var actionQueryString = "";
-    if (action) {
-        actionQueryString = "?action=" + action;
-    }
-    var url = "/s/" + setName + '/' + userName + '/' + subverseName + actionQueryString;
-    // call the set subverse list API
-    $.ajax({
-        type: "POST",
-        url: url,
-        success: function () {
-            var response = new getJsonResponse(arguments);
-            if (response.success) {
-                alert("It worked!")
-            } else {
-                alert(response.error.message);
-            }
-        },
-        error: function () {
-            alert('Something went wrong while sending a subscription request.');
+    if (subverseName != "")
+    {
+        //$(obj).html("unsubscribe");
+        //$(obj).toggleClass("btn-sub btn-unsub");
+        var actionQueryString = "";
+        if (action) {
+            actionQueryString = "?action=" + action;
         }
-    });
-
+        var url = "/s/" + setName + '/' + userName + '/' + subverseName + actionQueryString;
+        // call the set subverse list API
+        $.ajax({
+            type: "POST",
+            url: url,
+            success: function () {
+                var response = new getJsonResponse(arguments);
+                var message = "";
+                if (response.success) {
+                    if (response.data == true) {
+                        message = "Subverse " + subverseName + " was added to set " + setName;
+                    }
+                    else {
+                        message = "Subverse " + subverseName + " was removed from set " + setName;
+                    }
+                } else {
+                    message = "Oops: " + response.error.message;
+                }
+                $(obj).parent().find(".status").html(message);
+                $('#subName').val('');
+            },
+            error: function () {
+                alert('Something went wrong while sending a subscription request.');
+            }
+        });
+    }
 }
 
 // subscribe to subverse

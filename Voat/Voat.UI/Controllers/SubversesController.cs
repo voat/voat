@@ -402,16 +402,21 @@ namespace Voat.Controllers
 
         [Authorize]
 
-        //// GET: list of subverses user is subscribed to, used in hover menu
-        //public ActionResult ListOfSubversesUserIsSubscribedTo()
-        //{
-        //    // show custom list of subverses in top menu
-        //    var listOfSubverses = _db.SubverseSubscriptions
-        //        .Where(s => s.UserName == User.Identity.Name)
-        //        .OrderBy(s => s.Subverse);
+        // GET: list of subverses user is subscribed to, used in hover menu
+        public async Task<ActionResult> ListOfSubversesUserIsSubscribedTo()
+        {
+            var q = new QueryUserSubscriptions(User.Identity.Name);
+            var results = await q.ExecuteAsync();
+            var subs = results[Domain.Models.DomainType.Subverse];
 
-        //    return PartialView("_ListOfSubscribedToSubverses", listOfSubverses);
-        //}
+
+            //// show custom list of subverses in top menu
+            //var listOfSubverses = _db.SubverseSubscriptions
+            //    .Where(s => s.UserName == User.Identity.Name)
+            //    .OrderBy(s => s.Subverse);
+
+            return PartialView("_ListOfSubscribedToSubverses", subs);
+        }
 
         // POST: subscribe to a subverse
         [Authorize]

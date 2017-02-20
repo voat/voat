@@ -36,9 +36,10 @@
                         <input type="text" id="subName" class="form-control" />
                     </div>
                 </div>
-
+                
                 <div class="form-group">
-                    <div class="col-md-offset-4 col-md-3">
+                    <div class="col-md-offset-4 col-md-5">
+                        <div class="status"></div>
                         <input type="submit" value="Add" class="btn-whoaverse" onclick="javascript:setSubverseToggle($(this), '@Model.Set.Name', '@Model.Set.UserName', $('#subName').val(), '@Voat.Domain.Models.SubscriptionAction.Subscribe.ToString()');" />
                     </div>
                 </div>

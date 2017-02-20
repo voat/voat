@@ -3380,26 +3380,41 @@ namespace Voat.Data
         public IEnumerable<DomainReference> GetSubscriptions(string userName)
         {
 
-            //TODO: Set Change - needs to retrun subs in user Front set instead.
-            var subs = (from x in _db.SubverseSets
-                        join y in _db.SubverseSetLists on x.ID equals y.SubverseSetID
-                        join s in _db.Subverses on y.SubverseID equals s.ID
-                        where x.Name == SetType.Front.ToString() && x.UserName == userName
-                        select new DomainReference() { Name = s.Name, Type = DomainType.Subverse }
-                        ).ToList();
+            var d = new DapperQuery();
+            d.Select = @"SELECT Type = 1, s.Name, OwnerName = NULL FROM SubverseSet subSet
+                        INNER JOIN SubverseSetList setList ON subSet.ID = setList.SubverseSetID
+                        INNER JOIN Subverse s ON setList.SubverseID = s.ID
+                        WHERE subSet.Type = @Type AND subSet.Name = @SetName AND subSet.UserName = @UserName
+                        UNION ALL
+                        SELECT Type = 2, subSet.Name, OwnerName = setSub.UserName FROM SubverseSetSubscription setSub
+                        INNER JOIN SubverseSet subSet ON subSet.ID = setSub.SubverseSetID
+                        WHERE setSub.UserName = @UserName";
+            d.Parameters = new DynamicParameters(new { UserName = userName, Type = (int)SetType.Front, SetName = SetType.Front.ToString() });
 
-            //var subs = (from x in _db.SubverseSubscriptions
-            //            where x.UserName == userName
-            //            select new DomainReference() { Name = x.Subverse, Type = DomainType.Subverse }
+            var results = _db.Database.Connection.Query<DomainReference>(d.ToString(), d.Parameters);
+
+            ////TODO: Set Change - needs to retrun subs in user Front set instead.
+            //var subs = (from x in _db.SubverseSets
+            //            join y in _db.SubverseSetLists on x.ID equals y.SubverseSetID
+            //            join s in _db.Subverses on y.SubverseID equals s.ID
+            //            where x.Name == SetType.Front.ToString() && x.UserName == userName && x.Type == (int)SetType.Front
+            //            select new DomainReference() { Name = s.Name, Type = DomainType.Subverse }
             //            ).ToList();
 
-            //var sets = (from x in _db.UserSetSubscriptions
-            //            where x.UserName == userName
-            //            select new DomainReference() { Name = x.UserSet.Name, Type = DomainType.Set }).ToList();
 
-            //subs.AddRange(sets);
+            ////var subs = (from x in _db.SubverseSubscriptions
+            ////            where x.UserName == userName
+            ////            select new DomainReference() { Name = x.Subverse, Type = DomainType.Subverse }
+            ////            ).ToList();
 
-            return subs;
+            ////var sets = (from x in _db.UserSetSubscriptions
+            ////            where x.UserName == userName
+            ////            select new DomainReference() { Name = x.UserSet.Name, Type = DomainType.Set }).ToList();
+
+            ////subs.AddRange(sets);
+
+
+            return results;
         }
 
         public IList<BlockedItem> GetBlockedUsers(string userName)

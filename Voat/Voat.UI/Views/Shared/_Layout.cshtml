@@ -164,7 +164,10 @@
                             break;
                         case MenuType.UserProfile:
                             @Html.Partial("~/Views/Shared/Navigation/_UserProfileMenu.cshtml", navModel)
-                             break;
+                            break;
+                        case MenuType.SubverseDiscovery:
+                            @Html.Partial("~/Views/Shared/Navigation/_SubversesMenu.cshtml", navModel)
+                            break;
                     }
                 }
                 else

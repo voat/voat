@@ -8,5 +8,7 @@
         int PageSize { get; }
         int TotalCount { get; }
         int TotalPages { get; }
+        string RouteName { get; }
+        System.Web.Routing.RouteValueDictionary RouteData { get; set; }
     }
 }

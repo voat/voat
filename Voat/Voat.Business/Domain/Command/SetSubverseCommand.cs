@@ -20,8 +20,8 @@ namespace Voat.Domain.Command
         public SetSubverseCommand(DomainReference setRef, string subverse, SubscriptionAction? action = null)
         {
             _setRef = setRef;
-            _subverse = subverse;
             _action = action;
+            _subverse = subverse;
         }
 
         protected override async Task<CommandResponse<bool?>> CacheExecute()
@@ -38,18 +38,14 @@ namespace Voat.Domain.Command
         {
             if (result.Success)
             {
-                //string key = CachingKey.UserSavedItems(_type, UserName);
-                //if (result.Response.HasValue && CacheHandler.Instance.Exists(key))
-                //{
-                //    if (result.Response.Value)
-                //    {
-                //        CacheHandler.Instance.SetAdd(key, _id);
-                //    }
-                //    else
-                //    {
-                //        CacheHandler.Instance.SetRemove(key, _id);
-                //    }
-                //}
+                if (_setRef.Name.IsEqual(SetType.Front.ToString()))
+                {
+                    CacheHandler.Instance.Remove(CachingKey.UserSubscriptions(UserName));
+                }
+                else if (_setRef.Name.IsEqual(SetType.Blocked.ToString()))
+                {
+                    CacheHandler.Instance.Remove(CachingKey.UserBlocks(UserName));
+                }
             }
         }
     }

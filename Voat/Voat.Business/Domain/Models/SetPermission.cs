@@ -23,11 +23,10 @@ namespace Voat.Domain.Models
                 {
                     var isCurrentUserOwner = set.UserName.IsEqual(user.Name);
 
-                    perms.View = isCurrentUserOwner;
-
                     switch ((SetType)set.Type)
                     {
                         case SetType.Normal:
+                            perms.View = set.IsPublic || isCurrentUserOwner;
                             perms.Delete = isCurrentUserOwner;
                             perms.EditList = isCurrentUserOwner;
                             perms.EditProperties = isCurrentUserOwner;
@@ -35,6 +34,7 @@ namespace Voat.Domain.Models
                         case SetType.Blocked:
                         case SetType.Front:
                         case SetType.Following:
+                            perms.View = isCurrentUserOwner;
                             perms.Delete = false;
                             perms.EditList = isCurrentUserOwner;
                             perms.EditProperties = false;
