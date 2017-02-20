@@ -383,7 +383,6 @@
     <Content Include="Content\ui-themes\autocomplete\core.css" />
     <Content Include="Content\ui-themes\autocomplete\menu.css" />
     <Content Include="Content\ui-themes\autocomplete\theme.css" />
-    <Content Include="Content\Voat-Light.css" />
     <Content Include="ddos.min.htm">
       <DependentUpon>ddos.htm</DependentUpon>
     </Content>
@@ -488,7 +487,7 @@
       <CompileStyle>Nested</CompileStyle>
       <DebugInfo>False</DebugInfo>
     </Content>
-    <Content Include="Content\Sass\Voat-Dark.scss">
+    <None Include="Content\Sass\Voat-Dark.scss">
       <Compile>True</Compile>
       <Minify>True</Minify>
       <OutputFolder>..</OutputFolder>
@@ -496,8 +495,8 @@
       <IgnoreErrors>True</IgnoreErrors>
       <CompileStyle>Nested</CompileStyle>
       <DebugInfo>False</DebugInfo>
-    </Content>
-    <Content Include="Content\Sass\Voat-Light.scss">
+    </None>
+    <None Include="Content\Sass\Voat.scss">
       <Compile>True</Compile>
       <Minify>True</Minify>
       <OutputFolder>..</OutputFolder>
@@ -505,7 +504,7 @@
       <IgnoreErrors>True</IgnoreErrors>
       <CompileStyle>Nested</CompileStyle>
       <DebugInfo>False</DebugInfo>
-    </Content>
+    </None>
     <None Include="Properties\PublishProfiles\local fs.pubxml" />
     <None Include="Properties\PublishProfiles\File System.pubxml" />
     <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
