@@ -36,6 +36,35 @@ namespace Voat
                 defaults: new { controller = "RSS", action = "RSS", subverseName = UrlParameter.Optional }
             );
 
+            #region Discover 
+
+            routes.MapRoute(
+              name: "DiscoverSearch",
+              url: "discover/{domainType}/search/{sort}",
+              defaults: new
+              {
+                  controller = "Discover",
+                  action = "Search",
+                  domainType = (DomainType?)null,
+                  sort = (SortAlgorithm?)null
+              }
+            );
+
+            routes.MapRoute(
+                name: "Discover",
+                url: "discover/{domainType}/{sort}",
+                defaults: new {
+                    controller = "Discover",
+                    action = "Index",
+                    domainType = (DomainType?)null,
+                    sort = (SortAlgorithm?)null
+                }
+            );
+
+           
+
+            #endregion
+
             // /advertize
             routes.MapRoute(
                 name: "advertize",
@@ -71,41 +100,41 @@ namespace Voat
                 defaults: new { controller = "Search", action = "SearchResults" }
             );
 
-            // /search/findsubverse
-            routes.MapRoute(
-                name: "FindSubverse",
-                url: "search/findsubverse",
-                defaults: new { controller = "Search", action = "FindSubverse" }
-            );
+            //// /search/findsubverse
+            //routes.MapRoute(
+            //    name: "FindSubverse",
+            //    url: "search/findsubverse",
+            //    defaults: new { controller = "Search", action = "FindSubverse" }
+            //);
 
-            // /subverses
-            routes.MapRoute(
-                name: "Subverses",
-                url: "subverses/",
-                defaults: new { controller = "Subverses", action = "Subverses" }
-            );
+            //// /subverses
+            //routes.MapRoute(
+            //    name: "Subverses",
+            //    url: "subverses/",
+            //    defaults: new { controller = "Subverses", action = "Subverses" }
+            //);
 
 
-            // /subverses/search
-            routes.MapRoute(
-                name: "SearchSubverseForm",
-                url: "subverses/search",
-                defaults: new { controller = "Subverses", action = "Search" }
-            );
+            //// /subverses/search
+            //routes.MapRoute(
+            //    name: "SearchSubverseForm",
+            //    url: "subverses/search",
+            //    defaults: new { controller = "Subverses", action = "Search" }
+            //);
 
-            // /subverses/subscribed
-            routes.MapRoute(
-                name: "SubscribedSubverses",
-                url: "subverses/subscribed",
-                defaults: new { controller = "Subverses", action = "SubversesSubscribed" }
-            );
+            //// /subverses/subscribed
+            //routes.MapRoute(
+            //    name: "SubscribedSubverses",
+            //    url: "subverses/subscribed",
+            //    defaults: new { controller = "Subverses", action = "SubversesSubscribed" }
+            //);
 
-            // /subverses/active
-            routes.MapRoute(
-                name: "ActiveSubverses",
-                url: "subverses/active",
-                defaults: new { controller = "Subverses", action = "ActiveSubverses" }
-            );
+            //// /subverses/active
+            //routes.MapRoute(
+            //    name: "ActiveSubverses",
+            //    url: "subverses/active",
+            //    defaults: new { controller = "Subverses", action = "ActiveSubverses" }
+            //);
 
             // /subverses/adultcontent
             routes.MapRoute(
@@ -121,12 +150,12 @@ namespace Voat
                 defaults: new { controller = "Subverses", action = "AdultContentFiltered" }
             );
 
-            // /subverses/new
-            routes.MapRoute(
-                name: "NewestSubverses",
-                url: "subverses/{sortingmode}",
-                defaults: new { controller = "Subverses", action = "NewestSubverses" }
-            );
+            //// /subverses/new
+            //routes.MapRoute(
+            //    name: "NewestSubverses",
+            //    url: "subverses/{sortingmode}",
+            //    defaults: new { controller = "Subverses", action = "NewestSubverses" }
+            //);
 
             // comments/4
             routes.MapRoute(
@@ -288,6 +317,32 @@ namespace Voat
 
 
             #region User
+            //user/subscribe/subverse/technology/jason/toggle
+            //Domain.Models.DomainType domainType, string name, string ownerName, Domain.Models.SubscriptionAction action
+            //user/subscribe/subverse/technology/_/toggle
+            routes.MapRoute(
+                 name: "UserSubscribeAction",
+                 url: "{pathPrefix}/subscribe/{domainType}/{name}/{ownerName}/{subscribeAction}",
+                 defaults: new {
+                     controller = "User",
+                     action = "Subscribe"
+                 }
+                 , constraints: new
+                 {
+                     httpMethod = new HttpMethodConstraint("POST"),
+                     pathPrefix = "user|u",
+                     domainType = "set|subverse",
+                     subscribeAction = String.Join("|", Enum.GetNames(typeof(SubscriptionAction))).ToLower()
+                 }
+            );
+
+            routes.MapRoute(
+              name: "UserSubscriptions",
+              url: "{pathPrefix}/subscribed/{domainType}",
+              defaults: new { controller = "User", action = "Subscribed" },
+              constraints: new { httpMethod = new HttpMethodConstraint("GET"), pathPrefix = "user|u", domainType = "set|subverse" }
+           );
+
             // /user/blocked/subverse
             routes.MapRoute(
                name: "UserBlocks",
@@ -686,68 +741,79 @@ namespace Voat
             //    defaults: new { controller = "Home", action = "Cla" }
             //);
 
-            // subscribe to subverse
+            //// subscribe to subverse
+            //routes.MapRoute(
+            //    name: "subscribe",
+            //    url: "subscribe/{subverseName}",
+            //    defaults: new { controller = "Subverses", action = "Subscribe" }
+            //);
+
+            //// block a subverse
+            //routes.MapRoute(
+            //    name: "blocksubverse",
+            //    url: "subverses/block/{subverseName}",
+            //    defaults: new { controller = "Subverses", action = "BlockSubverse" }
+            //);
+
+            //// subscribe to set
+            //routes.MapRoute(
+            //    name: "subscribetoset",
+            //    url: "subscribetoset/{setId}",
+            //    defaults: new { controller = "Sets", action = "Subscribe" }
+            //);
+
+            //// unsubscribe from subverse
+            //routes.MapRoute(
+            //    name: "unsubscribe",
+            //    url: "unsubscribe/{subverseName}",
+            //    defaults: new { controller = "Subverses", action = "UnSubscribe" }
+            //);
+
+            //// unsubscribe from set
+            //routes.MapRoute(
+            //    name: "unsubscribefromset",
+            //    url: "unsubscribefromset/{setId}",
+            //    defaults: new { controller = "Sets", action = "UnSubscribe" }
+            //);
+
             routes.MapRoute(
-                name: "subscribe",
-                url: "subscribe/{subverseName}",
-                defaults: new { controller = "Subverses", action = "Subscribe" }
+                name: "Vote",
+                url: "user/vote/{contentType}/{id}/{voteStatus}",
+                defaults: new { controller = "User", action = "Vote" }
+            );
+            routes.MapRoute(
+                name: "Save",
+                url: "user/save/{contentType}/{id}",
+                defaults: new { controller = "User", action = "Save" }
             );
 
-            // block a subverse
-            routes.MapRoute(
-                name: "blocksubverse",
-                url: "subverses/block/{subverseName}",
-                defaults: new { controller = "Subverses", action = "BlockSubverse" }
-            );
+            //// vote
+            //routes.MapRoute(
+            //    name: "vote",
+            //    url: "vote/{submissionID}/{typeOfVote}",
+            //    defaults: new { controller = "Submissions", action = "Vote" }
+            //);
 
-            // subscribe to set
-            routes.MapRoute(
-                name: "subscribetoset",
-                url: "subscribetoset/{setId}",
-                defaults: new { controller = "Sets", action = "Subscribe" }
-            );
+            //// vote comment
+            //routes.MapRoute(
+            //    name: "votecomment",
+            //    url: "votecomment/{commentId}/{typeOfVote}",
+            //    defaults: new { controller = "Comment", action = "VoteComment" }
+            //);
 
-            // unsubscribe from subverse
-            routes.MapRoute(
-                name: "unsubscribe",
-                url: "unsubscribe/{subverseName}",
-                defaults: new { controller = "Subverses", action = "UnSubscribe" }
-            );
+            //// save
+            //routes.MapRoute(
+            //    name: "save",
+            //    url: "save/{messageId}",
+            //    defaults: new { controller = "Submissions", action = "Save" }
+            //);
 
-            // unsubscribe from set
-            routes.MapRoute(
-                name: "unsubscribefromset",
-                url: "unsubscribefromset/{setId}",
-                defaults: new { controller = "Sets", action = "UnSubscribe" }
-            );
-
-            // vote
-            routes.MapRoute(
-                name: "vote",
-                url: "vote/{submissionID}/{typeOfVote}",
-                defaults: new { controller = "Submissions", action = "Vote" }
-            );
-
-            // vote comment
-            routes.MapRoute(
-                name: "votecomment",
-                url: "votecomment/{commentId}/{typeOfVote}",
-                defaults: new { controller = "Comment", action = "VoteComment" }
-            );
-
-            // save
-            routes.MapRoute(
-                name: "save",
-                url: "save/{messageId}",
-                defaults: new { controller = "Submissions", action = "Save" }
-            );
-
-            // save comment
-            routes.MapRoute(
-                name: "savecomment",
-                url: "savecomment/{commentId}",
-                defaults: new { controller = "Comment", action = "SaveComment" }
-            );
+            //// save comment
+            //routes.MapRoute(
+            //    name: "savecomment",
+            //    url: "savecomment/{commentId}",
+            //    defaults: new { controller = "Comment", action = "SaveComment" }
+            //);
 
             // editcomment
             routes.MapRoute(
@@ -871,7 +937,7 @@ namespace Voat
                 defaults: new {
                     controller = "Subverses",
                     action = "SubverseIndex",
-                    subverse = "_front",
+                    //subverse = "_front",
                     sort = UrlParameter.Optional
                 }
             );
@@ -896,19 +962,6 @@ namespace Voat
                 defaults: new { controller = "ModLog", action = "Banned" }
             );
 
-            //Compat routes
-            //https://voat.co/v/test/modlog/deleted
-            routes.MapRoute(
-                name: "modLogSubmission_Old",
-                url: "v/{subverse}/modlog/deleted",
-                defaults: new { controller = "ModLog", action = "Submissions" }
-            );
-            //https://voat.co/v/test/modlog/deletedcomments
-            routes.MapRoute(
-                name: "modLogComment_Old",
-                url: "v/{subverse}/modlog/deletedcomments",
-                defaults: new { controller = "ModLog", action = "Comments" }
-            );
             //https://voat.co/v/test/modlog/bannedusers
             routes.MapRoute(
                 name: "modLogBanned_Old",
@@ -1278,8 +1331,16 @@ namespace Voat
                 // /s/{name}/{userName}/{subverse}?action=Subscribe|Unsubscribe
                 routes.MapRoute(
                     name: "SetSubListChange",
-                    url: setSuffix + "/{name}/{userName}/{subverse}",
-                    defaults: new { controller = "Set", action = "ListChange" }
+                    url: setSuffix + "/{name}/{ownerName}/{subverse}/{subscribeAction}",
+                    defaults: new {
+                        controller = "Set",
+                        action = "ListChange"
+                    }
+                    , constraints: new
+                    {
+                        httpMethod = new HttpMethodConstraint("POST"),
+                        subscribeAction = String.Join("|", Enum.GetNames(typeof(SubscriptionAction))).ToLower()
+                    }
                 );
 
                 //// /sets

@@ -5,6 +5,20 @@
     Stylesheet on Github: http://github.com/Nurdoidz/Minity-WhoaVerse/
     ============================================================================ */
 
+@mixin gradient-top($first-color, $last-color, $initial: $first-color) {
+    background: $initial;
+    @each $prefix in -webkit-, -ms- {
+        background: #{$prefix}linear-gradient( top,$first-color,$last-color );
+    }
+    background: linear-gradient( to bottom,$first-color,$last-color );
+}
+
+@mixin transition($params...) {
+    @each $prefix in -webkit-, null {
+        #{$prefix}transition: $params;
+    }
+}
+
 .unread {
     border: 1px dashed $border-1 !important;
     background: $background-1;
@@ -148,11 +162,7 @@ label {
 }
 
 .alert-danger {
-    background: $background-8;
-    background: -webkit-linear-gradient( top,$background-8,$background-9 );
-    background: -moz-linear-gradient( top,$background-8,$background-9 );
-    background: -ms-linear-gradient( top,$background-8,$background-9 );
-    background: -o-linear-gradient( top,$background-8,$background-9 );
+    @include gradient-top($background-8, $background-9);
     border-color: $border-color-3;
     color: $color-7;
     font-size: 12px;
@@ -170,11 +180,7 @@ label {
     }
 
 .alert-warning {
-    background: $background-11;
-    background: -webkit-linear-gradient( top,$background-11,$background-12 );
-    background: -moz-linear-gradient( top,$background-11,$background-12 );
-    background: -ms-linear-gradient( top,$background-11,$background-12 );
-    background: -o-linear-gradient( top,$background-11,$background-12 );
+    @include gradient-top($background-11, $background-12);
     border-color: $border-color-4;
     color: $color-10;
     font-size: 12px;
@@ -227,11 +233,7 @@ label {
     }
 
 a.btn-tour {
-    background: $background-16;
-    background: -webkit-linear-gradient( top,$background-17,$background-18 );
-    background: -moz-linear-gradient( top,$background-17,$background-18 );
-    background: -ms-linear-gradient( top,$background-17,$background-18 );
-    background: -o-linear-gradient( top,$background-17,$background-18 );
+    @include gradient-top($background-17, $background-18, $background-16);
     border: 1px solid $border-7;
     border-radius: 2px;
     box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
@@ -708,11 +710,7 @@ h2.whoaversename {
 }
 
 .btn-whoaverse {
-    background: $background-25;
-    background: -webkit-linear-gradient( top,$background-26,$background-27 );
-    background: -moz-linear-gradient( top,$background-26,$background-27 );
-    background: -ms-linear-gradient( top,$background-26,$background-27 );
-    background: -o-linear-gradient( top,$background-26,$background-27 );
+    @include gradient-top($background-26, $background-27, $background-25);
     border: solid $border-16;
     border-width: 1px 1px 2px;
     border-radius: 3px;
@@ -725,11 +723,7 @@ h2.whoaversename {
 }
 
     .btn-whoaverse:hover {
-        background: $background-28;
-        background: -webkit-linear-gradient( top,$background-28,$background-29 );
-        background: -moz-linear-gradient( top,$background-28,$background-29 );
-        background: -ms-linear-gradient( top,$background-28,$background-29 );
-        background: -o-linear-gradient( top,$background-28,$background-29 );
+        @include gradient-top($background-28, $background-29);
         border-color: $border-color-12;
         color: $color-37;
     }
@@ -748,21 +742,13 @@ h2.whoaversename {
 
     /* Promoted */
     .btn-whoaverse.contribute {
-        background: $background-30;
-        background: -webkit-linear-gradient( top,$background-30,$background-31 );
-        background: -moz-linear-gradient( top,$background-30,$background-31 );
-        background: -ms-linear-gradient( top,$background-30,$background-31 );
-        background: -o-linear-gradient( top,$background-30,$background-31 );
+        @include gradient-top($background-30, $background-31);
         border-color: $border-color-13;
         color: $color-38;
     }
 
         .btn-whoaverse.contribute:hover {
-            background: $background-32;
-            background: -webkit-linear-gradient( top,$background-32,$background-33 );
-            background: -moz-linear-gradient( top,$background-32,$background-33 );
-            background: -ms-linear-gradient( top,$background-32,$background-33 );
-            background: -o-linear-gradient( top,$background-32,$background-33 );
+            @include gradient-top($background-32, $background-33);
             border-color: $border-color-14;
         }
 
@@ -770,12 +756,9 @@ a.btn-whoaverse {
     color: $color-36;
 }
 
+.btn-voat,
 .btn-whoaverse-paging {
-    background: $background-34;
-    background: -webkit-linear-gradient( top,$background-34,$background-35 );
-    background: -moz-linear-gradient( top,$background-34,$background-35 );
-    background: -ms-linear-gradient( top,$background-34,$background-35 );
-    background: -o-linear-gradient( top,$background-34,$background-35 );
+    @include gradient-top($background-34, $background-35);
     border: 1px solid $border-17;
     border-radius: 2px;
     color: $color-39;
@@ -785,26 +768,26 @@ a.btn-whoaverse {
     text-align: center;
 }
 
+    .btn-voat:hover,
     .btn-whoaverse-paging:hover {
-        background: $background-36;
-        background: -webkit-linear-gradient( top,$background-36,$background-37 );
-        background: -moz-linear-gradient( top,$background-36,$background-37 );
-        background: -ms-linear-gradient( top,$background-36,$background-37 );
-        background: -o-linear-gradient( top,$background-36,$background-37 );
+        @include gradient-top($background-36, $background-37);
         border-color: $border-color-15;
         color: $color-39;
         text-decoration: none;
     }
 
+    .btn-voat:active,
     .btn-whoaverse-paging:active {
         position: relative;
         top: 1px;
     }
 
+    .btn-voat:focus,
     .btn-whoaverse-paging:focus {
         color: $color-1;
     }
 
+    .btn-voat.disabled, .btn-voat[disabled],
     .btn-whoaverse-paging.disabled, .btn-whoaverse-paging[disabled], fieldset[disabled] .btn {
         cursor: not-allowed;
         pointer-events: none;
@@ -812,20 +795,18 @@ a.btn-whoaverse {
         box-shadow: none;
     }
 
+    .btn-voat a,
     .btn-whoaverse-paging a {
         color: $color-39 !important;
     }
 
+    .btn-voat:visited,
     .btn-whoaverse-paging:visited {
         color: $color-39 !important;
     }
 
 .btn-whoaverse-medium {
-    background: $background-38;
-    background: -webkit-linear-gradient( top,$background-39,$background-40 );
-    background: -moz-linear-gradient( top,$background-39,$background-40 );
-    background: -ms-linear-gradient( top,$background-39,$background-40 );
-    background: -o-linear-gradient( top,$background-39,$background-40 );
+    @include gradient-top($background-39, $background-40, $background-38);
     border: 1px solid $border-18;
     border-radius: 2px;
     box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
@@ -838,14 +819,37 @@ a.btn-whoaverse {
 }
 
     .btn-whoaverse-medium:hover {
-        background: $background-41;
-        background: -webkit-linear-gradient( top,$background-41,$background-42 );
-        background: -moz-linear-gradient( top,$background-41,$background-42 );
-        background: -ms-linear-gradient( top,$background-41,$background-42 );
-        background: -o-linear-gradient( top,$background-41,$background-42 );
+        @include gradient-top($background-41, $background-42);
         border-color: $border-color-16;
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
         color: $color-1;
+    }
+
+.btn-voat {
+    @include gradient-top($background-30, $background-31);
+    border: 1px solid $border-23;
+    color: $color-38;
+}
+
+    .btn-voat:hover,
+    .btn-voat:active,
+    .btn-voat:focus {
+        @include gradient-top($background-32, $background-33);
+        border-color: $border-color-14;
+    }
+
+.btn-voat-off {
+    @include gradient-top($background-25, $background-70);
+    border: 1px solid $border-37;
+    color: $color-71;
+}
+
+    .btn-voat-off:hover,
+    .btn-voat-off:active,
+    .btn-voat-off:focus {
+        @include gradient-top($background-71, $background-72);
+        border-color: $border-color-29;
+        color: $color-70;
     }
 
 /* ! Body : Forms
@@ -861,10 +865,7 @@ a.btn-whoaverse {
     line-height: 140%;
     margin-bottom: 10px;
     padding: 8px;
-    -webkit-transition: border-color 0.1s ease-in-out 0s;
-    -moz-transition: border-color 0.1s ease-in-out 0s;
-    -o-transition: border-color 0.1s ease-in-out 0s;
-    transition: border-color 0.1s ease-in-out 0s;
+    @include transition(border-color 0.1s ease-in-out 0s);
     width: 100%;
     resize: vertical;
 }
@@ -885,10 +886,7 @@ a.btn-whoaverse {
     height: 30px;
     line-height: 100%;
     padding: 8px 12px;
-    -webkit-transition: border-color 0.1s ease-in-out;
-    -moz-transition: border-color 0.1s ease-in-out;
-    -o-transition: border-color 0.1s ease-in-out;
-    transition: border-color 0.1s ease-in-out;
+    @include transition(border-color 0.1s ease-in-out);
     width: 100%;
 }
 
@@ -1159,11 +1157,7 @@ pre, code {
 }
 
 .panel-heading, .panel-info > .panel-heading, .panel-default > .panel-heading {
-    background: $background-45;
-    background: -webkit-linear-gradient( top,$background-45,$background-46 );
-    background: -moz-linear-gradient( top,$background-45,$background-46 );
-    background: -ms-linear-gradient( top,$background-45,$background-46 );
-    background: -o-linear-gradient( top,$background-45,$background-46 );
+    @include gradient-top($background-45, $background-46);
     border-color: $border-color-20;
     border-radius: 3px 3px 0 0;
     border-style: solid;
@@ -1297,10 +1291,7 @@ pre, code {
 
 #sr-bar li a {
     color: $color-44;
-    -webkit-transition: color 0.2s ease;
-    -moz-transition: color 0.2s ease;
-    -o-transition: color 0.2s ease;
-    transition: color 0.2s ease;
+    @include transition(color 0.2s ease);
 }
 
 #sr-header-area:hover #sr-bar li a {
@@ -1394,11 +1385,7 @@ pre, code {
                 }
 
                 .whoaSubscriptionMenu li ul li a:hover {
-                    background: $background-49;
-                    background: -webkit-linear-gradient( top,$background-50,$background-49 );
-                    background: -moz-linear-gradient( top,$background-50,$background-49 );
-                    background: -ms-linear-gradient( top,$background-50,$background-49 );
-                    background: -o-linear-gradient( top,$background-50,$background-49 );
+                    @include gradient-top($background-50, $background-49, $background-49);
                     color: $color-1 !important;
                 }
 
@@ -1515,11 +1502,7 @@ pre, code {
         ------------------------------------------------------------------------------------ */
 
         .tabmenu li.selected a {
-            background: $background-15;
-            background: -webkit-linear-gradient( top,$background-15,$background-51 );
-            background: -moz-linear-gradient( top,$background-15,$background-51 );
-            background: -ms-linear-gradient( top,$background-15,$background-51 );
-            background: -o-linear-gradient( top,$background-15,$background-51 );
+            @include gradient-top($background-15, $background-51);
             border: solid $border-22;
             border-width: 1px 1px 2px;
             color: $color-45;
@@ -1530,11 +1513,7 @@ pre, code {
             }
 
             .tabmenu li.selected a.contribute {
-                background: $background-30;
-                background: -webkit-linear-gradient( top,$background-30,$background-31 );
-                background: -moz-linear-gradient( top,$background-30,$background-31 );
-                background: -ms-linear-gradient( top,$background-30,$background-31 );
-                background: -o-linear-gradient( top,$background-30,$background-31 );
+                @include gradient-top($background-30, $background-31);
                 border: solid $border-23;
                 border-width: 1px 1px 2px;
                 color: $color-38;
@@ -1542,11 +1521,7 @@ pre, code {
             }
 
                 .tabmenu li.selected a.contribute:hover {
-                    background: $background-32;
-                    background: -webkit-linear-gradient( top,$background-32,$background-33 );
-                    background: -moz-linear-gradient( top,$background-32,$background-33 );
-                    background: -ms-linear-gradient( top,$background-32,$background-33 );
-                    background: -o-linear-gradient( top,$background-32,$background-33 );
+                    @include gradient-top($background-32, $background-33);
                     border-color: $border-color-14;
                 }
 
@@ -1558,33 +1533,21 @@ pre, code {
         }
 
             .tabmenu li.disabled a:hover {
-                background: $background-15;
-                background: -webkit-linear-gradient( top,$background-15,$background-51 );
-                background: -moz-linear-gradient( top,$background-15,$background-51 );
-                background: -ms-linear-gradient( top,$background-15,$background-51 );
-                background: -o-linear-gradient( top,$background-15,$background-51 );
+                @include gradient-top($background-15, $background-51);
                 border: solid $border-22;
                 border-width: 1px 1px 2px;
                 color: $color-45;
             }
 
             .tabmenu li.disabled a.contribute {
-                background: $background-30;
-                background: -webkit-linear-gradient( top,$background-30,$background-31 );
-                background: -moz-linear-gradient( top,$background-30,$background-31 );
-                background: -ms-linear-gradient( top,$background-30,$background-31 );
-                background: -o-linear-gradient( top,$background-30,$background-31 );
+                @include gradient-top($background-30, $background-31);
                 border: solid $border-23;
                 border-width: 1px 1px 2px;
                 color: $color-49;
             }
 
                 .tabmenu li.disabled a.contribute:hover {
-                    background: $background-32;
-                    background: -webkit-linear-gradient( top,$background-32,$background-33 );
-                    background: -moz-linear-gradient( top,$background-32,$background-33 );
-                    background: -ms-linear-gradient( top,$background-32,$background-33 );
-                    background: -o-linear-gradient( top,$background-32,$background-33 );
+                    @include gradient-top($background-32, $background-33);
                     border-color: $border-color-14;
                 }
 
@@ -1992,10 +1955,7 @@ ul.content {
     max-width: 72px;
     overflow: hidden;
     padding: 0;
-    -webkit-transition: border-color 0.1s ease-in-out;
-    -moz-transition: border-color 0.1s ease-in-out;
-    -o-transition: border-color 0.1s ease-in-out;
-    transition: border-color 0.1s ease-in-out;
+    @include transition(border-color 0.1s ease-in-out);
     width: auto;
 }
 
@@ -2560,11 +2520,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 }
 
 #about-main .btn-whoaverse-paging {
-    background: $background-25;
-    background: -webkit-linear-gradient( top,$background-26,$background-27 );
-    background: -moz-linear-gradient( top,$background-26,$background-27 );
-    background: -ms-linear-gradient( top,$background-26,$background-27 );
-    background: -o-linear-gradient( top,$background-26,$background-27 );
+    @include gradient-top($background-26, $background-27, $background-25);
     border: 1px solid $border-32;
     border-radius: 3px;
     box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
@@ -2576,11 +2532,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 }
 
     #about-main .btn-whoaverse-paging:hover {
-        background: $background-63;
-        background: -webkit-linear-gradient( top,$background-63,$background-64 );
-        background: -moz-linear-gradient( top,$background-63,$background-64 );
-        background: -ms-linear-gradient( top,$background-63,$background-64 );
-        background: -o-linear-gradient( top,$background-63,$background-64 );
+        @include gradient-top($background-63, $background-64);
         border-color: $border-color-27;
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
         color: $color-68;
@@ -2656,11 +2608,7 @@ input[type=checkbox].form-control {
 }
 
 .modal-header {
-    background: $background-66;
-    background: -webkit-linear-gradient( top,$background-67,$background-68 );
-    background: -moz-linear-gradient( top,$background-67,$background-68 );
-    background: -ms-linear-gradient( top,$background-67,$background-68 );
-    background: -o-linear-gradient( top,$background-67,$background-68 );
+    @include gradient-top($background-67, $background-68, $background-66);
     border-bottom: 2px solid $border-bottom-9;
     border-radius: 3px 3px 0 0;
 }
@@ -2690,11 +2638,7 @@ input[type=checkbox].form-control {
 }
 
 .modal-body label.control-label {
-    background: $background-66;
-    background: -webkit-linear-gradient( top,$background-67,$background-68 );
-    background: -moz-linear-gradient( top,$background-67,$background-68 );
-    background: -ms-linear-gradient( top,$background-67,$background-68 );
-    background: -o-linear-gradient( top,$background-67,$background-68 );
+    @include gradient-top($background-67, $background-68, $background-66);
     border-bottom: 2px solid $border-bottom-9;
     border-radius: 3px 3px 0 0;
     color: $color-1;
@@ -2722,10 +2666,7 @@ input[type=checkbox].form-control {
         height: 36px;
         margin: 0;
         text-align: left;
-        -webkit-transition: border-color 0.25s ease-in-out;
-        -moz-transition: border-color 0.25s ease-in-out;
-        -o-transition: border-color 0.25s ease-in-out;
-        transition: border-color 0.25s ease-in-out;
+        @include transition(border-color 0.25s ease-in-out);
         width: 360px;
     }
 
@@ -2962,11 +2903,7 @@ input[type=checkbox].form-control {
     }
 
     .tabmenu li.selected a {
-        background: $background-28;
-        background: -webkit-linear-gradient( top,$background-28,$background-29 );
-        background: -moz-linear-gradient( top,$background-28,$background-29 );
-        background: -ms-linear-gradient( top,$background-28,$background-29 );
-        background: -o-linear-gradient( top,$background-28,$background-29 );
+        @include gradient-top($background-28, $background-29);
         border: 1px solid $border-34;
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.35 );
         color: $color-45;
@@ -2974,11 +2911,7 @@ input[type=checkbox].form-control {
     }
 
     .tabmenu li.disabled a {
-        background: $background-15;
-        background: -webkit-linear-gradient( top,$background-15,$background-69 );
-        background: -moz-linear-gradient( top,$background-15,$background-69 );
-        background: -ms-linear-gradient( top,$background-15,$background-69 );
-        background: -o-linear-gradient( top,$background-15,$background-69 );
+        @include gradient-top($background-15, $background-69);
         border: 1px solid $border-22;
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
         color: $color-45;
@@ -3031,11 +2964,7 @@ input[type=checkbox].form-control {
 
     .inline-loadcomments-btn {
         /*from btn-whoaverse*/
-        background: $background-25;
-        background: -webkit-linear-gradient( top,$background-26,$background-27 );
-        background: -moz-linear-gradient( top,$background-26,$background-27 );
-        background: -ms-linear-gradient( top,$background-26,$background-27 );
-        background: -o-linear-gradient( top,$background-26,$background-27 );
+        @include gradient-top($background-26, $background-27, $background-25);
         border: solid $border-16;
         border-width: 1px 1px 2px;
         border-radius: 3px;

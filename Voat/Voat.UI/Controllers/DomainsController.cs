@@ -30,32 +30,32 @@ namespace Voat.Controllers
     public class DomainsController : BaseController
     {
        
-        public async Task<ActionResult> Index(int? page, string domainname, string sortingmode)
+        public async Task<ActionResult> Index(int? page, string domainName, string sortingMode)
         {
             const int pageSize = 25;
             int pageNumber = (page ?? 0);
 
-            if (pageNumber < 0 || String.IsNullOrWhiteSpace(domainname) || pageNumber > 9)
+            if (pageNumber < 0 || String.IsNullOrWhiteSpace(domainName) || pageNumber > 9)
             {
                 return NotFoundErrorView();
             }
-            if (domainname.Length < 4)
+            if (domainName.Length < 4)
             {
                 return RedirectToAction("UnAuthorized", "Error");
             }
 
-            sortingmode = (sortingmode == "new" ? "new" : "hot");
+            sortingMode = (sortingMode == "new" ? "new" : "hot");
 
             ViewBag.SelectedSubverse = "domains";
-            ViewBag.SelectedDomain = domainname;
-            domainname = domainname.Trim().ToLower();
+            ViewBag.SelectedDomain = domainName;
+            domainName = domainName.Trim().ToLower();
 
             //TODO: This needs to moved to Query/Repository
             var options = new SearchOptions();
             options.Page = pageNumber;
-            options.Sort = sortingmode == "new" ? Domain.Models.SortAlgorithm.New : Domain.Models.SortAlgorithm.Hot;
+            options.Sort = sortingMode == "new" ? Domain.Models.SortAlgorithm.New : Domain.Models.SortAlgorithm.Hot;
 
-            var q = new QuerySubmissionsByDomain(domainname, options);
+            var q = new QuerySubmissionsByDomain(domainName, options);
             var results = await q.ExecuteAsync();
             //var results = CacheHandler.Instance.Register(CachingKey.DomainSearch(domainname, pageNumber, sortingmode), () => {
             //    using (var db = new voatEntities())
@@ -95,7 +95,17 @@ namespace Voat.Controllers
             viewProperties.Submissions = paginatedSubmissions;
             viewProperties.Submissions.RouteName = "DomainIndex";
 
-            viewProperties.Title = "Domain: " + domainname;
+            viewProperties.Title = "Domain: " + domainName;
+
+            ViewBag.NavigationViewModel = new NavigationViewModel()
+            {
+                Description = "Domain " + domainName,
+                Name = domainName,
+                MenuType = MenuType.Domain,
+                BasePath = $"/domains/{domainName}",
+                Sort = options.Sort
+            };
+
             return View("SubmissionList", viewProperties);
         }
         

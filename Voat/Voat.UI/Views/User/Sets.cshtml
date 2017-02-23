@@ -24,13 +24,16 @@
                 {
                     using (var enumerator = Model.GetEnumerator())
                     {
+                        Voat.Domain.Models.DomainReferenceDetails current = null;
                         while (enumerator.MoveNext())
                         {
+                            current = Voat.Domain.Models.DomainReferenceDetails.Map(enumerator.Current);
                             <div>
-                                <div class="col-md-6">@Html.DisplayFor(x => enumerator.Current, new { ShowDetailButton = true })</div>
+                                <div class="col-md-6">@Html.DisplayFor(x => current, new { ShowDetailButton = true })</div>
                                 @if (enumerator.MoveNext())
                                 {
-                                    <div class="col-md-6">@Html.DisplayFor(x => enumerator.Current, new { ShowDetailButton = true })</div>
+                                    current = Voat.Domain.Models.DomainReferenceDetails.Map(enumerator.Current);
+                                    <div class="col-md-6">@Html.DisplayFor(x => current, new { ShowDetailButton = true })</div>
                                 }
                             </div>
                         }
@@ -44,7 +47,7 @@
         }
         else
         {
-            <p>You no sets!</p>
+            <p>No sets found</p>
         }
     </div>
 </div>

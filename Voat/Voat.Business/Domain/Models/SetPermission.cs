@@ -8,7 +8,7 @@ namespace Voat.Domain.Models
 {
     public class SetPermission
     {
-        private SetPermission() { }
+        public SetPermission() { }
 
         public static SetPermission GetPermissions(Domain.Models.Set set, System.Security.Principal.IIdentity user)
         {
@@ -44,9 +44,9 @@ namespace Voat.Domain.Models
             }
             return perms;
         }
-        public bool View { get; set; } = false;
-        public bool EditList { get; set; } = false;
-        public bool EditProperties { get; set; } = false;
-        public bool Delete { get; set; } = false;
+        public bool View { get; private set; } = false;
+        public bool EditList { get; private set; } = false;
+        public bool EditProperties { get; private set; } = false;
+        public bool Delete { get; private set; } = false;
     }
 }

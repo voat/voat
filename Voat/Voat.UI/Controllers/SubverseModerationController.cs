@@ -50,14 +50,10 @@ namespace Voat.Controllers
             var viewModel = new SubverseSettingsViewModel
             {
                 Name = subverse.Name,
-                //Type = subverse.Type,
-                //SubmissionText = subverse.SubmissionText,
+                Title = subverse.Title,
                 Description = subverse.Description,
                 SideBar = subverse.SideBar,
                 Stylesheet = subverse.Stylesheet,
-                //IsDefaultAllowed = subverse.IsDefaultAllowed,
-                //SubmitLinkLabel = subverse.SubmitLinkLabel,
-                //SubmitPostLabel = subverse.SubmitPostLabel,
                 IsAdult = subverse.IsAdult,
                 IsPrivate = subverse.IsPrivate,
                 IsThumbnailEnabled = subverse.IsThumbnailEnabled,
@@ -111,6 +107,7 @@ namespace Voat.Controllers
                     // TODO investigate if EntityState is applicable here and use that instead
                     // db.Entry(updatedModel).State = EntityState.Modified;
 
+                    existingSubverse.Title = updatedModel.Title;
                     existingSubverse.Description = updatedModel.Description;
                     existingSubverse.SideBar = updatedModel.SideBar;
 

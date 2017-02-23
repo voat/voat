@@ -292,6 +292,7 @@
     <Compile Include="Controllers\Base\BaseController.cs" />
     <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
+    <Compile Include="Controllers\DiscoverController.cs" />
     <Compile Include="Controllers\DomainsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HtmlElementsController.cs" />
@@ -651,16 +652,16 @@
     <Content Include="Views\Subverses\Admin\ResignAsModerator.cshtml" />
     <Content Include="Views\Subverses\AdultContentFiltered.cshtml" />
     <Content Include="Views\AjaxViews\_PrivateMessageReplyForm.cshtml" />
-    <Content Include="Views\Shared\Navigation\_TabMenu.cshtml" />
+    <Content Include="Views\Shared\Navigation\_SubverseMenu.cshtml" />
     <Content Include="Views\Shared\Navigation\_PmMenu.cshtml" />
     <Content Include="Views\Shared\Navigation\_UserProfileMenu.cshtml" />
-    <Content Include="Views\Shared\Navigation\_SubversesMenu.cshtml" />
+    <Content Include="Views\Shared\Navigation\_DiscoveryMenu.cshtml" />
     <Content Include="Views\Shared\Navigation\_DomainsMenu.cshtml" />
     <Content Include="Views\Shared\Submissions\_StickiedSubmission.cshtml" />
     <Content Include="Views\Subverses\_Stickied.cshtml" />
     <Content Include="Views\Shared\_DefaultMessage.cshtml" />
     <Content Include="Views\Subverses\SearchForSubverse.cshtml" />
-    <Content Include="Views\Search\FindSubverseSearchResult.cshtml" />
+    <Content Include="Views\Search\DomainSearchResults.cshtml" />
     <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CommentFlatListButtons.cshtml" />
     <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonDelete.cshtml" />
     <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonReport.cshtml" />
@@ -742,8 +743,13 @@
     <Content Include="Views\User\Sets.cshtml" />
     <Content Include="Views\Set\Create.cshtml" />
     <Content Include="Views\Set\_Update.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\Set.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\XXXXXXSet.cshtml" />
     <Content Include="Views\Shared\Navigation\_SetMenu.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\DomainReferenceDetails.cshtml" />
+    <Content Include="Views\Shared\Sidebars\_SidebarSet.cshtml" />
+    <Content Include="Views\Discover\Index.cshtml" />
+    <Content Include="Views\Discover\Search.cshtml" />
+    <Content Include="Views\User\Subscribed.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

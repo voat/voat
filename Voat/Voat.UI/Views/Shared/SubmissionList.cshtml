@@ -14,7 +14,7 @@
 
 @{
     ViewBag.Title = Model.Title;
-    
+    ViewBag.Description = Model.Description;
 }
 
 @section PageHeader {
@@ -35,13 +35,17 @@
     {
         @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = Model.Context.Name })
     }
+    else if (Model.Context.Type == Voat.Domain.Models.DomainType.Set)
+    {
+        @Html.Action("Sidebar", "Set", new { name = Model.Context.FullName })
+    }
     else
     {
         @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
     }
 
     <div class="content" role="main">
-        @if (Model.Context.Type == Voat.Domain.Models.DomainType.Subverse && Model.Sort == Voat.Domain.Models.SortAlgorithm.Top)
+        @if (Model.Context != null && Model.Context.Type == Voat.Domain.Models.DomainType.Subverse && Model.Sort == Voat.Domain.Models.SortAlgorithm.Top)
         {
             <div id="sortingThingy" class="sorting-thingy">
                 @Html.RouteLink("day", Model.Submissions.RouteName, new { subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "day" }) | 

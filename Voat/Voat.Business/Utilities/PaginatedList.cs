@@ -58,9 +58,8 @@ namespace Voat.Utilities
             AddRange(source.Skip(PageIndex * PageSize).Take(PageSize));
         }
 
-        //IAmAGate: Perf mods for caching
         /// <summary>
-        /// 
+        /// Fake paging below bro
         /// </summary>
         /// <param name="source"></param>
         /// <param name="pageIndex"></param>

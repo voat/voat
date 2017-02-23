@@ -25,9 +25,9 @@ namespace Voat.Models
         [StringLength(20, ErrorMessage = "The name length is limited to 20 characters")]
         [Required(ErrorMessage = "Name is required. Seriously.")]
         public string Name { get; set; }
-        
-        //this needs to be calculated via name
-        [Required(ErrorMessage = "Title is required. Has to be calculated")]
+
+        [StringLength(100, ErrorMessage = "The title length is limited to 100 characters")]
+        [Display(Name="Short Title")]
         public string Title { get; set; }
 
         public string Sidebar { get; set; }

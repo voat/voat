@@ -36,6 +36,7 @@ using Voat.Utilities;
 
 namespace Voat.Data
 {
+
     /// <summary>
     /// Provide these Query string key/value pairs at endpoints that support the SearchOptions parsing to manipulate search query. 
     /// </summary>

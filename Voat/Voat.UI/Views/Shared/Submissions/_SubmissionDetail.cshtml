@@ -15,7 +15,6 @@
 @{
     DateTime submissionDate = Model.CreationDate;
     string postAge = Age.ToRelative(submissionDate);
-    bool? subverseAnonymized = Convert.ToBoolean(ViewData["SubverseAnonymized"]);
 
     string submissionDomain = Model.Subverse;
     string submissionDomainHref = "/v/" + Model.Subverse;
@@ -24,7 +23,6 @@
         submissionDomain = UrlUtility.GetDomainFromUri(Model.Url);
         submissionDomainHref = "/domains/" + submissionDomain;
     }
-
 }
 
 <div class="modal fade" id="linkFlairSelectModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true"></div>
@@ -71,7 +69,7 @@
                     }
                     else
                     {
-                        if (Model.IsAnonymized || subverseAnonymized == true)
+                        if (Model.IsAnonymized)
                         {
                             <span class="userattrs">
                                 <a href="#" class="author may-blank">@Model.ID</a>

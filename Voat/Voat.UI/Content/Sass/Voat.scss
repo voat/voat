@@ -67,6 +67,9 @@ $background-66: #4AABE7;
 $background-67: #69C0F5;
 $background-68: #4AABE7;
 $background-69: #FBFBFB;
+$background-70: #F0F0F0;
+$background-71: #C4B7FF;
+$background-72: #BDAEFF;
 $background-color-1: #4AABE7;
 $background-color-2: #FDFDFD;
 $background-color-3: #F2F2F2;
@@ -114,6 +117,7 @@ $border-33: #DCDCDC;
 $border-34: #BABABA;
 $border-35: #D1D1D1;
 $border-36: #DEDEDE;
+$border-37: #C9C9C9;
 $border-bottom-1: #E9E9E9;
 $border-bottom-2: #DDD;
 $border-bottom-3: #999;
@@ -151,6 +155,7 @@ $border-color-25: #4AABE7;
 $border-color-26: #DCDCDC;
 $border-color-27: #CCC;
 $border-color-28: #4C9FD2;
+$border-color-29: #9B85FF;
 $border-top-1: #CCC;
 $border-top-2: #404040;
 $border-top-3: #DCDCDC;
@@ -226,22 +231,19 @@ $color-66: #6D6D6D;
 $color-67: #444;
 $color-68: #444;
 $color-69: #6F64BA;
+$color-70: #5B46BE;
+$color-71: #5A5A5A;
 
 $spritesheet: '/Graphics/Light-SpriteSheet.png';
 
 @import 'Base';
 
-$background-70: #F0F0F0;
-$background-71: #C4B7FF;
-$background-72: #BDAEFF;
-$border-37: #C9C9C9;
-$border-color-29: #9B85FF;
-$color-70: #5B46BE;
-
+.btn-voat,
 .btn-whoaverse-paging {
     font-weight: bold;
 }
 
+    .btn-voat.disabled, .btn-voat[disabled],
     .btn-whoaverse-paging.disabled, .btn-whoaverse-paging[disabled], fieldset[disabled] .btn {
         color: $color-1;
     }
@@ -249,28 +251,6 @@ $color-70: #5B46BE;
 .btn-whoaverse-medium {
     font-weight: bold;
 }
-
-.btn-whoaverse-paging-off {
-    background: $background-4;
-    background: -webkit-linear-gradient( top,$background-4,$background-70 );
-    background: -moz-linear-gradient( top,$background-4,$background-70 );
-    background: -ms-linear-gradient( top,$background-4,$background-70 );
-    background: -o-linear-gradient( top,$background-4,$background-70 );
-    border: 1px solid $border-37;
-    color: $color-8;
-}
-
-    .btn-whoaverse-paging-off:hover,
-    .btn-whoaverse-paging-off:active,
-    .btn-whoaverse-paging-off:focus {
-        background: $background-71;
-        background: -webkit-linear-gradient( top,$background-71,$background-72 );
-        background: -moz-linear-gradient( top,$background-71,$background-72 );
-        background: -ms-linear-gradient( top,$background-71,$background-72 );
-        background: -o-linear-gradient( top,$background-71,$background-72 );
-        border-color: $border-color-29;
-        color: $color-70;
-    }
 
     .md a:hover {
         text-decoration: underline;

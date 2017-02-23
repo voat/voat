@@ -29,7 +29,13 @@
         <hr />
         @if (Model.Permissions.EditList)
         {
-            <div class="form-horizontal">
+            <div class="form-horizontal updateSection">
+
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-5">
+                        <div class="updateResult"></div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label class="col-md-4 control-label">Add a Subverse</label>
                     <div class="col-md-5">
@@ -39,8 +45,7 @@
                 
                 <div class="form-group">
                     <div class="col-md-offset-4 col-md-5">
-                        <div class="status"></div>
-                        <input type="submit" value="Add" class="btn-whoaverse" onclick="javascript:setSubverseToggle($(this), '@Model.Set.Name', '@Model.Set.UserName', $('#subName').val(), '@Voat.Domain.Models.SubscriptionAction.Subscribe.ToString()');" />
+                        <input type="button" value="Add" class="btn-whoaverse" onclick="javascript:setSubverseListToggle($(this), '@Model.Set.Name', '@Model.Set.UserName', $('#subName').val(), '@Voat.Domain.Models.SubscriptionAction.Subscribe.ToString()', setSubverseAddCallBack);" />
                     </div>
                 </div>
             </div>
@@ -71,3 +76,4 @@
         @Html.DisplayFor(model => Model.List, "IPaginatedList")
     </div>
 </div>
+

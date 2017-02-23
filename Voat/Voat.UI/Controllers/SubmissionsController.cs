@@ -167,27 +167,6 @@ namespace Voat.Controllers
             return Json(result);
         }
 
-        // save a submission
-        // POST: save/{messageId}
-        [HttpPost]
-        [Authorize]
-        [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> Save(int messageId)
-        {
-            var cmd = new SaveCommand(Domain.Models.ContentType.Submission, messageId);
-            var response = await cmd.Execute();
-            //Saving.SaveSubmission(messageId, loggedInUser);
-
-            if (response.Success)
-            {
-                return Json("Saving ok", JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
-            }
-        }
-
         // POST: editsubmission
         [Authorize]
         [HttpPost]

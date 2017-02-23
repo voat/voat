@@ -15,9 +15,9 @@ namespace Voat.Domain.Command
 
         protected DomainReference _setRef;
         protected string _subverse;
-        protected SubscriptionAction? _action;
+        protected SubscriptionAction _action;
 
-        public SetSubverseCommand(DomainReference setRef, string subverse, SubscriptionAction? action = null)
+        public SetSubverseCommand(DomainReference setRef, string subverse, SubscriptionAction action = SubscriptionAction.Toggle)
         {
             _setRef = setRef;
             _action = action;

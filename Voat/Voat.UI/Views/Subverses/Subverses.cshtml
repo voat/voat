@@ -15,20 +15,25 @@
 @{
     string sortingMode = ViewBag.SortingMode;
     string urlaction = "";
+    string description = "Showing subverses ordered by number of subscribers.";
 
+   
     switch (sortingMode)
     {
         case "new":
             ViewBag.Title = "Newest subverses";
-            urlaction = "NewestSubverses";
+            Model.RouteName = "NewestSubverses";
+            description = "Showing the most recently registered subverses.";
             break;
         case "active":
             ViewBag.Title = "Active subverses";
-            urlaction = "ActiveSubverses";
+            Model.RouteName = "ActiveSubverses";
+            description = "Showing subverses ordered by posting activity.";
             break;
         default:
             ViewBag.Title = "Most popular subverses";
-            urlaction = "Subverses";
+            Model.RouteName = "Subverses";
+            description = "Showing subverses ordered by number of subscribers.";
             break;
     }
 }
@@ -51,60 +56,28 @@
     </div>
 
     <div class="content" role="main">
-
-        @switch (sortingMode)
-        {
-            case "new":
-                <div class="alert-notice">
-                    <p>Showing the most recently registered subverses.</p>
-                </div>
-                break;
-            case "active":
-            <div class="alert-notice">
-                <p>Showing subverses ordered by posting activity.</p>
-            </div>
-                break;
-            default:
-            <div class="alert-notice">
-                <p>Showing subverses ordered by number of subscribers.</p>
-            </div>
-                break;
-        }
-
+        <div class="alert-notice">
+            <p>@description</p>
+        </div>
         <div class="sitetable linklisting">
 
             @using (var enumerator = Model.GetEnumerator())
             {
+                Voat.Domain.Models.DomainReferenceDetails current = null;
                 while (enumerator.MoveNext())
                 {
+                    current = Voat.Domain.Models.DomainReferenceDetails.Map(enumerator.Current);
                     <div class="row">
-                        <div class="col-md-6">@Html.Action("DetailsForSelectedSubverse", "Subverses", new { selectedSubverse = enumerator.Current.Name })</div>
+                        <div class="col-md-6">@Html.DisplayFor(x => current)</div>
                         @if (enumerator.MoveNext())
                         {
-                            <div class="col-md-6">@Html.Action("DetailsForSelectedSubverse", "Subverses", new { selectedSubverse = enumerator.Current.Name })</div>
+                            current = Voat.Domain.Models.DomainReferenceDetails.Map(enumerator.Current);
+                            <div class="col-md-6">@Html.DisplayFor(x => current)</div>
                         }
                     </div>
                 }
             }
-
-            <div class="pagination-container">
-                <ul>
-                    @if (Model.HasPreviousPage)
-                    {
-                        <li class="btn-whoaverse-paging">
-                            @Html.RouteLink("‹ prev", urlaction, new { page = (Model.PageIndex - 1) }, new { rel = "prev" })
-                        </li>
-                    }
-
-                    @if (Model.HasNextPage)
-                    {
-                        <li class="btn-whoaverse-paging">
-                            @Html.RouteLink("next ›", urlaction, new { page = (Model.PageIndex + 1) }, new { rel = "next" })
-                        </li>
-                    }
-                </ul>
-            </div>
-
+            @Html.DisplayFor(model => Model, "IPaginatedList")
         </div>
     </div>
 </div>

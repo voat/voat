@@ -50,22 +50,7 @@ namespace Voat.Controllers
             return Json(result);
         }
 
-        [HttpPost]
-        [Authorize]
-        [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> SaveComment(int commentId)
-        {
-            var cmd = new SaveCommand(Domain.Models.ContentType.Comment, commentId);
-            var response = await cmd.Execute();
-            if (response.Success)
-            {
-                return Json(new { success = true });
-            }
-            else
-            {
-                return JsonError(response.Message);
-            }
-        }
+       
 
         // GET: Renders Primary Submission Comments Page
         public async Task<ActionResult> Comments(int? submissionID, string subverseName, int? commentID, string sort, int? context)
@@ -392,7 +377,7 @@ namespace Voat.Controllers
 
         // POST: comments/distinguish/{commentId}
         [Authorize]
-        public JsonResult DistinguishComment(int commentId)
+        public async Task<JsonResult> DistinguishComment(int commentId)
         {
             using (var _db = new voatEntities())
             {
@@ -416,7 +401,7 @@ namespace Voat.Controllers
                                 commentToDistinguish.IsDistinguished = true;
                             }
 
-                            _db.SaveChangesAsync();
+                            await _db.SaveChangesAsync();
 
                             //Update Cache
                             CacheHandler.Instance.DictionaryReplace<int, usp_CommentTree_Result>(CachingKey.CommentTree(commentToDistinguish.SubmissionID.Value), commentToDistinguish.ID, x => { x.IsDistinguished = commentToDistinguish.IsDistinguished; return x; }, true);

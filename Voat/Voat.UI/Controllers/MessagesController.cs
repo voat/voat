@@ -81,11 +81,24 @@ namespace Voat.Controllers
         {
             return (page.HasValue && page.Value >= 0 ? page.Value : 0);
         }
+
+        private void SetNavigationInformation(string name)
+        {
+            ViewBag.NavigationViewModel = new NavigationViewModel()
+            {
+                Description = name,
+                Name = name,
+                MenuType = MenuType.UserMessages,
+                BasePath = null,
+                Sort = null
+            };
+        }
+
         public async Task<ActionResult> Private(int? page = null)
         {
 
-            ViewBag.PmView = "inbox";
-            ViewBag.Title = "Inbox";
+            //ViewBag.PmView = "inbox";
+            //ViewBag.Title = "Inbox";
 
             var q = new QueryMessages(MessageTypeFlag.Private, MessageState.All, false);
             q.PageNumber = SetPage(page);
@@ -94,15 +107,16 @@ namespace Voat.Controllers
 
             var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
 
-            return View("Index", pagedList);
+            SetNavigationInformation("Inbox");
 
+            return View("Index", pagedList);
         }
 
         public async Task<ActionResult> Sent(int? page = null)
         {
 
-            ViewBag.PmView = "sent";
-            ViewBag.Title = "Sent";
+            //ViewBag.PmView = "sent";
+            //ViewBag.Title = "Sent";
 
             var q = new QueryMessages(MessageTypeFlag.Sent, MessageState.All, true);
             q.PageNumber = SetPage(page);
@@ -110,14 +124,16 @@ namespace Voat.Controllers
 
             var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
 
+            SetNavigationInformation("Sent");
+
             return View("Index", pagedList);
 
         }
         public async Task<ActionResult> Replies(ContentType? type = null, int? page = null)
         {
 
-            ViewBag.PmView = "inbox";
-            ViewBag.Title = "Replies";
+            //ViewBag.PmView = "inbox";
+            //ViewBag.Title = "Replies";
 
             var contentType = MessageTypeFlag.CommentReply | MessageTypeFlag.SubmissionReply;
             if (type.HasValue)
@@ -133,14 +149,16 @@ namespace Voat.Controllers
 
             var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
 
+            SetNavigationInformation("Replies");
+
             return View("Index", pagedList);
 
         }
         public async Task<ActionResult> Mentions(ContentType? type = null, int? page = null)
         {
 
-            ViewBag.PmView = "inbox";
-            ViewBag.Title = "Mentions";
+            //ViewBag.PmView = "inbox";
+            //ViewBag.Title = "Mentions";
 
             var contentType = MessageTypeFlag.CommentMention | MessageTypeFlag.SubmissionMention;
             if (type.HasValue)
@@ -155,6 +173,8 @@ namespace Voat.Controllers
             var result = await q.ExecuteAsync();
             var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
 
+            SetNavigationInformation("Mentions");
+
             return View("Index", pagedList);
         }
 
@@ -162,12 +182,15 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<ActionResult> Notifications()
         {
-            ViewBag.PmView = "notifications";
-            ViewBag.selectedView = "notifications";
-            ViewBag.Title = "All Unread Notifications";
-            ViewBag.SelectedSubverse = "";
+            //ViewBag.PmView = "notifications";
+            //ViewBag.selectedView = "notifications";
+            //ViewBag.Title = "All Unread Notifications";
+            //ViewBag.SelectedSubverse = "";
             var q = new QueryAllMessageCounts(Domain.Models.MessageTypeFlag.All, Domain.Models.MessageState.Unread);
             var model = await q.ExecuteAsync();
+
+            SetNavigationInformation("Notifications");
+
             return View(model);
         }
 
@@ -175,8 +198,8 @@ namespace Voat.Controllers
         [System.Web.Mvc.Authorize]
         public ActionResult Compose()
         {
-            ViewBag.PmView = "compose";
-            ViewBag.Title = "Compose";
+            //ViewBag.PmView = "compose";
+            //ViewBag.Title = "Compose";
 
             var recipient = Request.Params["recipient"];
             var subject = Request.Params["subject"];
@@ -196,6 +219,8 @@ namespace Voat.Controllers
                 model.Sender = UserDefinition.Format(subverse, IdentityType.Subverse);
             }
 
+            SetNavigationInformation("Compose");
+
             // return compose view
             return View(model);
         }
@@ -207,8 +232,8 @@ namespace Voat.Controllers
         public async Task<ActionResult> Compose(NewMessageViewModel message)
         {
 
-            ViewBag.PmView = "compose";
-            ViewBag.Title = "Compose";
+            //ViewBag.PmView = "compose";
+            //ViewBag.Title = "Compose";
 
             //set this incase invalid submittal 
             var userData = UserData;
@@ -242,6 +267,8 @@ namespace Voat.Controllers
             };
             var cmd = new SendMessageCommand(sendMessage);
             var response = await cmd.Execute();
+
+            SetNavigationInformation("Compose");
 
             if (response.Success)
             {
@@ -401,6 +428,9 @@ namespace Voat.Controllers
             var result = await q.ExecuteAsync();
 
             var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
+
+            SetNavigationInformation("Inbox");
+
             return View("Index", pagedList);
         }
 

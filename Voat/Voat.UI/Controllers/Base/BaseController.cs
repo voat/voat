@@ -32,16 +32,16 @@ namespace Voat.Controllers
 
         #region JSON Responses
         //These are beginning port to api structures
-        public ActionResult JsonError(string type, string message)
+        public JsonResult JsonError(string type, string message)
         {
             //Response.StatusCode = 400;
             return Json(new { success = false, error = new { type = type, message = message } });
         }
-        public ActionResult JsonError(string message)
+        public JsonResult JsonError(string message)
         {
             return JsonError("General", message);
         }
-        public ActionResult JsonResult(CommandResponse response)
+        public JsonResult JsonResult(CommandResponse response)
         {
             if (response.Success)
             {
@@ -52,7 +52,7 @@ namespace Voat.Controllers
                 return JsonError(response.Message);
             }
         }
-        public ActionResult JsonResult<T>(CommandResponse<T> response)
+        public JsonResult JsonResult<T>(CommandResponse<T> response)
         {
             if (response.Success)
             {

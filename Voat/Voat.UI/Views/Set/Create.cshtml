@@ -21,6 +21,13 @@
                 </div>
             </div>
             <div class="form-group">
+                @Html.LabelFor(m => m.Title, new { @class = "col-md-4 control-label" })
+                <div class="col-md-5">
+                    @Html.TextBoxFor(m => m.Title, new { @class = "form-control", autocomplete = "off" })
+                    @Html.ValidationMessageFor(model => model.Title)
+                </div>
+            </div>
+            <div class="form-group">
                 @Html.LabelFor(m => m.Description, new { @class = "col-md-4 control-label" })
                 <div class="col-md-5">
                     @Html.TextBoxFor(m => m.Description, new { @class = "form-control", autocomplete = "off" })

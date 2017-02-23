@@ -29,6 +29,7 @@ namespace Voat.Data.Models
         public int SubscriberCount { get; set; }
         public System.DateTime CreationDate { get; set; }
         public bool IsPublic { get; set; }
+        public string Title { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SubverseSetList> SubverseSetLists { get; set; }

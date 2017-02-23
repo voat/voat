@@ -298,7 +298,7 @@ function firstTimeVisitorWelcome() {
 
 //locks vote operations
 var submissionVoteLock = null;
-function voteSubmission(submissionID, voteValue) {
+function voteSubmission(id, voteValue) {
 
     if (submissionVoteLock == null) {
         submissionVoteLock = new Object();
@@ -307,19 +307,19 @@ function voteSubmission(submissionID, voteValue) {
         //submitUpVote(submissionid);
         $.ajax({
             type: "POST",
-            url: "/vote/" + submissionID + "/" + voteValue.toString(),
+            url: "/user/vote/submission/" + id + "/" + voteValue.toString(),
             complete: function () {
                 submissionVoteLock = null;
             },
             error: function (data) {
                 //voting was not registered - show error
-                var submission = $(".submission.id-" + submissionID);
+                var submission = $(".submission.id-" + id);
                 var div = submission.children(".entry");
                 div.children('span').remove();
                 div.prepend('<span class="vote-error">An Error Occured :(</span>');
             },
             success: function (data) {
-                var submission = $(".submission.id-" + submissionID);
+                var submission = $(".submission.id-" + id);
                 //remove error span if present
                 submission.children(".entry").children('span').remove();
 
@@ -424,7 +424,7 @@ function voteSubmission(submissionID, voteValue) {
 }
 
 var commentVoteLock = null;
-function voteComment(commentid, voteValue) {
+function voteComment(id, voteValue) {
 
     if (commentVoteLock == null) {
 
@@ -434,13 +434,13 @@ function voteComment(commentid, voteValue) {
         //submitCommentUpVote(commentid);
         $.ajax({
             type: "POST",
-            url: "/votecomment/" + commentid + "/" + voteValue.toString(),
+            url: "/user/vote/comment/" + id + "/" + voteValue.toString(),
             complete: function () {
                 commentVoteLock = null;
             },
             error: function (data) {
                 //voting was not registered - show error
-                var comment = $(".comment.id-" + commentid);
+                var comment = $(".comment.id-" + id);
                 var div = comment.children(".entry");
                 div.children('span').remove();
                 div.prepend('<span class="vote-error">An Error Occured :(</span>');
@@ -448,7 +448,7 @@ function voteComment(commentid, voteValue) {
             success: function (data) {
                 //TODO: data object includes vote related json, the below code can use the values this object contains, but not changing right now.
                 //alert(data.message);
-                var comment = $(".comment.id-" + commentid);
+                var comment = $(".comment.id-" + id);
                 //remove error span if present
                 comment.children(".entry").children('span').remove();
 
@@ -648,16 +648,25 @@ function getErrorObject(arguments) {
 }
 function getJsonResponse(arguments) {
 
-    var request = arguments[2];
-
-    if (request.responseJSON) {
+    //complete
+    var request = arguments[0];
+    if (request !== undefined && request.responseJSON !== undefined) {
         return request.responseJSON;
-        //if (request.responseJSON.success === false) {
-        //    return request.responseJSON;
-        //}
+    }
+    //success
+    request = arguments[2];
+    if (request !== undefined && request.responseJSON !== undefined) {
+        return request.responseJSON;
     }
 
-    return new { succces: true, data: request.responseText };
+    if (arguments[0].status != 200) {
+        return {
+            success: false,
+            error: { type: arguments[0].status, message: arguments[0].statusText }
+        };
+    }
+    //return details i suppose...
+    return { success: false, data: arguments };
 }
 
 //attempting to clean up client side error handling
@@ -675,6 +684,31 @@ function getErrorMessage(error, defaultMessage)
         msg = error;
     }
     return msg;
+}
+function onSaveSet(sender, arguments)
+{
+    var response = getJsonResponse(arguments);
+    var messagePlaceHolder = sender.parents("form").find(".updateResult");
+    if (response.success) {
+        messagePlaceHolder.html("Set updated");
+    } else {
+        messagePlaceHolder.html(response.error.message);
+    }
+}
+function submitForm(sender, callBack)
+{
+    var $form = $(sender).parents('form');
+    $.ajax({
+        type: "POST",
+        url: $form.attr('action'),
+        data: $form.serialize(),
+        error: function (xhr, status, error) {
+            callBack(sender, arguments);
+        },
+        success: function (response) {
+            callBack(sender, arguments);
+        }
+    });
 }
 // post comment reply form through ajax
 function submitComment(senderButton, parentCommentID) {
@@ -1152,94 +1186,168 @@ function toggleSubmissionBack(obj) {
 $.fn.exists = function () {
     return this.length !== 0;
 };
+function setSubverseAddCallBack(sender, arguments) {
+    var response = new getJsonResponse(arguments);
+    var message = "";
+    if (response.success) {
+        if (response.data == true) {
+            message = "Subverse added to set";
+            //message = "Subverse " + subverseName + " was added to set " + setName;
+        }
+        else {
+            message = "Subverse removed to set";
+            //message = "Subverse " + subverseName + " was removed from set " + setName;
+        }
+    } else {
+        message = "Oops: " + response.error.message;
+    }
+    $(sender).parents(".updateSection").find(".updateResult").html(message);
+    $('#subName').val('');
+}
+function setSubverseListToggleCallBack(s, arguments) {
 
-function setSubverseToggle(obj, setName, userName, subverseName, action)
-{
-    if (subverseName != "")
-    {
+    var response = new getJsonResponse(arguments);
+    if (response.success) {
+        if (response.data) {
+            s.text("remove");
+            s.removeClass("btn-voat");
+            s.addClass("btn-voat-off");
+        } else {
+            s.text("add");
+            s.removeClass("btn-voat-off");
+            s.addClass("btn-voat");
+        }
+    } else {
+        s.text(response.error.message);
+    }
+}
+function setSubverseListToggle(sender, setName, userName, subverseName, action, callBack) {
+    if (subverseName != "") {
         //$(obj).html("unsubscribe");
         //$(obj).toggleClass("btn-sub btn-unsub");
-        var actionQueryString = "";
-        if (action) {
-            actionQueryString = "?action=" + action;
+        var actionType = "toggle";
+        if (action !== undefined && action != null) {
+            actionType = action;
         }
-        var url = "/s/" + setName + '/' + userName + '/' + subverseName + actionQueryString;
+        var url = "/s/" + setName + '/' + userName + '/' + subverseName + '/' + actionType;
         // call the set subverse list API
         $.ajax({
             type: "POST",
             url: url,
-            success: function () {
-                var response = new getJsonResponse(arguments);
-                var message = "";
-                if (response.success) {
-                    if (response.data == true) {
-                        message = "Subverse " + subverseName + " was added to set " + setName;
-                    }
-                    else {
-                        message = "Subverse " + subverseName + " was removed from set " + setName;
-                    }
-                } else {
-                    message = "Oops: " + response.error.message;
-                }
-                $(obj).parent().find(".status").html(message);
-                $('#subName').val('');
-            },
-            error: function () {
-                alert('Something went wrong while sending a subscription request.');
+            complete: function () {
+                callBack(sender, arguments);
             }
         });
     }
 }
 
-// subscribe to subverse
-function subscribe(obj, subverseName) {
-    //This is the famous undefined subscription bug - DO NOT ERASE - THIS IS VOAT FAMOUS - ATTN DAN.F. I found it first!
-    //$(obj).attr("onclick", "unsubscribe(this)");
-    $(obj).attr("onclick", "unsubscribe(this, '" + subverseName + "')");
-
-    $(obj).html("unsubscribe");
-    $(obj).toggleClass("btn-sub btn-unsub");
-
-    // call the subverse subscribe API
+function subscribe(sender, type, name, owner, callBack)
+{
+    if (owner == null || owner == ''){
+        owner = "_";
+    }
+    //{pathPrefix}/subscribe/{domainType}/{name}/{ownerName}/{action}
+    var url = "/user/subscribe/" + type + "/" + name + "/" + owner + "/toggle" ;
     $.ajax({
         type: "POST",
-        url: "/subscribe/" + subverseName,
-        success: function () {
-            var numberOfSubscribers = +($('#subscriberCount').html());
-            numberOfSubscribers++;
-            $('#subscriberCount').html(numberOfSubscribers);
-        },
-        error: function () {
-            alert('Something went wrong while sending a subscription request.');
+        url: url,
+        complete: function () {
+            callBack(sender, arguments);
         }
     });
 }
-//function setSubscribeToggle(obje, setID, subverseName)
-//{
 
+function subscribeToSet(sender, name, owner)
+{
+    subscribe(sender, "set", name, owner,
+        function (s, args) {
+            var response = getJsonResponse(args);
+            if (response.success) {
+                if (response.data) {
+                    s.text("unsubscribe");
+                    s.removeClass("btn-voat");
+                    s.addClass("btn-voat-off");
+                } else {
+                    s.text("subscribe");
+                    s.removeClass("btn-voat-off");
+                    s.addClass("btn-voat");
+                }
+            } else {
+                s.text(response.error.message);
+            }
+        }
+    );
+}
+function subscribeToSubverse(sender, name) {
+    subscribe(sender, "subverse", name, null,
+       function (s, args) {
+           var response = getJsonResponse(args);
+           if (response.success) {
+               if (response.data) {
+                   s.text("unsubscribe");
+                   s.removeClass("btn-voat");
+                   s.addClass("btn-voat-off");
+               } else {
+                   s.text("subscribe");
+                   s.removeClass("btn-voat-off");
+                   s.addClass("btn-voat");
+               }
+           } else {
+               s.text(response.error.message);
+           }
+       }
+   );
+}
+
+//// subscribe to subverse
+//function subscribe(obj, subverseName) {
+//    //This is the famous undefined subscription bug - DO NOT ERASE - THIS IS VOAT FAMOUS - ATTN DAN.F. I found it first!
+//    //$(obj).attr("onclick", "unsubscribe(this)");
+//    $(obj).attr("onclick", "unsubscribe(this, '" + subverseName + "')");
+
+//    $(obj).html("unsubscribe");
+//    $(obj).toggleClass("btn-sub btn-unsub");
+
+//    // call the subverse subscribe API
+//    $.ajax({
+//        type: "POST",
+//        url: "/subscribe/" + subverseName,
+//        success: function () {
+//            var numberOfSubscribers = +($('#subscriberCount').html());
+//            numberOfSubscribers++;
+//            $('#subscriberCount').html(numberOfSubscribers);
+//        },
+//        error: function () {
+//            alert('Something went wrong while sending a subscription request.');
+//        }
+//    });
 //}
-// unsubscribe from subverse
-function unsubscribe(obj, subverseName) {
-    //This is the famous undefined subscription bug - DO NOT ERASE - THIS IS VOAT FAMOUS - ATTN DAN.F. I found it first!
-    //$(obj).attr("onclick", "subscribe(this)");
-    $(obj).attr("onclick", "subscribe(this, '" + subverseName + "')");
-    $(obj).html("subscribe");
-    $(obj).toggleClass("btn-sub btn-unsub");
+////function setSubscribeToggle(obje, setID, subverseName)
+////{
 
-    // call the subverse unsubscribe API
-    $.ajax({
-        type: "POST",
-        url: "/unsubscribe/" + subverseName,
-        success: function () {
-            var numberOfSubscribers = +($('#subscriberCount').html());
-            numberOfSubscribers--;
-            $('#subscriberCount').html(numberOfSubscribers);
-        },
-        error: function () {
-            alert('Something went wrong while sending unsubscription request.');
-        }
-    });
-}
+////}
+//// unsubscribe from subverse
+//function unsubscribe(obj, subverseName) {
+//    //This is the famous undefined subscription bug - DO NOT ERASE - THIS IS VOAT FAMOUS - ATTN DAN.F. I found it first!
+//    //$(obj).attr("onclick", "subscribe(this)");
+//    $(obj).attr("onclick", "subscribe(this, '" + subverseName + "')");
+//    $(obj).html("subscribe");
+//    $(obj).toggleClass("btn-sub btn-unsub");
+
+//    // call the subverse unsubscribe API
+//    $.ajax({
+//        type: "POST",
+//        url: "/unsubscribe/" + subverseName,
+//        success: function () {
+//            var numberOfSubscribers = +($('#subscriberCount').html());
+//            numberOfSubscribers--;
+//            $('#subscriberCount').html(numberOfSubscribers);
+//        },
+//        error: function () {
+//            alert('Something went wrong while sending unsubscription request.');
+//        }
+//    });
+//}
 // *************************** SET **************************************
 
 //// subscribe to set
@@ -1820,32 +1928,34 @@ function toggleNightMode() {
     });
 }
 
-function toggleSaveSubmission(submissionId) {
-    var saveLink = $(".submission.id-" + submissionId + " .savelink");
+function toggleSaveSubmission(id) {
+    var saveLink = $(".submission.id-" + id + " .savelink");
     if (saveLink.exists()) {
         if (saveLink.text() === "save") {
             saveLink.text("unsave");
         } else {
             saveLink.text("save");
         }
+        var url = "/user/save/submission/" + id.toString()
         $.ajax({
             type: "POST",
-            url: "/save/" + submissionId
+            url: url
         });
     }
 }
 
-function toggleSaveComment(commentId) {
-    var saveLink = $(".comment.id-" + commentId + " .savelink").first();
+function toggleSaveComment(id) {
+    var saveLink = $(".comment.id-" + id + " .savelink").first();
     if (saveLink.exists()) {
         if (saveLink.text() === "save") {
             saveLink.text("unsave");
         } else {
             saveLink.text("save");
         }
+        var url = "/user/save/comment/" + id.toString()
         $.ajax({
             type: "POST",
-            url: "/savecomment/" + commentId
+            url: url
         });
     }
 }

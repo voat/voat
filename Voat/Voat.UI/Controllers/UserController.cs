@@ -330,6 +330,96 @@ namespace Voat.Controllers
                 return View(setList.Map());
             }
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult> Subscribed(Domain.Models.DomainType domainType)
+        {
+            switch (domainType)
+            {
+                case Domain.Models.DomainType.Subverse:
+                    return RedirectToAction("Details", "Set", new { name = Domain.Models.SetType.Front.ToString(), userName = User.Identity.Name });
+                    break;
+                case Domain.Models.DomainType.Set:
+
+
+                    var options = new SearchOptions(Request.QueryString);
+
+                    var q = new QueryUserSubscribedSets(options);
+                   
+                    var results = await q.ExecuteAsync();
+
+                    var paged = new Utilities.PaginatedList<Domain.Models.DomainReferenceDetails>(results, options.Page, options.Count);
+
+                    ViewBag.NavigationViewModel = new Models.ViewModels.NavigationViewModel()
+                    {
+                        Description = "Subscribed Sets",
+                        Name = "No Idea",
+                        MenuType = Models.ViewModels.MenuType.Discovery,
+                        BasePath = null,
+                        Sort = null
+                    };
+                    ViewBag.DomainType = Voat.Domain.Models.DomainType.Set;
+                    return View(paged);
+                    break;
+                default:
+                case Domain.Models.DomainType.User:
+                    throw new NotImplementedException("This isn't done yet!");
+                    break;
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        [VoatValidateAntiForgeryToken]
+        public async Task<JsonResult> Subscribe(Domain.Models.DomainType domainType, string name, string ownerName, Domain.Models.SubscriptionAction subscribeAction)
+        {
+
+            ownerName = (ownerName == "_" ? null : ownerName);
+            var cmd = new SubscribeCommand(new Domain.Models.DomainReference(domainType, name, ownerName), subscribeAction);
+            var result = await cmd.Execute();
+            return JsonResult(result); 
+
+        }
+
+
+        [HttpPost]
+        [Authorize]
+        [VoatValidateAntiForgeryToken]
+        public async Task<ActionResult> Save(Domain.Models.ContentType contentType, int id)
+        {
+            var cmd = new SaveCommand(contentType, id);
+            var response = await cmd.Execute();
+            if (response.Success)
+            {
+                return Json(new { success = true });
+            }
+            else
+            {
+                return JsonError(response.Message);
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        [VoatValidateAntiForgeryToken]
+        public async Task<JsonResult> Vote(Domain.Models.ContentType contentType, int id, int voteStatus)
+        {
+
+            VoteResponse result = null; 
+            switch (contentType) {
+                case Domain.Models.ContentType.Submission:
+                    var cmdV = new SubmissionVoteCommand(id, voteStatus, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
+                    result = await cmdV.Execute();
+                    break;
+                case Domain.Models.ContentType.Comment:
+                    var cmdC = new CommentVoteCommand(id, voteStatus, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
+                    result = await cmdC.Execute();
+                    break;
+            }
+            return Json(result);
+        }
+
         #endregion
     }
 }

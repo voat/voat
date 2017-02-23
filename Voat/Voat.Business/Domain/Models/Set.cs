@@ -17,9 +17,12 @@ namespace Voat.Domain.Models
         [MaxLength(20, ErrorMessage = "Name is limited to 20 characters")]
         [RegularExpression(CONSTANTS.SUBVERSE_REGEX, ErrorMessage = "Set name can not contain anything but letters and numbers")]
         public string Name { get; set; }
-        
+
         public string UserName { get; set; }
 
+        [MaxLength(100, ErrorMessage = "Title is limited to 100 characters")]
+        [Display(Name="Short Title")]
+        public string Title { get; set; }
 
         [MaxLength(500, ErrorMessage = "Description is limited to 500 characters")]
         public string Description { get; set; }

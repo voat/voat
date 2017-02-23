@@ -1,0 +1,102 @@
+﻿@*
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+
+    All Rights Reserved.
+*@
+
+@model PaginatedList<Voat.Domain.Models.DomainReferenceDetails>
+
+@{
+
+//var sort = Voat.Domain.Models.SortAlgorithm.Hot;
+string description = "Showing sets you are subscribed to";
+//Voat.Models.ViewModels.NavigationViewModel navModel = ViewBag.NavigationViewModel;
+
+//Voat.Domain.Models.DomainType domainType = ViewBag.DomainType;
+
+//if (navModel != null && navModel.Sort.HasValue)
+//{
+//    sort = navModel.Sort.Value;
+//}
+
+//switch (sort)
+//{
+//    case Voat.Domain.Models.SortAlgorithm.New:
+//        ViewBag.Title = String.Format("Newest {0}s", domainType.ToString());
+//        description = String.Format("Showing the most recently created {0}s", domainType.ToString());
+//        break;
+//    case Voat.Domain.Models.SortAlgorithm.Active:
+//        ViewBag.Title = String.Format("Active {0}s", domainType.ToString());
+//        description = String.Format("Showing {0}s ordered by posting activity", domainType.ToString());
+//        break;
+//    default:
+//        ViewBag.Title = String.Format("Popular {0}s", domainType.ToString());
+//        description = String.Format("Showing {0}s ordered by number of subscribers", domainType.ToString());
+//        break;
+//}
+}
+
+<style type="text/css">
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
+</style>
+
+<div id="container">
+    @*<div class="side">
+            <div class="spacer">
+                <div class="sidebox create">
+                    <a href="/subverses/create" class="btn-whoaverse btn-block">
+                        Create your own subverse
+                    </a>
+                </div>
+            </div>
+        </div>*@
+
+    <div class="content" role="main">
+        @*<div style="padding:10px;">
+            <a href="@Url.RouteUrl("Discover", new { domainType = "set", sort = Request.RequestContext.RouteData.Values["sort"] })" class='@(domainType == Voat.Domain.Models.DomainType.Set ? "btn-voat" : "btn-voat-off")'>Sets</a>
+            <a href="@Url.RouteUrl("Discover", new { domainType = "subverse", sort = Request.RequestContext.RouteData.Values["sort"] })" class='@(domainType == Voat.Domain.Models.DomainType.Subverse ? "btn-voat" : "btn-voat-off")'>Subverses</a>
+        </div>*@
+        <div class="alert-notice">
+            <p>@description</p>
+        </div>
+        <div class="sitetable linklisting">
+
+            @using (var enumerator = Model.GetEnumerator())
+            {
+                Voat.Domain.Models.DomainReferenceDetails current = null;
+                while (enumerator.MoveNext())
+                {
+                    current = enumerator.Current;
+                    <div class="row">
+                        <div class="col-md-6">@Html.DisplayFor(x => current)</div>
+                        @if (enumerator.MoveNext())
+                        {
+                            current = enumerator.Current;
+                            <div class="col-md-6">@Html.DisplayFor(x => current)</div>
+                        }
+                    </div>
+                }
+            }
+            @*@{
+                var phrase = (string)Request.QueryString["phrase"];
+                if (!String.IsNullOrEmpty(phrase))
+                {
+                    Model.RouteData = Request.RequestContext.RouteData.Values;
+                    Model.RouteData.Add("phrase", phrase);
+                }
+            }*@
+            @Html.DisplayFor(model => Model, "IPaginatedList")
+        </div>
+    </div>
+</div>

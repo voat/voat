@@ -16,6 +16,7 @@ namespace Voat.Models.ViewModels
 
         public bool PreviewMode { get; set; }
         public string Title { get; set; }
+        public string Description { get; set; }
         //public string UrlAction { get; set; }
 
         public Domain.Models.DomainReference Context { get; set; }
@@ -55,10 +56,10 @@ namespace Voat.Models.ViewModels
         {
             get
             {
-                if (Context.Type == Domain.Models.DomainType.Subverse)
+                if (Context != null && Context.Type == Domain.Models.DomainType.Subverse)
                 {
                     var subverse = Context.Name;
-                    return !(String.IsNullOrEmpty(subverse) || subverse.IsEqual("user") || subverse.IsEqual("all") || AGGREGATE_SUBVERSE.IsAggregate(subverse));
+                    return !(String.IsNullOrEmpty(subverse) || subverse.IsEqual("all") || AGGREGATE_SUBVERSE.IsAggregate(subverse));
 
                 }
                 return false;

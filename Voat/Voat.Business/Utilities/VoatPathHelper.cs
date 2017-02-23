@@ -116,5 +116,24 @@ namespace Voat.Utilities
             //short
             return $"/v/{subverse}/{submissionID.ToString()}/{sort.ToString().ToLower()}";
         }
+
+        public static string BasePath(DomainReference domainReference)
+        {
+            string basePath = "";
+            switch (domainReference.Type)
+            {
+                case DomainType.Set:
+                    basePath = $"/s/{domainReference.Name}" + (!String.IsNullOrEmpty(domainReference.OwnerName) ? $"/{domainReference.OwnerName}" : "");
+                    break;
+                case DomainType.Subverse:
+                    basePath = $"/v/{domainReference.Name}";
+                    break;
+                case DomainType.User:
+                    basePath = $"/user/{domainReference.Name}";
+                    break;
+            }
+            return basePath;
+
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace Voat.Models.ViewModels
         Set,
         Domain,
         UserProfile,
-        SubverseDiscovery,
+        Discovery,
         UserMessages,
         Smail
     }

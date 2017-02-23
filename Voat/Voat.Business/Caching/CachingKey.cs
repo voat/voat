@@ -54,9 +54,9 @@ namespace Voat.Caching
             return String.Format("Comment:Tree:{0}", submissionID);
         }
 
-        public static string UserSet(string setName)
+        public static string Set(string setName, string setOwner)
         {
-            return String.Format("User:Set:{0}", setName);
+            return String.Format("Set:{0}:{1}", (String.IsNullOrEmpty(setOwner) ? "_" : setOwner), setName);
         }
 
         public static string UserPreferences(string userName)
@@ -68,8 +68,6 @@ namespace Voat.Caching
         {
             return String.Format("User:Subscriptions:{0}", userName);
         }
-
-      
 
         public static string UserInformation(string userName)
         {
@@ -191,7 +189,10 @@ namespace Voat.Caching
         {
             return $"Domain:{domain}:{sort}:page{page}";
         }
-        
+        public static string DomainObjectSearch(DomainType domainType, SearchOptions options)
+        {
+            return $"DomainSearch:{domainType.ToString()}:page{options.Page}:{options.Sort.ToString()}:{options.Phrase}";
+        }
         public static string ModLogBannedUsers(string subverse, SearchOptions options)
         {
             return $"Subverse:ModLog:{subverse}:Banned{options.ToString(":{0}", "page=0")}";

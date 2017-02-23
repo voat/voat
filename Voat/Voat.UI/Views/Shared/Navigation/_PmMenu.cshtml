@@ -27,10 +27,10 @@
     else
     {
         <ul class="tabmenu ">
-            <li class="@(selectedView.Equals("inbox") || selectedView.Equals("unread") ? "selected" : "disabled")"><a href="~/messages">Inbox</a></li>
-            <li class="@(selectedView.Equals("sent") ? "selected" : "disabled")"><a href="~/messages/sent">Sent</a></li>
-            <li class="@(selectedView.Equals("compose") ? "selected" : "disabled")"><a href="~/messages/compose">Compose</a></li>
-            <li class="@(selectedView.Equals("notifications") ? "selected" : "disabled")"><a href="~/messages/notifications">Summary</a></li>
+            <li class="@(selectedView.Equals("Inbox") || selectedView.Equals("unread") ? "selected" : "disabled")"><a href="~/messages">Inbox</a></li>
+            <li class="@(selectedView.Equals("Sent") ? "selected" : "disabled")"><a href="~/messages/sent">Sent</a></li>
+            <li class="@(selectedView.Equals("Compose") ? "selected" : "disabled")"><a href="~/messages/compose">Compose</a></li>
+            <li class="@(selectedView.Equals("Notifications") ? "selected" : "disabled")"><a href="~/messages/notifications">Summary</a></li>
         </ul>
     }
 }

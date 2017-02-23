@@ -26,6 +26,7 @@ namespace Voat.Domain.Models
 
     public enum SubscriptionAction
     {
+        Toggle = 0,
         Subscribe = 1,
         Unsubscribe = 2
     }

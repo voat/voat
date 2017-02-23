@@ -196,6 +196,7 @@ namespace Voat.Domain
                 var s = new Set();
                 s.ID = subverseSet.ID;
                 s.Name = subverseSet.Name;
+                s.Title = subverseSet.Title;
                 s.Description = subverseSet.Description;
                 s.CreationDate = subverseSet.CreationDate;
                 s.Type = (SetType)subverseSet.Type;

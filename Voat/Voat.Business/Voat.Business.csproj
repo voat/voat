@@ -165,6 +165,7 @@
     <Compile Include="Configuration\RuntimeState.cs" />
     <Compile Include="Data\AGGREGATE_SUBVERSE.cs" />
     <Compile Include="Data\DapperQuery.cs" />
+    <Compile Include="Data\Repository\Repository_Search.cs" />
     <Compile Include="Data\Repository\Repository_Set.cs" />
     <Compile Include="Data\Selectors.cs" />
     <Compile Include="Domain\Command\Base\QueuedCommand.cs" />
@@ -188,9 +189,10 @@
     <Compile Include="Domain\Command\SendMessageCommand.cs" />
     <Compile Include="Domain\Command\SetSubverseCommand.cs" />
     <Compile Include="Domain\Command\SubmissionCommands.cs" />
-    <Compile Include="Domain\Command\SubscriptionCommand.cs" />
+    <Compile Include="Domain\Command\SubscribeCommand.cs" />
     <Compile Include="Domain\Command\SubverseBanCommand.cs" />
     <Compile Include="Domain\Command\UpdateApiClientLastAccessDateCommand.cs" />
+    <Compile Include="Domain\Command\UpdateSetCommand.cs" />
     <Compile Include="Domain\Command\UpdateUserPreferencesCommand.cs" />
     <Compile Include="Domain\Command\VoteCommands.cs" />
     <Compile Include="Common\Age.cs" />
@@ -204,6 +206,7 @@
     <Compile Include="Domain\Models\Comment\NestedComment.cs" />
     <Compile Include="Domain\Models\Comment\SubmissionComment.cs" />
     <Compile Include="Domain\Models\DeleteAccountOptions.cs" />
+    <Compile Include="Domain\Models\DomainSearchResult.cs" />
     <Compile Include="Domain\Models\Flair.cs" />
     <Compile Include="Domain\Models\FriendlyEnumNames.cs" />
     <Compile Include="Domain\Models\Message.cs" />
@@ -232,6 +235,7 @@
     <Compile Include="Domain\Query\QueryComment.cs" />
     <Compile Include="Domain\Query\QueryCommentContext.cs" />
     <Compile Include="Domain\Query\QueryDefaultSubverses.cs" />
+    <Compile Include="Domain\Query\QueryDomainObjects.cs" />
     <Compile Include="Domain\Query\QueryMessageCounts.cs" />
     <Compile Include="Domain\Query\QueryMessages.cs" />
     <Compile Include="Domain\Query\QueryModLogBannedUsers.cs" />
@@ -240,6 +244,7 @@
     <Compile Include="Domain\Query\QueryNewestSubverses.cs" />
     <Compile Include="Domain\Query\QueryComments.cs" />
     <Compile Include="Domain\Query\QueryRandomSubverse.cs" />
+    <Compile Include="Domain\Query\QuerySet.cs" />
     <Compile Include="Domain\Query\QuerySticky.cs" />
     <Compile Include="Domain\Query\QuerySubmission.cs" />
     <Compile Include="Domain\Query\QuerySubmissions.cs" />
@@ -264,6 +269,7 @@
     <Compile Include="Domain\Query\QueryUserInformation.cs" />
     <Compile Include="Domain\Query\QueryUserRecord.cs" />
     <Compile Include="Domain\Query\QueryUserSaves.cs" />
+    <Compile Include="Domain\Query\QueryUserSubscribedSets.cs" />
     <Compile Include="Domain\Query\QueryUserSubscriptions.cs" />
     <Compile Include="Domain\Query\Selectors.cs" />
     <Compile Include="Data\Repository\Repository.cs" />

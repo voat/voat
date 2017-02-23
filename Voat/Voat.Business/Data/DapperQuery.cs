@@ -17,7 +17,9 @@ namespace Voat.Data
             return d;
         }
     }
-    
+    /// <summary>
+    /// A super simple text based wrapper around query construction used for Dapper 
+    /// </summary>
     public class DapperQuery : DapperBase
     {
         public string Select { get; set; }

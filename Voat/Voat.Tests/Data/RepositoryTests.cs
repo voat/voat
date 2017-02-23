@@ -93,13 +93,13 @@ namespace Voat.Tests.Repository
 
                 TestHelper.SetPrincipal(userName);
 
-                await db.Block(DomainType.Subverse, name, null);
+                await db.Block(DomainType.Subverse, name, SubscriptionAction.Toggle);
 
                 var blocks = await db.GetBlockedSubverses(userName);
                 Assert.IsNotNull(blocks);
                 Assert.IsTrue(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
 
-                await db.Block(DomainType.Subverse, name, null);
+                await db.Block(DomainType.Subverse, name, SubscriptionAction.Toggle);
 
                 blocks = await db.GetBlockedSubverses(userName);
                 Assert.IsNotNull(blocks);

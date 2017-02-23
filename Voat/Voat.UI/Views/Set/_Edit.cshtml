@@ -5,7 +5,8 @@
 
 @if (!Model.Permissions.EditProperties)
 {
-    @Html.DisplayFor(x => Model.Set)
+    var model = Voat.Domain.Models.DomainReferenceDetails.Map(Model.Set);
+    @Html.DisplayFor(x => model)
 }
 else
 {

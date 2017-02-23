@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model PaginatedList<Voat.Data.Models.Subverse>
+@model PaginatedList<Voat.Domain.Models.DomainReferenceDetails>
 
 @using System.Globalization
 
@@ -34,19 +34,28 @@
 
 <div id="container">
     <div role="main">
-
         @if (Model.Count > 0)
         {
-            @Html.ActionLink("< Go back to frontpage", "Index", "Home")
-
             <div class="alert alert-info">
-                <p>Here are your search results for the term "@searchTerm", we found <b>@Model.TotalCount</b> matches:</p>
+                <p>Here are your search results for the term "@searchTerm":</p>
             </div>
 
             <div class="sitetable linklisting">
-                @foreach (var subverse in Model)
+                @using (var enumerator = Model.GetEnumerator())
                 {
-                    @Html.Action("DetailsForSelectedSubverse", "Subverses", new { selectedSubverse = subverse.Name });
+                    Voat.Domain.Models.DomainReferenceDetails current = null;
+                    while (enumerator.MoveNext())
+                    {
+                        current = enumerator.Current;
+                        <div class="row">
+                            <div class="col-md-6">@Html.DisplayFor(x => current)</div>
+                            @if (enumerator.MoveNext())
+                            {
+                                current = enumerator.Current;
+                                <div class="col-md-6">@Html.DisplayFor(x => current)</div>
+                            }
+                        </div>
+                    }
                 }
             </div>
         }
@@ -55,27 +64,11 @@
             <div class="alert alert-info">
                 <p>Sigh. We weren't able to find anything matching the term "@searchTerm".</p>
             </div>
-
-            @Html.ActionLink("Go back and try again with a different term?", "Search", "Subverses")
         }
-
-        <div class="pagination-container">
-            <ul>
-                @if (Model.HasPreviousPage)
-                {
-                    <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("‹ prev", "FindSubverse", new { page = (Model.PageIndex - 1), q = searchTerm, d = includeDescriptions }, new { rel = "prev" })
-                    </li>
-                }
-
-                @if (Model.HasNextPage)
-                {
-                    <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("next ›", "FindSubverse", new { page = (Model.PageIndex + 1), q = searchTerm, d = includeDescriptions }, new { rel = "next" })
-                    </li>
-                }
-            </ul>
-        </div>
-
+        @{ 
+            Model.RouteData = Request.RequestContext.RouteData.Values;
+            Model.RouteData.Add("q", searchTerm);
+        }
+        @Html.DisplayFor(model => Model, "IPaginatedList")
     </div>
 </div>

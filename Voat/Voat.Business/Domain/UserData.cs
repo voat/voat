@@ -280,12 +280,12 @@ namespace Voat.Domain
 
         public bool IsUserSubverseSubscriber(string subverse)
         {
-            return IsSubscriber(DomainType.Subverse, subverse);
+            return IsSubscriber(new DomainReference(DomainType.Subverse, subverse));
         }
-        public bool IsSubscriber(DomainType type, string name)
+        public bool IsSubscriber(DomainReference domainReference)
         {
-            var subs = GetSubscriptions(type);
-            return subs.Any(x => x.IsEqual(name));
+            var subs = GetSubscriptions(domainReference.Type);
+            return subs.Any(x => x.IsEqual(domainReference.FullName));
         }
         private IEnumerable<string> GetSubscriptions(DomainType type)
         {

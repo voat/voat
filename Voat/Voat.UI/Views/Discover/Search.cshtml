@@ -1,0 +1,29 @@
+﻿
+
+@{ 
+    var type = Request.RequestContext.RouteData.Values["domainType"];
+
+}
+
+<div id="container">
+    <div role="main">
+        <div class="alert-notice">
+            <p>Find a @type by name and/or description</p>
+        </div>
+        <div class="sitetable linklisting">
+            @using (Html.BeginForm("Index", "Discover", new { domainType = type }, FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
+            {
+                <h2>@Html.ValidationSummary(true)</h2>
+                @Html.TextBox("phrase", null, new { @class = "form-control", @placeholder = "Type a term to search for and press ENTER" })
+                @Html.ValidationMessage("phrase")
+
+                @*<input type="checkbox" name="d" value="true" id="d"
+                           @Html.Raw((Model.d) ? "checked=\"checked\"" : "") />
+                    @Html.Label("Also search in subverse descriptions")*@
+
+                <input type="submit" class="btn-voat" value="Submit" />
+
+            }
+        </div>
+    </div>
+</div>

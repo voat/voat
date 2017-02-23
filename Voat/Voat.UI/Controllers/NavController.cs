@@ -28,7 +28,7 @@ namespace Voat.Controllers
             ViewBag.frontpage = frontpage;
             ViewBag.selectedSubverseName = selectedSubverseName;
 
-            return PartialView("~/Views/Shared/Navigation/_TabMenu.cshtml");
+            return PartialView("~/Views/Shared/Navigation/_SubverseMenu.cshtml");
         }
 
         // GET: PmMenu

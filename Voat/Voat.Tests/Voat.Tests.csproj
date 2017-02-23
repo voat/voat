@@ -188,6 +188,7 @@
     <Compile Include="QueryTests\QueryCommentTests.cs" />
     <Compile Include="QueryTests\QueryCommentTreeAnonTests.cs" />
     <Compile Include="QueryTests\QueryCommentTreeTests.cs" />
+    <Compile Include="QueryTests\QueryDomainObjectsTests.cs" />
     <Compile Include="QueryTests\QueryMessageTests.cs" />
     <Compile Include="QueryTests\QuerySubverseTests.cs" />
     <Compile Include="QueryTests\QuerySubmissionSortTests.cs" />

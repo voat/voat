@@ -45,10 +45,10 @@ namespace Voat.Domain.Query
                 var dict = new Dictionary<DomainType, IEnumerable<string>>();
 
                 var type = DomainType.Subverse;
-                dict.Add(type, data.Where(x => x.Type == type).Select(x => x.Name).ToList());
+                dict.Add(type, data.Where(x => x.Type == type).Select(x => x.FullName).ToList());
 
                 type = DomainType.Set;
-                dict.Add(type, data.Where(x => x.Type == type).Select(x => x.Name).ToList());
+                dict.Add(type, data.Where(x => x.Type == type).Select(x => x.FullName).ToList());
                 //var dict = data.Select(x => x.Type).Distinct().ToDictionary(x => x.ToString(), y => data.Where(x => x.Type == y).Select(x => x.Name).ToList().AsEnumerable());
                 return dict;
             }

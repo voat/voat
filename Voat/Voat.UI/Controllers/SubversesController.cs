@@ -41,8 +41,6 @@ namespace Voat.Controllers
         //IAmAGate: Move queries to read-only mirror
         private readonly voatEntities _db = new voatEntities(true);
 
-        private int subverseCacheTimeInSeconds = 240;
-
         // GET: sidebar for selected subverse
         public ActionResult SidebarForSelectedSubverseComments(Domain.Models.Submission submission)
         {
@@ -109,7 +107,12 @@ namespace Voat.Controllers
                 return View(subverseTmpModel);
             }
 
-            var title = $"/v/{subverseTmpModel.Name}"; //backwards compatibility, previous code always uses this
+            var title = subverseTmpModel.Title;
+            if (String.IsNullOrEmpty(title))
+            {
+                title = $"/v/{subverseTmpModel.Name}"; //backwards compatibility, previous code always uses this
+            }
+
             var cmd = new CreateSubverseCommand(subverseTmpModel.Name, title, subverseTmpModel.Description, subverseTmpModel.Sidebar);
             var respones = await cmd.Execute();
             if (respones.Success)
@@ -133,149 +136,25 @@ namespace Voat.Controllers
 
        
 
-        // GET: show a list of subverses by number of subscribers
-        public ActionResult Subverses(int? page)
-        {
-            ViewBag.SelectedSubverse = "subverses";
-            const int pageSize = 25;
-            int pageNumber = (page ?? 0);
+   
+        //// GET: sidebar for selected subverse
+        //public ActionResult DetailsForSelectedSubverse(string selectedSubverse)
+        //{
+        //    var subverse = DataCache.Subverse.Retrieve(selectedSubverse);
 
-            if (pageNumber < 0)
-            {
-                return NotFoundErrorView();
-            }
+        //    if (subverse == null)
+        //        return new EmptyResult();
 
-            try
-            {
-                // order by subscriber count (popularity)
-                var subverses = _db.Subverses.OrderByDescending(s => s.SubscriberCount);
+        //    // get subscriber count for selected subverse
+        //    //var subscriberCount = _db.SubverseSubscriptions.Count(r => r.Subverse.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
 
-                var paginatedSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
+        //    //ViewBag.SubscriberCount = subscriberCount;
+        //    ViewBag.SelectedSubverse = selectedSubverse;
+        //    return PartialView("_SubverseDetails", subverse);
 
-                return View(paginatedSubverses);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        //    //don't return a sidebar since subverse doesn't exist or is a system subverse
+        //}
 
-        // GET: show subverse search view
-        public ActionResult Search()
-        {
-            ViewBag.SelectedSubverse = "subverses";
-            ViewBag.SubversesView = "search";
-
-            return View("~/Views/Subverses/SearchForSubverse.cshtml", new SearchSubverseViewModel());
-        }
-
-        [Authorize]
-        public ActionResult SubversesSubscribed(int? page)
-        {
-
-            return RedirectToAction("Details", "Set", new { name = Domain.Models.SetType.Front.ToString(), userName = User.Identity.Name  });
-
-            //ViewBag.SelectedSubverse = "subverses";
-            //ViewBag.SubversesView = "subscribed";
-            //const int pageSize = 25;
-            //int pageNumber = (page ?? 0);
-
-            //if (pageNumber < 0)
-            //{
-            //    return NotFoundErrorView();
-            //}
-
-            //// get a list of subcribed subverses with details and order by subverse names, ascending
-            //IQueryable<SubverseDetailsViewModel> subscribedSubverses = from c in _db.Subverses
-            //                                                           join a in _db.SubverseSubscriptions
-            //                                                           on c.Name equals a.Subverse
-            //                                                           where a.UserName.Equals(User.Identity.Name)
-            //                                                           orderby a.Subverse ascending
-            //                                                           select new SubverseDetailsViewModel
-            //                                                           {
-            //                                                               Name = c.Name,
-            //                                                               Title = c.Title,
-            //                                                               Description = c.Description,
-            //                                                               CreationDate = c.CreationDate,
-            //                                                               Subscribers = c.SubscriberCount
-            //                                                           };
-
-            //var paginatedSubscribedSubverses = new PaginatedList<SubverseDetailsViewModel>(subscribedSubverses, page ?? 0, pageSize);
-
-            //return View("SubscribedSubverses", paginatedSubscribedSubverses);
-        }
-
-        // GET: sidebar for selected subverse
-        public ActionResult DetailsForSelectedSubverse(string selectedSubverse)
-        {
-            var subverse = DataCache.Subverse.Retrieve(selectedSubverse);
-
-            if (subverse == null)
-                return new EmptyResult();
-
-            // get subscriber count for selected subverse
-            //var subscriberCount = _db.SubverseSubscriptions.Count(r => r.Subverse.Equals(selectedSubverse, StringComparison.OrdinalIgnoreCase));
-
-            //ViewBag.SubscriberCount = subscriberCount;
-            ViewBag.SelectedSubverse = selectedSubverse;
-            return PartialView("_SubverseDetails", subverse);
-
-            //don't return a sidebar since subverse doesn't exist or is a system subverse
-        }
-
-        // GET: show a list of subverses by creation date
-        public ViewResult NewestSubverses(int? page, string sortingmode)
-        {
-            ViewBag.SelectedSubverse = "subverses";
-            ViewBag.SortingMode = sortingmode;
-
-            const int pageSize = 25;
-            int pageNumber = (page ?? 0);
-
-            if (pageNumber < 0)
-            {
-                return NotFoundErrorView();
-            }
-
-            var subverses = _db.Subverses.Where(s => s.Description != null).OrderByDescending(s => s.CreationDate);
-
-            var paginatedNewestSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
-
-            return View("~/Views/Subverses/Subverses.cshtml", paginatedNewestSubverses);
-        }
-
-        // show subverses ordered by last received submission
-        public ViewResult ActiveSubverses(int? page)
-        {
-            ViewBag.SelectedSubverse = "subverses";
-            ViewBag.SortingMode = "active";
-
-            const int pageSize = 100;
-            int pageNumber = (page ?? 0);
-
-            if (pageNumber < 0)
-            {
-                return NotFoundErrorView();
-            }
-            var subverses = CacheHandler.Instance.Register("Legacy:ActiveSubverses", new Func<IList<Subverse>>(() => {
-                using (var db = new voatEntities())
-                {
-                    db.EnableCacheableOutput();
-
-                    //HACK: I'm either completely <censored> or this is a huge pain in EF (sorting on a joined column and using .Distinct()), what you see below is a total hack that 'kinda' works
-                    return (from subverse in db.Subverses
-                            join submission in db.Submissions on subverse.Name equals submission.Subverse
-                            where subverse.Description != null && subverse.SideBar != null
-                            orderby submission.CreationDate descending
-                            select subverse).Take(pageSize).ToList().Distinct().ToList();
-                }
-            }), TimeSpan.FromMinutes(15));
-
-            //Turn off paging and only show the top ~50 most active
-            var paginatedActiveSubverses = new PaginatedList<Subverse>(subverses, 0, pageSize, pageSize);
-
-            return View("~/Views/Subverses/Subverses.cshtml", paginatedActiveSubverses);
-        }
 
         public ActionResult Subversenotfound()
         {
@@ -383,22 +262,6 @@ namespace Voat.Controllers
             }
         }
 
-        // GET: list of default subverses
-        public ActionResult ListOfDefaultSubverses()
-        {
-            try
-            {
-                var q = new QueryDefaultSubverses();
-                var r = q.Execute();
-
-                //var listOfSubverses = _db.DefaultSubverses.OrderBy(s => s.Order).ToList();
-                return PartialView("_ListOfDefaultSubverses", r);
-            }
-            catch (Exception)
-            {
-                return new EmptyResult();
-            }
-        }
 
         [Authorize]
 
@@ -422,7 +285,7 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<JsonResult> Subscribe(string subverseName)
         {
-            var cmd = new SubscriptionCommand(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverseName), Domain.Models.SubscriptionAction.Subscribe);
+            var cmd = new SubscribeCommand(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverseName), Domain.Models.SubscriptionAction.Subscribe);
             var r = await cmd.Execute();
             if (r.Success)
             {
@@ -442,7 +305,7 @@ namespace Voat.Controllers
 
             //Voat.Utilities.UserHelper.UnSubscribeFromSubverse(loggedInUser, subverseName);
             //return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
-            var cmd = new SubscriptionCommand(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverseName), Domain.Models.SubscriptionAction.Unsubscribe);
+            var cmd = new SubscribeCommand(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverseName), Domain.Models.SubscriptionAction.Unsubscribe);
             var r = await cmd.Execute();
             if (r.Success)
             {
@@ -534,7 +397,8 @@ namespace Voat.Controllers
             }
             if (String.IsNullOrEmpty(subverse))
             {
-                return SubverseNotFoundErrorView();
+                subverse = AGGREGATE_SUBVERSE.FRONT;
+                //return SubverseNotFoundErrorView();
             }
 
             SetFirstTimeCookie();
@@ -641,7 +505,7 @@ namespace Voat.Controllers
                     }
 
                     viewProperties.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse,  subverseObject.Name);
-                    viewProperties.Title = subverseObject.Description;
+                    viewProperties.Title = subverseObject.Title;
                     routeName = "SubverseIndex";
                 }
 
@@ -654,21 +518,39 @@ namespace Voat.Controllers
                 pageList.RouteName = routeName;
                 viewProperties.Submissions = pageList;
 
+                var navModel = new NavigationViewModel()
+                {
+                    Description = "Subverse",
+                    Name = subverse,
+                    MenuType = MenuType.Subverse,
+                    BasePath = "/v/" + subverse,
+                    Sort = null
+                };
+
                 //Backwards compat with Views
                 if (subverse == AGGREGATE_SUBVERSE.FRONT || subverse == AGGREGATE_SUBVERSE.DEFAULT)
                 {
+                    navModel.BasePath = "";
+                    navModel.Name = "";
                     ViewBag.SelectedSubverse = "frontpage";
+                    viewProperties.Context.Name = "";
+                    pageList.RouteName = "FrontIndex";
                 }
                 else if (subverse == AGGREGATE_SUBVERSE.ALL || subverse == AGGREGATE_SUBVERSE.ANY)
                 {
+                    navModel.BasePath = "/v/all";
+                    navModel.Name = "All";
                     ViewBag.SelectedSubverse = "all";
+                    viewProperties.Context.Name = "all";
                 }
                 else 
                 {
                     ViewBag.SelectedSubverse = subverse;
                 }
                 ViewBag.SortingMode = sort;
-                
+
+                ViewBag.NavigationViewModel = navModel;
+
                 return View("SubmissionList", viewProperties);
             }
             catch (Exception ex)
@@ -780,5 +662,191 @@ namespace Voat.Controllers
         }
 
         #endregion random subverse
+
+
+        #region Discovery Methods
+
+        //// GET: show subverse search view
+        //public ActionResult Search()
+        //{
+        //    ViewBag.NavigationViewModel = new NavigationViewModel()
+        //    {
+        //        Description = "Search Subverses",
+        //        Name = "Subverses",
+        //        MenuType = MenuType.Discovery,
+        //        BasePath = null,
+        //        Sort = null
+        //    };
+
+        //    return View("~/Views/Subverses/SearchForSubverse.cshtml", new SearchSubverseViewModel());
+        //}
+
+        //// GET: show a list of subverses by number of subscribers
+        //public ActionResult Subverses(int? page)
+        //{
+        //    //ViewBag.SelectedSubverse = "subverses";
+        //    const int pageSize = 25;
+        //    int pageNumber = (page ?? 0);
+
+        //    if (pageNumber < 0)
+        //    {
+        //        return NotFoundErrorView();
+        //    }
+
+        //    try
+        //    {
+        //        // order by subscriber count (popularity)
+        //        var subverses = _db.Subverses.OrderByDescending(s => s.SubscriberCount);
+
+        //        var paginatedSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
+
+        //        ViewBag.NavigationViewModel = new NavigationViewModel()
+        //        {
+        //            Description = "Popular Subverses",
+        //            Name = "Subverses",
+        //            MenuType = MenuType.Discovery,
+        //            BasePath = null,
+        //            Sort = null
+        //        };
+
+        //        return View(paginatedSubverses);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+
+        // GET: list of default subverses
+        public ActionResult ListOfDefaultSubverses()
+        {
+            try
+            {
+                var q = new QueryDefaultSubverses();
+                var r = q.Execute();
+
+                //var listOfSubverses = _db.DefaultSubverses.OrderBy(s => s.Order).ToList();
+                return PartialView("_ListOfDefaultSubverses", r);
+            }
+            catch (Exception)
+            {
+                return new EmptyResult();
+            }
+        }
+
+        [Authorize]
+        public ActionResult SubversesSubscribed(int? page)
+        {
+            //DISCOVERY METHOD 
+            return RedirectToAction("Details", "Set", new { name = Domain.Models.SetType.Front.ToString(), userName = User.Identity.Name });
+
+            //ViewBag.SelectedSubverse = "subverses";
+            //ViewBag.SubversesView = "subscribed";
+            //const int pageSize = 25;
+            //int pageNumber = (page ?? 0);
+
+            //if (pageNumber < 0)
+            //{
+            //    return NotFoundErrorView();
+            //}
+
+            //// get a list of subcribed subverses with details and order by subverse names, ascending
+            //IQueryable<SubverseDetailsViewModel> subscribedSubverses = from c in _db.Subverses
+            //                                                           join a in _db.SubverseSubscriptions
+            //                                                           on c.Name equals a.Subverse
+            //                                                           where a.UserName.Equals(User.Identity.Name)
+            //                                                           orderby a.Subverse ascending
+            //                                                           select new SubverseDetailsViewModel
+            //                                                           {
+            //                                                               Name = c.Name,
+            //                                                               Title = c.Title,
+            //                                                               Description = c.Description,
+            //                                                               CreationDate = c.CreationDate,
+            //                                                               Subscribers = c.SubscriberCount
+            //                                                           };
+
+            //var paginatedSubscribedSubverses = new PaginatedList<SubverseDetailsViewModel>(subscribedSubverses, page ?? 0, pageSize);
+
+            //return View("SubscribedSubverses", paginatedSubscribedSubverses);
+        }
+
+        //// GET: show a list of subverses by creation date
+        //public ViewResult NewestSubverses(int? page, string sortingmode)
+        //{
+
+        //    //DISCOVERY METHOD 
+        //    //ViewBag.SelectedSubverse = "subverses";
+        //    ViewBag.SortingMode = sortingmode;
+
+        //    const int pageSize = 25;
+        //    int pageNumber = (page ?? 0);
+
+        //    if (pageNumber < 0)
+        //    {
+        //        return NotFoundErrorView();
+        //    }
+
+        //    var subverses = _db.Subverses.Where(s => s.Description != null).OrderByDescending(s => s.CreationDate);
+
+        //    var paginatedNewestSubverses = new PaginatedList<Subverse>(subverses, page ?? 0, pageSize);
+
+        //    ViewBag.NavigationViewModel = new NavigationViewModel()
+        //    {
+        //        Description = "Newest Subverses",
+        //        Name = "Subverses",
+        //        MenuType = MenuType.Discovery,
+        //        BasePath = null,
+        //        Sort = null
+        //    };
+
+        //    return View("~/Views/Subverses/Subverses.cshtml", paginatedNewestSubverses);
+        //}
+
+        //// show subverses ordered by last received submission
+        //public ViewResult ActiveSubverses(int? page)
+        //{
+        //    //ViewBag.SelectedSubverse = "subverses";
+        //    ViewBag.SortingMode = "active";
+
+        //    const int pageSize = 100;
+        //    int pageNumber = (page ?? 0);
+
+        //    if (pageNumber < 0)
+        //    {
+        //        return NotFoundErrorView();
+        //    }
+        //    var subverses = CacheHandler.Instance.Register("Legacy:ActiveSubverses", new Func<IList<Subverse>>(() => {
+        //        using (var db = new voatEntities())
+        //        {
+        //            db.EnableCacheableOutput();
+
+        //            //HACK: I'm either completely <censored> or this is a huge pain in EF (sorting on a joined column and using .Distinct()), what you see below is a total hack that 'kinda' works
+        //            return (from subverse in db.Subverses
+        //                    join submission in db.Submissions on subverse.Name equals submission.Subverse
+        //                    where subverse.Description != null && subverse.SideBar != null
+        //                    orderby submission.CreationDate descending
+        //                    select subverse).Take(pageSize).ToList().Distinct().ToList();
+        //        }
+        //    }), TimeSpan.FromMinutes(15));
+
+        //    //Turn off paging and only show the top ~50 most active
+        //    var paginatedActiveSubverses = new PaginatedList<Subverse>(subverses, 0, pageSize, pageSize);
+
+        //    ViewBag.NavigationViewModel = new NavigationViewModel()
+        //    {
+        //        Description = "Active Subverses",
+        //        Name = "Subverses",
+        //        MenuType = MenuType.Discovery,
+        //        BasePath = null,
+        //        Sort = null
+        //    };
+
+        //    return View("~/Views/Subverses/Subverses.cshtml", paginatedActiveSubverses);
+        //}
+
+        #endregion
+
+
     }
 }

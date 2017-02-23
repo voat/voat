@@ -405,8 +405,9 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Title" Type="nvarchar" MaxLength="500" />
           <Property Name="Description" Type="nvarchar" MaxLength="500" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
           <Property Name="Type" Type="int" Nullable="false" />
           <Property Name="IsPublic" Type="bit" Nullable="false" />
           <Property Name="SubscriberCount" Type="int" Nullable="false" />
@@ -731,6 +732,21 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <!--Errors Found During Generation:
+warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that are not part of the key of the table on the primary side of the relationship. The relationship was excluded.
+        <Association Name="FK_SubverseSetList_Subverse" />-->
+        <Association Name="FK_SubverseSetList_SubverseSet">
+          <End Role="SubverseSet" Type="Self.SubverseSet" Multiplicity="1" />
+          <End Role="SubverseSetList" Type="Self.SubverseSetList" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SubverseSet">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SubverseSetList">
+              <PropertyRef Name="SubverseSetID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_SubverseSetSubscription_Set">
           <End Role="SubverseSet" Type="Self.SubverseSet" Multiplicity="1" />
           <End Role="SubverseSetSubscription" Type="Self.SubverseSetSubscription" Multiplicity="*" />
@@ -887,6 +903,10 @@
           <AssociationSet Name="FK_SubverseModerator_Subverse" Association="Self.FK_SubverseModerator_Subverse">
             <End Role="Subverse" EntitySet="Subverse" />
             <End Role="SubverseModerator" EntitySet="SubverseModerator" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SubverseSetList_SubverseSet" Association="Self.FK_SubverseSetList_SubverseSet">
+            <End Role="SubverseSet" EntitySet="SubverseSet" />
+            <End Role="SubverseSetList" EntitySet="SubverseSetList" />
           </AssociationSet>
           <AssociationSet Name="FK_SubverseSetSubscription_Set" Association="Self.FK_SubverseSetSubscription_Set">
             <End Role="SubverseSet" EntitySet="SubverseSet" />
@@ -1835,6 +1855,7 @@
           <NavigationProperty Name="SubverseSetLists" Relationship="Models.FK_SubverseSetList_Set" FromRole="SubverseSet" ToRole="SubverseSetList" />
           <NavigationProperty Name="SubverseSetSubscriptions" Relationship="Models.FK_SubverseSetSubscription_Set" FromRole="SubverseSet" ToRole="SubverseSetSubscription" />
           <Property Name="IsPublic" Type="Boolean" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="SubverseSetList">
           <Key>
@@ -2401,6 +2422,7 @@
           <EntitySetMapping Name="SubverseSets">
             <EntityTypeMapping TypeName="Models.SubverseSet">
               <MappingFragment StoreEntitySet="SubverseSet">
+                <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="IsPublic" ColumnName="IsPublic" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
                 <ScalarProperty Name="SubscriberCount" ColumnName="SubscriberCount" />

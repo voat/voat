@@ -22,6 +22,7 @@ using Voat.Caching;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.UI.Utilities;
 using Voat.Utilities;
@@ -47,7 +48,7 @@ namespace Voat.Controllers
 
             if (String.IsNullOrWhiteSpace(q) || q.Length < 3)
             {
-                return View("~/Views/Search/Index.cshtml", new PaginatedList<Submission>(new List<Submission>(), 0, 25, 24));
+                return View("~/Views/Search/Index.cshtml", new PaginatedList<Data.Models.Submission>(new List<Data.Models.Submission>(), 0, 25, 24));
                 //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             
@@ -91,40 +92,29 @@ namespace Voat.Controllers
             return View("~/Views/Search/Index.cshtml", paginatedResults);
         }
 
-        [PreventSpam]
-        public ActionResult FindSubverse(int? page, string d, string q)
-        {
-            if (q == null || q.Length < 3) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            
-            IQueryable<Subverse> results;
-            ViewBag.SelectedSubverse = string.Empty;
-            ViewBag.SearchTerm = q;
+        ////THIS IS A DISCOVERY METHOD REDIRECTED FROM /subverses/search
+        //[PreventSpam]
+        //public async Task<ActionResult> FindSubverse(int? page, string d, string q)
+        //{
+        //    ViewBag.SearchTerm = q;
+        //    ViewBag.Title = "Search results";
+        //    page = page.HasValue ? page.Value : 0;
 
-            const int pageSize = 25;
-            int pageNumber = (page ?? 0);
+        //    var options = new SearchOptions() { Phrase = q, Page = page.Value, Count = 30 };
+        //    var query = new QueryDomainObject(Domain.Models.DomainType.Subverse, options);
+        //    var results = await query.ExecuteAsync();
 
-            if (pageNumber < 0)
-            {
-                return NotFoundErrorView();
-            }
+        //    var paginatedResults = new PaginatedList<DomainReferenceDetails>(results, options.Page, options.Count);
 
-            // find a subverse by name and/or description, sort search results by number of subscribers
-            results = _db.Subverses.Where(s => s.IsAdminDisabled != true);
-            if (d != null)
-            {
-                results = results.Where(x => x.Name.ToLower().Contains(q) || x.Description.ToLower().Contains(q));
-            }
-            else
-            {
-                results = results.Where(x => x.Name.ToLower().Contains(q));
-            }
-            results = results.OrderByDescending(s => s.SubscriberCount);
-
-            ViewBag.Title = "Search results";
-
-            var paginatedResults = new PaginatedList<Subverse>(results, page ?? 0, pageSize);
-
-            return View("~/Views/Search/FindSubverseSearchResult.cshtml", paginatedResults);
-        }
+        //    ViewBag.NavigationViewModel = new Models.ViewModels.NavigationViewModel()
+        //    {
+        //        Description = "Search Subverses",
+        //        Name = "Subverses",
+        //        MenuType = Models.ViewModels.MenuType.Discovery,
+        //        BasePath = null,
+        //        Sort = null
+        //    };
+        //    return View("~/Views/Search/DomainSearchResults.cshtml", paginatedResults);
+        //}
     }
 }

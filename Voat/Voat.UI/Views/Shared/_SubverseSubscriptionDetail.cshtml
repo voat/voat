@@ -29,7 +29,7 @@
 @if (setViewModel.Permissions.EditList)
 {
     <div class="midcol">
-        <button type="button" onclick="return setSubverseToggle(this, '@setViewModel.Set.Name', '@User.Identity.Name', '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-sub">@actionName</button>
+        <button type="button" onclick="return setSubverseListToggle($(this), '@setViewModel.Set.Name', '@User.Identity.Name', '@Model.Name', null, setSubverseListToggleCallBack)" class="btn-whoaverse-paging btn-xs btn-default btn-sub">@actionName</button>
     </div>
 }
 

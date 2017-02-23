@@ -22,6 +22,10 @@ namespace Voat.Models.ViewModels
     {
         public string Name { get; set; }
 
+        [StringLength(100, ErrorMessage = "The title is limited to 100 characters.")]
+        [Display(Name="Short Title")]
+        public string Title { get; set; }
+
         [Required(ErrorMessage = "Please enter a description.")]
         [StringLength(500, ErrorMessage = "The description is limited to 500 characters.")]
         public string Description { get; set; }

@@ -67,6 +67,9 @@ $background-66: #438DB7;
 $background-67: #438DB7;
 $background-68: #3E81A8;
 $background-69: #303030;
+$background-70: #454545;
+$background-71: #38434B;
+$background-72: #353C44;
 $background-color-1: #418AB3;
 $background-color-2: #303030;
 $background-color-3: #484848;
@@ -114,6 +117,7 @@ $border-33: #303030;
 $border-34: #242E39;
 $border-35: #2C2C2C;
 $border-36: #2C2C2C;
+$border-37: #303030;
 $border-bottom-1: #272727;
 $border-bottom-2: #222;
 $border-bottom-3: #666;
@@ -151,6 +155,7 @@ $border-color-25: #438BB7;
 $border-color-26: #222;
 $border-color-27: #2C2C2C;
 $border-color-28: #377396;
+$border-color-29: #242E39;
 $border-top-1: #292929;
 $border-top-2: #BBB;
 $border-top-3: #222;
@@ -226,15 +231,17 @@ $color-66: #959595;
 $color-67: #CCC;
 $color-68: #EEE;
 $color-69: #6F64BA;
+$color-70: #FFF;
+$color-71: #FFF;
 
 $spritesheet: '/Graphics/Dark-SpriteSheet.png';
 
 @import 'Base';
 
-$background-71: #606060;
+$background-73: #606060;
 $background-color-13: #606060;
-$border-37: #606060;
-$color-70: #C2C2C2;
+$border-38: #606060;
+$color-72: #C2C2C2;
 
 .settitlesortinglabel {
     box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
@@ -262,33 +269,14 @@ $color-70: #C2C2C2;
         color: $color-4;
     }
 
+.btn-voat,
 .btn-whoaverse-paging {
     box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
 }
 
+    .btn-voat:hover,
     .btn-whoaverse-paging:hover {
         box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
-    }
-
-.btn-whoaverse-paging-on {
-    background: $background-30;
-    background: -webkit-linear-gradient( top,$background-30,$background-31 );
-    background: -moz-linear-gradient( top,$background-30,$background-31 );
-    background: -ms-linear-gradient( top,$background-30,$background-31 );
-    background: -o-linear-gradient( top,$background-30,$background-31 );
-    border: 1px solid $border-23;
-    color: $color-38;
-}
-
-    .btn-whoaverse-paging-on:hover,
-    .btn-whoaverse-paging-on:active,
-    .btn-whoaverse-paging-on:focus {
-        background: $background-32;
-        background: -webkit-linear-gradient( top,$background-32,$background-33 );
-        background: -moz-linear-gradient( top,$background-32,$background-33 );
-        background: -ms-linear-gradient( top,$background-32,$background-33 );
-        background: -o-linear-gradient( top,$background-32,$background-33 );
-        border-color: $border-color-14;
     }
 
 .table-striped > tbody > tr:nth-child(2n+1) > td,
@@ -315,9 +303,9 @@ $color-70: #C2C2C2;
         }
 
 .link-expando-type {
-    background: $background-71;
-    border: 1px solid $border-37;
-    color: $color-70;
+    background: $background-73;
+    border: 1px solid $border-38;
+    color: $color-72;
 }
 
 .markdownEditorImgButton, .markdownEditorTextButton {

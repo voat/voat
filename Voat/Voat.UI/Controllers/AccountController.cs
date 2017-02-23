@@ -235,6 +235,7 @@ namespace Voat.Controllers
         {
             ViewBag.SelectedSubverse = string.Empty;
             ViewBag.UserName = User.Identity.Name;
+
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
@@ -247,6 +248,16 @@ namespace Voat.Controllers
                 : "";
             ViewBag.HasLocalPassword = HasPassword();
             ViewBag.ReturnUrl = Url.Action("Manage");
+
+            ViewBag.NavigationViewModel = new NavigationViewModel()
+            {
+                Description = "User Account",
+                Name = User.Identity.Name,
+                MenuType = MenuType.UserProfile,
+                BasePath = null,
+                Sort = null
+            };
+
             return View();
         }
 

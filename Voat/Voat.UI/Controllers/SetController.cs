@@ -37,7 +37,6 @@ namespace Voat.Controllers
 {
     public class SetController : BaseController
     {
-
         public async Task<ActionResult> Index(string name, string userName, string sort)
         {
             var options = new SearchOptions(Request.Url.Query);
@@ -51,6 +50,15 @@ namespace Voat.Controllers
             //{
             //    userName = null;
             //}
+            var qSet = new QuerySet(name, userName);
+            var set = await qSet.ExecuteAsync();
+
+            var perms = SetPermission.GetPermissions(set, User.Identity);
+
+            if (!perms.View)
+            {
+                return GenericErrorView(new ErrorViewModel() { Title = "Set is Private", Description = "This set doesn't allow viewing. It is private.", FooterMessage = "Sometimes sets are shy around others." });
+            }
 
             var q = new QuerySubmissions(name, Domain.Models.DomainType.Set, options, userName);
             var result = await q.ExecuteAsync();
@@ -72,7 +80,15 @@ namespace Voat.Controllers
 
             return View("SubmissionList", model);
         }
-
+        public async Task<ActionResult> Sidebar(string name)
+        {
+            using (var repo = new Repository())
+            {
+                var domainReference = DomainReference.ParseSetFromFullName(name);
+                var set = repo.GetSet(domainReference.Name, domainReference.OwnerName);
+                return PartialView("~/Views/Shared/Sidebars/_SidebarSet.cshtml", set);
+            }
+        }
         [Authorize]
         public async Task<ActionResult> Details(string name, string userName)
         {
@@ -118,24 +134,37 @@ namespace Voat.Controllers
                     Name = set.Name,
                     Description = set.Description,
                     BasePath = "",
-                    MenuType = (set.Type == (int)SetType.Front || set.Type == (int)SetType.Blocked ?  MenuType.SubverseDiscovery : MenuType.Set)
+                    MenuType = (set.Type == (int)SetType.Front || set.Type == (int)SetType.Blocked ?  MenuType.Discovery : MenuType.Set)
                 };
 
 
                 return View(model);
             }
         }
-
         // /s/{set}/{owner}/{subverse}
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ListChange(string name, string userName, string subverse, [System.Web.Http.FromUri]Domain.Models.SubscriptionAction? action = null)
+        public async Task<JsonResult> ListChange(string name, string ownerName, string subverse, Domain.Models.SubscriptionAction subscribeAction)
         {
-            var cmd = new SetSubverseCommand(new DomainReference(DomainType.Set, name, userName), subverse, action);
+            //Only user sets can be changed, thus userName never needs to be checked here.
+            var cmd = new SetSubverseCommand(new DomainReference(DomainType.Set, name, ownerName), subverse, subscribeAction);
             var result = await cmd.Execute();
             return JsonResult(result);
         }
+
+        //// /s/{set}/{owner}/{subverse}
+        //[Authorize]
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<JsonResult> Subscribe(string name, string userName, Domain.Models.SubscriptionAction action = SubscriptionAction.Toggle)
+        //{
+
+        //    var cmd = new SubscribeCommand(new DomainReference(DomainType.Set, name, userName), action);
+        //    var result = await cmd.Execute();
+        //    return JsonResult(result);
+        //}
+
 
         [Authorize]
         [HttpPost]
@@ -175,12 +204,10 @@ namespace Voat.Controllers
         {
             if (ModelState.IsValid)
             {
-                //TODO: Transfer to Command
-                using (var repo = new Repository())
-                {
-                    var result = await repo.CreateOrUpdateSet(set);
-                    return JsonResult(result);
-                }
+
+                var cmd = new UpdateSetCommand(set);
+                var result = await cmd.Execute();
+                return JsonResult(result);
             }
             return View(set);           
         }

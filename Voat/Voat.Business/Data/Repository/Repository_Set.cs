@@ -34,7 +34,7 @@ namespace Voat.Data
         #region Sets
         //TODO: Make subverse an array and process multiple additions
         [Authorize]
-        public async Task<CommandResponse<bool?>> SetSubverseListChange(DomainReference setReference, string subverse, SubscriptionAction? action)
+        public async Task<CommandResponse<bool?>> SetSubverseListChange(DomainReference setReference, string subverse, SubscriptionAction action)
         {
             DemandAuthentication();
             var set = GetSet(setReference.Name, setReference.OwnerName);
@@ -136,7 +136,7 @@ namespace Voat.Data
                 return CommandResponse.Error<CommandResponse<bool?>>(ex);
             }
         }
-        private async Task<CommandResponse<bool?>> SetSubverseListChange(SubverseSet set, Subverse subverse, SubscriptionAction? toggle)
+        private async Task<CommandResponse<bool?>> SetSubverseListChange(SubverseSet set, Subverse subverse, SubscriptionAction action)
         {
             using (var db = new voatEntities())
             {
@@ -144,12 +144,12 @@ namespace Voat.Data
 
                 var setSubverseRecord = db.SubverseSetLists.FirstOrDefault(n => n.SubverseSetID == set.ID && n.SubverseID == subverse.ID);
 
-                if (setSubverseRecord == null && ((toggle.HasValue && toggle.Value == SubscriptionAction.Subscribe) || !toggle.HasValue))
+                if (setSubverseRecord == null && ((action == SubscriptionAction.Subscribe) || action == SubscriptionAction.Toggle))
                 {
                     db.SubverseSetLists.Add(new SubverseSetList { SubverseSetID = set.ID, SubverseID = subverse.ID, CreationDate = CurrentDate });
                     response.Response = true;
                 }
-                else if (setSubverseRecord != null && ((toggle.HasValue && toggle.Value == SubscriptionAction.Unsubscribe) || !toggle.HasValue))
+                else if (setSubverseRecord != null && ((action == SubscriptionAction.Unsubscribe) || action == SubscriptionAction.Toggle))
                 {
                     db.SubverseSetLists.Remove(setSubverseRecord);
                     response.Response = false;
@@ -263,7 +263,7 @@ namespace Voat.Data
         }
 
 
-        public async Task<CommandResponse<SubverseSet>> CreateOrUpdateSet(Set set)
+        public async Task<CommandResponse<Domain.Models.Set>> CreateOrUpdateSet(Set set)
         {
             DemandAuthentication();
 
@@ -274,7 +274,7 @@ namespace Voat.Data
             var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.CreateSet);
             if (!outcome.IsAllowed)
             {
-                return MapRuleOutCome<SubverseSet>(outcome, null);
+                return MapRuleOutCome<Set>(outcome, null);
             }
 
             var existingSet = _db.SubverseSets.FirstOrDefault(x => x.ID == set.ID);
@@ -284,23 +284,24 @@ namespace Voat.Data
                  
                 if (!perms.EditProperties)
                 {
-                    return CommandResponse.FromStatus<SubverseSet>(null, Status.Denied, "User does not have permission to edit this set");
+                    return CommandResponse.FromStatus<Set>(null, Status.Denied, "User does not have permission to edit this set");
                 }
 
                 existingSet.Name = set.Name;
+                existingSet.Title = set.Title;
                 existingSet.Description = set.Description;
                 existingSet.IsPublic = set.IsPublic;
 
                 await _db.SaveChangesAsync().ConfigureAwait(false);
 
-                return CommandResponse.FromStatus<SubverseSet>(existingSet, Status.Success);
+                return CommandResponse.FromStatus<Set>(existingSet.Map(), Status.Success);
             }
             else
             {
                 //Validation - MOVE TO RULES SYSTEM MAYBE
                 if (Settings.SetCreationDisabled || Settings.MaximumOwnedSets <= 0)
                 {
-                    return CommandResponse.FromStatus<SubverseSet>(null, Status.Denied, "Set creation is currently disabled");
+                    return CommandResponse.FromStatus<Set>(null, Status.Denied, "Set creation is currently disabled");
                 }
 
                 if (Settings.MaximumOwnedSets > 0)
@@ -314,7 +315,7 @@ namespace Voat.Data
                     var setCount = _db.Database.Connection.ExecuteScalar<int>(d.ToString(), d.Parameters);
                     if (setCount >= Settings.MaximumOwnedSets)
                     {
-                        return CommandResponse.FromStatus<SubverseSet>(null, Status.Denied, $"Sorry, Users are limited to {Settings.MaximumOwnedSets} sets and you currently have {setCount}");
+                        return CommandResponse.FromStatus<Set>(null, Status.Denied, $"Sorry, Users are limited to {Settings.MaximumOwnedSets} sets and you currently have {setCount}");
                     }
                 }
 
@@ -325,12 +326,13 @@ namespace Voat.Data
                     var setCheck = GetSet(set.Name, User.Identity.Name);
                     if (setCheck != null)
                     {
-                        return CommandResponse.FromStatus<SubverseSet>(null, Status.Denied, "A set with same name and owner already exists");
+                        return CommandResponse.FromStatus<Set>(null, Status.Denied, "A set with same name and owner already exists");
                     } 
 
                     var newSet = new SubverseSet
                     {
                         Name = set.Name,
+                        Title = set.Title,
                         Description = set.Description,
                         UserName = User.Identity.Name,
                         Type = (int)SetType.Normal,
@@ -345,11 +347,11 @@ namespace Voat.Data
                     _db.SubverseSetSubscriptions.Add(new SubverseSetSubscription() { SubverseSetID = newSet.ID, UserName = User.Identity.Name, CreationDate = CurrentDate });
                     await _db.SaveChangesAsync().ConfigureAwait(false);
 
-                    return CommandResponse.Successful(newSet);
+                    return CommandResponse.Successful(newSet.Map());
                 }
                 catch (Exception ex)
                 {
-                    return CommandResponse.Error<CommandResponse<SubverseSet>>(ex);
+                    return CommandResponse.Error<CommandResponse<Set>>(ex);
                 }
             }
         }
