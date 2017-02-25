@@ -15,7 +15,8 @@ namespace Voat.Models.ViewModels
         UserProfile,
         Discovery,
         UserMessages,
-        Smail
+        Smail,
+        Moderator
     }
 
     public class NavigationViewModel

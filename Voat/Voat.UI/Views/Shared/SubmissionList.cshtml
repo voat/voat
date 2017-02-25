@@ -10,6 +10,8 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
+@using Voat.Domain.Models
+
 @model Voat.Models.ViewModels.SubmissionListViewModel
 
 @{
@@ -45,16 +47,23 @@
     }
 
     <div class="content" role="main">
-        @if (Model.Context != null && Model.Context.Type == Voat.Domain.Models.DomainType.Subverse && Model.Sort == Voat.Domain.Models.SortAlgorithm.Top)
+
+        @*Top Sort Span Buttons*@
+        @if (Model.Context != null && Model.Sort == Voat.Domain.Models.SortAlgorithm.Top)
         {
-            <div id="sortingThingy" class="sorting-thingy">
-                @Html.RouteLink("day", Model.Submissions.RouteName, new { subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "day" }) | 
-                @Html.RouteLink("week", Model.Submissions.RouteName, new {subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "week" }) | 
-                @Html.RouteLink("month", Model.Submissions.RouteName, new { subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "month"}) |
-                @Html.RouteLink("year", Model.Submissions.RouteName, new { subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "year"}) |
-                @Html.RouteLink("all", Model.Submissions.RouteName, new { subverse = Model.Context.Name, sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), time = "all"})
+            <div>
+                <ul class="tabmenu submenu">
+                    @{
+                        var spans = new SortSpan[] { SortSpan.Day, SortSpan.Week, SortSpan.Month, SortSpan.Quarter, SortSpan.Year, SortSpan.All };
+                        foreach (var span in spans)
+                        {
+                            <li class='@(Model.Span.HasValue && Model.Span.Value == span ? "selected" : "disabled")'>@Html.RouteLink(span.ToString(), Model.Submissions.RouteName, new { sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), span = span.ToString().ToLower() })</li>
+                        }
+                    }
+                </ul>
             </div>
         }
+
         <div class="sitetable linklisting">
             @if (Model.IsActualSubverse)
             {
@@ -94,7 +103,7 @@
             }
             if (Model.Span != null)
             {
-                Model.Submissions.RouteData["time"] = Model.Span.ToString().ToLower();
+                Model.Submissions.RouteData["span"] = Model.Span.ToString().ToLower();
             }
             if (!String.IsNullOrEmpty(Request.QueryString["frontpage"]))
             {

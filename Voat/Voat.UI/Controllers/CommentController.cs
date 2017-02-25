@@ -78,7 +78,6 @@ namespace Voat.Controllers
             }
 
             var subverse = DataCache.Subverse.Retrieve(subverseName);
-            //var subverse = _db.Subverse.Find(subversetoshow);
 
             if (subverse == null)
             {
@@ -126,6 +125,18 @@ namespace Voat.Controllers
 
             var q2 = new QuerySubverseModerators(subverseName);
             ViewBag.ModeratorList = await q2.ExecuteAsync();
+
+
+
+            ViewBag.NavigationViewModel = new NavigationViewModel()
+            {
+                Description = "Subverse",
+                Name = subverseName,
+                MenuType = MenuType.Subverse,
+                BasePath = VoatPathHelper.BasePath(new DomainReference(DomainType.Subverse, subverseName)),
+                Sort = null
+            };
+
 
             return View("~/Views/Home/Comments.cshtml", model);
 
@@ -177,7 +188,6 @@ namespace Voat.Controllers
             }
 
             var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-            //var subverse = _db.Subverse.Find(subversetoshow);
 
             if (subverse == null)
             {
@@ -226,7 +236,6 @@ namespace Voat.Controllers
             }
 
             var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-            //var subverse = _db.Subverse.Find(subversetoshow);
 
             if (subverse == null)
             {

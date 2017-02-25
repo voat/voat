@@ -23,14 +23,11 @@
 }
 
 <ul class="tabmenu">
-    <li class='@(url.EndsWith("subverses") ? "selected" : "disabled")'><a href="/discover/@type/top">Popular</a></li>
-    <li class='@(url.Contains("/active") ? "selected" : "disabled")'><a href="/discover/@type/active">Active</a></li>
-    <li class='@(url.Contains("/new") ? "selected" : "disabled")'><a href="/discover/@type/new">New</a></li>
-    <li class='@(url.Contains("s/front/") || url.Contains("user/subscribed/") ? "selected" : "disabled")'><a href="/user/subscribed/@type">Subscribed</a></li>
-    @if (domainType.Value == Voat.Domain.Models.DomainType.Subverse)
-    {
-        <li class='@(url.Contains("s/blocked/") ? "selected" : "disabled")'><a href="/user/blocked/subverse">Blocked</a></li>
-    }
-    @*<li class='@(url.Contains("/search") ? "selected" : "disabled")'><a href="/discover/@type/search">Search</a></li>*@
-    <li class='@(url.Contains("/search") ? "selected" : "disabled")'><a href='@Url.RouteUrl("DiscoverSearch", new { domainType=type, sort = Request.RequestContext.RouteData.Values["sort"] })'>Search</a></li>
+    <li class='@(domainType == Voat.Domain.Models.DomainType.Subverse ? "selected" : "disabled")'><a href="@Url.RouteUrl("Discover", new { domainType = "subverse", sort = Request.RequestContext.RouteData.Values["sort"] })">Subverses</a></li>
+    <li class='@(domainType == Voat.Domain.Models.DomainType.Set ? "selected" : "disabled")'><a href="@Url.RouteUrl("Discover", new { domainType = "set", sort = Request.RequestContext.RouteData.Values["sort"] })">Sets</a></li>
 </ul>
+
+@*<ul class="tabmenu">
+    <li class="disabled"><button href="@Url.RouteUrl("Discover", new { domainType = "subverse", sort = Request.RequestContext.RouteData.Values["sort"] })" class='@(domainType == Voat.Domain.Models.DomainType.Subverse ? "btn-voat" : "btn-voat btn-voat-off")'>Subverses</button></li>
+    <li class="disabled"><button href="@Url.RouteUrl("Discover", new { domainType = "set", sort = Request.RequestContext.RouteData.Values["sort"] })" class='@(domainType == Voat.Domain.Models.DomainType.Set ? "btn-voat" : "btn-voat btn-voat-off")'>Sets</button></li>
+</ul>*@

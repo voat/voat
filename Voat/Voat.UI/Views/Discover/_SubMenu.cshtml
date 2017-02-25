@@ -1,0 +1,38 @@
+﻿
+@model Voat.Domain.Models.DomainType
+
+@{
+    var type = Model.ToString().ToLower();
+    var url = Request.Url.AbsolutePath.ToLower().TrimEnd('/');
+
+    //if (Request.QueryString["phrase"] != null)
+    //{
+
+    //}
+}
+
+
+<div>
+    <ul class="tabmenu submenu">
+        <li class='@(url.EndsWith(String.Format("/{0}/top", type)) || url.EndsWith("/" + type) ? "selected" : "disabled")'><a href="/discover/@type/top">Popular</a></li>
+        <li class='@(url.EndsWith(String.Format("/{0}/active", type)) ? "selected" : "disabled")'><a href="/discover/@type/active">Active</a></li>
+        <li class='@(url.EndsWith(String.Format("/{0}/new", type)) ? "selected" : "disabled")'><a href="/discover/@type/new">New</a></li>
+        <li class='@(url.Contains("s/front/") || url.Contains("user/subscribed/") ? "selected" : "disabled")'><a href="/user/subscribed/@type">Subscribed</a></li>
+        @if (Model == Voat.Domain.Models.DomainType.Subverse)
+        {
+            <li class='@(url.Contains("s/blocked/") ? "selected" : "disabled")'><a href="/user/blocked/subverse">Blocked</a></li>
+        }
+       
+        @if (User.Identity.IsAuthenticated)
+        {
+            <li class='@(url.Contains(String.Format("/{0}/search", type)) ? "selected" : "disabled")'><a href='@Url.RouteUrl("DiscoverSearch", new { domainType = type, sort = "top" })'>Search</a></li>
+            @*<li class='@(url.Contains(String.Format("/{0}/search", type)) ? "selected" : "disabled")'><a href='@Url.RouteUrl("DiscoverSearch", new { domainType=type, sort = Request.RequestContext.RouteData.Values["sort"] })'>Search</a></li>*@
+            if (Model == Voat.Domain.Models.DomainType.Set)
+            {
+                <li class="disabled"><a href="/user/@User.Identity.Name/sets">My Sets</a></li>
+            }
+        }
+
+    </ul>
+</div>
+<div class="clear"></div>

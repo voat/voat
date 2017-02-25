@@ -40,18 +40,25 @@ namespace Voat.Controllers
         public async Task<ActionResult> Index(string name, string userName, string sort)
         {
             var options = new SearchOptions(Request.Url.Query);
-
+            
+            //Set sort because it is part of path
             if (!String.IsNullOrEmpty(sort))
             {
                 options.Sort = (SortAlgorithm)Enum.Parse(typeof(SortAlgorithm), sort, true);
             }
+            //set span to day if not specified explicitly 
+            if (options.Sort == SortAlgorithm.Top && Request.QueryString["span"] == null)
+            {
+                options.Span = SortSpan.Day;
+            }
 
-            //if (userName == "_")
-            //{
-            //    userName = null;
-            //}
             var qSet = new QuerySet(name, userName);
             var set = await qSet.ExecuteAsync();
+
+            if (set == null)
+            {
+                return GenericErrorView(new ErrorViewModel() { Title = "Can't find this set", Description = "Maybe it's gone?", FooterMessage = "Probably yeah" });
+            }
 
             var perms = SetPermission.GetPermissions(set, User.Identity);
 
@@ -94,17 +101,34 @@ namespace Voat.Controllers
         {
             using (var repo = new Repository())
             {
+                var domainReference = new DomainReference(DomainType.Set, name, userName);
                 var set = repo.GetSet(name, userName);
                 if (set == null)
                 {
                     //Since system sets are not created until needed we show a slightly better error message for front/blocked.
                     if (name.IsEqual(SetType.Front.ToString()))
                     {
-                        return GenericErrorView(new ErrorViewModel() { Title = "No Subscriptions!", Description = "You don't have any subscriptions so we have to show you this instead", FooterMessage = "Subscribe to a subverse silly" });
+                        ViewBag.NavigationViewModel = new Models.ViewModels.NavigationViewModel()
+                        {
+                            Description = "Discover Search",
+                            Name = "No Idea",
+                            MenuType = Models.ViewModels.MenuType.Discovery,
+                            BasePath = VoatPathHelper.BasePath(domainReference),
+                            Sort = null
+                        };
+                        return GenericErrorView(new ErrorViewModel() { Title = "No Subscriptions!", Description = "You don't have any subscriptions so we have to show you this instead", FooterMessage = "Subscribe to a subverse you silly goat" });
                     }
                     else if (name.IsEqual(SetType.Blocked.ToString()))
                     {
-                        return GenericErrorView(new ErrorViewModel() { Title = "No Blocked Subs!", Description = "You don't have any blocked subs. Golf clap.", FooterMessage = "Block subs and this page will change" });
+                        ViewBag.NavigationViewModel = new Models.ViewModels.NavigationViewModel()
+                        {
+                            Description = "Discover Search",
+                            Name = "No Idea",
+                            MenuType = Models.ViewModels.MenuType.Discovery,
+                            BasePath = VoatPathHelper.BasePath(domainReference),
+                            Sort = null
+                        };
+                        return GenericErrorView(new ErrorViewModel() { Title = "No Blocked Subs!", Description = "You don't have any blocked subs. Golf clap.", FooterMessage = "Block some subs and this page will magically change!" });
                     }
                     else
                     {
@@ -133,7 +157,7 @@ namespace Voat.Controllers
                 ViewBag.NavigationViewModel = new NavigationViewModel() {
                     Name = set.Name,
                     Description = set.Description,
-                    BasePath = "",
+                    BasePath = VoatPathHelper.BasePath(domainReference),
                     MenuType = (set.Type == (int)SetType.Front || set.Type == (int)SetType.Blocked ?  MenuType.Discovery : MenuType.Set)
                 };
 
@@ -231,6 +255,7 @@ namespace Voat.Controllers
 
                     if (result.Success)
                     {
+                        Caching.CacheHandler.Instance.Remove(Caching.CachingKey.UserSubscriptions(User.Identity.Name));
                         if (Request.IsAjaxRequest())
                         {
                             return JsonResult(result);

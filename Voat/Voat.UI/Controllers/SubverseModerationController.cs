@@ -23,13 +23,25 @@ namespace Voat.Controllers
     {
         private readonly voatEntities _db = new voatEntities(true);
 
+        private void SetNavigationViewModel(string subverseName)
+        {
+            ViewBag.NavigationViewModel = new Models.ViewModels.NavigationViewModel()
+            {
+                Description = "Moderation",
+                Name = subverseName,
+                MenuType = Models.ViewModels.MenuType.Moderator,
+                BasePath = null,
+                Sort = null
+            };
+        }
+
         // GET: settings
         [Authorize]
-        public ActionResult SubverseSettings(string subversetoshow)
+        public ActionResult Update(string subverse)
         {
-            var subverse = DataCache.Subverse.Retrieve(subversetoshow);
+            var subverseObject = DataCache.Subverse.Retrieve(subverse);
 
-            if (subverse == null)
+            if (subverseObject == null)
             {
                 ViewBag.SelectedSubverse = "404";
                 return SubverseNotFoundErrorView();
@@ -38,34 +50,36 @@ namespace Voat.Controllers
             // check that the user requesting to edit subverse settings is subverse owner!
             var subAdmin =
                 _db.SubverseModerators.FirstOrDefault(
-                    x => x.Subverse == subversetoshow && x.UserName == User.Identity.Name && x.Power <= 2);
+                    x => x.Subverse == subverse && x.UserName == User.Identity.Name && x.Power <= 2);
 
             if (subAdmin == null)
             {
-                return RedirectToAction("SubverseIndex", "Subverses", new { subverse = subversetoshow });
+                return RedirectToAction("SubverseIndex", "Subverses", new { subverse = subverse });
             }
 
             // map existing data to view model for editing and pass it to frontend
             // NOTE: we should look into a mapper which automatically maps these properties to corresponding fields to avoid tedious manual mapping
             var viewModel = new SubverseSettingsViewModel
             {
-                Name = subverse.Name,
-                Title = subverse.Title,
-                Description = subverse.Description,
-                SideBar = subverse.SideBar,
-                Stylesheet = subverse.Stylesheet,
-                IsAdult = subverse.IsAdult,
-                IsPrivate = subverse.IsPrivate,
-                IsThumbnailEnabled = subverse.IsThumbnailEnabled,
-                ExcludeSitewideBans = subverse.ExcludeSitewideBans,
-                IsAuthorizedOnly = subverse.IsAuthorizedOnly,
-                IsAnonymized = subverse.IsAnonymized,
-                MinCCPForDownvote = subverse.MinCCPForDownvote,
-                LastUpdateDate = subverse.LastUpdateDate
+                Name = subverseObject.Name,
+                Title = subverseObject.Title,
+                Description = subverseObject.Description,
+                SideBar = subverseObject.SideBar,
+                //Stylesheet = subverseObject.Stylesheet,
+                IsAdult = subverseObject.IsAdult,
+                IsPrivate = subverseObject.IsPrivate,
+                IsThumbnailEnabled = subverseObject.IsThumbnailEnabled,
+                ExcludeSitewideBans = subverseObject.ExcludeSitewideBans,
+                IsAuthorizedOnly = subverseObject.IsAuthorizedOnly,
+                IsAnonymized = subverseObject.IsAnonymized,
+                MinCCPForDownvote = subverseObject.MinCCPForDownvote,
+                LastUpdateDate = subverseObject.LastUpdateDate
             };
 
             ViewBag.SelectedSubverse = string.Empty;
-            ViewBag.SubverseName = subverse.Name;
+            ViewBag.SubverseName = subverseObject.Name;
+            SetNavigationViewModel(subverseObject.Name);
+
             return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", viewModel);
         }
 
@@ -73,12 +87,13 @@ namespace Voat.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> SubverseSettings(SubverseSettingsViewModel updatedModel)
+        public async Task<ActionResult> Update(SubverseSettingsViewModel updatedModel)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
+                    SetNavigationViewModel(updatedModel.Name);
                     return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
                 }
                 var existingSubverse = _db.Subverses.Find(updatedModel.Name);
@@ -86,6 +101,8 @@ namespace Voat.Controllers
                 // check if subverse exists before attempting to edit it
                 if (existingSubverse != null)
                 {
+                    SetNavigationViewModel(existingSubverse.Name);
+
                     // check if user requesting edit is authorized to do so for current subverse
                     if (!ModeratorPermission.HasPermission(User.Identity.Name, updatedModel.Name, Domain.Models.ModeratorAction.ModifySettings))
                     {
@@ -111,22 +128,22 @@ namespace Voat.Controllers
                     existingSubverse.Description = updatedModel.Description;
                     existingSubverse.SideBar = updatedModel.SideBar;
 
-                    if (updatedModel.Stylesheet != null)
-                    {
-                        if (updatedModel.Stylesheet.Length < 50001)
-                        {
-                            existingSubverse.Stylesheet = updatedModel.Stylesheet;
-                        }
-                        else
-                        {
-                            ModelState.AddModelError(string.Empty, "Sorry, custom CSS limit is set to 50000 characters.");
-                            return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
-                        }
-                    }
-                    else
-                    {
-                        existingSubverse.Stylesheet = updatedModel.Stylesheet;
-                    }
+                    //if (updatedModel.Stylesheet != null)
+                    //{
+                    //    if (updatedModel.Stylesheet.Length < 50001)
+                    //    {
+                    //        existingSubverse.Stylesheet = updatedModel.Stylesheet;
+                    //    }
+                    //    else
+                    //    {
+                    //        ModelState.AddModelError(string.Empty, "Sorry, custom CSS limit is set to 50000 characters.");
+                    //        return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    existingSubverse.Stylesheet = updatedModel.Stylesheet;
+                    //}
 
                     existingSubverse.IsAdult = updatedModel.IsAdult;
                   
@@ -186,16 +203,16 @@ namespace Voat.Controllers
 
         // GET: subverse stylesheet editor
         [Authorize]
-        public ActionResult SubverseStylesheetEditor(string subversetoshow)
+        public ActionResult SubverseStylesheetEditor(string subverse)
         {
-            var subverse = DataCache.Subverse.Retrieve(subversetoshow);
+            var subverseObject = DataCache.Subverse.Retrieve(subverse);
 
-            if (subverse == null)
+            if (subverseObject == null)
             {
                 ViewBag.SelectedSubverse = "404";
                 return SubverseNotFoundErrorView();
             }
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subversetoshow, Domain.Models.ModeratorAction.ModifyCSS))
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.ModifyCSS))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -203,12 +220,14 @@ namespace Voat.Controllers
             // map existing data to view model for editing and pass it to frontend
             var viewModel = new SubverseStylesheetViewModel
             {
-                Name = subverse.Name,
-                Stylesheet = subverse.Stylesheet
+                Name = subverseObject.Name,
+                Stylesheet = subverseObject.Stylesheet
             };
 
             ViewBag.SelectedSubverse = string.Empty;
-            ViewBag.SubverseName = subverse.Name;
+            ViewBag.SubverseName = subverseObject.Name;
+            SetNavigationViewModel(subverseObject.Name);
+
             return View("~/Views/Subverses/Admin/SubverseStylesheetEditor.cshtml", viewModel);
         }
 
@@ -216,19 +235,21 @@ namespace Voat.Controllers
         [ValidateInput(false)]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> SubverseStylesheetEditor(Subverse updatedModel)
+        public async Task<ActionResult> SubverseStylesheetEditor(SubverseStylesheetViewModel model)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
+                    SetNavigationViewModel(model.Name);
                     return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
                 }
-                var existingSubverse = _db.Subverses.Find(updatedModel.Name);
+                var existingSubverse = _db.Subverses.Find(model.Name);
 
                 // check if subverse exists before attempting to edit it
                 if (existingSubverse != null)
                 {
+                    SetNavigationViewModel(model.Name);
                     // check if user requesting edit is authorized to do so for current subverse
                     // check that the user requesting to edit subverse settings is subverse owner!
                     if (!ModeratorPermission.HasPermission(User.Identity.Name, existingSubverse.Name, Domain.Models.ModeratorAction.ModifyCSS))
@@ -236,11 +257,11 @@ namespace Voat.Controllers
                         return new EmptyResult();
                     }
 
-                    if (!String.IsNullOrEmpty(updatedModel.Stylesheet))
+                    if (!String.IsNullOrEmpty(model.Stylesheet))
                     {
-                        if (updatedModel.Stylesheet.Length < 50001)
+                        if (model.Stylesheet.Length < 50001)
                         {
-                            existingSubverse.Stylesheet = updatedModel.Stylesheet;
+                            existingSubverse.Stylesheet = model.Stylesheet;
                         }
                         else
                         {
@@ -250,7 +271,7 @@ namespace Voat.Controllers
                     }
                     else
                     {
-                        existingSubverse.Stylesheet = updatedModel.Stylesheet;
+                        existingSubverse.Stylesheet = model.Stylesheet;
                     }
 
                     await _db.SaveChangesAsync();
@@ -260,74 +281,78 @@ namespace Voat.Controllers
                     CacheHandler.Instance.Remove(CachingKey.Subverse(existingSubverse.Name));
 
                     // go back to this subverse
-                    return RedirectToAction("SubverseIndex", "Subverses", new { subverse = updatedModel.Name });
+                    return RedirectToAction("SubverseIndex", "Subverses", new { subverse = model.Name });
                 }
 
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");
-                return View("~/Views/Subverses/Admin/SubverseStylesheetEditor.cshtml");
+                return View("~/Views/Subverses/Admin/SubverseStylesheetEditor.cshtml", model);
             }
             catch (Exception)
             {
                 ModelState.AddModelError(string.Empty, "Something bad happened.");
-                return View("~/Views/Subverses/Admin/SubverseStylesheetEditor.cshtml");
+                return View("~/Views/Subverses/Admin/SubverseStylesheetEditor.cshtml", model);
             }
         }
         // GET: subverse moderators for selected subverse
         [Authorize]
-        public ActionResult SubverseModerators(string subversetoshow)
+        public ActionResult SubverseModerators(string subverse)
         {
             // get model for selected subverse
-            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
-            if (subverseModel == null)
+            var subverseObject = DataCache.Subverse.Retrieve(subverse);
+            if (subverseObject == null)
+            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subversetoshow, Domain.Models.ModeratorAction.InviteMods))
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.InviteMods))
             {
                 return RedirectToAction("Index", "Home");
             }
 
             var subverseModerators = _db.SubverseModerators
-                .Where(n => n.Subverse == subversetoshow)
+                .Where(n => n.Subverse == subverse)
                 .Take(20)
                 .OrderBy(s => s.Power)
                 .ToList();
 
-            ViewBag.SubverseModel = subverseModel;
-            ViewBag.SubverseName = subversetoshow;
-
+            ViewBag.SubverseModel = subverseObject;
+            ViewBag.SubverseName = subverse;
             ViewBag.SelectedSubverse = string.Empty;
+            SetNavigationViewModel(subverseObject.Name);
+
             return View("~/Views/Subverses/Admin/SubverseModerators.cshtml", subverseModerators);
         }
 
         // GET: subverse moderator invitations for selected subverse
         [Authorize]
-        public ActionResult ModeratorInvitations(string subversetoshow)
+        public ActionResult ModeratorInvitations(string subverse)
         {
             // get model for selected subverse
-            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
-            if (subverseModel == null)
+            var subverseObject = DataCache.Subverse.Retrieve(subverse);
+            if (subverseObject == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subversetoshow, Domain.Models.ModeratorAction.InviteMods))
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.InviteMods))
             {
                 return RedirectToAction("Index", "Home");
             }
 
             var moderatorInvitations = _db.ModeratorInvitations
-                .Where(mi => mi.Subverse == subversetoshow)
+                .Where(mi => mi.Subverse == subverse)
                 .Take(20)
                 .OrderBy(s => s.Power)
                 .ToList();
 
-            ViewBag.SubverseModel = subverseModel;
-            ViewBag.SubverseName = subversetoshow;
+            ViewBag.SubverseModel = subverseObject;
+            ViewBag.SubverseName = subverse;
+            SetNavigationViewModel(subverseObject.Name);
 
             return PartialView("~/Views/Subverses/Admin/_ModeratorInvitations.cshtml", moderatorInvitations);
         }
 
         // GET: banned users for selected subverse
         [Authorize]
-        public ActionResult SubverseBans(string subversetoshow, int? page)
+        public ActionResult SubverseBans(string subverse, int? page)
         {
             const int pageSize = 25;
             int pageNumber = (page ?? 0);
@@ -338,46 +363,49 @@ namespace Voat.Controllers
             }
 
             // get model for selected subverse
-            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
+            var subverseObject = DataCache.Subverse.Retrieve(subverse);
 
-            if (subverseModel == null)
+            if (subverseObject == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subversetoshow, Domain.Models.ModeratorAction.Banning))
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.Banning))
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            var subverseBans = _db.SubverseBans.Where(n => n.Subverse == subversetoshow).OrderByDescending(s => s.CreationDate);
+            var subverseBans = _db.SubverseBans.Where(n => n.Subverse == subverse).OrderByDescending(s => s.CreationDate);
             var paginatedSubverseBans = new PaginatedList<SubverseBan>(subverseBans, page ?? 0, pageSize);
 
-            ViewBag.SubverseModel = subverseModel;
-            ViewBag.SubverseName = subversetoshow;
-
+            ViewBag.SubverseModel = subverseObject;
+            ViewBag.SubverseName = subverse;
             ViewBag.SelectedSubverse = string.Empty;
+            SetNavigationViewModel(subverseObject.Name);
+
             return View("~/Views/Subverses/Admin/SubverseBans.cshtml", paginatedSubverseBans);
         }
         #region Banning
         // GET: show add ban view for selected subverse
         [Authorize]
-        public ActionResult AddBan(string subversetoshow)
+        public ActionResult AddBan(string subverse)
         {
             // get model for selected subverse
-            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
+            var subverseObject = DataCache.Subverse.Retrieve(subverse);
 
-            if (subverseModel == null)
+            if (subverseObject == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subversetoshow, Domain.Models.ModeratorAction.Banning))
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.Banning))
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            ViewBag.SubverseModel = subverseModel;
-            ViewBag.SubverseName = subversetoshow;
+            ViewBag.SubverseModel = subverseObject;
+            ViewBag.SubverseName = subverse;
             ViewBag.SelectedSubverse = string.Empty;
+            SetNavigationViewModel(subverseObject.Name);
+
             return View("~/Views/Subverses/Admin/AddBan.cshtml");
         }
 
@@ -409,6 +437,8 @@ namespace Voat.Controllers
                 ModelState.AddModelError(string.Empty, result.Message);
                 ViewBag.SubverseName = subverseBan.Subverse;
                 ViewBag.SelectedSubverse = string.Empty;
+                SetNavigationViewModel(subverseBan.Subverse);
+
                 return View("~/Views/Subverses/Admin/AddBan.cshtml",
                 new SubverseBanViewModel
                 {
@@ -419,7 +449,7 @@ namespace Voat.Controllers
         }
         // GET: show remove ban view for selected subverse
         [Authorize]
-        public ActionResult RemoveBan(string subversetoshow, int? id)
+        public ActionResult RemoveBan(string subverse, int? id)
         {
             if (id == null)
             {
@@ -427,7 +457,7 @@ namespace Voat.Controllers
             }
 
             // check if caller is subverse owner, if not, deny listing
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subversetoshow, Domain.Models.ModeratorAction.Banning))
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.Banning))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -440,6 +470,8 @@ namespace Voat.Controllers
 
             ViewBag.SelectedSubverse = string.Empty;
             ViewBag.SubverseName = subverseBan.Subverse;
+            SetNavigationViewModel(subverseBan.Subverse);
+
             return View("~/Views/Subverses/Admin/RemoveBan.cshtml", subverseBan);
         }
 
@@ -469,6 +501,8 @@ namespace Voat.Controllers
                     ModelState.AddModelError(String.Empty, response.Message);
                     ViewBag.SelectedSubverse = string.Empty;
                     ViewBag.SubverseName = banToBeRemoved.Subverse;
+                    SetNavigationViewModel(banToBeRemoved.Subverse);
+
                     return View("~/Views/Subverses/Admin/RemoveBan.cshtml", banToBeRemoved);
                 }
             }
@@ -504,6 +538,8 @@ namespace Voat.Controllers
             }
 
             ViewBag.SubverseName = moderatorInvitation.Subverse;
+            SetNavigationViewModel(moderatorInvitation.Subverse);
+
             return View("~/Views/Subverses/Admin/RecallModeratorInvitation.cshtml", moderatorInvitation);
         }
 
@@ -544,6 +580,7 @@ namespace Voat.Controllers
             // execute invitation removal
             _db.ModeratorInvitations.Remove(invitationToBeRemoved);
             await _db.SaveChangesAsync();
+
             return RedirectToAction("SubverseModerators");
         }
 
@@ -551,14 +588,14 @@ namespace Voat.Controllers
 
         // GET: show resign as moderator view for selected subverse
         [Authorize]
-        public ActionResult ResignAsModerator(string subversetoresignfrom)
+        public ActionResult ResignAsModerator(string subverse)
         {
-            if (subversetoresignfrom == null)
+            if (subverse == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var subModerator = _db.SubverseModerators.FirstOrDefault(s => s.Subverse == subversetoresignfrom && s.UserName == User.Identity.Name);
+            var subModerator = _db.SubverseModerators.FirstOrDefault(s => s.Subverse == subverse && s.UserName == User.Identity.Name);
 
             if (subModerator == null)
             {
@@ -567,6 +604,7 @@ namespace Voat.Controllers
 
             ViewBag.SelectedSubverse = string.Empty;
             ViewBag.SubverseName = subModerator.Subverse;
+            SetNavigationViewModel(subModerator.Subverse);
 
             return View("~/Views/Subverses/Admin/ResignAsModerator.cshtml", subModerator);
         }
@@ -576,18 +614,18 @@ namespace Voat.Controllers
         [HttpPost]
         [ActionName("ResignAsModerator")]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> ResignAsModeratorPost(string subversetoresignfrom)
+        public async Task<ActionResult> ResignAsModeratorPost(string subverse)
         {
             // get moderator name for selected subverse
-            var subModerator = _db.SubverseModerators.FirstOrDefault(s => s.Subverse == subversetoresignfrom && s.UserName == User.Identity.Name);
+            var subModerator = _db.SubverseModerators.FirstOrDefault(s => s.Subverse == subverse && s.UserName == User.Identity.Name);
 
             if (subModerator == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var subverse = DataCache.Subverse.Retrieve(subModerator.Subverse);
-            if (subverse == null)
+            var subverseObject = DataCache.Subverse.Retrieve(subModerator.Subverse);
+            if (subverseObject == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
@@ -597,64 +635,67 @@ namespace Voat.Controllers
             await _db.SaveChangesAsync();
 
             //clear mod cache
-            CacheHandler.Instance.Remove(CachingKey.SubverseModerators(subverse.Name));
+            CacheHandler.Instance.Remove(CachingKey.SubverseModerators(subverseObject.Name));
 
-            return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subversetoresignfrom });
+            return RedirectToAction("SubverseIndex", "Subverses", new { subverse = subverse });
         }
 
 
 
         // GET: show subverse flair settings view for selected subverse
         [Authorize]
-        public ActionResult SubverseFlairSettings(string subversetoshow)
+        public ActionResult SubverseFlairSettings(string subverse)
         {
             // get model for selected subverse
-            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
+            var subverseObject = DataCache.Subverse.Retrieve(subverse);
 
-            if (subverseModel == null)
+            if (subverseObject == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             // check if caller is authorized for this sub, if not, deny listing
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subversetoshow, Domain.Models.ModeratorAction.ModifyFlair))
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.ModifyFlair))
             {
                 return RedirectToAction("Index", "Home");
             }
 
             var subverseFlairsettings = _db.SubverseFlairs
-                .Where(n => n.Subverse == subversetoshow)
+                .Where(n => n.Subverse == subverse)
                 .Take(20)
                 .OrderBy(s => s.ID)
                 .ToList();
 
-            ViewBag.SubverseModel = subverseModel;
-            ViewBag.SubverseName = subversetoshow;
-
+            ViewBag.SubverseModel = subverseObject;
+            ViewBag.SubverseName = subverse;
             ViewBag.SelectedSubverse = string.Empty;
+            SetNavigationViewModel(subverseObject.Name);
+
             return View("~/Views/Subverses/Admin/Flair/FlairSettings.cshtml", subverseFlairsettings);
         }
 
         // GET: show add link flair view for selected subverse
         [Authorize]
-        public ActionResult AddLinkFlair(string subversetoshow)
+        public ActionResult AddLinkFlair(string subverse)
         {
             // get model for selected subverse
-            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
+            var subverseObject = DataCache.Subverse.Retrieve(subverse);
 
-            if (subverseModel == null)
+            if (subverseObject == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             //check perms
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subversetoshow, Domain.Models.ModeratorAction.ModifyFlair))
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.ModifyFlair))
             {
                 return RedirectToAction("Index", "Home");
             }
-            ViewBag.SubverseModel = subverseModel;
-            ViewBag.SubverseName = subversetoshow;
+            ViewBag.SubverseModel = subverseObject;
+            ViewBag.SubverseName = subverse;
             ViewBag.SelectedSubverse = string.Empty;
+            SetNavigationViewModel(subverseObject.Name);
+
             return View("~/Views/Subverses/Admin/Flair/AddLinkFlair.cshtml");
         }
 
@@ -683,6 +724,7 @@ namespace Voat.Controllers
             subverseFlairSetting.Subverse = subverseModel.Name;
             _db.SubverseFlairs.Add(subverseFlairSetting);
             _db.SaveChanges();
+
             return RedirectToAction("SubverseFlairSettings");
         }
 
@@ -704,6 +746,8 @@ namespace Voat.Controllers
 
             ViewBag.SubverseName = subverseFlairSetting.Subverse;
             ViewBag.SelectedSubverse = string.Empty;
+            SetNavigationViewModel(subverseFlairSetting.Subverse);
+
             return View("~/Views/Subverses/Admin/Flair/RemoveLinkFlair.cshtml", subverseFlairSetting);
         }
 
@@ -716,10 +760,14 @@ namespace Voat.Controllers
             // get link flair for selected subverse
             var linkFlairToRemove = await _db.SubverseFlairs.FindAsync(id);
             if (linkFlairToRemove == null)
+            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             var subverse = DataCache.Subverse.Retrieve(linkFlairToRemove.Subverse);
             if (subverse == null)
+            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
             // check if caller has clearance to remove a link flair
             if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse.Name, Domain.Models.ModeratorAction.ModifyFlair))
@@ -810,26 +858,30 @@ namespace Voat.Controllers
             _db.ModeratorInvitations.Remove(userInvitation);
             _db.SaveChanges();
 
-            return RedirectToAction("SubverseSettings", "SubverseModeration", new { subversetoshow = userInvitation.Subverse });
+            return RedirectToAction("SubverseSettings", "SubverseModeration", new { subverse = userInvitation.Subverse });
         }
 
         // GET: show add moderators view for selected subverse
         [Authorize]
-        public ActionResult AddModerator(string subversetoshow)
+        public ActionResult AddModerator(string subverse)
         {
             // get model for selected subverse
-            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
-            if (subverseModel == null)
+            var subverseObject = DataCache.Subverse.Retrieve(subverse);
+            if (subverseObject == null)
+            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subversetoshow, Domain.Models.ModeratorAction.InviteMods))
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.InviteMods))
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            ViewBag.SubverseModel = subverseModel;
-            ViewBag.SubverseName = subversetoshow;
+            ViewBag.SubverseModel = subverseObject;
+            ViewBag.SubverseName = subverse;
             ViewBag.SelectedSubverse = string.Empty;
+            SetNavigationViewModel(subverseObject.Name);
+
             return View("~/Views/Subverses/Admin/AddModerator.cshtml");
         }
 
@@ -860,6 +912,8 @@ namespace Voat.Controllers
                 ViewBag.SubverseName = subverseAdmin.Subverse;
                 ViewBag.SelectedSubverse = string.Empty;
                 ModelState.AddModelError(string.Empty, errorMessage);
+                SetNavigationViewModel(subverseAdmin.Subverse);
+
                 return View("~/Views/Subverses/Admin/AddModerator.cshtml",
                 new SubverseModeratorViewModel
                 {
@@ -989,6 +1043,8 @@ namespace Voat.Controllers
 
             ViewBag.SelectedSubverse = string.Empty;
             ViewBag.SubverseName = subModerator.Subverse;
+            SetNavigationViewModel(subModerator.Subverse);
+
             return View("~/Views/Subverses/Admin/RemoveModerator.cshtml", subModerator);
         }
 
@@ -1018,6 +1074,7 @@ namespace Voat.Controllers
                         UserName = response.Response.SubverseModerator.UserName,
                         Power = response.Response.SubverseModerator.Power
                     };
+                    SetNavigationViewModel(model.Subverse);
                     return View("~/Views/Subverses/Admin/RemoveModerator.cshtml", model);
                 }
                 else

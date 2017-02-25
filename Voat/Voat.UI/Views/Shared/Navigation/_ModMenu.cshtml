@@ -1,0 +1,69 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@model Voat.Models.ViewModels.NavigationViewModel
+
+
+@{
+    var subverseName = Model.Name;
+    var url = Request.Url.ToString().ToLower();
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+    <ul class="tabmenu">
+
+        <li class="disabled">
+            <a href="/v/@subverseName">Home</a>
+        </li>
+
+        @if (ModeratorPermission.HasPermission(User.Identity.Name, subverseName, Voat.Domain.Models.ModeratorAction.ModifySettings))
+        {
+            <li class='@(url.EndsWith("about/edit/") ? "selected" : "disabled")'>
+                <a href="/v/@subverseName/about/edit/">Settings</a>
+            </li>
+        }
+        @if (ModeratorPermission.HasPermission(User.Identity.Name, subverseName, Voat.Domain.Models.ModeratorAction.ModifyCSS))
+        {
+            <li class='@(url.Contains("about/edit/stylesheet") ? "selected" : "disabled")'>
+                <a href="/v/@subverseName/about/edit/stylesheet">CSS</a>
+            </li>
+            <li class='@(url.Contains("about/flair") ? "selected" : "disabled")'>
+                <a href="/v/@subverseName/about/flair/">Flair</a>
+            </li>
+        }
+        @if (ModeratorPermission.HasPermission(User.Identity.Name, subverseName, Voat.Domain.Models.ModeratorAction.InviteMods))
+        {
+            <li class='@(url.Contains("about/moderators") ? "selected" : "disabled")'>
+                <a href="/v/@subverseName/about/moderators/">Mods</a>
+            </li>
+        }
+        @if (ModeratorPermission.HasPermission(User.Identity.Name, subverseName, Voat.Domain.Models.ModeratorAction.Banning))
+        {
+            <li class='@(url.Contains("about/bans") ? "selected" : "disabled")'>
+                <a href="/v/@subverseName/about/bans/">Bans</a>
+            </li>
+        }
+        @if (ModeratorPermission.HasPermission(User.Identity.Name, subverseName, Voat.Domain.Models.ModeratorAction.AccessReports))
+        {
+            <li class='@(url.Contains("about/reports") ? "selected" : "disabled")'>
+                <a href="/v/@subverseName/about/reports/">Reports</a>
+            </li>
+        }
+        @if (ModeratorPermission.HasPermission(User.Identity.Name, subverseName, Voat.Domain.Models.ModeratorAction.ReadMail))
+        {
+            <li class='@(url.Contains("about/messages") ? "selected" : "disabled")'>
+                <a href="/v/@subverseName/about/messages/">SMail</a>
+            </li>
+        }
+    </ul>
+}

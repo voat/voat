@@ -2779,6 +2779,9 @@ input[type=checkbox].form-control {
         .tabmenu li a {
             padding: 4px 7px;
         }
+    .submenu {
+        position: relative !important;
+    }
 }
 
 @media ( max-width: 870px ) {
@@ -3118,9 +3121,13 @@ input[type=checkbox].form-control {
     padding-left: 5px;
 }
 
-.sorting-thingy {
+.sorting-thingy, .content-menu-container {
     border-bottom: 1px solid;
     border-color: $border-color-10;
+    padding-bottom:5px;
 }
 
+.content-menu-container > span {
+    padding-right:5px;
+}
 

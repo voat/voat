@@ -1130,11 +1130,11 @@ function toggle(obj, commentid) {
     return false;
 }
 
-// toggle are you sure question for subverse block action
-function blockSubverseToggle(obj) {
-    $(obj).parent().parent().find('.option, .error').toggleClass("active");
-    return false;
-}
+//// toggle are you sure question for subverse block action
+//function blockSubverseToggle(obj) {
+//    $(obj).parent().parent().find('.option, .error').toggleClass("active");
+//    return false;
+//}
 
 // toggle are you sure question for comment report
 function togglereport(commentid) {
@@ -1210,12 +1210,10 @@ function setSubverseListToggleCallBack(s, arguments) {
     if (response.success) {
         if (response.data) {
             s.text("remove");
-            s.removeClass("btn-voat");
             s.addClass("btn-voat-off");
         } else {
             s.text("add");
             s.removeClass("btn-voat-off");
-            s.addClass("btn-voat");
         }
     } else {
         s.text(response.error.message);
@@ -1265,12 +1263,10 @@ function subscribeToSet(sender, name, owner)
             if (response.success) {
                 if (response.data) {
                     s.text("unsubscribe");
-                    s.removeClass("btn-voat");
                     s.addClass("btn-voat-off");
                 } else {
                     s.text("subscribe");
                     s.removeClass("btn-voat-off");
-                    s.addClass("btn-voat");
                 }
             } else {
                 s.text(response.error.message);
@@ -1285,12 +1281,10 @@ function subscribeToSubverse(sender, name) {
            if (response.success) {
                if (response.data) {
                    s.text("unsubscribe");
-                   s.removeClass("btn-voat");
                    s.addClass("btn-voat-off");
                } else {
                    s.text("subscribe");
                    s.removeClass("btn-voat-off");
-                   s.addClass("btn-voat");
                }
            } else {
                s.text(response.error.message);
@@ -2041,7 +2035,7 @@ function previewStylesheet(obj, subverseName) {
 
     $.ajax({
         type: 'GET',
-        url: '/ajaxhelpers/previewstylesheet?subversetoshow=' + subverseName + '&previewMode=true',
+        url: '/ajaxhelpers/previewstylesheet?subverse=' + subverseName + '&previewMode=true',
         dataType: 'html',
         success: function (data) {
             $("#stylesheetpreviewarea").html(data);

@@ -29,6 +29,8 @@
     var unreadSubmissionMentionCount = counts.GetCount(Voat.Domain.Models.MessageType.SubmissionMention);
     var formatString = " ({0} new)";
     var subContext = (context.ViewerContext.Type == Voat.Domain.Models.IdentityType.Subverse ? context.ViewerContext.Name : "");
+
+    Voat.Models.ViewModels.NavigationViewModel navModel = ViewBag.NavigationViewModel;
 }
 
 <style>
@@ -42,7 +44,7 @@
 <div id="container">
 
     <h1>@ViewBag.Title</h1>
-    @if (ViewBag.PmView != "mod")
+    @if (navModel.MenuType == Voat.Models.ViewModels.MenuType.UserMessages)
     {
         <a href="/messages/private" class="btn-whoaverse-paging">Inbox @(unreadPrivateCount > 0 ? String.Format(formatString, unreadPrivateCount) : "")</a>
         <a href="/messages/replies/comment" class="btn-whoaverse-paging">Comment Replies@(unreadCommentReplyCount > 0 ? String.Format(formatString, unreadCommentReplyCount) : "")</a>

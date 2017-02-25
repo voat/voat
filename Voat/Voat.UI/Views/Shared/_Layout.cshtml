@@ -174,18 +174,23 @@
                             @Html.Partial("~/Views/Shared/Navigation/_SubverseMenu.cshtml", navModel)
                             break;
                         case MenuType.UserMessages:
-                            Html.RenderAction("PmMenu", "Nav", new { selectedView = navModel.Name, sortingMode = sortingMode });
+                        case MenuType.Smail:
+                            //Html.RenderAction("PmMenu", "Nav", new { selectedView = navModel.Name, sortingMode = sortingMode });
+                            @Html.Partial("~/Views/Shared/Navigation/_MailMenu.cshtml", navModel)
                             break;
                         case MenuType.Domain:
                             @Html.Partial("~/Views/Shared/Navigation/_DomainsMenu.cshtml", navModel)
+                            break;
+                        case MenuType.Moderator:
+                            @Html.Partial("~/Views/Shared/Navigation/_ModMenu.cshtml", navModel)
                             break;
                     }
                 }
                 else
                 {
                     //throw new NotImplementedException("WHERE IS THE FRICKIN' DAMN MENU BITCH!?");
-                    
-                    
+
+
                     ////Old Navigation Model
                     //if (ViewBag.PmView != null)
                     //{

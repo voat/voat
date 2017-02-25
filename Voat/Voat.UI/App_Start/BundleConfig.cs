@@ -47,7 +47,7 @@ namespace Voat
                       "~/Content/bootstrap.css",
                       "~/Content/Site.css",
                       "~/Content/tooltipster.css",
-                      "~/Content/Voat.css",
+                      "~/Content/Voat-Light.css",
                       "~/Content/markdownEditor.css"
                       ));
 

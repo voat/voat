@@ -354,9 +354,9 @@ namespace Voat.Domain.Models
     [DatabaseMappedValue()]
     public enum SetType
     {
-        Normal = 1,
-        Front = 2,
+        Front = 1,
+        Blocked = 2,
         Following = 3,
-        Blocked = 4
+        Normal = 4,
     }
 }

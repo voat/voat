@@ -62,39 +62,37 @@ namespace Voat.Controllers
 
         // GET: subverse link flairs for selected subverse
         [Authorize]
-        public ActionResult SubverseLinkFlairs(string subversetoshow, int? messageId)
+        public ActionResult SubverseLinkFlairs(string subverse, int? id)
         {
             // get model for selected subverse
-            var subverseModel = DataCache.Subverse.Retrieve(subversetoshow);
-            //var subverseModel = _db.Subverse.Find(subversetoshow);
+            var subverseObject = DataCache.Subverse.Retrieve(subverse);
 
-            if (subverseModel == null || messageId == null)
+            if (subverseObject == null || id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
+            var submission = DataCache.Submission.Retrieve(id);
 
-            var submission = DataCache.Submission.Retrieve(messageId);
-
-            if (submission == null || submission.Subverse != subversetoshow)
+            if (submission == null || submission.Subverse != subverse)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             // check if caller is subverse owner or moderator, if not, deny listing
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subversetoshow, Domain.Models.ModeratorAction.AssignFlair))
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.AssignFlair))
             {
                 return new HttpUnauthorizedResult();
             }
 
             var subverseLinkFlairs = _db.SubverseFlairs
-                .Where(n => n.Subverse == subversetoshow)
+                .Where(n => n.Subverse == subverse)
                 .Take(10)
                 .ToList()
                 .OrderBy(s => s.ID);
 
-            ViewBag.SubmissionId = messageId;
-            ViewBag.SubverseName = subversetoshow;
+            ViewBag.SubmissionId = id;
+            ViewBag.SubverseName = subverse;
 
             return PartialView("~/Views/AjaxViews/_LinkFlairSelectDialog.cshtml", subverseLinkFlairs);
         }
@@ -144,9 +142,9 @@ namespace Voat.Controllers
 
         // POST: preview stylesheet
         [Authorize]
-        public ActionResult PreviewStylesheet(string subversetoshow, bool previewMode)
+        public ActionResult PreviewStylesheet(string subverse, bool previewMode)
         {
-            return RedirectToRoute("SubverseIndex", new { subverse = subversetoshow, previewMode = previewMode });
+            return RedirectToRoute("SubverseIndex", new { subverse = subverse, previewMode = previewMode });
         }
 
         //// GET: subverse basic info used for V2 sets layout

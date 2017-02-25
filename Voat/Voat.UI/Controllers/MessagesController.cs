@@ -82,14 +82,15 @@ namespace Voat.Controllers
             return (page.HasValue && page.Value >= 0 ? page.Value : 0);
         }
 
-        private void SetNavigationInformation(string name)
+        private void SetMenuNavigationModel(string name, MenuType menuType, string subverse = null)
         {
+            string suffix = "/messages";
             ViewBag.NavigationViewModel = new NavigationViewModel()
             {
-                Description = name,
+                Description = (String.IsNullOrEmpty(subverse) ? "Messages" : String.Format("v/{0} Smail", subverse)),
                 Name = name,
-                MenuType = MenuType.UserMessages,
-                BasePath = null,
+                MenuType = menuType,
+                BasePath = (String.IsNullOrEmpty(subverse) ? suffix : String.Format("{0}/about{1}", VoatPathHelper.BasePath(new DomainReference(DomainType.Subverse, subverse)), suffix)),
                 Sort = null
             };
         }
@@ -107,7 +108,7 @@ namespace Voat.Controllers
 
             var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
 
-            SetNavigationInformation("Inbox");
+            SetMenuNavigationModel("Inbox", MenuType.UserMessages);
 
             return View("Index", pagedList);
         }
@@ -124,7 +125,8 @@ namespace Voat.Controllers
 
             var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
 
-            SetNavigationInformation("Sent");
+            SetMenuNavigationModel("Sent", MenuType.UserMessages);
+            ViewBag.Title = "Sent";
 
             return View("Index", pagedList);
 
@@ -149,7 +151,7 @@ namespace Voat.Controllers
 
             var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
 
-            SetNavigationInformation("Replies");
+            SetMenuNavigationModel("Replies", MenuType.UserMessages);
 
             return View("Index", pagedList);
 
@@ -173,7 +175,7 @@ namespace Voat.Controllers
             var result = await q.ExecuteAsync();
             var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
 
-            SetNavigationInformation("Mentions");
+            SetMenuNavigationModel("Mentions", MenuType.UserMessages);
 
             return View("Index", pagedList);
         }
@@ -189,7 +191,7 @@ namespace Voat.Controllers
             var q = new QueryAllMessageCounts(Domain.Models.MessageTypeFlag.All, Domain.Models.MessageState.Unread);
             var model = await q.ExecuteAsync();
 
-            SetNavigationInformation("Notifications");
+            SetMenuNavigationModel("Notifications", MenuType.UserMessages);
 
             return View(model);
         }
@@ -217,9 +219,14 @@ namespace Voat.Controllers
                 }
                 ViewBag.PmView = "mod";
                 model.Sender = UserDefinition.Format(subverse, IdentityType.Subverse);
+                SetMenuNavigationModel("Compose", MenuType.Smail, subverse);
+            }
+            else
+            {
+                SetMenuNavigationModel("Compose", MenuType.UserMessages);
+
             }
 
-            SetNavigationInformation("Compose");
 
             // return compose view
             return View(model);
@@ -268,7 +275,7 @@ namespace Voat.Controllers
             var cmd = new SendMessageCommand(sendMessage);
             var response = await cmd.Execute();
 
-            SetNavigationInformation("Compose");
+            
 
             if (response.Success)
             {
@@ -420,8 +427,8 @@ namespace Voat.Controllers
             var qSub = new QuerySubverse(subverse);
             var sub = await qSub.ExecuteAsync();
 
-            ViewBag.PmView = "mod";
-            ViewBag.Title = string.Format("v/{0} {1}", sub.Name, (type == MessageTypeFlag.Sent ? "Sent" : "Inbox"));
+            //ViewBag.PmView = "mod";
+            //ViewBag.Title = string.Format("v/{0} {1}", sub.Name, (type == MessageTypeFlag.Sent ? "Sent" : "Inbox"));
 
             var q = new QueryMessages(sub.Name, IdentityType.Subverse, type, MessageState.All, false);
             q.PageNumber = SetPage(page);
@@ -429,7 +436,10 @@ namespace Voat.Controllers
 
             var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
 
-            SetNavigationInformation("Inbox");
+            //TODO: This needs to be the Smail Menu, right now it shows user menu
+            var name = type == MessageTypeFlag.Sent ? "Sent" : "Inbox";
+            ViewBag.Title = name;
+            SetMenuNavigationModel(name, MenuType.Smail, subverse);
 
             return View("Index", pagedList);
         }

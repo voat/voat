@@ -62,8 +62,12 @@ string description = "Showing sets you are subscribed to";
             </div>
         </div>*@
 
-    <div class="content" role="main">
-        @*<div style="padding:10px;">
+    <div role="main">
+
+        @Html.Partial("~/Views/Discover/_SubMenu.cshtml", Voat.Domain.Models.DomainType.Set)
+            
+    
+    @*<div style="padding:10px;">
             <a href="@Url.RouteUrl("Discover", new { domainType = "set", sort = Request.RequestContext.RouteData.Values["sort"] })" class='@(domainType == Voat.Domain.Models.DomainType.Set ? "btn-voat" : "btn-voat-off")'>Sets</a>
             <a href="@Url.RouteUrl("Discover", new { domainType = "subverse", sort = Request.RequestContext.RouteData.Values["sort"] })" class='@(domainType == Voat.Domain.Models.DomainType.Subverse ? "btn-voat" : "btn-voat-off")'>Subverses</a>
         </div>*@

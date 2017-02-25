@@ -61,40 +61,19 @@
                 <a href="/v/@Model.Name" class="hover">@Model.Name</a>
                 <a href="/rss/@Model.Name" class="rss-icon"><img src="~/Graphics/feed-icon-14x14.png" alt="RSS feed for this subverse" /></a>
             </h1>
-
-            @if (User.Identity.IsAuthenticated)
-            {
-                if (userData.IsUserSubverseSubscriber(ViewBag.SelectedSubverse))
-                {
-                    <button type="button" onclick="return unsubscribe(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unsubscribe</button>
-                }
-                else
-                {
-                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-sub" onclick="return subscribe(this, '@Model.Name')">subscribe</button>
-                }
-
-                if (userData.IsUserBlockingSubverse(ViewBag.SelectedSubverse))
-                {
-                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-unblocksubverse" onclick="return blockSubverseToggle(this, '@Model.Name')">unblock</button>
-                }
-                else
-                {
-                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-blocksubverse" onclick="return blockSubverseToggle(this, '@Model.Name')">block</button>
-                }
-            }
-            else
-            {
-                <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-sub" onclick="mustLogin();">subscribe</button>
-            }
+            
+            @Html.Partial("Sidebars/Buttons/_SubscribeButtons", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Subverse, Model.Name), new ViewDataDictionary() { { "UserData", userData } })
 
             <span class="subscribers">
                 <span id="subscriberCount" class="number">@Model.SubscriberCount</span>
                 <span class="word">subscribers</span>
             </span>
+            
             <p class="users-online fuzzed" title="number of users viewing this subverse in the past 15 minutes">
                 <span class="number">~@ViewBag.OnlineUsers</span>
                 <span class="word">users here now</span>
             </p>
+            
             @if (User.Identity.IsAuthenticated && ModeratorPermission.IsModerator(User.Identity.Name, Model.Name))
             {
                 <div class="leavemoderator">

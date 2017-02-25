@@ -19,22 +19,6 @@
     ViewBag.Title = Model.Title;
     ViewBag.Description = Model.Description;
 
-    //System.Diagnostics.Debug.Assert(userData == null || userData.UserName == User.Identity.Name, "Context UserData and Identity UserName mismatch");
-
-    //string subverseAge = Age.ToRelative(Model.CreationDate);
-    //string subverseOwner = "youcanclaimthissub";
-    //if (String.IsNullOrEmpty(Model.CreatedBy))
-    //{
-    //    var subOwner = Model.SubverseModerators.FirstOrDefault(n => n.Subverse == Model.Name && n.Power == 1);
-    //    if (subOwner != null)
-    //    {
-    //        subverseOwner = subOwner.UserName;
-    //    }
-    //}
-    //else
-    //{
-    //    subverseOwner = Model.CreatedBy;
-    //}
 }
 
 <div class="side">
@@ -48,30 +32,16 @@
                 <a href="@VoatPathHelper.BasePath(domainReference)" class="hover">@Model.Name</a>
             </h1>
 
-            @if (User.Identity.IsAuthenticated)
-            {
-                if (userData.IsSubscriber(domainReference))
-                {
-                    <button type="button" onclick="return XXX_TODO(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unsubscribe</button>
-                }
-                else
-                {
-                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-sub" onclick="return subscribe(this, '@Model.Name')">subscribe</button>
-                }
-            }
-            else
-            {
-                <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-sub" onclick="mustLogin();">subscribe</button>
-            }
+            <div>
+                <a class="btn-whoaverse" href='@(VoatPathHelper.BasePath(domainReference) + "/about/details")'>Details</a>
+            </div>
+
+            @Html.Partial("Sidebars/Buttons/_SubscribeButtons", domainReference, new ViewDataDictionary() { { "UserData", userData } })
+
 
             <span class="subscribers">
-                <span id="subscriberCount" class="number">@Model.SubscriberCount</span>
-                <span class="word">subscribers</span>
+                <span id="subscriberCount" class="number">@(Formatting.PluralizeIt(Model.SubscriberCount, "subscriber"))</span>
             </span>
-            @*<p class="users-online fuzzed" title="number of users viewing this subverse in the past 15 minutes">
-                <span class="number">~@ViewBag.OnlineUsers</span>
-                <span class="word">users here now</span>
-            </p>*@
             
             <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-xxxx">
                 <input name="submission-id" value="xxxx" type="hidden">
@@ -85,12 +55,15 @@
             </form>
             <div class="bottom">
                 <p>
-                    created by <a href="/user/@Model.UserName" class="author may-blank">@Model.UserName</a>
-                    <span class="userattrs"></span>
+                    @if (!String.IsNullOrEmpty(Model.UserName))
+                    {
+                        <span>created by <a href="/user/@Model.UserName" class="author may-blank">@Model.UserName</a></span>
+                        <span class="userattrs"></span>
+                    }
                     <span class="age">a set for <time title="@Model.CreationDate" datetime="@Model.CreationDate">@Age.ToRelative(Model.CreationDate)</time></span>
-                    <p>This set is @(Model.IsPublic ? "public" : "private")</p>
-                    <div class="clear"></div>
-                </div>
+                </p>    
+                <p>This set is @(Model.IsPublic ? "public" : "private")</p>
+                <div class="clear"></div>
             </div>
             <div class="spacer">
                 <div class="sidecontentbox">
@@ -115,3 +88,4 @@
             @Html.Partial("~/Views/ModLog/_ModLogSidebarLinks.cshtml", Model.Name)*@
         </div>
     </div>
+</div>

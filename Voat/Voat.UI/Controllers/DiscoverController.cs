@@ -32,7 +32,10 @@ namespace Voat.Controllers
                 BasePath = null,
                 Sort = sortValue
             };
-            return View();
+
+            var page = new PaginatedList<DomainReferenceDetails>(Enumerable.Empty<DomainReferenceDetails>(), 0, 30);
+
+            return View("Index", page);
         }
 
         // GET: Discover

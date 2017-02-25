@@ -43,10 +43,10 @@ namespace Voat.Models.ViewModels
             }
             set
             {
-                if (value == Domain.Models.SortSpan.All)
-                {
-                    value = null;
-                }
+                //if (value == Domain.Models.SortSpan.All)
+                //{
+                //    value = null;
+                //}
                 _span = value;
             }
         }

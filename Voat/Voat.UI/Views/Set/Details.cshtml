@@ -14,6 +14,19 @@
     {
         urlaction = "new";
     }
+
+    var showDiscoveryMenu = false;
+    if (User.Identity.IsAuthenticated)
+    {
+        showDiscoveryMenu = (Model.Set.UserName == User.Identity.Name
+                && (
+                    (Model.Set.Type == Voat.Domain.Models.SetType.Front && Model.Set.Name == Voat.Domain.Models.SetType.Front.ToString())
+                    ||
+                    (Model.Set.Type == Voat.Domain.Models.SetType.Blocked && Model.Set.Name == Voat.Domain.Models.SetType.Blocked.ToString())
+                ));
+    }
+
+
 }
 
 <style type="text/css">
@@ -24,6 +37,11 @@
 
 <div id="container">
     <div role="main">
+
+        @if (showDiscoveryMenu)
+        {
+            @Html.Partial("~/Views/Discover/_SubMenu.cshtml", Voat.Domain.Models.DomainType.Subverse)
+        }
 
         @Html.Partial("_Edit", Model)
         <hr />

@@ -384,6 +384,7 @@
     <Content Include="Content\ui-themes\autocomplete\core.css" />
     <Content Include="Content\ui-themes\autocomplete\menu.css" />
     <Content Include="Content\ui-themes\autocomplete\theme.css" />
+    <Content Include="Content\Voat-Light.css" />
     <Content Include="ddos.min.htm">
       <DependentUpon>ddos.htm</DependentUpon>
     </Content>
@@ -423,6 +424,25 @@
     <Content Include="Graphics\Badges\donor_level_2.png" />
     <Content Include="Graphics\Badges\voat_cakeday.png" />
     <Content Include="Graphics\edit.png" />
+    <Content Include="Graphics\Icons\Arrow\apple-touch-icon-114x114.png" />
+    <Content Include="Graphics\Icons\Arrow\apple-touch-icon-120x120.png" />
+    <Content Include="Graphics\Icons\Arrow\apple-touch-icon-144x144.png" />
+    <Content Include="Graphics\Icons\Arrow\apple-touch-icon-152x152.png" />
+    <Content Include="Graphics\Icons\Arrow\apple-touch-icon-57x57.png" />
+    <Content Include="Graphics\Icons\Arrow\apple-touch-icon-60x60.png" />
+    <Content Include="Graphics\Icons\Arrow\apple-touch-icon-72x72.png" />
+    <Content Include="Graphics\Icons\Arrow\apple-touch-icon-76x76.png" />
+    <Content Include="Graphics\Icons\Arrow\favicon-128.png" />
+    <Content Include="Graphics\Icons\Arrow\favicon-16x16.png" />
+    <Content Include="Graphics\Icons\Arrow\favicon-196x196.png" />
+    <Content Include="Graphics\Icons\Arrow\favicon-32x32.png" />
+    <Content Include="Graphics\Icons\Arrow\favicon-96x96.png" />
+    <Content Include="Graphics\Icons\Arrow\favicon.ico" />
+    <Content Include="Graphics\Icons\Arrow\mstile-144x144.png" />
+    <Content Include="Graphics\Icons\Arrow\mstile-150x150.png" />
+    <Content Include="Graphics\Icons\Arrow\mstile-310x150.png" />
+    <Content Include="Graphics\Icons\Arrow\mstile-310x310.png" />
+    <Content Include="Graphics\Icons\Arrow\mstile-70x70.png" />
     <Content Include="Graphics\Icons\touch-icon-192x192.png" />
     <Content Include="Graphics\markdownEditorSprite.png" />
     <Content Include="Graphics\missing_image.png" />
@@ -479,7 +499,7 @@
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css.bundle" />
     <Content Include="gizmo\src\js\jquery.swipebox.min.js.map" />
     <None Include="bundleconfig.json" />
-    <Content Include="Content\Sass\_Base.scss">
+    <None Include="Content\Sass\_Base.scss">
       <Compile>False</Compile>
       <Minify>True</Minify>
       <OutputFolder>..</OutputFolder>
@@ -487,7 +507,7 @@
       <IgnoreErrors>True</IgnoreErrors>
       <CompileStyle>Nested</CompileStyle>
       <DebugInfo>False</DebugInfo>
-    </Content>
+    </None>
     <None Include="Content\Sass\Voat-Dark.scss">
       <Compile>True</Compile>
       <Minify>True</Minify>
@@ -497,7 +517,7 @@
       <CompileStyle>Nested</CompileStyle>
       <DebugInfo>False</DebugInfo>
     </None>
-    <None Include="Content\Sass\Voat.scss">
+    <None Include="Content\Sass\Voat-Light.scss">
       <Compile>True</Compile>
       <Minify>True</Minify>
       <OutputFolder>..</OutputFolder>
@@ -547,7 +567,6 @@
     <Content Include="Storage\Thumbs\Placeholder.txt" />
     <Content Include="Views\Subverses\_FeaturedSub.cshtml" />
     <Content Include="Content\Voat-Dark.css" />
-    <Content Include="Content\Voat.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -612,7 +631,6 @@
     <Content Include="Views\Shared\SubmissionList.cshtml" />
     <Content Include="Views\Help\SpeedyGonzales.cshtml" />
     <Content Include="Views\Subverses\Subverses.cshtml" />
-    <Content Include="Views\Shared\_SubverseDetails.cshtml" />
     <Content Include="Views\Shared\Sidebars\_Sidebar.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarFrontpage.cshtml" />
     <Content Include="Views\Subverses\CreateSubverse.cshtml" />
@@ -653,7 +671,7 @@
     <Content Include="Views\Subverses\AdultContentFiltered.cshtml" />
     <Content Include="Views\AjaxViews\_PrivateMessageReplyForm.cshtml" />
     <Content Include="Views\Shared\Navigation\_SubverseMenu.cshtml" />
-    <Content Include="Views\Shared\Navigation\_PmMenu.cshtml" />
+    <Content Include="Views\Shared\Navigation\_MailMenu.cshtml" />
     <Content Include="Views\Shared\Navigation\_UserProfileMenu.cshtml" />
     <Content Include="Views\Shared\Navigation\_DiscoveryMenu.cshtml" />
     <Content Include="Views\Shared\Navigation\_DomainsMenu.cshtml" />
@@ -750,6 +768,10 @@
     <Content Include="Views\Discover\Index.cshtml" />
     <Content Include="Views\Discover\Search.cshtml" />
     <Content Include="Views\User\Subscribed.cshtml" />
+    <Content Include="Views\Shared\Navigation\_ModMenu.cshtml" />
+    <Content Include="Views\Shared\Sidebars\Buttons\_SubscribeButtons.cshtml" />
+    <Content Include="Views\Discover\_SubMenu.cshtml" />
+    <Content Include="Views\Discover\_SearchBar.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

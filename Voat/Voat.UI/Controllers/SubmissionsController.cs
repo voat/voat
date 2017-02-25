@@ -290,7 +290,7 @@ namespace Voat.Controllers
             var r = await cmd.Execute();
             if (r.Success)
             {
-                return RedirectToRoute("SubverseIndex", new { subversetoshow = s.Subverse });
+                return RedirectToRoute("SubverseIndex", new { subverse = s.Subverse });
             }
             else
             {

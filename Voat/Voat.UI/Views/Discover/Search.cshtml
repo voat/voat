@@ -1,12 +1,15 @@
 ﻿
 
 @{ 
-    var type = Request.RequestContext.RouteData.Values["domainType"];
+    Voat.Domain.Models.DomainType type = ViewBag.DomainType;
 
 }
 
 <div id="container">
     <div role="main">
+
+        @Html.Partial("_SubMenu", type)
+
         <div class="alert-notice">
             <p>Find a @type by name and/or description</p>
         </div>
@@ -20,9 +23,7 @@
                 @*<input type="checkbox" name="d" value="true" id="d"
                            @Html.Raw((Model.d) ? "checked=\"checked\"" : "") />
                     @Html.Label("Also search in subverse descriptions")*@
-
                 <input type="submit" class="btn-voat" value="Submit" />
-
             }
         </div>
     </div>

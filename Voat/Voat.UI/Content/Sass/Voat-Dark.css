@@ -2378,7 +2378,10 @@ input[type=checkbox].form-control {
     top: 0; }
 
   .tabmenu li a {
-    padding: 4px 7px; } }
+    padding: 4px 7px; }
+
+  .submenu {
+    position: relative !important; } }
 @media (max-width: 870px) {
   .logged-in {
     background: none;
@@ -2650,9 +2653,13 @@ input[type=checkbox].form-control {
 .bylink {
   padding-left: 5px; }
 
-.sorting-thingy {
+.sorting-thingy, .content-menu-container {
   border-bottom: 1px solid;
-  border-color: #222; }
+  border-color: #222;
+  padding-bottom: 5px; }
+
+.content-menu-container > span {
+  padding-right: 5px; }
 
 .settitlesortinglabel {
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1); }

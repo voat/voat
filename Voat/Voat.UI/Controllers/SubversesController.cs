@@ -281,21 +281,21 @@ namespace Voat.Controllers
             return PartialView("_ListOfSubscribedToSubverses", subs);
         }
 
-        // POST: subscribe to a subverse
-        [Authorize]
-        public async Task<JsonResult> Subscribe(string subverseName)
-        {
-            var cmd = new SubscribeCommand(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverseName), Domain.Models.SubscriptionAction.Subscribe);
-            var r = await cmd.Execute();
-            if (r.Success)
-            {
-                return Json("Subscription request was successful.", JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                return Json(r.Message, JsonRequestBehavior.AllowGet);
-            }
-        }
+        //// POST: subscribe to a subverse
+        //[Authorize]
+        //public async Task<JsonResult> Subscribe(string subverseName)
+        //{
+        //    var cmd = new SubscribeCommand(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverseName), Domain.Models.SubscriptionAction.Subscribe);
+        //    var r = await cmd.Execute();
+        //    if (r.Success)
+        //    {
+        //        return Json("Subscription request was successful.", JsonRequestBehavior.AllowGet);
+        //    }
+        //    else
+        //    {
+        //        return Json(r.Message, JsonRequestBehavior.AllowGet);
+        //    }
+        //}
 
         // POST: unsubscribe from a subverse
         [Authorize]
@@ -378,15 +378,10 @@ namespace Voat.Controllers
         }
 
         // GET: show a subverse index
-        public async Task<ActionResult> SubverseIndex(int? page, string subverse, string sort = "hot", string time = "day", bool? previewMode = null)
+        public async Task<ActionResult> SubverseIndex(string subverse, string sort = "hot", bool? previewMode = null)
         {
             const string cookieName = "NSFWEnabled";
-            int pageNumber = (page ?? 0);
-
-            if (pageNumber < 0)
-            {
-                return NotFoundErrorView();
-            }
+           
             var viewProperties = new SubmissionListViewModel();
             viewProperties.PreviewMode = previewMode ?? false;
 
@@ -404,33 +399,21 @@ namespace Voat.Controllers
             SetFirstTimeCookie();
             RecordSession(subverse);
 
-            var options = new SearchOptions();
-            options.Page = pageNumber;
+            //Parse query
+            var options = new SearchOptions(Request.Url.Query);
+
+            //Set sort because it is part of path
+            if (!String.IsNullOrEmpty(sort))
+            {
+                options.Sort = (Domain.Models.SortAlgorithm)Enum.Parse(typeof(Domain.Models.SortAlgorithm), sort, true);
+            }
+            //set span to day if not specified explicitly 
+            if (options.Sort == Domain.Models.SortAlgorithm.Top && Request.QueryString["span"] == null)
+            {
+                options.Span = Domain.Models.SortSpan.Day;
+            }
+            //reset count incase they try to change it with querystrings those sneaky snakes
             options.Count = 25;
-
-
-            var sortAlg = Domain.Models.SortAlgorithm.New;
-            if (!Enum.TryParse(sort, true, out sortAlg))
-            {
-                throw new NotImplementedException("sort " + sort + " is unknown");
-            }
-            options.Sort = sortAlg;
-            //Set Top data
-            if (sortAlg == Domain.Models.SortAlgorithm.Top)
-            {
-                //set defaults
-                if (String.IsNullOrEmpty(time))
-                {
-                    time = "day";
-                }
-                Domain.Models.SortSpan span = Domain.Models.SortSpan.Day;
-                if (!Enum.TryParse(time, true, out span))
-                {
-                    throw new NotImplementedException("span " + time + " is unknown");
-                }
-                
-                options.Span = span;
-            }
 
             viewProperties.Sort = options.Sort;
             viewProperties.Span = options.Span;

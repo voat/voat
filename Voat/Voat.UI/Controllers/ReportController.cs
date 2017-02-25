@@ -60,6 +60,20 @@ namespace Voat.Controllers
                 ViewBag.Days = days;
                 ViewBag.RuleID = ruleid;
                 ViewBag.ReviewStatus = status;
+
+                //Add Mod Menu
+                if (!subverse.IsEqual("all"))
+                {
+                    ViewBag.NavigationViewModel = new Models.ViewModels.NavigationViewModel()
+                    {
+                        Description = "Moderation",
+                        Name = subverse,
+                        MenuType = Models.ViewModels.MenuType.Moderator,
+                        BasePath = String.Format("/v/{0}/about", subverse),
+                        Sort = null
+                    };
+                }
+
                 return View(data);
             }
         }

@@ -723,15 +723,11 @@ namespace Voat.Data
 
                 // go to newly created Subverse
                 return CommandResponse.Successful();
-                //return RedirectToAction("SubverseIndex", "Subverses", new { subversetoshow = subverseTmpModel.Name });
             }
             catch (Exception ex)
             {
                 return CommandResponse.Error<CommandResponse>(ex);
-                //ModelState.AddModelError(string.Empty, "Something bad happened, please report this to /v/voatdev. Thank you.");
-                //return View();
             }
-
         }
         public async Task<Domain.Models.Submission> GetSticky(string subverse)
         {
@@ -3904,7 +3900,7 @@ namespace Voat.Data
                         return CommandResponse.FromStatus<bool?>(null,Status.Denied, "Set does not exist");
                     }
 
-                    var countChanged = false;
+                    var subscribeAction = SubscriptionAction.Toggle;
 
                     var setSubscriptionRecord = _db.SubverseSetSubscriptions.FirstOrDefault(x => x.SubverseSetID == setb.ID && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
 
@@ -3912,7 +3908,7 @@ namespace Voat.Data
                     {
                         var sub = new SubverseSetSubscription { UserName = User.Identity.Name, SubverseSetID = setb.ID, CreationDate = CurrentDate };
                         _db.SubverseSetSubscriptions.Add(sub);
-                        countChanged = true;
+                        subscribeAction = SubscriptionAction.Subscribe;
                         response.Response = true;
 
 
@@ -3922,7 +3918,7 @@ namespace Voat.Data
                     else if (setSubscriptionRecord != null && ((action == SubscriptionAction.Unsubscribe) || action == SubscriptionAction.Toggle))
                     {
                         _db.SubverseSetSubscriptions.Remove(setSubscriptionRecord);
-                        countChanged = true;
+                        subscribeAction = SubscriptionAction.Unsubscribe;
                         response.Response = false;
 
                         //db.SubverseSetLists.Remove(setSubverseRecord);
@@ -3953,9 +3949,9 @@ namespace Voat.Data
                     //}
 
                     await _db.SaveChangesAsync().ConfigureAwait(false);
-                    if (countChanged)
+                    if (subscribeAction != SubscriptionAction.Toggle)
                     {
-                        await UpdateSubverseSubscriberCount(domainReference, action).ConfigureAwait(false);
+                        await UpdateSubverseSubscriberCount(domainReference, subscribeAction).ConfigureAwait(false);
                     }
                     response.Status = Status.Success;
 
@@ -3970,39 +3966,41 @@ namespace Voat.Data
         private async Task UpdateSubverseSubscriberCount(DomainReference domainReference, SubscriptionAction action)
         {
             //TODO: This logic is jacked because of the action has been extended to include a toggle value thus this needs refactoring
-            int incrementValue = action == SubscriptionAction.Subscribe ? 1 : -1;
-            var u = new DapperUpdate();
-
-            switch (domainReference.Type)
+            if (action != SubscriptionAction.Toggle)
             {
-                case DomainType.Subverse:
 
-                    u.Update = "UPDATE s SET SubscriberCount = (SubscriberCount + @IncrementValue) FROM Subverse s";
-                    u.Where = "s.Name = @Name";
-                    u.Parameters = new DynamicParameters(new { Name = domainReference.Name, IncrementValue = incrementValue });
-                    
-                    break;
-                case DomainType.Set:
-                    u.Update = "UPDATE s SET SubscriberCount = (SubscriberCount + @IncrementValue) FROM SubverseSet s";
-                    u.Where = "s.Name = @Name";
+                int incrementValue = action == SubscriptionAction.Subscribe ? 1 : -1;
+                var u = new DapperUpdate();
 
-                    if (!String.IsNullOrEmpty(domainReference.OwnerName))
-                    {
-                        u.Append(x => x.Where, "s.OwnerName = @OwnerName");
-                    }
-                    else
-                    {
-                        u.Append(x => x.Where, "s.OwnerName IS NULL");
-                    }
-                    u.Parameters = new DynamicParameters(new { Name = domainReference.Name, IncrementValue = incrementValue, OwnerName = domainReference.OwnerName });
-                    break;
-                case DomainType.User:
-                    throw new NotImplementedException("User subscriber count not implemented");
-                    break;
+                switch (domainReference.Type)
+                {
+                    case DomainType.Subverse:
+
+                        u.Update = "UPDATE s SET SubscriberCount = (SubscriberCount + @IncrementValue) FROM Subverse s";
+                        u.Where = "s.Name = @Name";
+                        u.Parameters = new DynamicParameters(new { Name = domainReference.Name, IncrementValue = incrementValue });
+
+                        break;
+                    case DomainType.Set:
+                        u.Update = "UPDATE s SET SubscriberCount = (SubscriberCount + @IncrementValue) FROM SubverseSet s";
+                        u.Where = "s.Name = @Name";
+
+                        if (!String.IsNullOrEmpty(domainReference.OwnerName))
+                        {
+                            u.Append(x => x.Where, "s.UserName = @OwnerName");
+                        }
+                        else
+                        {
+                            u.Append(x => x.Where, "s.UserName IS NULL");
+                        }
+                        u.Parameters = new DynamicParameters(new { Name = domainReference.Name, IncrementValue = incrementValue, OwnerName = domainReference.OwnerName });
+                        break;
+                    case DomainType.User:
+                        throw new NotImplementedException("User subscriber count not implemented");
+                        break;
+                }
+                var count = await _db.Database.Connection.ExecuteAsync(u.ToString(), u.Parameters);
             }
-            
-            
-            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task<CommandResponse<bool?>> BanUserFromSubverse(string userName, string subverse, string reason, bool? force = null)

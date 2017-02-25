@@ -387,7 +387,8 @@ namespace Voat.Configuration
             if (configValues.ContainsKey(key))
             {
                 var value = (T)configValues[key];
-                if (typeof(T) == typeof(bool) || !value.IsDefault())
+                //I'm NOT liking where this is going. And I forgot exactly what situation I originally wrote this for. As Fuzzy and Dan say, "It's a future person problem."
+                if (typeof(T) == typeof(bool) || typeof(T) == typeof(int) || !value.IsDefault())
                 {
                     return value;
                 }

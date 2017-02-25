@@ -168,6 +168,7 @@
     <Compile Include="CommandTests\ModeratorCommandTests.cs" />
     <Compile Include="CommandTests\RuleReportTests.cs" />
     <Compile Include="CommandTests\SendMessageCommandTests.cs" />
+    <Compile Include="CommandTests\SetTests.cs" />
     <Compile Include="CommandTests\SubmissionCommandTests.cs" />
     <Compile Include="CommandTests\UserCommandTests.cs" />
     <Compile Include="CommandTests\VoteCommandTests.cs" />
@@ -207,7 +208,6 @@
     <Compile Include="Utils\MiscUtilsTests.cs" />
     <Compile Include="Rules\RulesEngineTests.cs" />
     <Compile Include="Utils\RuntimeSettingTests.cs" />
-    <Compile Include="Utils\SetPermissionTests.cs" />
     <Compile Include="Utils\SubdomainForwardingTests.cs" />
     <Compile Include="Utils\AgeTests.cs" />
     <Compile Include="Utils\GenerateThumbnailTests.cs" />

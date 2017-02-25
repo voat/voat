@@ -2378,7 +2378,10 @@ input[type=checkbox].form-control {
     top: 0; }
 
   .tabmenu li a {
-    padding: 4px 7px; } }
+    padding: 4px 7px; }
+
+  .submenu {
+    position: relative !important; } }
 @media (max-width: 870px) {
   .logged-in {
     background: none;
@@ -2650,9 +2653,13 @@ input[type=checkbox].form-control {
 .bylink {
   padding-left: 5px; }
 
-.sorting-thingy {
+.sorting-thingy, .content-menu-container {
   border-bottom: 1px solid;
-  border-color: #D3D3D3; }
+  border-color: #D3D3D3;
+  padding-bottom: 5px; }
+
+.content-menu-container > span {
+  padding-right: 5px; }
 
 .btn-voat,
 .btn-whoaverse-paging {
@@ -2675,4 +2682,4 @@ input[type=checkbox].form-control {
   border-radius: 3px;
   border-width: 1px 1px 2px; }
 
-/*# sourceMappingURL=Voat.css.map */
+/*# sourceMappingURL=Voat-Light.css.map */

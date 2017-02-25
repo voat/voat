@@ -22,7 +22,7 @@
     Voat.Models.ViewModels.NavigationViewModel navModel = ViewBag.NavigationViewModel;
 
     Voat.Domain.Models.DomainType domainType = ViewBag.DomainType;
-
+   
     if (navModel != null && navModel.Sort.HasValue)
     {
         sort = navModel.Sort.Value;
@@ -62,41 +62,67 @@
         </div>
     </div>*@
 
-    <div class="content" role="main">
-        <div style="padding:10px;">
-            <a href="@Url.RouteUrl("Discover", new { domainType = "set", sort = Request.RequestContext.RouteData.Values["sort"] })" class='@(domainType == Voat.Domain.Models.DomainType.Set ? "btn-voat" : "btn-voat-off")'>Sets</a>
-            <a href="@Url.RouteUrl("Discover", new { domainType = "subverse", sort = Request.RequestContext.RouteData.Values["sort"] })" class='@(domainType == Voat.Domain.Models.DomainType.Subverse ? "btn-voat" : "btn-voat-off")'>Subverses</a>
-        </div>
+    <div role="main">
+
+       
+        @Html.Partial("_SubMenu", domainType)
+
+        @*<div style="padding:10px;">
+            <a href="@Url.RouteUrl("Discover", new { domainType = "subverse", sort = Request.RequestContext.RouteData.Values["sort"] })" class='@(domainType == Voat.Domain.Models.DomainType.Subverse ? "btn-voat" : "btn-voat btn-voat-off")'>Subverses</a>
+            <a href="@Url.RouteUrl("Discover", new { domainType = "set", sort = Request.RequestContext.RouteData.Values["sort"] })" class='@(domainType == Voat.Domain.Models.DomainType.Set ? "btn-voat" : "btn-voat btn-voat-off")'>Sets</a>
+        </div>*@
         <div class="alert-notice">
             <p>@description</p>
         </div>
+
+        @if (Request.QueryString["phrase"] != null || Request.Url.AbsoluteUri.Contains("/search"))
+        {
+            @Html.Partial("_SearchBar", domainType)
+
+        }
+
         <div class="sitetable linklisting">
 
-            @using (var enumerator = Model.GetEnumerator())
+            @if (Model.Any())
             {
-                Voat.Domain.Models.DomainReferenceDetails current = null;
-                while (enumerator.MoveNext())
+                using (var enumerator = Model.GetEnumerator())
                 {
-                    current = enumerator.Current;
-                    <div class="row">
-                        <div class="col-md-6">@Html.DisplayFor(x => current)</div>
-                        @if (enumerator.MoveNext())
+                    Voat.Domain.Models.DomainReferenceDetails current = null;
+                    while (enumerator.MoveNext())
+                    {
+                        current = enumerator.Current;
+                        <div class="row">
+                            <div class="col-md-6">@Html.DisplayFor(x => current)</div>
+                            @if (enumerator.MoveNext())
                         {
                             current = enumerator.Current;
-                            <div class="col-md-6">@Html.DisplayFor(x => current)</div>
-                        }
-                    </div>
+                                <div class="col-md-6">@Html.DisplayFor(x => current)</div>
+                            }
+                        </div>
+                    }
                 }
-            }
-            @{
-                var phrase = (string)Request.QueryString["phrase"];
-                if (!String.IsNullOrEmpty(phrase))
                 {
-                    Model.RouteData = Request.RequestContext.RouteData.Values;
-                    Model.RouteData.Add("phrase", phrase);
+                    var phrase = (string)Request.QueryString["phrase"];
+                    if (!String.IsNullOrEmpty(phrase))
+                    {
+                        Model.RouteData = Request.RequestContext.RouteData.Values;
+                        Model.RouteData.Add("phrase", phrase);
+                    }
+                }
+                @Html.DisplayFor(model => Model, "IPaginatedList")
+            }
+            else
+            {
+                if (Request.QueryString["phrase"] != null)
+                {
+                    <p>We can't find it.</p>
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        var createUrl = domainType == Voat.Domain.Models.DomainType.Subverse ? "/subverses/create" : String.Format("/user/{0}/sets/create", User.Identity.Name);
+                        <p>Hmm... Maybe you should <a href="@createUrl">create it</a>!</p>
+                    }
                 }
             }
-            @Html.DisplayFor(model => Model, "IPaginatedList")
         </div>
     </div>
 </div>
