@@ -272,7 +272,7 @@ namespace Voat.Controllers
                 Subject = message.Subject,
                 Sender = message.Sender
             };
-            var cmd = new SendMessageCommand(sendMessage);
+            var cmd = new SendMessageCommand(sendMessage, false, true);
             var response = await cmd.Execute();
 
             

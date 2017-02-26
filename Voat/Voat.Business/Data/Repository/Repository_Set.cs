@@ -141,22 +141,29 @@ namespace Voat.Data
             using (var db = new voatEntities())
             {
                 CommandResponse<bool?> response = new CommandResponse<bool?>(true, Status.Success, "");
+                var actionTaken = SubscriptionAction.Toggle;
 
                 var setSubverseRecord = db.SubverseSetLists.FirstOrDefault(n => n.SubverseSetID == set.ID && n.SubverseID == subverse.ID);
 
                 if (setSubverseRecord == null && ((action == SubscriptionAction.Subscribe) || action == SubscriptionAction.Toggle))
                 {
                     db.SubverseSetLists.Add(new SubverseSetList { SubverseSetID = set.ID, SubverseID = subverse.ID, CreationDate = CurrentDate });
-                    response.Response = true;
+                    actionTaken = SubscriptionAction.Subscribe;
                 }
                 else if (setSubverseRecord != null && ((action == SubscriptionAction.Unsubscribe) || action == SubscriptionAction.Toggle))
                 {
                     db.SubverseSetLists.Remove(setSubverseRecord);
-                    response.Response = false;
+                    actionTaken = SubscriptionAction.Unsubscribe;
                 }
 
                 await db.SaveChangesAsync().ConfigureAwait(false);
 
+                //If Subscribe is to a front page, update subscriber count
+                if (set.Type == (int)SetType.Front && !String.IsNullOrEmpty(set.UserName))
+                {
+                    await UpdateSubverseSubscriberCount(new DomainReference(DomainType.Subverse, subverse.Name), actionTaken);
+                }
+                response.Response = actionTaken == SubscriptionAction.Toggle ? (bool?)null : actionTaken == SubscriptionAction.Subscribe;
                 return response;
             }
 

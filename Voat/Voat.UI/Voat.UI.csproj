@@ -304,6 +304,7 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="MessagingHub.cs" />
     <Compile Include="Models\AddSet.cs" />
+    <Compile Include="Models\ROUTE_NAMES.cs" />
     <Compile Include="Models\SavedItem.cs" />
     <Compile Include="Models\MarkdownPreviewModel.cs" />
     <Compile Include="Models\ViewModels\AdViewModel.cs" />
@@ -410,6 +411,7 @@
     <Content Include="Graphics\Badges\founder.png" />
     <Content Include="Graphics\Badges\mb.png" />
     <Content Include="Graphics\Badges\putts_fav.png" />
+    <Content Include="Graphics\Badges\tester.png" />
     <Content Include="Graphics\Badges\whoaverse.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-114x114-precomposed.png" />
     <Content Include="Graphics\Icons\apple-touch-icon-120x120-precomposed.png" />

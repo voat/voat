@@ -632,7 +632,7 @@ namespace Voat
             #region Submissions / Subverse
 
             routes.MapRoute(
-                name: "FrontIndex",
+                name: Models.ROUTE_NAMES.FRONT_INDEX,
                 url: "{sort}",
                 defaults: new {
                     controller = "Subverses",
@@ -817,7 +817,18 @@ namespace Voat
             #endregion Sub Moderation
 
             routes.MapRoute(
-                name: "SubverseIndex",
+               name: "SubverseIndexNoSort",
+               url: "v/{subverse}",
+               defaults: new
+               {
+                   controller = "Subverses",
+                   action = "SubverseIndex",
+                   sort = UrlParameter.Optional
+               }
+           );
+
+            routes.MapRoute(
+                name: Models.ROUTE_NAMES.SUBVERSE_INDEX,
                 url: "v/{subverse}/{sort}",
                 defaults: new {
                     controller = "Subverses",

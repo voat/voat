@@ -46,7 +46,7 @@
             <br />
             <input type="submit" value="Resign" class="btn-whoaverse-medium" />
             <br /><br />
-            @Html.ActionLink("Back to subverse frontpage", "SubverseIndex", "Subverses", new { subverse = Model.Subverse }, null)
+            @Html.RouteLink("Back to subverse frontpage", Voat.Models.ROUTE_NAMES.SUBVERSE_INDEX, new { subverse = Model.Subverse }, null)
         }
     </div>
 </div>

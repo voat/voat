@@ -64,7 +64,7 @@ $(document).ready(function () {
                 error: function (xhr, status, error) {
                     var msg = getErrorMessage(error);
                     //TODO: Why is this here? I know I did this but why? WHY!? Please find my why.
-                    alert(msg);
+                    //alert(msg);
                 },
                 success: function (response) {
                     if (response && response.length > 0) {
@@ -1211,9 +1211,16 @@ function setSubverseListToggleCallBack(s, arguments) {
         if (response.data) {
             s.text("remove");
             s.addClass("btn-voat-off");
+            //backwards compat
+            s.addClass("btn-unsub");
+            s.removeClass("btn-sub");
+
         } else {
             s.text("add");
             s.removeClass("btn-voat-off");
+            //backwards compat
+            s.addClass("btn-sub");
+            s.removeClass("btn-unsub");
         }
     } else {
         s.text(response.error.message);
@@ -1264,10 +1271,24 @@ function subscribeToSet(sender, name, owner)
                 if (response.data) {
                     s.text("unsubscribe");
                     s.addClass("btn-voat-off");
+                    //backwards compat
+                    s.addClass("btn-unsub");
+                    s.removeClass("btn-sub");
+
                 } else {
                     s.text("subscribe");
                     s.removeClass("btn-voat-off");
+                    //backwards compat
+                    s.addClass("btn-sub");
+                    s.removeClass("btn-unsub");
                 }
+                //if (response.data) {
+                //    s.text("unsubscribe");
+                //    s.addClass("btn-voat-off");
+                //} else {
+                //    s.text("subscribe");
+                //    s.removeClass("btn-voat-off");
+                //}
             } else {
                 s.text(response.error.message);
             }
@@ -1282,9 +1303,16 @@ function subscribeToSubverse(sender, name) {
                if (response.data) {
                    s.text("unsubscribe");
                    s.addClass("btn-voat-off");
+                   //backwards compat
+                   s.addClass("btn-unsub");
+                   s.removeClass("btn-sub");
+
                } else {
                    s.text("subscribe");
                    s.removeClass("btn-voat-off");
+                   //backwards compat
+                   s.addClass("btn-sub");
+                   s.removeClass("btn-unsub");
                }
            } else {
                s.text(response.error.message);

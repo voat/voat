@@ -54,7 +54,7 @@ namespace Voat.Controllers
 
             if (subAdmin == null)
             {
-                return RedirectToAction("SubverseIndex", "Subverses", new { subverse = subverse });
+                return RedirectToRoute(Models.ROUTE_NAMES.SUBVERSE_INDEX, new { subverse = subverse });
             }
 
             // map existing data to view model for editing and pass it to frontend
@@ -187,7 +187,7 @@ namespace Voat.Controllers
                     CacheHandler.Instance.Remove(CachingKey.Subverse(existingSubverse.Name));
 
                     // go back to this subverse
-                    return RedirectToAction("SubverseIndex", "Subverses", new { subverse = updatedModel.Name });
+                    return RedirectToRoute(Models.ROUTE_NAMES.SUBVERSE_INDEX, new { subverse = updatedModel.Name });
 
                     // user was not authorized to commit the changes, drop attempt
                 }
@@ -281,7 +281,7 @@ namespace Voat.Controllers
                     CacheHandler.Instance.Remove(CachingKey.Subverse(existingSubverse.Name));
 
                     // go back to this subverse
-                    return RedirectToAction("SubverseIndex", "Subverses", new { subverse = model.Name });
+                    return RedirectToRoute(Models.ROUTE_NAMES.SUBVERSE_INDEX, new { subverse = model.Name });
                 }
 
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");
@@ -637,7 +637,7 @@ namespace Voat.Controllers
             //clear mod cache
             CacheHandler.Instance.Remove(CachingKey.SubverseModerators(subverseObject.Name));
 
-            return RedirectToAction("SubverseIndex", "Subverses", new { subverse = subverse });
+            return RedirectToRoute(Models.ROUTE_NAMES.SUBVERSE_INDEX, new { subverse = subverse });
         }
 
 

@@ -25,8 +25,7 @@ namespace Voat.Domain.Command
         {
             using (var db = new Repository())
             {
-                //TODO: Convert to async repo method
-                var response = await Task.Run(() => db.Block(_domainType, _name, (_toggleSetting ? SubscriptionAction.Toggle : SubscriptionAction.Subscribe))).ConfigureAwait(false);
+                var response = await db.Block(_domainType, _name, (_toggleSetting ? SubscriptionAction.Toggle : SubscriptionAction.Subscribe)).ConfigureAwait(false);
                 return Tuple.Create(response, response.Response);
             }
         }

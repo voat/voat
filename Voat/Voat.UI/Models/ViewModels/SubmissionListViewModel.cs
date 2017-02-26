@@ -39,6 +39,11 @@ namespace Voat.Models.ViewModels
         {
             get
             {
+                //we do not want span returned unless it is a top sort - there has to be a better way to do this... i'm tired.
+                if ((_span.HasValue && _span.Value == Domain.Models.SortSpan.All) && (!Sort.HasValue || Sort.HasValue && Sort.Value != Domain.Models.SortAlgorithm.Top))
+                {
+                    return null;
+                }
                 return _span;
             }
             set

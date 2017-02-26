@@ -958,7 +958,6 @@ namespace Voat.Data
                 }
             });
 
-
             switch (type) {
                 case DomainType.Subverse:
            
@@ -989,8 +988,8 @@ namespace Voat.Data
                                 query.Append(x => x.Where, "(s.UpCount - s.DownCount >= 20) AND ABS(DATEDIFF(HH, s.CreationDate, GETUTCDATE())) <= 24");
                             }
 
-                            //sort default by relative rank
-                            options.Sort = Domain.Models.SortAlgorithm.RelativeRank;
+                            //sort default by relative rank on default if sorted by rank by default
+                            options.Sort = (options.Sort == SortAlgorithm.Rank ? Domain.Models.SortAlgorithm.RelativeRank : options.Sort);
 
                             //query = (from x in _db.Submissions
                             //         join defaults in _db.DefaultSubverses on x.Subverse equals defaults.Subverse
@@ -1154,7 +1153,8 @@ namespace Voat.Data
             //execute query
             var queryString = query.ToString();
 
-           var data = await _db.Database.Connection.QueryAsync<Data.Models.Submission>(queryString, query.Parameters);
+
+            var data = await _db.Database.Connection.QueryAsync<Data.Models.Submission>(queryString, query.Parameters);
             var results = data.Select(Selectors.SecureSubmission).ToList();
             return results;
         }
@@ -2726,9 +2726,11 @@ namespace Voat.Data
                 }
                 var userData = new UserData(message.Sender);
                 //add exception for system messages from sender
-                if (!forceSend && !CONSTANTS.SYSTEM_USER_NAME.Equals(message.Sender, StringComparison.OrdinalIgnoreCase) && userData.Information.CommentPoints.Sum < 10)
+                var minCCPToSendMessages = Settings.MinimumCommentPointsForSendingMessages;
+
+                if (!forceSend && !CONSTANTS.SYSTEM_USER_NAME.Equals(message.Sender, StringComparison.OrdinalIgnoreCase) && userData.Information.CommentPoints.Sum < minCCPToSendMessages)
                 {
-                    return CommandResponse.FromStatus(responseMessage, Status.Ignored, "Comment points too low to send messages. Need at least 10 CCP.");
+                    return CommandResponse.FromStatus(responseMessage, Status.Ignored, $"Comment points too low to send messages. Need at least {minCCPToSendMessages} CCP.");
                 }
             }
 
@@ -2792,7 +2794,7 @@ namespace Voat.Data
             var firstSent = savedMessages.FirstOrDefault();
             if (firstSent == null)
             {
-                firstSent = CommandResponse.FromStatus((Domain.Models.Message)null, Status.Success, "");
+                firstSent = CommandResponse.FromStatus((Domain.Models.Message)null, Status.Invalid, "No messages sent. Please confirm that message details are valid.");
             }
             return firstSent;
         }
@@ -3325,7 +3327,7 @@ namespace Voat.Data
 
         public IEnumerable<DomainReference> GetSubscriptions(string userName)
         {
-
+            
             var d = new DapperQuery();
             d.Select = @"SELECT Type = 1, s.Name, OwnerName = NULL FROM SubverseSet subSet
                         INNER JOIN SubverseSetList setList ON subSet.ID = setList.SubverseSetID
@@ -3976,13 +3978,13 @@ namespace Voat.Data
                 {
                     case DomainType.Subverse:
 
-                        u.Update = "UPDATE s SET SubscriberCount = (SubscriberCount + @IncrementValue) FROM Subverse s";
+                        u.Update = "UPDATE s SET SubscriberCount = (ISNULL(SubscriberCount, 0) + @IncrementValue) FROM Subverse s";
                         u.Where = "s.Name = @Name";
                         u.Parameters = new DynamicParameters(new { Name = domainReference.Name, IncrementValue = incrementValue });
 
                         break;
                     case DomainType.Set:
-                        u.Update = "UPDATE s SET SubscriberCount = (SubscriberCount + @IncrementValue) FROM SubverseSet s";
+                        u.Update = "UPDATE s SET SubscriberCount = (ISNULL(SubscriberCount, 0) + @IncrementValue) FROM SubverseSet s";
                         u.Where = "s.Name = @Name";
 
                         if (!String.IsNullOrEmpty(domainReference.OwnerName))
@@ -4674,20 +4676,23 @@ namespace Voat.Data
         #region Misc
 
 
-        public async Task<string> GetRandomSubverse(bool nsfw)
+        private async Task<string> GetRandomSubverse(bool nsfw, bool restrict = true)
         {
 
             var q = new DapperQuery();
             q.Select = "SELECT TOP 1 s.Name FROM Subverse s INNER JOIN Submission sm ON s.Name = sm.Subverse";
-            q.Where = @"s.SubscriberCount > 10
-                        AND s.Name != 'all'
+            q.Where = @"s.Name != 'all'
                         AND s.IsAdult = @IsAdult
                         AND s.IsAdminDisabled = 0";
             q.GroupBy = "s.Name";
-            q.Having = "DATEDIFF(HH, MAX(sm.CreationDate), GETUTCDATE()) < @HourLimit";
             q.OrderBy = "NEWID()";
             q.Parameters = new DynamicParameters(new { IsAdult = nsfw, HourLimit = (24 * 7) });
 
+            if (restrict)
+            {
+                q.Append(x => x.Where, "s.SubscriberCount > 10");
+                q.Having = "DATEDIFF(HH, MAX(sm.CreationDate), GETUTCDATE()) < @HourLimit";
+            }
 
             return await _db.Database.Connection.ExecuteScalarAsync<string>(q.ToString(), q.Parameters);
             /*
@@ -4703,6 +4708,15 @@ namespace Voat.Data
             ORDER BY NEWID()
             */
 
+        }
+
+        public async Task<string> GetRandomSubverse(bool nsfw)
+        {
+            var sub = await GetRandomSubverse(nsfw, true);
+            if (String.IsNullOrEmpty(sub)) {
+                sub = await GetRandomSubverse(nsfw, false);
+            }
+            return sub;
         }
         public double? HighestRankInSubverse(string subverse)
         {
@@ -5101,7 +5115,11 @@ namespace Voat.Data
         {
             if (!User.Identity.IsAuthenticated || String.IsNullOrEmpty(User.Identity.Name))
             {
-                throw new VoatSecurityException("Current process not authenticated.");
+                throw new VoatSecurityException("Current process not authenticated");
+            }
+            if (UserDefinition.Parse(User.Identity.Name) == null)
+            {
+                throw new VoatSecurityException("Invalid user identity detected");
             }
         }
 

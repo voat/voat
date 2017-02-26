@@ -219,7 +219,14 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.MinimumAccountAgeInDaysForSubverseCreation, 30);
             }
         }
-
+        public static int MinimumCommentPointsForSendingMessages
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.MinimumCommentPointsForSendingMessages, 10);
+            }
+        }
+        
         public static int MinimumCommentPointsForSubverseCreation
         {
             get

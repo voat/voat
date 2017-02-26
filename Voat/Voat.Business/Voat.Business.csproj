@@ -206,7 +206,7 @@
     <Compile Include="Domain\Models\Comment\NestedComment.cs" />
     <Compile Include="Domain\Models\Comment\SubmissionComment.cs" />
     <Compile Include="Domain\Models\DeleteAccountOptions.cs" />
-    <Compile Include="Domain\Models\DomainSearchResult.cs" />
+    <Compile Include="Domain\Models\DomainReferenceDetails.cs" />
     <Compile Include="Domain\Models\Flair.cs" />
     <Compile Include="Domain\Models\FriendlyEnumNames.cs" />
     <Compile Include="Domain\Models\Message.cs" />
@@ -269,6 +269,7 @@
     <Compile Include="Domain\Query\QueryUserInformation.cs" />
     <Compile Include="Domain\Query\QueryUserRecord.cs" />
     <Compile Include="Domain\Query\QueryUserSaves.cs" />
+    <Compile Include="Domain\Query\QueryUserSets.cs" />
     <Compile Include="Domain\Query\QueryUserSubscribedSets.cs" />
     <Compile Include="Domain\Query\QueryUserSubscriptions.cs" />
     <Compile Include="Domain\Query\Selectors.cs" />
@@ -285,7 +286,7 @@
     <Compile Include="Domain\Models\API\v1\SendMessage.cs" />
     <Compile Include="Domain\Models\API\v1\SetInformation.cs" />
     <Compile Include="Domain\Models\API\v1\Submission.cs" />
-    <Compile Include="Domain\Models\API\v1\DomainReference.cs" />
+    <Compile Include="Domain\Models\DomainReference.cs" />
     <Compile Include="Domain\Models\API\v1\SubverseInformation.cs" />
     <Compile Include="Domain\Models\API\v1\UserBadge.cs" />
     <Compile Include="Domain\Models\API\v1\UserInformation.cs" />

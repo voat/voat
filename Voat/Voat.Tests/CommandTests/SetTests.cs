@@ -5,15 +5,202 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Voat.Caching;
+using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
+using Voat.Domain.Query;
+using Voat.Tests.Repository;
 
 namespace Voat.Tests.CommandTests
 {
 
     [TestClass]
-    public class SetTests
+    public class SetTests : BaseUnitTest
     {
+
+        [TestMethod]
+        [TestCategory("Set"), TestCategory("Command.Set")]
+        public async Task Block_Lifecycle_Tests()
+        {
+            var userName = "BloqueSoze";
+            var subName = "unit";
+
+            VoatDataInitializer.CreateUser(userName);
+            TestHelper.SetPrincipal(userName);
+
+            //Verify No Front / Blocked Sets
+            var userBlockQuery = new QueryUserBlocks(userName);
+            var userBlockResults = await userBlockQuery.ExecuteAsync();
+
+            Assert.IsNotNull(userBlockResults, "Old McDonald had a farm ee i ee i o. And on that farm he shot some guys. Badda boom badda bing bang boom.");
+            Assert.AreEqual(0, userBlockResults.Count(), "He is supposed to be Turkish. Some say his father was German. Nobody believed he was real.");
+
+            var userSetQuery = new QueryUserSets(userName);
+            var userSetResults = await userSetQuery.ExecuteAsync();
+
+            Assert.IsNotNull(userSetResults, "One cannot be betrayed if one has no people.");
+            Assert.AreEqual(0, userSetResults.Count(), "A man can convince anyone he's somebody else, but never himself.");
+
+            var currentSubscriberCount = 0;
+            using (var db = new voatEntities())
+            {
+                var count = db.Subverses.First(x => x.Name == subName).SubscriberCount;
+                currentSubscriberCount = count.HasValue ? count.Value : 0;
+
+            }
+
+            //Sub a user to front
+            var domainReference = new DomainReference(DomainType.Subverse, subName);
+            var blockCmd = new BlockCommand(domainReference.Type, domainReference.Name, true);
+            var blockResult = await blockCmd.Execute();
+
+            //Verify Front is created
+            userBlockQuery = new QueryUserBlocks(userName);
+            userBlockResults = await userBlockQuery.ExecuteAsync();
+
+            Assert.IsNotNull(userBlockResults, "What about it, pretzel man? What's your story?");
+            Assert.AreEqual(1, userBlockResults.Count(), "First day on the job, you know what I learned? How to spot a murderer.");
+            Assert.IsTrue(userBlockResults.Any(x => x.Type == DomainType.Subverse && x.Name == subName) , "It was Keyser Soze, Agent Kujan. I mean the Devil himself. How do you shoot the Devil in the back? What if you miss?");
+        
+            userSetQuery = new QueryUserSets(userName);
+            userSetResults = await userSetQuery.ExecuteAsync();
+
+            Assert.IsNotNull(userSetResults, "What the cops never figured out, and what I know now, was that these men would never break, never lie down, never bend over for anybody");
+            Assert.AreEqual(1, userSetResults.Count(x => x.Type == SetType.Blocked), "Is it Friday already? ");
+            var set = userSetResults.First(x => x.Type == SetType.Blocked);
+
+            Assert.AreEqual(SetType.Blocked, set.Type, "I got a whole new problem when I post bail.");
+            Assert.AreEqual(1, set.SubscriberCount, "I got a whole new problem when I post bail.");
+
+            //Ensure Subverse Subscriber Count Updated
+            using (var db = new voatEntities())
+            {
+                var tc = db.Subverses.First(x => x.Name == subName).SubscriberCount;
+                var count = tc.HasValue ? tc.Value : 0;
+                Assert.AreEqual(currentSubscriberCount, count, "");
+                currentSubscriberCount = count;
+            }
+
+            //verify FRONT set has sub
+            using (var repo = new Voat.Data.Repository())
+            {
+                var setList = await repo.GetSetListDescription(SetType.Blocked.ToString(), userName);
+                Assert.IsTrue(setList.Any(x => x.Name == subName));
+            }
+
+            //Unsubscribe
+            blockCmd = new BlockCommand(domainReference.Type, domainReference.Name, true);
+            blockResult = await blockCmd.Execute();
+
+            //Ensure Subverse Subscriber Count Updated
+            using (var db = new voatEntities())
+            {
+                var count = db.Subverses.First(x => x.Name == subName).SubscriberCount;
+                Assert.AreEqual(currentSubscriberCount, count.HasValue ? count.Value : 0, "");
+            }
+
+            //verify FRONT set has not sub
+            using (var repo = new Voat.Data.Repository())
+            {
+                var setList = await repo.GetSetListDescription(SetType.Blocked.ToString(), userName);
+                Assert.IsFalse(setList.Any(x => x.Name == subName));
+            }
+
+        }
+
+
+        [TestMethod]
+        [TestCategory("Set"), TestCategory("Command.Set")]
+        public async Task FrontPage_Lifecycle_Tests()
+        {
+            var userName = "KeyserSoze";
+            var subName = "unit";
+
+            VoatDataInitializer.CreateUser(userName);
+            TestHelper.SetPrincipal(userName);
+
+            //Verify No Front / Blocked Sets
+            var userSubQuery = new QueryUserSubscriptions(userName);
+            var userSubResults = await userSubQuery.ExecuteAsync();
+
+            Assert.IsNotNull(userSubResults, "Old McDonald had a farm ee i ee i o. And on that farm he shot some guys. Badda boom badda bing bang boom.");
+            Assert.AreEqual(0, userSubResults[DomainType.Set].Count(), "He is supposed to be Turkish. Some say his father was German. Nobody believed he was real.");
+
+            var userSetQuery = new QueryUserSets(userName);
+            var userSetResults = await userSetQuery.ExecuteAsync();
+
+            Assert.IsNotNull(userSetResults, "One cannot be betrayed if one has no people.");
+            Assert.AreEqual(0, userSetResults.Count(), "A man can convince anyone he's somebody else, but never himself.");
+
+            var currentSubscriberCount = 0;
+            using (var db = new voatEntities())
+            {
+                var count = db.Subverses.First(x => x.Name == subName).SubscriberCount;
+                currentSubscriberCount = count.HasValue ? count.Value : 0;
+
+            }
+
+            //Sub a user to front
+            var domainReference = new DomainReference(DomainType.Subverse, subName);
+            var subCmd = new SubscribeCommand(domainReference, SubscriptionAction.Toggle);
+            var subResult = await subCmd.Execute();
+
+
+            //Verify Front is created
+            userSubQuery = new QueryUserSubscriptions(userName, CachePolicy.None);
+            userSubResults = await userSubQuery.ExecuteAsync();
+
+            Assert.IsNotNull(userSubResults, "What about it, pretzel man? What's your story?");
+            Assert.AreEqual(1, userSubResults[DomainType.Set].Count(), "First day on the job, you know what I learned? How to spot a murderer.");
+            Assert.IsTrue(userSubResults[DomainType.Set].First() == new DomainReference(DomainType.Set, "Front", userName).FullName, "It was Keyser Soze, Agent Kujan. I mean the Devil himself. How do you shoot the Devil in the back? What if you miss?");
+
+            userSetQuery = new QueryUserSets(userName);
+            userSetResults = await userSetQuery.ExecuteAsync();
+
+            Assert.IsNotNull(userSetResults, "What the cops never figured out, and what I know now, was that these men would never break, never lie down, never bend over for anybody");
+            Assert.AreEqual(1, userSetResults.Count(), "Is it Friday already? ");
+            var set = userSetResults.First();
+
+            Assert.AreEqual(SetType.Front, set.Type, "I got a whole new problem when I post bail.");
+            Assert.AreEqual(1, set.SubscriberCount, "I got a whole new problem when I post bail.");
+
+            //Ensure Subverse Subscriber Count Updated
+            using (var db = new voatEntities())
+            {
+                var tc = db.Subverses.First(x => x.Name == subName).SubscriberCount;
+                var count = tc.HasValue ? tc.Value : 0;
+                Assert.AreEqual(currentSubscriberCount + 1,  count, "");
+                currentSubscriberCount = count;
+            }
+            
+            //verify FRONT set has sub
+            using (var repo = new Voat.Data.Repository())
+            {
+                var setList = await repo.GetSetListDescription(SetType.Front.ToString(), userName);
+                Assert.IsTrue(setList.Any(x => x.Name == subName));
+            }
+
+            //Unsubscribe
+            subCmd = new SubscribeCommand(domainReference, SubscriptionAction.Toggle);
+            subResult = await subCmd.Execute();
+
+            //Ensure Subverse Subscriber Count Updated
+            using (var db = new voatEntities())
+            {
+                var count = db.Subverses.First(x => x.Name == subName).SubscriberCount;
+                Assert.AreEqual(currentSubscriberCount - 1, count.HasValue ? count.Value : 0, "");
+            }
+
+            //verify FRONT set has not sub
+            using (var repo = new Voat.Data.Repository())
+            {
+                var setList = await repo.GetSetListDescription(SetType.Front.ToString(), userName);
+                Assert.IsFalse(setList.Any(x => x.Name == subName));
+            }
+
+        }
+
 
         [TestMethod]
         [TestCategory("Set"), TestCategory("Command.Set")]

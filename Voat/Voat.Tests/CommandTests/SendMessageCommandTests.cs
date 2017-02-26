@@ -28,8 +28,9 @@ namespace Voat.Tests.CommandTests
             var cmd = new SendMessageCommand(new Domain.Models.SendMessage() { Recipient = "Do you like chocolate", Message = id, Subject = "All That Matters" }, false, false);
             var response = await cmd.Execute();
 
-            Assert.IsTrue(response.Success, response.Message);
+            Assert.AreEqual(Status.Invalid, response.Status, response.Message);
             Assert.AreEqual(null, response.Response, "Expecting null return payload");
+
             using (var db = new voatEntities())
             {
                 var count = (from x in db.Messages

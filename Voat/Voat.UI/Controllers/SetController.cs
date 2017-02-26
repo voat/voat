@@ -99,6 +99,7 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<ActionResult> Details(string name, string userName)
         {
+
             using (var repo = new Repository())
             {
                 var domainReference = new DomainReference(DomainType.Set, name, userName);
@@ -160,8 +161,6 @@ namespace Voat.Controllers
                     BasePath = VoatPathHelper.BasePath(domainReference),
                     MenuType = (set.Type == (int)SetType.Front || set.Type == (int)SetType.Blocked ?  MenuType.Discovery : MenuType.Set)
                 };
-
-
                 return View(model);
             }
         }
@@ -239,6 +238,11 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<ActionResult> Create()
         {
+            if (Settings.SetCreationDisabled)
+            {
+                return GenericErrorView(new ErrorViewModel() { Title = "Set Creation Disabled", Description = "Sorry, but set creation is currently disabled", FooterMessage = "Someone will be fired for this" });
+            }
+
             return View(new Set());
         }
         [HttpPost]
@@ -246,6 +250,11 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Set set)
         {
+            if (Settings.SetCreationDisabled)
+            {
+                return GenericErrorView(new ErrorViewModel() { Title = "Set Creation Disabled", Description = "Sorry, but set creation is currently disabled", FooterMessage = "Someone will be fired for this" });
+            }
+
             if (ModelState.IsValid)
             {
                 //TODO: Transfer to Command

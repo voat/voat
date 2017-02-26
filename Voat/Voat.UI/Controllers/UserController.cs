@@ -323,12 +323,11 @@ namespace Voat.Controllers
                 Description = originalUserName + "'s Sets",
             };
 
-            //TODO: Move to query
-            using (var repo = new Repository())
-            {
-                var setList = await repo.GetUserSets(originalUserName);
-                return View(setList.Map());
-            }
+            var q = new QueryUserSets(userName);
+            var results = await q.ExecuteAsync();
+
+            return View(results);
+            
         }
 
         [HttpGet]

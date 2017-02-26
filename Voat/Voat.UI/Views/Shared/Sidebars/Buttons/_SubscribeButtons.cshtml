@@ -21,23 +21,23 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-    <button type="button" class='@(subscriber ? "btn-voat btn-voat-off" : "btn-voat")' onclick="@jsCommand">@(subscriber ? "unsubscribe" : "subscribe")</button>
+    <button type="button" class='btn-whoaverse-paging btn-xs btn-default btn-voat @(subscriber ? "btn-unsub btn-voat-off" : "btn-sub")' onclick="@jsCommand">@(subscriber ? "unsubscribe" : "subscribe")</button>
 
     if (Model.Type == Voat.Domain.Models.DomainType.Subverse)
     {
 
         if (userData.IsUserBlockingSubverse(Model.Name))
         {
-            <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-unblocksubverse" onclick="return blockSubverseToggle(this, '@Model.Name')">unblock</button>
+            <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-unblocksubverse btn-voat btn-voat-off" onclick="return blockSubverseToggle(this, '@Model.Name')">unblock</button>
         }
         else
         {
-            <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-blocksubverse" onclick="return blockSubverseToggle(this, '@Model.Name')">block</button>
+            <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-blocksubverse btn-voat" onclick="return blockSubverseToggle(this, '@Model.Name')">block</button>
         }
     }
 
 }
 else
 {
-    <button type="button" class="btn-voat" onclick="mustLogin();">subscribe</button>
+    <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-sub btn-voat" onclick="mustLogin();">subscribe</button>
 }

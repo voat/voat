@@ -117,7 +117,7 @@ namespace Voat.Controllers
             var respones = await cmd.Execute();
             if (respones.Success)
             {
-                return RedirectToAction("SubverseIndex", "Subverses", new { subverse = subverseTmpModel.Name });
+                return RedirectToRoute(Models.ROUTE_NAMES.SUBVERSE_INDEX, new { subverse = subverseTmpModel.Name });
             }
             else
             {
@@ -182,7 +182,7 @@ namespace Voat.Controllers
                 System.Web.HttpContext.Current.Response.Cookies.Add(hc);
 
                 // redirect to destination subverse
-                return RedirectToAction("SubverseIndex", "Subverses", new { subverse = destination });
+                return RedirectToRoute(Models.ROUTE_NAMES.SUBVERSE_INDEX, new { subverse = destination });
             }
             ViewBag.Destination = destination;
             return View("~/Views/Subverses/AdultContentWarning.cshtml");
@@ -193,10 +193,19 @@ namespace Voat.Controllers
         {
             try
             {
-                var q = new QueryRandomSubverse(true);
+                var q = new QueryRandomSubverse(false);
                 var randomSubverse = await q.ExecuteAsync();
 
-                return RedirectToAction("SubverseIndex", "Subverses", new { subverse = randomSubverse });
+                if (!String.IsNullOrEmpty(randomSubverse))
+                {
+                    return RedirectToRoute(ROUTE_NAMES.SUBVERSE_INDEX, new { subverse = randomSubverse });
+                }
+                else
+                {
+                    return RedirectToRoute(ROUTE_NAMES.FRONT_INDEX);
+                }
+
+
             }
             catch (Exception ex)
             {
@@ -209,10 +218,18 @@ namespace Voat.Controllers
         {
             try
             {
-                var q = new QueryRandomSubverse(false);
+                var q = new QueryRandomSubverse(true);
                 var randomSubverse = await q.ExecuteAsync();
 
-                return RedirectToAction("SubverseIndex", "Subverses", new { subverse = randomSubverse });
+                if (!String.IsNullOrEmpty(randomSubverse))
+                {
+                    return RedirectToRoute(ROUTE_NAMES.SUBVERSE_INDEX, new { subverse = randomSubverse });
+                }
+                else
+                {
+                    return RedirectToRoute(ROUTE_NAMES.FRONT_INDEX);
+                }
+
             }
             catch (Exception ex)
             {
@@ -417,7 +434,7 @@ namespace Voat.Controllers
 
             viewProperties.Sort = options.Sort;
             viewProperties.Span = options.Span;
-            var routeName = "SubverseIndex";
+            var routeName = ROUTE_NAMES.SUBVERSE_INDEX;
             try
             {
                 PaginatedList<Domain.Models.Submission> pageList = null;
@@ -489,7 +506,7 @@ namespace Voat.Controllers
 
                     viewProperties.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse,  subverseObject.Name);
                     viewProperties.Title = subverseObject.Title;
-                    routeName = "SubverseIndex";
+                    routeName = ROUTE_NAMES.SUBVERSE_INDEX;
                 }
 
 
@@ -517,7 +534,7 @@ namespace Voat.Controllers
                     navModel.Name = "";
                     ViewBag.SelectedSubverse = "frontpage";
                     viewProperties.Context.Name = "";
-                    pageList.RouteName = "FrontIndex";
+                    pageList.RouteName = Models.ROUTE_NAMES.FRONT_INDEX;
                 }
                 else if (subverse == AGGREGATE_SUBVERSE.ALL || subverse == AGGREGATE_SUBVERSE.ANY)
                 {
