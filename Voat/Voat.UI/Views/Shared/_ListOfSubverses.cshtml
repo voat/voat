@@ -10,7 +10,7 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model IEnumerable<Voat.Domain.Models.SubverseInformation>
+@model IEnumerable<string>
 
 @{
     string showingSubverse;
@@ -68,7 +68,7 @@
 
                 @foreach (var item in Model)
                 {
-                    string tmpItem = "/v/" + item.Name;
+                    string tmpItem = "/v/" + item;
 
                     string selectedClass;
                     if (tmpItem == showingSubverse)
@@ -82,7 +82,7 @@
 
                     <li class="@selectedClass">
                         <span class="separator">-</span>
-                        <a href="/v/@item.Name/">@item.Name</a>
+                        <a href="/v/@item/">@item</a>
                     </li>
                 }
             </ul>

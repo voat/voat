@@ -288,14 +288,14 @@ namespace Voat.Controllers
             var q = new QueryUserSubscriptions(User.Identity.Name);
             var results = await q.ExecuteAsync();
             var subs = results[Domain.Models.DomainType.Subverse];
-
+            subs = subs.OrderBy(x => x);
 
             //// show custom list of subverses in top menu
             //var listOfSubverses = _db.SubverseSubscriptions
             //    .Where(s => s.UserName == User.Identity.Name)
             //    .OrderBy(s => s.Subverse);
 
-            return PartialView("_ListOfSubscribedToSubverses", subs);
+            return PartialView("_ListOfSubverses", subs);
         }
 
         //// POST: subscribe to a subverse
@@ -725,9 +725,9 @@ namespace Voat.Controllers
             {
                 var q = new QueryDefaultSubverses();
                 var r = q.Execute();
+                var names = r.Select(x => x.Name).ToList();
 
-                //var listOfSubverses = _db.DefaultSubverses.OrderBy(s => s.Order).ToList();
-                return PartialView("_ListOfDefaultSubverses", r);
+                return PartialView("_ListOfSubverses", names);
             }
             catch (Exception)
             {

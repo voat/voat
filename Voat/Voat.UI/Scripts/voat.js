@@ -1208,20 +1208,23 @@ function setSubverseListToggleCallBack(s, arguments) {
 
     var response = new getJsonResponse(arguments);
     if (response.success) {
-        if (response.data) {
-            s.text("remove");
-            s.addClass("btn-voat-off");
-            //backwards compat
-            s.addClass("btn-unsub");
-            s.removeClass("btn-sub");
 
-        } else {
-            s.text("add");
-            s.removeClass("btn-voat-off");
-            //backwards compat
-            s.addClass("btn-sub");
-            s.removeClass("btn-unsub");
-        }
+        toggleButtonVisualState(s, response.data, "remove", "add");
+
+        //if (response.data) {
+        //    s.text("remove");
+        //    s.addClass("btn-voat-off");
+        //    //backwards compat
+        //    s.addClass("btn-unsub");
+        //    s.removeClass("btn-sub");
+
+        //} else {
+        //    s.text("add");
+        //    s.removeClass("btn-voat-off");
+        //    //backwards compat
+        //    s.addClass("btn-sub");
+        //    s.removeClass("btn-unsub");
+        //}
     } else {
         s.text(response.error.message);
     }
@@ -1268,27 +1271,24 @@ function subscribeToSet(sender, name, owner)
         function (s, args) {
             var response = getJsonResponse(args);
             if (response.success) {
-                if (response.data) {
-                    s.text("unsubscribe");
-                    s.addClass("btn-voat-off");
-                    //backwards compat
-                    s.addClass("btn-unsub");
-                    s.removeClass("btn-sub");
 
-                } else {
-                    s.text("subscribe");
-                    s.removeClass("btn-voat-off");
-                    //backwards compat
-                    s.addClass("btn-sub");
-                    s.removeClass("btn-unsub");
-                }
+                toggleButtonVisualState(s, response.data, "unsubscribe", "subscribe");
+
                 //if (response.data) {
                 //    s.text("unsubscribe");
                 //    s.addClass("btn-voat-off");
+                //    //backwards compat
+                //    s.addClass("btn-unsub");
+                //    s.removeClass("btn-sub");
+
                 //} else {
                 //    s.text("subscribe");
                 //    s.removeClass("btn-voat-off");
+                //    //backwards compat
+                //    s.addClass("btn-sub");
+                //    s.removeClass("btn-unsub");
                 //}
+               
             } else {
                 s.text(response.error.message);
             }
@@ -1300,27 +1300,49 @@ function subscribeToSubverse(sender, name) {
        function (s, args) {
            var response = getJsonResponse(args);
            if (response.success) {
-               if (response.data) {
-                   s.text("unsubscribe");
-                   s.addClass("btn-voat-off");
-                   //backwards compat
-                   s.addClass("btn-unsub");
-                   s.removeClass("btn-sub");
 
-               } else {
-                   s.text("subscribe");
-                   s.removeClass("btn-voat-off");
-                   //backwards compat
-                   s.addClass("btn-sub");
-                   s.removeClass("btn-unsub");
-               }
+               toggleButtonVisualState(s, response.data, "unsubscribe", "subscribe");
+
+               //if (response.data) {
+               //    s.text("unsubscribe");
+               //    s.addClass("btn-voat-off");
+               //    //backwards compat
+               //    s.addClass("btn-unsub");
+               //    s.removeClass("btn-sub");
+
+               //} else {
+               //    s.text("subscribe");
+               //    s.removeClass("btn-voat-off");
+               //    //backwards compat
+               //    s.addClass("btn-sub");
+               //    s.removeClass("btn-unsub");
+               //}
            } else {
                s.text(response.error.message);
            }
        }
    );
 }
+function toggleButtonVisualState(target, enabled, trueText, falseText) {
 
+    //So the enabled setting is the value of whether the item is subscribed or not
+    //true = subscribed (thus we show a non-highlighted button)
+    //false = we highlight it
+    if (enabled) {
+        target.text(trueText);
+        target.addClass("btn-voat-off");
+        //backwards compat
+        target.addClass("btn-unsub");
+        target.removeClass("btn-sub");
+
+    } else {
+        target.text(falseText);
+        target.removeClass("btn-voat-off");
+        //backwards compat
+        target.addClass("btn-sub");
+        target.removeClass("btn-unsub");
+    }
+}
 //// subscribe to subverse
 //function subscribe(obj, subverseName) {
 //    //This is the famous undefined subscription bug - DO NOT ERASE - THIS IS VOAT FAMOUS - ATTN DAN.F. I found it first!
@@ -1987,11 +2009,14 @@ function blockSubverseToggle(obj, subverseName) {
     $(obj).toggleClass("btn-blocksubverse btn-unblocksubverse");
     var blockButton = $(obj);
     if (blockButton.exists()) {
-        if (blockButton.text() === "block") {
-            blockButton.text("unblock");
-        } else {
-            blockButton.text("block");
-        }
+
+        toggleButtonVisualState(blockButton, blockButton.text() === "block", "unblock", "block");
+
+        //if (blockButton.text() === "block") {
+        //    blockButton.text("unblock");
+        //} else {
+        //    blockButton.text("block");
+        //}
 
         // submit block request
         postBlock('subverse', subverseName);
@@ -2001,11 +2026,14 @@ function blockUserToggle(obj, name) {
     $(obj).toggleClass("btn-blocksubverse btn-unblocksubverse");
     var blockButton = $(obj);
     if (blockButton.exists()) {
-        if (blockButton.text() === "block") {
-            blockButton.text("unblock");
-        } else {
-            blockButton.text("block");
-        }
+
+        toggleButtonVisualState(blockButton, blockButton.text() === "block", "unblock", "block");
+
+        //if (blockButton.text() === "block") {
+        //    blockButton.text("unblock");
+        //} else {
+        //    blockButton.text("block");
+        //}
 
         // submit block request
         postBlock('user', name);
@@ -2015,6 +2043,7 @@ function blockUserToggle(obj, name) {
 function toggleBlockSubverseFLButton(obj, subverseName) {
     var blockButton = $(obj);
     if (blockButton.exists()) {
+
         if (blockButton.text() === "block subverse") {
             blockButton.text("undo");
         } else {

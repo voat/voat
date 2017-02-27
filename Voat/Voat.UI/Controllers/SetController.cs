@@ -141,7 +141,7 @@ namespace Voat.Controllers
 
                 if (!perms.View)
                 {
-                    return GenericErrorView(new ErrorViewModel() { Title = "Set is Private", Description = "This set doesnt allow viewing it's properties", FooterMessage = "It's ok, I can't see it either" });
+                    return GenericErrorView(new ErrorViewModel() { Title = "Set is Private", Description = "This set doesn't allow the viewing of its properties", FooterMessage = "It's ok, I can't see it either" });
                 }
 
                 var options = new SearchOptions(Request.QueryString);

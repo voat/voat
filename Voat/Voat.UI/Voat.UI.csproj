@@ -624,7 +624,7 @@
     <Content Include="Views\Help\Privacy.cshtml" />
     <Content Include="Views\Help\Markdown.cshtml" />
     <Content Include="Views\Error\Subversenotfound.cshtml" />
-    <Content Include="Views\Shared\_ListOfDefaultSubverses.cshtml" />
+    <Content Include="Views\Shared\_ListOfSubverses.cshtml" />
     <Content Include="Views\Shared\_AddComment.cshtml" />
     <Content Include="Views\Shared\_VotingIconsComment.cshtml" />
     <Content Include="Views\Error\404.cshtml" />
@@ -686,7 +686,7 @@
     <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonDelete.cshtml" />
     <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonReport.cshtml" />
     <Content Include="Views\Shared\Userprofile\_SidebarSubsUserIsSubscribedTo.cshtml" />
-    <Content Include="Views\Shared\_ListOfSubscribedToSubverses.cshtml" />
+    <Content Include="Views\Shared\___ListOfSubscribedToSubverses.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonDelete.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonFlair.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSticky.cshtml" />

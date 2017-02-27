@@ -137,7 +137,6 @@ namespace Voat.Controllers
                 Sort = null
             };
 
-
             return View("~/Views/Home/Comments.cshtml", model);
 
         }

@@ -34,11 +34,9 @@
     @*
         display 1 submission with details and comments
     *@
-    @if (!submission.Subverse.Equals("user"))
-    {
 
-        @Html.Action("SidebarForSelectedSubverseComments", "Subverses", submission)
-    }
+    @Html.Action("SidebarForSelectedSubverseComments", "Subverses", submission)
+
     <div class="content" role="main">
         <br /><br />
         @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")

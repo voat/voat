@@ -37,7 +37,7 @@
     {
         @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = Model.Context.Name })
     }
-    else if (Model.Context.Type == Voat.Domain.Models.DomainType.Set)
+    else if (Model.Context != null && Model.Context.Type == Voat.Domain.Models.DomainType.Set)
     {
         @Html.Action("Sidebar", "Set", new { name = Model.Context.FullName })
     }
