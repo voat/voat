@@ -9,11 +9,11 @@ namespace Voat.Domain.Models
         Down = -1
     }
 
-    public enum CommentSort
-    {
-        New,
-        Top
-    }
+    //public enum CommentSort
+    //{
+    //    New,
+    //    Top
+    //}
 
     [Flags]
     [DatabaseMappedValue]
@@ -172,10 +172,10 @@ namespace Voat.Domain.Models
         /// </summary>
         Intensity,
 
-        /// <summary>
-        /// Orders results in a traditional forum style by date (uses new sort currently)
-        /// </summary>
-        Forum = New
+        ///// <summary>
+        ///// Orders results in a traditional forum style by date (uses new sort currently)
+        ///// </summary>
+        //Forum = New
 
     }
 

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Voat.Data.Models;
 
@@ -73,25 +75,39 @@ namespace Voat.Utilities.Components
         {
             _replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + CONSTANTS.USER_HOT_LINK_REGEX, MatchFound) { MatchThreshold = matchThreshold, IgnoreDuplicateMatches = ignoreDuplicatMatches };
         }
-
+       
         protected override string ProcessContent(string content, object context)
         {
             return _replacer.Replace(content, context);
         }
-
+        
         public abstract string MatchFound(Match match, string matchSource, object context);
     }
 
     public class UserMentionNotificationFilter : UserMentionFilter
     {
+        private class DuplicateUserNameDetectionReplacer : MatchProcessingReplacer
+        {
+            public DuplicateUserNameDetectionReplacer(string regEx, Func<Match, string, object, string> replacementFunc) : base(regEx, replacementFunc)
+            {
+            }
+            public override bool IsDuplicate(Match currentMatch, IEnumerable<Match> processedMatches)
+            {
+                string groupName = "user";
+                var found = processedMatches.Any(x => String.Equals(x.Groups[groupName].Value, currentMatch.Groups[groupName].Value, StringComparison.OrdinalIgnoreCase));
+                return found;
+            }
+        }
+
         public UserMentionNotificationFilter()
             : base(5, true)
         {
+            _replacer = new DuplicateUserNameDetectionReplacer(_replacer.RegEx, MatchFound) { MatchThreshold = _replacer.MatchThreshold, IgnoreDuplicateMatches = _replacer.IgnoreDuplicateMatches };
             Priority = 1;
             ProcessingStage = ProcessingStage.InboundPostSave;
             IsReadOnly = true;
         }
-
+       
         public override string MatchFound(Match match, string matchSource, object context)
         {
             if (!match.Groups["notify"].Success)

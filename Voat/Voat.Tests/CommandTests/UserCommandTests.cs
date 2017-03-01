@@ -32,7 +32,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsNotNull(prefs, "Pref query returned null");
             Assert.AreNotEqual(prefs.Bio, bio, "Bio returned unexpected data");
 
-            var cmd = new UpdateUserPreferencesCommand(new Domain.Models.UserPreference() { Bio = bio });
+            var cmd = new UpdateUserPreferencesCommand(new Domain.Models.UserPreferenceUpdate() { Bio = bio });
             var result = await cmd.Execute();
 
             Assert.IsNotNull(result, "UpdatePref command returned null");

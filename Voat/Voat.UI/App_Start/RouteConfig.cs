@@ -121,7 +121,7 @@ namespace Voat
                 defaults: new { controller = "Comment", action = "Comments" }
             );
 
-            string commentSortContraint = "(?i)" + String.Join("|", Enum.GetNames(typeof(CommentSortAlgorithm)));
+            string commentSortContraint = "(?i)^$|" + String.Join("|", Enum.GetNames(typeof(CommentSortAlgorithm)));
 
             // /comments/submission/startingpos
             //"/comments/" + submission + "/" + parentId + "/" + command + "/" + startingIndex + "/" + startIndex + "/" + sort + "/",
@@ -132,7 +132,7 @@ namespace Voat
                 {
                     sort = commentSortContraint
                 },
-                defaults: new { controller = "Comment", action = "CommentSegment", sort = "top" }
+                defaults: new { controller = "Comment", action = "CommentSegment", sort = (string)null }
             );
 
             routes.MapRoute(
@@ -142,7 +142,7 @@ namespace Voat
                 {
                     sort = commentSortContraint
                 },
-                defaults: new { controller = "Comment", action = "CommentTree", sort = "top" }
+                defaults: new { controller = "Comment", action = "CommentTree", sort = (string)null }
             );
 
 
@@ -203,7 +203,7 @@ namespace Voat
                 {
                     controller = "Comment",
                     action = "Comments",
-                    sort = "top",
+                    sort = (string)null,
                     commentID = UrlParameter.Optional,
                     contextCount = UrlParameter.Optional
                 }
@@ -219,7 +219,7 @@ namespace Voat
                     action = "Comments",
                     commentID = UrlParameter.Optional,
                     context = UrlParameter.Optional,
-                    sort = "top"
+                    sort = (string)null
                 }
             );
 
@@ -236,7 +236,7 @@ namespace Voat
                 {
                     controller = "Comment",
                     action = "Comments",
-                    sort = "top",
+                    sort = (string)null,
                     commentID = UrlParameter.Optional,
                     contextCount = UrlParameter.Optional
                 }
@@ -257,7 +257,7 @@ namespace Voat
                     action = "Comments",
                     commentID = UrlParameter.Optional,
                     context = UrlParameter.Optional,
-                    sort = "top"
+                    sort = (string)null
                 }
             );
 

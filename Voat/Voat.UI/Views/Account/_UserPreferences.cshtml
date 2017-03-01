@@ -10,38 +10,97 @@
     All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.*@
 
-@model Voat.Models.ViewModels.UserPreferencesViewModel
+@model Voat.Domain.Models.UserPreference
 
 @using (Html.BeginForm("UserPreferences", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary()
 
-    <div class="checkbox">
-        @Html.CheckBoxFor(m => m.Disable_custom_css)
-        @Html.LabelFor(m => m.Disable_custom_css)
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.DisableCSS, new { @class = "col-md-4 control-label" })
+        <div class="col-md-6">
+            @Html.CheckBoxFor(m => m.DisableCSS, new { @class = "form-control" })
+        </div>
     </div>
-    <div class="checkbox">
-        @Html.CheckBoxFor(m => m.Night_mode)
-        @Html.LabelFor(m => m.Night_mode)
+
+    @*<div class="checkbox">
+        @Html.CheckBoxFor(m => m.DisableCSS)
+        @Html.LabelFor(m => m.DisableCSS)
+    </div>*@
+    <div class="form-group">
+        @Html.LabelFor(m => m.NightMode, new { @class = "col-md-4 control-label" })
+        <div class="col-md-6">
+            @Html.CheckBoxFor(m => m.NightMode, new { @class = "form-control" })
+        </div>
     </div>
-    <div class="checkbox">
-        @Html.CheckBoxFor(m => m.OpenLinksInNewTab)
-        @Html.LabelFor(m => m.OpenLinksInNewTab)
+
+    @*<div class="checkbox">
+        @Html.CheckBoxFor(m => m.NightMode)
+        @Html.LabelFor(m => m.NightMode)
+    </div>*@
+    @*<div class="checkbox">
+        @Html.CheckBoxFor(m => m.OpenInNewWindow)
+        @Html.LabelFor(m => m.OpenInNewWindow)
+    </div>*@
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.EnableAdultContent, new { @class = "col-md-4 control-label" })
+        <div class="col-md-6">
+            @Html.CheckBoxFor(m => m.EnableAdultContent, new { @class = "form-control" })
+        </div>
     </div>
-    <div class="checkbox">
-        @Html.CheckBoxFor(m => m.Enable_adult_content)
-        @Html.LabelFor(m => m.Enable_adult_content)
+
+    @*<div class="checkbox">
+        @Html.CheckBoxFor(m => m.EnableAdultContent)
+        @Html.LabelFor(m => m.EnableAdultContent)
+    </div>*@
+    <div class="form-group">
+        @Html.LabelFor(m => m.DisplaySubscriptions, new { @class = "col-md-4 control-label" })
+        <div class="col-md-6">
+            @Html.CheckBoxFor(m => m.DisplaySubscriptions, new { @class = "form-control" })
+        </div>
     </div>
-    <div class="checkbox">
-        @Html.CheckBoxFor(m => m.Public_subscriptions)
-        @Html.LabelFor(m => m.Public_subscriptions)
+
+    @*<div class="checkbox">
+        @Html.CheckBoxFor(m => m.DisplaySubscriptions)
+        @Html.LabelFor(m => m.DisplaySubscriptions)
+    </div>*@
+    <div class="form-group">
+        @Html.LabelFor(m => m.UseSubscriptionsMenu, new { @class = "col-md-4 control-label" })
+        <div class="col-md-6">
+            @Html.CheckBoxFor(m => m.UseSubscriptionsMenu, new { @class = "form-control" })
+        </div>
     </div>
-    <div class="checkbox">
-        @Html.CheckBoxFor(m => m.Topmenu_from_subscriptions)
-        @Html.LabelFor(m => m.Topmenu_from_subscriptions)
+    @*<div class="checkbox">
+        @Html.CheckBoxFor(m => m.UseSubscriptionsMenu)
+        @Html.LabelFor(m => m.UseSubscriptionsMenu)
+    </div>*@
+    <div class="form-group">
+        @Html.LabelFor(m => m.BlockAnonymized, new { @class = "col-md-4 control-label" })
+        <div class="col-md-6">
+            @Html.CheckBoxFor(m => m.BlockAnonymized, new { @class = "form-control" })
+        </div>
     </div>
-    <br />
-    <input type="submit" value="Save" class="btn btn-whoaverse" />
+    @*<div class="checkbox">
+        @Html.CheckBoxFor(m => m.BlockAnonymized)
+        @Html.LabelFor(m => m.BlockAnonymized)
+    </div>*@
+    <div class="form-group">
+        @Html.LabelFor(m => m.CommentSort, new { @class = "col-md-4 control-label" })
+        <div class="col-md-6">
+            @Html.EnumDropDownListFor(m => m.CommentSort, new { @class = "form-control" })
+        </div>
+    </div>
+    @*<div class="checkbox">
+        @Html.EnumDropDownListFor(m => m.CommentSort, new { @class= "form-control" })
+        @Html.LabelFor(m => m.CommentSort)
+    </div>*@
+    <div class="form-group">
+        <div class="col-md-offset-4 col-md-3">
+            <input type="submit" value="Submit" class="btn-whoaverse" />
+        </div>
+    </div>
 }
 

@@ -9,7 +9,7 @@ namespace Voat.Domain.Query
     /// <summary>
     /// Returns the user profile. If no user is logged in return a default profile.
     /// </summary>
-    public class QueryUserPreferences : CachedQuery<UserPreference>
+    public class QueryUserPreferences : CachedQuery<Domain.Models.UserPreference>
     {
         private string _userToRetrieve;
 
@@ -45,7 +45,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override async Task<UserPreference> GetData()
+        protected override async Task<Domain.Models.UserPreference> GetData()
         {
             UserPreference pref = null;
 
@@ -61,7 +61,7 @@ namespace Voat.Domain.Query
             //    Repository.SetDefaultUserPreferences(pref);
             //    pref.UserName = _userToRetrieve;
             //}
-            return pref;
+            return pref.Map();
         }
     }
 }

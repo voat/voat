@@ -1153,7 +1153,6 @@ namespace Voat.Data
             //execute query
             var queryString = query.ToString();
 
-
             var data = await _db.Database.Connection.QueryAsync<Data.Models.Submission>(queryString, query.Parameters);
             var results = data.Select(Selectors.SecureSubmission).ToList();
             return results;
@@ -1435,7 +1434,7 @@ namespace Voat.Data
         //}
 
         [Authorize]
-        public async Task<CommandResponse<Models.Submission>> PostSubmission(UserSubmission userSubmission)
+        public async Task<CommandResponse<Domain.Models.Submission>> PostSubmission(UserSubmission userSubmission)
         {
             DemandAuthentication();
 
@@ -1452,7 +1451,7 @@ namespace Voat.Data
             //if rules engine denies bail.
             if (!outcome.IsAllowed)
             {
-                return MapRuleOutCome<Models.Submission>(outcome, null);
+                return MapRuleOutCome<Domain.Models.Submission>(outcome, null);
             }
 
             //Save submission
@@ -1469,7 +1468,7 @@ namespace Voat.Data
                 //Trap for a anon submittal in a non-anon subverse
                 if (!subverseObject.IsAnonymized.Value && userSubmission.IsAnonymized)
                 {
-                    return MapRuleOutCome<Models.Submission>(new RuleOutcome(RuleResult.Denied, "Anon Submission Rule", "9.1", "Subverse does not allow anon content"), null);
+                    return MapRuleOutCome<Domain.Models.Submission>(new RuleOutcome(RuleResult.Denied, "Anon Submission Rule", "9.1", "Subverse does not allow anon content"), null);
                 }
                 newSubmission.IsAnonymized = subverseObject.IsAnonymized.Value;
             }
@@ -1528,8 +1527,8 @@ namespace Voat.Data
             {
                 ContentProcessor.Instance.Process(String.Concat(newSubmission.Title, " ", newSubmission.Content), ProcessingStage.InboundPostSave, newSubmission);
             }
-
-            return CommandResponse.Successful(Selectors.SecureSubmission(newSubmission));
+            
+            return CommandResponse.Successful(newSubmission.Map());
         }
 
         [Authorize]
@@ -2431,7 +2430,7 @@ namespace Voat.Data
         {
             p.Language = "en";
             p.NightMode = false;
-            p.OpenInNewWindow = false;
+            //p.OpenInNewWindow = false;
             p.UseSubscriptionsMenu = true;
             p.DisableCSS = false;
             p.DisplaySubscriptions = false;
@@ -2446,7 +2445,7 @@ namespace Voat.Data
         }
 
         [Authorize]
-        public void SaveUserPrefernces(Domain.Models.UserPreference preferences)
+        public void SaveUserPrefernces(Domain.Models.UserPreferenceUpdate preferences)
         {
             DemandAuthentication();
 
@@ -2517,6 +2516,14 @@ namespace Voat.Data
             if (preferences.DisplayAds.HasValue)
             {
                 p.DisplayAds = preferences.DisplayAds.Value;
+            }
+            if (preferences.BlockAnonymized.HasValue)
+            {
+                p.BlockAnonymized = preferences.BlockAnonymized.Value;
+            }
+            if (preferences.CommentSort.HasValue)
+            {
+                p.CommentSort = (int)preferences.CommentSort.Value;
             }
             _db.SaveChanges();
         }

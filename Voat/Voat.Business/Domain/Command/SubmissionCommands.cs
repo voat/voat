@@ -20,7 +20,7 @@ namespace Voat.Domain.Command
             using (var db = new Repository())
             {
                 var result = await db.PostSubmission(_userSubmission);
-                return CommandResponse.Map(result, result.Response.Map());
+                return CommandResponse.Map(result, result.Response);
             }
         }
     }

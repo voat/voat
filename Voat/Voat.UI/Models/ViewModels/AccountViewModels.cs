@@ -48,27 +48,6 @@ namespace Voat.Models.ViewModels
 
 
 
-    public class UserPreferencesViewModel
-    {
-        [Display(Name = "Disable custom subverse styles")]
-        public bool Disable_custom_css { get; set; }
-        
-        [Display(Name = "Enable night mode (use dark theme)")]
-        public bool Night_mode { get; set; }
-
-        [Display(Name = "Open links in new tab")]
-        public bool OpenLinksInNewTab { get; set; }
-
-        [Display(Name = "Display NSFW content")]
-        public bool Enable_adult_content { get; set; }
-
-        [Display(Name = "Publicly display my subscriptions on my profile")]
-        public bool Public_subscriptions { get; set; }
-
-        [Display(Name = "Replace top menu bar with my subscriptions")]
-        public bool Topmenu_from_subscriptions { get; set; }
-    }
-
     public class UserAboutViewModel
     {
         [Display(Name = "Short profile bio")]

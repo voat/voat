@@ -37,11 +37,13 @@ using Voat.UI.Utilities;
 using Voat.Data;
 using Voat.Caching;
 using Voat.Domain;
+using Voat.Domain.Command;
+using Voat.Domain.Query;
 
 namespace Voat.Controllers
 {
     [Authorize]
-    public class AccountController : AsyncController
+    public class AccountController : BaseController
     {
         public AccountController()
             : this(new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
@@ -359,27 +361,36 @@ namespace Voat.Controllers
         } 
 
         [Authorize]
-        public ActionResult GetUserPreferencesAbout()
+        public async Task<ActionResult> GetUserPreferencesAbout()
         {
-            try
+            var userPreferences = UserData.Preferences;
+            var tmpModel = new UserAboutViewModel()
             {
-                using (var db = new voatEntities())
-                {
-                    var userPreferences = GetUserPreference(db);
+                Bio = String.IsNullOrEmpty(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio,
+                Avatar = userPreferences.Avatar
+            };
+            return PartialView("_UserPreferencesAbout", tmpModel);
 
-                    var tmpModel = new UserAboutViewModel()
-                    {
-                        Bio = String.IsNullOrEmpty(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio,
-                        Avatar = userPreferences.Avatar
-                    };
+            //return PartialView("_UserPreferencesAbout", tmpModel);
+            //try
+            //{
+            //    using (var db = new voatEntities())
+            //    {
+            //        var userPreferences = GetUserPreference(db);
 
-                    return PartialView("_UserPreferencesAbout", tmpModel);
-                }
-            }
-            catch (Exception)
-            {
-                return new EmptyResult();
-            }
+            //        var tmpModel = new UserAboutViewModel()
+            //        {
+            //            Bio = String.IsNullOrEmpty(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio,
+            //            Avatar = userPreferences.Avatar
+            //        };
+
+            //        return PartialView("_UserPreferencesAbout", tmpModel);
+            //    }
+            //}
+            //catch (Exception)
+            //{
+            //    return new EmptyResult();
+            //}
         }
 
         // POST: /Account/UserPreferences
@@ -390,6 +401,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> UserPreferencesAbout([Bind(Include = "Bio, Avatarfile")] UserAboutViewModel model)
         {
             ViewBag.UserName = User.Identity.Name;
+
             // save changes
             using (var db = new voatEntities())
             {
@@ -466,32 +478,37 @@ namespace Voat.Controllers
 
         // GET: /Account/UserPreferences
         [ChildActionOnly]
-        public ActionResult GetUserPreferences()
+        public async Task<ActionResult> GetUserPreferences()
         {
-            try
-            {
-                using (var db = new voatEntities())
-                {
-                    var userPreferences = GetUserPreference(db);
 
-                    // load existing preferences and return to view engine
-                    var tmpModel = new UserPreferencesViewModel
-                    {
-                        Disable_custom_css = userPreferences.DisableCSS,
-                        Night_mode = userPreferences.NightMode,
-                        OpenLinksInNewTab = userPreferences.OpenInNewWindow,
-                        Enable_adult_content = userPreferences.EnableAdultContent,
-                        Public_subscriptions = userPreferences.DisplaySubscriptions,
-                        Topmenu_from_subscriptions = userPreferences.UseSubscriptionsMenu
-                    };
+            var q = new QueryUserPreferences();
+            var model = await q.ExecuteAsync();
+            return PartialView("_UserPreferences", model);
 
-                    return PartialView("_UserPreferences", tmpModel);
-                }
-            }
-            catch (Exception)
-            {
-                return new EmptyResult();
-            }
+            //try
+            //{
+            //    using (var db = new voatEntities())
+            //    {
+            //        var userPreferences = GetUserPreference(db);
+
+            //        // load existing preferences and return to view engine
+            //        var tmpModel = new UserPreferencesViewModel
+            //        {
+            //            Disable_custom_css = userPreferences.DisableCSS,
+            //            Night_mode = userPreferences.NightMode,
+            //            OpenLinksInNewTab = userPreferences.OpenInNewWindow,
+            //            Enable_adult_content = userPreferences.EnableAdultContent,
+            //            Public_subscriptions = userPreferences.DisplaySubscriptions,
+            //            Topmenu_from_subscriptions = userPreferences.UseSubscriptionsMenu
+            //        };
+
+            //        return PartialView("_UserPreferences", tmpModel);
+            //    }
+            //}
+            //catch (Exception)
+            //{
+            //    return new EmptyResult();
+            //}
         }
 
         // POST: /Account/UserPreferences
@@ -499,7 +516,7 @@ namespace Voat.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> UserPreferences([Bind(Include = "Disable_custom_css, Night_mode, OpenLinksInNewTab, Enable_adult_content, Public_subscriptions, Topmenu_from_subscriptions, Shortbio, Avatar")] UserPreferencesViewModel model)
+        public async Task<ActionResult> UserPreferences(Domain.Models.UserPreferenceUpdate model)
         {
             ViewBag.UserName = User.Identity.Name;
 
@@ -508,26 +525,36 @@ namespace Voat.Controllers
                 return View("Manage", model);
             }
 
-            // save changes
-            string newTheme;
-            using (var db = new voatEntities())
+            var cmd = new UpdateUserPreferencesCommand(model);
+            var result = await cmd.Execute();
+
+
+            if (result.Success)
             {
-                var userPreferences = GetUserPreference(db);
-
-                // modify existing preferences
-                userPreferences.DisableCSS = model.Disable_custom_css;
-                userPreferences.NightMode = model.Night_mode;
-                userPreferences.OpenInNewWindow = model.OpenLinksInNewTab;
-                userPreferences.EnableAdultContent = model.Enable_adult_content;
-                userPreferences.DisplaySubscriptions = model.Public_subscriptions;
-                userPreferences.UseSubscriptionsMenu = model.Topmenu_from_subscriptions;
-
-                await db.SaveChangesAsync();
-                newTheme = userPreferences.NightMode ? "dark" : "light";
+                var newTheme = model.NightMode.Value ? "dark" : "light";
+                UserHelper.SetUserStylePreferenceCookie(newTheme);
             }
 
-            ClearUserCache();
-            UserHelper.SetUserStylePreferenceCookie(newTheme);
+            //// save changes
+            //string newTheme;
+            //using (var db = new voatEntities())
+            //{
+            //    var userPreferences = GetUserPreference(db);
+
+            //    // modify existing preferences
+            //    userPreferences.DisableCSS = model.Disable_custom_css;
+            //    userPreferences.NightMode = model.Night_mode;
+            //    userPreferences.OpenInNewWindow = model.OpenLinksInNewTab;
+            //    userPreferences.EnableAdultContent = model.Enable_adult_content;
+            //    userPreferences.DisplaySubscriptions = model.Public_subscriptions;
+            //    userPreferences.UseSubscriptionsMenu = model.Topmenu_from_subscriptions;
+
+            //    await db.SaveChangesAsync();
+            //    newTheme = userPreferences.NightMode ? "dark" : "light";
+            //}
+
+            //ClearUserCache();
+            //UserHelper.SetUserStylePreferenceCookie(newTheme);
             return RedirectToAction("Manage");
         }
 
@@ -558,18 +585,27 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<ActionResult> ToggleNightMode()
         {
-            string newTheme = "light";
+            var q = new QueryUserPreferences();
+            var preferences = await q.ExecuteAsync();
 
-            // save changes
-            using (var db = new voatEntities())
-            {
-                var userPreferences = GetUserPreference(db);
+            var newPreferences = new Domain.Models.UserPreferenceUpdate();
+            newPreferences.NightMode = !preferences.NightMode;
 
-                userPreferences.NightMode = !userPreferences.NightMode;
-                await db.SaveChangesAsync();
+            var cmd = new UpdateUserPreferencesCommand(newPreferences);
+            var result = await cmd.Execute();
 
-                newTheme = userPreferences.NightMode ? "dark" : "light";
-            }
+            string newTheme = newPreferences.NightMode.Value ? "dark" : "light";
+
+            //// save changes
+            //using (var db = new voatEntities())
+            //{
+            //    var userPreferences = GetUserPreference(db);
+
+            //    userPreferences.NightMode = !userPreferences.NightMode;
+            //    await db.SaveChangesAsync();
+
+            //    newTheme = userPreferences.NightMode ? "dark" : "light";
+            //}
 
             UserHelper.SetUserStylePreferenceCookie(newTheme);
             Response.StatusCode = 200;

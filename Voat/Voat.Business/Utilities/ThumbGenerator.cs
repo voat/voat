@@ -96,7 +96,9 @@ namespace Voat.Utilities
                 var originalImage = new KalikoImage(inputImage);
                 originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPathAvatars + '\\' + userName + ".jpg", 90);
                 if (!Settings.UseContentDeliveryNetwork)
+                {
                     return true;
+                }
 
                 // call upload to storage since CDN is enabled in config
                 string tempAvatarLocation = DestinationPathAvatars + '\\' + userName + ".jpg";

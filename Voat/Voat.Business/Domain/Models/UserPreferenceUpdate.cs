@@ -2,7 +2,7 @@
 
 namespace Voat.Domain.Models
 {
-    public class UserPreference
+    public class UserPreferenceUpdate
     {
         public bool? DisableCSS { get; set; }
 
@@ -36,5 +36,15 @@ namespace Voat.Domain.Models
         public string VanityTitle { get; set; }
 
         public int? CollapseCommentLimit { get; set; }
+
+        /// <summary>
+        /// When this setting is true, mentions and pings from submissions and comments that are Anonymized are not sent to the user.
+        /// </summary>
+        public bool? BlockAnonymized { get; set; }
+
+        /// <summary>
+        /// Specifies the default sort used for comments when no sort is supplied.
+        /// </summary>
+        public CommentSortAlgorithm? CommentSort { get; set; }
     }
 }

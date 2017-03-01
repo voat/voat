@@ -347,7 +347,7 @@ namespace Voat.Tests.Repository
                 DisableCSS = false,
                 NightMode = true,
                 Language = "en",
-                OpenInNewWindow = true,
+                //OpenInNewWindow = true,
                 EnableAdultContent = false,
                 DisplayVotes = true,
                 DisplaySubscriptions = false,

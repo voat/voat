@@ -222,6 +222,7 @@
     <Compile Include="Domain\Models\SubverseSubmissionSetting.cs" />
     <Compile Include="Domain\Models\SubverseSubscriptionDetail.cs" />
     <Compile Include="Domain\Models\UserDefinition.cs" />
+    <Compile Include="Domain\Models\UserPreference.cs" />
     <Compile Include="Domain\Models\VoteValue.cs" />
     <Compile Include="Domain\Query\Base\BaseQueryCommentSegment.cs" />
     <Compile Include="Domain\Query\Base\CachedQuery.cs" />
@@ -290,7 +291,7 @@
     <Compile Include="Domain\Models\API\v1\SubverseInformation.cs" />
     <Compile Include="Domain\Models\API\v1\UserBadge.cs" />
     <Compile Include="Domain\Models\API\v1\UserInformation.cs" />
-    <Compile Include="Domain\Models\API\v1\UserPreference.cs" />
+    <Compile Include="Domain\Models\UserPreferenceUpdate.cs" />
     <Compile Include="Domain\Models\API\v1\UserSubmission.cs" />
     <Compile Include="Domain\Models\API\v1\UserValue.cs" />
     <Compile Include="Domain\Models\API\v1\VoteableObject.cs" />

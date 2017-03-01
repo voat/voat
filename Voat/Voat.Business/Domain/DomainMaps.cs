@@ -502,5 +502,36 @@ namespace Voat.Domain
 
             }
         }
+
+
+        public static Domain.Models.UserPreference Map(this Data.Models.UserPreference preferences)
+        {
+            Domain.Models.UserPreference model = null;
+            if (preferences != null)
+            {
+                model = new Domain.Models.UserPreference();
+
+                model.UserName = preferences.UserName;
+                model.Avatar = preferences.Avatar;
+                model.Bio = preferences.Bio;
+                model.BlockAnonymized = preferences.BlockAnonymized;
+                model.CollapseCommentLimit = preferences.CollapseCommentLimit;
+                model.CommentSort = preferences.CommentSort.HasValue ? (CommentSortAlgorithm)preferences.CommentSort.Value : CommentSortAlgorithm.Top; //default
+                model.DisableCSS = preferences.DisableCSS;
+                model.DisplayAds = preferences.DisplayAds;
+                model.DisplayCommentCount = preferences.DisplayCommentCount;
+                model.DisplaySubscriptions = preferences.DisplaySubscriptions;
+                model.DisplayVotes = preferences.DisplayVotes;
+                model.EnableAdultContent = preferences.EnableAdultContent;
+                model.HighlightMinutes = preferences.HighlightMinutes;
+                model.Language = preferences.Language;
+                model.NightMode = preferences.NightMode;
+                model.OpenInNewWindow = preferences.OpenInNewWindow;
+                model.UseSubscriptionsMenu = preferences.UseSubscriptionsMenu;
+                model.VanityTitle = preferences.VanityTitle;
+            }
+
+            return model;
+        }
     }
 }

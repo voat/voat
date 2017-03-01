@@ -686,7 +686,6 @@
     <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonDelete.cshtml" />
     <Content Include="Views\Shared\Comments\CommentFlatListButtons\_CFLButtonReport.cshtml" />
     <Content Include="Views\Shared\Userprofile\_SidebarSubsUserIsSubscribedTo.cshtml" />
-    <Content Include="Views\Shared\___ListOfSubscribedToSubverses.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonDelete.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonFlair.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonSticky.cshtml" />

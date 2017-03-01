@@ -39,6 +39,29 @@ namespace Voat.Controllers
 {
     public class CommentController : BaseController
     {
+
+        private CommentSortAlgorithm GetSortMode(string sort)
+        {
+            var sortMode = CommentSortAlgorithm.Top;
+                        
+            if (String.IsNullOrEmpty(sort))
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var prefs = UserData.Preferences;
+                    if (prefs != null)
+                    {
+                        sortMode = prefs.CommentSort;
+                    }
+                }
+            }
+            else if (!Enum.TryParse(sort, out sortMode))
+            {
+                sortMode = CommentSortAlgorithm.Top;
+            }
+            return sortMode;
+        }
+
         // POST: votecomment/{commentId}/{typeOfVote}
         [HttpPost]
         [Authorize]
@@ -50,7 +73,7 @@ namespace Voat.Controllers
             return Json(result);
         }
 
-       
+        
 
         // GET: Renders Primary Submission Comments Page
         public async Task<ActionResult> Comments(int? submissionID, string subverseName, int? commentID, string sort, int? context)
@@ -104,8 +127,9 @@ namespace Voat.Controllers
             //This is a required view bag property in _Layout.cshtml
             ViewBag.SelectedSubverse = subverse.Name;
 
-            var SortingMode = (sort == null ? "top" : sort).ToLower();
-            ViewBag.SortingMode = SortingMode;
+            var sortingMode = GetSortMode(sort);
+
+            ViewBag.SortingMode = sortingMode;
 
             #endregion
 
@@ -116,11 +140,11 @@ namespace Voat.Controllers
             if (commentID != null)
             {
                 ViewBag.CommentToHighLight = commentID.Value;
-                model = await GetCommentContext(submission.ID, commentID.Value, context, sort);
+                model = await GetCommentContext(submission.ID, commentID.Value, context, sortingMode);
             }
             else
             {
-                model = await GetCommentSegment(submission.ID, null, 0, sort);
+                model = await GetCommentSegment(submission.ID, null, 0, sortingMode);
             }
 
             var q2 = new QuerySubverseModerators(subverseName);
@@ -141,31 +165,19 @@ namespace Voat.Controllers
 
         }
 
-        private async Task<CommentSegment> GetCommentSegment(int submissionID, int? parentID, int startingIndex, string sort)
+        private async Task<CommentSegment> GetCommentSegment(int submissionID, int? parentID, int startingIndex, CommentSortAlgorithm sort)
         {
-            //attempt to parse sort
-            var sortAlg = CommentSortAlgorithm.Top;
-            if (!Enum.TryParse(sort, true, out sortAlg))
-            {
-                sortAlg = CommentSortAlgorithm.Top;
-            }
+            var q = new QueryCommentSegment(submissionID, parentID, startingIndex, sort);
+            var results = await q.ExecuteAsync();
+            return results;
+        }
+        private async Task<CommentSegment> GetCommentContext(int submissionID, int commentID, int? contextCount, CommentSortAlgorithm sort)
+        {
+            var q = new QueryCommentContext(submissionID, commentID, contextCount, sort);
+            var results = await q.ExecuteAsync();
+            return results;
+        }
 
-            var q = new QueryCommentSegment(submissionID, parentID, startingIndex, sortAlg);
-            var results = await q.ExecuteAsync();
-            return results;
-        }
-        private async Task<CommentSegment> GetCommentContext(int submissionID, int commentID, int? contextCount, string sort)
-        {
-            //attempt to parse sort
-            var sortAlg = CommentSortAlgorithm.Top;
-            if (!Enum.TryParse(sort, true, out sortAlg))
-            {
-                sortAlg = CommentSortAlgorithm.Top;
-            }
-            var q = new QueryCommentContext(submissionID, commentID, contextCount, sortAlg);
-            var results = await q.ExecuteAsync();
-            return results;
-        }
         // url: "/comments/" + submission + "/" + parentId + "/" + command + "/" + startingIndex + "/" + count + "/" + nestingLevel + "/" + sort + "/",
         // GET: Renders a Section of Comments within the already existing tree
         //Leaving (string command) in for backwards compat with mobile html clients. this is no longer used
@@ -205,15 +217,15 @@ namespace Voat.Controllers
             ViewBag.Subverse = subverse;
             ViewBag.Submission = submission;
 
-            var SortingMode = (sort == null ? "top" : sort).ToLower();
-            ViewBag.SortingMode = SortingMode;
+            var sortingMode = GetSortMode(sort);
+            ViewBag.SortingMode = sortingMode;
 
             #endregion
 
             var q2 = new QuerySubverseModerators(subverse.Name);
             ViewBag.ModeratorList = await q2.ExecuteAsync();
 
-            var results = await GetCommentSegment(submissionID, parentID, startingIndex, sort);
+            var results = await GetCommentSegment(submissionID, parentID, startingIndex, sortingMode);
             return PartialView("~/Views/Shared/Comments/_CommentSegment.cshtml", results);
         }
 
@@ -253,12 +265,12 @@ namespace Voat.Controllers
             ViewBag.Subverse = subverse;
             ViewBag.Submission = submission;
 
-            var SortingMode = (sort == null ? "top" : sort).ToLower();
-            ViewBag.SortingMode = SortingMode;
+            var sortingMode = GetSortMode(sort);
+            ViewBag.SortingMode = sortingMode;
 
             #endregion
 
-            var results = await GetCommentSegment(submissionID, null, 0, sort);
+            var results = await GetCommentSegment(submissionID, null, 0, sortingMode);
             return PartialView("~/Views/Shared/Comments/_CommentTree.cshtml", results);
         }
 

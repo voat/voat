@@ -36,7 +36,7 @@ namespace Voat.Domain
     {
         protected string _userName;
         protected UserInformation _info;
-        protected Data.Models.UserPreference _prefs;
+        protected Domain.Models.UserPreference _prefs;
         //protected IEnumerable<string> _subverseSubscriptions;
         protected IDictionary<DomainType, IEnumerable<string>> _subscriptions;
         protected IEnumerable<string> _blockedSubverses;
@@ -193,7 +193,7 @@ namespace Voat.Domain
         }
         
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        public Data.Models.UserPreference Preferences
+        public Domain.Models.UserPreference Preferences
         {
             get
             {

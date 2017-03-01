@@ -30,5 +30,7 @@ namespace Voat.Data.Models
         public Nullable<int> HighlightMinutes { get; set; }
         public string VanityTitle { get; set; }
         public Nullable<int> CollapseCommentLimit { get; set; }
+        public bool BlockAnonymized { get; set; }
+        public Nullable<int> CommentSort { get; set; }
     }
 }

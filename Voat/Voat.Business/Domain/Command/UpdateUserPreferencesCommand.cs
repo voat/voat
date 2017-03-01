@@ -6,9 +6,9 @@ namespace Voat.Domain.Command
 {
     public class UpdateUserPreferencesCommand : CacheCommand<CommandResponse>, IExcutableCommand<CommandResponse>
     {
-        private Domain.Models.UserPreference _preferences = null;
+        private Domain.Models.UserPreferenceUpdate _preferences = null;
 
-        public UpdateUserPreferencesCommand(Domain.Models.UserPreference preferences)
+        public UpdateUserPreferencesCommand(Domain.Models.UserPreferenceUpdate preferences)
         {
             _preferences = preferences;
         }
@@ -28,6 +28,7 @@ namespace Voat.Domain.Command
         protected override void UpdateCache(CommandResponse result)
         {
             CacheHandler.Instance.Remove(CachingKey.UserPreferences(this.UserName));
+            CacheHandler.Instance.Remove(CachingKey.UserInformation(this.UserName));
         }
     }
 }

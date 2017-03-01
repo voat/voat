@@ -349,7 +349,7 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="500" />
           <Property Name="SideBar" Type="nvarchar" MaxLength="4000" />
           <Property Name="IsAdult" Type="bit" Nullable="false" />
@@ -405,7 +405,7 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="500" />
+          <Property Name="Title" Type="nvarchar" MaxLength="100" />
           <Property Name="Description" Type="nvarchar" MaxLength="500" />
           <Property Name="UserName" Type="nvarchar" MaxLength="50" />
           <Property Name="Type" Type="int" Nullable="false" />
@@ -483,6 +483,8 @@
           <Property Name="HighlightMinutes" Type="int" />
           <Property Name="VanityTitle" Type="varchar" MaxLength="50" />
           <Property Name="CollapseCommentLimit" Type="int" />
+          <Property Name="BlockAnonymized" Type="bit" Nullable="false" />
+          <Property Name="CommentSort" Type="int" />
         </EntityType>
         <EntityType Name="ViewStatistic">
           <Key>
@@ -1131,7 +1133,7 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
             <PropertyRef Name="Name" />
           </Key>
           <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Title" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="SideBar" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
           <Property Name="IsAdult" Type="Boolean" Nullable="false" />
@@ -1222,6 +1224,8 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <Property Name="HighlightMinutes" Type="Int32" />
           <Property Name="VanityTitle" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="CollapseCommentLimit" Type="Int32" />
+          <Property Name="BlockAnonymized" Type="Boolean" Nullable="false" />
+          <Property Name="CommentSort" Type="Int32" />
         </EntityType>
         <EntityType Name="ViewStatistic">
           <Key>
@@ -1855,7 +1859,7 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <NavigationProperty Name="SubverseSetLists" Relationship="Models.FK_SubverseSetList_Set" FromRole="SubverseSet" ToRole="SubverseSetList" />
           <NavigationProperty Name="SubverseSetSubscriptions" Relationship="Models.FK_SubverseSetSubscription_Set" FromRole="SubverseSet" ToRole="SubverseSetSubscription" />
           <Property Name="IsPublic" Type="Boolean" Nullable="false" />
-          <Property Name="Title" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="SubverseSetList">
           <Key>
@@ -2174,6 +2178,8 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <EntitySetMapping Name="UserPreferences">
             <EntityTypeMapping TypeName="Models.UserPreference">
               <MappingFragment StoreEntitySet="UserPreference">
+                <ScalarProperty Name="CommentSort" ColumnName="CommentSort" />
+                <ScalarProperty Name="BlockAnonymized" ColumnName="BlockAnonymized" />
                 <ScalarProperty Name="CollapseCommentLimit" ColumnName="CollapseCommentLimit" />
                 <ScalarProperty Name="VanityTitle" ColumnName="VanityTitle" />
                 <ScalarProperty Name="HighlightMinutes" ColumnName="HighlightMinutes" />

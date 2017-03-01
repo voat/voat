@@ -26,6 +26,18 @@ namespace Voat.Utilities.Components
 {
     public static class NotificationManager
     {
+        private static async Task<bool> UserAllowsAnonMentions(string userName, bool isAnonymized)
+        {
+            var allowed = true;
+            if (isAnonymized)
+            {
+                var q = new QueryUserPreferences(userName);
+                var prefs = await q.ExecuteAsync();
+                allowed = !prefs.BlockAnonymized;
+            }
+            return allowed;
+        }
+
         public static async Task SendUserMentionNotification(string user, Comment comment)
         {
             if (comment != null)
@@ -41,32 +53,35 @@ namespace Voat.Utilities.Components
                     //BlockedUser Implementation - Comment User Mention
                     if (!MesssagingUtility.IsSenderBlocked(comment.UserName, recipient))
                     {
-                        //var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
-
-                        var q = new QuerySubmission(comment.SubmissionID.Value);
-                        var submission = await q.ExecuteAsync().ConfigureAwait(false);
-                        //var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-
-                        var message = new Domain.Models.Message();
-
-                        message.IsAnonymized = comment.IsAnonymized;
-                        message.Recipient = recipient;
-                        message.RecipientType = Domain.Models.IdentityType.User;
-                        message.Sender = comment.UserName;
-                        message.SenderType = Domain.Models.IdentityType.User;
-                        message.Subverse = submission.Subverse;
-                        message.SubmissionID = comment.SubmissionID;
-                        message.CommentID = comment.ID;
-                        message.Type = Domain.Models.MessageType.CommentMention;
-                        message.CreationDate = Repository.CurrentDate;
-
-                        using (var repo = new Repository())
+                        if (await UserAllowsAnonMentions(user, comment.IsAnonymized))
                         {
-                            var response = await repo.SendMessage(message);
+                            //var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
 
-                            if (response.Success)
+                            var q = new QuerySubmission(comment.SubmissionID.Value);
+                            var submission = await q.ExecuteAsync().ConfigureAwait(false);
+                            //var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+
+                            var message = new Domain.Models.Message();
+
+                            message.IsAnonymized = comment.IsAnonymized;
+                            message.Recipient = recipient;
+                            message.RecipientType = Domain.Models.IdentityType.User;
+                            message.Sender = comment.UserName;
+                            message.SenderType = Domain.Models.IdentityType.User;
+                            message.Subverse = submission.Subverse;
+                            message.SubmissionID = comment.SubmissionID;
+                            message.CommentID = comment.ID;
+                            message.Type = Domain.Models.MessageType.CommentMention;
+                            message.CreationDate = Repository.CurrentDate;
+
+                            using (var repo = new Repository())
                             {
-                                EventNotification.Instance.SendMentionNotice(recipient, comment.UserName, Domain.Models.ContentType.Comment, comment.ID, comment.Content);
+                                var response = await repo.SendMessage(message);
+
+                                if (response.Success)
+                                {
+                                    EventNotification.Instance.SendMentionNotice(recipient, comment.UserName, Domain.Models.ContentType.Comment, comment.ID, comment.Content);
+                                }
                             }
                         }
                     }
@@ -93,28 +108,32 @@ namespace Voat.Utilities.Components
                     //BlockedUser Implementation - Submission User Mention
                     if (!MesssagingUtility.IsSenderBlocked(submission.UserName, recipient))
                     {
-                        //var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-                        var message = new Domain.Models.Message();
-
-                        message.IsAnonymized = submission.IsAnonymized;
-                        message.Recipient = recipient;
-                        message.RecipientType = Domain.Models.IdentityType.User;
-                        message.Sender = submission.UserName;
-                        message.SenderType = Domain.Models.IdentityType.User;
-                        message.Subverse = submission.Subverse;
-                        message.SubmissionID = submission.ID;
-                        message.Type = Domain.Models.MessageType.SubmissionMention;
-                        message.CreationDate = Repository.CurrentDate;
-
-                        using (var repo = new Repository())
+                        if (await UserAllowsAnonMentions(user, submission.IsAnonymized))
                         {
-                            var response = await repo.SendMessage(message);
+                            //var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+                            var message = new Domain.Models.Message();
 
-                            if (response.Success)
+                            message.IsAnonymized = submission.IsAnonymized;
+                            message.Recipient = recipient;
+                            message.RecipientType = Domain.Models.IdentityType.User;
+                            message.Sender = submission.UserName;
+                            message.SenderType = Domain.Models.IdentityType.User;
+                            message.Subverse = submission.Subverse;
+                            message.SubmissionID = submission.ID;
+                            message.Type = Domain.Models.MessageType.SubmissionMention;
+                            message.CreationDate = Repository.CurrentDate;
+
+                            using (var repo = new Repository())
                             {
-                                EventNotification.Instance.SendMentionNotice(recipient, submission.UserName, Domain.Models.ContentType.Submission, submission.ID, submission.Content);
+                                var response = await repo.SendMessage(message);
+
+                                if (response.Success)
+                                {
+                                    EventNotification.Instance.SendMentionNotice(recipient, submission.UserName, Domain.Models.ContentType.Submission, submission.ID, submission.Content);
+                                }
                             }
                         }
+
                     }
                 }
                 catch (Exception ex)
