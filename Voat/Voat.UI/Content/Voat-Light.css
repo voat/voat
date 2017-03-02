@@ -1213,6 +1213,39 @@ pre, code {
   height: 0;
   width: 0; }
 
+/* ! Dashboard
+-------------------------------------------------------------------------------- */
+.top-bar {
+  height: 24px;
+  line-height: 24px;
+  font-size: 12px;
+  overflow: hidden;
+  position: relative;
+  margin-left: 5px;
+  white-space: nowrap; }
+  .top-bar li {
+    margin-left: 8px; }
+
+#dashboard {
+  width: 80%;
+  background-color: #FFF;
+  border: 1px solid;
+  border-color: #FFF #EDEDED #EDEDED;
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+  font-size: 10px;
+  margin: 0;
+  padding: 0px 10px 20px 10px;
+  position: absolute;
+  display: none;
+  z-index: 99999; }
+  #dashboard ul {
+    list-style: none; }
+    #dashboard ul li {
+      display: inline;
+      padding: 5px; }
+      #dashboard ul li a {
+        font-size: 12px; }
+
 /* ! Header : Banner
 ------------------------------------------------------------------------------------┬á*/
 #header-container {
@@ -2348,6 +2381,9 @@ input[type=checkbox].form-control {
 
   #sr-more-link {
     height: 18px; }
+
+  #header {
+    height: 87px; }
 
   #header-container {
     height: 64px; }

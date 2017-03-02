@@ -282,21 +282,7 @@ namespace Voat.Controllers
 
         [Authorize]
 
-        // GET: list of subverses user is subscribed to, used in hover menu
-        public async Task<ActionResult> ListOfSubversesUserIsSubscribedTo()
-        {
-            var q = new QueryUserSubscriptions(User.Identity.Name);
-            var results = await q.ExecuteAsync();
-            var subs = results[Domain.Models.DomainType.Subverse];
-            subs = subs.OrderBy(x => x);
-
-            //// show custom list of subverses in top menu
-            //var listOfSubverses = _db.SubverseSubscriptions
-            //    .Where(s => s.UserName == User.Identity.Name)
-            //    .OrderBy(s => s.Subverse);
-
-            return PartialView("_ListOfSubverses", subs);
-        }
+       
 
         //// POST: subscribe to a subverse
         //[Authorize]
@@ -717,23 +703,38 @@ namespace Voat.Controllers
         //    }
         //}
 
+        //// GET: list of subverses user is subscribed to, used in hover menu
+        //public async Task<ActionResult> ListOfSubversesUserIsSubscribedTo()
+        //{
+        //    var q = new QueryUserSubscriptions(User.Identity.Name);
+        //    var results = await q.ExecuteAsync();
+        //    var subs = results[Domain.Models.DomainType.Subverse];
+        //    subs = subs.OrderBy(x => x);
+
+        //    //// show custom list of subverses in top menu
+        //    //var listOfSubverses = _db.SubverseSubscriptions
+        //    //    .Where(s => s.UserName == User.Identity.Name)
+        //    //    .OrderBy(s => s.Subverse);
+
+        //    return PartialView("_ListOfSubverses", subs);
+        //}
 
         // GET: list of default subverses
-        public ActionResult ListOfDefaultSubverses()
-        {
-            try
-            {
-                var q = new QueryDefaultSubverses();
-                var r = q.Execute();
-                var names = r.Select(x => x.Name).ToList();
+        //public ActionResult ListOfDefaultSubverses()
+        //{
+        //    try
+        //    {
+        //        var q = new QueryDefaultSubverses();
+        //        var r = q.Execute();
+        //        var names = r.Select(x => x.Name).ToList();
 
-                return PartialView("_ListOfSubverses", names);
-            }
-            catch (Exception)
-            {
-                return new EmptyResult();
-            }
-        }
+        //        return PartialView("_ListOfSubverses", names);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return new EmptyResult();
+        //    }
+        //}
 
         [Authorize]
         public ActionResult SubversesSubscribed(int? page)

@@ -1,0 +1,106 @@
+﻿
+
+@model Voat.Models.ViewModels.DashboardViewModel
+
+@{
+
+    IEnumerable<string> sets = Enumerable.Empty<string>();
+    IEnumerable<string> subs = Enumerable.Empty<string>();
+
+    if (Model.Subscriptions.ContainsKey(Voat.Domain.Models.DomainType.Set))
+    {
+        sets = Model.Subscriptions[Voat.Domain.Models.DomainType.Set];
+    }
+
+    if (Model.Subscriptions.ContainsKey(Voat.Domain.Models.DomainType.Subverse))
+    {
+        subs = Model.Subscriptions[Voat.Domain.Models.DomainType.Subverse];
+    }
+}
+
+<div id="dashboard-menu">
+    <div class="top-bar">
+        <nav>
+            <a href="#">my subscriptions</a>
+            <span class="drop-arrow"></span>
+            
+                <ul class="flat-list sr-bar hover" id="sr-bar">
+
+                    <li><a href="/">front</a></li>
+                    <li><a href="/v/all">all</a></li>
+                    <li><a href="/s/Default">default</a></li>
+                    <li><a href="/random">random</a></li>
+
+                    @if (Model.TopBar != null && Model.TopBar.Any())
+                    {
+                        foreach (var domainReference in Model.TopBar)
+                        {
+                            <li><a href="@VoatPathHelper.BasePath(domainReference)">@domainReference.FullName</a></li>
+                        }
+                    }
+                </ul>
+            
+        </nav>
+    </div>
+    <div id="dashboard">
+        <div class="section menu">
+            <h1>Menu</h1>
+            <nav>
+                <ul>
+                    <li><a href="/discover">Discover</a></li>
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li><a href="/u/@User.Identity.Name">Profile</a></li>
+                        <li><a href="/account/manage">Settings</a></li>
+                        <li><a href="/messages">Messages</a></li>
+                        <li><a href="/user/subscribed/subverse">Subverse Subscriptions</a></li>
+                        <li><a href="/user/subscribed/set">Set Subscriptions</a></li>
+                        <li><a href="/user/blocked/subverse">Blocked Subverses</a></li>
+                        <li><a href="/user/blocked/user">Blocked Users</a></li>
+                    }
+                    else
+                    {
+                        <li><a href="/account/login">Login</a></li>
+                    }
+                </ul>
+            </nav>
+        </div>
+
+        @if (sets.Any())
+        {
+            <div class="section set">
+                <h1>Sets</h1>
+                <nav>
+                    <ul>
+                        @foreach (var set in sets)
+                        {
+                            <li><a href="/s/@set">@set</a></li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        }
+        @if (subs.Any())
+        {
+            <div class="section subverse">
+                <h1>Subverses</h1>
+                <nav>
+                    <ul>
+                        @foreach (var sub in subs)
+                        {
+                            <li><a href="/v/@sub">@sub</a></li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+</div>
+@*<style type="text/css">
+    .section.subverse li, .section.set li {
+        display:inline-block !important;
+        width:130px !important;
+        padding:0px !important;
+    }
+</style>*@

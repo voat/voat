@@ -481,6 +481,12 @@
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
         </member>
+        <member name="M:Voat.Controllers.DashboardController.LegacyMenu">
+            <summary>
+            Represents the traditional menu
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Voat.Controllers.WebApiController.DefaultSubverses">
             <summary>
              This API returns a list of default subverses shown to guests.

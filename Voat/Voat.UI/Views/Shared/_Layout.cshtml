@@ -137,14 +137,18 @@
     </div>
 
     <div id="header" tabindex=0 role="banner">
-        @if (User.Identity.IsAuthenticated && userData.HasSubscriptions() && userData.Preferences.UseSubscriptionsMenu)
+        
+        @Html.Action("Menu", "Dashboard")
+
+        @*@if (User.Identity.IsAuthenticated && userData.HasSubscriptions() && userData.Preferences.UseSubscriptionsMenu)
         {
             @Html.Action("ListOfSubversesUserIsSubscribedTo", "Subverses")
         }
         else
         {
             @Html.Action("ListOfDefaultSubverses", "Subverses")
-        }
+        }*@
+
         <div id="header-container">
             <div id="header-banner">
 

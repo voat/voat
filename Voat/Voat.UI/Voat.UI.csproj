@@ -292,6 +292,7 @@
     <Compile Include="Controllers\Base\BaseController.cs" />
     <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\CommentController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DiscoverController.cs" />
     <Compile Include="Controllers\DomainsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
@@ -311,6 +312,7 @@
     <Compile Include="Models\ViewModels\ApiKeyCreateRequest.cs" />
     <Compile Include="Models\ViewModels\BasicUserInfo.cs" />
     <Compile Include="Models\ViewModels\ChatViewModel.cs" />
+    <Compile Include="Models\ViewModels\DashboardViewModel.cs" />
     <Compile Include="Models\ViewModels\ErrorViewModel.cs" />
     <Compile Include="Models\ViewModels\MessageContextViewModel.cs" />
     <Compile Include="Models\ViewModels\ModeratorDeleteViewModels.cs" />
@@ -562,6 +564,7 @@
     <Content Include="Scripts\markdownEditor.js" />
     <Content Include="Scripts\libs\npm.js" />
     <None Include="Scripts\_references.js" />
+    <Content Include="Scripts\voat.dashboard.js" />
     <Content Include="sitemap.xml">
       <SubType>Designer</SubType>
     </Content>
@@ -624,7 +627,7 @@
     <Content Include="Views\Help\Privacy.cshtml" />
     <Content Include="Views\Help\Markdown.cshtml" />
     <Content Include="Views\Error\Subversenotfound.cshtml" />
-    <Content Include="Views\Shared\_ListOfSubverses.cshtml" />
+    <Content Include="Views\Dashboard\_LegacyMenu.cshtml" />
     <Content Include="Views\Shared\_AddComment.cshtml" />
     <Content Include="Views\Shared\_VotingIconsComment.cshtml" />
     <Content Include="Views\Error\404.cshtml" />
@@ -773,6 +776,7 @@
     <Content Include="Views\Shared\Sidebars\Buttons\_SubscribeButtons.cshtml" />
     <Content Include="Views\Discover\_SubMenu.cshtml" />
     <Content Include="Views\Discover\_SearchBar.cshtml" />
+    <Content Include="Views\Dashboard\_Dashboard.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

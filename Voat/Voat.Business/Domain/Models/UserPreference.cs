@@ -28,7 +28,7 @@ namespace Voat.Domain.Models
         [Display(Name = "Publicly Display Subscriptions")]
         public bool DisplaySubscriptions { get; set; }
 
-        [Display(Name = "Replace Top Bar with Subscription")]
+        [Display(Name = "Replace Top Bar with Subscriptions")]
         public bool UseSubscriptionsMenu { get; set; }
 
         [Display(Name = "Publicly Display Votes")]

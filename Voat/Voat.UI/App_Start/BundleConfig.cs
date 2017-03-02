@@ -29,6 +29,7 @@ namespace Voat
                         "~/Scripts/libs/jquery.tooltipster.js",
                         "~/Scripts/libs/jquery.unobtrusive*",
                         "~/Scripts/libs/jquery.validate*",
+                        "~/Scripts/voat.dashboard.js", 
                         "~/Scripts/voat.ui.js",
                         "~/Scripts/voat.js",
                         "~/Scripts/markdownEditor.js"
