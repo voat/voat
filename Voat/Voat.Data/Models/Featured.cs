@@ -12,13 +12,15 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class FeaturedSubverse
+    public partial class Featured
     {
         public int ID { get; set; }
-        public string Subverse { get; set; }
+        public int DomainType { get; set; }
+        public System.DateTime StartDate { get; set; }
+        public Nullable<System.DateTime> EndDate { get; set; }
         public string CreatedBy { get; set; }
-        public System.DateTime CreationDate { get; set; }
-    
-        public virtual Subverse Subverse1 { get; set; }
+        public int DomainID { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
     }
 }

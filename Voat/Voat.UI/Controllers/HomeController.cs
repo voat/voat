@@ -360,12 +360,18 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult FeaturedSub()
         {
-            var featuredSub = _db.FeaturedSubverses.OrderByDescending(s => s.CreationDate).FirstOrDefault();
-
-            if (featuredSub == null)
-                return new EmptyResult();
-
-            return PartialView("~/Views/Subverses/_FeaturedSub.cshtml", featuredSub);
+            using (var repo = new Repository())
+            {
+                var featured = repo.GetFeatured();
+                if (featured != null)
+                {
+                    return PartialView("~/Views/Shared/_Featured.cshtml", featured);
+                }
+                else
+                {
+                    return new EmptyResult();
+                }
+            }
         }
 
         [HttpGet]

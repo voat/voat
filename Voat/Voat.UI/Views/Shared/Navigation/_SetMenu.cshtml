@@ -16,7 +16,8 @@
 
 <span class="hover pagename"><a href="@Model.BasePath">@Model.Name set</a></span>
 <ul class="tabmenu">
-    <li class='@(Model.Sort == null || Model.Sort == Voat.Domain.Models.SortAlgorithm.Hot ? "selected" : "disabled")'><a href="@Model.BasePath" title="Show most popular submissions">Hot</a></li>
+    <li class='@(Model.Sort == null || Model.Sort == Voat.Domain.Models.SortAlgorithm.Hot ? "selected" : "disabled")'><a href="@Model.BasePath/hot" title="Show most popular submissions">Hot</a></li>
+    <li class='@(Model.Sort == Voat.Domain.Models.SortAlgorithm.Relative ? "selected" : "disabled")'><a href="@Model.BasePath/relative" title="Show submissions by relative subverse rank">Rel</a></li>
     <li class='@(Model.Sort == Voat.Domain.Models.SortAlgorithm.New ? "selected" : "disabled")'><a href="@Model.BasePath/new" title="Show latest submissions">New</a></li>
     <li class='@(Model.Sort == Voat.Domain.Models.SortAlgorithm.Top ? "selected" : "disabled")'><a href="@Model.BasePath/top" title="Show top ranked submissions">Top</a></li>
 </ul>

@@ -350,6 +350,7 @@ namespace Voat.Controllers
                 var response = await cmd.Execute();
                 if (response.Success)
                 {
+                    AuthenticationManager.SignOut();
                     return View("~/Views/Account/AccountDeleted.cshtml");
                 }
                 else
@@ -357,6 +358,7 @@ namespace Voat.Controllers
                     ModelState.AddModelError("", response.Message);
                 }
             }
+
             return View(model);
         } 
 

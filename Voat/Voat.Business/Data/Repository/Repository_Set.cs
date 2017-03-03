@@ -201,7 +201,7 @@ namespace Voat.Data
             }
         }
 
-        public SubverseSet GetOrCreateSubverseSet(SubverseSet setInfo)
+        private SubverseSet GetOrCreateSubverseSet(SubverseSet setInfo)
         {
             using (var db = new voatEntities())
             {

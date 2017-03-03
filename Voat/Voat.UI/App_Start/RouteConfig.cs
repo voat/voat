@@ -28,6 +28,8 @@ namespace Voat
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.LowercaseUrls = true;
+            var subverseSortConstraint = @"^$|new|hot|top";
+            var setSortContraint = @"^$|new|hot|top|relative";
 
             // /rss
             routes.MapRoute(
@@ -631,6 +633,8 @@ namespace Voat
 
             #region Submissions / Subverse
 
+
+
             routes.MapRoute(
                 name: Models.ROUTE_NAMES.FRONT_INDEX,
                 url: "{sort}",
@@ -639,7 +643,11 @@ namespace Voat
                     action = "SubverseIndex",
                     //subverse = "_front",
                     sort = UrlParameter.Optional
-                }
+                },
+               constraints: new
+               {
+                   sort = subverseSortConstraint
+               }
             );
 
             #endregion
@@ -834,7 +842,11 @@ namespace Voat
                     controller = "Subverses",
                     action = "SubverseIndex",
                     sort = UrlParameter.Optional
-                }
+                },
+               constraints: new
+               {
+                   sort = subverseSortConstraint
+               }
             );
 
             #region Domains
@@ -947,7 +959,7 @@ namespace Voat
                     },
                    constraints: new
                    {
-                       sort = @"^$|new|hot|top"
+                       sort = setSortContraint
                    }
                 );
 
@@ -985,7 +997,7 @@ namespace Voat
                     },
                     constraints: new
                     {
-                        sort = @"^$|new|hot|top"
+                        sort = setSortContraint
                     }
                 );
                 

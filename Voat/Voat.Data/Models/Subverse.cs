@@ -17,7 +17,6 @@ namespace Voat.Data.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Subverse()
         {
-            this.FeaturedSubverses = new HashSet<FeaturedSubverse>();
             this.StickiedSubmissions = new HashSet<StickiedSubmission>();
             this.Submissions = new HashSet<Submission>();
             this.SubverseModerators = new HashSet<SubverseModerator>();
@@ -47,8 +46,6 @@ namespace Voat.Data.Models
         public int ID { get; set; }
     
         public virtual DefaultSubverse DefaultSubverse { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<FeaturedSubverse> FeaturedSubverses { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StickiedSubmission> StickiedSubmissions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

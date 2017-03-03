@@ -210,6 +210,11 @@ namespace Voat.Domain.Models
         RelativeRank, //order by rel rank
 
         /// <summary>
+        /// Orders results by relative ranking (per subverse)
+        /// </summary>
+        Relative = RelativeRank, //order by rel rank
+
+        /// <summary>
         /// Orders results by last comment date
         /// </summary>
         Active, //order by last comment time

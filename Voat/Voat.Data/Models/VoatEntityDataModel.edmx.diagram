@@ -13,7 +13,6 @@
         <EntityTypeShape EntityType="Models.CommentSaveTracker" Width="1.5" PointX="7.5" PointY="13.625" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.CommentVoteTracker" Width="1.5" PointX="7.5" PointY="16.375" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.DefaultSubverse" Width="1.5" PointX="3" PointY="5.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="Models.FeaturedSubverse" Width="1.5" PointX="3" PointY="8.125" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.ModeratorInvitation" Width="1.5" PointX="9.75" PointY="8.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.SessionTracker" Width="1.5" PointX="10.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Models.StickiedSubmission" Width="1.5" PointX="8.25" PointY="22" IsExpanded="true" />
@@ -34,7 +33,6 @@
         <AssociationConnector Association="Models.FK_Commentsavingtracker_Comments" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Commentvotingtracker_Comments" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Defaultsubverses_Subverses" ManuallyRouted="false" />
-        <AssociationConnector Association="Models.FK_Featuredsubs_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Stickiedsubmissions_Messages" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Stickiedsubmissions_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Messages_Subverses" ManuallyRouted="false" />
@@ -45,9 +43,9 @@
         <AssociationConnector Association="Models.FK_SubverseAdmins_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_SubverseBans_Subverses" ManuallyRouted="false" />
         <AssociationConnector Association="Models.FK_Subverseflairsettings_Subverses1" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="Models.ApiClient" Width="1.5" PointX="8" PointY="1" />
+        <EntityTypeShape EntityType="Models.ApiClient" Width="1.5" PointX="8.125" PointY="1" />
         <EntityTypeShape EntityType="Models.ApiLog" Width="1.5" PointX="11.75" PointY="8.75" />
-        <EntityTypeShape EntityType="Models.ApiThrottlePolicy" Width="1.5" PointX="5.75" PointY="2.125" />
+        <EntityTypeShape EntityType="Models.ApiThrottlePolicy" Width="1.5" PointX="6.125" PointY="1" />
         <EntityTypeShape EntityType="Models.EventLog" Width="1.5" PointX="12.75" PointY="0.75" />
         <EntityTypeShape EntityType="Models.ApiCorsPolicy" Width="1.5" PointX="12.75" PointY="4.75" />
         <EntityTypeShape EntityType="Models.ApiPermissionPolicy" Width="1.5" PointX="5.75" PointY="6.125" />
@@ -66,6 +64,7 @@
         <EntityTypeShape EntityType="Models.SubverseSetSubscription" Width="1.5" PointX="18.625" PointY="15.75" />
         <AssociationConnector Association="Models.FK_SubverseSetList_Set" />
         <AssociationConnector Association="Models.FK_SubverseSetSubscription_Set" />
+        <EntityTypeShape EntityType="Models.Featured" Width="1.5" PointX="17.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

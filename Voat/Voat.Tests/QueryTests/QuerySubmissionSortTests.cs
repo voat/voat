@@ -32,7 +32,7 @@ namespace Voat.Tests.QueryTests
         public void Search_Sort_RelativeRank()
         {
             var s = new SearchOptions();
-            s.Sort = SortAlgorithm.RelativeRank;
+            s.Sort = SortAlgorithm.Relative;
             var q = new QuerySubmissions(subverse, Domain.Models.DomainType.Subverse, s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
@@ -194,7 +194,7 @@ namespace Voat.Tests.QueryTests
                             current = (double)currentSubmission.Views;
                             previous = (double)previousSubmission.Views;
                             break;
-                        case SortAlgorithm.RelativeRank:
+                        case SortAlgorithm.Relative:
                             asc = options.SortDirection == SortDirection.Reverse;
                             current = (double)currentSubmission.RelativeRank;
                             previous = (double)previousSubmission.RelativeRank;

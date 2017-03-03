@@ -39,19 +39,7 @@ namespace Voat.Controllers
     {
         public async Task<ActionResult> Index(string name, string userName, string sort)
         {
-            var options = new SearchOptions(Request.Url.Query);
             
-            //Set sort because it is part of path
-            if (!String.IsNullOrEmpty(sort))
-            {
-                options.Sort = (SortAlgorithm)Enum.Parse(typeof(SortAlgorithm), sort, true);
-            }
-            //set span to day if not specified explicitly 
-            if (options.Sort == SortAlgorithm.Top && Request.QueryString["span"] == null)
-            {
-                options.Span = SortSpan.Day;
-            }
-
             var qSet = new QuerySet(name, userName);
             var set = await qSet.ExecuteAsync();
 
@@ -67,6 +55,27 @@ namespace Voat.Controllers
                 return GenericErrorView(new ErrorViewModel() { Title = "Set is Private", Description = "This set doesn't allow viewing. It is private.", FooterMessage = "Sometimes sets are shy around others." });
             }
 
+
+            var options = new SearchOptions(Request.Url.Query);
+            //Set sort because it is part of path
+            if (!String.IsNullOrEmpty(sort))
+            {
+                options.Sort = (SortAlgorithm)Enum.Parse(typeof(SortAlgorithm), sort, true);
+            }
+            else
+            {
+                //Set Default Set to Relative if no sort is provided
+                if (set.Name.IsEqual("Default") && String.IsNullOrEmpty(set.UserName))
+                {
+                    options.Sort = SortAlgorithm.Relative;
+                }
+            }
+            //set span to day if not specified explicitly 
+            if (options.Sort == SortAlgorithm.Top && Request.QueryString["span"] == null)
+            {
+                options.Span = SortSpan.Day;
+            }
+
             var q = new QuerySubmissions(name, Domain.Models.DomainType.Set, options, userName);
             var result = await q.ExecuteAsync();
             
@@ -74,7 +83,7 @@ namespace Voat.Controllers
             model.Submissions = new Utilities.PaginatedList<Domain.Models.Submission>(result, options.Page, options.Count);
             model.Submissions.RouteName = (String.IsNullOrEmpty(userName) ? "SetIndex" : "SetIndexUser");
             model.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Set, name, userName);
-            model.Sort = options.Sort;
+            model.Sort = options.Sort;// == SortAlgorithm.RelativeRank ? SortAlgorithm.Hot :options.Sort; //UI doesn't want relative rank
             model.Span = options.Span;
 
             ViewBag.NavigationViewModel = new NavigationViewModel() {
@@ -93,7 +102,16 @@ namespace Voat.Controllers
             {
                 var domainReference = DomainReference.ParseSetFromFullName(name);
                 var set = repo.GetSet(domainReference.Name, domainReference.OwnerName);
-                return PartialView("~/Views/Shared/Sidebars/_SidebarSet.cshtml", set);
+
+                if (set != null)
+                {
+                    return PartialView("~/Views/Shared/Sidebars/_SidebarSet.cshtml", set);
+                }
+                else
+                {
+                    return new EmptyResult();
+                }
+
             }
         }
         [Authorize]

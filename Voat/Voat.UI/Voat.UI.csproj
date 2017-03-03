@@ -570,7 +570,6 @@
     </Content>
     <Content Include="Storage\Avatars\Placeholder.txt" />
     <Content Include="Storage\Thumbs\Placeholder.txt" />
-    <Content Include="Views\Subverses\_FeaturedSub.cshtml" />
     <Content Include="Content\Voat-Dark.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -777,6 +776,7 @@
     <Content Include="Views\Discover\_SubMenu.cshtml" />
     <Content Include="Views\Discover\_SearchBar.cshtml" />
     <Content Include="Views\Dashboard\_Dashboard.cshtml" />
+    <Content Include="Views\Shared\_Featured.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

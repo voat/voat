@@ -47,5 +47,16 @@ namespace Voat.Tests.QueryTests
             Assert.AreEqual(true, (policy == policy));
 
         }
+
+
+        [TestMethod]
+        public void GetFeatured_Test()
+        {
+            //Just makes sure query doesn't choke
+            using (var repo = new Voat.Data.Repository())
+            {
+                var result = repo.GetFeatured();
+            }
+        }
     }
 }

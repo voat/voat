@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace Voat.Domain.Models
 {
+
+    public class FeaturedDomainReferenceDetails : DomainReferenceDetails
+    {
+        public DateTime FeaturedDate { get; set; }
+        public string FeaturedBy { get; set; }
+
+    }
+
     public class DomainReferenceDetails : DomainReference
     {
 

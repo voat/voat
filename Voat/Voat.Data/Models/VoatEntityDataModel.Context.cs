@@ -35,7 +35,6 @@ namespace Voat.Data.Models
         public virtual DbSet<CommentSaveTracker> CommentSaveTrackers { get; set; }
         public virtual DbSet<CommentVoteTracker> CommentVoteTrackers { get; set; }
         public virtual DbSet<DefaultSubverse> DefaultSubverses { get; set; }
-        public virtual DbSet<FeaturedSubverse> FeaturedSubverses { get; set; }
         public virtual DbSet<ModeratorInvitation> ModeratorInvitations { get; set; }
         public virtual DbSet<SessionTracker> SessionTrackers { get; set; }
         public virtual DbSet<StickiedSubmission> StickiedSubmissions { get; set; }
@@ -66,6 +65,7 @@ namespace Voat.Data.Models
         public virtual DbSet<SubverseSet> SubverseSets { get; set; }
         public virtual DbSet<SubverseSetList> SubverseSetLists { get; set; }
         public virtual DbSet<SubverseSetSubscription> SubverseSetSubscriptions { get; set; }
+        public virtual DbSet<Featured> Featureds { get; set; }
     
         public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
         {

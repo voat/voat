@@ -35,22 +35,6 @@
     ViewBag.Description = ViewBag.Description ?? Settings.SiteDescription;
     ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.RawUrl;
     ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
-
-    //if (selectedSubverse != null && selectedSubverse != "frontpage" && selectedSubverse != "user" && selectedSubverse != "domains" && ViewBag.PmView == null)
-    //{
-    //    selectedSubverse = "/v/" + ViewBag.SelectedSubverse;
-    //}
-    //else
-    //{
-    //    if (selectedSubverse != "user" && selectedSubverse != "domains" && ViewBag.PmView == null)
-    //    {
-    //        selectedSubverse = "/";
-    //    }
-    //    if (selectedSubverse == "domains")
-    //    {
-    //        selectedSubverse = "/domains/" + ViewBag.SelectedDomain + "/";
-    //    }
-    //}
 }
 
 <!DOCTYPE html>
@@ -139,15 +123,6 @@
     <div id="header" tabindex=0 role="banner">
         
         @Html.Action("Menu", "Dashboard")
-
-        @*@if (User.Identity.IsAuthenticated && userData.HasSubscriptions() && userData.Preferences.UseSubscriptionsMenu)
-        {
-            @Html.Action("ListOfSubversesUserIsSubscribedTo", "Subverses")
-        }
-        else
-        {
-            @Html.Action("ListOfDefaultSubverses", "Subverses")
-        }*@
 
         <div id="header-container">
             <div id="header-banner">

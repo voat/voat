@@ -982,14 +982,14 @@ namespace Voat.Data
                             joinSet(query, "Default", null, null, true);
                             //query.Append(x => x.Select, "INNER JOIN DefaultSubverse ss WITH (NOLOCK) ON s.Subverse = ss.Subverse");
 
-                            if (Settings.IsVoatBranded)
+                            //sort default by relative rank on default if sorted by rank by default
+                            options.Sort = (options.Sort == SortAlgorithm.Rank ? Domain.Models.SortAlgorithm.Relative : options.Sort);
+
+                            if (Settings.IsVoatBranded && options.Sort == SortAlgorithm.Relative)
                             {
                                 //This is a modification Voat uses in the default page
                                 query.Append(x => x.Where, "(s.UpCount - s.DownCount >= 20) AND ABS(DATEDIFF(HH, s.CreationDate, GETUTCDATE())) <= 24");
                             }
-
-                            //sort default by relative rank on default if sorted by rank by default
-                            options.Sort = (options.Sort == SortAlgorithm.Rank ? Domain.Models.SortAlgorithm.RelativeRank : options.Sort);
 
                             //query = (from x in _db.Submissions
                             //         join defaults in _db.DefaultSubverses on x.Subverse equals defaults.Subverse
@@ -1109,6 +1109,19 @@ namespace Voat.Data
 
                 case DomainType.Set:
                     joinSet(query, name, ownerName, null, true);
+                    
+                    if (name.IsEqual("Default") && String.IsNullOrEmpty(ownerName))
+                    {
+                        ////sort default by relative rank on default if sorted by rank by default
+                        //options.Sort = (options.Sort == SortAlgorithm.Rank ? Domain.Models.SortAlgorithm.Relative : options.Sort);
+
+                        if (Settings.IsVoatBranded && options.Sort == SortAlgorithm.Relative)
+                        {    
+                            //This is a modification Voat uses in the default page
+                            query.Append(x => x.Where, "(s.UpCount - s.DownCount >= 20) AND ABS(DATEDIFF(HH, s.CreationDate, GETUTCDATE())) <= 24");
+                        }
+                    }
+
                     break;
             }
 
@@ -1176,7 +1189,8 @@ namespace Voat.Data
             //Search Options
             switch (options.Sort)
             {
-                case SortAlgorithm.RelativeRank:
+                //case SortAlgorithm.RelativeRank:
+                case SortAlgorithm.Relative:
                     if (options.SortDirection == SortDirection.Reverse)
                     {
                         query.OrderBy = "s.RelativeRank ASC";
@@ -4654,6 +4668,11 @@ namespace Voat.Data
                         {
                             return new CommandResponse<bool?>(null, Status.Error, "User does not exist");
                         }
+                        if (User.Identity.Name.IsEqual(name))
+                        {
+                            return new CommandResponse<bool?>(null, Status.Error, "Attempting to open worm hold denied. Can not block yourself.");
+                        }
+
                         var userBlock = _db.UserBlockedUsers.FirstOrDefault(n => n.BlockUser.ToLower() == name.ToLower() && n.UserName == User.Identity.Name);
                         if (userBlock == null && (action == SubscriptionAction.Subscribe || action == SubscriptionAction.Toggle))
                         {
@@ -4835,7 +4854,7 @@ namespace Voat.Data
             //Search Options
             switch (options.Sort)
             {
-                case SortAlgorithm.RelativeRank:
+                case SortAlgorithm.Relative:
                     if (options.SortDirection == SortDirection.Reverse)
                     {
                         query = query.OrderBy(x => x.RelativeRank);
@@ -5170,6 +5189,36 @@ namespace Voat.Data
             }
         }
 
+        public FeaturedDomainReferenceDetails GetFeatured()
+        {
+            //This is for lazy admins, if you don't change the featured item this will cut it off
+            var dayCutOff = 7;
+
+            var d = new DapperQuery();
+            d.Select =
+                @"SELECT d.Type, d.ID, Name, Title = ISNULL(f.Title, d.Title), Description = ISNULL(f.Description, d.Description), d.SubscriberCount, d.OwnerName, d.CreationDate, FeaturedDate = f.StartDate, FeaturedBy = f.CreatedBy FROM Featured f
+                INNER JOIN (
+	                SELECT Type = 1, ID, Name, Title, Description, CreationDate, SubscriberCount, OwnerName = CreatedBy FROM Subverse WHERE IsAdminDisabled = 0
+	                UNION
+	                SELECT Type = 2, ID, Name, Title, Description, CreationDate, SubscriberCount, OwnerName = UserName FROM SubverseSet WHERE IsPublic = 1
+                ) AS D ON D.ID = f.DomainID AND D.Type = f.DomainType";
+            d.Where = "f.StartDate <= @CurrentDate AND (f.EndDate >= @CurrentDate OR f.EndDate IS NULL)";
+
+            if (dayCutOff > 0)
+            {
+                d.Append(x => x.Where, "(f.EndDate IS NOT NULL OR (f.EndDate IS NULL AND DATEDIFF(DD, f.StartDate, GETUTCDATE()) <= @Days))");
+                d.Parameters.Add("Days", dayCutOff);
+            }
+
+            d.OrderBy = "f.StartDate DESC";
+            d.Parameters.Add("CurrentDate", CurrentDate);
+
+            var result = _db.Database.Connection.QueryFirstOrDefault<FeaturedDomainReferenceDetails>(d.ToString(), d.Parameters);
+
+            return result;
+        }
+
+
         #endregion Misc
 
         #region Search 
@@ -5437,7 +5486,24 @@ namespace Voat.Data
                         }
                         await userManager.ChangePasswordAsync(userID, options.CurrentPassword, randomPassword).ConfigureAwait(false);
 
-                        //await Task.WhenAll(updateTasks).ConfigureAwait(false);
+                        //log this to ensure delete options working as expected
+                        var logEntry = new Logging.LogInformation();
+                        logEntry.Type = Logging.LogType.Audit;
+                        logEntry.Category = "DeleteAccount";
+                        logEntry.UserName = User.Identity.Name;
+                        logEntry.Message = String.Format("{0} deleted account", User.Identity.Name);
+                        logEntry.Origin = Settings.Origin.ToString();
+                        logEntry.Data = new
+                        {
+                            userName = options.UserName,
+                            reason = options.Reason,
+                            comments = options.Comments,
+                            textSubmissions = options.TextSubmissions,
+                            linkSubmissions = options.LinkSubmissions,
+                            recoveryAddress = options.RecoveryEmailAddress
+                        };
+
+                        EventLogger.Instance.Log(logEntry);
 
                         return CommandResponse.FromStatus(Status.Success);
                     }

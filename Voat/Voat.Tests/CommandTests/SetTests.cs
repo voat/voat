@@ -271,6 +271,34 @@ namespace Voat.Tests.CommandTests
             Assert.IsFalse(result.Success, result.Message);
 
         }
+
+        [TestMethod]
+        [TestCategory("Set"), TestCategory("Command.Set")]
+        public async Task CreateSet_Test_ReservedName_SetType()
+        {
+            var userName = "TestUser01";
+            TestHelper.SetPrincipal(userName);
+
+            var set = new Set() { Name = SetType.Front.ToString(), Title = "Some Title", Type = SetType.Normal, UserName = userName };
+            var cmd = new UpdateSetCommand(set);
+            var result = await cmd.Execute();
+            Assert.IsFalse(result.Success, result.Message);
+        }
+
+        [TestMethod]
+        [TestCategory("Set"), TestCategory("Command.Set")]
+        public async Task CreateSet_Test_ReservedName_SortAlgorithm()
+        {
+            var userName = "TestUser01";
+            TestHelper.SetPrincipal(userName);
+
+            var set = new Set() { Name = SortAlgorithm.Hot.ToString(), Title = "Some Title", Type = SetType.Normal, UserName = userName };
+            var cmd = new UpdateSetCommand(set);
+            var result = await cmd.Execute();
+            Assert.IsFalse(result.Success, result.Message);
+
+        }
+
         [TestMethod]
         [TestCategory("Set"), TestCategory("Command.Set")]
         public async Task CreateSet_Test_UnicodeName()

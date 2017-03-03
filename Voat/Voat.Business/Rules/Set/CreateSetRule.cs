@@ -34,12 +34,12 @@ namespace Voat.Rules
                 return base.CreateOutcome(RuleResult.Denied, "Set name does not conform to naming requirements");
             }
             //Ensure Name is not used for system sets 
-            var systemSets = Enum.GetNames(typeof(SetType));
+            var systemSets = Enum.GetNames(typeof(SetType)).Concat(Enum.GetNames(typeof(SortAlgorithm)));
             if (systemSets.Any(x => x.IsEqual(set.Name)))
             {
-                return base.CreateOutcome(RuleResult.Denied, "Set name is in restricted list");
+                return base.CreateOutcome(RuleResult.Denied, "Set name is in a restricted list - please choose a different name");
             }
-
+           
             ////Age
             //var registrationDate = context.UserData.Information.RegistrationDate;
             //int accountAgeInDays = Repository.CurrentDate.Subtract(registrationDate).Days;

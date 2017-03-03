@@ -182,14 +182,18 @@
           <Property Name="Data" Type="varchar(max)" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
         </EntityType>
-        <EntityType Name="FeaturedSubverse">
+        <EntityType Name="Featured">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="DomainType" Type="int" Nullable="false" />
+          <Property Name="DomainID" Type="int" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="100" />
+          <Property Name="Description" Type="nvarchar" MaxLength="500" />
+          <Property Name="StartDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="EndDate" Type="smalldatetime" />
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="Filter">
           <Key>
@@ -588,18 +592,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_FeaturedSubverse_Subverse">
-          <End Role="Subverse" Type="Self.Subverse" Multiplicity="1" />
-          <End Role="FeaturedSubverse" Type="Self.FeaturedSubverse" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverse">
-              <PropertyRef Name="Name" />
-            </Principal>
-            <Dependent Role="FeaturedSubverse">
-              <PropertyRef Name="Subverse" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_RuleReport_RuleSet">
           <End Role="RuleSet" Type="Self.RuleSet" Multiplicity="1" />
           <End Role="RuleReport" Type="Self.RuleReport" Multiplicity="*" />
@@ -810,7 +802,7 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <EntitySet Name="CommentVoteTracker" EntityType="Self.CommentVoteTracker" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DefaultSubverse" EntityType="Self.DefaultSubverse" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EventLog" EntityType="Self.EventLog" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="FeaturedSubverse" EntityType="Self.FeaturedSubverse" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Featured" EntityType="Self.Featured" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Filter" EntityType="Self.Filter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Message" EntityType="Self.Message" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ModeratorInvitation" EntityType="Self.ModeratorInvitation" Schema="dbo" store:Type="Tables" />
@@ -861,10 +853,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <AssociationSet Name="FK_DefaultSubverse_Subverse" Association="Self.FK_DefaultSubverse_Subverse">
             <End Role="Subverse" EntitySet="Subverse" />
             <End Role="DefaultSubverse" EntitySet="DefaultSubverse" />
-          </AssociationSet>
-          <AssociationSet Name="FK_FeaturedSubverse_Subverse" Association="Self.FK_FeaturedSubverse_Subverse">
-            <End Role="Subverse" EntitySet="Subverse" />
-            <End Role="FeaturedSubverse" EntitySet="FeaturedSubverse" />
           </AssociationSet>
           <AssociationSet Name="FK_RuleReport_RuleSet" Association="Self.FK_RuleReport_RuleSet">
             <End Role="RuleSet" EntitySet="RuleSet" />
@@ -1020,16 +1008,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <Property Name="Order" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Subverse1" Relationship="Self.FK_Defaultsubverses_Subverses" FromRole="DefaultSubverse" ToRole="Subverse" />
         </EntityType>
-        <EntityType Name="FeaturedSubverse">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Subverse" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="Subverse1" Relationship="Self.FK_Featuredsubs_Subverses" FromRole="FeaturedSubverse" ToRole="Subverse" />
-        </EntityType>
         <EntityType Name="ModeratorInvitation">
           <Key>
             <PropertyRef Name="ID" />
@@ -1151,7 +1129,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <Property Name="IsAdminDisabled" Type="Boolean" />
           <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DefaultSubverse" Relationship="Self.FK_Defaultsubverses_Subverses" FromRole="Subverse" ToRole="DefaultSubverse" />
-          <NavigationProperty Name="FeaturedSubverses" Relationship="Self.FK_Featuredsubs_Subverses" FromRole="Subverse" ToRole="FeaturedSubverse" />
           <NavigationProperty Name="StickiedSubmissions" Relationship="Self.FK_Stickiedsubmissions_Subverses" FromRole="Subverse" ToRole="StickiedSubmission" />
           <NavigationProperty Name="Submissions" Relationship="Self.FK_Messages_Subverses" FromRole="Subverse" ToRole="Submission" />
           <NavigationProperty Name="SubverseModerators" Relationship="Self.FK_SubverseAdmins_Subverses" FromRole="Subverse" ToRole="SubverseModerator" />
@@ -1320,18 +1297,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Featuredsubs_Subverses">
-          <End Role="Subverse" Type="Self.Subverse" Multiplicity="1" />
-          <End Role="FeaturedSubverse" Type="Self.FeaturedSubverse" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Subverse">
-              <PropertyRef Name="Name" />
-            </Principal>
-            <Dependent Role="FeaturedSubverse">
-              <PropertyRef Name="Subverse" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Stickiedsubmissions_Messages">
           <End Role="Submission" Type="Self.Submission" Multiplicity="1" />
           <End Role="StickiedSubmission" Type="Self.StickiedSubmission" Multiplicity="0..1" />
@@ -1477,7 +1442,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <EntitySet Name="CommentSaveTrackers" EntityType="Self.CommentSaveTracker" />
           <EntitySet Name="CommentVoteTrackers" EntityType="Self.CommentVoteTracker" />
           <EntitySet Name="DefaultSubverses" EntityType="Self.DefaultSubverse" />
-          <EntitySet Name="FeaturedSubverses" EntityType="Self.FeaturedSubverse" />
           <EntitySet Name="ModeratorInvitations" EntityType="Self.ModeratorInvitation" />
           <EntitySet Name="SessionTrackers" EntityType="Self.SessionTracker" />
           <EntitySet Name="StickiedSubmissions" EntityType="Self.StickiedSubmission" />
@@ -1515,10 +1479,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           <AssociationSet Name="FK_Defaultsubverses_Subverses" Association="Self.FK_Defaultsubverses_Subverses">
             <End Role="Subverse" EntitySet="Subverses" />
             <End Role="DefaultSubverse" EntitySet="DefaultSubverses" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Featuredsubs_Subverses" Association="Self.FK_Featuredsubs_Subverses">
-            <End Role="Subverse" EntitySet="Subverses" />
-            <End Role="FeaturedSubverse" EntitySet="FeaturedSubverses" />
           </AssociationSet>
           <AssociationSet Name="FK_Stickiedsubmissions_Messages" Association="Self.FK_Stickiedsubmissions_Messages">
             <End Role="Submission" EntitySet="Submissions" />
@@ -1601,6 +1561,7 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
             <End Role="SubverseSet" EntitySet="SubverseSets" />
             <End Role="SubverseSetSubscription" EntitySet="SubverseSetSubscriptions" />
           </AssociationSet>
+          <EntitySet Name="Featureds" EntityType="Models.Featured" />
         </EntityContainer>
         <ComplexType Name="usp_CommentTree_Result">
           <Property Type="Int32" Name="ChildCount" Nullable="true" />
@@ -1905,6 +1866,19 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Featured">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DomainType" Type="Int32" Nullable="false" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="EndDate" Type="DateTime" Precision="0" />
+          <Property Name="CreatedBy" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="DomainID" Type="Int32" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2000,16 +1974,6 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
               <MappingFragment StoreEntitySet="DefaultSubverse">
                 <ScalarProperty Name="Subverse" ColumnName="Subverse" />
                 <ScalarProperty Name="Order" ColumnName="Order" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="FeaturedSubverses">
-            <EntityTypeMapping TypeName="Models.FeaturedSubverse">
-              <MappingFragment StoreEntitySet="FeaturedSubverse">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Subverse" ColumnName="Subverse" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -2456,6 +2420,20 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="SubverseSetID" ColumnName="SubverseSetID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Featureds">
+            <EntityTypeMapping TypeName="Models.Featured">
+              <MappingFragment StoreEntitySet="Featured">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="DomainID" ColumnName="DomainID" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="DomainType" ColumnName="DomainType" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

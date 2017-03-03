@@ -125,7 +125,7 @@
     <Compile Include="Models\EventLog.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\FeaturedSubverse.cs">
+    <Compile Include="Models\Featured.cs">
       <DependentUpon>VoatEntityDataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Filter.cs">

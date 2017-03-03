@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Caching;
 using Voat.Data;
 
 namespace Voat.Domain.Command
 {
-    public class CreateSubverseCommand : Command<CommandResponse>
+    public class CreateSubverseCommand : CacheCommand<CommandResponse>
     {
         private string _name;
         private string _title;
@@ -22,12 +23,25 @@ namespace Voat.Domain.Command
             this._description = description;
         }
 
-        protected override async Task<CommandResponse> ProtectedExecute()
+        //protected override async Task<CommandResponse> ProtectedExecute()
+        //{
+           
+        //}
+
+        protected override async Task<CommandResponse> CacheExecute()
         {
             using (var repo = new Repository())
             {
                 return await repo.CreateSubverse(_name, _title, _description, _sidebar);
-            }   
+            }
+        }
+
+        protected override void UpdateCache(CommandResponse result)
+        {
+            if (result.Success)
+            {
+                CacheHandler.Instance.Remove(CachingKey.UserSubscriptions(UserName));
+            }
         }
     }
 }

@@ -409,6 +409,17 @@ namespace Voat.Controllers
             if (!String.IsNullOrEmpty(sort))
             {
                 options.Sort = (Domain.Models.SortAlgorithm)Enum.Parse(typeof(Domain.Models.SortAlgorithm), sort, true);
+                ////Prevent subs from being sorted relative
+                //switch (options.Sort)
+                //{
+                //    case Domain.Models.SortAlgorithm.New:
+                //    case Domain.Models.SortAlgorithm.Hot:
+                //    case Domain.Models.SortAlgorithm.Top:
+                //        break;
+                //    default:
+                //        options.Sort = Domain.Models.SortAlgorithm.Hot;
+                //        break;
+                //}
             }
             //set span to day if not specified explicitly 
             if (options.Sort == Domain.Models.SortAlgorithm.Top && Request.QueryString["span"] == null)
