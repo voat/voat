@@ -2535,10 +2535,14 @@ namespace Voat.Data
             {
                 p.BlockAnonymized = preferences.BlockAnonymized.Value;
             }
-            if (preferences.CommentSort.HasValue)
+            if (p.CommentSort != null)
             {
                 p.CommentSort = (int)preferences.CommentSort.Value;
             }
+            //if (Extensions.IsValidEnumValue(preferences.CommentSort))
+            //{
+            //    p.CommentSort = (int)preferences.CommentSort.Value;
+            //}
             _db.SaveChanges();
         }
 
@@ -5322,7 +5326,7 @@ namespace Voat.Data
                         List<DapperBase> statements = new List<DapperBase>();
                         var deleteText = "Account Deleted By User";
                         //Comments
-                        switch (options.Comments)
+                        switch (options.Comments.Value)
                         {
                             case DeleteOption.Anonymize:
                                 var a = new DapperUpdate();
@@ -5338,7 +5342,7 @@ namespace Voat.Data
                                 break;
                         }
                         //Text Submissions
-                        switch (options.TextSubmissions)
+                        switch (options.TextSubmissions.Value)
                         {
                             case DeleteOption.Anonymize:
                                 var a = new DapperUpdate();
@@ -5354,7 +5358,7 @@ namespace Voat.Data
                                 break;
                         }
                         //Link Submissions
-                        switch (options.LinkSubmissions)
+                        switch (options.LinkSubmissions.Value)
                         {
                             case DeleteOption.Anonymize:
                                 var a = new DapperUpdate();

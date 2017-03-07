@@ -516,7 +516,9 @@ namespace Voat.Domain
                 model.Bio = preferences.Bio;
                 model.BlockAnonymized = preferences.BlockAnonymized;
                 model.CollapseCommentLimit = preferences.CollapseCommentLimit;
-                model.CommentSort = preferences.CommentSort.HasValue ? (CommentSortAlgorithm)preferences.CommentSort.Value : CommentSortAlgorithm.Top; //default
+
+                model.CommentSort = Extensions.AssignIfValidEnumValue(preferences.CommentSort, CommentSortAlgorithm.Top);
+
                 model.DisableCSS = preferences.DisableCSS;
                 model.DisplayAds = preferences.DisplayAds;
                 model.DisplayCommentCount = preferences.DisplayCommentCount;

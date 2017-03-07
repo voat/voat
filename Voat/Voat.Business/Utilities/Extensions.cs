@@ -200,5 +200,53 @@ namespace Voat
             }
             return "";
         }
+
+        public static bool IsValidEnumValue<T>(int? value) where T : struct, IConvertible
+        {
+            var result = false;
+            if (value.HasValue)
+            {
+                result = Enum.IsDefined(typeof(T), value.Value);
+            }
+            return result;
+        }
+        public static bool IsValidEnumValue<T>(T? value) where T : struct, IConvertible
+        {
+            var result = false;
+            if (value.HasValue)
+            {
+                result = Enum.IsDefined(typeof(T), value.Value);
+            }
+            return result;
+        }
+        public static bool IsValidEnumValue<T>(T value) where T : struct, IConvertible
+        {
+            var result = false;
+            result = Enum.IsDefined(typeof(T), value);
+            return result;
+        }
+
+        public static T AssignIfValidEnumValue<T>(int value, T defaultValue) where T : struct, IConvertible
+        {
+            return AssignIfValidEnumValue((int?)value, defaultValue);
+        }
+
+        public static T AssignIfValidEnumValue<T>(int? value, T defaultValue) where T : struct, IConvertible
+        {
+            if (IsValidEnumValue<T>(value))
+            {
+                return (T)Enum.Parse(typeof(T), value.ToString());
+            }
+            else
+            {
+                return defaultValue;
+            }
+        }
+
+        //public Dictionary<int, string> GetEnumValues(Type type)
+        //{
+        //    var dict = new Dictionary<int, string>();
+        //}
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Voat.Common;
 
 namespace Voat.Domain.Models
 {
@@ -45,6 +46,6 @@ namespace Voat.Domain.Models
         /// <summary>
         /// Specifies the default sort used for comments when no sort is supplied.
         /// </summary>
-        public CommentSortAlgorithm? CommentSort { get; set; }
+        public SafeEnum<CommentSortAlgorithm> CommentSort { get; set; }
     }
 }

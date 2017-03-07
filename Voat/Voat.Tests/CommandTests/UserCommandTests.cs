@@ -269,7 +269,7 @@ namespace Voat.Tests.CommandTests
             using (var db = new Voat.Data.Models.voatEntities())
             {
                 int count = 0;
-                switch (options.Comments)
+                switch (options.Comments.Value)
                 {
                     case Domain.Models.DeleteOption.Anonymize:
 

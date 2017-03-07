@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Common;
 
 namespace Voat.Domain.Models
 {
@@ -39,13 +40,13 @@ namespace Voat.Domain.Models
         public string Reason { get; set; }
 
         [Display(Name = "Link Submission Action")]
-        public DeleteOption LinkSubmissions { get; set; } = DeleteOption.None;
+        public SafeEnum<DeleteOption> LinkSubmissions { get; set; } = DeleteOption.None;
 
         [Display(Name = "Text Submission Action")]
-        public DeleteOption TextSubmissions { get; set; } = DeleteOption.None;
+        public SafeEnum<DeleteOption> TextSubmissions { get; set; } = DeleteOption.None;
 
         [Display(Name = "Comment Action")]
-        public DeleteOption Comments { get; set; } = DeleteOption.None;
+        public SafeEnum<DeleteOption> Comments { get; set; } = DeleteOption.None;
 
         [EmailAddress]
         [Display(Name = "Recovery Email")]

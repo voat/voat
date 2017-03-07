@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Common;
 
 namespace Voat.Tests.Utils
 {
@@ -236,7 +237,95 @@ namespace Voat.Tests.Utils
             Assert.AreEqual("id=4&name=", (new { id = 4, name = (string)null }).ToQueryString(true));
 
         }
+
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("Extentions")]
+        public void TestEnumParsing()
+        {
+
+
+
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Top, Extensions.AssignIfValidEnumValue(-23223, Domain.Models.CommentSortAlgorithm.Top));
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Top, Extensions.AssignIfValidEnumValue(324324, Domain.Models.CommentSortAlgorithm.Top));
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.New, Extensions.AssignIfValidEnumValue((int)Domain.Models.CommentSortAlgorithm.New, Domain.Models.CommentSortAlgorithm.Top));
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Top, Extensions.AssignIfValidEnumValue(null, Domain.Models.CommentSortAlgorithm.Top));
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Intensity, Extensions.AssignIfValidEnumValue((int)Domain.Models.CommentSortAlgorithm.Intensity, Domain.Models.CommentSortAlgorithm.Top));
+
+            Assert.IsFalse(Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm?)777));
+            Assert.IsFalse(Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm?)null));
+            Assert.IsTrue(Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm?)2));
+
+            Assert.IsFalse(Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm)777));
+            Assert.IsTrue(Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm)2));
+
+        }
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("Extentions")]
+        public void TestSafeEnum_Conversions()
+        {
+            var safeClass = new TestEnumClass();
+            safeClass.CommentSort = Domain.Models.CommentSortAlgorithm.Top;
+
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Top,  safeClass.CommentSort.Value);
+            Assert.IsTrue(Domain.Models.CommentSortAlgorithm.Top == safeClass.CommentSort);
+            Assert.IsTrue(safeClass.CommentSort == Domain.Models.CommentSortAlgorithm.Top);
+
+            Domain.Models.CommentSortAlgorithm x = Domain.Models.CommentSortAlgorithm.New;
+            x = safeClass.CommentSort;
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Top, x);
+
+            switch (safeClass.CommentSort.Value)
+            {
+                case Domain.Models.CommentSortAlgorithm.Top:
+                    break;
+                default:
+                    Assert.Fail("This is a problem");
+                    break;
+            }
+
+            safeClass.CommentSort = 4;
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Bottom, safeClass.CommentSort.Value);
+
+            safeClass.CommentSort = "New";
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.New, safeClass.CommentSort.Value);
+
+            safeClass.CommentSort = "5";
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Intensity, safeClass.CommentSort.Value);
+
+
+        }
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("Extentions")]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void TestSafeEnum_Errors()
+        {
+            var safeClass = new TestEnumClass();
+            safeClass.CommentSort = ((Domain.Models.CommentSortAlgorithm)(-203));
+        }
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("Extentions")]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void TestSafeEnum_Errors_2()
+        {
+            var safeClass = new TestEnumClass();
+            safeClass.CommentSort = ((Domain.Models.CommentSortAlgorithm)(203));
+        }
+
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("Extentions")]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void TestSafeEnum_Errors_3()
+        {
+            var safeClass = new TestEnumClass();
+            safeClass.CommentSort = 203;
+        }
     }
+
+    public class TestEnumClass
+    {
+        public SafeEnum<Domain.Models.CommentSortAlgorithm> CommentSort { get; set; }
+    }
+
     public class TestObject
     {
 

@@ -145,12 +145,13 @@ namespace Voat.Domain.Models
         AJAX = 3
     }
 
+    [DatabaseMappedValue()]
     public enum CommentSortAlgorithm
     {
         /// <summary>
         /// Orders results by creation date
         /// </summary>
-        New, //order by date
+        New = 1, //order by date
 
         /// <summary>
         /// Orders results by creation date ascending

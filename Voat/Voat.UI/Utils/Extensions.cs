@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace Voat
 {
-    public static class Extensions
+    public static class UIExtensions
     {
         public static string GetFirstErrorMessage(this System.Web.Mvc.ModelStateDictionary modelState)
         {
