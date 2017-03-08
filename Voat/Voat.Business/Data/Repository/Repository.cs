@@ -656,7 +656,7 @@ namespace Voat.Data
         {
             var data = (from x in _db.SubverseModerators
                         where x.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
-                        orderby x.CreationDate ascending
+                        orderby x.Power ascending, x.CreationDate ascending
                         select x).ToList();
 
             return data.AsEnumerable();
@@ -2535,7 +2535,7 @@ namespace Voat.Data
             {
                 p.BlockAnonymized = preferences.BlockAnonymized.Value;
             }
-            if (p.CommentSort != null)
+            if (preferences.CommentSort != null)
             {
                 p.CommentSort = (int)preferences.CommentSort.Value;
             }

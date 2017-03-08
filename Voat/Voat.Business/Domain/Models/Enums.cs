@@ -365,4 +365,15 @@ namespace Voat.Domain.Models
         Following = 3,
         Normal = 4,
     }
+
+    [Flags]
+    public enum RobotIndexing
+    {
+        NoIndex = 1,
+        NoFollow = 2,
+        None = NoIndex | NoFollow,
+        Follow = 4,
+        Index = 8,
+        All = Follow | Index
+    }
 }

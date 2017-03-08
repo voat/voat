@@ -44,25 +44,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta lang="en" />
     <link rel="http://oexchange.org/spec/0.8/rel/related-target" type="application/xrd+xml" href="http://voat.co/oexchange.xrd" />
-
-    @if (ViewBag.Description != null)
-    {
-        <meta name="description" content="@ViewBag.Description" />
-    }
-    else
-    {
-        <meta name="description" content="@Settings.SiteSlogan" />
-    }
-    @if (ViewBag.Keywords != null)
-    {
-        <meta name="keywords" content="@ViewBag.Keywords" />
-    }
-    else
-    {
-        <meta name="keywords" content="@Settings.SiteKeywords" />
-    }
-
     <title>@ViewBag.Title</title>
+    <meta name="description" content="@(ViewBag.Keywords != null ? ViewBag.Description : Settings.SiteSlogan)" />
+    <meta name="keywords" content="@(ViewBag.Keywords != null ? ViewBag.Keywords : Settings.SiteKeywords)" />
+    @Html.Partial("_RobotsMeta")
     <meta property="og:title" content="@ViewBag.Title" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="@Request.Url.ToString()" />
@@ -111,6 +96,7 @@
 
     @* render any additional header info like stylesheet paths *@
     @RenderSection("PageHeader", required: false)
+
 
 </head>
 <body class="@themeClass">
@@ -164,57 +150,9 @@
                             break;
                     }
                 }
-                else
-                {
-                    //throw new NotImplementedException("WHERE IS THE FRICKIN' DAMN MENU BITCH!?");
-
-
-                    ////Old Navigation Model
-                    //if (ViewBag.PmView != null)
-                    //{
-                    //    Html.RenderAction("PmMenu", "Nav", new { selectedView = ViewBag.PmView, sortingMode = sortingMode });
-                    //}
-
-                    //if (selectedSubverse != null)
-                    //{
-                    //    if (selectedSubverse.Equals("user"))
-                    //    {
-                    //        // render user profile tab menu
-                    //        Html.RenderAction("UserProfileMenu", "Nav", new { whattodisplay = ViewBag.whattodisplay, selectedUser = selectedUser });
-                    //    }
-                    //    else if (selectedSubverse.Equals("/"))
-                    //    {
-                    //        // render frontpage tab menu
-                    //        Html.RenderAction("TabMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, action = ViewBag.action, frontpage = true });
-                    //    }
-                    //    else if (ViewBag.SelectedSubverse.Equals("domains"))
-                    //    {
-                    //        // render domains tab menu
-                    //        Html.RenderAction("DomainsMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, selectedDomain = ViewBag.selectedDomain });
-                    //    }
-                    //    else if (ViewBag.SelectedSubverse.Equals("subverses"))
-                    //    {
-                    //        // render browse subverses tab menu
-                    //        Html.RenderAction("SubversesMenu", "Nav", new { sortingMode = sortingMode, subversesView = ViewBag.SubversesView });
-                    //    }
-                    //    else if (ViewBag.SelectedSubverse.Equals(string.Empty))
-                    //    {
-                    //        // don't show tab menu
-                    //    }
-                    //    else
-                    //    {
-                    //        // render subverse tab menu
-                    //        Html.RenderAction("TabMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, action = ViewBag.action, selectedSubverseName = ViewBag.SelectedSubverse });
-                    //    }
-                    //}
-                }
-
                 @Html.Partial("_LoginPartial")
-
             </div>
-            
         </div>
-            
     </div>
 
     @* Must be logged in Modal *@

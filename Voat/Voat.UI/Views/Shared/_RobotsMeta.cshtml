@@ -1,0 +1,21 @@
+﻿@if (ViewBag.RobotIndexing != null && ViewBag.RobotIndexing is Voat.Domain.Models.RobotIndexing)
+{
+    Voat.Domain.Models.RobotIndexing robotIndexing = ViewBag.RobotIndexing;
+    switch (robotIndexing)
+    {
+        case Voat.Domain.Models.RobotIndexing.None:
+            <meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+            break;
+        case Voat.Domain.Models.RobotIndexing.NoFollow:
+            <meta name="ROBOTS" content="NOFOLLOW">
+            break;
+        case Voat.Domain.Models.RobotIndexing.NoIndex:
+            <meta name="ROBOTS" content="NOINDEX">
+            break;
+        case Voat.Domain.Models.RobotIndexing.Follow:
+        case Voat.Domain.Models.RobotIndexing.Index:
+        case Voat.Domain.Models.RobotIndexing.All:
+            //no-op
+            break;
+    }
+}

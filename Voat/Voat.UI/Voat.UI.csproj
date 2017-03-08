@@ -777,6 +777,7 @@
     <Content Include="Views\Discover\_SearchBar.cshtml" />
     <Content Include="Views\Dashboard\_Dashboard.cshtml" />
     <Content Include="Views\Shared\_Featured.cshtml" />
+    <Content Include="Views\Shared\_RobotsMeta.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

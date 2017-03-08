@@ -24,82 +24,45 @@
             @Html.CheckBoxFor(m => m.DisableCSS, new { @class = "form-control" })
         </div>
     </div>
-
-    @*<div class="checkbox">
-        @Html.CheckBoxFor(m => m.DisableCSS)
-        @Html.LabelFor(m => m.DisableCSS)
-    </div>*@
     <div class="form-group">
         @Html.LabelFor(m => m.NightMode, new { @class = "col-md-4 control-label" })
         <div class="col-md-6">
             @Html.CheckBoxFor(m => m.NightMode, new { @class = "form-control" })
         </div>
     </div>
-
-    @*<div class="checkbox">
-        @Html.CheckBoxFor(m => m.NightMode)
-        @Html.LabelFor(m => m.NightMode)
-    </div>*@
-    @*<div class="checkbox">
-        @Html.CheckBoxFor(m => m.OpenInNewWindow)
-        @Html.LabelFor(m => m.OpenInNewWindow)
-    </div>*@
-
     <div class="form-group">
         @Html.LabelFor(m => m.EnableAdultContent, new { @class = "col-md-4 control-label" })
         <div class="col-md-6">
             @Html.CheckBoxFor(m => m.EnableAdultContent, new { @class = "form-control" })
         </div>
     </div>
-
-    @*<div class="checkbox">
-        @Html.CheckBoxFor(m => m.EnableAdultContent)
-        @Html.LabelFor(m => m.EnableAdultContent)
-    </div>*@
     <div class="form-group">
         @Html.LabelFor(m => m.DisplaySubscriptions, new { @class = "col-md-4 control-label" })
         <div class="col-md-6">
             @Html.CheckBoxFor(m => m.DisplaySubscriptions, new { @class = "form-control" })
         </div>
     </div>
-
-    @*<div class="checkbox">
-        @Html.CheckBoxFor(m => m.DisplaySubscriptions)
-        @Html.LabelFor(m => m.DisplaySubscriptions)
-    </div>*@
     <div class="form-group">
         @Html.LabelFor(m => m.UseSubscriptionsMenu, new { @class = "col-md-4 control-label" })
         <div class="col-md-6">
             @Html.CheckBoxFor(m => m.UseSubscriptionsMenu, new { @class = "form-control" })
         </div>
     </div>
-    @*<div class="checkbox">
-        @Html.CheckBoxFor(m => m.UseSubscriptionsMenu)
-        @Html.LabelFor(m => m.UseSubscriptionsMenu)
-    </div>*@
     <div class="form-group">
         @Html.LabelFor(m => m.BlockAnonymized, new { @class = "col-md-4 control-label" })
         <div class="col-md-6">
             @Html.CheckBoxFor(m => m.BlockAnonymized, new { @class = "form-control" })
         </div>
     </div>
-    @*<div class="checkbox">
-        @Html.CheckBoxFor(m => m.BlockAnonymized)
-        @Html.LabelFor(m => m.BlockAnonymized)
-    </div>*@
     <div class="form-group">
         @Html.LabelFor(m => m.CommentSort, new { @class = "col-md-4 control-label" })
         <div class="col-md-6">
             @Html.EnumDropDownListFor(m => m.CommentSort, new { @class = "form-control" })
         </div>
     </div>
-    @*<div class="checkbox">
-        @Html.EnumDropDownListFor(m => m.CommentSort, new { @class= "form-control" })
-        @Html.LabelFor(m => m.CommentSort)
-    </div>*@
     <div class="form-group">
         <div class="col-md-offset-4 col-md-3">
-            <input type="submit" value="Submit" class="btn-whoaverse" />
+            <input type="submit" value="Save" class="btn-whoaverse" />
         </div>
     </div>
 }

@@ -86,6 +86,8 @@ namespace Voat.Controllers
                 BasePath = "/user/" + originalUserName,
                 Description = originalUserName + "'s Comments",
             };
+
+            ViewBag.RobotIndexing = Domain.Models.RobotIndexing.None;
             return View(paged);
         }
         public async Task<ActionResult> Submissions(string userName, int? page = null)
@@ -125,6 +127,7 @@ namespace Voat.Controllers
                 Description = originalUserName + "'s Submissions",
             };
 
+            ViewBag.RobotIndexing = Domain.Models.RobotIndexing.None;
             return View(paged);
         }
 
