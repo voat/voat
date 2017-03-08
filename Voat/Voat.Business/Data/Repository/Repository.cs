@@ -3770,8 +3770,8 @@ namespace Voat.Data
                     }
 
                     string statement = String.Format(groupingClause, q.ToString());
-                    System.Diagnostics.Debug.Print("Query Output");
-                    System.Diagnostics.Debug.Print(statement);
+                    System.Diagnostics.Debug.WriteLine("Query Output");
+                    System.Diagnostics.Debug.WriteLine(statement);
                     var records = db.Database.Connection.Query(statement, new
                     {
                         UserName = userName,

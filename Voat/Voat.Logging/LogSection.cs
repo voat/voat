@@ -32,7 +32,7 @@ namespace Voat.Logging
             catch (Exception ex)
             {
                 //can't construct
-                Debug.Print(ex.ToString());
+                Debug.WriteLine(ex.ToString());
                 return new NullLogger();
             }
         }

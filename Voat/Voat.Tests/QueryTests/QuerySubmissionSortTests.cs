@@ -141,7 +141,7 @@ namespace Voat.Tests.QueryTests
 
             var f = new Func<double, double, bool, bool>((x, y, ascending) => {
 
-                Debug.Print(String.Format("x: {0}, y:{0}", x, y));
+                Debug.WriteLine(String.Format("x: {0}, y:{0}", x, y));
 
                 if (ascending)
                 {

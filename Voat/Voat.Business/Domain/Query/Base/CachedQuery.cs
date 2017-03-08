@@ -128,7 +128,7 @@ namespace Voat.Domain.Query
         {
             //BLOCK: This needs fixed
             CacheHit = false;
-            Debug.Print("{0}(loading)", this.GetType().Name);
+            Debug.WriteLine("{0}(loading)", this.GetType().Name);
             T data = await GetData().ConfigureAwait(false);
             return data;
         }

@@ -88,7 +88,7 @@ namespace Voat.Domain
         public UserData(string userName, bool validateUserExists = false)
         {
 
-            System.Diagnostics.Debug.Print("UserData({0}, {1})", userName, validateUserExists.ToString());
+            System.Diagnostics.Debug.WriteLine("UserData({0}, {1})", userName, validateUserExists.ToString());
 
             var val = UserDefinition.Parse(userName);
             if (val == null)
@@ -120,7 +120,7 @@ namespace Voat.Domain
             {
                 var val = GetOrLoad(ref _votesInLast24Hours, userName =>
                 {
-                    Debug.Print("UserData[{0}].TotalVotesUsedIn24Hours(loading)", userName);
+                    Debug.WriteLine("UserData[{0}].TotalVotesUsedIn24Hours(loading)", userName);
                     using (var repo = new Repository())
                     {
                         return repo.UserVotingBehavior(userName, ContentType.Comment | ContentType.Submission, TimeSpan.FromDays(1)).Total;
@@ -144,7 +144,7 @@ namespace Voat.Domain
             {
                 var val = GetOrLoad(ref _submissionsInLast24Hours, userName =>
                 {
-                    Debug.Print("UserData[{0}].TotalSubmissionsPostedIn24Hours(loading)", userName);
+                    Debug.WriteLine("UserData[{0}].TotalSubmissionsPostedIn24Hours(loading)", userName);
                     using (var repo = new Repository())
                     {
                         return repo.UserSubmissionCount(userName, TimeSpan.FromDays(1));
@@ -168,7 +168,7 @@ namespace Voat.Domain
             {
                 var val = GetOrLoad(ref _blockedSubverses, userName =>
                 {
-                    Debug.Print("UserData[{0}].BlockedSubverses(loading)", userName);
+                    Debug.WriteLine("UserData[{0}].BlockedSubverses(loading)", userName);
                     var q = new QueryUserBlocks();
                     var r = q.Execute();
                     return r.Where(x => x.Type == DomainType.Subverse).Select(x => x.Name);
@@ -183,7 +183,7 @@ namespace Voat.Domain
             {
                 var val = GetOrLoad(ref _blockedUsers, userName =>
                 {
-                    Debug.Print("UserData[{0}].BlockedUsers(loading)", userName);
+                    Debug.WriteLine("UserData[{0}].BlockedUsers(loading)", userName);
                     var q = new QueryUserBlocks();
                     var r = q.Execute();
                     return r.Where(x => x.Type == DomainType.User).Select(x => x.Name);
@@ -199,7 +199,7 @@ namespace Voat.Domain
             {
                 return GetOrLoad(ref _prefs, userName =>
                 {
-                    Debug.Print("UserData[{0}].Preferences(loading)", userName);
+                    Debug.WriteLine("UserData[{0}].Preferences(loading)", userName);
                     var q = new QueryUserPreferences(userName);
                     var result = q.Execute();
                     return result;
@@ -219,7 +219,7 @@ namespace Voat.Domain
             {
                 return GetOrLoad(ref _subscriptions, userName =>
                 {
-                    Debug.Print("UserData[{0}].Subscriptions(loading)", userName);
+                    Debug.WriteLine("UserData[{0}].Subscriptions(loading)", userName);
                     var q = new QueryUserSubscriptions(userName);
                     var result = q.Execute();
                     return result;
@@ -251,7 +251,7 @@ namespace Voat.Domain
             {
                 return GetOrLoad(ref _info, userName =>
                 {
-                    Debug.Print("UserData[{0}].Information(loading)", userName);
+                    Debug.WriteLine("UserData[{0}].Information(loading)", userName);
                     var q = new QueryUserInformation(userName);
                     var result = q.Execute();
                     return result;

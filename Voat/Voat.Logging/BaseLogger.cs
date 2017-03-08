@@ -15,7 +15,7 @@ namespace Voat.Logging
 
         public void Log(ILogInformation info)
         {
-            Debug.Print(info.ToString());
+            Debug.WriteLine(info.ToString());
             ProtectedLog(info);
         }
 

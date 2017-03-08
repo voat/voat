@@ -1127,7 +1127,7 @@ namespace Voat
             {
                 sb.AppendLine(route.Url);
             }
-            Debug.Print(sb.ToString());
+            Debug.WriteLine(sb.ToString());
 #endif
 
 

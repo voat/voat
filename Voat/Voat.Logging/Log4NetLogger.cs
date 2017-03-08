@@ -89,7 +89,7 @@ namespace Voat.Logging
         protected override void ProtectedLog(ILogInformation info) 
         {
 
-            Debug.Print(info.ToString());
+            Debug.WriteLine(info.ToString());
 
             ILog _log = LogManager.GetLogger(_loggerName);
             

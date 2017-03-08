@@ -250,7 +250,7 @@ namespace Voat.Tests.Repository
                 ParentID = null
             });
             context.SaveChanges();
-            Debug.Print("Comment ID: {0}", c.ID);
+            Debug.WriteLine("Comment ID: {0}", c.ID);
             //ID: 2
             c = context.Comments.Add(new Comment()
             {
@@ -261,7 +261,7 @@ namespace Voat.Tests.Repository
                 ParentID = c.ID
             });
             context.SaveChanges();
-            Debug.Print("Comment ID: {0}", c.ID);
+            Debug.WriteLine("Comment ID: {0}", c.ID);
 
             //ID:2 (Anon Subverse submission)
             var anonSubmission = context.Submissions.Add(new Submission()
@@ -286,7 +286,7 @@ namespace Voat.Tests.Repository
                 ParentID = null
             });
             context.SaveChanges();
-            Debug.Print("Comment ID: {0}", c.ID);
+            Debug.WriteLine("Comment ID: {0}", c.ID);
 
             //ID: 4
             c = context.Comments.Add(new Comment()
@@ -299,7 +299,7 @@ namespace Voat.Tests.Repository
                 ParentID = null
             });
             context.SaveChanges();
-            Debug.Print("Comment ID: {0}", c.ID);
+            Debug.WriteLine("Comment ID: {0}", c.ID);
 
             //ID:3 (MinCCP Subverse submission)
             var minCCPSubmission = context.Submissions.Add(new Submission()
@@ -323,7 +323,7 @@ namespace Voat.Tests.Repository
                 ParentID = null
             });
             context.SaveChanges();
-            Debug.Print("Comment ID: {0}", c.ID);
+            Debug.WriteLine("Comment ID: {0}", c.ID);
 
             //ID: 6
             c = context.Comments.Add(new Comment()
@@ -335,7 +335,7 @@ namespace Voat.Tests.Repository
                 ParentID = null
             });
             context.SaveChanges();
-            Debug.Print("Comment ID: {0}", c.ID);
+            Debug.WriteLine("Comment ID: {0}", c.ID);
 
             #endregion Submissions
 
@@ -367,7 +367,7 @@ namespace Voat.Tests.Repository
             //    ParentID = null
             //});
             context.SaveChanges();
-            Debug.Print("Comment ID: {0}", c.ID);
+            Debug.WriteLine("Comment ID: {0}", c.ID);
 
             #endregion UserPrefernces
 

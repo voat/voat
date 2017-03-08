@@ -44,7 +44,7 @@ namespace Voat.Tests.Utils
             while (timespan <= TimeSpan.FromHours(3))
             {
                 string result = Age.ToRelative(timespan);
-                Debug.Print(result);
+                Debug.WriteLine(result);
                 if (result.StartsWith("0"))
                 {
                     Assert.Fail(String.Format("{0} ticks breaks this mofo!", timespan.Ticks));

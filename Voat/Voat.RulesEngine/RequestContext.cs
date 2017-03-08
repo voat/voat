@@ -104,7 +104,7 @@ namespace Voat.RulesEngine
                 if (Contains(binder.Name, true))
                 {
                     _values.TryGetValue(binder.Name, out result);
-                    Debug.Print(String.Format("NullFriendly Get {0} ({1})", binder.Name, result));
+                    Debug.WriteLine(String.Format("NullFriendly Get {0} ({1})", binder.Name, result));
                     return true;
                 }
                 //can't find, can't get
@@ -114,7 +114,7 @@ namespace Voat.RulesEngine
 
             public override bool TrySetMember(SetMemberBinder binder, object value)
             {
-                Debug.Print(String.Format("NullFriendly Set {0} = {1}", binder.Name, value));
+                Debug.WriteLine(String.Format("NullFriendly Set {0} = {1}", binder.Name, value));
                 _values[binder.Name] = value;
                 return true;
             }

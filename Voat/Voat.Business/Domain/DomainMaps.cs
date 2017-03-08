@@ -89,7 +89,7 @@ namespace Voat.Domain
             //existing messages do not have formatted content saved - check here
             if (String.IsNullOrEmpty(m.FormattedContent))
             {
-                Debug.Print("Formatting PM Content!");
+                Debug.WriteLine("Formatting PM Content!");
                 m.FormattedContent = Formatting.FormatMessage(m.Content);
             }
 

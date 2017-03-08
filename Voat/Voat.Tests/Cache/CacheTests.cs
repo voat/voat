@@ -618,7 +618,7 @@ namespace Voat.Tests.Cache
     {
         public MemoryCacheTests() : base(new MemoryCacheHandler())
         {
-            Debug.Print("Starting MemoryCacheTests");
+            Debug.WriteLine("Starting MemoryCacheTests");
         }
     }
 
@@ -628,7 +628,7 @@ namespace Voat.Tests.Cache
         //Stop following me fuzzy
         public RedisCacheTests() : base(null)
         {
-            Debug.Print("Starting RedisCacheTests");
+            Debug.WriteLine("Starting RedisCacheTests");
 
             //Use connection info from CacheHandlerSection
             var handler = CacheHandlerSection.Instance.Handlers.First(x => x.Type.ToLower().Contains("redis")).Construct();
@@ -641,7 +641,7 @@ namespace Voat.Tests.Cache
     {
         public NullCacheTests() : base(new NullCacheHandler())
         {
-            Debug.Print("Starting NullCacheTests");
+            Debug.WriteLine("Starting NullCacheTests");
         }
     }
 }
