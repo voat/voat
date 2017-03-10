@@ -128,3 +128,16 @@
         </div>
     }
 </div>
+
+@*
+
+    //Should use this code but deleted comments get hidden and mod log has all deleted comments.
+    @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", Voat.Domain.DomainMaps.Map((Voat.Domain.Models.Comment)Model),
+        new ViewDataDictionary {
+            { "CommentId", Model.ID },
+            { "parentIsHidden", false },
+            { "SortingMode", "new" },
+            { "ShowContextLink", true },
+            { "VoteTypeAllowed", Voat.Domain.Models.VoteTypeAllowed.None }
+        })
+*@

@@ -5210,12 +5210,12 @@ namespace Voat.Data
 
             if (dayCutOff > 0)
             {
-                d.Append(x => x.Where, "(f.EndDate IS NOT NULL OR (f.EndDate IS NULL AND DATEDIFF(DD, f.StartDate, GETUTCDATE()) <= @Days))");
-                d.Parameters.Add("Days", dayCutOff);
+                d.Append(x => x.Where, "(f.EndDate IS NOT NULL OR (f.EndDate IS NULL AND DATEDIFF(HH, f.StartDate, GETUTCDATE()) <= @Hours))");
+                d.Parameters.Add("Hours", (dayCutOff * 24));
             }
 
             d.OrderBy = "f.StartDate DESC";
-            d.Parameters.Add("CurrentDate", CurrentDate);
+            d.Parameters.Add("CurrentDate", CurrentDate); //I really have no idea why we are passing in a current time. In fact, it is both pointless and error prone, but for some reason, deep inside me, I cannot change this. True, it would take me all of 4 seconds, but this isn’t the time investment. It is something deeper, something unexplainable. I feel that somehow, for some reason, this will save us in the future. I shall leave it in order to save the future people! I am legend?
 
             var result = _db.Database.Connection.QueryFirstOrDefault<FeaturedDomainReferenceDetails>(d.ToString(), d.Parameters);
 

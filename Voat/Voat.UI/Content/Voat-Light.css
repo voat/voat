@@ -1117,7 +1117,7 @@ pre, code {
 
 /* ! Header : Top : Subverses list
 ------------------------------------------------------------------------------------ */
-#sr-bar li a {
+#sr-bar li a, .top-bar li a {
   color: #818181;
   -webkit-transition: color 0.2s ease;
   transition: color 0.2s ease; }
@@ -1216,12 +1216,13 @@ pre, code {
 /* ! Dashboard
 -------------------------------------------------------------------------------- */
 .top-bar {
+  background-color: #F4F4F4;
   height: 24px;
   line-height: 24px;
   font-size: 12px;
   overflow: hidden;
   position: relative;
-  margin-left: 5px;
+  padding-left: 5px;
   white-space: nowrap; }
   .top-bar li {
     margin-left: 8px; }

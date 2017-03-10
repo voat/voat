@@ -111,6 +111,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -157,6 +158,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInit.cs" />
     <Compile Include="Base\BaseUnitTest.cs" />
+    <Compile Include="Base\TestEnvironmentSettings.cs" />
     <Compile Include="BugTraps\BugTrapTests.cs" />
     <Compile Include="Cache\CacheConfigurationTests.cs" />
     <Compile Include="Cache\MiscTests.cs" />

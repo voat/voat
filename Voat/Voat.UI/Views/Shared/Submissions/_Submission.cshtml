@@ -63,7 +63,9 @@
 <div class="submission id-@Model.ID @classes link @submissionClass" data-fullname="@Model.ID" data-ups="@Model.UpCount" data-downs="@Model.DownCount">
     <p class="parent"></p>
 
-    @Html.Partial("_VotingIconsSubmission", Model)
+    @Html.Partial("_VotingIconsSubmission", Model, new ViewDataDictionary() {
+        { "VoteTypeAllowed", ViewBag.VoteTypeAllowed }
+    })
     
     @{
 

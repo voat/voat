@@ -301,6 +301,7 @@
     <Compile Include="Controllers\ModLogController.cs" />
     <Compile Include="Controllers\NavController.cs" />
     <Compile Include="Controllers\SetController.cs" />
+    <Compile Include="Controllers\StatisticsController.cs" />
     <Compile Include="Controllers\SubverseModerationController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="MessagingHub.cs" />
@@ -778,6 +779,10 @@
     <Content Include="Views\Dashboard\_Dashboard.cshtml" />
     <Content Include="Views\Shared\_Featured.cshtml" />
     <Content Include="Views\Shared\_RobotsMeta.cshtml" />
+    <Content Include="Views\Statistics\UserVotesGiven.cshtml" />
+    <Content Include="Views\Statistics\UserVotesReceived.cshtml" />
+    <Content Include="Views\Shared\Navigation\_Statistics.cshtml" />
+    <Content Include="Views\Statistics\HighestVotedContent.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

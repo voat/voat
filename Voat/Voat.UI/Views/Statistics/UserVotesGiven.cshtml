@@ -1,0 +1,55 @@
+﻿
+
+@model Statistics<IEnumerable<UserVoteStats>>
+
+@{
+    Dictionary<string, IEnumerable<UserVoteStats>> segmented = new Dictionary<string, IEnumerable<UserVoteStats>>();
+
+    segmented.Add("Most Submissions Upvoted", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Submission && x.VoteType == Voat.Domain.Models.Vote.Up));
+    segmented.Add("Most Submissions Downvoted", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Submission && x.VoteType == Voat.Domain.Models.Vote.Down));
+
+    segmented.Add("Most Comments Upvoted", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Comment && x.VoteType == Voat.Domain.Models.Vote.Up));
+    segmented.Add("Most Comments Downvoted", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Comment && x.VoteType == Voat.Domain.Models.Vote.Down));
+
+}
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
+
+        <h1 class="alert-h1">User Votes Given Statistics</h1>
+        <p class="tagline">
+            <span>
+                <time title="@Model.BeginDate" datetime="@Model.BeginDate">@Model.BeginDate.ToShortDateString()</time> through <time title="@Model.EndDate" datetime="@Model.EndDate">@Model.EndDate.ToShortDateString()</time>
+            </span>
+        </p>
+        @foreach (var key in segmented.Keys)
+        {
+            if (segmented[key].Any())
+            {
+                var records = segmented[key];
+                <section style="padding:20px;">
+                    <h2>@key</h2>
+                    <table class="table table-striped table-condensed">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Total Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var record in records)
+                            {
+                                <tr>
+                                    <td>
+                                        <a class="author may-blank userinfo" href="/user/@record.UserName" data-username="@record.UserName">@record.UserName</a>
+                                    </td>
+                                    <td>@record.TotalCount</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </section>
+            }
+        }
+    </div>
+</div>

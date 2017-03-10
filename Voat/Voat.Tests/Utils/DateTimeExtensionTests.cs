@@ -322,22 +322,22 @@ namespace Voat.Tests.Utils
         public void DateTimeExt_RelavtiveRanges()
         {
             var current = DateTime.UtcNow;
-            var range = current.RelativeRange(Domain.Models.SortSpan.Hour);
+            var range = current.ToRelativeRange(Domain.Models.SortSpan.Hour);
             Assert.AreEqual(TimeSpan.FromHours(1), range.Item2 - range.Item1);
 
-            range = current.RelativeRange(Domain.Models.SortSpan.Day);
+            range = current.ToRelativeRange(Domain.Models.SortSpan.Day);
             Assert.AreEqual(TimeSpan.FromHours(24), range.Item2 - range.Item1);
 
-            range = current.RelativeRange(Domain.Models.SortSpan.Week);
+            range = current.ToRelativeRange(Domain.Models.SortSpan.Week);
             Assert.AreEqual(TimeSpan.FromDays(7), range.Item2 - range.Item1);
 
-            range = current.RelativeRange(Domain.Models.SortSpan.Month);
+            range = current.ToRelativeRange(Domain.Models.SortSpan.Month);
             Assert.AreEqual(TimeSpan.FromDays(30), range.Item2 - range.Item1);
 
-            range = current.RelativeRange(Domain.Models.SortSpan.Quarter);
+            range = current.ToRelativeRange(Domain.Models.SortSpan.Quarter);
             Assert.AreEqual(TimeSpan.FromDays(90), range.Item2 - range.Item1);
 
-            range = current.RelativeRange(Domain.Models.SortSpan.Year);
+            range = current.ToRelativeRange(Domain.Models.SortSpan.Year);
             Assert.AreEqual(TimeSpan.FromDays(365), range.Item2 - range.Item1);
 
         }

@@ -16,6 +16,7 @@ namespace Voat.Tests
         [AssemblyInitialize]
         public static void AssemblyInitialize(TestContext context)
         {
+            
             if (ConfigurationManager.AppSettings["PreventDatabaseDrop"] != "true")
             {
                 //Force db to drop & seed
@@ -46,7 +47,7 @@ namespace Voat.Tests
         [AssemblyCleanup]
         public static void AssemblyCleanup()
         {
-
+            
         }
 
     }

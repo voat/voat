@@ -26,6 +26,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Data.Entity;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Voat.Data.Models;
 using Voat.Tests.Data;
@@ -640,6 +641,8 @@ namespace Voat.Tests.Repository
         }
         private void CreateUserSchema(voatEntities context)
         {
+            
+            
             //Got sick of wasting time messing around with database initializers for
             //the Identity classes since we are using a single database for testing. Here
             //is the schema script to create all the neccesary tables for AspNet Entity Identity
@@ -1554,125 +1557,60 @@ namespace Voat.Tests.Repository
             #endregion Create AspNet Schema
 
             //Create Needed Procs
+            var sqlFolderPathPublicRepo = TestEnvironmentSettings.SqlScriptRelativePath;
 
-            #region Create usp_CommentTree
+            #region Create Procs
+            
+            var dir = Environment.CurrentDirectory;
+            var scriptFolder = Path.GetFullPath(Path.Combine(dir, sqlFolderPathPublicRepo));
 
-            var proc = @"CREATE PROC dbo.usp_CommentTree
-	                        @SubmissionID INT,
-	                        @Depth INT = NULL,
-	                        @ParentID INT = NULL
-                        AS
+            var scriptFiles = new string[] { Path.Combine(scriptFolder, "procedures.sql") };
 
-                        /*
-                        I spent 14 hours working on this. Not. Even. Joking.
-                        Man, <**censored**> SQL.
-                        For at *least* two hours I was just randomly changing
-                        things in the hopes that I would accidently fix it.
-                        */
+            foreach (var scriptFile in scriptFiles)
+            {
+                if (!File.Exists(scriptFile))
+                {
+                    throw new InvalidOperationException($"Setup can not find script '{scriptFile}'");
+                }
 
-                        DECLARE @tree TABLE (
-                           SubmissionID INT,
-                           UserName NVARCHAR(30),
-                           ParentID INT,
-                           ChildID INT
-                        );
+                using (var sr = new StreamReader(scriptFile))
+                {
+                    var contents = sr.ReadToEnd();
 
-                        IF @ParentID IS NULL
-	                        INSERT INTO @tree
-	                        SELECT p.SubmissionID, p.UserName, ID, 0 FROM Comment p
-	                        WHERE
-		                        1 = 1
-		                        AND p.ParentID IS NULL
-		                        AND p.SubmissionID = @SubmissionID
-	                        UNION ALL
-	                        SELECT c.SubmissionID, c.UserName, c.ParentID, c.ID FROM Comment c
-	                        WHERE
-		                        1 = 1
-		                        AND c.ParentID IS NOT NULL
-		                        AND c.SubmissionID = @SubmissionID
-                        ELSE
-	                        INSERT INTO @tree
-	                        SELECT p.SubmissionID, p.UserName, ID, 0 FROM Comment p
-	                        WHERE
-		                        1 = 1
-		                        AND p.ParentID = @ParentID
-		                        AND p.SubmissionID = @SubmissionID
-	                        UNION ALL
-	                        SELECT c.SubmissionID, c.UserName, c.ParentID, c.ID FROM Comment c
-	                        WHERE
-		                        1 = 1
-		                        AND c.ParentID IS NOT NULL
-		                        AND c.ParentID > @ParentID
-		                        AND c.SubmissionID = @SubmissionID
+                    var segments = contents.Split(new string[] { "GO" }, StringSplitOptions.RemoveEmptyEntries);
 
-                        ;WITH CommentHierarchy
-                             AS (
-		                        SELECT
-			                        SubmissionID,
-			                        UserName,
-			                        RootID = ParentID,
-			                        [Depth] = CASE WHEN ChildID = 0 THEN 0 ELSE 1 END,
-			                        [Path] = CAST(ParentID AS VARCHAR(MAX)) + CASE WHEN ChildID != 0 THEN '\' + CAST(ChildID AS VARCHAR(MAX)) ELSE '' END,
-			                        ChildID = ChildID ,
-			                        ParentID = ParentID
-                                FROM @tree
-                                WHERE NOT ParentID IN (SELECT ChildID FROM @tree)
-                                UNION ALL
-			                        SELECT
-				                        P.SubmissionID,
-				                        C.UserName,
-				                        P.RootID,
-				                        P.[Depth] + 1 ,
-				                        P.[Path] + '\' + CAST(C.ChildID AS VARCHAR(MAX)) ,
-				                        C.ChildID,
-				                        C.ParentID
-			                        FROM CommentHierarchy P
-			                        INNER JOIN @tree C ON P.ChildID = C.ParentID
-                               )
-                        SELECT
-	                        ChildCount = (
-			                        SELECT COUNT(*)  FROM CommentHierarchy
-			                        WHERE
-				                        1 = 1
-				                        AND c.ID = ParentID
-				                        AND ChildID != 0
-		                        ),
-	                        --h.*,
-	                        h.Depth,
-	                        h.Path,
-	                        m.Subverse,
-	                        c.*
-                        FROM CommentHierarchy h
-                        INNER JOIN Comment c ON (c.ID = CASE WHEN ChildID IS NULL OR ChildID = 0 THEN h.ParentID ELSE ChildID END)
-                        INNER JOIN Submission m ON (c.SubmissionID = m.ID)
-                        WHERE
-	                        ([Depth] <= @Depth OR @Depth IS NULL)
-                        --ORDER BY ID, Depth, ParentID
-	                        --AND (h.RootID = @ParentID OR @ParentID IS NULL)
+                    var cmd = context.Database.Connection.CreateCommand();
+                    //cmd.CommandText = contents;
+                    cmd.CommandType = System.Data.CommandType.Text;
+                    try
+                    {
+                        if (cmd.Connection.State != System.Data.ConnectionState.Open)
+                        {
+                            cmd.Connection.Open();
+                        }
+                        foreach (var batch in segments)
+                        {
+                            cmd.CommandText = batch;
+                            cmd.ExecuteNonQuery();
+                        }
 
-                        /*
-	                        LOAD ALL COMMENTS FOR SUBMISSION
-	                        usp_CommentTree 2441
-	                        , NULL, 6116
-	                        usp_CommentTree 2510, 1, 7407
-	                        usp_CommentTree 2510, 1, 7408
-	                        usp_CommentTree 2510, 1, 7409
-		                        usp_CommentTree 2441, NULL, 6177
-	                        usp_CommentTree 2441, 1, 6116
-	                        usp_CommentTree 2441, NULL, 6113
-	                        usp_CommentTree 2441, NULL, 6287
-	                        SELECT p.MessageID, ID, 0 FROM Comments p
-	                        WHERE
-		                        p.ID = 6177
-	                        UNION ALL
+                    }
+                    finally {
+                        if (cmd.Connection.State != System.Data.ConnectionState.Closed)
+                        {
+                            cmd.Connection.Close();
+                        }
+                    }
+                    //ExecuteSqlCommand(contents);
+                }
 
-	                        SELECT c.MessageID, c.ParentID, c.ID FROM Comments c
-	                        WHERE
-		                        c.MessageID = 2441
-		                        AND
-		                        c.ParentID != 6177
-                        */";
-            context.Database.ExecuteSqlCommand(proc);
+
+            }
+
+
+
+
+            
 
             #endregion Create usp_CommentTree
         }

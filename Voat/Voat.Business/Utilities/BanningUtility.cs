@@ -36,7 +36,7 @@ namespace Voat.Utilities
                 if (s == null || (s != null && !s.ExcludeSitewideBans))
                 {
                     List<string> domains = new List<string>();
-                    ProcessMatches(Regex.Matches(contentToEvaluate, CONSTANTS.HTTP_LINK_REGEX, RegexOptions.IgnoreCase), domains);
+                    ProcessMatches(Regex.Matches(contentToEvaluate, CONSTANTS.PROTOCOL_LESS_LINK_REGEX, RegexOptions.IgnoreCase), domains);
                     if (domains.Count > 0)
                     {
                         bool hasBannedDomainLinks = BanningUtility.IsDomainBanned(domains.ToArray());

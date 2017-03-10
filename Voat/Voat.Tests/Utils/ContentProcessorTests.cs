@@ -132,7 +132,7 @@ namespace Voat.Tests.Utils
             string content = "/v/VoatIs";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == String.Format("[{0}]({1})", content, "https://voat.co" + content));
+            Assert.AreEqual(String.Format("[{0}]({1})", content, "https://voat.co" + content), processed);
         }
 
         [TestMethod]
@@ -143,7 +143,7 @@ namespace Voat.Tests.Utils
             string content = "nomatch/v/VoatIs/new";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == content);
+            Assert.AreEqual(content, processed);
         }
 
         [TestMethod]
@@ -154,7 +154,7 @@ namespace Voat.Tests.Utils
             string content = "/v/somesub/comments/3333#submissionTop";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == String.Format("[{0}](https://voat.co{1})", content, content));
+            Assert.AreEqual(String.Format("[{0}](https://voat.co{1})", content, content), processed);
         }
 
         [TestMethod]
@@ -165,7 +165,7 @@ namespace Voat.Tests.Utils
             string content = "/v/VoatIs/new";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == String.Format("[{0}]({1})", content, "https://voat.co" + content));
+            Assert.AreEqual(String.Format("[{0}]({1})", content, "https://voat.co" + content), processed);
         }
 
         [TestMethod]
@@ -176,7 +176,7 @@ namespace Voat.Tests.Utils
             string content = "/v/VoatIs/top";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == String.Format("[{0}]({1})", content, "https://voat.co" + content));
+            Assert.AreEqual(String.Format("[{0}]({1})", content, "https://voat.co" + content), processed);
         }
 
         [TestMethod]
@@ -187,7 +187,7 @@ namespace Voat.Tests.Utils
             string content = "/v/VoatIs/NotValid";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == String.Format("[{0}]({1})/NotValid", "/v/VoatIs", "https://voat.co/v/VoatIs"));
+            Assert.AreEqual(String.Format("[{0}]({1})/NotValid", "/v/VoatIs", "https://voat.co/v/VoatIs"), processed);
         }
 
         [TestMethod]
@@ -203,7 +203,7 @@ namespace Voat.Tests.Utils
             string content = "I have enabled this: v/api and r/golf matching [link](http://voat.co)";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "I have enabled this: [v/api](https://voat.co/v/api) and [r/golf](https://np.reddit.com/r/golf) matching [link](http://voat.co)");
+            Assert.AreEqual("I have enabled this: [v/api](https://voat.co/v/api) and [r/golf](https://np.reddit.com/r/golf) matching [link](http://voat.co)", processed);
         }
 
         [TestMethod]
@@ -214,12 +214,12 @@ namespace Voat.Tests.Utils
             string content = "-@User";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "[@User](https://voat.co/user/User)");
+            Assert.AreEqual("[@User](https://voat.co/user/User)", processed);
 
             content = "-/u/User";
 
             processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "[/u/User](https://voat.co/user/User)");
+            Assert.AreEqual("[/u/User](https://voat.co/user/User)", processed);
         }
 
         [TestMethod]
@@ -308,7 +308,32 @@ namespace Voat.Tests.Utils
 
             Assert.AreEqual(expected, actual);
         }
+        [TestMethod]
+        [TestCategory("Utility")]
+        [TestCategory("Formatting")]
+        [TestCategory("Bug")]
+        public void Href_Raw_Bug_Trap_Dash_End()
+        {
+            string input = "http://www.domain.com/x-";
+            string expected = $"<p><a href=\"{input}\">{input}</a></p>";
 
+            string actual = Formatting.FormatMessage(input);
+
+            Assert.AreEqual(expected, actual);
+        }
+        [TestMethod]
+        [TestCategory("Utility")]
+        [TestCategory("Formatting")]
+        [TestCategory("Bug")]
+        public void Href_Raw_Bug_Trap_Underscore_End()
+        {
+            string input = "http://www.domain.com/x_";
+            string expected = $"<p><a href=\"{input}\">{input}</a></p>";
+
+            string actual = Formatting.FormatMessage(input);
+
+            Assert.AreEqual(expected, actual);
+        }
         [TestMethod]
         [TestCategory("Utility")]
         [TestCategory("Formatting")]

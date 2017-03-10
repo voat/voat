@@ -69,7 +69,7 @@
             {
                 @Html.Action("StickiedSubmission", "Subverses", new { subverseName = Model.Context.Name })
             }
-            else
+            else if (Model.Context == null || (Model.Context != null && Model.Context.Type != DomainType.Set))
             {
                 @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
                 @Html.Action("FeaturedSub", "Home")

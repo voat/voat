@@ -186,6 +186,22 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
         [TestCategory("Ban"), TestCategory("Ban.Domain")]
+        public void CreateComment_BannedDomain_NoProtocol()
+        {
+            TestHelper.SetPrincipal("TestUser02");
+
+            var cmd = new CreateCommentCommand(1, null, "[Check out this killer website](//fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!");
+            var c = cmd.Execute().Result;
+
+            Assert.IsFalse(c.Success);
+            Assert.AreEqual("Comment contains banned domains", c.Message);
+
+        }
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
+        [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void EditComment_BannedDomain()
         {
             TestHelper.SetPrincipal("TestUser02");

@@ -79,8 +79,8 @@
 }
 
 body {
-    background: $background-5;
-    color: $color-2;
+    background: $body-background-color;
+    color: $body-color;
     font: 11px Arial,sans-serif;
     line-height: 1.43;
     margin: 0;
@@ -1289,7 +1289,7 @@ pre, code {
 /* ! Header : Top : Subverses list
 ------------------------------------------------------------------------------------ */
 
-#sr-bar li a {
+#sr-bar li a, .top-bar li a {
     color: $color-44;
     @include transition(color 0.2s ease);
 }
@@ -1402,12 +1402,13 @@ pre, code {
 -------------------------------------------------------------------------------- */
 
 .top-bar {
+    background-color: $body-background-color;
     height: 24px;
     line-height: 24px;
     font-size: 12px;
     overflow: hidden;
     position: relative;
-    margin-left: 5px;
+    padding-left: 5px;
     white-space: nowrap;
 
     li {

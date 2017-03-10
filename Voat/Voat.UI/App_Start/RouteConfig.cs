@@ -1109,6 +1109,8 @@ namespace Voat
                 defaults: new { controller = "Error", action = "Others" }
             );
 
+            routes.MapMvcAttributeRoutes();
+
             // default route
             routes.MapRoute(
                 name: "Default",
@@ -1122,12 +1124,12 @@ namespace Voat
             );
 
 #if DEBUG
-            var sb = new System.Text.StringBuilder();
-            foreach (Route route in routes)
-            {
-                sb.AppendLine(route.Url);
-            }
-            Debug.WriteLine(sb.ToString());
+            //var sb = new System.Text.StringBuilder();
+            //foreach (Route route in routes)
+            //{
+            //    sb.AppendLine(route.Url);
+            //}
+            //Debug.WriteLine(sb.ToString());
 #endif
 
 

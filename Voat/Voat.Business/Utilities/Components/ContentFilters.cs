@@ -156,7 +156,7 @@ namespace Voat.Utilities.Components
 
             ProcessLogic = delegate (Match m, string matchSource, object state)
             {
-                return String.Format("[{0}]({1})", m.Value, VoatUrlFormatter.Subverse(m.Groups["sub"].Value + (m.Groups["anchor"].Success ? m.Groups["anchor"].Value : "")));
+                return String.Format("[{0}]({1})", m.Value, VoatUrlFormatter.Subverse(m.Groups["name"].Value + (m.Groups["fullPath"].Success ? m.Groups["fullPath"].Value : "")));
             };
         }
 

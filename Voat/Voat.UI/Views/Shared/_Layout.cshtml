@@ -121,6 +121,7 @@
                 @if (navModel != null)
                 {
                     //New Navigation Model
+                    //TODO: Possibly move the path into the model?
                     switch (navModel.MenuType)
                     {
                         case MenuType.Set:
@@ -147,6 +148,9 @@
                             break;
                         case MenuType.Moderator:
                             @Html.Partial("~/Views/Shared/Navigation/_ModMenu.cshtml", navModel)
+                            break;
+                        case MenuType.Statistics:
+                            @Html.Partial("~/Views/Shared/Navigation/_Statistics.cshtml", navModel)
                             break;
                     }
                 }

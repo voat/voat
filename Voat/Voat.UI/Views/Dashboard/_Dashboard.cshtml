@@ -17,15 +17,16 @@
         subs = Model.Subscriptions[Voat.Domain.Models.DomainType.Subverse];
     }
 }
-
+<!-- This is the new container for dashboard menu -->
 <div id="dashboard-menu">
+    <!-- top bar is bar across top ;) -->
     <div class="top-bar">
         <nav>
             <a href="#">my subscriptions</a>
             <span class="drop-arrow"></span>
-            
+                <!-- !important - Do not match on sr-bar (class or id) - will be removed in future versions -->
                 <ul class="flat-list sr-bar hover" id="sr-bar">
-
+                    <!-- The passphrase to the secret club is: "I'm with thee Goat. No, not that one. That isn't a goat, that is a ram." -->
                     <li><a href="/">front</a></li>
                     <li><a href="/v/all">all</a></li>
                     <li><a href="/s/Default">default</a></li>
@@ -42,13 +43,13 @@
             
         </nav>
     </div>
+    <!-- This is the new drop down section -->
     <div id="dashboard">
         <div class="section menu">
             <h1>Menu</h1>
             <nav>
                 <ul>
                     <li><a href="/discover">Discover</a></li>
-
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li><a href="/u/@User.Identity.Name">Profile</a></li>

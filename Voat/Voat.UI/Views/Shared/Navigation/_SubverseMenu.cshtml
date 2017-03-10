@@ -17,15 +17,14 @@
     var name = Model.Name;
     var path = Model.BasePath;
     var url = Request.Url.AbsolutePath.ToLower();
-
-
+ 
     if (!String.IsNullOrEmpty(name))
     {
         <span class="hover pagename"><a href="@path">@name</a></span>
     }
 
     <ul class="tabmenu">
-        <li class='@(!(url.Contains("/new") || url.Contains("/top")) ? "selected" : "disabled")'><a href="@path" title="Show most popular submissions">Hot</a></li>
+        <li class='@(!(url.Contains("/new") || url.Contains("/top")) ? "selected" : "disabled")'><a href="@path/" title="Show most popular submissions">Hot</a></li>
         <li class='@(url.Contains("/new") ? "selected" : "disabled")'><a href="@path/new" title="Show latest submissions">New</a></li>
         <li class='@(url.Contains("/top") ? "selected" : "disabled")'><a href="@path/top" title="Show all time top ranked submissions">Top</a></li>
         @if (!name.IsEqual("all") && String.IsNullOrEmpty(name))

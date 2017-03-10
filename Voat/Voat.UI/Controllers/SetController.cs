@@ -114,7 +114,7 @@ namespace Voat.Controllers
 
             }
         }
-        [Authorize]
+
         public async Task<ActionResult> Details(string name, string userName)
         {
 

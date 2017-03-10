@@ -206,5 +206,20 @@ namespace Voat.Caching
             return $"Subverse:ModLog:{subverse}:Comments{options.ToString(":{0}", "page=0")}";
         }
 
+        public class Statistics
+        {
+            public static string UserVotesGiven(SearchOptions options)
+            {
+                return $"Statistics:UserVotesGiven";
+            }
+            public static string UserVotesReceived(SearchOptions options)
+            {
+                return $"Statistics:UserVotesReceived";
+            }
+            public static string HighestVotedContent(SearchOptions options)
+            {
+                return $"Statistics:HighestVotedContent";
+            }
+        }
     }
 }

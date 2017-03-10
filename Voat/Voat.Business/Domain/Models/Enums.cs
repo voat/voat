@@ -376,4 +376,12 @@ namespace Voat.Domain.Models
         Index = 8,
         All = Follow | Index
     }
+    [Flags]
+    public enum VoteTypeAllowed
+    {
+        None = 1,
+        Up = 2,
+        Down = 4,
+        Any = Up | Down,
+    }
 }

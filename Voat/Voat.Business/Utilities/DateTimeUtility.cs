@@ -122,40 +122,47 @@ namespace Voat.Utilities
             }
             return null;
         }
-        public static Tuple<DateTime, DateTime> RelativeRange(this DateTime dateTime, SortSpan sortSpan)
+        /// <summary>
+        /// Returns a range based on the span provided. Does not standardize range, simply subtracts offset.
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <param name="sortSpan"></param>
+        /// <returns></returns>
+        public static Tuple<DateTime, DateTime> ToRelativeRange(this DateTime dateTime, SortSpan sortSpan, SortDirection sortDirection = SortDirection.Reverse)
         {
             DateTime start = dateTime;
             DateTime end = dateTime;
+            var directionMultiplier = sortDirection == SortDirection.Reverse ? -1 : 1;
             switch (sortSpan)
             {
                 case SortSpan.Hour:
                     end = start.ToEndOfHour();
-                    start = end.AddHours(-1);
+                    start = end.AddHours(1 * directionMultiplier);
                     break;
 
                 case SortSpan.Day:
                     end = start.ToEndOfHour();
-                    start = end.AddHours(-24);
+                    start = end.AddHours(24 * directionMultiplier);
                     break;
 
                 case SortSpan.Week:
                     end = start.ToEndOfDay();
-                    start = end.AddDays(-7);
+                    start = end.AddDays(7 * directionMultiplier);
                     break;
 
                 case SortSpan.Month:
                     end = start.ToEndOfDay();
-                    start = end.AddDays(-30);
+                    start = end.AddDays(30 * directionMultiplier);
                     break;
 
                 case SortSpan.Quarter:
                     end = start.ToEndOfDay();
-                    start = end.AddDays(-90);
+                    start = end.AddDays(90 * directionMultiplier);
                     break;
 
                 case SortSpan.Year:
                     end = start.ToEndOfDay();
-                    start = end.AddDays(-365);
+                    start = end.AddDays(365 * directionMultiplier);
                     break;
 
                 default:
@@ -167,10 +174,15 @@ namespace Voat.Utilities
 
             return new Tuple<DateTime, DateTime>(start, end);
         }
-        //The purpose of this function is to standardize inputs so that we can cache ranged queries. Currently ranges
-        //use the current date which contains diffrent minute, second, and ms with each call. This function converts to common
-        //start and end ranges (beginning and ending of days, hours, etc.)
-        public static Tuple<DateTime, DateTime> Range(this DateTime dateTime, SortSpan sortSpan)
+        /// <summary>
+        /// The purpose of this function is to standardize inputs so that we can cache ranged queries. Currently ranges
+        /// use the current date which contains diffrent minute, second, and ms with each call. This function converts to common
+        /// start and end ranges (beginning and ending of days, hours, etc.)
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <param name="sortSpan"></param>
+        /// <returns></returns>
+        public static Tuple<DateTime, DateTime> ToRange(this DateTime dateTime, SortSpan sortSpan)
         {
             DateTime start = dateTime;
             DateTime end = dateTime;
@@ -215,42 +227,6 @@ namespace Voat.Utilities
             }
 
             return new Tuple<DateTime, DateTime>(start, end);
-        }
-    }
-
-    [Obsolete("Will be removed from future versions. Use Voat.Utilities.DateTimeExtensions class instead")]
-    public static class DateTimeUtility
-    {
-        // a method to convert natural language to DateTime datatype
-        public static DateTime DateRangeToDateTime(string daterange)
-        {
-            switch (daterange)
-            {
-                case "week":
-
-                    // set start date to past 1 week
-                    return Repository.CurrentDate.Add(new TimeSpan(-7, 0, 0, 0, 0));
-
-                case "month":
-
-                    // set start date to past 30 days
-                    return Repository.CurrentDate.Add(new TimeSpan(-30, 0, 0, 0, 0));
-
-                case "year":
-
-                    // set start date to past 365 days
-                    return Repository.CurrentDate.Add(new TimeSpan(-365, 0, 0, 0, 0));
-
-                case "all":
-
-                    // set start date to past 100 years
-                    return Repository.CurrentDate.AddYears(-100);
-
-                default:
-
-                    // set start date to past 24 hours
-                    return Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
-            }
         }
     }
 }

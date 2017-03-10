@@ -32,16 +32,16 @@ namespace Voat.Controllers
 
         #region JSON Responses
         //These are beginning port to api structures
-        public JsonResult JsonError(string type, string message)
+        protected JsonResult JsonError(string type, string message)
         {
             //Response.StatusCode = 400;
             return Json(new { success = false, error = new { type = type, message = message } });
         }
-        public JsonResult JsonError(string message)
+        protected JsonResult JsonError(string message)
         {
             return JsonError("General", message);
         }
-        public JsonResult JsonResult(CommandResponse response)
+        protected JsonResult JsonResult(CommandResponse response)
         {
             if (response.Success)
             {
@@ -52,7 +52,7 @@ namespace Voat.Controllers
                 return JsonError(response.Message);
             }
         }
-        public JsonResult JsonResult<T>(CommandResponse<T> response)
+        protected JsonResult JsonResult<T>(CommandResponse<T> response)
         {
             if (response.Success)
             {
@@ -65,11 +65,11 @@ namespace Voat.Controllers
         }
         #endregion
         #region Error View Accessors
-        public ViewResult NotFoundErrorView()
+        protected ViewResult NotFoundErrorView()
         {
             return View("~/Views/Error/404.cshtml");
         }
-        public ViewResult GenericErrorView(ErrorViewModel model = null)
+        protected ViewResult GenericErrorView(ErrorViewModel model = null)
         {
             if (model == null)
             {
@@ -77,19 +77,19 @@ namespace Voat.Controllers
             }
             return View("~/Views/Error/Generic.cshtml", model);
         }
-        public ViewResult UnAuthorizedErrorView()
+        protected ViewResult UnAuthorizedErrorView()
         {
             return View("~/Views/Error/UnAuthorized.cshtml");
         }
-        public ViewResult HeavyLoadErrorView()
+        protected ViewResult HeavyLoadErrorView()
         {
             return View("~/Views/Error/DbNotResponding.cshtml");
         }
-        public ViewResult SubverseDisabledErrorView()
+        protected ViewResult SubverseDisabledErrorView()
         {
             return View("~/Views/Error/SubverseDisabled.cshtml");
         }
-        public ViewResult SubverseNotFoundErrorView()
+        protected ViewResult SubverseNotFoundErrorView()
         {
             return View("~/Views/Error/Subversenotfound.cshtml");
         }

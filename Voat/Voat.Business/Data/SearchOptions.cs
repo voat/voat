@@ -248,20 +248,36 @@ namespace Voat.Data
         {
             if (this.Span != SortSpan.All)
             {
-                if (!StartDate.HasValue)
+                DateTime dateToBaseRangeOn;
+
+                if (StartDate.HasValue && !EndDate.HasValue)
                 {
-                    _startDate = Repository.CurrentDate;
+                    //Use start date
+                    dateToBaseRangeOn = StartDate.Value;
+                }
+                else if (!StartDate.HasValue && EndDate.HasValue)
+                {
+                    //Use end date
+                    dateToBaseRangeOn = EndDate.Value;
+                }
+                else if (StartDate.HasValue && EndDate.HasValue)
+                {
+                    //default previous logic
+                    dateToBaseRangeOn = StartDate.Value;
+                }
+                else {
+                    dateToBaseRangeOn = Repository.CurrentDate;
                 }
 
                 //get date range based on span
                 Tuple<DateTime, DateTime> range;
                 if (UseRelativeDateSpans)
                 {
-                    range = _startDate.Value.RelativeRange(this.Span);
+                    range = dateToBaseRangeOn.ToRelativeRange(this.Span);
                 }
                 else
                 {
-                    range = _startDate.Value.Range(this.Span);
+                    range = dateToBaseRangeOn.ToRange(this.Span);
                 }
                 this._startDate = range.Item1;
                 this._endDate = range.Item2;

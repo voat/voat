@@ -24,7 +24,23 @@
     string votingStatusClassDownArrow = "arrow-downvote";
     string likesOrDislikesClass = "unvoted";
     Submission submission = ViewBag.Submission;
-    if (submission == null || !submission.ArchiveDate.HasValue)
+
+    Voat.Domain.Models.VoteTypeAllowed voteTypeAllowed = ViewBag.VoteTypeAllowed == null ? Voat.Domain.Models.VoteTypeAllowed.Any : (Voat.Domain.Models.VoteTypeAllowed)ViewBag.VoteTypeAllowed;
+    if (submission != null && submission.ArchiveDate.HasValue)
+    {
+        voteTypeAllowed = Voat.Domain.Models.VoteTypeAllowed.None;
+    }
+
+
+    if (voteTypeAllowed == Voat.Domain.Models.VoteTypeAllowed.None)
+    {
+        <div class="midcol unvoted">
+            <div class="score dislikes">@Model.DownCount</div>
+            <div class="score submissionscore">@Model.Sum</div>
+            <div class="score likes">@Model.UpCount</div>
+        </div>
+    }
+    else
     {
         //LOGGED IN USERS
         if (User.Identity.IsAuthenticated)
@@ -46,17 +62,29 @@
                 }
             }
             <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
-                <div class="@votingStatusClassUpArrow login-required" onclick="voteComment(@Model.ID, 1);" role="button" aria-label="upvote" tabindex="0"></div>
-                <div class="@votingStatusClassDownArrow login-required" onclick="voteComment(@Model.ID, -1);" role="button" aria-label="downvote" tabindex="0"></div>
+                @if ((voteTypeAllowed & Voat.Domain.Models.VoteTypeAllowed.Up) > 0)
+                {
+                    <div class="@votingStatusClassUpArrow login-required" onclick="voteComment(@Model.ID, 1);" role="button" aria-label="upvote" tabindex="0"></div>
+                }
+                @if ((voteTypeAllowed & Voat.Domain.Models.VoteTypeAllowed.Down) > 0)
+                {
+                    <div class="@votingStatusClassDownArrow login-required" onclick="voteComment(@Model.ID, -1);" role="button" aria-label="downvote" tabindex="0"></div>
+                }
             </div>
             }
             else
             //GUESTS
             {
-            <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
-                <div class="@votingStatusClassUpArrow login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0"></div>
-                <div class="@votingStatusClassDownArrow login-required" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
-            </div>
+                <div class="midcol @likesOrDislikesClass" style="@collapsedStyle">
+                    @if ((voteTypeAllowed & Voat.Domain.Models.VoteTypeAllowed.Up) > 0)
+                    {
+                        <div class="@votingStatusClassUpArrow login-required" onclick="mustLogin();" role="button" aria-label="upvote" tabindex="0"></div>
+                    }
+                    @if ((voteTypeAllowed & Voat.Domain.Models.VoteTypeAllowed.Down) > 0)
+                    {
+                        <div class="@votingStatusClassDownArrow login-required" onclick="mustLogin();" role="button" aria-label="downvote" tabindex="0"></div>
+                    }
+                </div>
             }
         }
     }
