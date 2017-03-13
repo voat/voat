@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
 using Voat.Tests.Repository;
@@ -163,6 +164,21 @@ namespace Voat.Tests.CommandTests
         [TestCategory("User"), TestCategory("Command"), TestCategory("User.DeleteAccount")]
         public async Task DeleteAccount_Basic()
         {
+            //EnsureBadges
+            using (var db = new voatEntities())
+            {
+                if (!db.Badges.Any(x => x.ID == "deleted"))
+                {
+                    db.Badges.Add(new Badge() { ID = "deleted", Name = "Account Deleted", Graphic = "deleted.png", Title = "deleted" }); 
+                }
+                if (!db.Badges.Any(x => x.ID == "deleted2"))
+                {
+                    db.Badges.Add(new Badge() { ID = "deleted2", Name = "Account Deleted", Graphic = "deleted2.png", Title = "deleted" });
+                }
+                db.SaveChanges();
+            }
+
+
             var userName = "TestDeleteUser01";
 
             VoatDataInitializer.CreateUser(userName);
@@ -318,6 +334,8 @@ namespace Voat.Tests.CommandTests
                         Assert.IsTrue(userAccount.LockoutEnabled, "Lockout should be enabled");
                         Assert.IsNotNull(userAccount.LockoutEndDateUtc, "Lockout should not be null");
                         Assert.IsTrue(userAccount.LockoutEndDateUtc.Value.Subtract(DateTime.UtcNow) >= TimeSpan.FromDays(89), "Lockout be set to roughly 90 days");
+
+                       
                     }
                     else
                     {
@@ -325,8 +343,10 @@ namespace Voat.Tests.CommandTests
                         Assert.IsFalse(userAccount.LockoutEnabled, "Lockout should be enabled");
                     }
 
-                    //Make sure password is reset
-                    var passwordAccess = userManager.Find(options.UserName, options.CurrentPassword);
+                    Assert.IsTrue(db.UserBadges.Any(x => x.UserName == userAccount.UserName && x.BadgeID == (String.IsNullOrEmpty(options.RecoveryEmailAddress) ? "deleted" : "deleted2")), "Can not find delete badge");
+
+                   //Make sure password is reset
+                   var passwordAccess = userManager.Find(options.UserName, options.CurrentPassword);
                     Assert.IsNull(passwordAccess, "Can access user account with old password");
 
                 }

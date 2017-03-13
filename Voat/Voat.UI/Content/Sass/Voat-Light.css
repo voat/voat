@@ -1117,7 +1117,7 @@ pre, code {
 
 /* ! Header : Top : Subverses list
 ------------------------------------------------------------------------------------ */
-#sr-bar li a, .top-bar li a {
+#sr-bar li a, .top-bar li a, #dashboard li a {
   color: #818181;
   -webkit-transition: color 0.2s ease;
   transition: color 0.2s ease; }

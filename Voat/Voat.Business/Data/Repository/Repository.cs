@@ -5408,8 +5408,8 @@ namespace Voat.Data
                         }
                     
 
-                    // delete user preferences
-                    var userPrefs = _db.UserPreferences.Find(userName);
+                        // delete user preferences
+                        var userPrefs = _db.UserPreferences.Find(userName);
                         if (userPrefs != null)
                         {
                             // delete short bio
@@ -5441,24 +5441,21 @@ namespace Voat.Data
                             }
                         }
 
+
                         // UNDONE: keep this updated as new features are added (delete sets etc)
                         // username will stay permanently reserved to prevent someone else from registering it and impersonating
                         await _db.SaveChangesAsync().ConfigureAwait(false);
 
-                        //Modify User Account
-
-                        //            UserManager.SetEmail(User.Identity.GetUserId(), null);
-
-                        //            string randomPassword = "";
-                        //            using (SHA512 shaM = new SHA512Managed())
-                        //            {
-                        //                randomPassword = Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(Path.GetRandomFileName())));
-                        //            }
-
-                        //            UserManager.ChangePassword(User.Identity.GetUserId(), model.CurrentPassword, randomPassword);
-
-                        //            AuthenticationManager.SignOut();
-                        //            return View("~/Views/Account/AccountDeleted.cshtml");
+                        try
+                        {
+                            //Flag Deleted Account
+                            _db.UserBadges.Add(new Models.UserBadge() { BadgeID = (setRecoveryEmail ? "deleted2" : "deleted"), CreationDate = CurrentDate, UserName = userName });
+                            await _db.SaveChangesAsync().ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            /*no-op*/
+                        }
 
                         var userID = userAccount.Id;
 

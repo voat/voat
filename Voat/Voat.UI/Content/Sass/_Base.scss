@@ -1289,7 +1289,7 @@ pre, code {
 /* ! Header : Top : Subverses list
 ------------------------------------------------------------------------------------ */
 
-#sr-bar li a, .top-bar li a {
+#sr-bar li a, .top-bar li a, #dashboard li a {
     color: $color-44;
     @include transition(color 0.2s ease);
 }

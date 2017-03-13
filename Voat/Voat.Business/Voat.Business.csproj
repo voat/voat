@@ -158,6 +158,7 @@
     <Compile Include="Caching\Handlers\NullCacheHandler.cs" />
     <Compile Include="Caching\Handlers\RedisCacheHandler.cs" />
     <Compile Include="Caching\ICacheHandler.cs" />
+    <Compile Include="Caching\Models\CacheEnvelope.cs" />
     <Compile Include="Common\DatabaseMappedValueAttribute.cs" />
     <Compile Include="Common\LockStore.cs" />
     <Compile Include="Common\SafeEnum.cs" />
@@ -218,6 +219,7 @@
     <Compile Include="Domain\Models\Reports\ContentUserReport.cs" />
     <Compile Include="Domain\Models\Set.cs" />
     <Compile Include="Domain\Models\SetPermission.cs" />
+    <Compile Include="Domain\Models\Statistics\Statistics.cs" />
     <Compile Include="Domain\Models\Stylesheet.cs" />
     <Compile Include="Domain\Models\SubverseBannedUser.cs" />
     <Compile Include="Domain\Models\SubverseModerator.cs" />

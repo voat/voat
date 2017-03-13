@@ -1,9 +1,9 @@
 ﻿
 
-@model Statistics<IEnumerable<UserVoteReceivedStats>>
+@model Voat.Domain.Models.Statistics<IEnumerable<Voat.Domain.Models.UserVoteReceivedStats>>
 
 @{
-    Dictionary<string, IEnumerable<UserVoteReceivedStats>> segmented = new Dictionary<string, IEnumerable<UserVoteReceivedStats>>();
+    Dictionary<string, IEnumerable<Voat.Domain.Models.UserVoteReceivedStats>> segmented = new Dictionary<string, IEnumerable<Voat.Domain.Models.UserVoteReceivedStats>>();
 
     segmented.Add("Submission Upvotes Received", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Submission && x.VoteType == Voat.Domain.Models.Vote.Up));
     segmented.Add("Submission Downvotes Received", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Submission && x.VoteType == Voat.Domain.Models.Vote.Down));
@@ -18,7 +18,7 @@
         <h1 class="alert-h1">User Votes Received Statistics</h1>
         <p class="tagline">
             <span>
-                <time title="@Model.BeginDate" datetime="@Model.BeginDate">@Model.BeginDate.ToShortDateString()</time> through <time title="@Model.EndDate" datetime="@Model.EndDate">@Model.EndDate.ToShortDateString()</time>
+                <time title="@Model.BeginDate" datetime="@Model.BeginDate">@Model.BeginDate.ToShortDateString()</time> through <time title="@Model.EndDate" datetime="@Model.EndDate">@Model.EndDate.ToShortDateString()</time> generated <time title="@Model.CreationDate" datetime="@Model.CreationDate">@Age.ToRelative(Model.CreationDate)</time> ago.
             </span>
         </p>
         @foreach (var key in segmented.Keys)
@@ -26,7 +26,7 @@
             if (segmented[key].Any())
             {
                 var records = segmented[key];
-                <section style="padding:20px;">
+                <section>
                     <h2>@key</h2>
                     <table class="table table-striped table-condensed">
                         <thead>
