@@ -75,6 +75,10 @@ namespace Voat.Common
         {
             return new SafeEnum<T>(value);
         }
+        public override string ToString()
+        {
+            return _value.ToString();
+        }
     }
 
     public class SafeEnumConverter : TypeConverter
