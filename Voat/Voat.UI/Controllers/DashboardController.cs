@@ -14,7 +14,7 @@ namespace Voat.Controllers
     {
         public async Task<ActionResult> Menu()
         {
-            var showDashboard = (Request.Cookies["dashboard"] != null);
+            var showDashboard = (Request.Cookies["legacy"] == null);
 
             //Temp logic, parse querystring, allows showing both menus
             var menuQueryString = Request.QueryString["menu"];
@@ -22,12 +22,12 @@ namespace Voat.Controllers
             {
                 if (menuQueryString.Equals("dashboard"))
                 {
-                    Response.SetCookie(new HttpCookie("dashboard") { Expires = DateTime.UtcNow.AddDays(7) });
+                    Response.SetCookie(new HttpCookie("legacy") { Expires = DateTime.UtcNow.AddDays(-7) });
                     showDashboard = true;
                 }
                 else if (menuQueryString.Equals("legacy"))
                 {
-                    Response.SetCookie(new HttpCookie("dashboard") { Expires = DateTime.UtcNow.AddDays(-7) });
+                    Response.SetCookie(new HttpCookie("legacy") { Expires = DateTime.UtcNow.AddDays(7) });
                     showDashboard = false;
                 }
             }

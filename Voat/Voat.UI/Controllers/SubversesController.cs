@@ -387,6 +387,7 @@ namespace Voat.Controllers
            
             var viewProperties = new SubmissionListViewModel();
             viewProperties.PreviewMode = previewMode ?? false;
+            ViewBag.PreviewMode = viewProperties.PreviewMode;
 
             //Set to DEFAULT if querystring is present
             if (Request.QueryString["frontpage"] == "guest")
@@ -396,7 +397,6 @@ namespace Voat.Controllers
             if (String.IsNullOrEmpty(subverse))
             {
                 subverse = AGGREGATE_SUBVERSE.FRONT;
-                //return SubverseNotFoundErrorView();
             }
 
             SetFirstTimeCookie();
@@ -409,18 +409,8 @@ namespace Voat.Controllers
             if (!String.IsNullOrEmpty(sort))
             {
                 options.Sort = (Domain.Models.SortAlgorithm)Enum.Parse(typeof(Domain.Models.SortAlgorithm), sort, true);
-                ////Prevent subs from being sorted relative
-                //switch (options.Sort)
-                //{
-                //    case Domain.Models.SortAlgorithm.New:
-                //    case Domain.Models.SortAlgorithm.Hot:
-                //    case Domain.Models.SortAlgorithm.Top:
-                //        break;
-                //    default:
-                //        options.Sort = Domain.Models.SortAlgorithm.Hot;
-                //        break;
-                //}
             }
+
             //set span to day if not specified explicitly 
             if (options.Sort == Domain.Models.SortAlgorithm.Top && Request.QueryString["span"] == null)
             {
@@ -505,12 +495,13 @@ namespace Voat.Controllers
                     viewProperties.Title = subverseObject.Title;
                     routeName = ROUTE_NAMES.SUBVERSE_INDEX;
                 }
+                //what to query
+                var domainReference = new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse);
 
-
-                var q = new QuerySubmissions(subverse, Domain.Models.DomainType.Subverse, options);
+                var q = new QuerySubmissions(domainReference, options);
                 var results = await q.ExecuteAsync().ConfigureAwait(false);
 
-                viewProperties.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse);
+                viewProperties.Context = domainReference;
                 pageList = new PaginatedList<Domain.Models.Submission>(results, options.Page, options.Count, -1);
                 pageList.RouteName = routeName;
                 viewProperties.Submissions = pageList;

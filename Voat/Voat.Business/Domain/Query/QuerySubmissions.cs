@@ -14,20 +14,18 @@ namespace Voat.Domain.Query
 
         protected DomainReference _domainReference;
 
-        //protected string _name;
-        //protected DomainType _type;
-        //protected string _contextUserName;
-
-        public QuerySubmissions(string name, DomainType type, SearchOptions options, string userName = null) : this(name, type, options, CachePolicy.None, userName)
+       
+        public QuerySubmissions(DomainReference domainReference, SearchOptions options) : this(domainReference, options, CachePolicy.None)
         {
-            
+
         }
-        public QuerySubmissions(string name, DomainType type, SearchOptions options,  CachePolicy policy, string userName = null) : base(policy)
+        public QuerySubmissions(DomainReference domainReference, SearchOptions options, CachePolicy policy) : base(policy)
         {
             this._options = options;
-            this._domainReference = new DomainReference(type, name, userName);
+            this._domainReference = domainReference;
 
         }
+
         //Since all submission queries will run through this we need to control caching times here
         public override CachePolicy CachingPolicy
         {
@@ -45,7 +43,7 @@ namespace Voat.Domain.Query
                     }
                     else
                     {
-                        //Want to keep first two subverse pages hotcached
+                        //Want to keep first two subverse pages hot cached
                         return new CachePolicy(TimeSpan.FromMinutes(6), _options.Page <= 1 ? 3 : -1);
                     }
                 }

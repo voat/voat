@@ -2086,35 +2086,39 @@ function checkUsernameAvailability(obj) {
 
 // a function to preview stylesheet called from subverse stylesheet editor
 function previewStylesheet(obj, subverseName) {
-    var sendingButton = $(obj);
-    sendingButton.html('Hold on...');
-    sendingButton.prop('disabled', true);
+   
 
-    $.ajax({
-        type: 'GET',
-        url: '/ajaxhelpers/previewstylesheet?subverse=' + subverseName + '&previewMode=true',
-        dataType: 'html',
-        success: function (data) {
-            $("#stylesheetpreviewarea").html(data);
-            sendingButton.html("Preview");
-            sendingButton.prop('disabled', false);
+    function replaceStyle() {
+        $('[id=custom_css]').remove();
+        // inject the new stylesheet
+        var sheetToAdd = document.createElement('style');
+        sheetToAdd.setAttribute('id', 'custom_css');
+        sheetToAdd.innerHTML = $('#Stylesheet').val();
+        document.body.appendChild(sheetToAdd);
+    }
 
-            // remove the old stylesheet from document
-            var sheetToRemove = document.getElementById('custom_css');
-            //if null, sneaky user has css disabled
-            if (sheetToRemove)
-            {
-                var sheetParent = sheetToRemove.parentNode;
-                sheetParent.removeChild(sheetToRemove);
+    //Only reload if not loaded
+    if ($.trim($("#stylesheetpreviewarea").html()) == '') {
+        var sendingButton = $(obj);
+        sendingButton.html('Hold on...');
+        sendingButton.prop('disabled', true);
+
+        $.ajax({
+            type: 'GET',
+            url: '/ajaxhelpers/previewstylesheet?subverse=' + subverseName + '&previewMode=true' + '&nocache=' + cachePrevention(),
+            dataType: 'html',
+            success: function (data) {
+                $("#stylesheetpreviewarea").html(data);
+                sendingButton.html("Preview");
+                sendingButton.prop('disabled', false);
+                registerDashboardHandler(); //hooks menu to newly loaded html
+                replaceStyle();
             }
+        });
+    } else {
+        replaceStyle();
+    }
 
-            // inject the new stylesheet
-            var sheetToAdd = document.createElement('style');
-            sheetToAdd.setAttribute('id', 'custom_css');
-            sheetToAdd.innerHTML = $('#Stylesheet').val();
-            document.body.appendChild(sheetToAdd);
-        }
-    });
 }
 // a function to preview stylesheet called from subverse stylesheet editor
 function getCommentTree(submissionID, sort) {

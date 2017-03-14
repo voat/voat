@@ -76,7 +76,7 @@ namespace Voat.Controllers
                 options.Span = SortSpan.Day;
             }
 
-            var q = new QuerySubmissions(name, Domain.Models.DomainType.Set, options, userName);
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Set, name, userName), options);
             var result = await q.ExecuteAsync();
             
             var model = new SubmissionListViewModel();

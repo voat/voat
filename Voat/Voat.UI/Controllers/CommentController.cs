@@ -124,7 +124,7 @@ namespace Voat.Controllers
             #region Set ViewBag
             ViewBag.Subverse = subverse;
             ViewBag.Submission = submission;
-            //This is a required view bag property in _Layout.cshtml
+            //This is a required view bag property in _Layout.cshtml - Update: hmmm, don't think so but too lazy to look 
             ViewBag.SelectedSubverse = subverse.Name;
 
             var sortingMode = GetSortMode(sort);

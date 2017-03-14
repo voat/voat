@@ -145,7 +145,7 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Cache")]
         public void Query_v_All_Guest_Cached()
         {
-            var q = new QuerySubmissions("_all", Domain.Models.DomainType.Subverse, SearchOptions.Default, new CachePolicy(TimeSpan.FromSeconds(30)));
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), SearchOptions.Default, new CachePolicy(TimeSpan.FromSeconds(30)));
 
             //DELETE Cached entry because other test could insert it
             CacheHandler.Instance.Remove(q.CacheKey);
@@ -156,7 +156,7 @@ namespace Voat.Tests.QueryTests
             Assert.AreEqual(false, q.CacheHit);
             Assert.IsTrue(result.Any());
 
-            q = new QuerySubmissions("_all", Domain.Models.DomainType.Subverse, SearchOptions.Default, new CachePolicy(TimeSpan.FromMinutes(10)));
+            q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), SearchOptions.Default, new CachePolicy(TimeSpan.FromMinutes(10)));
             result = q.ExecuteAsync().Result;
             Assert.AreEqual(CacheHandler.Instance.CacheEnabled, q.CacheHit, this.GetType().Name); //ensure second query hits cache
             Assert.IsNotNull(result, this.GetType().Name);
@@ -172,7 +172,7 @@ namespace Voat.Tests.QueryTests
         {
             TimeSpan cacheTime = TimeSpan.FromSeconds(2);
 
-            var q = new QuerySubmissions("_all", Domain.Models.DomainType.Subverse, new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
             //q.CachePolicy.Duration = cacheTime; //Cache this request
             var result = await q.ExecuteAsync();
 
@@ -194,7 +194,7 @@ namespace Voat.Tests.QueryTests
             //wait for cache to expire - Runtime caches aren't precise so wait long enough to ensure cached item is removed.
             System.Threading.Thread.Sleep(TimeSpan.FromSeconds(waitTime));
 
-            q = new QuerySubmissions("_all", Domain.Models.DomainType.Subverse, new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
+            q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
             result = await q.ExecuteAsync();
             //ensure we had to retreive new data
             Assert.AreEqual(false, q.CacheHit, this.GetType().Name);
@@ -231,7 +231,7 @@ namespace Voat.Tests.QueryTests
             var cmd = new BlockCommand(Domain.Models.DomainType.Subverse, "unit");
             var r = await cmd.Execute();
 
-            var q = new QuerySubmissions("_all", Domain.Models.DomainType.Subverse, SearchOptions.Default);
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), SearchOptions.Default);
             //q.CachePolicy.Duration = cacheTime; //Cache this request
             var result = q.ExecuteAsync().Result;
 

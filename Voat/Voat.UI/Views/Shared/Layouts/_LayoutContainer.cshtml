@@ -1,0 +1,112 @@
+﻿@*
+    
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+
+    All Rights Reserved.
+
+*@
+
+@using System.Configuration
+@using Voat.Models.ViewModels
+
+
+@{
+    var theme = UserHelper.UserStylePreference();
+    var themeClass = theme == null || theme == "light" ? "light" : "dark";
+}
+
+<!DOCTYPE html>
+<html>
+<head prefix="og: http://ogp.me/ns#">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta lang="en" />
+    <link rel="http://oexchange.org/spec/0.8/rel/related-target" type="application/xrd+xml" href="http://voat.co/oexchange.xrd" />
+    <title>@ViewBag.Title</title>
+    <meta name="description" content="@(ViewBag.Description != null ? ViewBag.Description : Settings.SiteSlogan)" />
+    <meta name="keywords" content="@(ViewBag.Keywords != null ? ViewBag.Keywords : Settings.SiteKeywords)" />
+    @Html.Partial("_RobotsMeta")
+    <meta property="og:title" content="@ViewBag.Title" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="@Request.Url.ToString()" />
+    <meta property="og:image" content="@ViewBag.Image" />
+    <meta property="og:site_name" content="@Settings.SiteName" />
+    <meta property="og:description" content="@ViewBag.Description" />
+
+    @if (theme == null || theme == "light")
+    {
+        @Styles.Render("~/Content/Light")
+    }
+    else
+    {
+        <meta name="theme-color" content="#333" />
+        <meta name="msapplication-navbutton-color" content="#333" />
+        <meta name="apple-mobile-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        @Styles.Render("~/Content/Dark")
+    }
+
+    <link rel=StyleSheet href="~/Content/ui-themes/autocomplete/autocompletebundle.min.css" type="text/css">
+
+    @* Icons... Icons everywhere! Thanks to http://www.favicomatic.com/ for the help generating these.  *@
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="~/Graphics/Icons/Arrow/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="~/Graphics/Icons/Arrow/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="~/Graphics/Icons/Arrow/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="~/Graphics/Icons/Arrow/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="~/Graphics/Icons/Arrow/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="~/Graphics/Icons/Arrow/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="~/Graphics/Icons/Arrow/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="~/Graphics/Icons/Arrow/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="~/Graphics/Icons/Arrow/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="~/Graphics/Icons/Arrow/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="~/Graphics/Icons/Arrow/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="~/Graphics/Icons/Arrow/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="~/Graphics/Icons/Arrow/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="@Settings.SiteName" />
+    <meta name="msapplication-TileColor" content="#000000" />
+    <meta name="msapplication-TileImage" content="~/Graphics/Icons/Arrow/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="~/Graphics/Icons/Arrow/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="~/Graphics/Icons/Arrow/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="~/Graphics/Icons/Arrow/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="~/Graphics/Icons/Arrow/mstile-310x310.png" />
+    @* Standard favicon *@
+    <link rel='shortcut icon' href="/favicon.ico" type="image/x-icon" />
+
+    @* render any additional header info like stylesheet paths *@
+    @RenderSection("PageHeader", required: false)
+
+</head>
+<body class="@themeClass">
+    @RenderBody()
+
+    @Scripts.RenderFormat("<script type=\"text/javascript\" src=\"{0}\"></script>", "~/bundles/javascript")
+    @Scripts.RenderFormat("<script type=\"text/javascript\" src=\"{0}\"></script>", "~/bundles/bootstrap")
+
+    @if (!Settings.SignalRDisabled)
+    {
+        @* SignalR library. *@
+        <script src="~/Scripts/libs/jquery.signalR-2.2.0.min.js" defer></script>
+        @* Autogenerated SignalR hub script. *@
+        <script src="~/signalr/hubs" defer></script>
+        if (User.Identity.IsAuthenticated)
+        {
+            <script language="javascript">
+                $(document).ready(function () {
+                    initiateWSConnection();
+                });
+            </script>
+        }
+    }
+    @* if any partial page runs custom javascript this section will render it after the main scripts load *@
+    @RenderSection("PageScripts", required: false)
+</body>
+</html>

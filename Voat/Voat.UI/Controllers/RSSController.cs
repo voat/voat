@@ -23,62 +23,9 @@ namespace Voat.Controllers
         public async Task<ActionResult> Rss(string subverseName)
         {
 
-            //var submissions = CacheHandler.Instance.Register<List<Submission>>(CachingKey.RssFeed(subverseName), new Func<List<Submission>>(() => {
-            //    var result = new List<Submission>();
-            //    using (var _db = new voatEntities())
-            //    {
-            //        _db.EnableCacheableOutput();
-
-            //        if (subverseName != null && subverseName != "all")
-            //        {
-            //            // return only frontpage submissions from a given subverse
-            //            var subverse = DataCache.Subverse.Retrieve(subverseName); // _db.Subverse.Find(subverseName);
-            //            if (subverse != null)
-            //            {
-
-            //                //HACK: Disable subverse
-            //                if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
-            //                {
-            //                    //ViewBag.Subverse = subverse.Name;
-            //                    //return SubverseDisabledErrorView();
-            //                    return result;
-            //                }
-
-            //                result = (from message in _db.Submissions
-            //                               where !message.IsDeleted && message.Subverse == subverse.Name
-            //                               select message)
-            //                               .OrderByDescending(s => s.Rank)
-            //                               .Take(25)
-            //                               .ToList();
-            //            }
-            //        }
-            //        else if (subverseName == "all")
-            //        {
-            //            // return submissions from all subs
-            //            result = (from message in _db.Submissions
-            //                           join subverse in _db.Subverses on message.Subverse equals subverse.Name
-            //                           where !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && message.Rank > 0.00009
-            //                           where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-            //                           select message).OrderByDescending(s => s.Rank).ThenByDescending(s => s.CreationDate).Take(25).ToList();
-            //        }
-            //        else
-            //        {
-            //            // return site-wide frontpage submissions
-            //            result = (from message in _db.Submissions
-            //                           where !message.IsDeleted
-            //                           join defaultsubverse in _db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
-            //                           select message)
-            //                           .OrderByDescending(s => s.Rank)
-            //                           .Take(25)
-            //                           .ToList();
-            //        }
-            //    }
-            //    return result;
-            //}), TimeSpan.FromMinutes(30));
-
             subverseName = String.IsNullOrEmpty(subverseName) ? AGGREGATE_SUBVERSE.ALL : subverseName;
 
-            var q = new QuerySubmissions(subverseName, Domain.Models.DomainType.Subverse, new Data.SearchOptions());
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverseName), new Data.SearchOptions());
             var submissions = await q.ExecuteAsync();
 
             var feed = new SyndicationFeed("Voat", "Have your say", new Uri("http://www.voat.co"))

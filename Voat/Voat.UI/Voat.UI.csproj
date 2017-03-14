@@ -611,7 +611,7 @@
     </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Error\Error.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\Layouts\_LayoutContainer.cshtml" />
     <Content Include="Views\About\About.cshtml" />
     <Content Include="Views\Account\_ChangeAccountSettings.cshtml" />
     <Content Include="Views\Account\_RemoveAccountPartial.cshtml" />
@@ -785,6 +785,8 @@
     <Content Include="Views\Statistics\UserVotesReceived.cshtml" />
     <Content Include="Views\Shared\Navigation\_Statistics.cshtml" />
     <Content Include="Views\Statistics\HighestVotedContent.cshtml" />
+    <Content Include="Views\Shared\Layouts\_Layout.cshtml" />
+    <Content Include="Views\Shared\Layouts\_LayoutEmpty.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

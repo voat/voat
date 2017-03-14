@@ -20,6 +20,14 @@ namespace Voat.Common
     {
         private T _value;
 
+        static SafeEnum()
+        {
+            if (!typeof(T).IsEnum)
+            {
+                throw new TypeLoadException(String.Format("{0} is not an Enum type", typeof(T).FullName));
+            }
+        }
+
         public SafeEnum(T value)
         {
             Value = value;
@@ -47,7 +55,6 @@ namespace Voat.Common
             set {
                 if (!Extensions.IsValidEnumValue<T>(value))
                 {
-                    
                     var message = String.Format("A value of {0} is not defined in type {1}", value, typeof(T).Name);
                     var exception = new ArgumentOutOfRangeException(nameof(value), value, message);
                     throw exception;

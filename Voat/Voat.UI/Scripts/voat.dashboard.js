@@ -5,10 +5,12 @@ Now these lines technically are no longer blank. ;)
 */
 function closeDashboardHandler(e) {
 
-    var dashboard = document.getElementById("dashboard");
+    //StyleSheet Preview loads two full pages (yeah yeah I already know), so this selector allows all the elements with id #dashboard to be selected
+    var dashboard = $("div[id=dashboard]");
+    //var dashboard = $('#dashboard');
 
-    if (dashboard !== null && !$.contains(dashboard, e.target)) {
-        $(dashboard).hide();
+    if (dashboard !== null && !$.contains(dashboard[0], e.target)) {
+        dashboard.hide();
 
         var body = $('body');
         body.off('click.menu');
@@ -16,17 +18,26 @@ function closeDashboardHandler(e) {
         return false;
     }
 }
-$('.top-bar > nav > a').click(function () {
-    var dashboard = $('#dashboard');
-    var body = $('body');
+function registerDashboardHandler() {
 
-    dashboard.toggle();
+    $('.top-bar > nav > a').click(function () {
 
-    if (dashboard.is(':visible')) {
-        body.on('click.menu', closeDashboardHandler);
-    } else {
-        body.off('click.menu');
-    }
+        //StyleSheet Preview loads two full pages (yeah yeah I already know), so this selector allows all the elements with id #dashboard to be selected
+        var dashboard = $("div[id=dashboard]");
+        //var dashboard = $('#dashboard');
 
-    return false;
-});
+        var body = $('body');
+
+        dashboard.toggle();
+
+        if (dashboard.is(':visible')) {
+            body.on('click.menu', closeDashboardHandler);
+        } else {
+            body.off('click.menu');
+        }
+
+        return false;
+    });
+}
+
+registerDashboardHandler();
