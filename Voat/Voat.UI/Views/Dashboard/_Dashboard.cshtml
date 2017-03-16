@@ -27,7 +27,7 @@
                 <!-- !important - Do not match on sr-bar (class or id) - will be removed in future versions -->
                 <ul class="flat-list sr-bar hover" id="sr-bar">
                     <!-- The passphrase to the secret club is: "I'm with thee Goat. No, not that one. That isn't a goat, that is a ram." -->
-                    <li><a href="/">front</a></li>
+                    <li><a title="Front" href="/">front</a></li>
                     <li><a href="/v/all">all</a></li>
                     <li><a href="/s/Default">default</a></li>
                     <li><a href="/random">random</a></li>
@@ -46,6 +46,7 @@
     <!-- This is the new drop down section -->
     <div id="dashboard">
         <div class="section head">
+            <!-- This section will likely include something at some time -->
         </div>
         <div class="section menu">
             <h1>Menu</h1>
@@ -64,7 +65,7 @@
                     }
                     else
                     {
-                        <li><a href="/account/login">Login</a></li>
+                        <li><a href="/account/login" onclick="mustLogin(); return false;">Login</a></li>
                     }
                 </ul>
             </nav>
@@ -98,20 +99,14 @@
                 </nav>
             </div>
         }
-        @*<div class="centered">
-            <a title="@Settings.SiteName - @Settings.SiteSlogan" href="/">
-                <img width="112" height="31" alt="@Settings.SiteName" src="@Settings.SiteLogo">
-            </a>
-        </div>*@
         <div class="section foot">
+            <!-- This section will likely include something at some time -->
+            @*<div class="centered">
+                <a title="@Settings.SiteName - @Settings.SiteSlogan" href="/">
+                    <img width="112" height="31" alt="@Settings.SiteName" src="@Settings.SiteLogo">
+                </a>
+            </div>*@
         </div>
     </div>
    
 </div>
-@*<style type="text/css">
-    .section.subverse li, .section.set li {
-        display:inline-block !important;
-        width:130px !important;
-        padding:0px !important;
-    }
-</style>*@

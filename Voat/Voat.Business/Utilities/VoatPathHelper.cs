@@ -5,6 +5,8 @@ using Voat.Domain.Models;
 
 namespace Voat.Utilities
 {
+    //TODO: This class needs to be rewritten, this is all patched together over time and it's nasty imo - like warm beer. 
+    
     /// <summary>
     /// This utility can resolve image paths for Voat. The API benifits from qualified urls and the MVC UI benifits from partials which this utility supports
     /// </summary>
@@ -13,8 +15,8 @@ namespace Voat.Utilities
         private static string SiteRoot(bool provideProtocol, bool supportsContentDelivery, string forceDomain = null)
         {
             //Defaults
-            string domain = "voat.co";
-            string protocol = "https";
+            string domain = Settings.SiteDomain;
+            string protocol = Settings.ForceHTTPS ? "https" : "http";
 
             if (supportsContentDelivery && Settings.UseContentDeliveryNetwork)
             {
@@ -45,15 +47,6 @@ namespace Voat.Utilities
             {
                 return thumbnailFile;
             }
-
-            //@if(Settings.UseContentDeliveryNetwork)
-            //{
-            //    < img src = "https://cdn.voat.co/thumbs/@Model.Thumbnail" alt = "@Model.LinkDescription" />
-            //}
-            //else
-            //{
-            //    < img src = "~/Thumbs/@Model.Thumbnail" alt = "@Model.LinkDescription" />
-            //}
 
             return String.Format("{0}/thumbs/{1}", (fullyQualified ? SiteRoot(provideProtocol, true) : "~"), thumbnailFile);
         }

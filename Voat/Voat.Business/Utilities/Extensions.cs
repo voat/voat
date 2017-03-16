@@ -6,6 +6,20 @@ namespace Voat
 {
     public static class Extensions
     {
+
+        public static string ToYesNo(this bool value)
+        {
+            return value ? "Yes" : "No";
+        }
+        public static string ToYesNo(this bool? value, string nullValue)
+        {
+            if (value.HasValue)
+            {
+                return value.Value.ToYesNo();
+            }
+            return nullValue;
+        }
+
         public static string BasePath(this Domain.Models.DomainReference domainReference, Domain.Models.SortAlgorithm? sort = null)
         {
             string path = "";

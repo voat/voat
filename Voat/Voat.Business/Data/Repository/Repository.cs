@@ -5257,39 +5257,6 @@ namespace Voat.Data
         {
             DemandAuthentication();
 
-            //if (!User.Identity.Name.IsEqual(model.UserName))
-            //{
-            //    return RedirectToAction("Manage", new { message = ManageMessageId.UserNameMismatch });
-            //}
-            //else
-            //{
-            //    // require users to enter their password in order to execute account delete action
-            //    var user = UserManager.Find(User.Identity.Name, model.CurrentPassword);
-
-            //    if (user != null)
-            //    {
-            //        // execute delete action
-            //        if (UserHelper.DeleteUser(User.Identity.Name))
-            //        {
-            //            // delete email address and set password to something random
-            //            UserManager.SetEmail(User.Identity.GetUserId(), null);
-
-            //            string randomPassword = "";
-            //            using (SHA512 shaM = new SHA512Managed())
-            //            {
-            //                randomPassword = Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(Path.GetRandomFileName())));
-            //            }
-
-            //            UserManager.ChangePassword(User.Identity.GetUserId(), model.CurrentPassword, randomPassword);
-
-            //            AuthenticationManager.SignOut();
-            //            return View("~/Views/Account/AccountDeleted.cshtml");
-            //        }
-
-            //        // something went wrong when deleting user account
-            //        return View("~/Views/Error/Error.cshtml");
-            //    }
-            //}
             if (!options.UserName.IsEqual(options.ConfirmUserName))
             {
                 return CommandResponse.FromStatus(Status.Error, "Confirmation UserName does not match");
@@ -5308,7 +5275,7 @@ namespace Voat.Data
 
                 using (var userManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
                 {
-                    var userAccount = userManager.Find(options.UserName, options.CurrentPassword);
+                    var userAccount = userManager.Find(userName, options.CurrentPassword);
                     if (userAccount != null)
                     {
 
@@ -5412,9 +5379,6 @@ namespace Voat.Data
                         var userPrefs = _db.UserPreferences.Find(userName);
                         if (userPrefs != null)
                         {
-                            // delete short bio
-                            userPrefs.Bio = null;
-
                             // delete avatar
                             if (userPrefs.Avatar != null)
                             {
@@ -5426,7 +5390,7 @@ namespace Voat.Data
                                 }
                                 else
                                 {
-                                    // try to remove from local FS
+                                    // try to remove from local FS - I think this code is retarded
                                     string tempAvatarLocation = Settings.DestinationPathAvatars + '\\' + userName + ".jpg";
 
                                     // the avatar file was not found at expected path, abort
@@ -5434,23 +5398,32 @@ namespace Voat.Data
                                     {
                                         File.Delete(tempAvatarLocation);
                                     }
-                                    // exec delete
                                 }
-                                //reset avatar
-                                userPrefs.Avatar = null;
                             }
+
+
+                            var updatePrefStatement = new DapperUpdate();
+                            updatePrefStatement.Update = "UserPreference SET Bio = NULL, Avatar = NULL";
+                            updatePrefStatement.Where = "UserName = @UserName";
+                            updatePrefStatement.Parameters.Add("UserName", userName);
+                            await _db.Database.Connection.ExecuteAsync(updatePrefStatement.ToString(), updatePrefStatement.Parameters);
                         }
 
 
-                        // UNDONE: keep this updated as new features are added (delete sets etc)
-                        // username will stay permanently reserved to prevent someone else from registering it and impersonating
-                        await _db.SaveChangesAsync().ConfigureAwait(false);
+                        //// UNDONE: keep this updated as new features are added (delete sets etc)
+                        //// username will stay permanently reserved to prevent someone else from registering it and impersonating
+                        //await _db.SaveChangesAsync().ConfigureAwait(false);
 
                         try
                         {
                             //Flag Deleted Account
-                            _db.UserBadges.Add(new Models.UserBadge() { BadgeID = (setRecoveryEmail ? "deleted2" : "deleted"), CreationDate = CurrentDate, UserName = userName });
-                            await _db.SaveChangesAsync().ConfigureAwait(false);
+                            var badgeID = (setRecoveryEmail ? "deleted2" : "deleted");
+                            var existing = _db.UserBadges.FirstOrDefault(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && x.BadgeID.Equals(badgeID, StringComparison.OrdinalIgnoreCase));
+                            if (existing == null)
+                            {
+                                _db.UserBadges.Add(new Models.UserBadge() { BadgeID = badgeID, CreationDate = CurrentDate, UserName = userName });
+                                await _db.SaveChangesAsync().ConfigureAwait(false);
+                            }
                         }
                         catch (Exception ex)
                         {

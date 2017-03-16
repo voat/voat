@@ -109,7 +109,7 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style='@(ModeratorPermission.IsLevel(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorLevel.Owner) ? "" : "display:none")'>
                     @Html.Label("Anonymized mode", htmlAttributes: new {@class = "control-label col-md-2"})
                     <div class="col-md-10">
                         @Html.EditorFor(model => model.IsAnonymized, new {@class = "form-control"})

@@ -94,7 +94,7 @@
                 <p>
                     created by <a href="/user/@subverseOwner" class="author may-blank">@subverseOwner</a>
                     <span class="userattrs"></span>
-                    <span class="age">a community for <time title="@Model.CreationDate" datetime="@Model.CreationDate">@subverseAge</time></span>
+                    <span class="age">@(Model.ExcludeSitewideBans ? "*" : "") a community for <time title="@Model.CreationDate" datetime="@Model.CreationDate">@subverseAge</time></span>
                     @if (Model.IsAnonymized.HasValue)
                     {
                         if (Model.IsAnonymized.Value)
@@ -106,41 +106,52 @@
                     {
                         <p>This subverse allows anonymized submissions.</p>
                     }
-                    </p>
-                    <div class="minimum-ccp-downvote">
-                        <p>
-                            Minimum CCP required to downvote in this sub: @Model.MinCCPForDownvote
-                            @if (User.Identity.IsAuthenticated)
-                            {
-                                var q = new Voat.Domain.Query.QueryUserContributionPoints(Voat.Domain.Models.ContentType.Comment, Model.Name);
-                                var r = q.Execute();
-                                <p>Your CCP for this sub: @r.Sum</p>
-                            }
-                            </p>
-                        </div>
-                    </div>
-                    <div class="clear"></div>
-                </div>
-            </div>
-            <div class="spacer">
-                <div class="sidecontentbox">
-                    @{
-                        Html.RenderAction("RenderAd", "Ad", new { subverse = Model.Name });
-                    }
-                </div>
-            </div>
-            <div class="spacer">
-                <div class="sidecontentbox ">
-                    <a class="helplink message-moderators-temporary-class" title="Message the Moderators" href="/messages/compose?recipient=v/@Model.Name">message the moderators</a>
-                    <div class="title">
-                        <h1 class="alert-h1">MODERATORS</h1>
-                    </div>
-                    <ul class="content">
-                        @{
-                            Html.RenderAction("SubverseModeratorsList", "Subverses", new { subverseName = Model.Name });
+                </p>
+                <div class="minimum-ccp-downvote">
+                    <p>
+                        Minimum CCP required to downvote in this sub: @Model.MinCCPForDownvote
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            var q = new Voat.Domain.Query.QueryUserContributionPoints(Voat.Domain.Models.ContentType.Comment, Model.Name);
+                            var r = q.Execute();
+                            <p>Your CCP for this sub: @r.Sum</p>
                         }
-                    </ul>
+                    </p>
+                </div>
+                <div class="sub-attributes">
+                    <p>
+                        NSFW: @Model.IsAdult.ToYesNo()
+                        <br/>
+                        Authorized: @Model.IsAuthorizedOnly.ToYesNo()
+                        <br />
+                        Anon: @Model.IsAnonymized.ToYesNo("Both")
+                        <br />
+                        Private: @Model.IsPrivate.ToYesNo()
+                    </p>
                 </div>
             </div>
-            @Html.Partial("~/Views/ModLog/_ModLogSidebarLinks.cshtml", Model.Name)
+            <div class="clear"></div>
         </div>
+    </div>
+    <div class="spacer">
+        <div class="sidecontentbox">
+            @{
+                Html.RenderAction("RenderAd", "Ad", new { subverse = Model.Name });
+            }
+        </div>
+    </div>
+    <div class="spacer">
+        <div class="sidecontentbox ">
+            <a class="helplink message-moderators-temporary-class" title="Message the Moderators" href="/messages/compose?recipient=v/@Model.Name">message the moderators</a>
+            <div class="title">
+                <h1 class="alert-h1">MODERATORS</h1>
+            </div>
+            <ul class="content">
+                @{
+                    Html.RenderAction("SubverseModeratorsList", "Subverses", new { subverseName = Model.Name });
+                }
+            </ul>
+        </div>
+    </div>
+    @Html.Partial("~/Views/ModLog/_ModLogSidebarLinks.cshtml", Model.Name)
+</div>

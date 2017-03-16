@@ -165,11 +165,11 @@ namespace Voat.Controllers
                     //existingSubverse.SubmissionText = updatedModel.SubmissionText;
                     //existingSubverse.IsDefaultAllowed = updatedModel.IsDefaultAllowed;
 
-                    if (existingSubverse.IsAnonymized == true && updatedModel.IsAnonymized == false)
-                    {
-                        ModelState.AddModelError(string.Empty, "Sorry, this subverse is permanently locked to anonymized mode.");
-                        return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
-                    }
+                    //if (existingSubverse.IsAnonymized == true && updatedModel.IsAnonymized == false)
+                    //{
+                    //    ModelState.AddModelError(string.Empty, "Sorry, this subverse is permanently locked to anonymized mode.");
+                    //    return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
+                    //}
 
                     // only subverse owners should be able to convert a sub to anonymized mode
                     if (ModeratorPermission.IsLevel(User.Identity.Name, updatedModel.Name, Domain.Models.ModeratorLevel.Owner))

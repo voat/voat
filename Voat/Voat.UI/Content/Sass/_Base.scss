@@ -3,6 +3,11 @@
     Designed by Nurdoidz
 
     Stylesheet on Github: http://github.com/Nurdoidz/Minity-WhoaVerse/
+
+    ----
+
+    Ported to Sass by Fuzzy
+
     ============================================================================ */
 
 @mixin gradient-top($first-color, $last-color, $initial: $first-color) {
@@ -1427,36 +1432,42 @@ pre, code {
     padding: 0px 10px 20px 10px;
     position: absolute;
     display: none;
-    z-index:99999;
+    z-index: 99999;
 
     ul {
         list-style: none;
+
         li {
             display: inline;
             padding: .4em;
             display: inline-block;
             position: relative;
             min-width: 19.7%;
-            min-height:16px;
-            line-height: 16px;  
+            min-height: 16px;
+            line-height: 16px;
             margin-top: 1px;
-            margin-bottom: 1px;  
+            margin-bottom: 1px;
             padding: 0;
-            padding-left:3px;  
-            background: $dashboard-item-background-color; 
-            border-radius: 2px;  
+            padding-left: 3px;
+            background: $dashboard-item-background-color;
+            border-radius: 2px;
 
             a {
                 display: inline-block;
                 width: 100%;
                 height: 100%;
-                min-height:1em; 
+                min-height: 1em;
                 transition: none;
                 font-size: 1.2em;
                 color: $dashboard-item-color;
-                padding:.2em;
-                &:hover {   
+                padding: .2em;
+
+                &:hover {
                     color: $dashboard-item-color_hover;
+                }
+
+                &:visited {
+                    color: $dashboard-item-color;
                 }
             }
         }

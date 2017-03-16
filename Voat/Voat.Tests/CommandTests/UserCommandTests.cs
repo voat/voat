@@ -249,6 +249,23 @@ namespace Voat.Tests.CommandTests
             VoatDataInitializer.CreateUser(userName);
             TestHelper.SetPrincipal(userName);
 
+            //Need to ensure delete clears preferences
+            var prefUpdate = new UpdateUserPreferencesCommand(new Domain.Models.UserPreferenceUpdate() { Bio = "My Bio" });
+            await prefUpdate.Execute();
+            using (var db = new voatEntities())
+            {
+                var prefs = db.UserPreferences.FirstOrDefault(x => x.UserName == userName);
+                Assert.IsNotNull(prefs, "Expected user to have preference record at this stage");
+                prefs.Avatar = userName + ".jpg";
+
+                //Add badges to prevent duplicates
+                db.UserBadges.Add(new Voat.Data.Models.UserBadge() { BadgeID = "deleted", CreationDate = DateTime.UtcNow, UserName = userName });
+                db.UserBadges.Add(new Voat.Data.Models.UserBadge() { BadgeID = "deleted2", CreationDate = DateTime.UtcNow, UserName = userName });
+
+                db.SaveChanges();
+
+            }
+
             options = new Domain.Models.DeleteAccountOptions()
             {
                 UserName = userName,
@@ -343,12 +360,22 @@ namespace Voat.Tests.CommandTests
                         Assert.IsFalse(userAccount.LockoutEnabled, "Lockout should be enabled");
                     }
 
-                    Assert.IsTrue(db.UserBadges.Any(x => x.UserName == userAccount.UserName && x.BadgeID == (String.IsNullOrEmpty(options.RecoveryEmailAddress) ? "deleted" : "deleted2")), "Can not find delete badge");
+                  
 
                    //Make sure password is reset
                    var passwordAccess = userManager.Find(options.UserName, options.CurrentPassword);
                     Assert.IsNull(passwordAccess, "Can access user account with old password");
 
+                }
+
+                Assert.AreEqual(1, db.UserBadges.Count(x => x.UserName == options.UserName && x.BadgeID == (String.IsNullOrEmpty(options.RecoveryEmailAddress) ? "deleted" : "deleted2")), "Can not find delete badge");
+
+                //Verify Bio and Avatar cleared
+                var prefs = db.UserPreferences.Where(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase)).ToList();
+                foreach (var pref in prefs)
+                {
+                    Assert.AreEqual(null, pref.Avatar, "Avatar not cleared");
+                    Assert.AreEqual(null, pref.Bio, "Bio not cleared");
                 }
             }
         }

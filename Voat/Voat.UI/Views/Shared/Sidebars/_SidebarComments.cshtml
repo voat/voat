@@ -85,7 +85,7 @@
             <div class="bottom">
                 created by <a href="/user/@subverseOwner" class="author may-blank">@subverseOwner</a>
                 <span class="userattrs"></span>
-                <span class="age">a community for <time title="@Model.CreationDate" datetime="@Model.CreationDate">@subverseAge</time></span>
+                <span class="age">@(Model.ExcludeSitewideBans ? "*" : "") a community for <time title="@Model.CreationDate" datetime="@Model.CreationDate">@subverseAge</time></span>
                 @if (Model.IsAnonymized.HasValue)
                 {
                     if (Model.IsAnonymized.Value)
@@ -97,6 +97,17 @@
                 {
                     <p>This subverse allows anonymized submissions.</p>
                 }
+                <div class="sub-attributes">
+                    <p>
+                        NSFW: @Model.IsAdult.ToYesNo()
+                        <br />
+                        Authorized: @Model.IsAuthorizedOnly.ToYesNo()
+                        <br />
+                        Anon: @Model.IsAnonymized.ToYesNo("Both")
+                        <br />
+                        Private: @Model.IsPrivate.ToYesNo()
+                    </p>
+                </div>
             </div>
             <div class="clear">
             </div>
