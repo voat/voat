@@ -1,5 +1,6 @@
-$background-5: #292929;
-$color-2: #DFDFDF;
+
+//This file is an auto-generated file based on old style sheets, thus it is a work in progress as we convert the generic
+//scripted colors to named colors.
 
 //NAMED COLORS
 $body-background-color: #292929;
@@ -13,11 +14,17 @@ $dashboard-item-color_hover: #56A8DA;
 $resign-moderator-background-color: #2E2E2E;
 $resign-moderator-color: #9b9b9b;
 
-//SCRIPTED COLORS 
+$highlight-border-color: #A23E3E;
+$highlight-background-color: #4F3333;
+
+$retro-hightlight-link-color: #b01a1f;
+
+//SCRIPTED COLORS -- DO NOT REMOVE -- IF YOU MODIFY NAME - CREATE NAMED VAR ABOVE AND CHANGE REFS IN BASE.SCSS
 $background-1: #4F3333;
 $background-2: #432626;
 $background-3: #492D2D;
 $background-4: #2E2E2E;
+$background-5: #292929;
 $background-6: #773939;
 $background-7: #4E2E2E;
 $background-8: #2E2E2E;
@@ -178,6 +185,7 @@ $border-top-4: #222;
 $border-top-5: #333;
 $border-top-6: #252525;
 $color-1: #FFF;
+$color-2: #DFDFDF;
 $color-3: #56A8DA;
 $color-4: #DC5757;
 $color-5: #CCC;

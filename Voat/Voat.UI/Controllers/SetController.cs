@@ -94,7 +94,7 @@ namespace Voat.Controllers
                 Sort = model.Sort
             };
 
-            return View("SubmissionList", model);
+            return View(ViewPath(model.Context), model);
         }
         public async Task<ActionResult> Sidebar(string name)
         {

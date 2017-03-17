@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Voat.Caching;
 using Voat.Domain;
 using Voat.Domain.Command;
+using Voat.Domain.Models;
 using Voat.Models.ViewModels;
 using Voat.Utilities.Components;
 
@@ -93,6 +94,14 @@ namespace Voat.Controllers
         {
             return View("~/Views/Error/Subversenotfound.cshtml");
         }
+
+
+        protected string ViewPath(DomainReference domainReference)
+        {
+            var isRetro = Request.IsCookiePresent("view", "retro", this.Response);
+            return (isRetro ? VIEW_PATH.SUBMISSION_LIST_RETRO : VIEW_PATH.SUBMISSION_LIST);
+        }
+
 
         #endregion
 

@@ -1,0 +1,10 @@
+﻿[
+  {
+    "outputFile": "Content/Voat-Dark.css",
+    "inputFile": "Content/Sass/Voat-Dark.scss"
+  },
+  {
+    "outputFile": "Content/Voat-Light.css",
+    "inputFile": "Content/Sass/Voat-Light.scss"
+  }
+]

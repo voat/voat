@@ -1,0 +1,93 @@
+﻿@*This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+    the specific language governing rights and limitations under the License.
+
+    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    All Rights Reserved.*@
+
+@model Voat.Domain.Models.Submission
+
+@{
+    //LINK
+    string ahrefTarget = "_self";
+    var showNSFWThumbs = false;
+
+    if (User.Identity.IsAuthenticated)
+    {
+        var userData = Voat.Domain.UserData.GetContextUserData();
+        showNSFWThumbs = userData.Preferences.EnableAdultContent;
+
+        if (userData.Preferences.OpenInNewWindow)
+        {
+            ahrefTarget = "_blank";
+        }
+    }
+
+    bool anonymizedSubverse = Model.IsAnonymized;
+
+    string routeActiveSubverse = (string)ViewContext.RouteData.Values["subverse"];
+
+    string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
+
+    //var x = this.Request.RequestContext.RouteData.Values["sort"];
+    //if (x != null && x.ToString() == "active")
+    //{
+    //    commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID, Voat.Domain.Models.CommentSortAlgorithm.New);
+    //}
+
+    DateTime submissionDate = Model.CreationDate;
+    string postAge = Age.ToRelative(submissionDate);
+
+    string submissionDomain = Model.Subverse;
+    string submissionDomainHref = "/v/" + Model.Subverse;
+    string titleUrl = commentsUrl;
+
+    if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
+    {
+        titleUrl = Model.Url;
+        submissionDomain = UrlUtility.GetDomainFromUri(Model.Url);
+        submissionDomainHref = "/domains/" + submissionDomain;
+    }
+    var submissionClass = Model.Type == Voat.Domain.Models.SubmissionType.Text ? "self" : "";
+    var classes = "";
+    if (ViewBag.CssClass != null)
+    {
+        classes = String.Join(" ", ViewBag.CssClass);
+    }
+    if (Model.UpCount > 10)
+    {
+        classes += " highlight";
+    }
+    bool showThumbnail = !String.IsNullOrEmpty(Model.ThumbnailUrl) && ViewBag.ShowThumbnail != null && ViewBag.ShowThumbnail == true;
+    bool showCommentsLink = Model.Type == Voat.Domain.Models.SubmissionType.Link && (ViewBag.ShowCommentsLink == null || ViewBag.ShowCommentsLink != null && ViewBag.ShowCommentsLink != true);
+
+    var title = String.Format("Submitted by {0} {1} ago to {2}. {3}, {4}, {5}.", Model.IsAnonymized ? "Anon" : Model.UserName, Age.ToRelative(Model.CreationDate), Model.Subverse, Formatting.PluralizeIt(Model.UpCount, "Up"), Formatting.PluralizeIt(Model.DownCount, "Down"), Formatting.PluralizeIt(Model.CommentCount, "Comment"));
+
+}
+
+<div class="submission id-@Model.ID @classes @submissionClass" data-fullname="@Model.ID" data-ups="@Model.UpCount" data-downs="@Model.DownCount">
+    @if (showThumbnail)
+    {
+        <div class="thumb">
+            <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
+        </div>
+    }
+    @if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
+    {
+        <a href="@Model.Url" title="@title">@Model.Title</a>
+    }
+    else
+    {
+        <a href="@commentsUrl" title="@title">@Model.Title</a>
+    }
+    @if (showCommentsLink)
+    {
+        <span><a href="@commentsUrl">...</a></span>
+    }
+</div>
+

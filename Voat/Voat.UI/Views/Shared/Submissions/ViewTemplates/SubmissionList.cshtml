@@ -17,6 +17,7 @@
 @{
     ViewBag.Title = Model.Title;
     ViewBag.Description = Model.Description;
+    int counter = 0;
 }
 
 @section PageHeader {
@@ -74,13 +75,6 @@
                 @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
                 @Html.Action("FeaturedSub", "Home")
                 @Html.Action("StickiedSubmission", "Home")
-            }
-
-
-            @{
-                int currentPageNumber = Model.Submissions.PageIndex;
-                int counterCont = (currentPageNumber) * 25;
-                int counter = 0;
             }
 
             @if (Model.Submissions.Count <= 0)

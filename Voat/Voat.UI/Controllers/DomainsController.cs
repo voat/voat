@@ -105,9 +105,7 @@ namespace Voat.Controllers
                 BasePath = $"/domains/{domainName}",
                 Sort = options.Sort
             };
-
-            return View("SubmissionList", viewProperties);
+            return View(VIEW_PATH.SUBMISSION_LIST, viewProperties);
         }
-        
     }
 }

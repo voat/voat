@@ -369,6 +369,7 @@
     <Compile Include="Utils\RSSUtility.cs" />
     <Compile Include="Utils\SessionTracker.cs" />
     <Compile Include="Utils\SetsUtility.cs" />
+    <Compile Include="Utils\VIEW_PATH.cs" />
     <Compile Include="Utils\VoatExceptionLogger.cs" />
     <Compile Include="Utils\VoatValidateAntiForgeryTokenAttribute.cs" />
   </ItemGroup>
@@ -388,7 +389,13 @@
     <Content Include="Content\ui-themes\autocomplete\core.css" />
     <Content Include="Content\ui-themes\autocomplete\menu.css" />
     <Content Include="Content\ui-themes\autocomplete\theme.css" />
+    <Content Include="Content\Voat-Dark.min.css">
+      <DependentUpon>Voat-Dark.css</DependentUpon>
+    </Content>
     <Content Include="Content\Voat-Light.css" />
+    <Content Include="Content\Voat-Light.min.css">
+      <DependentUpon>Voat-Light.css</DependentUpon>
+    </Content>
     <Content Include="ddos.min.htm">
       <DependentUpon>ddos.htm</DependentUpon>
     </Content>
@@ -506,6 +513,10 @@
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css.bundle" />
     <Content Include="gizmo\src\js\jquery.swipebox.min.js.map" />
     <None Include="bundleconfig.json" />
+    <None Include="compilerconfig.json" />
+    <None Include="compilerconfig.json.defaults">
+      <DependentUpon>compilerconfig.json</DependentUpon>
+    </None>
     <None Include="Content\Sass\_Base.scss">
       <Compile>False</Compile>
       <Minify>True</Minify>
@@ -635,7 +646,7 @@
     <Content Include="Views\Error\404.cshtml" />
     <Content Include="Views\User\Comments.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileComment.cshtml" />
-    <Content Include="Views\Shared\SubmissionList.cshtml" />
+    <Content Include="Views\Shared\Submissions\ViewTemplates\SubmissionList.cshtml" />
     <Content Include="Views\Help\SpeedyGonzales.cshtml" />
     <Content Include="Views\Subverses\Subverses.cshtml" />
     <Content Include="Views\Shared\Sidebars\_Sidebar.cshtml" />
@@ -787,6 +798,8 @@
     <Content Include="Views\Statistics\HighestVotedContent.cshtml" />
     <Content Include="Views\Shared\Layouts\_Layout.cshtml" />
     <Content Include="Views\Shared\Layouts\_LayoutEmpty.cshtml" />
+    <Content Include="Views\Shared\Submissions\ViewTemplates\SubmissionListRetro.cshtml" />
+    <Content Include="Views\Shared\Submissions\_SubmissionRetro.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -52,8 +52,8 @@
 }
 
 .highlightedComment {
-    background: $background-1 !important;
-    border: 1px dashed $border-1 !important;
+    background: $highlight-background-color !important;
+    border: 1px dashed $highlight-border-color !important;
 }
 
 .navbar-nav {
@@ -90,7 +90,9 @@ body {
     line-height: 1.43;
     margin: 0;
 }
-
+body > .content .link .rank {
+    width: 3.2ex;
+}
 a, a:visited {
     color: $color-3;
     text-decoration: none;
@@ -3235,3 +3237,56 @@ input[type=checkbox].form-control {
 .content-menu-container > span {
     padding-right:5px;
 }
+
+
+/* ------------------------------------- RETRO PROTOTYPE ------------------------------ */
+
+.retro .submission a {
+    font-family: Helvetica, Arial, Verdana, Arial, Helvetica, sans-serif;
+    text-decoration: underline;
+    font-size: 1.2em;
+    color: $body-color;
+    font-weight: bold;
+}
+
+.retro .submission {
+    padding-bottom: 1.4em;
+}
+
+.retro > .body > .column {
+    width: 32%;
+    float: left;
+    padding: 1em;
+    min-height: 400px;
+}
+
+.column1, .column2 {
+    border-right: 1px solid #555;
+}
+
+.retro > .head {
+    align-content: center;
+    padding: 2em 2em 3em 2em;
+    font-size: 1.3em;
+}
+
+.retro > .head .context {
+    font-size: 3em;
+    font-size: 5vw;
+    text-transform: uppercase;
+    text-shadow: 5px 2px 2px rgba(150, 150, 150, 0.5);
+}
+
+.top-submission a {
+    font-size: 4em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.highlight > a {
+    color: $retro-hightlight-link-color !important;
+}
+
+
+
+
+/* ------------------------------------- RETRO PROTOTYPE END ------------------------------ */

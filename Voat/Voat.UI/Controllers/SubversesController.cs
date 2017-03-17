@@ -539,7 +539,7 @@ namespace Voat.Controllers
 
                 ViewBag.NavigationViewModel = navModel;
 
-                return View("SubmissionList", viewProperties);
+                return View(ViewPath(domainReference), viewProperties);
             }
             catch (Exception ex)
             {

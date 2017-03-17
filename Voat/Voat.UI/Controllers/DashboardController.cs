@@ -14,6 +14,8 @@ namespace Voat.Controllers
     {
         public async Task<ActionResult> Menu()
         {
+            //var showDashboard = !Request.IsCookiePresent("menu", "legacy", this.Response);
+
             var showDashboard = (Request.Cookies["legacy"] == null);
 
             //Temp logic, parse querystring, allows showing both menus

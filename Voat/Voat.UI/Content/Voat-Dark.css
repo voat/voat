@@ -1,9 +1,14 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 /*  ============================================================================
     Minity CSS stylesheet for Voat (http://voat.co/)
     Designed by Nurdoidz
 
     Stylesheet on Github: http://github.com/Nurdoidz/Minity-WhoaVerse/
+
+    ----
+
+    Ported to Sass by Fuzzy
+
     ============================================================================ */
 .unread {
   border: 1px dashed #A23E3E !important;
@@ -61,6 +66,9 @@ body {
   line-height: 1.43;
   margin: 0; }
 
+body > .content .link .rank {
+  width: 3.2ex; }
+
 a, a:visited {
   color: #56A8DA;
   text-decoration: none; }
@@ -96,7 +104,7 @@ label {
 .horizontal-line {
   border-bottom: 1px solid #272727; }
 
-/* Universal spoiler tags┬á*/
+/* Universal spoiler tags */
 .md a[href="#s"] {
   display: inline-block;
   color: inherit; }
@@ -622,7 +630,7 @@ h2.whoaversename {
   opacity: 0.65;
   box-shadow: none; }
 
-/* Promoted┬á*/
+/* Promoted */
 .btn-whoaverse.contribute {
   background: #B44747;
   background: -webkit-linear-gradient(top, #B44747, #AB3C3C);
@@ -1266,21 +1274,27 @@ pre, code {
         padding: .2em; }
         #dashboard ul li a:hover {
           color: #56A8DA; }
+        #dashboard ul li a:visited {
+          color: #AAA; }
 
 @media screen and (max-width: 1600px) {
   #dashboard ul > li {
     min-width: 24.7%; } }
+
 @media screen and (max-width: 1024px) {
   #dashboard ul > li {
     min-width: 33%; } }
+
 @media screen and (max-width: 800px) {
   #dashboard ul > li {
     min-width: 49.5%; } }
+
 @media screen and (max-width: 500px) {
   #dashboard ul > li {
     min-width: 100%; } }
+
 /* ! Header : Banner
-------------------------------------------------------------------------------------┬á*/
+------------------------------------------------------------------------------------ */
 #header-container {
   background: #333;
   border-bottom: 1px solid #222;
@@ -1338,7 +1352,7 @@ pre, code {
   text-decoration: none; }
 
 /* ! Header : Banner : Tab menu
-------------------------------------------------------------------------------------┬á*/
+------------------------------------------------------------------------------------ */
 .tabmenu {
   display: inline-block;
   line-height: 57px;
@@ -1348,7 +1362,7 @@ pre, code {
   white-space: nowrap; }
 
 /* ! Header : Banner : Tab menu : Tab
-------------------------------------------------------------------------------------┬á*/
+    ------------------------------------------------------------------------------------ */
 .tabmenu li {
   display: inline;
   font-weight: normal;
@@ -1363,7 +1377,7 @@ pre, code {
   border-radius: 3px; }
 
 /* ! Header : Banner : Tab menu : Tab : Selected
-------------------------------------------------------------------------------------┬á*/
+        ------------------------------------------------------------------------------------ */
 .tabmenu li.selected a {
   background: #333;
   background: -webkit-linear-gradient(top, #333, #2D2D2D);
@@ -1394,7 +1408,7 @@ pre, code {
   border-color: #802626; }
 
 /* ! Header : Banner : Tab menu : Tab : Unselected
------------------------------------------------------------------------------------- */
+        ------------------------------------------------------------------------------------ */
 .tabmenu li.disabled a {
   color: #AAA; }
 
@@ -1677,7 +1691,7 @@ ul.content {
   padding: 0; }
 
 /* ! Sitetable : Link : Rank
------------------------------------------------------------------------------------- */
+    ------------------------------------------------------------------------------------ */
 .link .rank {
   color: #555;
   float: left;
@@ -1688,7 +1702,7 @@ ul.content {
   text-align: center; }
 
 /* ! Sitetable : Link : Votes
------------------------------------------------------------------------------------- */
+    ------------------------------------------------------------------------------------ */
 .link .midcol {
   font-size: 12px;
   font-weight: bold; }
@@ -2077,7 +2091,7 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
   padding: 5px; }
 
 /* ! Sitetable : Comments : Tag line
------------------------------------------------------------------------------------- */
+    ------------------------------------------------------------------------------------ */
 .comment a.expand {
   color: #AAA;
   margin: 0 3px 0 0; }
@@ -2122,13 +2136,13 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
   text-decoration: underline; }
 
 /* ! Sitetable : Comments : Markdown
------------------------------------------------------------------------------------- */
+    ------------------------------------------------------------------------------------ */
 .comment .md {
   font-size: 13px;
   max-width: 60em; }
 
 /* ! Sitetable : Comments : Form
------------------------------------------------------------------------------------- */
+    ------------------------------------------------------------------------------------ */
 .comment .form-control {
   margin-bottom: 10px; }
 
@@ -2411,65 +2425,51 @@ input[type=checkbox].form-control {
     font-size: 10px;
     height: 18px;
     line-height: 16px; }
-
   #sr-more-link {
     height: 18px; }
-
   #header {
     height: 87px; }
-
   #header-container {
     height: 64px; }
-
   #header-account {
     font-size: 10px;
     line-height: 20px;
     padding: 6px; }
-
   .logged-in {
     margin: 0; }
-
   .logged-out {
     margin: 0; }
-
   #manage {
     position: relative;
     top: 2px; }
-
   #header-banner {
     font-size: 13px;
     height: 64px; }
-
   .tabmenu {
     font-size: 12px;
     line-height: 40px;
     position: absolute;
     top: 0; }
-
   .tabmenu li a {
     padding: 4px 7px; }
-
   .submenu {
     position: relative !important; } }
+
 @media (max-width: 870px) {
   .logged-in {
     background: none;
     border: 0;
     border-radius: 0;
     padding: 0; }
-
   .logged-out {
     background: none;
     border: 0;
     border-radius: 0;
     padding: 0; }
-
   #container {
     overflow: visible; }
-
   #container.page-userprofile {
     padding-top: 10px; }
-
   .side {
     position: absolute;
     top: -11px;
@@ -2481,70 +2481,59 @@ input[type=checkbox].form-control {
     overflow-x: hidden;
     z-index: 2;
     height: calc(100vh - 81px); }
-
   body.show-mobile-sidebar {
     overflow: hidden;
     height: 100vh; }
-
   .side.show-mobile-sidebar {
     left: -1px; }
-
   #modal-background.show-mobile-sidebar {
     display: block;
     opacity: .75;
     pointer-events: all; }
-
   #show-menu-button {
     display: block; }
-
   .side .titlebox h1 {
     font-size: 14px;
     font-weight: normal;
     margin: 0 10px 0 0;
     display: inline-block; }
-
   .side .subscribers {
     font-size: 11px;
     font-weight: bold; }
-
   .content {
     margin-right: 10px; }
-
   .link {
     margin-left: auto;
     margin-right: auto; }
-
   .pagination-container {
     max-width: 700px;
     margin-left: auto;
     margin-right: auto; }
-
   .well {
     margin: 0 auto;
     max-width: 500px; } }
+
 @media (max-width: 750px) {
   .pagename {
     display: none; }
-
   .content {
     margin-right: 10px; } }
+
 @media (max-width: 725px) {
   #about-main .container {
     margin-left: 20px;
     margin-right: 20px; } }
+
 @media (max-width: 700px) {
   #header-img-a {
     display: none; }
-
   .tabmenu {
     display: block;
     text-align: center;
     line-height: 34px;
     position: relative; }
-
   .link .title {
     font-size: 15px; }
-
   .tabmenu li.selected a {
     background: #38434B;
     background: -webkit-linear-gradient(top, #38434B, #353C44);
@@ -2554,7 +2543,6 @@ input[type=checkbox].form-control {
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
     color: #DDD;
     font-weight: bold; }
-
   .tabmenu li.disabled a {
     background: #333;
     background: -webkit-linear-gradient(top, #333, #303030);
@@ -2563,42 +2551,31 @@ input[type=checkbox].form-control {
     border: 1px solid #222;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
     color: #DDD; }
-
   .comment .comment {
     margin: 4px 8px 0 0;
     padding: 0 0 4px 4px; }
-
   .comment .arrow-downvote, .comment .arrow-downvoted,
   .comment .arrow-upvote, .comment .arrow-upvoted {
     background: url("/Graphics/Dark-SpriteSheet.png");
     height: 16px;
     width: 16px; }
-
   .comment .arrow-upvote {
     background-position: 0 -12px; }
-
   .comment .arrow-upvoted {
     background-position: -16px -12px; }
-
   .comment .arrow-downvote {
     background-position: 0 -28px; }
-
   .comment .arrow-downvoted {
     background-position: -16px -28px; }
-
   .comment .arrow-upvote, .comment .arrow-upvoted {
     margin-bottom: 3px; }
-
   .comment .arrow-downvote, .comment .arrow-downvoted {
     margin-top: 12px; }
-
   .btn-whoaverse-medium {
     font-size: 12px;
     padding: 2px 8px; }
-
   .menuarea {
     font-size: 13px; }
-
   .inline-loadcomments-btn {
     /*from btn-whoaverse*/
     background: #4B4B4B;
@@ -2617,66 +2594,55 @@ input[type=checkbox].form-control {
     /*from btn-block*/
     display: block;
     width: 100%; } }
+
 @media (max-width: 550px) {
   .alert-title {
     font-size: 12px; }
-
   .expando-button {
     float: right;
     height: 32px;
     margin: 5px 5px 2px 0;
     width: 32px; }
-
   .expando-button.selftext.collapsed {
     background: url("/Graphics/Dark-SpriteSheet.png");
     background-position: -32px -44px;
     height: 32px;
     width: 32px; }
-
   .expando-button.selftext.collapsed:hover {
     background: url("/Graphics/Dark-SpriteSheet.png");
     background-position: -32px -44px;
     height: 32px;
     width: 32px; }
-
   .expando-button.selftext.expanded {
     background: url("/Graphics/Dark-SpriteSheet.png");
     background-position: -64px -44px;
     height: 32px;
     width: 32px; }
-
   .expando-button.selftext.expanded:hover {
     background: url("/Graphics/Dark-SpriteSheet.png");
     background-position: -64px -44px;
     height: 32px;
     width: 32px; }
-
   .expando-button.selftext.loading, .expando-button.selftext.loading:hover {
     background: url("/Graphics/Dark-SpriteSheet.png");
     background-position: -32px -76px;
     height: 32px;
     width: 32px; }
-
   .link {
     padding-bottom: 6px; }
-
   .link .flat-list.buttons {
     margin: 0;
     padding: 5px 0; }
-
   .link .flat-list.buttons li a {
     background: #333;
     border: 1px solid #2C2C2C;
     line-height: 30px;
     padding: 4px 6px; }
-
   .link .flat-list.buttons li a:hover {
     text-decoration: none; }
-
   .comment .flat-list.buttons {
     display: inline-block;
     padding: 5px 0; }
-
   .comment .flat-list.buttons li a {
     background: #333;
     border: 1px solid #2C2C2C;
@@ -2684,30 +2650,29 @@ input[type=checkbox].form-control {
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
     line-height: 30px;
     padding: 4px 6px; }
-
   .comment .flat-list.buttons li a:hover {
     text-decoration: none; } }
+
 @media (max-width: 480px) {
   #container {
     padding: 0; }
-
   .comment .comment {
     margin-right: 2px; }
-
   .comment.thread > .comment.child {
     margin-left: 4px; } }
+
 @media (max-width: 420px) {
   .modal-dialog {
     width: 300px; }
-
   .modal-body {
     font-size: 12px; }
-
   .modal-body .col-md-4 input.form-control {
     width: 260px; } }
+
 @media (max-width: 380px) {
   .comment .md {
     font-size: 12px; } }
+
 /* ! FAQ
 -------------------------------------------------------------------------------- */
 .faqAnchor {
@@ -2730,6 +2695,46 @@ input[type=checkbox].form-control {
 .content-menu-container > span {
   padding-right: 5px; }
 
+/* ------------------------------------- RETRO PROTOTYPE ------------------------------ */
+.retro .submission a {
+  font-family: Helvetica, Arial, Verdana, Arial, Helvetica, sans-serif;
+  text-decoration: underline;
+  font-size: 1.2em;
+  color: #DFDFDF;
+  font-weight: bold; }
+
+.retro .submission {
+  padding-bottom: 1.4em; }
+
+.retro > .body > .column {
+  width: 32%;
+  float: left;
+  padding: 1em;
+  min-height: 400px; }
+
+.column1, .column2 {
+  border-right: 1px solid #555; }
+
+.retro > .head {
+  align-content: center;
+  padding: 2em 2em 3em 2em;
+  font-size: 1.3em; }
+
+.retro > .head .context {
+  font-size: 3em;
+  font-size: 5vw;
+  text-transform: uppercase;
+  text-shadow: 5px 2px 2px rgba(150, 150, 150, 0.5); }
+
+.top-submission a {
+  font-size: 4em;
+  font-weight: bold;
+  text-transform: uppercase; }
+
+.highlight > a {
+  color: #b01a1f !important; }
+
+/* ------------------------------------- RETRO PROTOTYPE END ------------------------------ */
 .settitlesortinglabel {
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1); }
 
@@ -2791,4 +2796,3 @@ input[type=checkbox].form-control {
   border-radius: 2px;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1); }
 
-/*# sourceMappingURL=Voat-Dark.css.map */
