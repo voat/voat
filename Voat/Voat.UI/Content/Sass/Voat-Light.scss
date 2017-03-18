@@ -15,10 +15,11 @@ $dashboard-item-color_hover: #56A8DA;
 $resign-moderator-background-color: #F4F4F4; 
 $resign-moderator-color: #9b9b9b;
 
-$highlight-border-color: #E7F7FF;
-$highlight-background-color: #4B96C4;
+$highlight-border-color: #4B96C4;
+$highlight-background-color: #E7F7FF;
 
-$retro-hightlight-link-color: #4B96C4;
+$retro-highlight-link-color: #4B96C4;
+$retro-link-color: #404040; //#727272 < Standard default title color
 
 //SCRIPTED COLORS -- DO NOT REMOVE -- IF YOU MODIFY NAME - CREATE NAMED VAR ABOVE AND CHANGE REFS IN BASE.SCSS
 $background-1: #E7F7FF;

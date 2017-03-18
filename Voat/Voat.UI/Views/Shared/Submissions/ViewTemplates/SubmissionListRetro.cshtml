@@ -38,7 +38,7 @@
     }
 }
 
-<div id="container">
+<div id="container" class="retro">
 
         @*Top Sort Span Buttons*@
         @if (Model.Context != null && Model.Sort == Voat.Domain.Models.SortAlgorithm.Top)
@@ -55,10 +55,11 @@
                 </ul>
             </div>
         }
-    <div class="content retro">
-        <div class="retro">
+   
+    <div class="content retro" role="main">      
+        <div class="sitetable retro">
             <div class="head">
-                <center>
+                <div class="centered">
                     @{
                         Voat.Domain.Models.Submission topSubmission = null;
 
@@ -79,12 +80,12 @@
                         if (topSubmission != null)
                         {
                             Model.Submissions.Remove(topSubmission);
-                            @Html.Partial("~/Views/Shared/Submissions/_SubmissionRetro.cshtml", topSubmission, new ViewDataDictionary() { { "ShowThumbnail", true }, { "CssClass", new string[] { "top-submission" } } })
+                            @Html.Partial("~/Views/Shared/Submissions/_SubmissionRetro.cshtml", topSubmission, new ViewDataDictionary() { { "ShowThumbnail", true }, { "CssClass", new string[] { "top-submission", "centered" } } })
                         }
                         <h2 class="context">@title</h2>
                         <p class="bottommenu">* Retro layout inspired by DrudgeReport.com <a href='@turnOffLink'>(Turn this off. Eww!)</a></p>
                     }
-                </center>
+                </div>
             </div>
             <div class="body">
 
@@ -100,7 +101,8 @@
                                 var submission = (counter >= Model.Submissions.Count ? null : Model.Submissions[counter]);
                                 if (submission != null)
                                 {
-                                    @Html.Partial("~/Views/Shared/Submissions/_SubmissionRetro.cshtml", submission)
+                                    
+                                    @Html.Partial("~/Views/Shared/Submissions/_SubmissionRetro.cshtml", submission, new ViewDataDictionary() { { "ShowThumbnailIfHighlighted", false } })
                                     counter++;
                                     i = (column == columnCount && (i + 1) == submissionsPerColumn ? i - 1 : i); //keep looping to pick up remaining posts.
                                 }
@@ -112,75 +114,52 @@
                         </div>
                     }
                 }
+                
             </div>
             <div class="foot">
             </div>
-            <div class="clear"></div>
         </div>
+
+        @{
+            Model.Submissions.RouteData = Request.RequestContext.RouteData.Values;
+            if (Model.Sort != null)
+            {
+                Model.Submissions.RouteData["sort"] = Model.Sort.ToString().ToLower();
+            }
+            if (Model.Span != null)
+            {
+                Model.Submissions.RouteData["span"] = Model.Span.ToString().ToLower();
+            }
+            if (!String.IsNullOrEmpty(Request.QueryString["frontpage"]))
+            {
+                Model.Submissions.RouteData["frontpage"] = Request.QueryString["frontpage"];
+            }
+        }
+        @Html.DisplayFor(model => Model.Submissions, "IPaginatedList")
+
+
        
-            @{
-                Model.Submissions.RouteData = Request.RequestContext.RouteData.Values;
-                if (Model.Sort != null)
-                {
-                    Model.Submissions.RouteData["sort"] = Model.Sort.ToString().ToLower();
-                }
-                if (Model.Span != null)
-                {
-                    Model.Submissions.RouteData["span"] = Model.Span.ToString().ToLower();
-                }
-                if (!String.IsNullOrEmpty(Request.QueryString["frontpage"]))
-                {
-                    Model.Submissions.RouteData["frontpage"] = Request.QueryString["frontpage"];
-                }
-            }
-            @Html.DisplayFor(model => Model.Submissions, "IPaginatedList")
-
-
-            @if (Model.IsActualSubverse)
-            {
-                @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = Model.Context.Name })
-            }
-            else if (Model.Context != null && Model.Context.Type == Voat.Domain.Models.DomainType.Set)
-            {
-                @Html.Action("Sidebar", "Set", new { name = Model.Context.FullName })
-            }
-            else
-            {
-                @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
-            }
-
     </div>
+
+    @if (Model.IsActualSubverse)
+    {
+        @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = Model.Context.Name })
+    }
+    else if (Model.Context != null && Model.Context.Type == Voat.Domain.Models.DomainType.Set)
+    {
+        @Html.Action("Sidebar", "Set", new { name = Model.Context.FullName })
+    }
+    else
+    {
+        @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
+    }
+
 </div>
 <style type="text/css">
-   
-    .content.retro
-    {
-        margin: 20px;
-        padding: 0;
-    }
+
+
     
-    .retro > .side {
-        float:left;
-    }
-
-    @@media ( max-width: 600px ) {
-        .retro > .body > .column {
-            width: 90%;
-            float: left;
-            padding: 1em;
-            min-height: 400px;
-        }
-
-        .column1, .column2 {
-            border: none;
-        }
-
-        .content.retro {
-            margin: 10px;
-            padding: 0;
-        }
-       
-    }
+  
 
 
     

@@ -2696,15 +2696,20 @@ input[type=checkbox].form-control {
   padding-right: 5px; }
 
 /* ------------------------------------- RETRO PROTOTYPE ------------------------------ */
-.retro .submission a {
+.retro .submission > a {
+  font-size: 1.2em;
   font-family: Helvetica, Arial, Verdana, Arial, Helvetica, sans-serif;
   text-decoration: underline;
-  font-size: 1.2em;
-  color: #DFDFDF;
+  color: #C3C3C3;
   font-weight: bold; }
 
 .retro .submission {
   padding-bottom: 1.4em; }
+
+.retro .submission > span > a {
+  font-size: 2em;
+  line-height: 100%;
+  color: #DFDFDF; }
 
 .retro > .body > .column {
   width: 32%;
@@ -2726,13 +2731,74 @@ input[type=checkbox].form-control {
   text-transform: uppercase;
   text-shadow: 5px 2px 2px rgba(150, 150, 150, 0.5); }
 
-.top-submission a {
+.retro .head > div {
+  width: 80%;
+  margin: 0 auto; }
+
+.top-submission > a {
   font-size: 4em;
   font-weight: bold;
   text-transform: uppercase; }
 
 .highlight > a {
-  color: #b01a1f !important; }
+  color: #c22d2d !important; }
+
+.retro .bottommenu {
+  clear: none; }
+
+.sitetable.retro {
+  overflow: hidden; }
+
+.content.retro {
+  margin: 0px;
+  z-index: 1; }
+
+.retro .summary {
+  text-align: left; }
+
+.retro .summary > div {
+  padding: 5px; }
+
+.retro .submission, .retro .submission > a {
+  overflow: hidden;
+  text-overflow: ellipsis; }
+
+@media (max-width: 600px) {
+  .retro > .body > .column {
+    width: 90%;
+    float: left;
+    padding: 1em;
+    min-height: 400px; }
+  .column1, .column2 {
+    border: none; }
+  .content.retro {
+    margin: 10px;
+    padding: 0; } }
+
+@media (min-width: 871px) {
+  .retro > .side {
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+    text-align: center; }
+  .retro > .side > .spacer {
+    display: inline-block;
+    text-align: left;
+    vertical-align: top;
+    margin: 0 5px 15px 5px;
+    min-width: 282px; }
+  .retro > .side > .spacer > .titlebox {
+    overflow: hidden; }
+  .retro > .side > .spacer > .titlebox > .spacer:first-child {
+    width: 282px;
+    float: right;
+    margin-left: 5px; }
+  .retro .side > .spacer.spacersection ~ .spacer {
+    width: 282px; }
+  .retro .side > .spacer.spacersection {
+    width: 100%; }
+  .retro .side > .spacer.spacerbig {
+    width: 100%; } }
 
 /* ------------------------------------- RETRO PROTOTYPE END ------------------------------ */
 .settitlesortinglabel {
