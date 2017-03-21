@@ -33,32 +33,32 @@ namespace Voat.Controllers
     {
         private readonly voatEntities _db = new voatEntities();
         
-        // GET: MessageContent
-        public async Task<ActionResult> MessageContent(int? messageId)
-        {
-            if (messageId.HasValue)
-            {
-                var q = new QuerySubmission(messageId.Value);
-                var result = await q.ExecuteAsync();
+        //// GET: MessageContent
+        //public async Task<ActionResult> MessageContent(int? messageId)
+        //{
+        //    if (messageId.HasValue)
+        //    {
+        //        var q = new QuerySubmission(messageId.Value);
+        //        var result = await q.ExecuteAsync();
 
-                if (result != null)
-                {
-                    var mpm = new MarkdownPreviewModel();
+        //        if (result != null)
+        //        {
+        //            var mpm = new MarkdownPreviewModel();
 
-                    if (!String.IsNullOrEmpty(result.Content))
-                    {
-                        mpm.MessageContent = (String.IsNullOrEmpty(result.FormattedContent) ? Formatting.FormatMessage(result.Content) : result.FormattedContent);
-                    }
-                    else
-                    {
-                        mpm.MessageContent = "<p>This submission only has a title.</p>"; //"format" this content
-                    }
+        //            if (!String.IsNullOrEmpty(result.Content))
+        //            {
+        //                mpm.MessageContent = (String.IsNullOrEmpty(result.FormattedContent) ? Formatting.FormatMessage(result.Content) : result.FormattedContent);
+        //            }
+        //            else
+        //            {
+        //                mpm.MessageContent = "<p>This submission only has a title.</p>"; //"format" this content
+        //            }
 
-                    return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", mpm);
-                }
-            }
-            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        }
+        //            return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", mpm);
+        //        }
+        //    }
+        //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //}
 
         // GET: subverse link flairs for selected subverse
         [Authorize]

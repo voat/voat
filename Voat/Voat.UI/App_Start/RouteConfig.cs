@@ -879,12 +879,12 @@ namespace Voat
                 defaults: new { controller = "HtmlElements", action = "PrivateMessageReplyForm" }
             );
 
-            // ajaxhelpers/messagecontent
-            routes.MapRoute(
-                name: "MessageContent",
-                url: "ajaxhelpers/messagecontent/{messageId}",
-                defaults: new { controller = "AjaxGateway", action = "MessageContent" }
-            );
+            //// ajaxhelpers/messagecontent
+            //routes.MapRoute(
+            //    name: "MessageContent",
+            //    url: "ajaxhelpers/messagecontent/{messageId}",
+            //    defaults: new { controller = "AjaxGateway", action = "MessageContent" }
+            //);
 
             // ajaxhelpers/basicuserinfo
             routes.MapRoute(
