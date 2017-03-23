@@ -695,6 +695,27 @@ function onSaveSet(sender, arguments)
         messagePlaceHolder.html(response.error.message);
     }
 }
+function submitSetUpdateForm(sender, setName) {
+
+    var callBack = function (sender, arguments) {
+
+        var response = getJsonResponse(arguments);
+        var messagePlaceHolder = sender.parents("form").find(".updateResult");
+        if (response.success) {
+            if (response.data.fullName != setName) {
+                location.href = "/s/" + response.data.fullName + "/about/details?message=Set%20Updated";
+            }
+            else {
+                messagePlaceHolder.html("Set Updated");
+            }
+        } else {
+            messagePlaceHolder.html(response.error.message);
+        }
+    }
+
+    submitForm(sender, callBack);
+
+}
 function submitForm(sender, callBack)
 {
     var $form = $(sender).parents('form');
@@ -1195,7 +1216,7 @@ function setSubverseAddCallBack(sender, arguments) {
             //message = "Subverse " + subverseName + " was added to set " + setName;
         }
         else {
-            message = "Subverse removed to set";
+            message = "Subverse removed from set";
             //message = "Subverse " + subverseName + " was removed from set " + setName;
         }
     } else {
@@ -1229,7 +1250,7 @@ function setSubverseListToggleCallBack(s, arguments) {
         s.text(response.error.message);
     }
 }
-function setSubverseListToggle(sender, setName, userName, subverseName, action, callBack) {
+function setSubverseListToggle(sender, setName, subverseName, action, callBack) {
     if (subverseName != "") {
         //$(obj).html("unsubscribe");
         //$(obj).toggleClass("btn-sub btn-unsub");
@@ -1237,7 +1258,7 @@ function setSubverseListToggle(sender, setName, userName, subverseName, action, 
         if (action !== undefined && action != null) {
             actionType = action;
         }
-        var url = "/s/" + setName + '/' + userName + '/' + subverseName + '/' + actionType;
+        var url = "/s/" + setName + '/' + subverseName + '/' + actionType;
         // call the set subverse list API
         $.ajax({
             type: "POST",
@@ -1249,13 +1270,10 @@ function setSubverseListToggle(sender, setName, userName, subverseName, action, 
     }
 }
 
-function subscribe(sender, type, name, owner, callBack)
+function subscribe(sender, type, name, callBack)
 {
-    if (owner == null || owner == ''){
-        owner = "_";
-    }
     //{pathPrefix}/subscribe/{domainType}/{name}/{ownerName}/{action}
-    var url = "/user/subscribe/" + type + "/" + name + "/" + owner + "/toggle" ;
+    var url = "/user/subscribe/" + type + "/" + name + "/toggle" ;
     $.ajax({
         type: "POST",
         url: url,
@@ -1265,9 +1283,9 @@ function subscribe(sender, type, name, owner, callBack)
     });
 }
 
-function subscribeToSet(sender, name, owner)
+function subscribeToSet(sender, name)
 {
-    subscribe(sender, "set", name, owner,
+    subscribe(sender, "set", name,
         function (s, args) {
             var response = getJsonResponse(args);
             if (response.success) {
@@ -1296,7 +1314,7 @@ function subscribeToSet(sender, name, owner)
     );
 }
 function subscribeToSubverse(sender, name) {
-    subscribe(sender, "subverse", name, null,
+    subscribe(sender, "subverse", name,
        function (s, args) {
            var response = getJsonResponse(args);
            if (response.success) {

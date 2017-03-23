@@ -21,11 +21,13 @@
                 <li class="btn-whoaverse-paging">
                     @if (routeLink)
                     {
-                        @Html.RouteLink("< prev", Model.RouteName, Model.RouteData)
+                        <a href='@Url.RouteUrlPretty(Model.RouteName, Model.RouteData)'>< prev</a>
+                        //@Html.RouteLink("< prev", Model.RouteName, Model.RouteData)
                     }
                     else
                     {
-                        @Html.ActionLink("< prev", (string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)
+                        <a href='@Url.ActionPretty((string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)'>< prev</a>
+                        //@Html.ActionLink("< prev", (string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)
                     }
                 </li>
             }
@@ -35,11 +37,13 @@
                 <li class="btn-whoaverse-paging">
                     @if (routeLink)
                     {
-                        @Html.RouteLink("next >", Model.RouteName, Model.RouteData)
+                        <a href='@Url.RouteUrlPretty(Model.RouteName, Model.RouteData)'>next ></a>
+                        //@Html.RouteLink("next >", Model.RouteName, Model.RouteData)
                     }
                     else
                     {
-                        @Html.ActionLink("next >", (string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)
+                        <a href='@Url.ActionPretty((string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)'>next ></a>
+                        //@Html.ActionLink("next >", (string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)
                     }
                 </li>
             }

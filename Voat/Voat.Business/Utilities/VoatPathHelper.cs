@@ -116,7 +116,7 @@ namespace Voat.Utilities
             switch (domainReference.Type)
             {
                 case DomainType.Set:
-                    basePath = $"/s/{domainReference.Name}" + (!String.IsNullOrEmpty(domainReference.OwnerName) ? $"/{domainReference.OwnerName}" : "");
+                    basePath = $"/s/{domainReference.Name}" + (!String.IsNullOrEmpty(domainReference.OwnerName) ? CONSTANTS.SET_SEPERATOR + $"{domainReference.OwnerName}" : "");
                     break;
                 case DomainType.Subverse:
                     basePath = $"/v/{domainReference.Name}";

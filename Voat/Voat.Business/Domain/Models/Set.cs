@@ -10,6 +10,7 @@ namespace Voat.Domain.Models
 {
     public class Set
     {
+        public string FullName { get { return new DomainReference(DomainType.Set, Name, UserName).FullName; } }
 
         public int ID { get; set; }
 

@@ -6,11 +6,11 @@
     Voat.Domain.UserData userData = ViewBag.UserData;
     //Voat.Domain.Models.DomainReference domainReference = ViewBag.DomainReference;
 
-    var jsCommand = String.Format("return subscribeToSubverse($(this), '{0}')", Model.Name);
+    var jsCommand = String.Format("return subscribeToSubverse($(this), '{0}')", Model.FullName);
 
     if (Model.Type == Voat.Domain.Models.DomainType.Set)
     {
-        jsCommand = String.Format("return subscribeToSet($(this), '{0}', '{1}')", Model.Name, Model.OwnerName);
+        jsCommand = String.Format("return subscribeToSet($(this), '{0}')", Model.FullName);
     }
     var subscriber = false;
     if (userData != null)

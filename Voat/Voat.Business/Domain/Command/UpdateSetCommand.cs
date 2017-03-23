@@ -32,6 +32,7 @@ namespace Voat.Domain.Command
         {
             if (result.Success)
             {
+                CacheHandler.Instance.Remove(CachingKey.UserSubscriptions(UserName));
                 CacheHandler.Instance.Remove(CachingKey.Set(this._set.Name, this._set.UserName));
             }
         }

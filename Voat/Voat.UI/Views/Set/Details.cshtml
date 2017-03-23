@@ -63,33 +63,14 @@
                 
                 <div class="form-group">
                     <div class="col-md-offset-4 col-md-5">
-                        <input type="button" value="Add" class="btn-whoaverse" onclick="javascript:setSubverseListToggle($(this), '@Model.Set.Name', '@Model.Set.UserName', $('#subName').val(), '@Voat.Domain.Models.SubscriptionAction.Subscribe.ToString()', setSubverseAddCallBack);" />
+                        <input type="button" value="Add" class="btn-whoaverse" onclick="javascript:setSubverseListToggle($(this), '@Model.Set.FullName', $('#subName').val(), '@Voat.Domain.Models.SubscriptionAction.Subscribe.ToString()', setSubverseAddCallBack);" />
                     </div>
                 </div>
             </div>
             <div class="clear"></div>
         }
         <div class="sitetable linklisting">
-            @if (Model.List.Any())
-            {
-                using (var enumerator = Model.List.GetEnumerator())
-                {
-                    while (enumerator.MoveNext())
-                    {
-                        <div class="row">
-                            <div class="col-md-6">@Html.Partial("_SubverseSubscriptionDetail", enumerator.Current, new ViewDataDictionary() { { "SetViewModel", Model } })</div>
-                            @if (enumerator.MoveNext())
-                            {
-                                <div class="col-md-6">@Html.Partial("_SubverseSubscriptionDetail", enumerator.Current, new ViewDataDictionary() { { "SetViewModel", Model } })</div>
-                            }
-                        </div>
-                    }
-                }
-            }
-            else
-            {
-                <div>No subverses</div>
-            }
+           @Html.Partial("_List", Model)
         </div>
         @Html.DisplayFor(model => Model.List, "IPaginatedList")
     </div>

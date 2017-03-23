@@ -1,4 +1,4 @@
-﻿@charset "UTF-8";
+@charset "UTF-8";
 /*  ============================================================================
     Minity CSS stylesheet for Voat (http://voat.co/)
     Designed by Nurdoidz
@@ -2821,4 +2821,3 @@ input[type=checkbox].form-control {
 .link .flat-list.buttons li a {
   border-radius: 3px;
   border-width: 1px 1px 2px; }
-

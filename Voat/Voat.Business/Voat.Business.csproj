@@ -345,6 +345,7 @@
     <Compile Include="Configuration\Settings.cs" />
     <Compile Include="Rules\Voting\ArchivedVoteRules.cs" />
     <Compile Include="Rules\Voting\DownVoteCommentAgeRule.cs" />
+    <Compile Include="Rules\Voting\DownVoteSubmissionMeanieRule.cs" />
     <Compile Include="Rules\Voting\DownVoteCommentMeanieRule.cs" />
     <Compile Include="Rules\Voting\DownVoteRule.cs" />
     <Compile Include="Rules\Voting\DownVoteSubmissionAgeRule.cs" />

@@ -32,17 +32,24 @@
                 <a href="@VoatPathHelper.BasePath(domainReference)" class="hover">@Model.Name</a>
             </h1>
 
-            <div>
-                <a class="btn-whoaverse" href='@(VoatPathHelper.BasePath(domainReference) + "/about/details")'>Details</a>
-            </div>
+          
 
             @Html.Partial("Sidebars/Buttons/_SubscribeButtons", domainReference, new ViewDataDictionary() { { "UserData", userData } })
 
+           
 
             <span class="subscribers">
                 <span id="subscriberCount" class="number">@(Formatting.PluralizeIt(Model.SubscriberCount, "subscriber"))</span>
             </span>
             
+
+            <div class="spacer">
+                <p>
+                    <a class="btn-whoaverse" href='@(VoatPathHelper.BasePath(domainReference) + "/about/details")'>Details</a>
+                </p>
+            </div>
+
+
             <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-xxxx">
                 <input name="submission-id" value="xxxx" type="hidden">
                 <div class="usertext-body may-blank-within">
@@ -53,6 +60,7 @@
                     </div>
                 </div>
             </form>
+
             <div class="bottom">
                 <p>
                     @if (!String.IsNullOrEmpty(Model.UserName))

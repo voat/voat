@@ -37,10 +37,14 @@ namespace Voat.Controllers
 {
     public class SetController : BaseController
     {
-        public async Task<ActionResult> Index(string name, string userName, string sort)
+        public async Task<ActionResult> Index(string name, string sort)
         {
-            
-            var qSet = new QuerySet(name, userName);
+
+            var domainReference = DomainReference.Parse(name, DomainType.Set);
+
+            //var domainReference = new DomainReference(DomainType.Set, name, userName);
+
+            var qSet = new QuerySet(domainReference.Name, domainReference.OwnerName);
             var set = await qSet.ExecuteAsync();
 
             if (set == null)
@@ -76,13 +80,13 @@ namespace Voat.Controllers
                 options.Span = SortSpan.Day;
             }
 
-            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Set, name, userName), options);
+            var q = new QuerySubmissions(domainReference, options);
             var result = await q.ExecuteAsync();
             
             var model = new SubmissionListViewModel();
             model.Submissions = new Utilities.PaginatedList<Domain.Models.Submission>(result, options.Page, options.Count);
-            model.Submissions.RouteName = (String.IsNullOrEmpty(userName) ? "SetIndex" : "SetIndexUser");
-            model.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Set, name, userName);
+            model.Submissions.RouteName = "SetIndex";
+            model.Context = domainReference;
             model.Sort = options.Sort;// == SortAlgorithm.RelativeRank ? SortAlgorithm.Hot :options.Sort; //UI doesn't want relative rank
             model.Span = options.Span;
 
@@ -100,7 +104,7 @@ namespace Voat.Controllers
         {
             using (var repo = new Repository())
             {
-                var domainReference = DomainReference.ParseSetFromFullName(name);
+                var domainReference = DomainReference.Parse(name, DomainType.Set);
                 var set = repo.GetSet(domainReference.Name, domainReference.OwnerName);
 
                 if (set != null)
@@ -115,13 +119,13 @@ namespace Voat.Controllers
             }
         }
 
-        public async Task<ActionResult> Details(string name, string userName)
+        public async Task<ActionResult> Details(string name)
         {
 
             using (var repo = new Repository())
             {
-                var domainReference = new DomainReference(DomainType.Set, name, userName);
-                var set = repo.GetSet(name, userName);
+                var domainReference = DomainReference.Parse(name, DomainType.Set);
+                var set = repo.GetSet(domainReference.Name, domainReference.OwnerName);
                 if (set == null)
                 {
                     //Since system sets are not created until needed we show a slightly better error message for front/blocked.
@@ -174,22 +178,23 @@ namespace Voat.Controllers
                 model.List.RouteName = "SetDetails";
 
                 ViewBag.NavigationViewModel = new NavigationViewModel() {
-                    Name = set.Name,
+                    Name = domainReference.FullName,
                     Description = set.Description,
                     BasePath = VoatPathHelper.BasePath(domainReference),
                     MenuType = (set.Type == (int)SetType.Front || set.Type == (int)SetType.Blocked ?  MenuType.Discovery : MenuType.Set)
                 };
-                return View(model);
+                return View("Details", model);
             }
         }
         // /s/{set}/{owner}/{subverse}
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<JsonResult> ListChange(string name, string ownerName, string subverse, Domain.Models.SubscriptionAction subscribeAction)
+        public async Task<JsonResult> ListChange(string name, string subverse, Domain.Models.SubscriptionAction subscribeAction)
         {
+            var domainReference = DomainReference.Parse(name, DomainType.Set);
             //Only user sets can be changed, thus userName never needs to be checked here.
-            var cmd = new SetSubverseCommand(new DomainReference(DomainType.Set, name, ownerName), subverse, subscribeAction);
+            var cmd = new SetSubverseCommand(domainReference, subverse, subscribeAction);
             var result = await cmd.Execute();
             return JsonResult(result);
         }
@@ -210,7 +215,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(string name, string userName)
+        public async Task<ActionResult> Delete(string name)
         {
 
             if (ModelState.IsValid)
@@ -218,7 +223,8 @@ namespace Voat.Controllers
                 //TODO: Transfer to Command
                 using (var repo = new Repository())
                 {
-                    var result = await repo.DeleteSet(new DomainReference(DomainType.Set, name, userName));
+                    var domainReference = DomainReference.Parse(name, DomainType.Set);
+                    var result = await repo.DeleteSet(domainReference);
 
                     if (result.Success)
                     {
@@ -245,7 +251,6 @@ namespace Voat.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 var cmd = new UpdateSetCommand(set);
                 var result = await cmd.Execute();
                 return JsonResult(result);
@@ -289,7 +294,8 @@ namespace Voat.Controllers
                         }
                         else
                         {
-                            return new RedirectToRouteResult("SetDetails", new System.Web.Routing.RouteValueDictionary() { { "name", result.Response.Name }, { "userName", User.Identity.Name } });
+                            var domainReference = new DomainReference(DomainType.Set, result.Response.Name, result.Response.UserName);
+                            return new RedirectToRouteResult("SetDetails", new System.Web.Routing.RouteValueDictionary() { { "name", domainReference.FullName } });
                         }
                     }
                     else

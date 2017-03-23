@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace Voat.Domain.Models
 {
@@ -6,13 +7,11 @@ namespace Voat.Domain.Models
     {
         public DomainReference() { }
 
-        private static readonly string seperator = "/";
-
         public DomainReference(DomainType type, string name, string ownerName = null)
         {
             this.Type = type;
             this.Name = name;
-            this.OwnerName = ownerName;
+            this.OwnerName = Utilities.CONSTANTS.SYSTEM_USER_NAME.IsEqual(ownerName) ? null : ownerName;
         }
 
         /// <summary>
@@ -24,7 +23,7 @@ namespace Voat.Domain.Models
             {
                 if (Type == DomainType.Set && !String.IsNullOrEmpty(OwnerName))
                 {
-                    return Name + seperator + OwnerName;
+                    return Name + Utilities.CONSTANTS.SET_SEPERATOR + OwnerName;
                 }
                 return Name;
             }
@@ -45,22 +44,43 @@ namespace Voat.Domain.Models
         /// </summary>
         public string OwnerName { get; set; }
 
-        public static DomainReference ParseSetFromFullName(string fullName)
+        public static DomainReference Parse(string fullName, DomainType domainType)
         {
             DomainReference d = null;
+            Match match = null;
+
             if (!String.IsNullOrEmpty(fullName))
             {
-                d = new DomainReference();
-                d.Type = DomainType.Set;
-                if (fullName.Contains(seperator))
+                switch (domainType)
                 {
-                    var split = fullName.Split(new string[] { seperator }, StringSplitOptions.RemoveEmptyEntries);
-                    d.Name = split[0];
-                    d.OwnerName = split[1];
-                }
-                else
-                {
-                    d.Name = fullName;
+                    case DomainType.Set:
+
+                        match = Regex.Match(fullName, String.Format("^{0}$", Utilities.CONSTANTS.SET_REGEX));
+
+                        if (match.Success)
+                        {
+                            d = new DomainReference();
+                            d.Type = domainType;
+                            d.Name = match.Groups["name"].Value;
+                            d.OwnerName = match.Groups["ownerName"].Success ? match.Groups["ownerName"].Value : null;
+                        }
+
+                        break;
+                    case DomainType.Subverse:
+                        match = Regex.Match(fullName, String.Format("^{0}$", Utilities.CONSTANTS.SUBVERSE_REGEX));
+
+                        if (match.Success)
+                        {
+                            d = new DomainReference();
+                            d.Type = domainType;
+                            d.Name = match.Groups["name"].Value;
+                            d.OwnerName = null;
+                        }
+
+                        break;
+                    default:
+
+                        break;
                 }
             }
             return d;

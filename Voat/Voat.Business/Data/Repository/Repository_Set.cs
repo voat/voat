@@ -294,6 +294,16 @@ namespace Voat.Data
                     return CommandResponse.FromStatus<Set>(null, Status.Denied, "User does not have permission to edit this set");
                 }
 
+                //HACK: Need to clear this entry out of cache if name changes and check name
+                if (!existingSet.Name.IsEqual(set.Name))
+                {
+                    if (_db.SubverseSets.Any(x => x.Name.Equals(set.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        return CommandResponse.FromStatus<Set>(null, Status.Denied, "A set with this name already exists");
+                    }
+                    CacheHandler.Instance.Remove(CachingKey.Set(existingSet.Name, existingSet.UserName));
+                }
+
                 existingSet.Name = set.Name;
                 existingSet.Title = set.Title;
                 existingSet.Description = set.Description;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace Voat
 {
@@ -61,6 +62,23 @@ namespace Voat
             return result;
         }
 
+        private static Dictionary<string, string> replacements = new Dictionary<string, string>() { { "%40", "@" } };
+
+        public static string RouteUrlPretty(this UrlHelper urlHelper, string routeName, RouteValueDictionary routeValues)
+        {
+            
+            var routedUrl = urlHelper.RouteUrl(routeName, routeValues);
+
+            return replacements.Aggregate(routedUrl, (value, keyPair) => value.Replace(keyPair.Key, keyPair.Value));
+
+        }
+        public static string ActionPretty(this UrlHelper urlHelper, string routeName, RouteValueDictionary routeValues)
+        {
+            var routedUrl = urlHelper.Action(routeName, routeValues);
+
+            return replacements.Aggregate(routedUrl, (value, keyPair) => value.Replace(keyPair.Key, keyPair.Value));
+
+        }
 
     }
 }

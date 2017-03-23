@@ -374,11 +374,11 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
-        public async Task<JsonResult> Subscribe(Domain.Models.DomainType domainType, string name, string ownerName, Domain.Models.SubscriptionAction subscribeAction)
+        public async Task<JsonResult> Subscribe(Domain.Models.DomainType domainType, string name, Domain.Models.SubscriptionAction subscribeAction)
         {
+            var domainReference = Domain.Models.DomainReference.Parse(name, domainType);
 
-            ownerName = (ownerName == "_" ? null : ownerName);
-            var cmd = new SubscribeCommand(new Domain.Models.DomainReference(domainType, name, ownerName), subscribeAction);
+            var cmd = new SubscribeCommand(domainReference, subscribeAction);
             var result = await cmd.Execute();
             return JsonResult(result); 
 

@@ -307,9 +307,21 @@ namespace Voat.Domain.Models
     public enum SubmissionType
     {
         Text = 1,
-        Link = 2
+        Link = 2,
+        //New types
+        LinkText = 3, //Both a URL and a Body are provided
+        Status = 4 //Only message content is provided - an update/selfsub post
     }
 
+    //DO NOT CHANGE THESE VALUES - ALIGNS WITH DB
+    [DatabaseMappedValue]
+    public enum SubverseType
+    {
+        Subverse = 1,
+        User = 2,
+        Sponsored = 3
+    }
+    
     //It is CRITICAL these roles are numbered correctly as the value each one contains is used to rank
     //the role in permission based tasks. Where this is critical is role assignment. An Admin can not
     //change the permissions of a GlobalAdmin as a GlobalAdmin outranks them (Higer Value). A DelegateAdmin can not
@@ -320,6 +332,7 @@ namespace Voat.Domain.Models
         Admin = 2147483646,
         DelegateAdmin = 10000
     }
+
     [DatabaseMappedValue]
     public enum ModeratorLevel
     {

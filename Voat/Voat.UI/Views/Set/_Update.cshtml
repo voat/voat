@@ -6,21 +6,27 @@
 {
     <div class="alert-title">Set Properties</div>
     <p class="titlerow">
-        <a class="h4" href="/s/@Model.Name/@Model.UserName">@Model.Name</a>
+        <a class="h4" href="/s/@Model.FullName">@Model.Name</a>
     </p>
     
     @Html.AntiForgeryToken()
     @Html.ValidationSummary()
     @Html.HiddenFor(m => m.ID)
     <div class="form-group">
-        <div class="col-md-offset-4 col-md-3">
-            <span class="updateResult"></span>
+        <div class="col-md-offset-4 col-md-5">
+            <span class="updateResult">
+                @Request.QueryString["message"]
+            </span>
         </div>
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.Name, new { @class = "col-md-4 control-label" })
         <div class="col-md-5">
-            @Html.TextBoxFor(m => m.Name, new { @class = "form-control"})
+            @Html.TextBoxFor(model => model.Name, new { Value = Model.Name, @class = "form-control"})
+            @if (Model.ID > 0)
+            {
+                <p>Changing the name of a set will break all existing links</p>
+            }
             @Html.ValidationMessageFor(model => model.Name)
         </div>
     </div>
@@ -46,7 +52,7 @@
     </div>
     <div class="form-group">
         <div class="col-md-offset-4 col-md-3">
-            <input type="button" value="Save" onclick="submitForm($(this), onSaveSet)" class="btn-whoaverse" />
+            <input type="button" value="Save" onclick="submitSetUpdateForm($(this), '@Model.FullName');" class="btn-whoaverse" />
         </div>
     </div>
 }

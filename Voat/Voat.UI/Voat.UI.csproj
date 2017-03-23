@@ -382,6 +382,8 @@
     <Content Include="Content\bootstrap.min.css">
       <DependentUpon>bootstrap.css</DependentUpon>
     </Content>
+    <Content Include="Content\Themes\Cashmere\cashmere.css" />
+    <Content Include="Content\Themes\Cashmere\cashmere.min.css" />
     <Content Include="Content\tooltipster.css" />
     <Content Include="Content\ui-themes\autocomplete\autocomplete.css" />
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css" />
@@ -389,13 +391,7 @@
     <Content Include="Content\ui-themes\autocomplete\core.css" />
     <Content Include="Content\ui-themes\autocomplete\menu.css" />
     <Content Include="Content\ui-themes\autocomplete\theme.css" />
-    <Content Include="Content\Voat-Dark.min.css">
-      <DependentUpon>Voat-Dark.css</DependentUpon>
-    </Content>
     <Content Include="Content\Voat-Light.css" />
-    <Content Include="Content\Voat-Light.min.css">
-      <DependentUpon>Voat-Light.css</DependentUpon>
-    </Content>
     <Content Include="ddos.min.htm">
       <DependentUpon>ddos.htm</DependentUpon>
     </Content>
@@ -472,6 +468,7 @@
       <DependentUpon>WVSprite.png</DependentUpon>
     </Content>
     <Content Include="ddos.htm" />
+    <Content Include="gulpfile.js" />
     <Content Include="inactive.htm" />
     <Content Include="inactive.min.htm">
       <DependentUpon>inactive.htm</DependentUpon>
@@ -513,10 +510,6 @@
     <Content Include="Content\ui-themes\autocomplete\autocompletebundle.css.bundle" />
     <Content Include="gizmo\src\js\jquery.swipebox.min.js.map" />
     <None Include="bundleconfig.json" />
-    <None Include="compilerconfig.json" />
-    <None Include="compilerconfig.json.defaults">
-      <DependentUpon>compilerconfig.json</DependentUpon>
-    </None>
     <None Include="Content\Sass\_Base.scss">
       <Compile>False</Compile>
       <Minify>True</Minify>
@@ -544,6 +537,10 @@
       <CompileStyle>Nested</CompileStyle>
       <DebugInfo>False</DebugInfo>
     </None>
+    <Content Include="package.json" />
+    <Content Include="Content\Themes\Cashmere\fonts\Cashmere-icons.eot" />
+    <Content Include="Content\Themes\Cashmere\fonts\Cashmere-icons.ttf" />
+    <Content Include="Content\Themes\Cashmere\fonts\Cashmere-icons.woff" />
     <None Include="Properties\PublishProfiles\local fs.pubxml" />
     <None Include="Properties\PublishProfiles\File System.pubxml" />
     <None Include="Properties\PublishProfiles\voat.co - Web Deploy.pubxml" />
@@ -800,6 +797,7 @@
     <Content Include="Views\Shared\Layouts\_LayoutEmpty.cshtml" />
     <Content Include="Views\Shared\Submissions\ViewTemplates\SubmissionListRetro.cshtml" />
     <Content Include="Views\Shared\Submissions\_SubmissionRetro.cshtml" />
+    <Content Include="Views\Set\_List.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

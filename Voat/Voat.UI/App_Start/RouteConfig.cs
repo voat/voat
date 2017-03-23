@@ -31,6 +31,10 @@ namespace Voat
             var subverseSortConstraint = @"^$|new|hot|top";
             var setSortContraint = @"^$|new|hot|top|relative";
 
+            var subversePathSuffix = "{subversePathSuffix}";
+            var subversePathSuffixConstraint = "v";
+
+
             // /rss
             routes.MapRoute(
                 name: "rss",
@@ -290,7 +294,7 @@ namespace Voat
             //user/subscribe/subverse/technology/_/toggle
             routes.MapRoute(
                  name: "UserSubscribeAction",
-                 url: "{pathPrefix}/subscribe/{domainType}/{name}/{ownerName}/{subscribeAction}",
+                 url: "{pathPrefix}/subscribe/{domainType}/{name}/{subscribeAction}",
                  defaults: new {
                      controller = "User",
                      action = "Subscribe"
@@ -965,46 +969,46 @@ namespace Voat
 
                 //sets
                 routes.MapRoute(
-                   name: "SetDetailsSystem",
+                   name: "SetDetails",
                    url: setSuffix + "/{name}/about/details",
                    defaults: new { controller = "Set", action = "Details", userName = (string)null }
                );
-                routes.MapRoute(
-                    name: "SetDetails",
-                    url: setSuffix + "/{name}/{userName}/about/details",
-                    defaults: new { controller = "Set", action = "Details" }
-                );
+                //routes.MapRoute(
+                //    name: "SetDetails",
+                //    url: setSuffix + "/{name}/{userName}/about/details",
+                //    defaults: new { controller = "Set", action = "Details" }
+                //);
                 routes.MapRoute(
                    name: "EditSet",
-                   url: setSuffix + "/{name}/{userName}/about/edit",
+                   url: setSuffix + "/{name}/about/edit",
                    defaults: new { controller = "Set", action = "Edit" }
                 );
 
                 routes.MapRoute(
                    name: "DeleteSet",
-                   url: setSuffix + "/{name}/{userName}/about/delete",
+                   url: setSuffix + "/{name}/about/delete",
                    defaults: new { controller = "Set", action = "Delete" }
                 );
 
                 //sets
-                routes.MapRoute(
-                    name: "SetIndexUser",
-                    url: setSuffix + "/{name}/{userName}/{sort}",
-                    defaults: new {
-                        controller = "Set",
-                        action = "Index",
-                        sort = UrlParameter.Optional
-                    },
-                    constraints: new
-                    {
-                        sort = setSortContraint
-                    }
-                );
-                
+                //routes.MapRoute(
+                //    name: "SetIndexUser",
+                //    url: setSuffix + "/{name}/{userName}/{sort}",
+                //    defaults: new {
+                //        controller = "Set",
+                //        action = "Index",
+                //        sort = UrlParameter.Optional
+                //    },
+                //    constraints: new
+                //    {
+                //        sort = setSortContraint
+                //    }
+                //);
+
                 // /s/{name}/{userName}/{subverse}?action=Subscribe|Unsubscribe
                 routes.MapRoute(
                     name: "SetSubListChange",
-                    url: setSuffix + "/{name}/{ownerName}/{subverse}/{subscribeAction}",
+                    url: setSuffix + "/{name}/{subverse}/{subscribeAction}",
                     defaults: new {
                         controller = "Set",
                         action = "ListChange"
