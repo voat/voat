@@ -16,19 +16,37 @@
 *@
 
 @{
-    Layout = "~/Views/Chat/_Layout.cshtml";
+    Layout = "~/Views/Shared/Layouts/_LayoutContainer.cshtml";
 } 
 @using Voat.Models.ViewModels
 
 @model ChatViewModel
 
+
+@{
+    var history = ChatHistory.History(Model.Room.Name).ToList();
+    history.Add(new ChatMessage() { UserName = CONSTANTS.SYSTEM_USER_NAME, RoomName = Model.Room.Name, Message = "<p>You have joined the " + Model.Room.Name + " chatroom</p>", CreationDate = DateTime.UtcNow });
+
+}
 @if (!Settings.SignalRDisabled)
 {
+
+
+    <div tabindex=0 role="banner">
+        <div>
+            <div>
+                <a title="@Settings.SiteSlogan" href="/">
+                    <img id="header-img" src="@Settings.SiteLogo" alt="@Settings.SiteName" height="31" width="112">
+                </a>
+            </div>
+        </div>
+    </div>
+
     <div class="chatContent">
-        <div class="spacer spacersection">
+        <div>
             <div class="sidecontentbox">
                 <div class="title">
-                    <h1 class="alert-h1">Voat's @Model.Room.Name chat</h1>
+                    <h1 class="alert-h1">@Model.Room.Name chat</h1>
                     <h2>@Model.Room.Description</h2>
                 </div>
                 <br/>
@@ -39,11 +57,9 @@
                     }
                 </div>
 
-                <div class="sidecontentbox content">
+                <div class="content">
                     <div id="subverseChatRoom" class="subverseChatRoomContent">
-                        <p>
-                            <b>Voat</b>: you have joined @Model.Room.Name chatroom.
-                        </p>
+                        @Html.Partial("_RoomHistory", history)
                     </div>
                 </div>
 
@@ -63,17 +79,32 @@
             </div>
         </div>
     </div>
-
-    @section PageScripts
-    {
-        <script type="text/javascript">
-            $(document).ready(function () {
-                joinChat('@Model.Room.ID');
-            });
-        </script>
-    }
 }
 else
 {
     <div>Chat is currently disabled :(</div>
+}
+
+@section PageScripts
+    {
+    <script type="text/javascript">
+            $(document).ready(function () {
+                joinChat('@Model.Room.ID');
+            });
+            scrollChatToBottom(true);
+    </script>
+}
+@section PageHeader
+    {
+    <style type="text/css">
+        .chat-message-body {
+            font-size: 1.4em;
+        }
+        .dark .chat-message-timestamp {
+            color: #9b9b9b;
+        }
+        .light .chat-message-timestamp {
+            color: #707070;
+        }
+    </style>
 }

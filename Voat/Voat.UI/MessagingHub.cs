@@ -47,7 +47,7 @@ namespace Voat
             if (message != String.Empty && !String.IsNullOrEmpty(subverseName))
             {
                 // check if user is banned
-                if (UserHelper.IsUserBannedFromSubverse(Context.User.Identity.Name, subverseName))
+                if (UserHelper.IsUserGloballyBanned(Context.User.Identity.Name))
                 {
                     // message won't be processed
                     // this is necessary because banning a user from a subverse doesn't kick them from chat
@@ -60,37 +60,30 @@ namespace Voat
                     return;
                 }
 
-                // trim message to 200 characters
-                if (message.Length > 200)
-                {
-                    message = message.Substring(0, 200);
-                }
-
-                // check if previous message from this user is in cache
-                //if (messageCache.ContainsKey(name))
-                //{
-                //    // discard duplicate message and update timestamp
-                //    if (message == messageCache[name].Item1)
-                //    {
-                //        messageCache.Remove(name);
-                //        messageCache.Add(name, new Tuple<string, DateTime>(message, DateTime.UtcNow));
-                //        return;
-                //    }
-
-                //    // check timestamp and discard if diff less than 5 seconds
-                //    var timestamp = messageCache[name].Item2;
-                //    if (timestamp.AddSeconds(5) < DateTime.UtcNow)
-                //    {
-                //        return;
-                //    }
-                //}
-                //messageCache.Add(Context.User.Identity.Name, new Tuple<string, DateTime>(message, DateTime.UtcNow));
+                var messageSizeLimit = 500;
+                message = message.SubstringMax(messageSizeLimit);
 
                 var formattedMessage = Formatting.FormatMessage(message, true, true);
 
-                //var htmlEncodedMessage = WebUtility.HtmlEncode(formattedMessage);
+                var chatMessage = new ChatMessage()
+                {
+                    RoomName = subverseName,
+                    UserName = Context.User.Identity.Name,
+                    Message = formattedMessage,
+                    CreationDate = Data.Repository.CurrentDate
+                };
 
-                Clients.Group(subverseName).appendChatMessage(Context.User.Identity.Name, formattedMessage);
+                var context = new Rules.VoatRuleContext();
+                context.PropertyBag.ChatMessage = chatMessage;
+
+                var outcome = Rules.VoatRulesEngine.Instance.EvaluateRuleSet(context, RulesEngine.RuleScope.PostChatMessage);
+                if (outcome.IsAllowed)
+                {
+                    ChatHistory.Add(chatMessage);
+
+                    //var htmlEncodedMessage = WebUtility.HtmlEncode(formattedMessage);
+                    Clients.Group(subverseName).appendChatMessage(chatMessage.UserName, formattedMessage, chatMessage.CreationDate.ToChatTimeDisplay());
+                }
             }
         }
 

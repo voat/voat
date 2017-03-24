@@ -4,17 +4,21 @@ using Voat.Utilities;
 namespace Voat.Rules.Global
 {
     [RuleDiscovery("Approved if user isn't globally banned.", "approved = (user.IsBanned == false)")]
-    public class DerpyGuyRule : VoatRule
+    public class GlobalBanRule : VoatRule
     {
-        public DerpyGuyRule() : base("Global Ban Rule", "5.1", RuleScope.Global)
+        public GlobalBanRule() : base("Global Ban Rule", "5.1", RuleScope.Global)
         {
         }
 
         protected override RuleOutcome EvaluateRule(VoatRuleContext context)
         {
-            if (UserHelper.IsUserGloballyBanned(context.UserName))
+            var userName = context.UserName;
+            if (!string.IsNullOrEmpty(userName))
             {
-                return CreateOutcome(RuleResult.Denied, "User is globally banned");
+                if (UserHelper.IsUserGloballyBanned(userName))
+                {
+                    return CreateOutcome(RuleResult.Denied, "User is globally banned");
+                }
             }
             return Allowed;
         }

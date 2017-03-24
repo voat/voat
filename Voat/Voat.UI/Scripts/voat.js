@@ -203,8 +203,9 @@ $(document).ready(function () {
                 };
 
                 // Hub accessed function to append incoming chat message
-                proxy.client.appendChatMessage = function (sender, chatMessage) {
-                    $("#subverseChatRoom").append('<p><b><a href="/user/' + sender + '">' + sender + '</a></b>:</p>' + chatMessage );
+                proxy.client.appendChatMessage = function (sender, chatMessage, time) {
+                    //$("#subverseChatRoom").append('<p><b><a href="/user/' + sender + '">' + sender + '</a></b> (' + time + ' UTC):</p>' + chatMessage);
+                    $("#subverseChatRoom").append('<div class="chat-message"><div class="chat-message-head"><p><b><a href="/user/' + sender + '">' + sender + '</a></b> <span class="chat-message-timestamp">(' + time + ')</span>:</p></div><div class="chat-message-body">' + chatMessage + '</div></div>');
                     scrollChatToBottom();
                 };
             }
@@ -1944,9 +1945,18 @@ function goToParent(event, parentId) {
 // ********************************** CHAT ****************************************
 
 // a function to scroll chat box content up
-function scrollChatToBottom() {
-    var elem = document.getElementById('subverseChatRoom');
-    elem.scrollTop = elem.scrollHeight;
+function scrollChatToBottom(force) {
+    
+    var chatWindow = document.getElementById('subverseChatRoom');
+    var margin = 100;
+    var difference = (chatWindow.scrollHeight - chatWindow.offsetHeight) - chatWindow.scrollTop;
+
+    var scroll = difference < margin;
+
+    if (force === true || scroll === true)
+    {
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
 }
 
 // a function to submit chat message to subverse chat room
@@ -1955,7 +1965,7 @@ function sendChatMessage(subverseName) {
         var messageToSend = $("#chatInputBox").val();
         var chatProxy = $.connection.messagingHub;
         chatProxy.server.sendChatMessage(subverseName, messageToSend);
-        scrollChatToBottom();
+        scrollChatToBottom(true);
         // clear input
         $("#chatInputBox").val('');
     }

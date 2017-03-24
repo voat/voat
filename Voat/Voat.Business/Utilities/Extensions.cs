@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Voat
@@ -260,6 +261,12 @@ namespace Voat
         //{
         //    var dict = new Dictionary<int, string>();
         //}
+        public static string ToChatTimeDisplay(this DateTime dateTime) 
+        {
+            CultureInfo ci = CultureInfo.InvariantCulture;
 
+            return dateTime.ToString("hh:mm:ss", ci) + " UTC";
+  
+        }
     }
 }

@@ -354,6 +354,7 @@ namespace Voat.Controllers
                 }
                 else
                 {
+                    PreventSpamAttribute.Reset();
                     return JsonError(result.Message);
                 }
             }

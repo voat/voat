@@ -739,7 +739,6 @@
     <Content Include="Views\ApiKeys\Index.cshtml" />
     <Content Include="Views\Home\Rules.cshtml" />
     <Content Include="Views\Chat\Index.cshtml" />
-    <Content Include="Views\Chat\_Layout.cshtml" />
     <Content Include="Views\User\BlockedUsers.cshtml" />
     <Content Include="Views\Shared\_SubverseSubscriptionDetail.cshtml" />
     <Content Include="Views\Shared\Submissions\SubmissionFlatListButtons\_SFLButtonModeratorDelete.cshtml" />
@@ -798,6 +797,7 @@
     <Content Include="Views\Shared\Submissions\ViewTemplates\SubmissionListRetro.cshtml" />
     <Content Include="Views\Shared\Submissions\_SubmissionRetro.cshtml" />
     <Content Include="Views\Set\_List.cshtml" />
+    <Content Include="Views\Chat\_RoomHistory.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

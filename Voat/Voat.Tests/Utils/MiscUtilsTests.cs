@@ -240,5 +240,40 @@ namespace Voat.Tests.Utils
             Assert.AreEqual("none", result);
 
         }
+
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("DomainReference")]
+        public void DomainReference_Tests()
+        {
+            var d = Domain.Models.DomainReference.Parse("sub", Domain.Models.DomainType.Subverse);
+            Assert.AreEqual("sub", d.Name);
+
+            d = Domain.Models.DomainReference.Parse("&oarstI", Domain.Models.DomainType.Subverse);
+            Assert.IsNull(d);
+
+            d = Domain.Models.DomainReference.Parse("UpperDown_", Domain.Models.DomainType.Subverse);
+            Assert.IsNull(d);
+
+            //Sets
+
+            d = Domain.Models.DomainReference.Parse("sub", Domain.Models.DomainType.Set);
+            Assert.AreEqual("sub", d.Name);
+            Assert.AreEqual(null, d.OwnerName);
+
+            d = Domain.Models.DomainReference.Parse("sub" + CONSTANTS.SET_SEPERATOR + "owner", Domain.Models.DomainType.Set);
+            Assert.AreEqual("sub", d.Name);
+            Assert.AreEqual("owner", d.OwnerName);
+
+            d = Domain.Models.DomainReference.Parse("sub" + CONSTANTS.SET_SEPERATOR + "owner_-1", Domain.Models.DomainType.Set);
+            Assert.AreEqual("sub", d.Name);
+            Assert.AreEqual("owner_-1", d.OwnerName);
+
+            d = Domain.Models.DomainReference.Parse("sub/owner_-1", Domain.Models.DomainType.Set);
+            Assert.IsNull(d);
+
+
+        }
+
+
     }
 }

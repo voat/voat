@@ -263,10 +263,8 @@ namespace Voat.Controllers
                 case Domain.Models.DomainType.Subverse:
                 default:
 
-                    return RedirectToAction("Details", "Set", new RouteValueDictionary() {
-                        { "name", Domain.Models.SetType.Blocked.ToString() },
-                        { "userName", User.Identity.Name }
-                    });
+                    var domainReference = new Domain.Models.DomainReference(Domain.Models.DomainType.Set, Domain.Models.SetType.Blocked.ToString(), User.Identity.Name);
+                    return RedirectToAction("Details", "Set", new { name = domainReference.FullName });
 
                     ////Original Code below, leaving as is bc it works
                     //ViewBag.SelectedSubverse = "subverses";
@@ -340,7 +338,8 @@ namespace Voat.Controllers
             switch (domainType)
             {
                 case Domain.Models.DomainType.Subverse:
-                    return RedirectToAction("Details", "Set", new { name = Domain.Models.SetType.Front.ToString(), userName = User.Identity.Name });
+                    var domainReference = new Domain.Models.DomainReference(Domain.Models.DomainType.Set, Domain.Models.SetType.Front.ToString(), User.Identity.Name);
+                    return RedirectToAction("Details", "Set", new { name = domainReference.FullName });
                     break;
                 case Domain.Models.DomainType.Set:
 

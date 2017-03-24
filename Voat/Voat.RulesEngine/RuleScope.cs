@@ -40,7 +40,8 @@ namespace Voat.RulesEngine
         Subverse = 512,
         Profile = 1024,
         Message = 2048,
-        Set = 4096
+        Set = 4096,
+        Chat = 8192
     }
 
     /// <summary>
@@ -140,10 +141,21 @@ namespace Voat.RulesEngine
         CreateSubverse = RuleAction.Create | RuleArea.Subverse,
 
 
-         /// <summary>
-         /// Applies to creating a new set
-         /// </summary>
+        /// <summary>
+        /// Applies to creating a new set
+        /// </summary>
         CreateSet = RuleAction.Create | RuleArea.Set,
+
+        /// <summary>
+        /// Applies to sending a chat message
+        /// </summary>
+        PostChatMessage = RuleAction.Create | RuleArea.Chat,
+
+        /// <summary>
+        /// Applies to joining a chat room
+        /// </summary>
+        ViewChat = RuleAction.View | RuleArea.Chat
+
 
         #endregion C-C-C-COMBOs
 

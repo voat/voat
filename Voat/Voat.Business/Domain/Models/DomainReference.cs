@@ -73,7 +73,7 @@ namespace Voat.Domain.Models
                         {
                             d = new DomainReference();
                             d.Type = domainType;
-                            d.Name = match.Groups["name"].Value;
+                            d.Name = match.Value;
                             d.OwnerName = null;
                         }
 

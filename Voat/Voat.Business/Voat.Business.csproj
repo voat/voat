@@ -160,6 +160,7 @@
     <Compile Include="Caching\ICacheHandler.cs" />
     <Compile Include="Caching\Models\CacheEnvelope.cs" />
     <Compile Include="Common\DatabaseMappedValueAttribute.cs" />
+    <Compile Include="Common\LimitedQueue.cs" />
     <Compile Include="Common\LockStore.cs" />
     <Compile Include="Common\SafeEnum.cs" />
     <Compile Include="Configuration\ArgumentParser.cs" />
@@ -316,6 +317,7 @@
     <Compile Include="Rules\Base\BaseSubverseMinCCPRule.cs" />
     <Compile Include="Rules\Base\VoatRule.cs" />
     <Compile Include="Rules\Base\MinimumCCPRule.cs" />
+    <Compile Include="Rules\Chat\ChatMessageSpamRule.cs" />
     <Compile Include="Rules\Global\DerpyGuyRule.cs" />
     <Compile Include="Rules\Global\GlobalBanRule.cs" />
     <Compile Include="Rules\Global\RuntimeStateReadOnlyRule.cs" />
@@ -358,6 +360,7 @@
     <Compile Include="Rules\Voting\VoteThrottleRule.cs" />
     <Compile Include="Utilities\AccountSecurity.cs" />
     <Compile Include="Utilities\BanningUtility.cs" />
+    <Compile Include="Utilities\Chat\ChatHistory.cs" />
     <Compile Include="Utilities\CloudStorageUtility.cs" />
     <Compile Include="Utilities\CommentCounter.cs" />
     <Compile Include="Utilities\Components\ContentFilters.cs" />
