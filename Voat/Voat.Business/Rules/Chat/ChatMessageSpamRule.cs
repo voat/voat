@@ -34,7 +34,17 @@ namespace Voat.Rules.Chat
             var historyArray = history.ToArray();
 
             //Copy Pasta
-            if (historyArray.Any(x => x.UserName == message.UserName && x.Message.IsEqual(message.Message.TrimSafe())))
+            //check full history
+            var duplicateFound = false;
+            //duplicateFound = historyArray.Any(x => x.UserName == message.UserName && x.Message.IsEqual(message.Message.TrimSafe()));
+
+            var lastMessage = historyArray.FirstOrDefault(x => x.UserName == message.UserName);
+            if (lastMessage != null)
+            {
+                duplicateFound = lastMessage.Message.IsEqual(message.Message.TrimSafe());
+            }
+
+            if (duplicateFound)
             {
                 return CreateOutcome(RuleResult.Denied, "Chat message considered copy/paste spam");
             }

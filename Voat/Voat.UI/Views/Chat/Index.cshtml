@@ -24,6 +24,8 @@
 
 
 @{
+
+    ViewBag.Title = "Chat " + Model.Room.Name;
     var history = ChatHistory.History(Model.Room.Name).ToList();
     history.Add(new ChatMessage() { UserName = CONSTANTS.SYSTEM_USER_NAME, RoomName = Model.Room.Name, Message = "<p>You have joined the " + Model.Room.Name + " chatroom</p>", CreationDate = DateTime.UtcNow });
 

@@ -953,6 +953,11 @@ var IFrameEmbedderExpando = function (urlRegEx, options) {
                     var funDisplay = function (src) {
                         LinkExpando.dataProp(target, 'source', src);
                         iFrameSettings.src = LinkExpando.dataProp(target, 'source');
+
+                        iFrameSettings.width = iFrameSettings.width == 0 ? '100%' : iFrameSettings.width;
+                        iFrameSettings.height = iFrameSettings.height == 0 ? '100%' : iFrameSettings.height;
+
+
                         var iFrame = $('<iframe/>', iFrameSettings);
                         displayDiv.empty().html(iFrame);
                         LinkExpando.setDirectLink(displayDiv, description, source.prop('href'));

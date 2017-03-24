@@ -299,11 +299,15 @@ function firstTimeVisitorWelcome() {
 
 //locks vote operations
 var submissionVoteLock = null;
-function voteSubmission(id, voteValue) {
+function voteSubmission(id, voteValue, errorSpan) {
 
     if (submissionVoteLock == null) {
         submissionVoteLock = new Object();
         voteValue = (voteValue == -1 ? -1 : 1);//standardize bad input
+
+        if (errorSpan) {
+            errorSpan.html('');
+        }
 
         //submitUpVote(submissionid);
         $.ajax({
@@ -313,11 +317,15 @@ function voteSubmission(id, voteValue) {
                 submissionVoteLock = null;
             },
             error: function (data) {
-                //voting was not registered - show error
-                var submission = $(".submission.id-" + id);
-                var div = submission.children(".entry");
-                div.children('span').remove();
-                div.prepend('<span class="vote-error">An Error Occured :(</span>');
+                if (errorSpan) {
+                    errorSpan.html("An Error Occured :(");
+                } else {
+                    //voting was not registered - show error
+                    var submission = $(".submission.id-" + id);
+                    var div = submission.children(".entry");
+                    div.children('span').remove();
+                    div.prepend('<span class="vote-error">An Error Occured :(</span>');
+                }
             },
             success: function (data) {
                 var submission = $(".submission.id-" + id);
@@ -330,13 +338,17 @@ function voteSubmission(id, voteValue) {
                     } else if (data.message.indexOf('4.0', 0) > 0 || data.message.indexOf('2.1', 0) > 0) {
                         notEnoughCCPUpVote();
                     }
-
-                    var err = submission.children(".entry");
-                    err.children('span').remove();
-                    err.prepend('<span class="vote-error">' + data.message + '</span>');
-                    return;
+                    if (errorSpan) {
+                        errorSpan.html(data.message);
+                        return;
+                    } else {
+                        var err = submission.children(".entry");
+                        err.children('span').remove();
+                        err.prepend('<span class="vote-error">' + data.message + '</span>');
+                        return;
+                    }
                 }
-                var div = submission.children(".midcol");
+                var div = submission.find(".voting-icons");
 
 
                 var scoreLikes = +(submission.find('.score.likes').html());
@@ -1634,8 +1646,8 @@ function loadSelfText(obj, messageId) {
     //     );
     //}
 
-    //$(obj).toggleClass("collapsed");
-    //$(obj).toggleClass("expanded");
+    $(obj).toggleClass("collapsed");
+    $(obj).toggleClass("expanded");
 
     // toggle message content display
     $(obj).parent().find(".expando").toggle();

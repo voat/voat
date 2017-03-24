@@ -629,7 +629,7 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Home\Submit.cshtml" />
     <Content Include="Views\Home\Comments.cshtml" />
-    <Content Include="Views\Shared\_VotingIconsSubmission.cshtml" />
+    <Content Include="Views\Shared\VotingIcons\_VotingIconsSubmission.cshtml" />
     <Content Include="Views\Shared\Submissions\_Submission.cshtml" />
     <Content Include="Views\Shared\Comments\_SubmissionComment.cshtml" />
     <Content Include="Views\User\Overview.cshtml" />
@@ -639,7 +639,7 @@
     <Content Include="Views\Error\Subversenotfound.cshtml" />
     <Content Include="Views\Dashboard\_LegacyMenu.cshtml" />
     <Content Include="Views\Shared\_AddComment.cshtml" />
-    <Content Include="Views\Shared\_VotingIconsComment.cshtml" />
+    <Content Include="Views\Shared\VotingIcons\_VotingIconsComment.cshtml" />
     <Content Include="Views\Error\404.cshtml" />
     <Content Include="Views\User\Comments.cshtml" />
     <Content Include="Views\Shared\Userprofile\_UserProfileComment.cshtml" />
@@ -774,7 +774,6 @@
     <Content Include="Views\User\Sets.cshtml" />
     <Content Include="Views\Set\Create.cshtml" />
     <Content Include="Views\Set\_Update.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\XXXXXXSet.cshtml" />
     <Content Include="Views\Shared\Navigation\_SetMenu.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\DomainReferenceDetails.cshtml" />
     <Content Include="Views\Shared\Sidebars\_SidebarSet.cshtml" />
@@ -798,6 +797,7 @@
     <Content Include="Views\Shared\Submissions\_SubmissionRetro.cshtml" />
     <Content Include="Views\Set\_List.cshtml" />
     <Content Include="Views\Chat\_RoomHistory.cshtml" />
+    <Content Include="Views\Shared\VotingIcons\_VotingIconsSubmissionFlat.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

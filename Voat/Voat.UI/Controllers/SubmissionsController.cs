@@ -155,17 +155,18 @@ namespace Voat.Controllers
             }
         }
 
-        // vote on a submission
-        // POST: vote/{messageId}/{typeOfVote}
-        [HttpPost]
-        [Authorize]
-        [VoatValidateAntiForgeryToken]
-        public async Task<JsonResult> Vote(int submissionID, int typeOfVote)
-        {
-            var cmd = new SubmissionVoteCommand(submissionID, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
-            var result = await cmd.Execute();
-            return Json(result);
-        }
+        //// vote on a submission
+        //// POST: vote/{messageId}/{typeOfVote}
+        //[HttpPost]
+        //[Authorize]
+        //[VoatValidateAntiForgeryToken]
+        //public async Task<JsonResult> Vote(int submissionID, int typeOfVote)
+        //{
+        //    System.Threading.Thread.Sleep(3000);
+        //    var cmd = new SubmissionVoteCommand(submissionID, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
+        //    var result = await cmd.Execute();
+        //    return Json(result);
+        //}
 
         // POST: editsubmission
         [Authorize]

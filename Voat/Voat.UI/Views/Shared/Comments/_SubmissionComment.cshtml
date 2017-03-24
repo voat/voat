@@ -51,7 +51,7 @@
 
     @if (!Model.IsDeleted)
     {
-        @Html.Partial("_VotingIconsComment", Model,
+        @Html.Partial("~/Views/Shared/VotingIcons/_VotingIconsComment.cshtml", Model,
             new ViewDataDictionary {
                 { "collapsedStyle", uncollapsedComment },
                 { "Submission", ViewBag.Submission },

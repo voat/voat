@@ -406,7 +406,6 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<JsonResult> Vote(Domain.Models.ContentType contentType, int id, int voteStatus)
         {
-
             VoteResponse result = null; 
             switch (contentType) {
                 case Domain.Models.ContentType.Submission:
