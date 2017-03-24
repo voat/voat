@@ -3402,7 +3402,7 @@ namespace Voat.Data
         public async Task<IEnumerable<BlockedItem>> GetBlockedSubverses(string userName)
         {
 
-            var setList = await GetSetListDescription(SetType.Blocked.ToString(), userName);
+            var setList = await GetSetListDescription(SetType.Blocked.ToString(), userName, null);
             var blocked = setList.Select(x => new BlockedItem()
             {
                 Name = x.Name,

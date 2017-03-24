@@ -169,17 +169,17 @@ namespace Voat.Data
 
         }
 
-        public async Task<IEnumerable<SubverseSubscriptionDetail>> GetSetListDescription(string name, string userName, int page = 0)
+        public async Task<IEnumerable<SubverseSubscriptionDetail>> GetSetListDescription(string name, string userName, int? page = 0)
         {
             var set = GetSet(name, userName);
             if (set != null)
             {
-                return await GetSetListDescription(set.ID).ConfigureAwait(false);
+                return await GetSetListDescription(set.ID, page).ConfigureAwait(false);
             }
             return Enumerable.Empty<SubverseSubscriptionDetail>();
         }
 
-        public async Task<IEnumerable<SubverseSubscriptionDetail>> GetSetListDescription(int setID, int page = 0)
+        public async Task<IEnumerable<SubverseSubscriptionDetail>> GetSetListDescription(int setID, int? page = 0)
         {
             int count = 50;
 
@@ -191,8 +191,13 @@ namespace Voat.Data
                 ";
             q.Where = "sl.SubverseSetID = @ID";
             q.Parameters = new DynamicParameters(new { ID = setID });
-            q.SkipCount = page * count;
-            q.TakeCount = count;
+
+            if (page.HasValue)
+            {
+                q.SkipCount = page.Value * count;
+                q.TakeCount = count;
+            }
+
             q.OrderBy = "s.Name ASC";
             using (var db = new voatEntities())
             {
