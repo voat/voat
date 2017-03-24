@@ -27,6 +27,7 @@ namespace Voat
     public class MessagingHub : Hub
     {
         //private static Dictionary<string, Tuple<string, DateTime>> messageCache;
+       
 
         public MessagingHub()
         {
@@ -42,9 +43,9 @@ namespace Voat
                 return;
             }
 
-            message = message.Trim();
+            message = message.TrimSafe();
 
-            if (message != String.Empty && !String.IsNullOrEmpty(subverseName))
+            if (!String.IsNullOrEmpty(subverseName))
             {
                 // check if user is banned
                 if (UserHelper.IsUserGloballyBanned(Context.User.Identity.Name))
@@ -60,29 +61,32 @@ namespace Voat
                     return;
                 }
 
-                var messageSizeLimit = 500;
-                message = message.SubstringMax(messageSizeLimit);
+                //Strip out annoying markdown
+                message = ChatMessage.SanitizeInput(message);
 
-                var formattedMessage = Formatting.FormatMessage(message, true, true);
-
-                var chatMessage = new ChatMessage()
+                if (!String.IsNullOrEmpty(message))
                 {
-                    RoomName = subverseName,
-                    UserName = Context.User.Identity.Name,
-                    Message = formattedMessage,
-                    CreationDate = Data.Repository.CurrentDate
-                };
+                    var formattedMessage = Formatting.FormatMessage(message, true, true);
 
-                var context = new Rules.VoatRuleContext();
-                context.PropertyBag.ChatMessage = chatMessage;
+                    var chatMessage = new ChatMessage()
+                    {
+                        RoomName = subverseName,
+                        UserName = Context.User.Identity.Name,
+                        Message = formattedMessage,
+                        CreationDate = Data.Repository.CurrentDate
+                    };
 
-                var outcome = Rules.VoatRulesEngine.Instance.EvaluateRuleSet(context, RulesEngine.RuleScope.PostChatMessage);
-                if (outcome.IsAllowed)
-                {
-                    ChatHistory.Add(chatMessage);
+                    var context = new Rules.VoatRuleContext();
+                    context.PropertyBag.ChatMessage = chatMessage;
 
-                    //var htmlEncodedMessage = WebUtility.HtmlEncode(formattedMessage);
-                    Clients.Group(subverseName).appendChatMessage(chatMessage.UserName, formattedMessage, chatMessage.CreationDate.ToChatTimeDisplay());
+                    var outcome = Rules.VoatRulesEngine.Instance.EvaluateRuleSet(context, RulesEngine.RuleScope.PostChatMessage);
+                    if (outcome.IsAllowed)
+                    {
+                        ChatHistory.Add(chatMessage);
+
+                        //var htmlEncodedMessage = WebUtility.HtmlEncode(formattedMessage);
+                        Clients.Group(subverseName).appendChatMessage(chatMessage.UserName, formattedMessage, chatMessage.CreationDate.ToChatTimeDisplay());
+                    }
                 }
             }
         }
