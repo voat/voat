@@ -2655,7 +2655,7 @@ input[type=checkbox].form-control {
 
 @media (max-width: 480px) {
   #container {
-    padding: 0; }
+    padding: 5px; }
   .comment .comment {
     margin-right: 2px; }
   .comment.thread > .comment.child {
