@@ -522,17 +522,16 @@ namespace Voat.Data
         private int GetVoteValue(string sourceUser, string targetUser, ContentType contentType, int id, int voteStatus)
         {
             var q = new DapperQuery();
-            q.Select = @"sub.IsPrivate, s.IsAnonymized, sub.MinCCPForDownvote FROM Subverse sub WITH (NOLOCK)
-                         INNER JOIN Submission s WITH (NOLOCK) ON s.Subverse = sub.Name";
+            q.Select = $"sub.\"IsPrivate\", s.\"IsAnonymized\", sub.\"MinCCPForDownvote\" FROM {SqlFormatter.Table("Subverse", "sub", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Submission", "s", null,  "NOLOCK")} ON s.\"Subverse\" = sub.\"Name\"";
 
             switch (contentType)
             {
                 case ContentType.Comment:
-                    q.Select += " INNER JOIN Comment c WITH (NOLOCK) ON c.SubmissionID = s.ID";
-                    q.Where = "c.ID = @ID";
+                    q.Select += " INNER JOIN Comment c WITH (NOLOCK) ON c.\"SubmissionID\" = s.\"ID\"";
+                    q.Where = "c.\"ID\" = @ID";
                     break;
                 case ContentType.Submission:
-                    q.Where = "s.ID = @ID";
+                    q.Where = "s.\"ID\" = @ID";
                     break;
             }
 
@@ -751,7 +750,7 @@ namespace Voat.Data
             using (voatEntities db = new voatEntities())
             {
                 var cmd = db.Database.Connection.CreateCommand();
-                cmd.CommandText = "SELECT COUNT(*) FROM Comment WITH (NOLOCK) WHERE SubmissionID = @SubmissionID AND IsDeleted != 1";
+                cmd.CommandText = $"SELECT COUNT(*) FROM {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} WHERE c.\"SubmissionID\" = @SubmissionID AND c.\"IsDeleted\" != {SqlFormatter.BooleanLiteral(true)}";
                 var param = cmd.CreateParameter();
                 param.ParameterName = "SubmissionID";
                 param.DbType = System.Data.DbType.Int32;
@@ -872,16 +871,16 @@ namespace Voat.Data
         {
             var query = new DapperQuery();
             query.SelectColumns = "s.*";
-            query.Select = @"SELECT DISTINCT {0} FROM Submission s WITH (NOLOCK) INNER JOIN Subverse sub WITH (NOLOCK) ON s.Subverse = sub.Name";
-            query.Where = $"s.Type = {((int)SubmissionType.Link).ToString()} AND s.Url LIKE CONCAT('%', @Domain, '%')";
+            query.Select = $"SELECT DISTINCT {"{0}"} FROM {SqlFormatter.Table("Submission", "s", null,  "NOLOCK")} INNER JOIN {SqlFormatter.Table("Subverse", "sub", null, "NOLOCK")} ON s.\"Subverse\" = sub.\"Name\"";
+            query.Where = $"s.\"Type\" = {((int)SubmissionType.Link).ToString()} AND s.\"Url\" LIKE CONCAT('%', @Domain, '%')";
             ApplySubmissionSort(query, options);
 
             query.SkipCount = options.Index;
             query.TakeCount = options.Count;
 
             //Filter out all disabled subs
-            query.Append(x => x.Where, "sub.IsAdminDisabled = 0");
-            query.Append(x => x.Where, "s.IsDeleted = 0");
+            query.Append(x => x.Where, $"sub.\"IsAdminDisabled\" = {SqlFormatter.BooleanLiteral(false)}");
+            query.Append(x => x.Where, $"s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)}");
 
             query.Parameters = (new { Domain = domain }).ToDynamicParameters();
 
@@ -894,8 +893,9 @@ namespace Voat.Data
         {
             var query = new DapperQuery();
             query.SelectColumns = "s.*";
-            query.Select = @"SELECT DISTINCT {0} FROM Submission s WITH (NOLOCK)";
-            query.Where = "ID IN @IDs";
+            query.Select = $"SELECT DISTINCT {"{0}"} FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")}";
+             
+            query.Where = "s.\"ID\" IN @IDs";
             query.Parameters = (new { IDs = submissionID }).ToDynamicParameters();
 
             //execute query
@@ -928,7 +928,7 @@ namespace Voat.Data
 
             var query = new DapperQuery();
             query.SelectColumns = "s.*";
-            query.Select = @"SELECT DISTINCT {0} FROM Submission s WITH (NOLOCK) INNER JOIN Subverse sub WITH (NOLOCK) ON s.Subverse = sub.Name";
+            query.Select = $"SELECT DISTINCT {"{0}"} FROM  {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN  {SqlFormatter.Table("Subverse", "sub", null, "NOLOCK")} ON s.\"Subverse\" = sub.\"Name\"";
 
             //Parameter Declarations
             DateTime? startDate = options.StartDate;
@@ -952,8 +952,8 @@ namespace Voat.Data
                 {
                     var joinAlias = $"set{setName}";
                     var op = include ? "=" : "!=";
-                    query.Append(x => x.Select, $"INNER JOIN [dbo].[SubverseSetList] {joinAlias} WITH (NOLOCK) ON sub.ID {op} {joinAlias}.SubverseID");
-                    query.Append(x => x.Where, $"{joinAlias}.SubverseSetID = @{joinAlias}ID");
+                    query.Append(x => x.Select, $"INNER JOIN {SqlFormatter.Table("SubverseSetList", joinAlias, null, "NOLOCK")} ON sub.\"ID\" {op} {joinAlias}.\"SubverseID\"");
+                    query.Append(x => x.Where, $"{joinAlias}.\"SubverseSetID\" = @{joinAlias}ID");
                     query.Parameters.Add($"{joinAlias}ID", set.ID);
                 }
             });
@@ -969,7 +969,7 @@ namespace Voat.Data
                         case AGGREGATE_SUBVERSE.FRONT:
                             joinSet(query, SetType.Front.ToString(), userName, SetType.Front, true);
                             //query.Append(x => x.Select, "INNER JOIN SubverseSubscription ss WITH (NOLOCK) ON s.Subverse = ss.Subverse");
-                            query.Append(x => x.Where, "s.ArchiveDate IS NULL AND s.IsDeleted = 0");
+                            query.Append(x => x.Where, $"s.\"ArchiveDate\" IS NULL AND s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)}");
 
                             //query = (from x in _db.Submissions
                             //         join subscribed in _db.SubverseSubscriptions on x.Subverse equals subscribed.Subverse
@@ -988,7 +988,7 @@ namespace Voat.Data
                             if (Settings.IsVoatBranded && options.Sort == SortAlgorithm.Relative)
                             {
                                 //This is a modification Voat uses in the default page
-                                query.Append(x => x.Where, "(s.UpCount - s.DownCount >= 20) AND ABS(DATEDIFF(HH, s.CreationDate, GETUTCDATE())) <= 24");
+                                query.Append(x => x.Where, "(s.\"UpCount\" - s.\"DownCount\" >= 20) AND ABS(DATEDIFF(HH, s.CreationDate, GETUTCDATE())) <= 24");
                             }
 
                             //query = (from x in _db.Submissions
@@ -999,7 +999,7 @@ namespace Voat.Data
                             //allowing subverse marked private to not be filtered
                             //Should subs marked as private be excluded from an ANY query? I don't know.
                             //query.Where = "sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0";
-                            query.Where = "sub.IsAdminPrivate = 0";
+                            query.Where = $"sub.\"IsAdminPrivate\" = {SqlFormatter.BooleanLiteral(false)}";
                             //query = (from x in _db.Submissions
                             //         where
                             //         !x.Subverse1.IsAdminPrivate
@@ -1028,10 +1028,10 @@ namespace Voat.Data
                             //2. Don't show private subs
                             //3. Don't show NSFW subs if nsfw isn't enabled in profile, if they are logged in
                             //4. Don't show blocked subs if logged in // not implemented
-                            query.Where = "sub.MinCCPForDownvote = 0 AND sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0";
+                            query.Where = $"sub.\"MinCCPForDownvote\" = {SqlFormatter.BooleanLiteral(false)} AND sub.\"IsAdminPrivate\" = {SqlFormatter.BooleanLiteral(false)} AND sub.\"IsPrivate\" = {SqlFormatter.BooleanLiteral(false)}";
                             if (!nsfw)
                             {
-                                query.Where += " AND sub.IsAdult = 0 AND s.IsAdult = 0";
+                                query.Where += $" AND sub.\"IsAdult\" = {SqlFormatter.BooleanLiteral(false)} AND s.\"IsAdult\" = {SqlFormatter.BooleanLiteral(false)}";
                             }
 
                             //query = (from x in _db.Submissions
@@ -1059,7 +1059,7 @@ namespace Voat.Data
                             //    select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
 
                             name = ToCorrectSubverseCasing(name);
-                            query.Where = "s.Subverse = @Name";
+                            query.Where = "s.\"Subverse\" = @Name";
 
                             ////Filter out stickies in subs
                             //query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = s.Subverse)");
@@ -1079,14 +1079,14 @@ namespace Voat.Data
                         case AGGREGATE_SUBVERSE.ALL:
                         case "all":
 
-                            query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = 'announcements')");
+                            query.Append(x => x.Where, $"s.\"ID\" NOT IN (SELECT sticky.\"SubmissionID\" FROM {SqlFormatter.Table("StickiedSubmission", "sticky", null, "NOLOCK")} WHERE sticky.\"SubmissionID\" = s.\"ID\" AND sticky.\"Subverse\" = 'announcements')");
 
                             break;
                         //for regular subverse queries
                         default:
 
                             //Filter out stickies in subs
-                            query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = s.Subverse)");
+                            query.Append(x => x.Where, $"s.\"ID\" NOT IN (SELECT sticky.\"SubmissionID\" FROM {SqlFormatter.Table("StickiedSubmission", "sticky", null, "NOLOCK")} WHERE sticky.\"SubmissionID\" = s.\"ID\" AND sticky.\"Subverse\" = s.\"Subverse\")");
                             break;
                     }
 
@@ -1100,7 +1100,7 @@ namespace Voat.Data
                             var set = GetSet(SetType.Blocked.ToString(), userName, SetType.Blocked);
                             if (set != null)
                             {
-                                query.Append(x => x.Where, "sub.ID NOT IN (SELECT SubverseID FROM SubverseSetList WHERE SubverseSetID = @BlockedSetID)");
+                                query.Append(x => x.Where, $"sub.\"ID\" NOT IN (SELECT \"SubverseID\" FROM {SqlFormatter.Table("SubverseSetList")} WHERE \"SubverseSetID\" = @BlockedSetID)");
                                 query.Parameters.Add("BlockedSetID", set.ID);
                             }
                         }
@@ -1118,20 +1118,20 @@ namespace Voat.Data
                         if (Settings.IsVoatBranded && options.Sort == SortAlgorithm.Relative)
                         {    
                             //This is a modification Voat uses in the default page
-                            query.Append(x => x.Where, "(s.UpCount - s.DownCount >= 20) AND ABS(DATEDIFF(HH, s.CreationDate, GETUTCDATE())) <= 24");
+                            query.Append(x => x.Where, "(s.\"UpCount\" - s.\"DownCount\" >= 20) AND ABS(DATEDIFF(HH, s.\"CreationDate\", GETUTCDATE())) <= 24");
                         }
                     }
 
                     break;
             }
 
-            query.Append(x => x.Where, "s.IsDeleted = 0");
+            query.Append(x => x.Where, $"s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)}");
 
             //TODO: Re-implement this logic
             //HACK: Warning, Super hacktastic
             if (!String.IsNullOrEmpty(options.Phrase))
             {
-                query.Append(x => x.Where, "(s.Title LIKE CONCAT('%', @Phrase, '%') OR s.Content LIKE CONCAT('%', @Phrase, '%') OR s.Url LIKE CONCAT('%', @Phrase, '%'))");
+                query.Append(x => x.Where, "(s.\"Title\" LIKE CONCAT('%', @Phrase, '%') OR s.\"Content\" LIKE CONCAT('%', @Phrase, '%') OR s\".Url\" LIKE CONCAT('%', @Phrase, '%'))");
                 ////WARNING: This is a quickie that views spaces as AND conditions in a search.
                 //List<string> keywords = null;
                 //if (options.Phrase.Contains(" "))
@@ -1155,7 +1155,7 @@ namespace Voat.Data
             query.TakeCount = options.Count;
 
             //Filter out all disabled subs
-            query.Append(x => x.Where, "sub.IsAdminDisabled = 0");
+            query.Append(x => x.Where, $"sub.\"IsAdminDisabled\" = {SqlFormatter.BooleanLiteral(false)}");
 
             query.Parameters.Add("StartDate", startDate);
             query.Parameters.Add("EndDate", endDate);
@@ -1177,12 +1177,12 @@ namespace Voat.Data
 
             if (options.StartDate.HasValue)
             {
-                query.Where += " AND s.CreationDate >= @StartDate";
+                query.Where += " AND s.\"CreationDate\" >= @StartDate";
                 //query = query.Where(x => x.CreationDate >= options.StartDate.Value);
             }
             if (options.EndDate.HasValue)
             {
-                query.Where += " AND s.CreationDate <= @EndDate";
+                query.Where += " AND s.\"CreationDate\" <= @EndDate";
                 //query = query.Where(x => x.CreationDate <= options.EndDate.Value);
             }
 
@@ -1193,12 +1193,12 @@ namespace Voat.Data
                 case SortAlgorithm.Relative:
                     if (options.SortDirection == SortDirection.Reverse)
                     {
-                        query.OrderBy = "s.RelativeRank ASC";
+                        query.OrderBy = "s.\"RelativeRank\" ASC";
                         //query = query.OrderBy(x => x.RelativeRank);
                     }
                     else
                     {
-                        query.OrderBy = "s.RelativeRank DESC";
+                        query.OrderBy = "s.\"RelativeRank\" DESC";
                         //query = query.OrderByDescending(x => x.RelativeRank);
                     }
                     break;
@@ -1206,12 +1206,12 @@ namespace Voat.Data
                 case SortAlgorithm.Rank:
                     if (options.SortDirection == SortDirection.Reverse)
                     {
-                        query.OrderBy = "s.Rank ASC";
+                        query.OrderBy = "s.\"Rank\" ASC";
                         //query = query.OrderBy(x => x.Rank);
                     }
                     else
                     {
-                        query.OrderBy = "s.Rank DESC";
+                        query.OrderBy = "s.\"Rank\" DESC";
                         //query = query.OrderByDescending(x => x.Rank);
                     }
                     break;
@@ -1219,12 +1219,12 @@ namespace Voat.Data
                 case SortAlgorithm.Top:
                     if (options.SortDirection == SortDirection.Reverse)
                     {
-                        query.OrderBy = "s.UpCount ASC";
+                        query.OrderBy = "s.\"UpCount\" ASC";
                         //query = query.OrderBy(x => x.UpCount);
                     }
                     else
                     {
-                        query.OrderBy = "s.UpCount DESC";
+                        query.OrderBy = "s.\"UpCount\" DESC";
                         //query = query.OrderByDescending(x => x.UpCount);
                     }
                     break;
@@ -1232,12 +1232,12 @@ namespace Voat.Data
                 case SortAlgorithm.Viewed:
                     if (options.SortDirection == SortDirection.Reverse)
                     {
-                        query.OrderBy = "s.Views ASC";
+                        query.OrderBy = "s.\"Views\" ASC";
                         //query = query.OrderBy(x => x.Views);
                     }
                     else
                     {
-                        query.OrderBy = "s.Views DESC";
+                        query.OrderBy = "s.\"Views\" DESC";
                         //query = query.OrderByDescending(x => x.Views);
                     }
                     break;
@@ -1267,12 +1267,12 @@ namespace Voat.Data
                 case SortAlgorithm.Bottom:
                     if (options.SortDirection == SortDirection.Reverse)
                     {
-                        query.OrderBy = "s.DownCount ASC";
+                        query.OrderBy = "s.\"DownCount\" ASC";
                         //query = query.OrderBy(x => x.DownCount);
                     }
                     else
                     {
-                        query.OrderBy = "s.DownCount DESC";
+                        query.OrderBy = "s.\"DownCount\" DESC";
                         //query = query.OrderByDescending(x => x.DownCount);
                     }
                     break;
@@ -1290,7 +1290,7 @@ namespace Voat.Data
                 //break;
 
                 case SortAlgorithm.Intensity:
-                    string sort = "(s.UpCount + s.DownCount)";
+                    string sort = "(s.\"UpCount\" + s.\"DownCount\")";
                     query.SelectColumns = query.AppendClause(query.SelectColumns, sort, ", ");
                     if (options.SortDirection == SortDirection.Reverse)
                     {
@@ -1309,12 +1309,12 @@ namespace Voat.Data
                 default:
                     if (options.SortDirection == SortDirection.Reverse)
                     {
-                        query.OrderBy = "s.CreationDate ASC";
+                        query.OrderBy = "s.\"CreationDate\" ASC";
                         //query = query.OrderBy(x => x.CreationDate);
                     }
                     else
                     {
-                        query.OrderBy = "s.CreationDate DESC";
+                        query.OrderBy = "s.\"CreationDate\" DESC";
                         //query = query.OrderByDescending(x => x.CreationDate);
                     }
                     break;
@@ -1733,13 +1733,9 @@ namespace Voat.Data
                     // register a new session for this subverse
                     //New logic
 
-                    var sql =
-                        @"IF NOT EXISTS (
-                    SELECT st.* FROM SessionTracker st WITH (NOLOCK)
-                    WHERE st.SessionID = @SessionID AND st.Subverse = (SELECT TOP 1 Subverse FROM Submission WITH (NOLOCK) WHERE ID = @SubmissionID)
-                    ) 
-                    INSERT SessionTracker (SessionID, Subverse, CreationDate)
-                    SELECT @SessionID, s.Subverse, getutcdate() FROM Submission s WITH (NOLOCK) WHERE ID = @SubmissionID";
+                    var sql = $"IF NOT EXISTS (SELECT st.* FROM  {SqlFormatter.Table("SessionTracker", "st", null, "NOLOCK")} WHERE st.\"SessionID\" = @SessionID AND st.\"Subverse\" = (SELECT TOP 1 \"Subverse\" FROM {SqlFormatter.Table("Submission", null, null, "NOLOCK")} WHERE \"ID\" = @SubmissionID)) ";
+                    sql += $"INSERT {SqlFormatter.Table("SessionTracker")} (\"SessionID\", \"Subverse\", \"CreationDate\") ";
+                    sql += $"SELECT @SessionID, s.\"Subverse\", getutcdate() FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} WHERE \"ID\" = @SubmissionID ";
 
                     await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
 
@@ -1758,14 +1754,11 @@ namespace Voat.Data
 
                     //}
 
-                    sql =
-                        @"IF NOT EXISTS (
-                        SELECT * FROM ViewStatistic vs WITH (NOLOCK) WHERE vs.SubmissionID = @SubmissionID AND vs.ViewerID = @SessionID
-                        )
-                        BEGIN 
-                        INSERT ViewStatistic (SubmissionID, ViewerID) VALUES (@SubmissionID, @SessionID)
-                        UPDATE Submission SET Views = (Views + 1) WHERE ID = @SubmissionID
-                        END";
+                    sql = $"IF NOT EXISTS (SELECT * FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID) ";
+                    sql += $"BEGIN ";
+                    sql += $"INSERT {SqlFormatter.Table("ViewStatistic")} (\"SubmissionID\", \"ViewerID\") VALUES (@SubmissionID, @SessionID) ";
+                    sql += $"UPDATE {SqlFormatter.Table("Submission")} SET \"Views\" = (\"Views\" + 1) WHERE \"ID\" = @SubmissionID ";
+                    sql += $"END";
 
                     await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
 
@@ -1904,8 +1897,8 @@ namespace Voat.Data
         {
 
             var q = new DapperQuery();
-            q.Select = "c.*, s.Subverse FROM Comment c WITH (NOLOCK) INNER JOIN Submission s WITH (NOLOCK) ON s.ID = c.SubmissionID";
-            q.Where = "c.ID IN @IDs";
+            q.Select = $"c.*, s.\"Subverse\" FROM {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} ON s.\"ID\" = c.\"SubmissionID\"";
+            q.Where = "c.\"ID\" IN @IDs";
 
             q.Parameters = (new { IDs = commentID}).ToDynamicParameters();
 
@@ -1946,9 +1939,7 @@ namespace Voat.Data
             switch (contentType)
             {
                 case ContentType.Comment:
-                    u.Update = @"UPDATE v SET v.VoteValue = @VoteValue FROM CommentVoteTracker v
-                                INNER JOIN Comment c WITH (NOLOCK) ON c.ID = v.CommentID
-                                INNER JOIN Submission s WITH (NOLOCK) ON c.SubmissionID = s.ID";
+                    u.Update = $"UPDATE v SET v.\"VoteValue\" = @VoteValue FROM {SqlFormatter.Table("CommentVoteTracker", "v")} INNER JOIN {SqlFormatter.Table("Comment", "c", "NOLOCK")} ON c.\"ID\" = v.\"CommentID\" INNER JOIN {SqlFormatter.Table("Submission", "s", "NOLOCK")}  ON c.\"SubmissionID\" = s.\"ID\"";
                     u.Where = "v.CommentID = @ID AND v.VoteStatus = @VoteStatus AND s.ArchiveDate IS NULL";
                     break;
                 default:
@@ -2833,17 +2824,17 @@ namespace Voat.Data
         {
             var q = new DapperQuery();
 
-            q.Select = "SELECT {0} FROM [Message] m WITH (NOLOCK) LEFT JOIN Submission s WITH (NOLOCK) ON s.ID = m.SubmissionID LEFT JOIN Comment c WITH (NOLOCK) ON c.ID = m.CommentID";
+            q.Select = $"SELECT {"{0}"} FROM {SqlFormatter.Table("Message", "m", null, "NOLOCK")} LEFT JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} ON s.\"ID\" = m.\"SubmissionID\" LEFT JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"ID\" = m.\"CommentID\"";
             q.SelectColumns = "*";
             string senderClause = "";
 
             //messages include sent items, add special condition to include them
             if ((type & MessageTypeFlag.Sent) > 0)
             {
-                senderClause = $" OR (m.Sender = @OwnerName AND m.SenderType = @OwnerType AND m.[Type] = {((int)MessageType.Sent).ToString()})";
+                senderClause = $" OR (m.\"Sender\" = @OwnerName AND m.\"SenderType\" = @OwnerType AND m.\"Type\" = {((int)MessageType.Sent).ToString()})";
             }
-            q.Where = $"((m.Recipient = @OwnerName AND m.RecipientType = @OwnerType AND m.[Type] != {((int)MessageType.Sent).ToString()}){senderClause})";
-            q.OrderBy = "m.CreationDate DESC";
+            q.Where = $"((m.\"Recipient\" = @OwnerName AND m.\"RecipientType\" = @OwnerType AND m.\"Type\" != {((int)MessageType.Sent).ToString()}){senderClause})";
+            q.OrderBy = "m.\"CreationDate\" DESC";
             q.Parameters.Add("OwnerName", ownerName);
             q.Parameters.Add("OwnerType", (int)ownerType);
 
@@ -2863,10 +2854,10 @@ namespace Voat.Data
             switch (state)
             {
                 case MessageState.Read:
-                    q.Append(x => x.Where,  "m.ReadDate IS NOT NULL");
+                    q.Append(x => x.Where, "m.\"ReadDate\" IS NOT NULL");
                     break;
                 case MessageState.Unread:
-                    q.Append(x => x.Where, "m.ReadDate IS NULL");
+                    q.Append(x => x.Where, "m.\"ReadDate\" IS NULL");
                     break;
             }
 
@@ -2910,7 +2901,7 @@ namespace Voat.Data
                         }
                     }
                 }
-                q.Append(x => x.Where, "m.[Type] IN @Types");
+                q.Append(x => x.Where, "m.\"Type\" IN @Types");
                 q.Parameters.Add("Types", messageTypes.ToArray());
                 //q = q.Where(x => messageTypes.Contains(x.Type));
             }
@@ -3062,11 +3053,11 @@ namespace Voat.Data
             d.Where = q.Where;
             d.Parameters = q.Parameters;
 
-            d.Delete = "m FROM [Message] m";
+            d.Delete = $"m FROM {SqlFormatter.Table("Message", "m")}";
 
             if (id.HasValue)
             {
-                d.Append(x => x.Where, "m.ID = @ID");
+                d.Append(x => x.Where, "m.\"ID\" = @ID");
                 d.Parameters.Add("ID", id.Value);
             }
            
@@ -3134,11 +3125,11 @@ namespace Voat.Data
             u.Where = q.Where;
             u.Parameters = q.Parameters;
 
-            u.Update = "m SET m.ReadDate = @ReadDate FROM [Message] m";
+            u.Update = $"m SET m.\"ReadDate\" = @ReadDate FROM {SqlFormatter.Table("Message", "m")}";
 
             if (id.HasValue)
             {
-                u.Append(x => x.Where, "m.ID = @ID");
+                u.Append(x => x.Where, "m.\"ID\" = @ID");
                 u.Parameters.Add("ID", id.Value);
             }
 
@@ -3164,27 +3155,22 @@ namespace Voat.Data
             using (var db = new voatEntities())
             {
                 var q = new DapperQuery();
-                q.Select = "SELECT [Type], Count = COUNT(*) FROM [Message] WITH (NOLOCK)";
-                q.Where =
-                    @"(
-                        (Recipient = @UserName AND RecipientType = @OwnerType AND [Type] <> @SentType)
-                        OR
-                        (Sender = @UserName AND SenderType = @OwnerType AND [Type] = @SentType)
-                    )";
+                q.Select = $"SELECT \"Type\", COUNT(*) AS \"Count\" FROM {SqlFormatter.Table("Message")}";
+                q.Where = "((\"Recipient\" = @UserName AND \"RecipientType\" = @OwnerType AND \"Type\" <> @SentType) OR (\"Sender\" = @UserName AND \"SenderType\" = @OwnerType AND \"Type\" = @SentType))";
 
                 //Filter
                 if (state != MessageState.All)
                 {
-                    q.Where += String.Format(" AND ReadDate IS {0} NULL", state == MessageState.Unread ? "" : "NOT");
+                    q.Where += String.Format(" AND \"ReadDate\" IS {0} NULL", state == MessageState.Unread ? "" : "NOT");
                 }
 
                 var types = ConvertMessageTypeFlag(type);
                 if (types != null)
                 {
-                    q.Where += String.Format(" AND [Type] IN @MessageTypes");
+                    q.Where += String.Format(" AND \"Type\" IN @MessageTypes");
                 }
 
-                q.GroupBy = "[Type]";
+                q.GroupBy = "\"Type\"";
                 q.Parameters = new {
                     UserName = ownerName,
                     OwnerType = (int)ownerType,
@@ -3286,8 +3272,8 @@ namespace Voat.Data
                 if (markAsRead && messages.Any(x => x.ReadDate == null))
                 {
                     var update = new DapperUpdate();
-                    update.Update = "m SET m.ReadDate = @CurrentDate FROM [Message] m";
-                    update.Where = "m.ReadDate IS NULL AND m.ID IN @IDs";
+                    update.Update = $"m SET m.\"ReadDate\" = @CurrentDate FROM {SqlFormatter.Table("Message", "m")}";
+                    update.Where = "m.\"ReadDate\" IS NULL AND m.\"ID\" IN @IDs";
                     update.Parameters.Add("CurrentDate", Repository.CurrentDate);
                     update.Parameters.Add("IDs", messages.Where(x => x.ReadDate == null).Select(x => x.ID).ToArray());
 
@@ -3317,8 +3303,8 @@ namespace Voat.Data
             IEnumerable<VoteValue> result = null;
             var q = new DapperQuery();
 
-            q.Select = "SELECT [ID] = v.CommentID, [Value] = IsNull(v.VoteStatus, 0) FROM CommentVoteTracker v WITH (NOLOCK) INNER JOIN Comment c WITH (NOLOCK) ON CommentID = c.ID";
-            q.Where = "v.UserName = @UserName AND c.SubmissionID = @ID";
+            q.Select = $"SELECT v.\"CommentID\" AS \"ID\", IsNull(v.\"VoteStatus\", 0) AS \"Value\" FROM {SqlFormatter.Table("CommentVoteTracker", "v", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON v.\"CommentID\" = c.\"ID\"";
+            q.Where = "v.\"UserName\" = @UserName AND c.\"SubmissionID\" = @ID";
 
             result = _db.Database.Connection.Query<VoteValue>(q.ToString(), new { UserName = userName, ID = submissionID });
 
@@ -3354,14 +3340,9 @@ namespace Voat.Data
         {
             
             var d = new DapperQuery();
-            d.Select = @"SELECT Type = 1, s.Name, OwnerName = NULL FROM SubverseSet subSet
-                        INNER JOIN SubverseSetList setList ON subSet.ID = setList.SubverseSetID
-                        INNER JOIN Subverse s ON setList.SubverseID = s.ID
-                        WHERE subSet.Type = @Type AND subSet.Name = @SetName AND subSet.UserName = @UserName
-                        UNION ALL
-                        SELECT Type = 2, subSet.Name, OwnerName = subSet.UserName FROM SubverseSetSubscription setSub
-                        INNER JOIN SubverseSet subSet ON subSet.ID = setSub.SubverseSetID
-                        WHERE setSub.UserName = @UserName";
+            d.Select = $"SELECT 1 AS \"Type\", s.\"Name\", NULL AS \"OwnerName\" FROM{SqlFormatter.Table("SubverseSet", "subSet")} INNER JOIN {SqlFormatter.Table("SubverseSetList", "setList")} ON subSet.\"ID\" = setList.\"SubverseSetID\" INNER JOIN {SqlFormatter.Table("Subverse", "s")} ON setList.\"SubverseID\" = s.\"ID\" WHERE subSet.\"Type\" = @Type AND subSet.\"Name\" = @SetName AND subSet.\"UserName\" = @UserName ";
+            d.Select += $"UNION ALL ";
+            d.Select += $"SELECT 2 AS \"Type\", subSet.\"Name\", subSet.\"UserName\" AS \"OwnerName\" FROM {SqlFormatter.Table("SubverseSetSubscription","setSub")} INNER JOIN {SqlFormatter.Table("SubverseSet", "subSet")} ON subSet.\"ID\" = setSub.\"SubverseSetID\" WHERE setSub.\"UserName\" = @UserName ";
             d.Parameters = new DynamicParameters(new { UserName = userName, Type = (int)SetType.Front, SetName = SetType.Front.ToString() });
 
             var results = _db.Database.Connection.Query<DomainReference>(d.ToString(), d.Parameters);
@@ -3552,12 +3533,7 @@ namespace Voat.Data
                 }
 
                 var cmd = db.Database.Connection.CreateCommand();
-                cmd.CommandText = String.Format(
-                                    @"SELECT x.VoteStatus, 'Count' = ABS(ISNULL(SUM(x.VoteStatus), 0))
-                                FROM {0} x WITH (NOLOCK)
-                                WHERE x.UserName = @UserName
-                                AND (x.CreationDate >= @CompareDate OR @CompareDate IS NULL)
-                                GROUP BY x.VoteStatus", type == ContentType.Comment ? "CommentVoteTracker" : "SubmissionVoteTracker");
+                cmd.CommandText = $"SELECT x.\"VoteStatus\", ABS(ISNULL(SUM(x.\"VoteStatus\"), 0)) AS \"Count\" FROM {SqlFormatter.Table(type == ContentType.Comment ? "CommentVoteTracker" : "SubmissionVoteTracker", "x", null, "NOLOCK")} WHERE x.\"UserName\" = @UserName AND (x.\"CreationDate\" >= @CompareDate OR @CompareDate IS NULL) GROUP BY x.\"VoteStatus\"";
                 cmd.CommandType = System.Data.CommandType.Text;
 
                 var param = cmd.CreateParameter();
@@ -3611,12 +3587,12 @@ namespace Voat.Data
             switch (type)
             {
                 case ContentType.Comment:
-                    q.Select = "SELECT [ID] = CommentID, [Value] = IsNull(VoteStatus, 0) FROM CommentVoteTracker WITH (NOLOCK)";
-                    q.Where = "UserName = @UserName AND CommentID IN @ID";
+                    q.Select = $"SELECT \"CommentID\" AS \"ID\", IsNull(\"VoteStatus\", 0) AS \"Value\" FROM {SqlFormatter.Table("CommentVoteTracker", null, null, "NOLOCK")}";
+                    q.Where = "\"UserName\" = @UserName AND \"CommentID\" IN @ID";
                     break;
                 case ContentType.Submission:
-                    q.Select = "SELECT [ID] = SubmissionID, [Value] = IsNull(VoteStatus, 0) FROM SubmissionVoteTracker WITH (NOLOCK)";
-                    q.Where = "UserName = @UserName AND SubmissionID IN @ID";
+                    q.Select = $"SELECT [ID] = SubmissionID, [Value] = IsNull(VoteStatus, 0) FROM {SqlFormatter.Table("SubmissionVoteTracker", null, null, "NOLOCK")}";
+                    q.Where = "\"UserName\" = @UserName AND \"SubmissionID\" IN @ID";
                     break;
             }
 
@@ -3649,19 +3625,19 @@ namespace Voat.Data
                 compareDate = CurrentDate.Subtract(span.Value);
             }
             var q = new DapperQuery();
-            q.Select = "COUNT(*) FROM Submission WITH (NOLOCK)";
-            q.Where = "UserName = @UserName";
+            q.Select = $"COUNT(*) FROM {SqlFormatter.Table("Submission", null, null, "NOLOCK")}";
+            q.Where = "\"UserName\" = @UserName";
             if (compareDate != null)
             {
-                q.Append(x => x.Where, "CreationDate >= @StartDate");
+                q.Append(x => x.Where, "\"CreationDate\" >= @StartDate");
             }
             if (type != null)
             {
-                q.Append(x => x.Where, "Type = @Type");
+                q.Append(x => x.Where, "\"Type\" = @Type");
             }
             if (!String.IsNullOrEmpty(subverse))
             {
-                q.Append(x => x.Where, "Subverse = @Subverse");
+                q.Append(x => x.Where, "\"Subverse\" = @Subverse");
             }
 
             var count = _db.Database.Connection.ExecuteScalar<int>(q.ToString(), new { UserName = userName, StartDate = compareDate, Type = type, Subverse = subverse });
@@ -3701,16 +3677,9 @@ namespace Voat.Data
                 return score;
             });
 
-            var groupingClause = @"SELECT UserName, IsReceived, ContentType, VoteStatus, VoteCount = SUM(VoteCount), VoteValue = SUM(VoteValue) 
-                        FROM (	
-	                        {0}
-                        ) AS a
-                        GROUP BY a.UserName, a.IsReceived, a.ContentType, a.VoteStatus";
-            var archivedPointsClause = @"SELECT UserName, IsReceived, ContentType, VoteStatus, VoteCount, VoteValue
-	                        FROM UserContribution AS uc WITH (NOLOCK)
-	                        WHERE uc.UserName = @UserName AND uc.IsReceived = @IsReceived AND uc.ContentType = @ContentType
-	                        UNION ALL
-                    ";
+            var groupingClause = $"SELECT \"UserName\", \"IsReceived\", \"ContentType\", \"VoteStatus\", SUM(\"VoteCount\") AS \"VoteCount\", SUM(\"VoteValue\") AS \"VoteValue\" FROM ({"{0}"}) AS a GROUP BY a.\"UserName\", a.\"IsReceived\", a.\"ContentType\", a.\"VoteStatus\"";
+
+            var archivedPointsClause = $"SELECT \"UserName\", \"IsReceived\", \"ContentType\", \"VoteStatus\", \"VoteCount\", \"VoteValue\" FROM {SqlFormatter.Table("UserContribution", "uc", null, "NOLOCK")} WHERE uc.\"UserName\" = @UserName AND uc.\"IsReceived\" = @IsReceived AND uc.\"ContentType\" = @ContentType UNION ALL ";
             var alias = "";
             DateTime? dateRange = timeSpan.HasValue ? CurrentDate.Subtract(timeSpan.Value) : (DateTime?)null;
             Score s = new Score();
@@ -3726,25 +3695,21 @@ namespace Voat.Data
                         case ContentType.Comment:
 
                             //basic point calc query
-                            q.Select = $@"SELECT UserName = @UserName, IsReceived = @IsReceived, ContentType = @ContentType, VoteStatus = v.VoteStatus, VoteCount = 1, VoteValue = ABS(v.VoteValue)
-	                                FROM CommentVoteTracker v WITH (NOLOCK) 
-	                                INNER JOIN Comment c WITH (NOLOCK) ON c.ID = v.CommentID
-	                                INNER JOIN Submission s ON s.ID = c.SubmissionID";
-
+                            q.Select = $"SELECT @UserName AS \"UserName\", @IsReceived AS \"IsReceived\", @ContentType AS \"ContentType\", v.\"VoteStatus\" AS \"VoteStatus\", 1 AS \"VoteCount\", ABS(v.VoteValue) AS \"VoteValue\" FROM {SqlFormatter.Table("CommentVoteTracker", "v", null, "NOLOCK")}";
+                            q.Select += $"INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"ID\" = v.\"CommentID\" INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} ON s.\"ID\" = c.\"SubmissionID\""; 
+                                    
                             //This controls whether we search for given or received votes
                             alias = (isReceived ? "c" : "v");
-                            q.Append(x => x.Where, $"{alias}.UserName = @UserName");
+                            q.Append(x => x.Where, $"{alias}.\"UserName\" = @UserName");
 
                             break;
                         case ContentType.Submission:
                             //basic point calc query
-                            q.Select = $@"SELECT UserName = @UserName, IsReceived = @IsReceived, ContentType = @ContentType, VoteStatus = v.VoteStatus, VoteCount = 1, VoteValue = ABS(v.VoteValue)
-	                        FROM SubmissionVoteTracker v WITH (NOLOCK) 
-	                        INNER JOIN Submission s ON s.ID = v.SubmissionID";
+                            q.Select = $"SELECT @UserName AS \"UserName\", @IsReceived AS \"IsReceived\", @ContentType AS \"ContentType\", v.\"VoteStatus\" AS \"VoteStatus\", 1 AS \"VoteCount\", ABS(v.VoteValue) AS \"VoteValue\" FROM {SqlFormatter.Table("SubmissionVoteTracker", "v", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} ON s.\"ID\" = v.\"SubmissionID\"";
 
                             //This controls whether we search for given or received votes
                             alias = (isReceived ? "s" : "v");
-                            q.Append(x => x.Where, $"{alias}.UserName = @UserName");
+                            q.Append(x => x.Where, $"{alias}.\"UserName\" = @UserName");
 
                             break;
                         default:
@@ -3756,17 +3721,17 @@ namespace Voat.Data
                     {
                         if (!String.IsNullOrEmpty(subverse))
                         {
-                            q.Append(x => x.Where, "s.Subverse = @Subverse");
+                            q.Append(x => x.Where, "s.\"Subverse\" = @Subverse");
                         }
                         if (dateRange.HasValue)
                         {
-                            q.Append(x => x.Where, "v.CreationDate >= @DateRange");
+                            q.Append(x => x.Where, "v.\"CreationDate\" >= @DateRange");
                         }
                     }
                     else
                     {
                         q.Select = archivedPointsClause + q.Select;
-                        q.Append(x => x.Where, "s.ArchiveDate IS NULL");
+                        q.Append(x => x.Where, "s.\"ArchiveDate\" IS NULL");
                     }
 
                     string statement = String.Format(groupingClause, q.ToString());
@@ -4003,22 +3968,22 @@ namespace Voat.Data
                 {
                     case DomainType.Subverse:
 
-                        u.Update = "UPDATE s SET SubscriberCount = (ISNULL(SubscriberCount, 0) + @IncrementValue) FROM Subverse s";
-                        u.Where = "s.Name = @Name";
+                        u.Update = $"UPDATE s SET \"SubscriberCount\" = (ISNULL(\"SubscriberCount\", 0) + @IncrementValue) FROM {SqlFormatter.Table("Subverse", "s")}";
+                        u.Where = "s.\"Name\" = @Name";
                         u.Parameters = new DynamicParameters(new { Name = domainReference.Name, IncrementValue = incrementValue });
 
                         break;
                     case DomainType.Set:
-                        u.Update = "UPDATE s SET SubscriberCount = (ISNULL(SubscriberCount, 0) + @IncrementValue) FROM SubverseSet s";
-                        u.Where = "s.Name = @Name";
+                        u.Update = $"UPDATE s SET \"SubscriberCount\" = (ISNULL(\"SubscriberCount\", 0) + @IncrementValue) FROM {SqlFormatter.Table("SubverseSet", "s")}";
+                        u.Where = "s.\"Name\" = @Name";
 
                         if (!String.IsNullOrEmpty(domainReference.OwnerName))
                         {
-                            u.Append(x => x.Where, "s.UserName = @OwnerName");
+                            u.Append(x => x.Where, "s.\"UserName\" = @OwnerName");
                         }
                         else
                         {
-                            u.Append(x => x.Where, "s.UserName IS NULL");
+                            u.Append(x => x.Where, "s.\"UserName\" IS NULL");
                         }
                         u.Parameters = new DynamicParameters(new { Name = domainReference.Name, IncrementValue = incrementValue, OwnerName = domainReference.OwnerName });
                         break;
@@ -4359,9 +4324,9 @@ namespace Voat.Data
             var typeFilter = contentType == ContentType.Submission ? "r.SubmissionID IS NOT NULL" : "r.CommentID IS NOT NULL";
             var q = new DapperQuery();
 
-            q.Select = "* FROM RuleSet r";
-            q.Where = "(r.Subverse = @Subverse OR r.Subverse IS NULL) AND (r.ContentType = @ContentType OR r.ContentType IS NULL) AND r.IsActive = 1";
-            q.OrderBy = "r.SortOrder ASC";
+            q.Select = $"* FROM {SqlFormatter.Table("RuleSet", "r")}";
+            q.Where = $"(r.\"Subverse\" = @Subverse OR r.\"Subverse\" IS NULL) AND (r.\"ContentType\" = @ContentType OR r.\"ContentType\" IS NULL) AND r.\"IsActive\" = {SqlFormatter.BooleanLiteral(true)}";
+            q.OrderBy = "r.\"SortOrder\" ASC";
 
             int? intContentType = contentType == null ? (int?)null : (int)contentType;
 
@@ -4372,12 +4337,9 @@ namespace Voat.Data
         }
         public async Task<Dictionary<ContentItem, IEnumerable<ContentUserReport>>> GetRuleReports(string subverse, ContentType? contentType = null, int hours = 24, ReviewStatus reviewedStatus = ReviewStatus.Unreviewed, int[] ruleSetID = null)
         {
-            var typeFilter = contentType == ContentType.Submission ? "rr.SubmissionID IS NOT NULL" : "rr.CommentID IS NOT NULL";
             var q = new DapperQuery();
 
-            q.Select = $@"SELECT rr.Subverse, rr.UserName, rr.SubmissionID, rr.CommentID, rr.RuleSetID, r.Name, r.Description, Count = COUNT(*), MostRecent = MAX(rr.CreationDate)
-                        FROM RuleReport rr WITH (NOLOCK)
-                        INNER JOIN RuleSet r WITH (NOLOCK) ON rr.RuleSetID = r.ID";
+            q.Select = $"SELECT rr.\"Subverse\", rr.\"UserName\", rr.\"SubmissionID\", rr.\"CommentID\", rr.\"RuleSetID\", r.\"Name\", r.\"Description\", COUNT(*) AS \"Count\", MAX(rr.\"CreationDate\") AS \"MostRecent\" FROM {SqlFormatter.Table("RuleReport", "rr", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON rr.\"RuleSetID\" = r.\"ID\"";
 
                         //--LEFT JOIN Submission s WITH (NOLOCK) ON s.ID = rr.SubmissionID
                         //--LEFT JOIN Comment c WITH (NOLOCK) ON c.ID = rr.CommentID
@@ -4388,29 +4350,25 @@ namespace Voat.Data
                         //    AND
                         //    (rr.CreationDate <= @EndDate OR @EndDate IS NULL)
                         //    AND {typeFilter}
-            q.Where = @"(rr.Subverse = @Subverse OR @Subverse IS NULL)
-                        AND
-                        (rr.CreationDate >= @StartDate OR @StartDate IS NULL)
-                        AND
-                        (rr.CreationDate <= @EndDate OR @EndDate IS NULL)";
-            q.OrderBy = "MostRecent DESC";
+            q.Where = "(rr.\"Subverse\" = @Subverse OR @Subverse IS NULL) AND (rr.\"CreationDate\" >= @StartDate OR @StartDate IS NULL) AND (rr.\"CreationDate\" <= @EndDate OR @EndDate IS NULL)";
+            q.OrderBy = "\"MostRecent\" DESC";
 
             if (contentType != null)
             {
-                q.Append(x => x.Where, contentType == ContentType.Submission ? "rr.SubmissionID IS NOT NULL" : "rr.CommentID IS NOT NULL");
+                q.Append(x => x.Where, contentType == ContentType.Submission ? "rr.\"SubmissionID\" IS NOT NULL" : "rr.\"CommentID\" IS NOT NULL");
             }
 
             if (reviewedStatus != ReviewStatus.Any)
             {
-                q.Append(x => x.Where, reviewedStatus == ReviewStatus.Reviewed ? "rr.ReviewedDate IS NOT NULL" : "rr.ReviewedDate IS NULL");
+                q.Append(x => x.Where, reviewedStatus == ReviewStatus.Reviewed ? "rr.\"ReviewedDate\" IS NOT NULL" : "rr.\"ReviewedDate\" IS NULL");
             }
 
             if (ruleSetID != null && ruleSetID.Any())
             {
-                q.Append(x => x.Where, "rr.RuleSetID IN @RuleSetID");
+                q.Append(x => x.Where, "rr.\"RuleSetID\" IN @RuleSetID");
             }
 
-            q.GroupBy = "rr.Subverse, rr.UserName, rr.SubmissionID, rr.CommentID, rr.RuleSetID, r.Name, r.Description";
+            q.GroupBy = "rr.\"Subverse\", rr.\"UserName\", rr.\"SubmissionID\", rr.\"CommentID\", rr.\"RuleSetID\", r.\"Name\", r.\"Description\"";
 
             DateTime? startDate = Repository.CurrentDate.AddHours(hours * -1);
             DateTime? endDate = null;
@@ -4457,16 +4415,16 @@ namespace Voat.Data
             }
 
             var q = new DapperUpdate();
-            q.Update = "r SET r.ReviewedBy = @UserName, r.ReviewedDate = @CreationDate FROM RuleReport r";
+            q.Update = $"r SET r.\"ReviewedBy\" = @UserName, r.\"ReviewedDate\" = @CreationDate FROM {SqlFormatter.Table("RuleReport",  "r")}";
             if (contentType == ContentType.Submission)
             {
-                q.Where = "r.Subverse = @Subverse AND SubmissionID = @ID";
+                q.Where = "r.\"Subverse\" = @Subverse AND r.\"SubmissionID\" = @ID";
             }
             else
             {
-                q.Where = "r.Subverse = @Subverse AND CommentID = @ID";
+                q.Where = "r.\"Subverse\" = @Subverse AND r.\"CommentID\" = @ID";
             }
-            q.Append(x => x.Where, "r.ReviewedDate IS NULL AND r.ReviewedBy IS NULL");
+            q.Append(x => x.Where, "r.\"ReviewedDate\" IS NULL AND r.\"ReviewedBy\" IS NULL");
 
             var result = await _db.Database.Connection.ExecuteAsync(q.ToString(), new { Subverse = subverse, ID = id, UserName = User.Identity.Name, CreationDate = CurrentDate });
 
@@ -4483,34 +4441,29 @@ namespace Voat.Data
             switch (contentType)
             {
                 case ContentType.Comment:
-                    duplicateFilter = "AND CommentID = @ID";
+                    duplicateFilter = "AND \"CommentID\" = @ID";
                     break;
                 case ContentType.Submission:
-                    duplicateFilter = "AND SubmissionID = @ID AND CommentID IS NULL";
+                    duplicateFilter = "AND \"SubmissionID\" = @ID AND \"CommentID\" IS NULL";
                     break;
                 default:
                     throw new NotImplementedException("ContentType not supported");
                     break;
             }
 
-            var q = $"IF NOT EXISTS (SELECT * FROM RuleReport WHERE CreatedBy = @UserName {duplicateFilter}) INSERT RuleReport (Subverse, UserName, SubmissionID, CommentID, RuleSetID, CreatedBy, CreationDate) ";
+            var q = $"IF NOT EXISTS (SELECT * FROM {SqlFormatter.Table("RuleReport")} WHERE \"CreatedBy\" = @UserName {duplicateFilter}) INSERT {SqlFormatter.Table("RuleReport")} (\"Subverse\", \"UserName\", \"SubmissionID\", \"CommentID\", \"RuleSetID\", \"CreatedBy\", \"CreationDate\") ";
 
             switch (contentType)
             {
                 case ContentType.Comment:
-                    q += @"SELECT s.Subverse, NULL, s.ID, c.ID, @RuleID, @UserName, GETUTCDATE() FROM Submission s WITH (NOLOCK) 
-                          INNER JOIN Comment c WITH (NOLOCK) ON c.SubmissionID = s.ID 
-                          INNER JOIN RuleSet r WITH (NOLOCK) ON r.ID = @RuleID AND (r.Subverse = s.Subverse OR r.Subverse IS NULL) AND (r.ContentType = @ContentType OR r.ContentType IS NULL) 
-                          WHERE c.ID = @ID AND c.IsDeleted = 0 AND r.IsActive = 1";
+                    q += $"SELECT s.\"Subverse\", NULL, s.\"ID\", c.\"ID\", @RuleID, @UserName, GETUTCDATE() FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"SubmissionID\" = s.\"ID\" INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON r.\"ID\" = @RuleID AND (r.\"Subverse\" = s.\"Subverse\" OR r.\"Subverse\" IS NULL) AND (r.\"ContentType\" = @ContentType OR r.\"ContentType\" IS NULL) WHERE c.\"ID\" = @ID AND c.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)} AND r.\"IsActive\" = {SqlFormatter.BooleanLiteral(true)}";
                     break;
                 case ContentType.Submission:
-                    q += @"SELECT s.Subverse, NULL, s.ID, NULL, @RuleID, @UserName, GETUTCDATE() FROM Submission s WITH (NOLOCK) 
-                        INNER JOIN RuleSet r WITH (NOLOCK) ON r.ID = @RuleID AND (r.Subverse = s.Subverse OR r.Subverse IS NULL) AND (r.ContentType = @ContentType OR r.ContentType IS NULL) 
-                        WHERE s.ID = @ID AND s.IsDeleted = 0 AND r.IsActive = 1";
+                    q += $"SELECT s.\"Subverse\", NULL, s.\"ID\", NULL, @RuleID, @UserName, GETUTCDATE() FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON r.\"ID\" = @RuleID AND (r.\"Subverse\" = s.Subverse OR r.\"Subverse\" IS NULL) AND (r.\"ContentType\" = @ContentType OR r.\"ContentType\" IS NULL) WHERE s.\"ID\" = @ID AND s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)} AND r.\"IsActive\" = {SqlFormatter.BooleanLiteral(true)}";
                     break;
             }
             //filter out banned users
-            q += " AND NOT EXISTS (SELECT * FROM BannedUser WHERE UserName = @UserName) AND NOT EXISTS(SELECT * FROM SubverseBan WHERE UserName = @UserName AND Subverse = s.Subverse)";
+            q += $" AND NOT EXISTS (SELECT * FROM {SqlFormatter.Table("BannedUser")} WHERE \"UserName\" = @UserName) AND NOT EXISTS(SELECT * FROM {SqlFormatter.Table("SubverseBan")} WHERE \"UserName\" = @UserName AND \"Subverse\" = s.Subverse)";
 
             var result = await _db.Database.Connection.ExecuteAsync(q, new { UserName = User.Identity.Name, ID = id, RuleID = ruleID, ContentType = (int)contentType });
 
@@ -4710,18 +4663,16 @@ namespace Voat.Data
         {
 
             var q = new DapperQuery();
-            q.Select = "SELECT TOP 1 s.Name FROM Subverse s INNER JOIN Submission sm ON s.Name = sm.Subverse";
-            q.Where = @"s.Name != 'all'
-                        AND s.IsAdult = @IsAdult
-                        AND s.IsAdminDisabled = 0";
-            q.GroupBy = "s.Name";
+            q.Select = $"SELECT TOP 1 s.\"Name\" FROM {SqlFormatter.Table("Subverse", "s")} INNER JOIN {SqlFormatter.Table("Submission", "sm")} ON s.\"Name\" = sm.\"Subverse\"";
+            q.Where = $"s.\"Name\" != 'all' AND s.IsAdult = @IsAdult AND s.\"IsAdminDisabled\" = {SqlFormatter.BooleanLiteral(false)}";
+            q.GroupBy = "s.\"Name\"";
             q.OrderBy = "NEWID()";
             q.Parameters = new DynamicParameters(new { IsAdult = nsfw, HourLimit = (24 * 7) });
 
             if (restrict)
             {
-                q.Append(x => x.Where, "s.SubscriberCount > 10");
-                q.Having = "DATEDIFF(HH, MAX(sm.CreationDate), GETUTCDATE()) < @HourLimit";
+                q.Append(x => x.Where, "s.\"SubscriberCount\" > 10");
+                q.Having = "DATEDIFF(HH, MAX(sm.\"CreationDate\"), GETUTCDATE()) < @HourLimit";
             }
 
             return await _db.Database.Connection.ExecuteScalarAsync<string>(q.ToString(), q.Parameters);
@@ -4751,9 +4702,9 @@ namespace Voat.Data
         public double? HighestRankInSubverse(string subverse)
         {
             var q = new DapperQuery();
-            q.Select = "TOP 1 ISNULL(Rank, 0) FROM Submission WITH (NOLOCK)";
-            q.Where = "Subverse = @Subverse AND ArchiveDate IS NULL";
-            q.OrderBy = "Rank DESC";
+            q.Select = $"TOP 1 ISNULL(Rank, 0) FROM {SqlFormatter.Table("Submission", null, null, "NOLOCK")}";
+            q.Where = "\"Subverse\" = @Subverse AND \"ArchiveDate\" IS NULL";
+            q.OrderBy = "\"Rank\" DESC";
             q.Parameters = new { Subverse = subverse }.ToDynamicParameters();
 
             var result = _db.Database.Connection.ExecuteScalar<double?>(q.ToString(), q.Parameters);
@@ -5084,8 +5035,8 @@ namespace Voat.Data
                 }
 
                 var q = new DapperQuery();
-                q.Select = "* FROM BannedDomain";
-                q.Where = "Domain IN @Domains";
+                q.Select = $"* FROM {SqlFormatter.Table("BannedDomain")}";
+                q.Where = "\"Domain\" IN @Domains";
                 q.Parameters = new { Domains = alldomains.ToArray() }.ToDynamicParameters();
 
                 var bannedDomains = _db.Database.Connection.Query<BannedDomain>(q.ToString(), q.Parameters);
@@ -5172,10 +5123,10 @@ namespace Voat.Data
         public IEnumerable<Data.Models.Filter> GetFilters(bool activeOnly = true)
         {
             var q = new DapperQuery();
-            q.Select = "* FROM Filter";
+            q.Select = $"* FROM {SqlFormatter.Table("Filter")}";
             if (activeOnly)
             {
-                q.Where = "IsActive = @IsActive";
+                q.Where = "\"IsActive\" = @IsActive";
             }
             //will return empty list I believe, so should be runtime cacheable 
             return _db.Database.Connection.Query<Data.Models.Filter>(q.ToString(), new { IsActive = activeOnly });
@@ -5199,22 +5150,22 @@ namespace Voat.Data
             var dayCutOff = 7;
 
             var d = new DapperQuery();
-            d.Select =
-                @"SELECT d.Type, d.ID, Name, Title = ISNULL(f.Title, d.Title), Description = ISNULL(f.Description, d.Description), d.SubscriberCount, d.OwnerName, d.CreationDate, FeaturedDate = f.StartDate, FeaturedBy = f.CreatedBy FROM Featured f
-                INNER JOIN (
-	                SELECT Type = 1, ID, Name, Title, Description, CreationDate, SubscriberCount, OwnerName = CreatedBy FROM Subverse WHERE IsAdminDisabled = 0
-	                UNION
-	                SELECT Type = 2, ID, Name, Title, Description, CreationDate, SubscriberCount, OwnerName = UserName FROM SubverseSet WHERE IsPublic = 1
-                ) AS D ON D.ID = f.DomainID AND D.Type = f.DomainType";
-            d.Where = "f.StartDate <= @CurrentDate AND (f.EndDate >= @CurrentDate OR f.EndDate IS NULL)";
+            d.Select += $"SELECT d.\"Type\", d.\"ID\", \"Name\", ISNULL(f.\"Title\", d.\"Title\") AS \"Title\", ISNULL(f.\"Description\", d.\"Description\") AS \"Description\", d.\"SubscriberCount\", d.\"OwnerName\", d.\"CreationDate\", f.\"StartDate\" AS \"FeaturedDate\", f.\"CreatedBy\" AS \"FeaturedBy\" FROM {SqlFormatter.Table("Featured", "f")} ";
+            d.Select += $"INNER JOIN ( ";
+            d.Select += $"SELECT 1 AS \"Type\", \"ID\", \"Name\", \"Title\", \"Description\", \"CreationDate\", \"SubscriberCount\", \"CreatedBy\" AS \"OwnerName\" FROM {SqlFormatter.Table("Subverse")} WHERE \"IsAdminDisabled\" = {SqlFormatter.BooleanLiteral(false)} ";
+            d.Select += $"UNION ";
+            d.Select += $"SELECT 2 AS \"Type\", \"ID\", \"Name\", \"Title\", \"Description\", \"CreationDate\", \"SubscriberCount\", \"UserName\" AS \"OwnerName\" FROM {SqlFormatter.Table("SubverseSet")} WHERE \"IsPublic\" = {SqlFormatter.BooleanLiteral(true)} ";
+            d.Select += $") AS D ON D.\"ID\" = f.\"DomainID\" AND D.\"Type\" = f.\"DomainType\" ";
+
+            d.Where = "f.\"StartDate\" <= @CurrentDate AND (f.\"EndDate\" >= @CurrentDate OR f.\"EndDate\" IS NULL )";
 
             if (dayCutOff > 0)
             {
-                d.Append(x => x.Where, "(f.EndDate IS NOT NULL OR (f.EndDate IS NULL AND DATEDIFF(HH, f.StartDate, GETUTCDATE()) <= @Hours))");
+                d.Append(x => x.Where, "(f.\"EndDate\" IS NOT NULL OR (f.\"EndDate\" IS NULL AND DATEDIFF(HH, f.\"StartDate\", GETUTCDATE()) <= @Hours))");
                 d.Parameters.Add("Hours", (dayCutOff * 24));
             }
 
-            d.OrderBy = "f.StartDate DESC";
+            d.OrderBy = "f.\"StartDate\" DESC";
             d.Parameters.Add("CurrentDate", CurrentDate); //I really have no idea why we are passing in a current time. In fact, it is both pointless and error prone, but for some reason, deep inside me, I cannot change this. True, it would take me all of 4 seconds, but this isn’t the time investment. It is something deeper, something unexplainable. I feel that somehow, for some reason, this will save us in the future. I shall leave it in order to save the future people! I am legend?
 
             var result = _db.Database.Connection.QueryFirstOrDefault<FeaturedDomainReferenceDetails>(d.ToString(), d.Parameters);
@@ -5231,17 +5182,17 @@ namespace Voat.Data
         {
 
             var q = new DapperQuery();
-            q.Select = "Name, IsAnonymized, IsAdult FROM Subverse";
-            q.OrderBy = "SubscriberCount DESC, CreationDate ASC";
+            q.Select = $"\"Name\", \"IsAnonymized\", \"IsAdult\" FROM {SqlFormatter.Table("Subverse")}";
+            q.OrderBy = "\"SubscriberCount\" DESC, \"CreationDate\" ASC";
 
             if (exactMatch)
             {
-                q.Where = "Name = @Name";
+                q.Where = "\"Name\" = @Name";
                 q.TakeCount = 1;
             }
             else
             {
-                q.Where = "Name LIKE CONCAT(@Name, '%') OR Name = @Name";
+                q.Where = "\"Name\" LIKE CONCAT(@Name, '%') OR \"Name\" = @Name";
                 q.TakeCount = 10;
             }
 
@@ -5297,13 +5248,13 @@ namespace Voat.Data
                         {
                             case DeleteOption.Anonymize:
                                 var a = new DapperUpdate();
-                                a.Update = "Update c SET c.IsAnonymized = 1 FROM Comment c WHERE c.UserName = @UserName";
+                                a.Update = $"Update c SET c.\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)} FROM {SqlFormatter.Table("Comment", "c")} WHERE c.\"UserName\" = @UserName";
                                 a.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(a);
                                 break;
                             case DeleteOption.Delete:
                                 var d = new DapperUpdate();
-                                d.Update = $"Update c SET c.IsDeleted = 1, Content = '{deleteText}' FROM Comment c WHERE c.UserName = @UserName";
+                                d.Update = $"Update c SET c.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, \"Content\" = '{deleteText}' FROM {SqlFormatter.Table("Comment", "c")} WHERE c.\"UserName\" = @UserName";
                                 d.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(d);
                                 break;
@@ -5313,13 +5264,13 @@ namespace Voat.Data
                         {
                             case DeleteOption.Anonymize:
                                 var a = new DapperUpdate();
-                                a.Update = $"Update s SET s.IsAnonymized = 1 FROM Submission s WHERE s.UserName = @UserName AND s.Type = {(int)SubmissionType.Text}";
+                                a.Update = $"Update s SET s.\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)} FROM {SqlFormatter.Table("Submission", "s")} WHERE s.\"UserName\" = @UserName AND s.\"Type\" = {(int)SubmissionType.Text}";
                                 a.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(a);
                                 break;
                             case DeleteOption.Delete:
                                 var d = new DapperUpdate();
-                                d.Update = $"Update s SET s.IsDeleted = 1, s.Title = '{deleteText}', s.Content = '{deleteText}' FROM Submission s WHERE s.UserName = @UserName AND s.Type = {(int)SubmissionType.Text}";
+                                d.Update = $"Update s SET s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, s.\"Title\" = '{deleteText}', s.\"Content\" = '{deleteText}' FROM {SqlFormatter.Table("Submission", "s")} WHERE s.\"UserName\" = @UserName AND s.\"Type\" = {(int)SubmissionType.Text}";
                                 d.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(d);
                                 break;
@@ -5329,13 +5280,13 @@ namespace Voat.Data
                         {
                             case DeleteOption.Anonymize:
                                 var a = new DapperUpdate();
-                                a.Update = $"Update s SET s.IsAnonymized = 1 FROM Submission s WHERE s.UserName = @UserName AND s.Type = {(int)SubmissionType.Link}";
+                                a.Update = $"Update s SET s.\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)} FROM {SqlFormatter.Table("Submission", "s")} WHERE s.\"UserName\" = @UserName AND s.\"Type\" = {(int)SubmissionType.Link}";
                                 a.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(a);
                                 break;
                             case DeleteOption.Delete:
                                 var d = new DapperUpdate();
-                                d.Update = $"Update s SET s.IsDeleted = 1, s.Title = '{deleteText}', s.Url = 'https://{Settings.SiteDomain}' FROM Submission s WHERE s.UserName = @UserName AND s.Type = {(int)SubmissionType.Link}";
+                                d.Update = $"Update s SET s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, s.\"Title\" = '{deleteText}', s.\"Url\" = 'https://{Settings.SiteDomain}' FROM {SqlFormatter.Table("Submission", "s")} WHERE s.\"UserName\" = @UserName AND s.\"Type\" = {(int)SubmissionType.Link}";
                                 d.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(d);
                                 break;
@@ -5344,15 +5295,15 @@ namespace Voat.Data
                         // resign from all moderating positions
                         _db.SubverseModerators.RemoveRange(_db.SubverseModerators.Where(m => m.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase)));
                         var u = new DapperDelete();
-                        u.Delete = "DELETE m FROM SubverseModerator m";
-                        u.Where = "m.UserName = @UserName";
+                        u.Delete = $"DELETE m FROM {SqlFormatter.Table("SubverseModerator", "m")}";
+                        u.Where = "m.\"UserName\" = @UserName";
                         u.Parameters = new DynamicParameters(new { UserName = userName });
                         statements.Add(u);
 
                         //Messages
                         u = new DapperDelete();
-                        u.Delete = "DELETE m FROM [Message] m";
-                        u.Where = $"((m.Recipient = @UserName AND m.RecipientType = {(int)IdentityType.User} AND m.Type IN @RecipientTypes))";
+                        u.Delete = $"DELETE m FROM {SqlFormatter.Table("Message", "m")}";
+                        u.Where = $"((m.\"Recipient\" = @UserName AND m.\"RecipientType\" = {(int)IdentityType.User} AND m.\"Type\" IN @RecipientTypes))";
                         u.Parameters = new DynamicParameters(new
                         {
                             UserName = userName,
@@ -5403,8 +5354,8 @@ namespace Voat.Data
 
 
                             var updatePrefStatement = new DapperUpdate();
-                            updatePrefStatement.Update = "UserPreference SET Bio = NULL, Avatar = NULL";
-                            updatePrefStatement.Where = "UserName = @UserName";
+                            updatePrefStatement.Update = $"{SqlFormatter.Table("UserPreference")} SET \"Bio\" = NULL, \"Avatar\" = NULL";
+                            updatePrefStatement.Where = "\"UserName\" = @UserName";
                             updatePrefStatement.Parameters.Add("UserName", userName);
                             await _db.Database.Connection.ExecuteAsync(updatePrefStatement.ToString(), updatePrefStatement.Parameters);
                         }

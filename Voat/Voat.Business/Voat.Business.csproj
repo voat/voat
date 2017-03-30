@@ -171,6 +171,7 @@
     <Compile Include="Data\Repository\Repository_Search.cs" />
     <Compile Include="Data\Repository\Repository_Set.cs" />
     <Compile Include="Data\Repository\Repository_Stats.cs" />
+    <Compile Include="Data\Repository\SqlFormatter.cs" />
     <Compile Include="Data\Selectors.cs" />
     <Compile Include="Domain\Command\Base\QueuedCommand.cs" />
     <Compile Include="Domain\Command\CreateSubverseCommand.cs" />

@@ -9,6 +9,6 @@ namespace Voat.Tests
     public class TestEnvironmentSettings
     {
 
-        public static string SqlScriptRelativePath { get; set; } = @"..\..\..\SqlScripts";
+        public static string SqlScriptRelativePath { get; set; } = @"..\..\..\SqlScripts\" + Voat.Data.DataStoreType.SqlServer.ToString();
     }
 }

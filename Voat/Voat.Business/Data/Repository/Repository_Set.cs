@@ -114,16 +114,16 @@ namespace Voat.Data
             {
                 var d = new DapperDelete();
 
-                d.Delete = "SubverseSetSubscription";
-                d.Where = "SubverseSetID = @ID";
+                d.Delete = SqlFormatter.Table("SubverseSetSubscription");
+                d.Where = "\"SubverseSetID\" = @ID";
                 await conn.ExecuteAsync(d.ToString(), param);
 
-                d.Delete = "SubverseSetList";
-                d.Where = "SubverseSetID = @ID";
+                d.Delete = SqlFormatter.Table("SubverseSetList");
+                d.Where = "\"SubverseSetID\" = @ID";
                 await conn.ExecuteAsync(d.ToString(), param);
 
-                d.Delete = "SubverseSet";
-                d.Where = "ID = @ID";
+                d.Delete = SqlFormatter.Table("SubverseSet");
+                d.Where = "\"ID\" = @ID";
                 await conn.ExecuteAsync(d.ToString(), param);
 
                 //tran.Commit();
@@ -184,12 +184,8 @@ namespace Voat.Data
             int count = 50;
 
             var q = new DapperQuery();
-            q.Select =
-                @"s.ID, s.Name, s.Title, s.Description, s.CreationDate, s.SubscriberCount, SubscriptionDate = sl.CreationDate
-                FROM SubverseSetList sl
-                INNER JOIN Subverse s ON (sl.SubverseID = s.ID)
-                ";
-            q.Where = "sl.SubverseSetID = @ID";
+            q.Select = $"s.\"ID\", s.\"Name\", s.\"Title\", s.\"Description\", s.\"CreationDate\", s.\"SubscriberCount\", sl.\"CreationDate\" AS \"SubscriptionDate\" FROM {SqlFormatter.Table("SubverseSetList", "sl")} INNER JOIN {SqlFormatter.Table("Subverse", "s")} ON (sl.\"SubverseID\" = s.\"ID\")";
+            q.Where = "sl.\"SubverseSetID\" = @ID";
             q.Parameters = new DynamicParameters(new { ID = setID });
 
             if (page.HasValue)
@@ -198,7 +194,7 @@ namespace Voat.Data
                 q.TakeCount = count;
             }
 
-            q.OrderBy = "s.Name ASC";
+            q.OrderBy = "s.\"Name\" ASC";
             using (var db = new voatEntities())
             {
                 var result = await db.Database.Connection.QueryAsync<SubverseSubscriptionDetail>(q.ToString(), q.Parameters);
@@ -230,21 +226,21 @@ namespace Voat.Data
         {
 
             var q = new DapperQuery();
-            q.Select = "SELECT * FROM SubverseSet subSet";
-            q.Where = "subSet.Name = @Name";
+            q.Select = $"SELECT * FROM {SqlFormatter.Table("SubverseSet", "subSet")}";
+            q.Where = "subSet.\"Name\" = @Name";
 
             if (type.HasValue)
             {
-                q.Append(x => x.Where, "subSet.Type = @Type");
+                q.Append(x => x.Where, "subSet.\"Type\" = @Type");
             }
 
             if (!String.IsNullOrEmpty(userName))
             {
-                q.Append(x => x.Where, "subSet.UserName = @UserName");
+                q.Append(x => x.Where, "subSet.\"UserName\" = @UserName");
             }
             else
             {
-                q.Append(x => x.Where, "subSet.UserName IS NULL");
+                q.Append(x => x.Where, "subSet.\"UserName\" IS NULL");
             }
 
             q.Parameters = new DynamicParameters(new { Name = name, UserName = userName, Type = (int?)type });
@@ -258,13 +254,13 @@ namespace Voat.Data
         public async Task<IEnumerable<SubverseSet>> GetUserSets(string userName)
         {
             var q = new DapperQuery();
-            q.Select = "SELECT * FROM SubverseSet subSet";
-            q.Where = "subSet.UserName = @UserName";
+            q.Select = $"SELECT * FROM {SqlFormatter.Table("SubverseSet", "subSet")}";
+            q.Where = "subSet.\"UserName\" = @UserName";
             q.Parameters.Add("UserName", userName);
 
             if (!userName.IsEqual(User.Identity.Name))
             {
-                q.Append(x => x.Where, "subSet.IsPublic = 1");
+                q.Append(x => x.Where, $"subSet.\"IsPublic\" = {SqlFormatter.BooleanLiteral(true)}");
             }
 
             using (var db = new voatEntities())
@@ -329,8 +325,8 @@ namespace Voat.Data
                 if (Settings.MaximumOwnedSets > 0)
                 {
                     var d = new DapperQuery();
-                    d.Select = "SELECT COUNT(*) FROM SubverseSet subSet";
-                    d.Where = "subSet.Type = @Type AND subSet.UserName = @UserName";
+                    d.Select = $"SELECT COUNT(*) FROM {SqlFormatter.Table("SubverseSet", "subSet")}";
+                    d.Where = "subSet.\"Type\" = @Type AND subSet.\"UserName\" = @UserName";
                     d.Parameters.Add("Type", (int)SetType.Normal);
                     d.Parameters.Add("UserName", User.Identity.Name);
 

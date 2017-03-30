@@ -14,7 +14,9 @@ namespace Voat.Data
 
         public async Task<Statistics<IEnumerable<UserVoteStats>>> UserVotesGivenStatistics(SearchOptions options)
         {
-            var result = await _db.Database.Connection.QueryAsync<UserVoteStats>("[dbo].[usp_Reports_UserVoteGivenStats]",
+            var procedure = SqlFormatter.Object("usp_Reports_UserVoteGivenStats");
+
+            var result = await _db.Database.Connection.QueryAsync<UserVoteStats>(procedure,
                  new { BeginDate = options.StartDate.Value, endDate = options.EndDate.Value, RecordCount = options.Count },
                 commandType: System.Data.CommandType.StoredProcedure);
 
@@ -27,7 +29,9 @@ namespace Voat.Data
         }
         public async Task<Statistics<IEnumerable<UserVoteReceivedStats>>> UserVotesReceivedStatistics(SearchOptions options)
         {
-            var result = await _db.Database.Connection.QueryAsync<UserVoteReceivedStats>("[dbo].[usp_Reports_UserVoteReceivedStats]",
+            var procedure = SqlFormatter.Object("usp_Reports_UserVoteReceivedStats");
+
+            var result = await _db.Database.Connection.QueryAsync<UserVoteReceivedStats>(procedure,
                   new { BeginDate = options.StartDate, endDate = options.EndDate, RecordCount = options.Count },
                 commandType: System.Data.CommandType.StoredProcedure);
 
@@ -42,7 +46,9 @@ namespace Voat.Data
         public async Task<Statistics<IEnumerable<StatContentItem>>> HighestVotedContentStatistics(SearchOptions options)
         {
             //Get content items
-            var result = await _db.Database.Connection.QueryAsync<StatContentItem>("[usp_Reports_HighestVotedContent]",
+            var procedure = SqlFormatter.Object("usp_Reports_HighestVotedContent");
+
+            var result = await _db.Database.Connection.QueryAsync<StatContentItem>(procedure,
                new { BeginDate = options.StartDate, endDate = options.EndDate, RecordCount = options.Count },
                commandType: System.Data.CommandType.StoredProcedure);
 

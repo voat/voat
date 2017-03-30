@@ -52,8 +52,8 @@ namespace Voat.Data
 
             var q = BaseDomainObjectSearch(DomainType.Set, options);
 
-            q.Select += " INNER JOIN SubverseSetSubscription setSubscription WITH (NOLOCK) ON setSubscription.SubverseSetID = s.ID";
-            q.Append(x => x.Where, "setSubscription.UserName = @UserName");
+            q.Select += $" INNER JOIN {SqlFormatter.Table("SubverseSetSubscription", "setSubscription", null, "NOLOCK")} ON setSubscription.\"SubverseSetID\" = s.\"ID\"";
+            q.Append(x => x.Where, "setSubscription.\"UserName\" = @UserName");
             q.Parameters.Add("UserName", userName);
 
             //Reset ispublic on base query
@@ -73,22 +73,22 @@ namespace Voat.Data
             switch (domainType)
             {
                 case DomainType.Subverse:
-                    q.SelectColumns = "Type = @DomainType, s.Name, s.Title, s.Description, OwnerName = s.CreatedBy, s.SubscriberCount, s.CreationDate";
-                    q.Select = "DISTINCT {0} FROM Subverse s WITH (NOLOCK)";
+                    q.SelectColumns = "\"Type\" = @DomainType, s.\"Name\", s.\"Title\", s.\"Description\", s.\"CreatedBy\" AS \"OwnerName\", s.\"SubscriberCount\", s.\"CreationDate\"";
+                    q.Select = $"DISTINCT {"{0}"} FROM {SqlFormatter.Table("Subverse", "s", null, "NOLOCK")}";
                     if (hasPhrase)
                     {
-                        q.Where = "(s.Name LIKE CONCAT('%', @SearchPhrase, '%') OR s.Title LIKE CONCAT('%', @SearchPhrase, '%') OR s.Description LIKE CONCAT('%', @SearchPhrase, '%'))";
+                        q.Where = "(s.\"Name\" LIKE CONCAT('%', @SearchPhrase, '%') OR s.\"Title\" LIKE CONCAT('%', @SearchPhrase, '%') OR s.\"Description\" LIKE CONCAT('%', @SearchPhrase, '%'))";
                     }
-                    q.Append(x => x.Where, "s.IsAdminDisabled = 0 AND s.IsPrivate = 0");
+                    q.Append(x => x.Where, $"s.\"IsAdminDisabled\" = {SqlFormatter.BooleanLiteral(false)} AND s.\"IsPrivate\" = {SqlFormatter.BooleanLiteral(false)}");
                     break;
                 case DomainType.Set:
-                    q.SelectColumns = "Type = @DomainType, s.Name, s.Title, s.Description, OwnerName = s.UserName, s.SubscriberCount, s.CreationDate";
-                    q.Select = "DISTINCT {0} FROM SubverseSet s WITH (NOLOCK)";
+                    q.SelectColumns = "\"Type\" = @DomainType, s.\"Name\", s.\"Title\", s.\"Description\", s.\"UserName\" AS \"OwnerName\", s.\"SubscriberCount\", s.\"CreationDate\"";
+                    q.Select = $"DISTINCT {"{0}"} FROM {SqlFormatter.Table("SubverseSet", "s", null, "NOLOCK")}";
                     if (hasPhrase)
                     {
-                        q.Where = "(s.Name LIKE CONCAT('%', @SearchPhrase, '%') OR s.Title LIKE CONCAT('%', @SearchPhrase, '%') OR s.Description LIKE CONCAT('%', @SearchPhrase, '%'))";
+                        q.Where = "(s.\"Name\" LIKE CONCAT('%', @SearchPhrase, '%') OR s.\"Title\" LIKE CONCAT('%', @SearchPhrase, '%') OR s.\"Description\" LIKE CONCAT('%', @SearchPhrase, '%'))";
                     }
-                    q.Append(x => x.Where, "(s.IsPublic = @IsPublic OR @IsPublic IS NULL)");
+                    q.Append(x => x.Where, "(s.\"IsPublic\" = @IsPublic OR @IsPublic IS NULL)");
                     break;
             }
 
@@ -106,25 +106,25 @@ namespace Voat.Data
                     switch (domainType)
                     {
                         case DomainType.Subverse:
-                            q.Select += " INNER JOIN Submission sub WITH (NOLOCK) ON sub.Subverse = s.Name";
-                            q.SelectColumns += ", ThisIsOnlyUsedForSortingByActive = MAX(sub.CreationDate)";
-                            q.GroupBy = "s.Name, s.Title, s.Description, s.CreatedBy, s.SubscriberCount, s.CreationDate";
-                            q.OrderBy = "MAX(sub.CreationDate) DESC";
+                            q.Select += $" INNER JOIN {SqlFormatter.Table("Submission", "sub", null, "NOLOCK")} ON sub.\"Subverse\" = s.\"Name\"";
+                            q.SelectColumns += ", MAX(sub.\"CreationDate\") AS \"ThisIsOnlyUsedForSortingByActive\"";
+                            q.GroupBy = "s.\"Name\", s.\"Title\", s.\"Description\", s.\"CreatedBy\", s.\"SubscriberCount\", s.\"CreationDate\"";
+                            q.OrderBy = "MAX(sub.\"CreationDate\") DESC";
                             break;
                         case DomainType.Set:
-                            q.Select += " INNER JOIN SubverseSetList subList WITH (NOLOCK) ON subList.SubverseSetID = s.ID";
-                            q.SelectColumns += ", ThisIsOnlyUsedForSortingByActive = MAX(subList.CreationDate)";
-                            q.GroupBy = "s.Name, s.Title, s.Description, s.UserName, s.SubscriberCount, s.CreationDate";
-                            q.OrderBy = "MAX(subList.CreationDate) DESC";
+                            q.Select += $" INNER JOIN {SqlFormatter.Table("SubverseSetList", "subList", null, "NOLOCK")} ON subList.\"SubverseSetID\" = s.\"ID\"";
+                            q.SelectColumns += ", MAX(subList.\"CreationDate\") AS \"ThisIsOnlyUsedForSortingByActive\"";
+                            q.GroupBy = "s.\"Name\", s.\"Title\", s.\"Description\", s.\"UserName\", s.\"SubscriberCount\", s.\"CreationDate\"";
+                            q.OrderBy = "MAX(subList.\"CreationDate\") DESC";
                             break;
                     }
                     break;
                 case SortAlgorithm.New:
-                    q.OrderBy = "s.CreationDate DESC";
+                    q.OrderBy = "s.\"CreationDate\" DESC";
                     break;
                 case SortAlgorithm.Top:
                 default:
-                    q.OrderBy = "s.SubscriberCount DESC";
+                    q.OrderBy = "s.\"SubscriberCount\" DESC";
                     break;
             }
 
