@@ -626,12 +626,24 @@ namespace Voat
                }
             );
 
-            if (!Settings.SignalRDisabled)
+            if (!Settings.SignalRDisabled && !Settings.ChatDisabled)
             {
                 routes.MapRoute(
+                    name: "ChatPassword",
+                    url: "chat/action/password",
+                    defaults: new { controller = "Chat", action = "Password" }
+                );
+
+                routes.MapRoute(
+                    name: "CreateChat",
+                    url: "chat/action/create",
+                    defaults: new { controller = "Chat", action = "Create" }
+                );
+
+                routes.MapRoute(
                     name: "JoinChat",
-                    url: "chat/{subverseName}",
-                    defaults: new { controller = "Chat", action = "Index", subverseName = UrlParameter.Optional }
+                    url: "chat/{id}",
+                    defaults: new { controller = "Chat", action = "Index", name = UrlParameter.Optional }
                 );
             }
 

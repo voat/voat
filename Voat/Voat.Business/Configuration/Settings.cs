@@ -47,7 +47,13 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.CaptchaDisabled, false);
             }
         }
-
+        public static bool ChatDisabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.ChatDisabled, true);
+            }
+        }
         public static int DailyCommentPostingQuota
         {
             get

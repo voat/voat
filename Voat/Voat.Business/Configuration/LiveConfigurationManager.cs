@@ -16,6 +16,8 @@ namespace Voat.Configuration
         public const string ApiKeyCreationEnabled = "apiKeyCreationEnabled";
         public const string CacheDisabled = "cacheDisabled";
         public const string CaptchaDisabled = "captchaDisabled";
+        public const string ChatDisabled = "chatDisabled"; 
+
         public const string DailyCommentPostingQuota = "dailyCommentPostingQuota";
         public const string DailyCommentPostingQuotaForNegativeScore = "dailyCommentPostingQuotaForNegativeScore";
         public const string DailyCrossPostingQuota = "dailyCrossPostingQuota";
@@ -117,6 +119,7 @@ namespace Voat.Configuration
             {
                 SetValueIfPresent<string>(CONFIGURATION.RecaptchaPublicKey, section[CONFIGURATION.RecaptchaPublicKey]);
                 SetValueIfPresent<string>(CONFIGURATION.RecaptchaPrivateKey, section[CONFIGURATION.RecaptchaPrivateKey]);
+
                 SetValueIfPresent<string>(CONFIGURATION.EmailAddress, section[CONFIGURATION.EmailAddress]);
                 SetValueIfPresent<string>(CONFIGURATION.EmailServiceKey, section[CONFIGURATION.EmailServiceKey]);
                 SetValueIfPresent<string>(CONFIGURATION.SiteName, section[CONFIGURATION.SiteName]);
@@ -162,6 +165,7 @@ namespace Voat.Configuration
 
 
                 SetValueIfPresent<bool>(CONFIGURATION.CacheDisabled, section[CONFIGURATION.CacheDisabled]);
+                SetValueIfPresent<bool>(CONFIGURATION.ChatDisabled, section[CONFIGURATION.ChatDisabled]);
                 SetValueIfPresent<bool>(CONFIGURATION.RegistrationDisabled, section[CONFIGURATION.RegistrationDisabled]);
                 SetValueIfPresent<bool>(CONFIGURATION.RedirectToSiteDomain, section[CONFIGURATION.RedirectToSiteDomain]);
                 SetValueIfPresent<bool>(CONFIGURATION.UseContentDeliveryNetwork, section[CONFIGURATION.UseContentDeliveryNetwork]);

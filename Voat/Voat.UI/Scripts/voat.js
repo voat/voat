@@ -1972,11 +1972,11 @@ function scrollChatToBottom(force) {
 }
 
 // a function to submit chat message to subverse chat room
-function sendChatMessage(subverseName) {
+function sendChatMessage(id, access) {
     if ($.connection != null) {
         var messageToSend = $("#chatInputBox").val();
         var chatProxy = $.connection.messagingHub;
-        chatProxy.server.sendChatMessage(subverseName, messageToSend);
+        chatProxy.server.sendChatMessage(id, messageToSend, access);
         scrollChatToBottom(true);
         // clear input
         $("#chatInputBox").val('');
@@ -1984,20 +1984,20 @@ function sendChatMessage(subverseName) {
 }
 
 // a function to add a client to a subverse chat room
-function joinChat(subverseName) {
+function joinChat(id, access) {
     if ($.connection != null) {
         // Start the connection.
         $.connection.hub.start().done(function () {
             var chatProxy = $.connection.messagingHub;
-            chatProxy.server.joinChat(subverseName);
+            chatProxy.server.joinChat(id, access);
         });
     }
 }
 
-function leaveChat(subverseName) {
+function leaveChat(id) {
     if ($.connection != null) {
         var chatProxy = $.connection.messagingHub;
-        chatProxy.server.leaveChat(subverseName);
+        chatProxy.server.leaveChat(id);
     }
 }
 

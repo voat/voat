@@ -798,6 +798,8 @@
     <Content Include="Views\Set\_List.cshtml" />
     <Content Include="Views\Chat\_RoomHistory.cshtml" />
     <Content Include="Views\Shared\VotingIcons\_VotingIconsSubmissionFlat.cshtml" />
+    <Content Include="Views\Chat\Password.cshtml" />
+    <Content Include="Views\Chat\Create.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

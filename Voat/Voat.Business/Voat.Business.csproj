@@ -362,6 +362,7 @@
     <Compile Include="Utilities\AccountSecurity.cs" />
     <Compile Include="Utilities\BanningUtility.cs" />
     <Compile Include="Utilities\Chat\ChatHistory.cs" />
+    <Compile Include="Utilities\Chat\ChatRoom.cs" />
     <Compile Include="Utilities\CloudStorageUtility.cs" />
     <Compile Include="Utilities\CommentCounter.cs" />
     <Compile Include="Utilities\Components\ContentFilters.cs" />

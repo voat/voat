@@ -30,7 +30,7 @@ namespace Voat.Rules.Chat
                 return CreateOutcome(RuleResult.Denied, "Rule needs chat message contexarstt");
             }
             
-            var history = ChatHistory.History(message.RoomName);
+            var history = ChatHistory.History(message.RoomID);
             var historyArray = history.ToArray();
 
             //Copy Pasta

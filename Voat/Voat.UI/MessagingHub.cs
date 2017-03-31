@@ -27,7 +27,6 @@ namespace Voat
     public class MessagingHub : Hub
     {
         //private static Dictionary<string, Tuple<string, DateTime>> messageCache;
-       
 
         public MessagingHub()
         {
@@ -36,7 +35,7 @@ namespace Voat
 
         // send a chat message to all users in a subverse room
         [Authorize]
-        public void SendChatMessage(string subverseName, string message)
+        public void SendChatMessage(string id, string message, string access)
         {
             if (message == null)
             {
@@ -45,7 +44,7 @@ namespace Voat
 
             message = message.TrimSafe();
 
-            if (!String.IsNullOrEmpty(subverseName))
+            if (!String.IsNullOrEmpty(id))
             {
                 // check if user is banned
                 if (UserHelper.IsUserGloballyBanned(Context.User.Identity.Name))
@@ -66,51 +65,60 @@ namespace Voat
 
                 if (!String.IsNullOrEmpty(message))
                 {
-                    var formattedMessage = Formatting.FormatMessage(message, true, true);
-
-                    var chatMessage = new ChatMessage()
+                    var room = ChatRoom.Find(id);
+                    if (room != null)
                     {
-                        RoomName = subverseName,
-                        UserName = Context.User.Identity.Name,
-                        Message = formattedMessage,
-                        CreationDate = Data.Repository.CurrentDate
-                    };
+                        if (room.IsAccessAllowed(Context.User.Identity.Name, access))
+                        {
+                            var formattedMessage = Formatting.FormatMessage(message, true, true);
 
-                    var context = new Rules.VoatRuleContext();
-                    context.PropertyBag.ChatMessage = chatMessage;
+                            var chatMessage = new ChatMessage()
+                            {
+                                RoomID = room.ID,
+                                UserName = Context.User.Identity.Name,
+                                Message = formattedMessage,
+                                CreationDate = Data.Repository.CurrentDate
+                            };
 
-                    var outcome = Rules.VoatRulesEngine.Instance.EvaluateRuleSet(context, RulesEngine.RuleScope.PostChatMessage);
-                    if (outcome.IsAllowed)
-                    {
-                        ChatHistory.Add(chatMessage);
+                            var context = new Rules.VoatRuleContext();
+                            context.PropertyBag.ChatMessage = chatMessage;
 
-                        //var htmlEncodedMessage = WebUtility.HtmlEncode(formattedMessage);
-                        Clients.Group(subverseName).appendChatMessage(chatMessage.UserName, formattedMessage, chatMessage.CreationDate.ToChatTimeDisplay());
+                            var outcome = Rules.VoatRulesEngine.Instance.EvaluateRuleSet(context, RulesEngine.RuleScope.PostChatMessage);
+                            if (outcome.IsAllowed)
+                            {
+                                ChatHistory.Add(chatMessage);
+                                //var htmlEncodedMessage = WebUtility.HtmlEncode(formattedMessage);
+                                Clients.Group(room.ID).appendChatMessage(chatMessage.UserName, formattedMessage, chatMessage.CreationDate.ToChatTimeDisplay());
+                            }
+                        }
                     }
                 }
             }
         }
 
         // add a user to a subverse chat room
-        public async Task JoinChat(string subverseName)
+        public async Task JoinChat(string id, string access = null)
         {
-            // reject join request if user is banned if user is authenticated
-            if (Context.User.Identity.IsAuthenticated)
+            var room = ChatRoom.Find(id);
+            if (room != null && room.IsAccessAllowed(Context.User.Identity.Name, access))
             {
-                if (UserHelper.IsUserBannedFromSubverse(Context.User.Identity.Name, subverseName))
+                // reject join request if user is banned if user is authenticated
+                if (Context.User.Identity.IsAuthenticated)
                 {
-                    // abort join
-                    return;
+                    if (UserHelper.IsUserBannedFromSubverse(Context.User.Identity.Name, id))
+                    {
+                        // abort join
+                        return;
+                    }
                 }
-            }            
-
-            await Groups.Add(Context.ConnectionId, subverseName);
+                await Groups.Add(Context.ConnectionId, id);
+            }
         }
 
         // remove a user from a subverse chat room
-        public async Task LeaveChat(string subverseName)
+        public async Task LeaveChat(string id)
         {
-            await Groups.Remove(Context.ConnectionId, subverseName);
+            await Groups.Remove(Context.ConnectionId, id);
         }
     }
 }
