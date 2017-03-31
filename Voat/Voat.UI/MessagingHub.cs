@@ -72,13 +72,7 @@ namespace Voat
                         {
                             var formattedMessage = Formatting.FormatMessage(message, true, true);
 
-                            var chatMessage = new ChatMessage()
-                            {
-                                RoomID = room.ID,
-                                UserName = Context.User.Identity.Name,
-                                Message = formattedMessage,
-                                CreationDate = Data.Repository.CurrentDate
-                            };
+                            var chatMessage = room.CreateMessage(Context.User.Identity.Name, formattedMessage);
 
                             var context = new Rules.VoatRuleContext();
                             context.PropertyBag.ChatMessage = chatMessage;
@@ -88,7 +82,7 @@ namespace Voat
                             {
                                 ChatHistory.Add(chatMessage);
                                 //var htmlEncodedMessage = WebUtility.HtmlEncode(formattedMessage);
-                                Clients.Group(room.ID).appendChatMessage(chatMessage.UserName, formattedMessage, chatMessage.CreationDate.ToChatTimeDisplay());
+                                Clients.Group(room.ID).appendChatMessage(chatMessage.User.DisplayName, chatMessage.Message, chatMessage.CreationDate.ToChatTimeDisplay());
                             }
                         }
                     }
@@ -110,7 +104,9 @@ namespace Voat
                         // abort join
                         return;
                     }
+                    room.AddUser(Context.User.Identity.Name);
                 }
+
                 await Groups.Add(Context.ConnectionId, id);
             }
         }
@@ -118,6 +114,14 @@ namespace Voat
         // remove a user from a subverse chat room
         public async Task LeaveChat(string id)
         {
+            var room = ChatRoom.Find(id);
+            if (room != null)
+            {
+                if (Context.User.Identity.IsAuthenticated)
+                {
+                    //room.RemoveUser(Context.User.Identity.Name);
+                }
+            }
             await Groups.Remove(Context.ConnectionId, id);
         }
     }

@@ -160,6 +160,7 @@
     <Compile Include="Caching\ICacheHandler.cs" />
     <Compile Include="Caching\Models\CacheEnvelope.cs" />
     <Compile Include="Common\DatabaseMappedValueAttribute.cs" />
+    <Compile Include="Common\FlushDetector.cs" />
     <Compile Include="Common\LimitedQueue.cs" />
     <Compile Include="Common\LockStore.cs" />
     <Compile Include="Common\SafeEnum.cs" />
@@ -362,6 +363,7 @@
     <Compile Include="Utilities\AccountSecurity.cs" />
     <Compile Include="Utilities\BanningUtility.cs" />
     <Compile Include="Utilities\Chat\ChatHistory.cs" />
+    <Compile Include="Utilities\Chat\ChatMessage.cs" />
     <Compile Include="Utilities\Chat\ChatRoom.cs" />
     <Compile Include="Utilities\CloudStorageUtility.cs" />
     <Compile Include="Utilities\CommentCounter.cs" />

@@ -6,14 +6,18 @@
 {
     foreach (var message in Model)
     {
-        @* IF YOU CHANGE THIS HTML YOU MUST CHANGE THE proxy.client.appendChatMessage function TO MATCH!!! *@
-        <div class="chat-message">
-            <div class="chat-message-head">
-                <p><b><a target="_blank" href="/user/@message.UserName">@message.UserName</a></b> <span class="chat-message-timestamp">(@message.CreationDate.ToChatTimeDisplay())</span>:</p>
+        if (message.User != null)
+        {
+            @* IF YOU CHANGE THIS HTML YOU MUST CHANGE THE proxy.client.appendChatMessage function TO MATCH!!! *@
+            <div class="chat-message">
+                <div class="chat-message-head">
+                    <p><b><a target="_blank" href="/user/@message.User.DisplayName">@message.User.DisplayName</a></b> <span class="chat-message-timestamp">(@message.CreationDate.ToChatTimeDisplay())</span>:</p>
+                </div>
+                <div class="chat-message-body">
+                    @Html.Raw(message.Message)
+                </div>
             </div>
-            <div class="chat-message-body">
-                @Html.Raw(message.Message)
-            </div>
-        </div>
+
+        }
     }
 }

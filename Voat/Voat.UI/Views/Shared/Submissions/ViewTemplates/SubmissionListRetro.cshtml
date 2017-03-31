@@ -28,7 +28,6 @@
     }
 
     var turnOffLink = String.Format("{0}{1}{2}", Request.Url.AbsoluteUri, Request.Url.AbsoluteUri.Contains("?") ? "&" : "?", "view=list");
-
 }
 
 @section PageHeader {
@@ -56,6 +55,7 @@
             </div>
         }
    
+
     <div class="content retro" role="main">      
         <div class="sitetable retro">
             <div class="head">
@@ -66,9 +66,13 @@
                         //try to get sticky if subverse
                         if (Model.IsActualSubverse)
                         {
-                            var q = new Voat.Domain.Query.QueryStickies(Model.Context.Name);
-                            topSubmission = q.Execute().FirstOrDefault();
+                            topSubmission = StickyHelper.GetSticky(Model.Context.Name);
                         }
+                        else if (Model.Context == null || (Model.Context != null && Model.Context.Type != DomainType.Set))
+                        {
+                            topSubmission = StickyHelper.GetSticky("announcements");
+                        }
+
                         if (topSubmission == null)
                         {
                             topSubmission = Model.Submissions.FirstOrDefault(x => !String.IsNullOrEmpty(x.ThumbnailUrl));

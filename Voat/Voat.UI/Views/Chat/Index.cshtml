@@ -26,7 +26,7 @@
 @{
     ViewBag.Title = "Chat " + Model.Room.Name;
     var history = ChatHistory.History(Model.Room.ID).ToList();
-    history.Add(new ChatMessage() { UserName = CONSTANTS.SYSTEM_USER_NAME, RoomID = Model.Room.Name, Message = "<p>You have joined the " + Model.Room.Name + " chatroom</p>", CreationDate = DateTime.UtcNow });
+    history.Add(new ChatMessage() { User = new UserContext(CONSTANTS.SYSTEM_USER_NAME), RoomID = Model.Room.Name, Message = "<p>You have joined the " + Model.Room.Name + " chatroom</p>", CreationDate = DateTime.UtcNow });
 }
 @if (!Settings.SignalRDisabled && !Settings.ChatDisabled)
 {

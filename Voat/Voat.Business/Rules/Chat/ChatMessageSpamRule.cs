@@ -13,7 +13,7 @@ namespace Voat.Rules.Chat
     public class ChatMessageSpamRule : VoatRule
     {
         //thresholds
-        public int _count = 3;
+        public int _count = 5;
         public TimeSpan _timeSpanWindow = TimeSpan.FromSeconds(25);
 
         public ChatMessageSpamRule() : base("Chat Spam", "10.0", RuleScope.PostChatMessage, 1)
@@ -38,7 +38,7 @@ namespace Voat.Rules.Chat
             var duplicateFound = false;
             //duplicateFound = historyArray.Any(x => x.UserName == message.UserName && x.Message.IsEqual(message.Message.TrimSafe()));
 
-            var lastMessage = historyArray.FirstOrDefault(x => x.UserName == message.UserName);
+            var lastMessage = historyArray.LastOrDefault(x => x.User.UserName == message.User.UserName);
             if (lastMessage != null)
             {
                 duplicateFound = lastMessage.Message.IsEqual(message.Message.TrimSafe());
@@ -50,7 +50,7 @@ namespace Voat.Rules.Chat
             }
 
             ////Spammer
-            var countInWindow = historyArray.Count(x => x.UserName == message.UserName && currentDate.Subtract(x.CreationDate) <= _timeSpanWindow);
+            var countInWindow = historyArray.Count(x => x.User.UserName == message.User.UserName && currentDate.Subtract(x.CreationDate) <= _timeSpanWindow);
             if (countInWindow >= _count)
             {
                 return CreateOutcome(RuleResult.Denied, "Chat message considered spamming by user");

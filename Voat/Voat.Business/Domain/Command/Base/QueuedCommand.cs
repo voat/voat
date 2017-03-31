@@ -3,9 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Common;
 
 namespace Voat.Domain.Command.Base
 {
+
+
+
+
+
     /// <summary>
     /// This command base will queue commands to a certain threshold then execute them in a batch
     /// </summary>
@@ -14,60 +20,22 @@ namespace Voat.Domain.Command.Base
     {
         private static List<QueuedCommand<T>> _commands = new List<QueuedCommand<T>>();
 
-        private static DateTime _lastActionDate = DateTime.UtcNow;
-        private static int _flushCount = 1;
-        private static TimeSpan _flushSpan = TimeSpan.Zero;
 
-        protected static bool IsFlushable
-        {
-            get
-            {
-                return _commands.Count >= _flushCount || (_flushSpan <= DateTime.UtcNow.Subtract(_lastActionDate) && _flushSpan != TimeSpan.Zero);
-            }
-        }
-
-        public static int FlushCount
-        {
-            get
-            {
-                return _flushCount;
-            }
-
-            set
-            {
-                if (value < 0)
-                {
-                    value = 0;
-                }
-                _flushCount = value;
-            }
-        }
-
-        public static TimeSpan FlushSpan
-        {
-            get
-            {
-                return _flushSpan;
-            }
-
-            set
-            {
-                _flushSpan = value;
-            }
-        }
+        protected abstract FlushDetector Flusher { get; }   
 
         public void Append()
         {
             _commands.Add(this);
+            Flusher.Increment();
 
-            if (IsFlushable)
+            if (Flusher.IsFlushable)
             {
                 Flush();
             }
-            _lastActionDate = DateTime.UtcNow;
+            
         }
 
-        protected void Flush()
+        protected virtual void Flush()
         {
             var commands = _commands;
             _commands = new List<QueuedCommand<T>>();
@@ -76,6 +44,7 @@ namespace Voat.Domain.Command.Base
             {
                 command.CacheExecute();
             }
+            Flusher.Reset();
         }
 
 
