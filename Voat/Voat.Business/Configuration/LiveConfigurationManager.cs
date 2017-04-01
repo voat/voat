@@ -228,7 +228,7 @@ namespace Voat.Configuration
         }
         private static void SetValueIfPresent<T>(string key, string value, bool updateOnly = false)
         {
-            if (!String.IsNullOrEmpty(key))
+            if (!String.IsNullOrEmpty(key) && value != null)
             {
                 try
                 {

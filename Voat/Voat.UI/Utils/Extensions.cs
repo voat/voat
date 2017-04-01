@@ -29,7 +29,7 @@ namespace Voat
             }
         }
 
-        public static bool IsCookiePresent(this HttpRequestBase request, string keyName, string setValue, HttpResponseBase response = null)
+        public static bool IsCookiePresent(this HttpRequestBase request, string keyName, string setValue, HttpResponseBase response = null, TimeSpan? expiration = null)
         {
             var result = false;
 
@@ -40,6 +40,8 @@ namespace Voat
                 result = true;
             }
 
+
+
             if (response != null)
             {
                 //Set if present in url
@@ -48,7 +50,12 @@ namespace Voat
                 {
                     if (qsKeyValue.Equals(setValue))
                     {
-                        response.SetCookie(new HttpCookie(keyName) { Expires = DateTime.UtcNow.AddDays(7) });
+                        var newCookie = new HttpCookie(keyName);
+                        if (expiration.HasValue)
+                        {
+                            newCookie.Expires = DateTime.UtcNow.Add(expiration.Value); 
+                        }
+                        response.SetCookie(newCookie);
                         result = true;
                     }
                     else
