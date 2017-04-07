@@ -175,6 +175,12 @@ namespace Voat.Tests.CommandTests
                 {
                     db.Badges.Add(new Badge() { ID = "deleted2", Name = "Account Deleted", Graphic = "deleted2.png", Title = "deleted" });
                 }
+                if (!db.Badges.Any(x => x.ID == "donor_upto_30"))
+                {
+                    db.Badges.Add(new Badge() { ID = "donor_upto_30", Name = "Donor Up To Thirty", Graphic = "donor30.png", Title = "Donor" });
+                }
+
+                
                 db.SaveChanges();
             }
 
@@ -216,6 +222,13 @@ namespace Voat.Tests.CommandTests
 
             VoatDataInitializer.CreateUser(userName);
             TestHelper.SetPrincipal(userName);
+
+            using (var db = new voatEntities())
+            {
+                //Trying to trap a bug with a user not getting delete badge
+                db.UserBadges.Add(new Voat.Data.Models.UserBadge() { BadgeID = "donor_upto_30", CreationDate = DateTime.UtcNow, UserName = userName });
+                db.SaveChanges();
+            }
 
             options = new Domain.Models.DeleteAccountOptions()
             {

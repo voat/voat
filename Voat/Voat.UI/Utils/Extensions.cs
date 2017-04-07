@@ -35,7 +35,7 @@ namespace Voat
 
             var cookie = request.Cookies[keyName];
 
-            if (cookie != null)
+            if (cookie != null && setValue.IsEqual(cookie.Value))
             {
                 result = true;
             }
@@ -48,13 +48,14 @@ namespace Voat
                 var qsKeyValue = request.QueryString[keyName];
                 if (!String.IsNullOrEmpty(qsKeyValue))
                 {
-                    if (qsKeyValue.Equals(setValue))
+                    if (qsKeyValue.IsEqual(setValue))
                     {
                         var newCookie = new HttpCookie(keyName);
                         if (expiration.HasValue)
                         {
                             newCookie.Expires = DateTime.UtcNow.Add(expiration.Value); 
                         }
+                        newCookie.Value = setValue;
                         response.SetCookie(newCookie);
                         result = true;
                     }

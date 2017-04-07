@@ -98,7 +98,11 @@ namespace Voat.Controllers
 
         protected string ViewPath(DomainReference domainReference)
         {
-            var isRetro = Request.IsCookiePresent("view", "retro", this.Response);
+            //var isList = !Request.IsCookiePresent("view", "list", this.Response);
+            //return (isList ? VIEW_PATH.SUBMISSION_LIST_RETRO : VIEW_PATH.SUBMISSION_LIST);
+
+
+            var isRetro = Request.IsCookiePresent("view", "retro", this.Response, TimeSpan.FromDays(7));
             return (isRetro ? VIEW_PATH.SUBMISSION_LIST_RETRO : VIEW_PATH.SUBMISSION_LIST);
         }
 
