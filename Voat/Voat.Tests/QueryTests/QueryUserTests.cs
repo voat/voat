@@ -17,37 +17,47 @@ namespace Voat.Tests.QueryTests
     public class QueryUserTests : BaseUnitTest
     {
         
-        [TestMethod, TestCategory("UserData"), ExpectedException(typeof(ArgumentException))]
+        [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_1()
         {
-            string user = "";
-            var voatData = new Domain.UserData(user, true);
+            Assert.Throws<ArgumentException>(() => {
+                string user = "";
+                var voatData = new Domain.UserData(user, true);
+            });
         }
-        [TestMethod, TestCategory("UserData"), ExpectedException(typeof(ArgumentException))]
+        [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_2()
         {
-            string user = null;
-            var voatData = new Domain.UserData(user, true);
+            Assert.Throws<ArgumentException>(() => {
+                string user = null;
+                var voatData = new Domain.UserData(user, true);
+            });
 
         }
-        [TestMethod, TestCategory("UserData"), ExpectedException(typeof(ArgumentException))]
+        [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_3()
         {
-            string user = "____________Doesn't__Exist_________";
-            var voatData = new Domain.UserData(user, true);
+            Assert.Throws<ArgumentException>(() => {
+                string user = "____________Doesn't__Exist_________";
+                var voatData = new Domain.UserData(user, true);
+            });
         }
 
-        [TestMethod, TestCategory("UserData"), ExpectedException(typeof(VoatNotFoundException))]
+        [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_4()
         {
-            string user = "MyName-Is-Me";
-            var voatData = new Domain.UserData(user, true);
+            Assert.Throws<VoatNotFoundException>(() => {
+                string user = "MyName-Is-Me";
+                var voatData = new Domain.UserData(user, true);
+            });
         }
-        [TestMethod, TestCategory("UserData"), ExpectedException(typeof(VoatNotFoundException))]
+        [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_5()
         {
-            string user = "DoesntExist";
-            var voatData = new Domain.UserData(user, true);
+            Assert.Throws<VoatNotFoundException>(() => {
+                string user = "DoesntExist";
+                var voatData = new Domain.UserData(user, true);
+            });
         }
 
         [TestMethod]

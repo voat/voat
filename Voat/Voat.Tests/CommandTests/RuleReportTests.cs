@@ -14,8 +14,7 @@ namespace Voat.Tests.CommandTests
     public class RuleReportTests : BaseUnitTest
     {
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public override void ClassInitialize()
         {
             //create basic rules
             using (var db = new voatEntities())

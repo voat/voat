@@ -197,11 +197,13 @@ namespace Voat.Tests.Utils
 
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Extentions")]
-        [ExpectedException(typeof(InvalidCastException))]
+        //[ExpectedException(typeof(InvalidCastException))]
         public void Convert_Object_2()
         {
-            TestObject t = new TestObject();
-            TestObjectParent x = t.Convert<TestObjectParent, TestObject>();
+            Assert.Throws<InvalidCastException>(() => {
+                TestObject t = new TestObject();
+                TestObjectParent x = t.Convert<TestObjectParent, TestObject>();
+            });
         }
 
         [TestMethod]
@@ -297,46 +299,61 @@ namespace Voat.Tests.Utils
 
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Extentions")]
-        [ExpectedException(typeof(TypeInitializationException))]
+        //[ExpectedException(typeof(TypeInitializationException))]
         public void TestSafeEnum_ConstructionError()
         {
-            var s = new SomeStruct();
-            SafeEnum<SomeStruct> x = new SafeEnum<SomeStruct>(s);
+            Assert.Throws<TypeInitializationException>(() => {
+                var s = new SomeStruct();
+                SafeEnum<SomeStruct> x = new SafeEnum<SomeStruct>(s);
+            });
+
         }
 
 
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Extentions")]
-        [ExpectedException(typeof(TypeInitializationException))]
+        //[ExpectedException(typeof(TypeInitializationException))]
         public void TestSafeEnum_ConstructionError2()
         {
-            SafeEnum<int> x = new SafeEnum<int>(45);
+            Assert.Throws<TypeInitializationException>(() => {
+                SafeEnum<int> x = new SafeEnum<int>(45);
+            });
+
         }
 
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Extentions")]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        //[ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TestSafeEnum_Errors()
         {
-            var safeClass = new TestEnumClass();
-            safeClass.CommentSort = ((Domain.Models.CommentSortAlgorithm)(-203));
+            Assert.Throws<ArgumentOutOfRangeException>(() => {
+                var safeClass = new TestEnumClass();
+                safeClass.CommentSort = ((Domain.Models.CommentSortAlgorithm)(-203));
+            });
+
         }
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Extentions")]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        //[ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TestSafeEnum_Errors_2()
         {
-            var safeClass = new TestEnumClass();
-            safeClass.CommentSort = ((Domain.Models.CommentSortAlgorithm)(203));
+            Assert.Throws<ArgumentOutOfRangeException>(() => {
+                var safeClass = new TestEnumClass();
+                safeClass.CommentSort = ((Domain.Models.CommentSortAlgorithm)(203));
+            });
+
         }
 
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Extentions")]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        //[ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TestSafeEnum_Errors_3()
         {
-            var safeClass = new TestEnumClass();
-            safeClass.CommentSort = 203;
+            Assert.Throws<ArgumentOutOfRangeException>(() => {
+                var safeClass = new TestEnumClass();
+                safeClass.CommentSort = 203;
+            });
+
         }
     }
 

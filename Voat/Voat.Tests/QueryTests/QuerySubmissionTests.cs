@@ -62,7 +62,7 @@ namespace Voat.Tests.QueryTests
     }
 
     //[TestClass]
-    public class QuerySubmissionTests : BaseUnitTest
+    public abstract class QuerySubmissionTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Query")]
@@ -143,7 +143,7 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Query")]
         [TestCategory("Submission")]
         [TestCategory("Cache")]
-        public void Query_v_All_Guest_Cached()
+        public async Task Query_v_All_Guest_Cached()
         {
             var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), SearchOptions.Default, new CachePolicy(TimeSpan.FromSeconds(30)));
 
@@ -151,13 +151,13 @@ namespace Voat.Tests.QueryTests
             CacheHandler.Instance.Remove(q.CacheKey);
 
             //q.CachePolicy.Duration = TimeSpan.FromSeconds(30); //Cache this request
-            var result = q.ExecuteAsync().Result;
+            var result = await q.ExecuteAsync();
             Assert.IsNotNull(result);
             Assert.AreEqual(false, q.CacheHit);
             Assert.IsTrue(result.Any());
 
             q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), SearchOptions.Default, new CachePolicy(TimeSpan.FromMinutes(10)));
-            result = q.ExecuteAsync().Result;
+            result = await q.ExecuteAsync();
             Assert.AreEqual(CacheHandler.Instance.CacheEnabled, q.CacheHit, this.GetType().Name); //ensure second query hits cache
             Assert.IsNotNull(result, this.GetType().Name);
             Assert.IsTrue(result.Any(), this.GetType().Name);
@@ -168,11 +168,16 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Query")]
         [TestCategory("Submission")]
         [TestCategory("Cache")]
+        [NUnit.Framework.RequiresThread]
         public async Task Query_v_All_Guest_Cached_Expired_Correctly()
         {
             TimeSpan cacheTime = TimeSpan.FromSeconds(2);
 
             var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
+
+            //Clear Cache - NUnit port 
+            CacheHandler.Instance.Remove(q.CacheKey);
+
             //q.CachePolicy.Duration = cacheTime; //Cache this request
             var result = await q.ExecuteAsync();
 
@@ -192,7 +197,8 @@ namespace Voat.Tests.QueryTests
             }
 
             //wait for cache to expire - Runtime caches aren't precise so wait long enough to ensure cached item is removed.
-            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(waitTime));
+            //System.Threading.Thread.Sleep(TimeSpan.FromSeconds(waitTime));
+            await Task.Delay(TimeSpan.FromSeconds(waitTime));
 
             q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
             result = await q.ExecuteAsync();

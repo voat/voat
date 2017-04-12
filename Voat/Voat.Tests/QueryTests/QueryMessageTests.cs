@@ -18,8 +18,7 @@ namespace Voat.Tests.QueryTests
 
         private List<Domain.Models.Message> messages = new List<Domain.Models.Message>();
 
-        [TestInitialize]
-        public void TestInitialize()
+        public override void ClassInitialize()
         {
             //create user inbox
             Message message = null;

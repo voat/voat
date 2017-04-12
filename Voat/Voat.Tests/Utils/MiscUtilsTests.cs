@@ -77,13 +77,13 @@ namespace Voat.Tests.Utils
             var graph = OpenGraph.ParseUrl(testUri);
 
             List<string> acceptable = new List<string>() {
-                "http://ichef.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test
-                "http://ichef-1.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test part 2
-                "http://news.bbcimg.co.uk/media/images/80755000/jpg/_80755021_163765270.jpg" //Yuro test
+                "://ichef.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test
+                "://ichef-1.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test part 2
+                "://news.bbcimg.co.uk/media/images/80755000/jpg/_80755021_163765270.jpg" //Yuro test
             };
             var expected = graph.Image.ToString();
 
-            var passed = acceptable.Any(x => x.Equals(expected, StringComparison.OrdinalIgnoreCase));
+            var passed = acceptable.Any(x => expected.EndsWith(x, StringComparison.OrdinalIgnoreCase));
 
             Assert.IsTrue(passed, "OpenGraph was unable to find an acceptable image path");
         }

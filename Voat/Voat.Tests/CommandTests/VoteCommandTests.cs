@@ -107,12 +107,14 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Command.Vote")]
         [TestCategory("Command.Comment.Vote")]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void InvalidVoteValue_Comment_Low()
         {
-            TestHelper.SetPrincipal("unit");
-            var cmd = new CommentVoteCommand(1, -2, IpHash.CreateHash("127.0.0.1"));
-            var c = cmd.Execute().Result;
+            Assert.Throws<ArgumentOutOfRangeException>(() => {
+                TestHelper.SetPrincipal("unit");
+                var cmd = new CommentVoteCommand(1, -2, IpHash.CreateHash("127.0.0.1"));
+                var c = cmd.Execute().Result;
+            });
+           
         }
 
         [TestMethod]
@@ -160,7 +162,7 @@ namespace Voat.Tests.CommandTests
                     && e.ReferenceType == Domain.Models.ContentType.Submission 
                     && e.ReferenceID == 1;
             };
-            var cmd = new SubmissionVoteCommand(1, -1, IpHash.CreateHash("127.0.0.1"));
+            var cmd = new SubmissionVoteCommand(1, -1, IpHash.CreateHash("127.0.0.100"));
 
             var c = cmd.Execute().Result;
             Assert.IsTrue(c.Success, c.Message);
@@ -236,8 +238,6 @@ namespace Voat.Tests.CommandTests
             submission = q.Execute();
             Assert.IsNotNull(submission);
             Assert.AreEqual(null, submission.Vote);
-
-
         }
 
         [TestMethod]
@@ -259,28 +259,34 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Command.Vote")]
         [TestCategory("Command.Comment.Vote")]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void InvalidVoteValue_Submission_High()
         {
-            TestHelper.SetPrincipal("unit");
 
-            var cmd = new SubmissionVoteCommand(1, 2, IpHash.CreateHash("127.0.0.1"));
+            Assert.Throws<ArgumentOutOfRangeException>(() => {
+                TestHelper.SetPrincipal("unit");
 
-            var c = cmd.Execute().Result;
+                var cmd = new SubmissionVoteCommand(1, 2, IpHash.CreateHash("127.0.0.1"));
+
+                var c = cmd.Execute().Result;
+            });
+
         }
 
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Command.Vote")]
         [TestCategory("Command.Comment.Vote")]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void InvalidVoteValue_Submission_Low()
         {
-            TestHelper.SetPrincipal("unit");
 
-            var cmd = new CommentVoteCommand(1, -2, IpHash.CreateHash("127.0.0.1"));
+            Assert.Throws<ArgumentOutOfRangeException>(() => {
+                TestHelper.SetPrincipal("unit");
 
-            var c = cmd.Execute().Result;
+                var cmd = new CommentVoteCommand(1, -2, IpHash.CreateHash("127.0.0.1"));
+
+                var c = cmd.Execute().Result;
+            });
+
         }
 
        

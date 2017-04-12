@@ -18,8 +18,7 @@ namespace Voat.Tests.Logging
     {
         private ILogger log = null;
 
-        [TestInitialize]
-        public void TestInitialize()
+        public override void ClassInitialize()
         {
             var logEntry = LogSection.Instance.Loggers.FirstOrDefault(x => x.Name == "Log4Net");
             if (logEntry.Enabled)

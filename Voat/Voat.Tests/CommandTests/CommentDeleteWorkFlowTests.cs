@@ -10,18 +10,17 @@ using Voat.Domain.Query;
 namespace Voat.Tests.CommandTests
 {
     [TestClass]
-    public class CommentDeleteWorkFlowTests
+    public class CommentDeleteWorkFlowTests : BaseUnitTest
     {
-        private static string AUTHOR_NAME = "TestUser13";
-        private static string MOD_NAME = "unit";
-        private static string CONTENT = Guid.NewGuid().ToString();
-        private static int SUBMISSION_ID = 0;
-        private static Tuple<int, int> CommentIDs;
+        private string AUTHOR_NAME = "TestUser13";
+        private string MOD_NAME = "unit";
+        private string CONTENT = Guid.NewGuid().ToString();
+        private int SUBMISSION_ID = 0;
+        private Tuple<int, int> CommentIDs;
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public override void ClassInitialize()
         {
-
+            
             TestHelper.SetPrincipal(AUTHOR_NAME);
 
             //create submission

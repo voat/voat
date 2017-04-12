@@ -30,11 +30,15 @@ namespace Voat.Tests.Utils
 
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Thumbnail")]
-        [ExpectedException(typeof(WebException))]
+        //[ExpectedException(typeof(WebException))]
         public async Task GenerateThumbFromImageUrl_Failure()
         {
-            var result = await ThumbGenerator.GenerateThumbFromImageUrl("https://idontexistimprettysuremaybeIlladdrandom3243242.co/graphics/voat-goat.png", 5000, false);
-            Assert.AreEqual(null, result, "Expecting no thumb");
+            Assert.ThrowsAsync<WebException>(new NUnit.Framework.AsyncTestDelegate(() => {
+                return ThumbGenerator.GenerateThumbFromImageUrl("https://idontexistimprettysuremaybeIlladdrandom3243242.co/graphics/voat-goat.png", 5000, false);
+            }));
+
+            //var result = await ThumbGenerator.GenerateThumbFromImageUrl("https://idontexistimprettysuremaybeIlladdrandom3243242.co/graphics/voat-goat.png", 5000, false);
+            //Assert.AreEqual(null, result, "Expecting no thumb");
         }
 
         [TestMethod]

@@ -15,10 +15,9 @@ namespace Voat.Tests.QueryTests
     [TestClass]
     public class QuerySubmissionSortTests : BaseUnitTest
     {
-        private static string subverse = "sort";
+        private string subverse = "sort";
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public override void ClassInitialize()
         {
             VoatDataInitializer.CreateSorted(subverse);
         }

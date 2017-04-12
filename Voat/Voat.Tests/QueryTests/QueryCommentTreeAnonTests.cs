@@ -15,12 +15,11 @@ namespace Voat.Tests.QueryTests
     [TestClass]
     public class QueryCommentTreeAnonTests : BaseCommandTest
     {
-        private static int _submissionID;
-        private static int _rootCount = 1;
-        private static int _nestedCount = 4;
-        private static int _recurseCount = 4;
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        private int _submissionID;
+        private int _rootCount = 1;
+        private int _nestedCount = 4;
+        private int _recurseCount = 4;
+        public override void ClassInitialize()
         {
             _submissionID = VoatDataInitializer.BuildCommentTree("anon", "Build Comment Tree", 1, 2, 2);
         }

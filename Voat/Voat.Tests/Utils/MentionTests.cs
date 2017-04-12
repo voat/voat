@@ -16,12 +16,10 @@ namespace Voat.Tests.Utils
     public class MentionTests : BaseUnitTest
     {
 
-        private static Domain.Models.Submission submission;
+        private Domain.Models.Submission submission;
         //private static Domain.Models.Submission submission;
 
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public override void ClassInitialize()
         {
             string owner = "UnitTestUser04";
             submission = TestHelper.ContentCreation.CreateSubmission(owner, new Domain.Models.UserSubmission() { Title = GetMethodName(), Content = GetMethodName(true), Subverse = "unit" });

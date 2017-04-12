@@ -36,7 +36,7 @@ namespace Voat.Tests.Repository
         public ContentContext context = null;
 
         [TestInitialize]
-        public void TestInitialize()
+        public override void TestInitialize()
         {
             context = ContentContext.NewContext(true);
         }
@@ -197,25 +197,30 @@ namespace Voat.Tests.Repository
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        //[ExpectedException(typeof(ArgumentOutOfRangeException))]
         [TestCategory("Repository"), TestCategory("Repository.Vote")]
         public void EnsureInvalidVoteValueThrowsException_Com()
         {
-            using (var db = new Voat.Data.Repository())
-            {
-                db.VoteComment(121, -2, IpHash.CreateHash("127.0.0.1"));
-            }
+            Assert.Throws<ArgumentOutOfRangeException>(() => {
+                using (var db = new Voat.Data.Repository())
+                {
+                    db.VoteComment(121, -2, IpHash.CreateHash("127.0.0.1"));
+                }
+            });
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        //[ExpectedException(typeof(ArgumentOutOfRangeException))]
         [TestCategory("Repository"), TestCategory("Repository.Vote")]
         public void EnsureInvalidVoteValueThrowsException_Sub()
         {
-            using (var db = new Voat.Data.Repository())
-            {
-                db.VoteSubmission(1, 21, IpHash.CreateHash("127.0.0.1"));
-            }
+            Assert.Throws<ArgumentOutOfRangeException>(() => {
+                using (var db = new Voat.Data.Repository())
+                {
+                    db.VoteSubmission(1, 21, IpHash.CreateHash("127.0.0.1"));
+                }
+            });
+            
         }
 
         [TestMethod]

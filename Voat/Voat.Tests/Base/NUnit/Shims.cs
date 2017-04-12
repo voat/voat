@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections;
+using System.Threading.Tasks;
 
-
-#if NUNIT
-
+//This is a start of a port to NUnit, the idea was to originally support both NUnit and MSTest, 
+//but MSTest is written so wacky it can not be cleanly abstracted without a lot of plumbing code,
+//so we are ditching it entirely, and eventually this attribute shim will go away.
 namespace Microsoft.VisualStudio.TestTools.UnitTesting
 {
-    public class Placeholder { }
     public class TestClassAttribute : NUnit.Framework.TestFixtureAttribute
     {
     }
@@ -14,9 +14,6 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
     {
     }
     public class TestMethodAttribute : NUnit.Framework.TestAttribute
-    {
-    }
-    public class TestCleanupAttribute : NUnit.Framework.TearDownAttribute
     {
     }
     public class IgnoreAttribute : NUnit.Framework.IgnoreAttribute
@@ -28,13 +25,14 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
     {
         public TestCategoryAttribute(string name) : base(name) { }
     }
-    [Obsolete("Not portable to NUnit")]
-    public class ExpectedExceptionAttribute : System.Attribute
+
+    [Obsolete("Not portable to NUnit", true)]
+    public class ExpectedExceptionAttribute : Attribute
     {
         public ExpectedExceptionAttribute(Type expectedType) { }
     }
 
-    public class AssemblyInitializeAttribute : NUnit.Framework.PreTestAttribute
+    public class AssemblyInitializeAttribute : Attribute
     {
 
     }
@@ -42,7 +40,13 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
     {
 
     }
-    public class ClassInitializeAttribute : NUnit.Framework.OneTimeSetUpAttribute
+    public class TestClassInitialize : NUnit.Framework.OneTimeSetUpAttribute
+    {
+
+    }
+
+    [Obsolete("Not portable to NUnit", true)]
+    public class ClassInitializeAttribute : Attribute
     {
 
     }
@@ -65,19 +69,9 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
         }
     }
 
-
-
     public class Assert : NUnit.Framework.Assert
     {
-        public static void IsInstanceOfType(object obj, Type type)
-        {
-            NUnit.Framework.Assert.IsInstanceOf(type, obj, null);
-        }
-        public static void IsInstanceOfType(object obj, Type type, string message)
-        {
-            NUnit.Framework.Assert.IsInstanceOf(type, obj, message);
-        }
+        
     }
 }
 
-#endif

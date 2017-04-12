@@ -1561,7 +1561,7 @@ namespace Voat.Tests.Repository
 
             #region Create Procs
             
-            var dir = Environment.CurrentDirectory;
+            var dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             var scriptFolder = Path.GetFullPath(Path.Combine(dir, sqlFolderPathPublicRepo));
 
             var scriptFiles = new string[] { Path.Combine(scriptFolder, "procedures.sql") };

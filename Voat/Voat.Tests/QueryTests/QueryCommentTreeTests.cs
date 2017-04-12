@@ -14,12 +14,12 @@ namespace Voat.Tests.QueryTests
     [TestClass]
     public class QueryCommentTreeTests : BaseUnitTest
     {
-        private static int _unitSubmissionID;
-        private static int _rootCount = 1;
-        private static int _nestedCount = 4;
-        private static int _recurseCount = 4;
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        private int _unitSubmissionID;
+        private int _rootCount = 1;
+        private int _nestedCount = 4;
+        private int _recurseCount = 4;
+
+        public override void ClassInitialize()
         {
             _unitSubmissionID = VoatDataInitializer.BuildCommentTree("unit", "Build Comment Tree", _rootCount, _nestedCount, _recurseCount);
         }

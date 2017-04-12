@@ -9,16 +9,27 @@ using System.Threading.Tasks;
 
 namespace Voat.Tests
 {
+    [TestClass]
     public class BaseUnitTest
     {
+        public BaseUnitTest()
+        {
+        }
+
         //Different configurations of Test Suites will handle test context 
         //authentication differently [i.e. WindowsIdentity (Authenticated) | GenericIdentity(Not Authenticated)]
         //
         //This method ensures that the user context is cleared before test execution
         [TestInitialize]
-        public virtual void Initialize()
+        public virtual void TestInitialize()
         {
             TestHelper.SetPrincipal(null);
+        }
+        
+        [TestClassInitialize]
+        public virtual void ClassInitialize()
+        {
+
         }
 
         public static string GetMethodName(bool fullyQualified = false, string additionalData = null)

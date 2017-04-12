@@ -4,16 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Caching;
 using Voat.Data.Models;
 using Voat.Utilities;
 
 namespace Voat.Tests.Utils
 {
     [TestClass]
-    public class FilterTests
+    public class FilterTests : BaseUnitTest
     {
-        [TestInitialize]
-        public void TestInitialize()
+        public override void ClassInitialize()
         {
             using (var db = new voatEntities())
             {
@@ -42,6 +42,8 @@ namespace Voat.Tests.Utils
                 });
                 db.SaveChanges();
             }
+            //Remove Filters that may be in cache
+            CacheHandler.Instance.Remove(CachingKey.Filters());
         }
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Utility.Filters")]

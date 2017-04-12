@@ -2,6 +2,7 @@
 
 namespace Voat.Common
 {
+    [Serializable]
     abstract public class VoatException : Exception
     {
         private string _friendlyType = "VoatException";
@@ -32,6 +33,7 @@ namespace Voat.Common
         }
     }
 
+    [Serializable]
     public class VoatRuleExeception : VoatException
     {
         public VoatRuleExeception()
@@ -51,6 +53,7 @@ namespace Voat.Common
         }
     }
 
+    [Serializable]
     public class VoatSecurityException : VoatException
     {
         public VoatSecurityException()
@@ -70,6 +73,7 @@ namespace Voat.Common
         }
     }
 
+    [Serializable]
     public class VoatValidationException : VoatException
     {
         public VoatValidationException()
@@ -90,7 +94,7 @@ namespace Voat.Common
             /*no-op*/
         }
     }
-
+    [Serializable]
     public class VoatNotFoundException : VoatException
     {
         public VoatNotFoundException()

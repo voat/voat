@@ -8,47 +8,44 @@ using Voat.Data.Models;
 using Voat.Rules;
 using Voat.Tests.Repository;
 
-namespace Voat.Tests
+
+[NUnit.Framework.SetUpFixture]
+public class UnitTestSetup
 {
-    [TestClass]
-    public class AssemblyInit
+    [NUnit.Framework.OneTimeSetUp()]
+    public void SetUp()
     {
-        [AssemblyInitialize]
-        public static void AssemblyInitialize(TestContext context)
+
+        if (ConfigurationManager.AppSettings["PreventDatabaseDrop"] != "true")
         {
-            
-            if (ConfigurationManager.AppSettings["PreventDatabaseDrop"] != "true")
+            //Force db to drop & seed
+            Database.SetInitializer(new VoatDataInitializer());
+            using (var db = new voatEntities())
             {
-                //Force db to drop & seed
-                Database.SetInitializer(new VoatDataInitializer());
-                using (var db = new voatEntities())
-                {
-                    var data = db.DefaultSubverses.ToList();
-                }
+                var data = db.DefaultSubverses.ToList();
             }
-      
-            //load web.config.live monitor
-            LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
-            LiveConfigurationManager.Start();
-
-            //This causes the voat rules engine to init using config section for load
-            var rulesEngine = VoatRulesEngine.Instance;
-
-            //purge redis for unit tests if enabled
-            var defaultHandler = CacheHandlerSection.Instance.Handlers.FirstOrDefault(x => x.Enabled && x.Type.ToLower().Contains("redis"));
-            if (defaultHandler != null)
-            {
-                var instance = defaultHandler.Construct();
-                instance.Purge();
-            }
-
         }
 
-        [AssemblyCleanup]
-        public static void AssemblyCleanup()
+        //load web.config.live monitor
+        LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
+        LiveConfigurationManager.Start();
+
+        //This causes the voat rules engine to init using config section for load
+        var rulesEngine = VoatRulesEngine.Instance;
+
+        //purge redis for unit tests if enabled
+        var defaultHandler = CacheHandlerSection.Instance.Handlers.FirstOrDefault(x => x.Enabled && x.Type.ToLower().Contains("redis"));
+        if (defaultHandler != null)
         {
-            
+            var instance = defaultHandler.Construct();
+            instance.Purge();
         }
+
+    }
+
+    [NUnit.Framework.OneTimeTearDown()]
+    public void TearDown()
+    {
 
     }
 }

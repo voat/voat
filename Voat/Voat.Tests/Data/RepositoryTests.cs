@@ -60,26 +60,33 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Block"), TestCategory("Repository.Block.Subverse")]
-        [ExpectedException(typeof(VoatSecurityException))]
-        public async Task Block_Subverse_NoAuthentication()
+        public void Block_Subverse_NoAuthentication()
         {
-            TestHelper.SetPrincipal(null);
-            using (var db = new Voat.Data.Repository())
-            {
-                await db.Block(DomainType.Subverse, "test");
-            }
+            Assert.ThrowsAsync<VoatSecurityException>(() => {
+                TestHelper.SetPrincipal(null);
+                using (var db = new Voat.Data.Repository())
+                {
+                    return db.Block(DomainType.Subverse, "test");
+                }
+            });
+
+            
         }
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Block"), TestCategory("Repository.Block.Subverse")]
-        [ExpectedException(typeof(VoatNotFoundException))]
-        public async Task Block_Subverse_SubverseDoesNotExist()
+        public void Block_Subverse_SubverseDoesNotExist()
         {
-            using (var db = new Voat.Data.Repository())
-            {
-                TestHelper.SetPrincipal("TestUser01");
-                await db.Block(DomainType.Subverse, "happyhappyjoyjoy");
-            }
+            Assert.ThrowsAsync<VoatNotFoundException>(() => {
+                using (var db = new Voat.Data.Repository())
+                {
+                    TestHelper.SetPrincipal("TestUser01");
+                    return db.Block(DomainType.Subverse, "happyhappyjoyjoy");
+                }
+            });
+
+
+            
         }
 
         [TestMethod]
@@ -109,7 +116,6 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository")]
-        //[ExpectedException(typeof(VoatValidationException))]
         public async Task PostSubmission_InvalidSubveseFails()
         {
             using (var db = new Voat.Data.Repository())

@@ -58,11 +58,6 @@ namespace Voat.Tests.Rules
             Assert.AreEqual("2.4", outcome.RuleNumber);
         }
 
-        [TestInitialize]
-        public void Initialize()
-        {
-        }
-
         [TestMethod]
         [TestCategory("Rules")]
         public void UpVoat_Comment_Allowed()
