@@ -1131,7 +1131,7 @@ namespace Voat.Data
             //HACK: Warning, Super hacktastic
             if (!String.IsNullOrEmpty(options.Phrase))
             {
-                query.Append(x => x.Where, "(s.\"Title\" LIKE CONCAT('%', @Phrase, '%') OR s.\"Content\" LIKE CONCAT('%', @Phrase, '%') OR s\".Url\" LIKE CONCAT('%', @Phrase, '%'))");
+                query.Append(x => x.Where, "(s.\"Title\" LIKE CONCAT('%', @Phrase, '%') OR s.\"Content\" LIKE CONCAT('%', @Phrase, '%') OR s.\"Url\" LIKE CONCAT('%', @Phrase, '%'))");
                 ////WARNING: This is a quickie that views spaces as AND conditions in a search.
                 //List<string> keywords = null;
                 //if (options.Phrase.Contains(" "))
