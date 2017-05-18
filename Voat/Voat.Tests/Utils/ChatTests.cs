@@ -88,6 +88,9 @@ namespace Voat.Tests.Utils
             Assert.AreEqual("This is my message", ChatMessage.SanitizeInput("This is my message   - - -  "));
             Assert.AreEqual("This is my message", ChatMessage.SanitizeInput("This is my message - - -"));
 
+
+            Assert.AreEqual("This is my message", ChatMessage.SanitizeInput(">#This is my message"));
+            Assert.AreEqual("This is my message", ChatMessage.SanitizeInput(">#>#>#This is my message"));
         }
     }
 }

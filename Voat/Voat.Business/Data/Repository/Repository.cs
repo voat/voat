@@ -2672,7 +2672,14 @@ namespace Voat.Data
                     message.CreationDate = CurrentDate;
                     message.FormattedContent = Formatting.FormatMessage(message.Content);
 
-                    if (!MesssagingUtility.IsSenderBlocked(message.Sender, message.Recipient))
+                    //Prevent abuse in subverse ban/unban/etc flooding by checking against the sender in subverse messages
+                    var sender = message.Sender;
+                    if (message.SenderDefinition.Type == IdentityType.Subverse)
+                    {
+                        sender = message.CreatedBy;
+                    }
+
+                    if (!MesssagingUtility.IsSenderBlocked(sender, message.Recipient))
                     {
                         messages.Add(message);
                     }
@@ -5369,16 +5376,22 @@ namespace Voat.Data
                         {
                             //Flag Deleted Account
                             var badgeID = (setRecoveryEmail ? "deleted2" : "deleted");
-                            var existing = _db.UserBadges.FirstOrDefault(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && x.BadgeID.Equals(badgeID, StringComparison.OrdinalIgnoreCase));
-                            if (existing == null)
-                            {
-                                _db.UserBadges.Add(new Models.UserBadge() { BadgeID = badgeID, CreationDate = CurrentDate, UserName = userName });
-                                await _db.SaveChangesAsync().ConfigureAwait(false);
-                            }
+
+                            //Get rid of EF
+                            var statement = "IF NOT EXISTS (SELECT * FROM \"dbo\".\"UserBadge\" WHERE \"UserName\" = @UserName AND \"BadgeID\" = @BadgeID) INSERT \"dbo\".\"UserBadge\" VALUES (@UserName, @BadgeID, GETUTCDATE())";
+                            await _db.Database.Connection.ExecuteAsync(statement, new { BadgeID = badgeID, UserName = userName });
+
+                            //var existing = _db.UserBadges.FirstOrDefault(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && x.BadgeID.Equals(badgeID, StringComparison.OrdinalIgnoreCase));
+                            //if (existing == null)
+                            //{
+                            //    _db.UserBadges.Add(new Models.UserBadge() { BadgeID = badgeID, CreationDate = CurrentDate, UserName = userName });
+                            //    await _db.SaveChangesAsync().ConfigureAwait(false);
+                            //}
                         }
                         catch (Exception ex)
                         {
                             /*no-op*/
+                            EventLogger.Log(ex);
                         }
 
                         var userID = userAccount.Id;

@@ -28,11 +28,147 @@ using System.Net.Http;
 using Voat.Caching;
 using System.Threading;
 using Voat.Domain;
+using System.Text.RegularExpressions;
 
 namespace Voat.Utilities
 {
     public static class UserHelper
     {
+
+        public static IEnumerable<Func<string, IEnumerable<string>>> DefaultSpoofList(IDictionary<string, string> charSwaps = null)
+        {
+           
+            List<Func<string, IEnumerable<string>>> spoofs = new List<Func<string, IEnumerable<string>>>();
+
+            spoofs.Add(new Func<string, IEnumerable<string>>((userName) => {
+
+                List<string> l = new List<string>();
+
+                if (charSwaps == null || !charSwaps.Any())
+                {
+                    charSwaps = new Dictionary<string, string>();
+                    charSwaps.Add("i", "l");
+                    charSwaps.Add("o", "0");
+                    //charSwaps.Add("h", "hahaha"); //just to make sure offset swapping does not break
+                    //charSwaps.Add("heart", "like"); //just to make sure offset swapping does not break
+                }
+                string allSwapped = userName;
+
+                Action<string, string, List<string>> processSwap = new Action<string, string, List<string>>((string1, string2, list) => {
+
+                    var userArray = list.ToArray();
+                    foreach (var username in userArray)
+                    {
+                        var lusername = username.ToLower();
+                        if (lusername.Contains(string1.ToLower()))
+                        {
+                            //Add straight swap (all)
+                            list.Add(lusername.Replace(string1.ToLower(), string2.ToLower()));
+
+                            //replace each individual occurance
+                            var matches = Regex.Matches(lusername, string1, RegexOptions.IgnoreCase);
+                            if (matches.Count > 1) //If it has 1 match the above line already swapped it
+                            {
+                                //rolling sub
+                                string rollingUserName = lusername;
+                                var offset = 0;
+                                var substitution = string2;
+                                var rollingSwap = lusername;
+
+                                List<Match> reverseProcessing = new List<Match>();
+
+                                foreach (Match m in matches)
+                                {
+                                    reverseProcessing.Add(m);
+                                    //Concat method (fractions of milliseconds faster)
+                                    rollingSwap = String.Concat(rollingSwap.Substring(0, m.Index + offset), substitution, rollingSwap.Substring(m.Index + m.Length + offset, rollingSwap.Length - (m.Length + m.Index + offset)));
+                                    list.Add(rollingSwap);
+                                    offset += substitution.Length - m.Length;
+
+                                    var individualSwap = String.Concat(rollingSwap.Substring(0, m.Index), substitution, rollingSwap.Substring(m.Index + m.Length, rollingSwap.Length - (m.Length + m.Index)));
+                                    list.Add(individualSwap);
+                                }
+
+                                //Reverse swaps
+                                offset = 0;
+                                substitution = string2;
+                                rollingSwap = lusername;
+                                reverseProcessing.Reverse();
+                                foreach (Match m in reverseProcessing)
+                                {
+                                    //Concat method (fractions of milliseconds faster)
+                                    rollingSwap = String.Concat(rollingSwap.Substring(0, m.Index + offset), substitution, rollingSwap.Substring(m.Index + m.Length + offset, rollingSwap.Length - (m.Length + m.Index + offset)));
+                                    list.Add(rollingSwap);
+                                    //offset += substitution.Length - m.Length;
+                                }
+                            }
+                        }
+                    }
+                });
+
+                l.Add(userName);
+                foreach (var swap in charSwaps)
+                {
+
+
+                    //swap key for value
+                    processSwap(swap.Key, swap.Value, l);
+                    //var swapped = userName.ToLower().Replace(swap.Key.ToLower(), swap.Value.ToLower());
+                    //allSwapped = allSwapped.ToLower().Replace(swap.Key.ToLower(), swap.Value.ToLower());
+                    //l.Add(swapped);
+                    //l.Add(allSwapped);
+
+
+
+
+                    //swap value for key
+                    processSwap(swap.Value, swap.Key, l);
+                    //swapped = userName.ToLower().Replace(swap.Value.ToLower(), swap.Key.ToLower());
+                    //allSwapped = allSwapped.ToLower().Replace(swap.Value.ToLower(), swap.Key.ToLower());
+                    //l.Add(swapped);
+                    //l.Add(allSwapped);
+
+                }
+
+                return l.Distinct().ToList();
+
+            }));
+
+            return spoofs;
+        }
+
+        public static bool CanUserNameBeRegistered(UserManager<VoatUser> userManager, string userName, IEnumerable<Func<string, IEnumerable<string>>> spoofSubstitutionFuncList = null)
+        {
+            
+            List<string> spoofsToCheck = new List<string>();
+            spoofsToCheck.Add(userName); //add original username
+
+            //process deviations
+            if (spoofSubstitutionFuncList != null && spoofSubstitutionFuncList.Any())
+            {
+                foreach (var spoofFunc in spoofSubstitutionFuncList)
+                {
+                    var l = spoofFunc(userName);
+                    if (l != null && l.Any())
+                    {
+                        spoofsToCheck.AddRange(l.Where(x => !String.IsNullOrEmpty(x) && !userName.IsEqual(x)).ToList()); //only add valid items
+                    }
+                }
+            }
+
+            //TODO: Need to migrate to dapper and repo
+            var accountExists = spoofsToCheck.Any(x => userManager.FindByName(x) != null);
+            if (accountExists)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
         // check if user exists in database
         public static bool UserExists(string userName)
         {

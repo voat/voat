@@ -46,7 +46,7 @@ namespace Voat.Configuration
         public const string MinimumCommentPointsForCaptchaSubmission = "minimumCommentPointsForCaptchaSubmission";
         public const string MinimumCommentPointsForCaptchaMessaging = "minimumCommentPointsForCaptchaMessaging";
         public const string MinimumCommentPointsForSendingMessages = "minimumCommentPointsForSendingMessages";
-        
+        public const string MinimumCommentPointsForSendingChatMessages = "minimumCommentPointsForSendingChatMessages";
 
         public const string RuntimeState = "runtimeState";
         public const string RecaptchaPrivateKey = "recaptchaPrivateKey";
@@ -151,7 +151,8 @@ namespace Voat.Configuration
                 SetValueIfPresent<int>(CONFIGURATION.MinimumCommentPointsForCaptchaMessaging, section[CONFIGURATION.MinimumCommentPointsForCaptchaMessaging]);
                 SetValueIfPresent<int>(CONFIGURATION.MinimumCommentPointsForCaptchaSubmission, section[CONFIGURATION.MinimumCommentPointsForCaptchaSubmission]);
                 SetValueIfPresent<int>(CONFIGURATION.MinimumCommentPointsForSendingMessages, section[CONFIGURATION.MinimumCommentPointsForSendingMessages]);
-                
+                SetValueIfPresent<int>(CONFIGURATION.MinimumCommentPointsForSendingChatMessages, section[CONFIGURATION.MinimumCommentPointsForSendingChatMessages]);
+
 
 
                 SetValueIfPresent<bool>(CONFIGURATION.ForceHTTPS, section[CONFIGURATION.ForceHTTPS]);

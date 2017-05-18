@@ -1,12 +1,10 @@
-﻿
-@model IEnumerable<ChatMessage>
-
+﻿@model IEnumerable<ChatMessage>
 
 @if (Model != null && Model.Any())
 {
     foreach (var message in Model)
     {
-        if (message.User != null)
+        if (message != null && message.User != null)
         {
             @* IF YOU CHANGE THIS HTML YOU MUST CHANGE THE proxy.client.appendChatMessage function TO MATCH!!! *@
             <div class="chat-message">
@@ -17,7 +15,6 @@
                     @Html.Raw(message.Message)
                 </div>
             </div>
-
         }
     }
 }

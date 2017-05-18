@@ -194,7 +194,7 @@
     <Compile Include="Rules\Rules.cs" />
     <Compile Include="Rules\RulesTests.cs" />
     <Compile Include="Rules\TestStubs\UnitTestRulesEngine.cs" />
-    <Compile Include="Utils\AccountSecurityTests.cs" />
+    <Compile Include="Utils\AccountTests.cs" />
     <Compile Include="Utils\ChatTests.cs" />
     <Compile Include="Utils\ContentProcessorTests.cs" />
     <Compile Include="Utils\DateTimeExtensionTests.cs" />
@@ -249,7 +249,9 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

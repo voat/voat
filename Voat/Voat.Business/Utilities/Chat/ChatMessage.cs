@@ -17,8 +17,7 @@ namespace Voat
         private static Dictionary<string, string> replacements = new Dictionary<string, string>() {
             { @"\n", "" },
             { @"\r", "" },
-            { @"^(\#(\s+)?){1,}", "" },
-            { @"^(\>(\s+)?){1,}", "" },
+            { @"^([\#\>](\s+)?){1,}", "" },
             { @"(\-\s+){2,}(\-(\s+)?)", "" }, //three or more - followed by spaces
             { @"(\*\s+){2,}(\*(\s+)?)", "" } //three or more * followed by spaces
         };

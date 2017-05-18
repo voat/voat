@@ -4,22 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Voat.Common;
+using Voat.Configuration;
 using Voat.RulesEngine;
+using Voat.Utilities;
 
 namespace Voat.Rules.Chat
 {
 
     [RuleDiscovery("Approves action if message isn't spammed", "approved = (IsSpam(message) == false)")]
-    public class ChatMessageSpamRule : VoatRule
+    public class ChatMessageSpamRule : BaseCCPVote
     {
         //thresholds
         public int _count = 5;
         public TimeSpan _timeSpanWindow = TimeSpan.FromSeconds(25);
 
-        public ChatMessageSpamRule() : base("Chat Spam", "10.0", RuleScope.PostChatMessage, 1)
+        //Adding Min CCP of 100 to send messages
+        public ChatMessageSpamRule() : base("Chat Spam", "10.0", Settings.MinimumCommentPointsForSendingChatMessages, RuleScope.PostChatMessage)
         {
             
         }
+
         protected override RuleOutcome EvaluateRule(VoatRuleContext context)
         {
             ChatMessage message = context.PropertyBag.ChatMessage;
@@ -29,7 +33,12 @@ namespace Voat.Rules.Chat
             {
                 return CreateOutcome(RuleResult.Denied, "Rule needs chat message contexarstt");
             }
-            
+
+            if (BanningUtility.ContentContainsBannedDomain(null, message.Message))
+            {
+                return CreateOutcome(RuleResult.Denied, "Content contains banned domain");
+            }
+
             var history = ChatHistory.History(message.RoomID);
             var historyArray = history.ToArray();
 

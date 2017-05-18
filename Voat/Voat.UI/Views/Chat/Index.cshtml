@@ -67,6 +67,10 @@
 
                 @if (User.Identity.IsAuthenticated)
                 {
+                    if (Settings.MinimumCommentPointsForSendingChatMessages > 0)
+                    {
+                        <span>@Settings.MinimumCommentPointsForSendingChatMessages CCP is required to send messages</span>
+                    }
                     <input id="chatInputBox" onkeydown="if (event.keyCode == 13) sendChatMessage('@Model.Room.ID', '@Request.QueryString["access"]');" class="form-control" data-val="true" data-val-length="Please write at least 3 characters." data-val-length-max="100" data-val-length-min="3" data-val-required="Please enter a message." name="chatInputBox" placeholder="Say something." value="" type="text">
                     <button type="button" class="btn-whoaverse contribute" onclick="sendChatMessage('@Model.Room.ID', '@Request.QueryString["access"]');">send</button>
                 }

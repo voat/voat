@@ -46,6 +46,13 @@ namespace Voat
 
             if (!String.IsNullOrEmpty(id))
             {
+
+                // discard message if it contains unicode
+                if (Formatting.ContainsUnicode(message))
+                {
+                    return;
+                }
+
                 // check if user is banned
                 if (UserHelper.IsUserGloballyBanned(Context.User.Identity.Name))
                 {
@@ -54,11 +61,7 @@ namespace Voat
                     return;
                 }
 
-                // discard message if it contains unicode
-                if (Formatting.ContainsUnicode(message))
-                {
-                    return;
-                }
+               
 
                 //Strip out annoying markdown
                 message = ChatMessage.SanitizeInput(message);
@@ -70,6 +73,13 @@ namespace Voat
                     {
                         if (room.IsAccessAllowed(Context.User.Identity.Name, access))
                         {
+                            // check if user is banned from room (which is subverse right now too)
+                            if (UserHelper.IsUserBannedFromSubverse(Context.User.Identity.Name, room.ID))
+                            {
+                                // message won't be processed
+                                return;
+                            }
+
                             var formattedMessage = Formatting.FormatMessage(message, true, true);
 
                             var chatMessage = room.CreateMessage(Context.User.Identity.Name, formattedMessage);

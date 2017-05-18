@@ -263,6 +263,14 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.MinimumCommentPointsForCaptchaSubmission, 25);
             }
         }
+        public static int MinimumCommentPointsForSendingChatMessages
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.MinimumCommentPointsForSendingChatMessages, 100);
+            }
+        }
+
         public static Domain.Models.Origin Origin
         {
             get
