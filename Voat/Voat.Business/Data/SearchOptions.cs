@@ -1,6 +1,10 @@
-﻿#region LICENSE
+#region LICENSE
 
 /*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
 
     This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
@@ -12,15 +16,11 @@
     or implied. See the License for the specific language governing
     rights and limitations under the License.
 
-    All portions of the code written by Voat, Inc. are Copyright(c) Voat, Inc.
-
     All Rights Reserved.
 
 */
 
 #endregion LICENSE
-
-
 
 using Newtonsoft.Json;
 using System;
