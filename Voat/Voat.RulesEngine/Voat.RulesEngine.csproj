@@ -1,7 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Company>Voat, Inc.</Company>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
+    <AssemblyTitle>Voat.RuleEngine</AssemblyTitle>
+    <AssemblyProduct>Voat.RuleEngine</AssemblyProduct>
+    <AssemblyDescription>Runtime for Rules on Voat</AssemblyDescription>
   </PropertyGroup>
-
+  <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.0-preview1-25305-02" />
+  </ItemGroup>
 </Project>
