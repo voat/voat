@@ -1,4 +1,4 @@
-#region LICENSE
+﻿#region LICENSE
 
 /*
     
@@ -153,18 +153,21 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Submission.Vote")]
         public void DownvoteSubmission()
         {
+            var submissionUser = "UnitTestUser47";
+            var newSubmission = TestHelper.ContentCreation.CreateSubmission(submissionUser, new Domain.Models.UserSubmission() { Title = "This is what I think about you guys", Subverse = "unit" });
+
             TestHelper.SetPrincipal("User500CCP");
             bool voteEventReceived = false;
 
             EventNotification.Instance.OnVoteReceived += (s, e) => {
                 voteEventReceived = 
-                    e.TargetUserName == "anon" 
+                    e.TargetUserName == submissionUser
                     && e.SendingUserName == "User500CCP" 
                     && e.ChangeValue == -1 
                     && e.ReferenceType == Domain.Models.ContentType.Submission 
-                    && e.ReferenceID == 1;
+                    && e.ReferenceID == newSubmission.ID;
             };
-            var cmd = new SubmissionVoteCommand(1, -1, IpHash.CreateHash("127.0.0.100"));
+            var cmd = new SubmissionVoteCommand(newSubmission.ID, -1, IpHash.CreateHash("127.0.0.100"));
 
             var c = cmd.Execute().Result;
             Assert.IsTrue(c.Success, c.Message);
@@ -173,15 +176,15 @@ namespace Voat.Tests.CommandTests
             //verify in db
             using (var db = new Voat.Data.Repository())
             {
-                var comment = db.GetSubmission(1);
-                Assert.IsNotNull(comment, "Couldn't find comment in db");
-                Assert.AreEqual(comment.UpCount, c.Response.UpCount);
-                Assert.AreEqual(comment.DownCount, c.Response.DownCount);
+                var submissionFromRepo = db.GetSubmission(newSubmission.ID);
+                Assert.IsNotNull(submissionFromRepo, "Couldn't find comment in db");
+                Assert.AreEqual(submissionFromRepo.UpCount, c.Response.UpCount);
+                Assert.AreEqual(submissionFromRepo.DownCount, c.Response.DownCount);
             }
             Assert.IsTrue(voteEventReceived, "VoteEvent not have the expected values");
 
             //Verify Submission pull has correct vote value recorded in output for current user
-            var q = new QuerySubmission(1, true);
+            var q = new QuerySubmission(newSubmission.ID, true);
             var submission = q.Execute();
             Assert.IsNotNull(submission);
             Assert.AreEqual(c.RecordedValue, submission.Vote);
@@ -200,18 +203,21 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Submission.Vote")]
         public void UpvoteSubmission()
         {
+            var submissionUser = "UnitTestUser48";
+            var newSubmission = TestHelper.ContentCreation.CreateSubmission(submissionUser, new Domain.Models.UserSubmission() { Title = "This is what I think about you guys", Subverse = "unit" });
+
             TestHelper.SetPrincipal("User50CCP");
             bool voteEventReceived = false;
 
             EventNotification.Instance.OnVoteReceived += (s, e) => {
                 voteEventReceived =
-                    e.TargetUserName == "anon"
+                    e.TargetUserName == submissionUser
                     && e.SendingUserName == "User50CCP"
                     && e.ChangeValue == 1
                     && e.ReferenceType == Domain.Models.ContentType.Submission
-                    && e.ReferenceID == 1;
+                    && e.ReferenceID == newSubmission.ID;
             };
-            var cmd = new SubmissionVoteCommand(1, 1, IpHash.CreateHash("127.0.0.2"));
+            var cmd = new SubmissionVoteCommand(newSubmission.ID, 1, IpHash.CreateHash("127.0.0.2"));
 
             var c = cmd.Execute().Result;
             Assert.IsNotNull(c, "Response is null");
@@ -221,7 +227,7 @@ namespace Voat.Tests.CommandTests
             //verify in db
             using (var db = new Voat.Data.Repository())
             {
-                var comment = db.GetSubmission(1);
+                var comment = db.GetSubmission(newSubmission.ID);
                 Assert.IsNotNull(comment, "Couldn't find submission in db");
                 Assert.AreEqual(comment.UpCount, c.Response.UpCount);
                 Assert.AreEqual(comment.DownCount, c.Response.DownCount);
@@ -229,14 +235,14 @@ namespace Voat.Tests.CommandTests
             Assert.IsTrue(voteEventReceived, "VoteEvent not have the expected values");
 
             //Verify Submission pull has correct vote value recorded in output for current user
-            var q = new QuerySubmission(1, true);
+            var q = new QuerySubmission(newSubmission.ID, true);
             var submission = q.Execute();
             Assert.IsNotNull(submission);
             Assert.AreEqual(c.RecordedValue, submission.Vote);
 
             //Verify non-logged in user has correct vote value
             TestHelper.SetPrincipal(null);
-            q = new QuerySubmission(1, true);
+            q = new QuerySubmission(newSubmission.ID, true);
             submission = q.Execute();
             Assert.IsNotNull(submission);
             Assert.AreEqual(null, submission.Vote);
