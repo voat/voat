@@ -12,4 +12,8 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj" />
+  </ItemGroup>
+
 </Project>
