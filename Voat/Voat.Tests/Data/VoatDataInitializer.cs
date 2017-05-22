@@ -26,6 +26,7 @@ using Microsoft.AspNet.Identity;
 
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.IO;
@@ -36,15 +37,94 @@ using Voat.Utilities;
 
 namespace Voat.Tests.Repository
 {
-    public class VoatDataInitializer : DropCreateDatabaseAlways<voatEntities>
+    public class VoatDataInitializer : IDatabaseInitializer<voatEntities>
     {
 
-        public override void InitializeDatabase(voatEntities context)
+        public void InitializeDatabase(voatEntities context)
         {
-            base.InitializeDatabase(context);
+            //For Postgre
+            //TestEnvironmentSettings.DataStoreType = Voat.Data.DataStoreType.PostgreSQL;
+            CreateSchema(context);
+            Seed(context);
         }
 
-        protected override void Seed(voatEntities context)
+        protected void CreateSchema(voatEntities context)
+        {
+            //THIS METHOD MIGHT VERY WELL NEED A DIFFERENT IMPLEMENTATION FOR DIFFERENT STORES
+
+
+            //Parse and run sql scripts
+            var dbName = context.Database.Connection.Database;
+            var originalConnectionString = context.Database.Connection.ConnectionString;
+
+            try
+            {
+
+                var builder = new DbConnectionStringBuilder();
+                builder.ConnectionString = originalConnectionString;
+                builder["database"] = "master";
+                context.Database.Connection.ConnectionString = builder.ConnectionString;
+
+                var cmd = context.Database.Connection.CreateCommand();
+                cmd.CommandType = System.Data.CommandType.Text;
+                if (cmd.Connection.State != System.Data.ConnectionState.Open)
+                {
+                    cmd.Connection.Open();
+                }
+
+                cmd.CommandText = $"IF EXISTS (SELECT name FROM sys.databases WHERE name = '{dbName}') DROP DATABASE {dbName}";
+                cmd.ExecuteNonQuery();
+
+                cmd.CommandText = $"CREATE DATABASE {dbName}";
+                cmd.ExecuteNonQuery();
+
+                context.Database.Connection.ChangeDatabase(dbName);
+
+                //Run Scripts in repo folder
+                var sqlFolderPathPublicRepo = TestEnvironmentSettings.SqlScriptRelativePath;
+
+                var dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                var scriptFolder = Path.GetFullPath(Path.Combine(dir, sqlFolderPathPublicRepo));
+
+                var scriptFiles = new string[] {
+                    Path.Combine(scriptFolder, "voat.sql"),
+                    Path.Combine(scriptFolder, "voat_users.sql"),
+                    Path.Combine(scriptFolder, "procedures.sql")
+                };
+
+                foreach (var scriptFile in scriptFiles)
+                {
+                    if (!File.Exists(scriptFile))
+                    {
+                        throw new InvalidOperationException($"Setup can not find script '{scriptFile}'");
+                    }
+
+                    using (var sr = new StreamReader(scriptFile))
+                    {
+                        var contents = sr.ReadToEnd();
+                       
+                        var segments = contents.Split(new string[] { TestEnvironmentSettings.DataStoreType == Voat.Data.DataStoreType.SqlServer ? "GO" : ";" }, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var batch in segments)
+                        {
+                            cmd.CommandText = batch;
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                //revert connection 
+                if (context.Database.Connection.State != System.Data.ConnectionState.Closed)
+                {
+                    context.Database.Connection.Close();
+                }
+                context.Database.Connection.ConnectionString = originalConnectionString;
+            }
+        }
+
+
+        protected void Seed(voatEntities context)
         {
             CreateUserSchema(context);
             
@@ -58,7 +138,7 @@ namespace Voat.Tests.Repository
              *
              *      EXISTING DATA BASED UNIT TESTS ARE BUILD UPON WHAT IS SPECIFIED HERE AND IF CHANGED WILL FAIL
              *
-             *
+             *      UPON SECOND THOUGHT THIS SOUNDS WRONG BUT THIS ALSO SOUNDS LIKE A FUTURE PERSON PROBLEM
             */
 
             //*******************************************************************************************************
@@ -644,986 +724,16 @@ namespace Voat.Tests.Repository
         private void CreateUserSchema(voatEntities context)
         {
             
-            
-            //Got sick of wasting time messing around with database initializers for
-            //the Identity classes since we are using a single database for testing. Here
-            //is the schema script to create all the neccesary tables for AspNet Entity Identity
-
-            #region Create AspNet Schema
-
-            var script = @"
-                        SET NUMERIC_ROUNDABORT OFF
-                        ;
-                        SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDENTIFIER, ANSI_NULLS ON
-                        ;
-                        SET XACT_ABORT ON
-                        ;
-                        SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
-                        ;
-                        BEGIN TRANSACTION
-                        ;
-                        IF @@ERROR <> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[AspNetUsers]'
-                        ;
-                        CREATE TABLE[dbo].[AspNetUsers]
-                        (
-                        [Id][nvarchar](128) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [UserName] [nvarchar] (800) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-                        [PasswordHash] [nvarchar] (max) COLLATE Latin1_General_CI_AS NULL,
-                        [SecurityStamp]
-                                [nvarchar] (max) COLLATE Latin1_General_CI_AS NULL,
-                        [Email]
-                                [nvarchar] (max) COLLATE Latin1_General_CI_AS NULL,
-                        [IsConfirmed]
-                                [bit]
-                                NULL CONSTRAINT[DF__AspNetUse__IsCon__37A5467C] DEFAULT((0)),
-                        [EmailConfirmed]
-                                [bit]
-                                NULL,
-                        [PhoneNumber]
-                                [nchar] (10) COLLATE Latin1_General_CI_AS NULL,
-                        [PhoneNumberConfirmed]
-                                [bit]
-                                NULL,
-                        [TwoFactorEnabled]
-                                [bit]
-                                NULL,
-                        [LockoutEndDateUtc]
-                                [datetime]
-                                NULL,
-                        [LockoutEnabled]
-                                [bit]
-                                NULL,
-                        [AccessFailedCount]
-                                [int] NULL,
-                        [RegistrationDateTime]
-                                [datetime]
-                                NOT NULL CONSTRAINT[DF__AspNetUse__Regis__47DBAE45] DEFAULT('1900-01-01T00:00:00.000'),
-                        [RecoveryQuestion]
-                                [nvarchar] (50) COLLATE Latin1_General_CI_AS NULL,
-                        [Answer]
-                                [nvarchar] (50) COLLATE Latin1_General_CI_AS NULL,
-                        [Partner]
-                                [bit]
-                                NOT NULL CONSTRAINT[DF__AspNetUse__Partn__74AE54BC] DEFAULT((0)),
-                        [LastLoginFromIp]
-                                [nvarchar] (50) COLLATE Latin1_General_CI_AS NULL,
-                        [LastLoginDateTime]
-                                [datetime]
-                                NOT NULL CONSTRAINT[DF__AspNetUse__LastL__18EBB532] DEFAULT('1900-01-01T00:00:00.000')
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230838] on [dbo].[AspNetUsers]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230838] ON[dbo].[AspNetUsers] ([Id])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [IX_UserName] on [dbo].[AspNetUsers]'
-                        ;
-                        CREATE NONCLUSTERED INDEX[IX_UserName] ON[dbo].[AspNetUsers] ([UserName])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[AspNetRoles]'
-                        ;
-                        CREATE TABLE[dbo].[AspNetRoles]
-                        (
-                        [Id]
-                                [nvarchar] (128) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [Name] [nvarchar] (max) COLLATE Latin1_General_CI_AS NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230754] on [dbo].[AspNetRoles]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230754] ON[dbo].[AspNetRoles] ([Id])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_AspNetRoles] on [dbo].[AspNetRoles]'
-                        ;
-                        ALTER TABLE[dbo].[AspNetRoles]
-                                ADD CONSTRAINT[PK_AspNetRoles] PRIMARY KEY NONCLUSTERED([Id])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[AspNetUserClaims]'
-                        ;
-                        CREATE TABLE[dbo].[AspNetUserClaims]
-                        (
-                        [Id]
-                                [int] NOT NULL,
-                           [ClaimType] [nvarchar] (max) COLLATE Latin1_General_CI_AS NULL,
-                        [ClaimValue]
-                                [nvarchar] (max) COLLATE Latin1_General_CI_AS NULL,
-                        [UserId]
-                                [nvarchar] (128) COLLATE Latin1_General_CI_AS NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230805] on [dbo].[AspNetUserClaims]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230805] ON[dbo].[AspNetUserClaims] ([Id])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_AspNetUserClaims] on [dbo].[AspNetUserClaims]'
-                        ;
-                        ALTER TABLE[dbo].[AspNetUserClaims]
-                                ADD CONSTRAINT[PK_AspNetUserClaims] PRIMARY KEY NONCLUSTERED([Id])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[AspNetUserLogins]'
-                        ;
-                        CREATE TABLE[dbo].[AspNetUserLogins]
-                        (
-                        [UserId]
-                                [nvarchar] (128) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [LoginProvider] [nvarchar] (128) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [ProviderKey] [nvarchar] (128) COLLATE Latin1_General_CI_AS NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230815] on [dbo].[AspNetUserLogins]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230815] ON[dbo].[AspNetUserLogins] ([UserId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_AspNetUserLogins] on [dbo].[AspNetUserLogins]'
-                        ;
-                        ALTER TABLE[dbo].[AspNetUserLogins]
-                                ADD CONSTRAINT[PK_AspNetUserLogins] PRIMARY KEY NONCLUSTERED([UserId], [LoginProvider], [ProviderKey])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[AspNetUserRoles]'
-                        ;
-                        CREATE TABLE[dbo].[AspNetUserRoles]
-                        (
-                        [UserId]
-                                [nvarchar] (128) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [RoleId] [nvarchar] (128) COLLATE Latin1_General_CI_AS NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230826] on [dbo].[AspNetUserRoles]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230826] ON[dbo].[AspNetUserRoles] ([RoleId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_AspNetUserRoles] on [dbo].[AspNetUserRoles]'
-                        ;
-                        ALTER TABLE[dbo].[AspNetUserRoles]
-                                ADD CONSTRAINT[PK_AspNetUserRoles] PRIMARY KEY NONCLUSTERED([UserId], [RoleId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[Sessions]'
-                        ;
-                        CREATE TABLE[dbo].[Sessions]
-                        (
-                        [SessionId]
-                                [nvarchar] (88) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [Created] [datetime]
-                                NOT NULL,
-                        [Expires] [datetime]
-                                NOT NULL,
-                        [LockDate] [datetime]
-                                NOT NULL,
-                        [LockCookie] [int] NOT NULL,
-                        [Locked] [bit]
-                                NOT NULL,
-                        [SessionItem] [image]
-                                NULL,
-                        [Flags]
-                                [int] NOT NULL,
-                        [Timeout] [int] NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230903] on [dbo].[Sessions]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230903] ON[dbo].[Sessions] ([SessionId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[__MigrationHistory]'
-                        ;
-                        CREATE TABLE[dbo].[__MigrationHistory]
-                        (
-                        [MigrationId]
-                                [nvarchar] (150) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [ContextKey] [nvarchar] (300) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [Model] [varbinary] (max) NOT NULL,
-                        [ProductVersion] [nvarchar] (32) COLLATE Latin1_General_CI_AS NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230514] on [dbo].[__MigrationHistory]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230514] ON[dbo].[__MigrationHistory] ([MigrationId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK___MigrationHistory] on [dbo].[__MigrationHistory]'
-                        ;
-                        ALTER TABLE[dbo].[__MigrationHistory]
-                                ADD CONSTRAINT[PK___MigrationHistory] PRIMARY KEY NONCLUSTERED([MigrationId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[aspnet_Applications]'
-                        ;
-                        CREATE TABLE[dbo].[aspnet_Applications]
-                        (
-                        [ApplicationName]
-                                [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [LoweredApplicationName] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [ApplicationId] [uniqueidentifier]
-                                NOT NULL,
-                        [Description] [nvarchar] (256) COLLATE Latin1_General_CI_AS NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230529] on [dbo].[aspnet_Applications]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230529] ON[dbo].[aspnet_Applications] ([ApplicationId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_aspnet_Applications] on [dbo].[aspnet_Applications]'
-                        ;
-                        ALTER TABLE[dbo].[aspnet_Applications]
-                                ADD CONSTRAINT[PK_aspnet_Applications] PRIMARY KEY NONCLUSTERED([ApplicationId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[aspnet_Membership]'
-                        ;
-                        CREATE TABLE[dbo].[aspnet_Membership]
-                        (
-                        [ApplicationId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [UserId] [uniqueidentifier]
-                                NOT NULL,
-                        [Password] [nvarchar] (128) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [PasswordFormat] [int] NOT NULL,
-                        [PasswordSalt] [nvarchar] (128) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [MobilePIN] [nvarchar] (16) COLLATE Latin1_General_CI_AS NULL,
-                        [Email]
-                                [nvarchar] (256) COLLATE Latin1_General_CI_AS NULL,
-                        [LoweredEmail]
-                                [nvarchar] (256) COLLATE Latin1_General_CI_AS NULL,
-                        [PasswordQuestion]
-                                [nvarchar] (256) COLLATE Latin1_General_CI_AS NULL,
-                        [PasswordAnswer]
-                                [nvarchar] (128) COLLATE Latin1_General_CI_AS NULL,
-                        [IsApproved]
-                                [bit]
-                                NOT NULL,
-                        [IsLockedOut] [bit]
-                                NOT NULL,
-                        [CreateDate] [datetime]
-                                NOT NULL,
-                        [LastLoginDate] [datetime]
-                                NOT NULL,
-                        [LastPasswordChangedDate] [datetime]
-                                NOT NULL,
-                        [LastLockoutDate] [datetime]
-                                NOT NULL,
-                        [FailedPasswordAttemptCount] [int] NOT NULL,
-                        [FailedPasswordAttemptWindowStart] [datetime]
-                                NOT NULL,
-                        [FailedPasswordAnswerAttemptCount] [int] NOT NULL,
-                        [FailedPasswordAnswerAttemptWindowStart] [datetime]
-                                NOT NULL,
-                        [Comment] [ntext]
-                                COLLATE Latin1_General_CI_AS NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230542] on [dbo].[aspnet_Membership]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230542] ON[dbo].[aspnet_Membership] ([ApplicationId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_aspnet_Membership] on [dbo].[aspnet_Membership]'
-                        ;
-                        ALTER TABLE[dbo].[aspnet_Membership]
-                                ADD CONSTRAINT[PK_aspnet_Membership] PRIMARY KEY NONCLUSTERED([ApplicationId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[aspnet_Paths]'
-                        ;
-                        CREATE TABLE[dbo].[aspnet_Paths]
-                        (
-                        [ApplicationId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [PathId] [uniqueidentifier]
-                                NOT NULL,
-                        [Path] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [LoweredPath] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230607] on [dbo].[aspnet_Paths]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230607] ON[dbo].[aspnet_Paths] ([PathId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_aspnet_Paths] on [dbo].[aspnet_Paths]'
-                        ;
-                        ALTER TABLE[dbo].[aspnet_Paths]
-                                ADD CONSTRAINT[PK_aspnet_Paths] PRIMARY KEY NONCLUSTERED([PathId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[aspnet_PersonalizationAllUsers]'
-                        ;
-                        CREATE TABLE[dbo].[aspnet_PersonalizationAllUsers]
-                        (
-                        [PathId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [PageSettings] [image]
-                                NOT NULL,
-                        [LastUpdatedDate] [datetime]
-                                NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230616] on [dbo].[aspnet_PersonalizationAllUsers]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230616] ON[dbo].[aspnet_PersonalizationAllUsers] ([PathId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_aspnet_PersonalizationAllUsers] on [dbo].[aspnet_PersonalizationAllUsers]'
-                        ;
-                        ALTER TABLE[dbo].[aspnet_PersonalizationAllUsers]
-                                ADD CONSTRAINT[PK_aspnet_PersonalizationAllUsers] PRIMARY KEY NONCLUSTERED([PathId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[aspnet_PersonalizationPerUser]'
-                        ;
-                        CREATE TABLE[dbo].[aspnet_PersonalizationPerUser]
-                        (
-                        [Id]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [PathId] [uniqueidentifier]
-                                NULL,
-                        [UserId]
-                                [uniqueidentifier]
-                                NULL,
-                        [PageSettings]
-                                [image]
-                                NOT NULL,
-                        [LastUpdatedDate] [datetime]
-                                NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230628] on [dbo].[aspnet_PersonalizationPerUser]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230628] ON[dbo].[aspnet_PersonalizationPerUser] ([Id])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_aspnet_PersonalizationPerUser] on [dbo].[aspnet_PersonalizationPerUser]'
-                        ;
-                        ALTER TABLE[dbo].[aspnet_PersonalizationPerUser]
-                                ADD CONSTRAINT[PK_aspnet_PersonalizationPerUser] PRIMARY KEY NONCLUSTERED([Id])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[aspnet_Profile]'
-                        ;
-                        CREATE TABLE[dbo].[aspnet_Profile]
-                        (
-                        [UserId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [PropertyNames] [ntext]
-                                COLLATE Latin1_General_CI_AS NOT NULL,
-                        [PropertyValuesString] [ntext]
-                                COLLATE Latin1_General_CI_AS NOT NULL,
-                        [PropertyValuesBinary] [image]
-                                NOT NULL,
-                        [LastUpdatedDate] [datetime]
-                                NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230638] on [dbo].[aspnet_Profile]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230638] ON[dbo].[aspnet_Profile] ([UserId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_aspnet_Profile] on [dbo].[aspnet_Profile]'
-                        ;
-                        ALTER TABLE[dbo].[aspnet_Profile]
-                                ADD CONSTRAINT[PK_aspnet_Profile] PRIMARY KEY NONCLUSTERED([UserId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[aspnet_Roles]'
-                        ;
-                        CREATE TABLE[dbo].[aspnet_Roles]
-                        (
-                        [ApplicationId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [RoleId] [uniqueidentifier]
-                                NOT NULL,
-                        [RoleName] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [LoweredRoleName] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [Description] [nvarchar] (256) COLLATE Latin1_General_CI_AS NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230647] on [dbo].[aspnet_Roles]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230647] ON[dbo].[aspnet_Roles] ([RoleId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_aspnet_Roles] on [dbo].[aspnet_Roles]'
-                        ;
-                        ALTER TABLE[dbo].[aspnet_Roles]
-                                ADD CONSTRAINT[PK_aspnet_Roles] PRIMARY KEY NONCLUSTERED([RoleId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[aspnet_SchemaVersions]'
-                        ;
-                        CREATE TABLE[dbo].[aspnet_SchemaVersions]
-                        (
-                        [Feature]
-                                [nvarchar] (128) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [CompatibleSchemaVersion] [nvarchar] (128) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [IsCurrentVersion] [bit]
-                                NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230658] on [dbo].[aspnet_SchemaVersions]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230658] ON[dbo].[aspnet_SchemaVersions] ([IsCurrentVersion])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_aspnet_SchemaVersions] on [dbo].[aspnet_SchemaVersions]'
-                        ;
-                        ALTER TABLE[dbo].[aspnet_SchemaVersions]
-                                ADD CONSTRAINT[PK_aspnet_SchemaVersions] PRIMARY KEY NONCLUSTERED([Feature], [CompatibleSchemaVersion])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[aspnet_UsersInRoles]'
-                        ;
-                        CREATE TABLE[dbo].[aspnet_UsersInRoles]
-                        (
-                        [UserId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [RoleId] [uniqueidentifier]
-                                NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230730] on [dbo].[aspnet_UsersInRoles]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230730] ON[dbo].[aspnet_UsersInRoles] ([RoleId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_aspnet_UsersInRoles] on [dbo].[aspnet_UsersInRoles]'
-                        ;
-                        ALTER TABLE[dbo].[aspnet_UsersInRoles]
-                                ADD CONSTRAINT[PK_aspnet_UsersInRoles] PRIMARY KEY NONCLUSTERED([RoleId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[aspnet_Users]'
-                        ;
-                        CREATE TABLE[dbo].[aspnet_Users]
-                        (
-                        [ApplicationId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [UserId] [uniqueidentifier]
-                                NOT NULL,
-                        [UserName] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [LoweredUserName] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [MobileAlias] [nvarchar] (16) COLLATE Latin1_General_CI_AS NULL,
-                        [IsAnonymous]
-                                [bit]
-                                NOT NULL,
-                        [LastActivityDate] [datetime]
-                                NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230719] on [dbo].[aspnet_Users]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230719] ON[dbo].[aspnet_Users] ([UserId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_aspnet_Users] on [dbo].[aspnet_Users]'
-                        ;
-                        ALTER TABLE[dbo].[aspnet_Users]
-                                ADD CONSTRAINT[PK_aspnet_Users] PRIMARY KEY NONCLUSTERED([UserId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[aspnet_WebEvent_Events]'
-                        ;
-                        CREATE TABLE[dbo].[aspnet_WebEvent_Events]
-                        (
-                        [EventId]
-                                [char] (32) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [EventTimeUtc] [datetime]
-                                NOT NULL,
-                        [EventTime] [datetime]
-                                NOT NULL,
-                        [EventType] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [EventSequence] [decimal] (19, 0) NOT NULL,
-                        [EventOccurrence] [decimal] (19, 0) NOT NULL,
-                        [EventCode] [int] NOT NULL,
-                        [EventDetailCode] [int] NOT NULL,
-                        [Message] [nvarchar] (1024) COLLATE Latin1_General_CI_AS NULL,
-                        [ApplicationPath]
-                                [nvarchar] (256) COLLATE Latin1_General_CI_AS NULL,
-                        [ApplicationVirtualPath]
-                                [nvarchar] (256) COLLATE Latin1_General_CI_AS NULL,
-                        [MachineName]
-                                [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [RequestUrl] [nvarchar] (1024) COLLATE Latin1_General_CI_AS NULL,
-                        [ExceptionType]
-                                [nvarchar] (256) COLLATE Latin1_General_CI_AS NULL,
-                        [Details]
-                                [ntext]
-                                COLLATE Latin1_General_CI_AS NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230743] on [dbo].[aspnet_WebEvent_Events]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230743] ON[dbo].[aspnet_WebEvent_Events] ([EventId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_aspnet_WebEvent_Events] on [dbo].[aspnet_WebEvent_Events]'
-                        ;
-                        ALTER TABLE[dbo].[aspnet_WebEvent_Events]
-                                ADD CONSTRAINT[PK_aspnet_WebEvent_Events] PRIMARY KEY NONCLUSTERED([EventId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[vw_aspnet_Applications]'
-                        ;
-                        CREATE TABLE[dbo].[vw_aspnet_Applications]
-                        (
-                        [ApplicationName]
-                                [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [LoweredApplicationName] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [ApplicationId] [uniqueidentifier]
-                                NOT NULL,
-                        [Description] [nvarchar] (256) COLLATE Latin1_General_CI_AS NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230915] on [dbo].[vw_aspnet_Applications]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230915] ON[dbo].[vw_aspnet_Applications] ([ApplicationId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_vw_aspnet_Applications] on [dbo].[vw_aspnet_Applications]'
-                        ;
-                        ALTER TABLE[dbo].[vw_aspnet_Applications]
-                                ADD CONSTRAINT[PK_vw_aspnet_Applications] PRIMARY KEY NONCLUSTERED([ApplicationId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[vw_aspnet_MembershipUsers]'
-                        ;
-                        CREATE TABLE[dbo].[vw_aspnet_MembershipUsers]
-                        (
-                        [UserId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [PasswordFormat] [int] NOT NULL,
-                        [MobilePIN] [nvarchar] (16) COLLATE Latin1_General_CI_AS NULL,
-                        [Email]
-                                [nvarchar] (256) COLLATE Latin1_General_CI_AS NULL,
-                        [LoweredEmail]
-                                [nvarchar] (256) COLLATE Latin1_General_CI_AS NULL,
-                        [PasswordQuestion]
-                                [nvarchar] (256) COLLATE Latin1_General_CI_AS NULL,
-                        [PasswordAnswer]
-                                [nvarchar] (128) COLLATE Latin1_General_CI_AS NULL,
-                        [IsApproved]
-                                [bit]
-                                NOT NULL,
-                        [IsLockedOut] [bit]
-                                NOT NULL,
-                        [CreateDate] [datetime]
-                                NOT NULL,
-                        [LastLoginDate] [datetime]
-                                NOT NULL,
-                        [LastPasswordChangedDate] [datetime]
-                                NOT NULL,
-                        [LastLockoutDate] [datetime]
-                                NOT NULL,
-                        [FailedPasswordAttemptCount] [int] NOT NULL,
-                        [FailedPasswordAttemptWindowStart] [datetime]
-                                NOT NULL,
-                        [FailedPasswordAnswerAttemptCount] [int] NOT NULL,
-                        [FailedPasswordAnswerAttemptWindowStart] [datetime]
-                                NOT NULL,
-                        [Comment] [ntext]
-                                COLLATE Latin1_General_CI_AS NULL,
-                        [ApplicationId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [UserName] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [MobileAlias] [nvarchar] (16) COLLATE Latin1_General_CI_AS NULL,
-                        [IsAnonymous]
-                                [bit]
-                                NOT NULL,
-                        [LastActivityDate] [datetime]
-                                NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230926] on [dbo].[vw_aspnet_MembershipUsers]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230926] ON[dbo].[vw_aspnet_MembershipUsers] ([UserId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_vw_aspnet_MembershipUsers] on [dbo].[vw_aspnet_MembershipUsers]'
-                        ;
-                        ALTER TABLE[dbo].[vw_aspnet_MembershipUsers]
-                                ADD CONSTRAINT[PK_vw_aspnet_MembershipUsers] PRIMARY KEY NONCLUSTERED([UserId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[vw_aspnet_Profiles]'
-                        ;
-                        CREATE TABLE[dbo].[vw_aspnet_Profiles]
-                        (
-                        [UserId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [LastUpdatedDate] [datetime]
-                                NOT NULL,
-                        [DataSize] [int] NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230937] on [dbo].[vw_aspnet_Profiles]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230937] ON[dbo].[vw_aspnet_Profiles] ([UserId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_vw_aspnet_Profiles] on [dbo].[vw_aspnet_Profiles]'
-                        ;
-                        ALTER TABLE[dbo].[vw_aspnet_Profiles]
-                                ADD CONSTRAINT[PK_vw_aspnet_Profiles] PRIMARY KEY NONCLUSTERED([UserId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[vw_aspnet_Roles]'
-                        ;
-                        CREATE TABLE[dbo].[vw_aspnet_Roles]
-                        (
-                        [ApplicationId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [RoleId] [uniqueidentifier]
-                                NOT NULL,
-                        [RoleName] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [LoweredRoleName] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [Description] [nvarchar] (256) COLLATE Latin1_General_CI_AS NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230946] on [dbo].[vw_aspnet_Roles]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230946] ON[dbo].[vw_aspnet_Roles] ([RoleId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_vw_aspnet_Roles] on [dbo].[vw_aspnet_Roles]'
-                        ;
-                        ALTER TABLE[dbo].[vw_aspnet_Roles]
-                                ADD CONSTRAINT[PK_vw_aspnet_Roles] PRIMARY KEY NONCLUSTERED([ApplicationId], [RoleId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[vw_aspnet_UsersInRoles]'
-                        ;
-                        CREATE TABLE[dbo].[vw_aspnet_UsersInRoles]
-                        (
-                        [UserId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [RoleId] [uniqueidentifier]
-                                NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-231004] on [dbo].[vw_aspnet_UsersInRoles]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 231004] ON[dbo].[vw_aspnet_UsersInRoles] ([RoleId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_vw_aspnet_UsersInRoles] on [dbo].[vw_aspnet_UsersInRoles]'
-                        ;
-                        ALTER TABLE[dbo].[vw_aspnet_UsersInRoles]
-                                ADD CONSTRAINT[PK_vw_aspnet_UsersInRoles] PRIMARY KEY NONCLUSTERED([UserId], [RoleId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[vw_aspnet_Users]'
-                        ;
-                        CREATE TABLE[dbo].[vw_aspnet_Users]
-                        (
-                        [ApplicationId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [UserId] [uniqueidentifier]
-                                NOT NULL,
-                        [UserName] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [LoweredUserName] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [MobileAlias] [nvarchar] (16) COLLATE Latin1_General_CI_AS NULL,
-                        [IsAnonymous]
-                                [bit]
-                                NOT NULL,
-                        [LastActivityDate] [datetime]
-                                NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-230955] on [dbo].[vw_aspnet_Users]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 230955] ON[dbo].[vw_aspnet_Users] ([UserId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[vw_aspnet_WebPartState_Paths]'
-                        ;
-                        CREATE TABLE[dbo].[vw_aspnet_WebPartState_Paths]
-                        (
-                        [ApplicationId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [PathId] [uniqueidentifier]
-                                NOT NULL,
-                        [Path] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL,
-                        [LoweredPath] [nvarchar] (256) COLLATE Latin1_General_CI_AS NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-231014] on [dbo].[vw_aspnet_WebPartState_Paths]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 231014] ON[dbo].[vw_aspnet_WebPartState_Paths] ([PathId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_vw_aspnet_WebPartState_Paths] on [dbo].[vw_aspnet_WebPartState_Paths]'
-                        ;
-                        ALTER TABLE[dbo].[vw_aspnet_WebPartState_Paths]
-                                ADD CONSTRAINT[PK_vw_aspnet_WebPartState_Paths] PRIMARY KEY NONCLUSTERED([ApplicationId], [PathId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[vw_aspnet_WebPartState_Shared]'
-                        ;
-                        CREATE TABLE[dbo].[vw_aspnet_WebPartState_Shared]
-                        (
-                        [PathId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [DataSize] [int] NULL,
-                        [LastUpdatedDate]
-                                [datetime]
-                                NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-231023] on [dbo].[vw_aspnet_WebPartState_Shared]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 231023] ON[dbo].[vw_aspnet_WebPartState_Shared] ([PathId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_vw_aspnet_WebPartState_Shared] on [dbo].[vw_aspnet_WebPartState_Shared]'
-                        ;
-                        ALTER TABLE[dbo].[vw_aspnet_WebPartState_Shared]
-                                ADD CONSTRAINT[PK_vw_aspnet_WebPartState_Shared] PRIMARY KEY NONCLUSTERED([PathId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating [dbo].[vw_aspnet_WebPartState_User]'
-                        ;
-                        CREATE TABLE[dbo].[vw_aspnet_WebPartState_User]
-                        (
-                        [PathId]
-                                [uniqueidentifier]
-                                NULL,
-                        [UserId]
-                                [uniqueidentifier]
-                                NOT NULL,
-                        [DataSize] [int] NULL,
-                        [LastUpdatedDate]
-                                [datetime]
-                                NOT NULL
-                        )
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating index [ClusteredIndex-20141217-231032] on [dbo].[vw_aspnet_WebPartState_User]'
-                        ;
-                        CREATE CLUSTERED INDEX[ClusteredIndex - 20141217 - 231032] ON[dbo].[vw_aspnet_WebPartState_User] ([UserId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        PRINT N'Creating primary key [PK_vw_aspnet_WebPartState_User] on [dbo].[vw_aspnet_WebPartState_User]'
-                        ;
-                        ALTER TABLE[dbo].[vw_aspnet_WebPartState_User]
-                                ADD CONSTRAINT[PK_vw_aspnet_WebPartState_User] PRIMARY KEY NONCLUSTERED([UserId])
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        COMMIT TRANSACTION
-                        ;
-                        IF @@ERROR<> 0 SET NOEXEC ON
-                        ;
-                        DECLARE @Success AS BIT
-                        SET @Success = 1
-                        SET NOEXEC OFF
-                        IF(@Success = 1) PRINT 'The database update succeeded'
-                        ELSE BEGIN
-                            IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION
-                            PRINT 'The database update failed'
-                        END
-                        ;";
-            context.Database.ExecuteSqlCommand(script);
-
-            #endregion Create AspNet Schema
-
-            //Create Needed Procs
-            var sqlFolderPathPublicRepo = TestEnvironmentSettings.SqlScriptRelativePath;
-
-            #region Create Procs
-            
-            var dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            var scriptFolder = Path.GetFullPath(Path.Combine(dir, sqlFolderPathPublicRepo));
-
-            var scriptFiles = new string[] { Path.Combine(scriptFolder, "procedures.sql") };
-
-            foreach (var scriptFile in scriptFiles)
-            {
-                if (!File.Exists(scriptFile))
-                {
-                    throw new InvalidOperationException($"Setup can not find script '{scriptFile}'");
-                }
-
-                using (var sr = new StreamReader(scriptFile))
-                {
-                    var contents = sr.ReadToEnd();
-
-                    var segments = contents.Split(new string[] { "GO" }, StringSplitOptions.RemoveEmptyEntries);
-
-                    var cmd = context.Database.Connection.CreateCommand();
-                    //cmd.CommandText = contents;
-                    cmd.CommandType = System.Data.CommandType.Text;
-                    try
-                    {
-                        if (cmd.Connection.State != System.Data.ConnectionState.Open)
-                        {
-                            cmd.Connection.Open();
-                        }
-                        foreach (var batch in segments)
-                        {
-                            cmd.CommandText = batch;
-                            cmd.ExecuteNonQuery();
-                        }
-
-                    }
-                    finally {
-                        if (cmd.Connection.State != System.Data.ConnectionState.Closed)
-                        {
-                            cmd.Connection.Close();
-                        }
-                    }
-                    //ExecuteSqlCommand(contents);
-                }
-
-
-            }
-
-
-
-
-            
-
-            #endregion Create usp_CommentTree
+           
         }
     }
 
-    public class VoatUsersInitializer : CreateDatabaseIfNotExists<ApplicationDbContext>
-    {
-        public override void InitializeDatabase(ApplicationDbContext context)
-        {
-            //context.Database.Create();
-            //base.InitializeDatabase(context);
-        }
-    }
+    //public class VoatUsersInitializer : CreateDatabaseIfNotExists<ApplicationDbContext>
+    //{
+    //    public override void InitializeDatabase(ApplicationDbContext context)
+    //    {
+    //        //context.Database.Create();
+    //        //base.InitializeDatabase(context);
+    //    }
+    //}
 }
