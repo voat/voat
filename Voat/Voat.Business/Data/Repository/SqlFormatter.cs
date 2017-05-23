@@ -113,7 +113,7 @@ namespace Voat.Data
         }
 
 
-        private static DataStoreType _dataStore = DataStoreType.SqlServer;
+        private static DataStoreType _dataStore = DataStoreType.PostgreSQL;
 
         public static DataStoreType DataStore
         {

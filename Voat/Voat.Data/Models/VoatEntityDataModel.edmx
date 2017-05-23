@@ -10,7 +10,7 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IsActive" Type="boolean" Nullable="false" />
+          <Property Name="IsActive" Type="bool" Nullable="false" />
           <Property Name="GraphicUrl" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="DestinationUrl" Type="varchar" MaxLength="1000" />
           <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
@@ -25,7 +25,7 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IsActive" Type="boolean" Nullable="false" />
+          <Property Name="IsActive" Type="bool" Nullable="false" />
           <Property Name="UserName" Type="varchar" MaxLength="100" />
           <Property Name="AppName" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="AppDescription" Type="varchar" MaxLength="2000" />
@@ -43,11 +43,11 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IsActive" Type="boolean" Nullable="false" />
+          <Property Name="IsActive" Type="bool" Nullable="false" />
           <Property Name="AllowOrigin" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="AllowMethods" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="AllowHeaders" Type="varchar" MaxLength="100" Nullable="false" />
-          <Property Name="AllowCredentials" Type="boolean" />
+          <Property Name="AllowCredentials" Type="bool" />
           <Property Name="MaxAge" Type="int4" />
           <Property Name="UserName" Type="varchar" MaxLength="100" />
           <Property Name="Description" Type="varchar" MaxLength="500" />
@@ -124,10 +124,10 @@
           <Property Name="UpCount" Type="int8" Nullable="false" />
           <Property Name="DownCount" Type="int8" Nullable="false" />
           <Property Name="ParentID" Type="int4" />
-          <Property Name="IsAnonymized" Type="boolean" Nullable="false" />
-          <Property Name="IsDistinguished" Type="boolean" Nullable="false" />
+          <Property Name="IsAnonymized" Type="bool" Nullable="false" />
+          <Property Name="IsDistinguished" Type="bool" Nullable="false" />
           <Property Name="FormattedContent" Type="text" />
-          <Property Name="IsDeleted" Type="boolean" Nullable="false" />
+          <Property Name="IsDeleted" Type="bool" Nullable="false" />
         </EntityType>
         <EntityType Name="CommentRemovalLog">
           <Key>
@@ -157,7 +157,7 @@
           <Property Name="VoteStatus" Type="int4" Nullable="false" />
           <Property Name="CreationDate" Type="timestamp" Nullable="false" />
           <Property Name="IPAddress" Type="varchar" MaxLength="90" />
-          <Property Name="VoteValue" Type="float" Nullable="false" />
+          <Property Name="VoteValue" Type="float8" Nullable="false" />
         </EntityType>
         <EntityType Name="DefaultSubverse">
           <Key>
@@ -200,7 +200,7 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IsActive" Type="boolean" Nullable="false" />
+          <Property Name="IsActive" Type="bool" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="1000" />
           <Property Name="Pattern" Type="varchar" MaxLength="100" Nullable="false" />
@@ -227,7 +227,7 @@
           <Property Name="Subverse" Type="varchar" MaxLength="20" />
           <Property Name="SubmissionID" Type="int4" />
           <Property Name="CommentID" Type="int4" />
-          <Property Name="IsAnonymized" Type="boolean" Nullable="false" />
+          <Property Name="IsAnonymized" Type="bool" Nullable="false" />
           <Property Name="ReadDate" Type="timestamp" />
           <Property Name="CreatedBy" Type="varchar" MaxLength="50" />
           <Property Name="CreationDate" Type="timestamp" Nullable="false" />
@@ -263,9 +263,9 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IsActive" Type="boolean" Nullable="false" />
+          <Property Name="IsActive" Type="bool" Nullable="false" />
           <Property Name="Subverse" Type="varchar" MaxLength="50" />
-          <Property Name="ContentType" Type="tinyint" />
+          <Property Name="ContentType" Type="int2" />
           <Property Name="SortOrder" Type="int4" />
           <Property Name="Name" Type="varchar" MaxLength="200" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="1000" />
@@ -300,21 +300,21 @@
           <Property Name="CreationDate" Type="timestamp" Nullable="false" />
           <Property Name="Type" Type="int4" Nullable="false" />
           <Property Name="Title" Type="varchar" MaxLength="200" />
-          <Property Name="Rank" Type="float" Nullable="false" />
+          <Property Name="Rank" Type="float8" Nullable="false" />
           <Property Name="Subverse" Type="varchar" MaxLength="20" />
           <Property Name="UpCount" Type="int8" Nullable="false" />
           <Property Name="DownCount" Type="int8" Nullable="false" />
-          <Property Name="Thumbnail" Type="nchar" MaxLength="40" />
+          <Property Name="Thumbnail" Type="varchar" MaxLength="40" />
           <Property Name="LastEditDate" Type="timestamp" />
           <Property Name="FlairLabel" Type="varchar" MaxLength="50" />
           <Property Name="FlairCss" Type="varchar" MaxLength="50" />
-          <Property Name="IsAnonymized" Type="boolean" Nullable="false" />
-          <Property Name="Views" Type="float" Nullable="false" />
-          <Property Name="IsDeleted" Type="boolean" Nullable="false" />
-          <Property Name="RelativeRank" Type="float" Nullable="false" />
+          <Property Name="IsAnonymized" Type="bool" Nullable="false" />
+          <Property Name="Views" Type="float8" Nullable="false" />
+          <Property Name="IsDeleted" Type="bool" Nullable="false" />
+          <Property Name="RelativeRank" Type="float8" Nullable="false" />
           <Property Name="Url" Type="varchar" MaxLength="3000" />
           <Property Name="FormattedContent" Type="text" />
-          <Property Name="IsAdult" Type="boolean" Nullable="false" />
+          <Property Name="IsAdult" Type="bool" Nullable="false" />
           <Property Name="ArchiveDate" Type="timestamp" />
         </EntityType>
         <EntityType Name="SubmissionRemovalLog">
@@ -345,7 +345,7 @@
           <Property Name="VoteStatus" Type="int4" Nullable="false" />
           <Property Name="CreationDate" Type="timestamp" Nullable="false" />
           <Property Name="IPAddress" Type="varchar" MaxLength="90" />
-          <Property Name="VoteValue" Type="float" Nullable="false" />
+          <Property Name="VoteValue" Type="float8" Nullable="false" />
         </EntityType>
         <EntityType Name="Subverse">
           <Key>
@@ -356,19 +356,19 @@
           <Property Name="Title" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="500" />
           <Property Name="SideBar" Type="varchar" MaxLength="4000" />
-          <Property Name="IsAdult" Type="boolean" Nullable="false" />
-          <Property Name="IsThumbnailEnabled" Type="boolean" Nullable="false" />
-          <Property Name="ExcludeSitewideBans" Type="boolean" Nullable="false" />
+          <Property Name="IsAdult" Type="bool" Nullable="false" />
+          <Property Name="IsThumbnailEnabled" Type="bool" Nullable="false" />
+          <Property Name="ExcludeSitewideBans" Type="bool" Nullable="false" />
           <Property Name="CreationDate" Type="timestamp" Nullable="false" />
           <Property Name="Stylesheet" Type="text" />
           <Property Name="SubscriberCount" Type="int4" />
-          <Property Name="IsPrivate" Type="boolean" Nullable="false" />
-          <Property Name="IsAuthorizedOnly" Type="boolean" Nullable="false" />
-          <Property Name="IsAnonymized" Type="boolean" />
+          <Property Name="IsPrivate" Type="bool" Nullable="false" />
+          <Property Name="IsAuthorizedOnly" Type="bool" Nullable="false" />
+          <Property Name="IsAnonymized" Type="bool" />
           <Property Name="LastSubmissionDate" Type="timestamp" />
           <Property Name="MinCCPForDownvote" Type="int4" Nullable="false" />
-          <Property Name="IsAdminPrivate" Type="boolean" Nullable="false" />
-          <Property Name="IsAdminDisabled" Type="boolean" />
+          <Property Name="IsAdminPrivate" Type="bool" Nullable="false" />
+          <Property Name="IsAdminDisabled" Type="bool" />
           <Property Name="CreatedBy" Type="varchar" MaxLength="50" />
           <Property Name="LastUpdateDate" Type="timestamp" />
         </EntityType>
@@ -413,7 +413,7 @@
           <Property Name="Description" Type="varchar" MaxLength="500" />
           <Property Name="UserName" Type="varchar" MaxLength="50" />
           <Property Name="Type" Type="int4" Nullable="false" />
-          <Property Name="IsPublic" Type="boolean" Nullable="false" />
+          <Property Name="IsPublic" Type="bool" Nullable="false" />
           <Property Name="SubscriberCount" Type="int4" Nullable="false" />
           <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
@@ -459,11 +459,11 @@
           </Key>
           <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="IsReceived" Type="boolean" Nullable="false" />
+          <Property Name="IsReceived" Type="bool" Nullable="false" />
           <Property Name="ContentType" Type="int4" Nullable="false" />
           <Property Name="VoteStatus" Type="int4" Nullable="false" />
           <Property Name="VoteCount" Type="int4" Nullable="false" />
-          <Property Name="VoteValue" Type="float" Nullable="false" />
+          <Property Name="VoteValue" Type="float8" Nullable="false" />
           <Property Name="ValidThroughDate" Type="timestamp" Nullable="false" />
           <Property Name="LastUpdateDate" Type="timestamp" Nullable="false" />
         </EntityType>
@@ -472,22 +472,22 @@
             <PropertyRef Name="UserName" />
           </Key>
           <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="DisableCSS" Type="boolean" Nullable="false" />
-          <Property Name="NightMode" Type="boolean" Nullable="false" />
+          <Property Name="DisableCSS" Type="bool" Nullable="false" />
+          <Property Name="NightMode" Type="bool" Nullable="false" />
           <Property Name="Language" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="OpenInNewWindow" Type="boolean" Nullable="false" />
-          <Property Name="EnableAdultContent" Type="boolean" Nullable="false" />
-          <Property Name="DisplayVotes" Type="boolean" Nullable="false" />
-          <Property Name="DisplaySubscriptions" Type="boolean" Nullable="false" />
-          <Property Name="UseSubscriptionsMenu" Type="boolean" Nullable="false" />
+          <Property Name="OpenInNewWindow" Type="bool" Nullable="false" />
+          <Property Name="EnableAdultContent" Type="bool" Nullable="false" />
+          <Property Name="DisplayVotes" Type="bool" Nullable="false" />
+          <Property Name="DisplaySubscriptions" Type="bool" Nullable="false" />
+          <Property Name="UseSubscriptionsMenu" Type="bool" Nullable="false" />
           <Property Name="Bio" Type="varchar" MaxLength="100" />
           <Property Name="Avatar" Type="varchar" MaxLength="50" />
-          <Property Name="DisplayAds" Type="boolean" Nullable="false" />
+          <Property Name="DisplayAds" Type="bool" Nullable="false" />
           <Property Name="DisplayCommentCount" Type="int4" />
           <Property Name="HighlightMinutes" Type="int4" />
           <Property Name="VanityTitle" Type="varchar" MaxLength="50" />
           <Property Name="CollapseCommentLimit" Type="int4" />
-          <Property Name="BlockAnonymized" Type="boolean" Nullable="false" />
+          <Property Name="BlockAnonymized" Type="bool" Nullable="false" />
           <Property Name="CommentSort" Type="int4" />
         </EntityType>
         <EntityType Name="ViewStatistic">
