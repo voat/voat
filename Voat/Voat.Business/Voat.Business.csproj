@@ -23,4 +23,7 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.3.0" />
     <PackageReference Include="System.Spatial" Version="5.8.2" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Voat.Data\Voat.Data.csproj" />
+  </ItemGroup>
 </Project>
