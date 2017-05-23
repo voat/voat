@@ -1,0 +1,102 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@model IEnumerable<string>
+
+@{
+    string showingSubverse;
+    string selectedFrontpageClass = "";
+
+    var routeDataObject = ViewContext.RouteData.Values["activeSubverse"];
+
+    if (routeDataObject != null)
+    {
+        showingSubverse = ViewContext.RouteData.Values["activeSubverse"].ToString();
+
+        if (showingSubverse == "/")
+        {
+            selectedFrontpageClass = "selected";
+        }
+    }
+    else
+    {
+        showingSubverse = null;
+        selectedFrontpageClass = "";
+    }
+}
+
+<div id="sr-header-area">
+    <div class="width-clip">
+        <div class="sr-list">
+            <ul class="whoaSubscriptionMenu flat-list sr-bar hover">
+                @Html.Partial("_SubscriptionsHoverMenu")
+            </ul>
+
+            <ul class="flat-list sr-bar hover">
+                <li class="@selectedFrontpageClass">
+                    <span class="separator">-</span>
+                    <a href="/">front</a>
+                </li>
+              
+                <li>
+                    <span class="separator">-</span>
+                    <a href="/v/all">all</a>
+                </li>
+                @* Add Guest Relative Ranking Front for logged in users to access *@
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li>
+                        <span class="separator">-</span>
+                        <a href="/s/Default">default</a>
+                    </li>
+                }
+                <li>
+                    <span class="separator">-</span>
+                    <a href="/random" class="random">random</a>
+                </li>
+            </ul>
+            <ul class="flat-list sr-bar hover" id="sr-bar">
+
+                @foreach (var item in Model)
+                {
+                    string tmpItem = "/v/" + item;
+
+                    string selectedClass;
+                    if (tmpItem == showingSubverse)
+                    {
+                        selectedClass = "selected";
+                    }
+                    else
+                    {
+                        selectedClass = "";
+                    }
+
+                    <li class="@selectedClass">
+                        <span class="separator">-</span>
+                        <a href="/v/@item/">@item</a>
+                    </li>
+                }
+            </ul>
+        </div><a href="/discover" id="sr-more-link">more »</a>
+        <br />
+    </div>
+</div>
+
+

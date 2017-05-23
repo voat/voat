@@ -1,6 +1,10 @@
-﻿#region LICENSE
+#region LICENSE
 
 /*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
 
     This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
@@ -11,8 +15,6 @@
     "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
     or implied. See the License for the specific language governing
     rights and limitations under the License.
-
-    All portions of the code written by Voat, Inc. are Copyright(c) Voat, Inc.
 
     All Rights Reserved.
 
@@ -44,7 +46,7 @@ namespace Voat.Tests.Utils
             while (timespan <= TimeSpan.FromHours(3))
             {
                 string result = Age.ToRelative(timespan);
-                Debug.Print(result);
+                Debug.WriteLine(result);
                 if (result.StartsWith("0"))
                 {
                     Assert.Fail(String.Format("{0} ticks breaks this mofo!", timespan.Ticks));
@@ -94,7 +96,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Utility")]
         public void Age_1_5years()
         {
-            string result = Age.ToRelative(TimeSpan.FromDays(18 * 30));
+            string result = Age.ToRelative(TimeSpan.FromDays(18 * 31));
             Assert.AreEqual(String.Format("{0} years", 1.5), result, "Submission age was not calculated.");
         }
 
@@ -247,6 +249,6 @@ namespace Voat.Tests.Utils
             string result = Age.ToRelative(TimeSpan.FromMinutes(90));
             Assert.AreEqual(String.Format("{0} hours", 1.5), result, "Submission age was not calculated.");
         }
-
+       
     }
 }

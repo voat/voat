@@ -1,4 +1,28 @@
-﻿using Newtonsoft.Json;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using Newtonsoft.Json;
 using System;
 using Voat.Common;
 
@@ -46,16 +70,27 @@ namespace Voat.Domain.Command
 
         #region Static Helpers
 
+        private static string DefaultDescription(Status status)
+        {
+            return $"Operation Result: {status.ToString()}";
+        }
+
         public static CommandResponse FromStatus(Status status, string description)
         {
             return new CommandResponse(status, description);
         }
-
+        public static CommandResponse FromStatus(Status status)
+        {
+            return new CommandResponse(status, DefaultDescription(status));
+        }
         public static CommandResponse<R> FromStatus<R>(R response, Status status, string description)
         {
             return new CommandResponse<R>(response, status, description);
         }
-
+        public static CommandResponse<R> FromStatus<R>(R response, Status status)
+        {
+            return new CommandResponse<R>(response, status, DefaultDescription(status));
+        }
         //public static CommandResponse<R> Denied<R>(R response, string description)
         //{
         //    return new CommandResponse<R>(response, Status.Denied, description);

@@ -1,4 +1,28 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,10 +39,9 @@ namespace Voat.Tests.QueryTests
     [TestClass]
     public class QuerySubmissionSortTests : BaseUnitTest
     {
-        private static string subverse = "sort";
+        private string subverse = "sort";
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public override void ClassInitialize()
         {
             VoatDataInitializer.CreateSorted(subverse);
         }
@@ -32,8 +55,8 @@ namespace Voat.Tests.QueryTests
         public void Search_Sort_RelativeRank()
         {
             var s = new SearchOptions();
-            s.Sort = SortAlgorithm.RelativeRank;
-            var q = new QuerySubmissions(subverse, s);
+            s.Sort = SortAlgorithm.Relative;
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
@@ -59,7 +82,7 @@ namespace Voat.Tests.QueryTests
         public void Search_Sort_Rank() {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Rank;
-            var q = new QuerySubmissions(subverse, s);
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
@@ -73,7 +96,7 @@ namespace Voat.Tests.QueryTests
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.New;
-            var q = new QuerySubmissions(subverse, s);
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
@@ -86,7 +109,7 @@ namespace Voat.Tests.QueryTests
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Top;
-            var q = new QuerySubmissions(subverse, s);
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
@@ -99,7 +122,7 @@ namespace Voat.Tests.QueryTests
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Bottom;
-            var q = new QuerySubmissions(subverse, s);
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
@@ -113,7 +136,7 @@ namespace Voat.Tests.QueryTests
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Viewed;
-            var q = new QuerySubmissions(subverse, s);
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
@@ -126,7 +149,7 @@ namespace Voat.Tests.QueryTests
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Intensity;
-            var q = new QuerySubmissions(subverse, s);
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), s);
             var r = q.ExecuteAsync().Result;
             VerifySort(s, r);
         }
@@ -141,7 +164,7 @@ namespace Voat.Tests.QueryTests
 
             var f = new Func<double, double, bool, bool>((x, y, ascending) => {
 
-                Debug.Print(String.Format("x: {0}, y:{0}", x, y));
+                Debug.WriteLine(String.Format("x: {0}, y:{0}", x, y));
 
                 if (ascending)
                 {
@@ -194,7 +217,7 @@ namespace Voat.Tests.QueryTests
                             current = (double)currentSubmission.Views;
                             previous = (double)previousSubmission.Views;
                             break;
-                        case SortAlgorithm.RelativeRank:
+                        case SortAlgorithm.Relative:
                             asc = options.SortDirection == SortDirection.Reverse;
                             current = (double)currentSubmission.RelativeRank;
                             previous = (double)previousSubmission.RelativeRank;

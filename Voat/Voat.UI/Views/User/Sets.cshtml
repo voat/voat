@@ -1,0 +1,73 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+
+@model IEnumerable<Voat.Domain.Models.Set>
+
+@{ 
+    //System.Diagnostics.Debug.Assert(ViewBag.UserName != null, "UserName is required");
+}
+
+<div id="container">
+    @Html.Partial("~/Views/Shared/Sidebars/_SidebarUserInfo.cshtml")
+
+    <div class="content" role="main">
+
+        @if (!Settings.SetCreationDisabled && User.Identity.IsAuthenticated && User.Identity.Name.IsEqual((string)ViewBag.UserName))
+        {
+            <a href="/user/@User.Identity.Name/sets/create">Create a Set</a>
+        }
+        <div class="alert-title">Sets for @ViewBag.UserName</div>
+        
+        @if (Model.Any())
+        {
+            <div class="sitetable linklisting">
+
+                @if (Model.Any())
+                {
+                    using (var enumerator = Model.GetEnumerator())
+                    {
+                        Voat.Domain.Models.DomainReferenceDetails current = null;
+                        while (enumerator.MoveNext())
+                        {
+                            current = Voat.Domain.Models.DomainReferenceDetails.Map(enumerator.Current);
+                            <div>
+                                <div class="col-md-6">@Html.DisplayFor(x => current, new { ShowDetailButton = true })</div>
+                                @if (enumerator.MoveNext())
+                                {
+                                    current = Voat.Domain.Models.DomainReferenceDetails.Map(enumerator.Current);
+                                    <div class="col-md-6">@Html.DisplayFor(x => current, new { ShowDetailButton = true })</div>
+                                }
+                            </div>
+                        }
+                    }
+                }
+                else
+                {
+                    <div>No subverses</div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>No sets found</p>
+        }
+    </div>
+</div>

@@ -1,10 +1,35 @@
-﻿using Kaliko.ImageLibrary;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using Kaliko.ImageLibrary;
 using Kaliko.ImageLibrary.Scaling;
 using OpenGraph_Net;
 using System;
 
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
@@ -55,8 +80,9 @@ namespace Voat.Utilities
         private const int MaxWidth = 70;
 
         // generate a thumbnail while removing transparency and preserving aspect ratio
-        public static async Task<string> GenerateThumbFromImageUrl(string imageUrl, int timeoutInMilliseconds = 3000)
+        public static async Task<string> GenerateThumbFromImageUrl(string imageUrl, int timeoutInMilliseconds = 3000, bool purgeTempFile = true)
         {
+            //TODO: Return NULL if file lenght is zero as thumbnail did not generate to local disk
             var randomFileName = GenerateRandomFilename();
             var tempPath = Path.Combine(DestinationPathThumbs, $"{randomFileName}.jpg");
 
@@ -68,23 +94,29 @@ namespace Voat.Utilities
                 originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(tempPath, 90);
             }
 
-            // call upload to storage method if CDN config is enabled
-            if (Settings.UseContentDeliveryNetwork)
+            if (FileSystemUtility.FileExists(tempPath, DestinationPathThumbs))
             {
-                if (FileSystemUtility.FileExists(tempPath, DestinationPathThumbs))
+                // call upload to storage method if CDN config is enabled
+                if (Settings.UseContentDeliveryNetwork)
                 {
                     await CloudStorageUtility.UploadBlobToStorageAsync(tempPath, "thumbs");
-
-                    // delete local file after uploading to CDN
-                    File.Delete(tempPath);
+                    if (purgeTempFile)
+                    {
+                        // delete local file after uploading to CDN
+                        File.Delete(tempPath);
+                    }
                 }
+                return Path.GetFileName(tempPath);
+            }
+            else
+            {
+                return null;
             }
 
-            return Path.GetFileName(tempPath);
         }
 
         // store uploaded avatar
-        public static async Task<bool> GenerateAvatar(Image inputImage, string userName, string mimetype)
+        public static async Task<bool> GenerateAvatar(Image inputImage, string userName, string mimetype, bool purgeTempFile = true)
         {
             try
             {
@@ -92,7 +124,9 @@ namespace Voat.Utilities
                 var originalImage = new KalikoImage(inputImage);
                 originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPathAvatars + '\\' + userName + ".jpg", 90);
                 if (!Settings.UseContentDeliveryNetwork)
+                {
                     return true;
+                }
 
                 // call upload to storage since CDN is enabled in config
                 string tempAvatarLocation = DestinationPathAvatars + '\\' + userName + ".jpg";
@@ -106,9 +140,11 @@ namespace Voat.Utilities
                 {
                     // upload to CDN
                     await CloudStorageUtility.UploadBlobToStorageAsync(tempAvatarLocation, "avatars");
-
-                    // delete local file after uploading to CDN
-                    File.Delete(tempAvatarLocation);
+                    if (purgeTempFile)
+                    {
+                        // delete local file after uploading to CDN
+                        File.Delete(tempAvatarLocation);
+                    }
                 }
                 return true;
             }
@@ -146,69 +182,39 @@ namespace Voat.Utilities
             return rndFileName;
         }
 
-        // generate a thumbnail if submission is a direct link to image or video
-        public static async Task<string> GenerateThumbFromWebpageUrl(string websiteUrl)
+        
+        public static async Task<string> GenerateThumbFromWebpageUrl(string websiteUrl, bool purgeTempFile = true)
         {
             var extension = Path.GetExtension(websiteUrl);
+            var imageExtensions = new string[] { ".jpg", ".png", ".gif", ".jpeg" };
 
-            // this is a direct link to image
-            if (extension != String.Empty)
+            var thumbFileName = (string)null;
+
+            try
             {
-                if (extension == ".jpg" || extension == ".JPG" || extension == ".png" || extension == ".PNG" || extension == ".gif" || extension == ".GIF")
+                if (imageExtensions.Any(x => x.IsEqual(extension)))
                 {
-                    try
-                    {
-                        var thumbFileName = await GenerateThumbFromImageUrl(websiteUrl);
-                        return thumbFileName;
-                    }
-                    catch (Exception)
-                    {
-                        // thumnail generation failed, skip adding thumbnail
-                        return null;
-                    }
+                    // generate a thumbnail if submission is a direct link to image or video
+                    thumbFileName = await GenerateThumbFromImageUrl(websiteUrl, purgeTempFile: purgeTempFile);
                 }
-
-                // try generating a thumbnail by using the Open Graph Protocol
-                try
+                if (String.IsNullOrEmpty(thumbFileName))
                 {
                     var graphUri = new Uri(websiteUrl);
                     var graph = OpenGraph.ParseUrl(graphUri, userAgent: "Voat.co OpenGraph Parser");
 
                     // open graph failed to find og:image element, abort thumbnail generation
-                    if (graph.Image == null)
-                        return null;
-
-                    var thumbFileName = await GenerateThumbFromImageUrl(graph.Image.ToString());
-                    return thumbFileName;
+                    if (graph.Image != null)
+                    {
+                        thumbFileName = await GenerateThumbFromImageUrl(graph.Image.ToString(), purgeTempFile: purgeTempFile);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    EventLogger.Log(ex);
-                    // thumnail generation failed, skip adding thumbnail
-                    return null;
-                }
-            }
-
-            // this is not a direct link to an image, it could be a link to an article or video
-            // try generating a thumbnail by using the Open Graph Protocol
-            try
-            {
-                var graphUri = new Uri(websiteUrl);
-                var graph = OpenGraph.ParseUrl(graphUri, userAgent: "Voat.co OpenGraph Parser");
-
-                // open graph failed to find og:image element, abort thumbnail generation
-                if (graph.Image == null)
-                    return null;
-
-                var thumbFileName = await GenerateThumbFromImageUrl(graph.Image.ToString());
-                return thumbFileName;
             }
             catch (Exception ex)
             {
-                EventLogger.Log(ex);
                 // thumnail generation failed, skip adding thumbnail
-                return null;
+                EventLogger.Log(ex);
             }
+            return thumbFileName;
         }
     }
 }

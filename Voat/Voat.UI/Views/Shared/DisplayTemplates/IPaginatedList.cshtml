@@ -1,0 +1,72 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+
+@model Voat.Utilities.IPaginatedList
+
+@{
+    if (Model.RouteData == null)
+    {
+        Model.RouteData = new RouteValueDictionary();
+    }
+    var routeLink = false;
+    if (!String.IsNullOrEmpty(Model.RouteName))
+    {
+        routeLink = true;
+    }
+    var viewDic = ViewBag;
+
+    <div class="pagination-container">
+        <ul>
+            @if (Model.HasPreviousPage)
+            {
+                Model.RouteData["page"] = Model.PageIndex - 1;
+                <li class="btn-whoaverse-paging">
+                    @if (routeLink)
+                    {
+                        <a href='@Url.RouteUrlPretty(Model.RouteName, Model.RouteData)'>< prev</a>
+                        //@Html.RouteLink("< prev", Model.RouteName, Model.RouteData)
+                    }
+                    else
+                    {
+                        <a href='@Url.ActionPretty((string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)'>< prev</a>
+                        //@Html.ActionLink("< prev", (string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)
+                    }
+                </li>
+            }
+            @if (Model.HasNextPage)
+            {
+                Model.RouteData["page"] = Model.PageIndex + 1;
+                <li class="btn-whoaverse-paging">
+                    @if (routeLink)
+                    {
+                        <a href='@Url.RouteUrlPretty(Model.RouteName, Model.RouteData)'>next ></a>
+                        //@Html.RouteLink("next >", Model.RouteName, Model.RouteData)
+                    }
+                    else
+                    {
+                        <a href='@Url.ActionPretty((string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)'>next ></a>
+                        //@Html.ActionLink("next >", (string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+}

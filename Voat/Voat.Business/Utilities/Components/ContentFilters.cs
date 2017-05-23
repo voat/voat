@@ -1,4 +1,30 @@
-﻿using System;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Voat.Data.Models;
 
@@ -73,25 +99,39 @@ namespace Voat.Utilities.Components
         {
             _replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + CONSTANTS.USER_HOT_LINK_REGEX, MatchFound) { MatchThreshold = matchThreshold, IgnoreDuplicateMatches = ignoreDuplicatMatches };
         }
-
+       
         protected override string ProcessContent(string content, object context)
         {
             return _replacer.Replace(content, context);
         }
-
+        
         public abstract string MatchFound(Match match, string matchSource, object context);
     }
 
     public class UserMentionNotificationFilter : UserMentionFilter
     {
+        private class DuplicateUserNameDetectionReplacer : MatchProcessingReplacer
+        {
+            public DuplicateUserNameDetectionReplacer(string regEx, Func<Match, string, object, string> replacementFunc) : base(regEx, replacementFunc)
+            {
+            }
+            public override bool IsDuplicate(Match currentMatch, IEnumerable<Match> processedMatches)
+            {
+                string groupName = "user";
+                var found = processedMatches.Any(x => String.Equals(x.Groups[groupName].Value, currentMatch.Groups[groupName].Value, StringComparison.OrdinalIgnoreCase));
+                return found;
+            }
+        }
+
         public UserMentionNotificationFilter()
             : base(5, true)
         {
+            _replacer = new DuplicateUserNameDetectionReplacer(_replacer.RegEx, MatchFound) { MatchThreshold = _replacer.MatchThreshold, IgnoreDuplicateMatches = _replacer.IgnoreDuplicateMatches };
             Priority = 1;
             ProcessingStage = ProcessingStage.InboundPostSave;
             IsReadOnly = true;
         }
-
+       
         public override string MatchFound(Match match, string matchSource, object context)
         {
             if (!match.Groups["notify"].Success)
@@ -140,7 +180,7 @@ namespace Voat.Utilities.Components
 
             ProcessLogic = delegate (Match m, string matchSource, object state)
             {
-                return String.Format("[{0}]({1})", m.Value, VoatUrlFormatter.Subverse(m.Groups["sub"].Value + (m.Groups["anchor"].Success ? m.Groups["anchor"].Value : "")));
+                return String.Format("[{0}]({1})", m.Value, VoatUrlFormatter.Subverse(m.Groups["name"].Value + (m.Groups["fullPath"].Success ? m.Groups["fullPath"].Value : "")));
             };
         }
 

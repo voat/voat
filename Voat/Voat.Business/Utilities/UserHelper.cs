@@ -1,16 +1,26 @@
-﻿/*
-This source file is subject to version 3 of the GPL license,
-that is bundled with this package in the file LICENSE, and is
-available online at http://www.gnu.org/licenses/gpl.txt;
-you may not use this file except in compliance with the License.
+#region LICENSE
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+/*
+    
+    Copyright(c) Voat, Inc.
 
-All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
-All Rights Reserved.
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
 */
+
+#endregion LICENSE
 
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -28,11 +38,147 @@ using System.Net.Http;
 using Voat.Caching;
 using System.Threading;
 using Voat.Domain;
+using System.Text.RegularExpressions;
 
 namespace Voat.Utilities
 {
     public static class UserHelper
     {
+
+        public static IEnumerable<Func<string, IEnumerable<string>>> DefaultSpoofList(IDictionary<string, string> charSwaps = null)
+        {
+           
+            List<Func<string, IEnumerable<string>>> spoofs = new List<Func<string, IEnumerable<string>>>();
+
+            spoofs.Add(new Func<string, IEnumerable<string>>((userName) => {
+
+                List<string> l = new List<string>();
+
+                if (charSwaps == null || !charSwaps.Any())
+                {
+                    charSwaps = new Dictionary<string, string>();
+                    charSwaps.Add("i", "l");
+                    charSwaps.Add("o", "0");
+                    //charSwaps.Add("h", "hahaha"); //just to make sure offset swapping does not break
+                    //charSwaps.Add("heart", "like"); //just to make sure offset swapping does not break
+                }
+                string allSwapped = userName;
+
+                Action<string, string, List<string>> processSwap = new Action<string, string, List<string>>((string1, string2, list) => {
+
+                    var userArray = list.ToArray();
+                    foreach (var username in userArray)
+                    {
+                        var lusername = username.ToLower();
+                        if (lusername.Contains(string1.ToLower()))
+                        {
+                            //Add straight swap (all)
+                            list.Add(lusername.Replace(string1.ToLower(), string2.ToLower()));
+
+                            //replace each individual occurance
+                            var matches = Regex.Matches(lusername, string1, RegexOptions.IgnoreCase);
+                            if (matches.Count > 1) //If it has 1 match the above line already swapped it
+                            {
+                                //rolling sub
+                                string rollingUserName = lusername;
+                                var offset = 0;
+                                var substitution = string2;
+                                var rollingSwap = lusername;
+
+                                List<Match> reverseProcessing = new List<Match>();
+
+                                foreach (Match m in matches)
+                                {
+                                    reverseProcessing.Add(m);
+                                    //Concat method (fractions of milliseconds faster)
+                                    rollingSwap = String.Concat(rollingSwap.Substring(0, m.Index + offset), substitution, rollingSwap.Substring(m.Index + m.Length + offset, rollingSwap.Length - (m.Length + m.Index + offset)));
+                                    list.Add(rollingSwap);
+                                    offset += substitution.Length - m.Length;
+
+                                    var individualSwap = String.Concat(rollingSwap.Substring(0, m.Index), substitution, rollingSwap.Substring(m.Index + m.Length, rollingSwap.Length - (m.Length + m.Index)));
+                                    list.Add(individualSwap);
+                                }
+
+                                //Reverse swaps
+                                offset = 0;
+                                substitution = string2;
+                                rollingSwap = lusername;
+                                reverseProcessing.Reverse();
+                                foreach (Match m in reverseProcessing)
+                                {
+                                    //Concat method (fractions of milliseconds faster)
+                                    rollingSwap = String.Concat(rollingSwap.Substring(0, m.Index + offset), substitution, rollingSwap.Substring(m.Index + m.Length + offset, rollingSwap.Length - (m.Length + m.Index + offset)));
+                                    list.Add(rollingSwap);
+                                    //offset += substitution.Length - m.Length;
+                                }
+                            }
+                        }
+                    }
+                });
+
+                l.Add(userName);
+                foreach (var swap in charSwaps)
+                {
+
+
+                    //swap key for value
+                    processSwap(swap.Key, swap.Value, l);
+                    //var swapped = userName.ToLower().Replace(swap.Key.ToLower(), swap.Value.ToLower());
+                    //allSwapped = allSwapped.ToLower().Replace(swap.Key.ToLower(), swap.Value.ToLower());
+                    //l.Add(swapped);
+                    //l.Add(allSwapped);
+
+
+
+
+                    //swap value for key
+                    processSwap(swap.Value, swap.Key, l);
+                    //swapped = userName.ToLower().Replace(swap.Value.ToLower(), swap.Key.ToLower());
+                    //allSwapped = allSwapped.ToLower().Replace(swap.Value.ToLower(), swap.Key.ToLower());
+                    //l.Add(swapped);
+                    //l.Add(allSwapped);
+
+                }
+
+                return l.Distinct().ToList();
+
+            }));
+
+            return spoofs;
+        }
+
+        public static bool CanUserNameBeRegistered(UserManager<VoatUser> userManager, string userName, IEnumerable<Func<string, IEnumerable<string>>> spoofSubstitutionFuncList = null)
+        {
+            
+            List<string> spoofsToCheck = new List<string>();
+            spoofsToCheck.Add(userName); //add original username
+
+            //process deviations
+            if (spoofSubstitutionFuncList != null && spoofSubstitutionFuncList.Any())
+            {
+                foreach (var spoofFunc in spoofSubstitutionFuncList)
+                {
+                    var l = spoofFunc(userName);
+                    if (l != null && l.Any())
+                    {
+                        spoofsToCheck.AddRange(l.Where(x => !String.IsNullOrEmpty(x) && !userName.IsEqual(x)).ToList()); //only add valid items
+                    }
+                }
+            }
+
+            //TODO: Need to migrate to dapper and repo
+            var accountExists = spoofsToCheck.Any(x => userManager.FindByName(x) != null);
+            if (accountExists)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
         // check if user exists in database
         public static bool UserExists(string userName)
         {
@@ -51,96 +197,6 @@ namespace Voat.Utilities
                 return d != null ? d.UserName : null;
             }
             return null;
-        }
-
-        // delete a user account and all history: comments, posts and votes
-        public static bool DeleteUser(string userName)
-        {
-            using (var db = new voatEntities())
-            {
-                using (var tmpUserManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
-                {
-                    var tmpuser = tmpUserManager.FindByName(userName);
-                    if (tmpuser != null)
-                    {
-                        // remove voting history for submisions
-                        db.SubmissionVoteTrackers.RemoveRange(db.SubmissionVoteTrackers.Where(x => x.UserName == userName));
-
-                        // remove voting history for comments
-                        db.CommentVoteTrackers.RemoveRange(db.CommentVoteTrackers.Where(x => x.UserName == userName));
-
-                        // remove all comments
-                        var comments = db.Comments.Where(c => c.UserName == userName).ToList();
-                        foreach (Comment c in comments)
-                        {
-                            c.IsDeleted = true;
-                            c.Content = "deleted by user";
-                        }
-                        db.SaveChanges();
-
-                        // remove all submissions
-                        var submissions = db.Submissions.Where(c => c.UserName == userName).ToList();
-                        foreach (var s in submissions)
-                        {
-                            s.Title = "deleted by user";
-                            if (s.Type == 1)
-                            {
-                                s.IsDeleted = true;
-                                s.Content = "deleted by user";
-                            }
-                            else
-                            {
-                                s.IsDeleted = true;
-                                s.Url = "http://voat.co";
-                            }
-                        }
-
-                        // resign from all moderating positions
-                        db.SubverseModerators.RemoveRange(db.SubverseModerators.Where(m => m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)));
-
-                        // delete user preferences
-                        var userPrefs = db.UserPreferences.Find(userName);
-                        if (userPrefs != null)
-                        {
-                            // delete short bio
-                            userPrefs.Bio = null;
-
-                            // delete avatar
-                            if (userPrefs.Avatar != null)
-                            {
-                                var avatarFilename = userPrefs.Avatar;
-                                if (Settings.UseContentDeliveryNetwork)
-                                {
-                                    // try to delete from CDN
-                                    CloudStorageUtility.DeleteBlob(avatarFilename, "avatars");
-                                }
-                                else
-                                {
-                                    // try to remove from local FS
-                                    string tempAvatarLocation = Settings.DestinationPathAvatars + '\\' + userName + ".jpg";
-
-                                    // the avatar file was not found at expected path, abort
-                                    if (!FileSystemUtility.FileExists(tempAvatarLocation, Settings.DestinationPathAvatars))
-                                        return false;
-
-                                    // exec delete
-                                    File.Delete(tempAvatarLocation);
-                                }
-                            }
-                        }
-
-                        // UNDONE: keep this updated as new features are added (delete sets etc)
-                        // username will stay permanently reserved to prevent someone else from registering it and impersonating
-
-                        db.SaveChanges();
-
-                        return true;
-                    }
-
-                    // user account could not be found
-                    return false;
-                }
-            }
         }
 
         // check which theme style user selected
@@ -226,8 +282,8 @@ namespace Voat.Utilities
                         .Take(3)
                         .ToList();
 
-                    var linkSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 2 && !a.IsDeleted);
-                    var messageSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 1 && !a.IsDeleted);
+                    var linkSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 2 && !a.IsDeleted && !a.IsAnonymized);
+                    var messageSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 1 && !a.IsDeleted && !a.IsAnonymized);
 
                     // get 5 highest rated submissions
                     var highestRatedSubmissions = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
@@ -287,34 +343,34 @@ namespace Voat.Utilities
             }
         }
        
-        // check if a given user is subscribed to a given set
-        public static bool IsUserSubscribedToSet(string userName, string setName)
-        {
-            using (var db = new voatEntities())
-            {
-                var result = db.UserSetSubscriptions.FirstOrDefault(s => s.UserSet.Name == setName && s.UserName == userName);
-                return result != null;
-            }
-        }
-        //[Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
-        // check if a given user is owner of a given set
-        public static bool IsUserSetOwner(string userName, int setId)
-        {
-            using (var db = new voatEntities())
-            {
-                var result = db.UserSets.FirstOrDefault(s => s.ID == setId && s.CreatedBy == userName);
-                return result != null;
-            }
-        }
+        //// check if a given user is subscribed to a given set
+        //public static bool IsUserSubscribedToSet(string userName, string setName)
+        //{
+        //    using (var db = new voatEntities())
+        //    {
+        //        var result = db.UserSetSubscriptions.FirstOrDefault(s => s.UserSet.Name == setName && s.UserName == userName);
+        //        return result != null;
+        //    }
+        //}
+        ////[Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
+        //// check if a given user is owner of a given set
+        //public static bool IsUserSetOwner(string userName, int setId)
+        //{
+        //    using (var db = new voatEntities())
+        //    {
+        //        var result = db.UserSets.FirstOrDefault(s => s.ID == setId && s.CreatedBy == userName);
+        //        return result != null;
+        //    }
+        //}
 
-        // return sets subscription count for a given user
-        public static int SetsSubscriptionCount(string userName)
-        {
-            using (var db = new voatEntities())
-            {
-                return db.UserSetSubscriptions.Count(s => s.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
-            }
-        }
+        //// return sets subscription count for a given user
+        //public static int SetsSubscriptionCount(string userName)
+        //{
+        //    using (var db = new voatEntities())
+        //    {
+        //        return db.UserSetSubscriptions.Count(s => s.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
+        //    }
+        //}
 
 
         // subscribe to a set

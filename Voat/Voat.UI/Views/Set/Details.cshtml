@@ -1,0 +1,98 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+
+@model Voat.Models.ViewModels.SetViewModel
+
+
+@{
+    ViewBag.Title = "subverses";
+    string urlaction = "";
+
+    if (ViewBag.SubversesView == "blocked")
+    {
+        urlaction = "BlockedSubverses";
+    }
+    else
+    {
+        urlaction = "new";
+    }
+
+    var showDiscoveryMenu = false;
+    if (User.Identity.IsAuthenticated)
+    {
+        showDiscoveryMenu = (Model.Set.UserName == User.Identity.Name
+                && (
+                    (Model.Set.Type == Voat.Domain.Models.SetType.Front && Model.Set.Name == Voat.Domain.Models.SetType.Front.ToString())
+                    ||
+                    (Model.Set.Type == Voat.Domain.Models.SetType.Blocked && Model.Set.Name == Voat.Domain.Models.SetType.Blocked.ToString())
+                ));
+    }
+
+
+}
+
+<style type="text/css">
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
+</style>
+
+<div id="container">
+    <div role="main">
+
+        @if (showDiscoveryMenu)
+        {
+            @Html.Partial("~/Views/Discover/_SubMenu.cshtml", Voat.Domain.Models.DomainType.Subverse)
+        }
+
+        @Html.Partial("_Edit", Model)
+        <hr />
+        @if (Model.Permissions.EditList)
+        {
+            <div class="form-horizontal updateSection">
+
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-5">
+                        <div class="updateResult"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-4 control-label">Add a Subverse</label>
+                    <div class="col-md-5">
+                        <input type="text" id="subName" class="form-control" />
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-5">
+                        <input type="button" value="Add" class="btn-whoaverse" onclick="javascript:setSubverseListToggle($(this), '@Model.Set.FullName', $('#subName').val(), '@Voat.Domain.Models.SubscriptionAction.Subscribe.ToString()', setSubverseAddCallBack);" />
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+        }
+        <div class="sitetable linklisting">
+           @Html.Partial("_List", Model)
+        </div>
+        @Html.DisplayFor(model => Model.List, "IPaginatedList")
+    </div>
+</div>
+

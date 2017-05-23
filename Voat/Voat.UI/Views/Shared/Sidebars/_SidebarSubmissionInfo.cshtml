@@ -1,100 +1,98 @@
-﻿@*This source file is subject to version 3 of the GPL license,
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
-    available online at http://www.gnu.org/licenses/gpl.txt;
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
     you may not use this file except in compliance with the License.
 
-    Software distributed under the License is distributed on an "AS IS" basis,
-    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-    the specific language governing rights and limitations under the License.
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
 
-    All portions of the code written by Voat are Copyright (c) 2014 Voat
-    All Rights Reserved.*@
+    All Rights Reserved.
 
-@{
-    double percentageOfLove;
-    double totalVotes = ViewBag.dislikes + ViewBag.likes;
-    double difference = ViewBag.Likes - ViewBag.dislikes;
-    double views = ViewBag.views;
+*@
 
-    bool? anonymized = ViewBag.anonymized;
+@model Voat.Domain.Models.Submission
 
-    if (totalVotes > 0)
-    {
-        percentageOfLove = Math.Round((ViewBag.likes / totalVotes) * 100, 2);
-    }
-    else
-    {
-        percentageOfLove = 0;
-    }
+<div class="spacer">
+    <div class="titlebox submissioninfo">
+        <div class="alert-h2">
+            Submission Info
+        </div>
+        <div>
 
-    <div class="spacer">
-        <div class="titlebox submissioninfo">
-            <div class="alert-h2">
-                Submission Info
-            </div>
-            <div>
-
-                @if (ViewBag.name == "deleted")
-                {
-                    <p class="h6">
-                        Posted by: [deleted]
-                    </p>
-                }
-                else
-                {
-                    if (anonymized == true)
-                    {
-                        <p class="h6">
-                            Posted by: <a href="#" class="author may-blank">@ViewBag.name</a>
-                        </p>
-                    }
-                    else
-                    {
-                        <p class="h6">
-                            Posted by: <a href="/user/@ViewBag.name" class="author may-blank">@ViewBag.name</a>
-                        </p>
-                    }
-                }
-
+            @if (Model.IsDeleted)
+            {
                 <p class="h6">
-                    Posting time: @Age.ToRelative(ViewBag.date) ago on <time title="@ViewBag.date" datetime="@ViewBag.date">@ViewBag.date</time>
+                    Posted by: [deleted]
                 </p>
-
-                @if (@ViewBag.lastEditDate != null)
+            }
+            else
+            {
+                if (Model.IsAnonymized)
                 {
                     <p class="h6">
-                        Last edit time: @Age.ToRelative(ViewBag.lastEditDate) ago on <time title="@ViewBag.lastEditDate" datetime="@ViewBag.lastEditDate">@ViewBag.lastEditDate</time>
+                        Posted by: <a href="#" class="author may-blank">@Model.UserName</a>
                     </p>
                 }
                 else
                 {
                     <p class="h6">
-                        Last edit time: never edited.
+                        Posted by: <a href="/user/@Model.UserName" class="author may-blank">@Model.UserName</a>
                     </p>
                 }
+            }
 
-            </div>
-            <div class="alert-h2">
-                Traffic stats
-            </div>
-            <div class="submission-score-box">
+            <p class="h6">
+                Posting time: @Age.ToRelative(Model.CreationDate) ago on <time title="@Model.CreationDate" datetime="@Model.CreationDate">@Model.CreationDate</time>
+            </p>
+
+            @if (Model.LastEditDate.HasValue)
+            {
                 <p class="h6">
-                    <span class="user">Views</span>: <b>@views</b>
+                    Last edit time: @Age.ToRelative(Model.LastEditDate.Value) ago on <time title="@Model.LastEditDate.Value" datetime="@Model.LastEditDate.Value">@Model.LastEditDate.Value</time>
                 </p>
-            </div>
-            <div class="alert-h2">
-                Score
-            </div>
-            <div class="submission-score-box">
+            }
+            else
+            {
                 <p class="h6">
-                    <span class="ikp" title="Submission Contribution Points"><span class="user">SCP</span></span>: <b>@difference</b>
+                    Last edit time: never edited.
                 </p>
+            }
+            @if (Model.ArchiveDate.HasValue)
+            {
                 <p class="h6">
-                    <b>@ViewBag.Likes</b> upvotes, <b>@ViewBag.Dislikes</b> downvotes (<b>@percentageOfLove%</b> upvoted it)
+                    Archived on: @Model.ArchiveDate.Value
                 </p>
-            </div>
-            <div class="clear">
-            </div>
+            }
+
+        </div>
+        <div class="alert-h2">
+            Traffic stats
+        </div>
+        <div class="submission-score-box">
+            <p class="h6">
+                <span class="user">Views</span>: <b>@Model.Views</b>
+            </p>
+        </div>
+        <div class="alert-h2">
+            Score
+        </div>
+        <div class="submission-score-box">
+            <p class="h6">
+                <span class="ikp" title="Submission Contribution Points"><span class="user">SCP</span></span>: <b>@Model.Sum</b>
+            </p>
+            <p class="h6">
+                <b>@Model.UpCount</b> upvotes, <b>@Model.DownCount</b> downvotes (<b>@System.Math.Round(Model.UpRatio * 100, 2)%</b> upvoted it)
+            </p>
+        </div>
+        <div class="clear">
         </div>
     </div>
-}
+</div>

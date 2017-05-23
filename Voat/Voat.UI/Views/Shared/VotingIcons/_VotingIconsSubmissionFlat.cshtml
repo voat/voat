@@ -1,0 +1,96 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@model Voat.Domain.Models.Submission
+
+@{
+    int score = (int)(Model.UpCount - Model.DownCount);
+
+    //default voting icons style
+    string votingStatusClassUpArrow = "arrow-upvote";
+    string votingStatusClassDownArrow = "arrow-downvote";
+    string likesOrDislikesClass = "unvoted";
+    string upVoteJavaScript = "mustLogin();";
+    string downVoteJavaScript = "mustLogin();";
+
+    double likes = Math.Round(((double)Model.UpCount / ((double)Model.UpCount + (double)Model.DownCount)) * 100);
+    double dislikes = Math.Round(((double)Model.DownCount / ((double)Model.UpCount + (double)Model.DownCount)) * 100);
+    var hidden = Model.ArchiveDate.HasValue ? "" : "";
+
+    Voat.Domain.Models.VoteTypeAllowed voteTypeAllowed = ViewBag.VoteTypeAllowed == null ? Voat.Domain.Models.VoteTypeAllowed.Any : (Voat.Domain.Models.VoteTypeAllowed)ViewBag.VoteTypeAllowed;
+    if (Model.ArchiveDate.HasValue)
+    {
+        voteTypeAllowed = Voat.Domain.Models.VoteTypeAllowed.None;
+    }
+
+    if (voteTypeAllowed == Voat.Domain.Models.VoteTypeAllowed.None)
+    {
+        <div class="unvoted votingicons">
+            <div class="score dislikes">@Model.DownCount</div>
+            <div class="submissionscore">@Model.Sum</div>
+            <div class="score likes">@Model.UpCount</div>
+        </div>
+    }
+    else
+    {
+        if (Model.Vote.HasValue)
+        {
+            //returns -1:downvoted, 1:upvoted, or 0:not voted
+            int votedOrNot = Model.Vote.HasValue ? Model.Vote.Value : 0;
+
+            switch (votedOrNot)
+            {
+                case 1:
+                    votingStatusClassUpArrow = "arrow-upvoted";
+                    votingStatusClassDownArrow = "arrow-downvote";
+                    likesOrDislikesClass = "likes";
+                    break;
+                case -1:
+                    likesOrDislikesClass = "dislikes";
+                    votingStatusClassUpArrow = "arrow-upvote";
+                    votingStatusClassDownArrow = "arrow-downvoted";
+                    break;
+            }
+            upVoteJavaScript = String.Format("voteSubmission({0}, 1, $(this).parent().prev('span.vote-error'));", Model.ID);
+            downVoteJavaScript = String.Format("voteSubmission({0}, -1, $(this).parent().prev('span.vote-error'));", Model.ID);
+        }
+        <span class="vote-error"></span>
+        <div class="@likesOrDislikesClass voting-icons">
+           
+            @if ((voteTypeAllowed & Voat.Domain.Models.VoteTypeAllowed.Up) > 0)
+            {
+                <div class="@votingStatusClassUpArrow login-required @hidden arrow-up" onclick="@upVoteJavaScript" role="button" aria-label="upvote" tabindex="0"></div>
+            }
+            <div class="score dislikes">@Model.DownCount</div>
+            <div class="score unvoted">@score</div>
+            <div class="score likes">@Model.UpCount</div>
+            @if ((voteTypeAllowed & Voat.Domain.Models.VoteTypeAllowed.Down) > 0)
+            {
+                <div class="@votingStatusClassDownArrow login-required @hidden arrow-down" onclick="@downVoteJavaScript" role="button" aria-label="downvote" tabindex="0"></div>
+            }
+            
+        </div>
+        <div style="padding-bottom: 10px; clear:left"></div>
+    }
+    @*<div class="scorebar flat" title="Blue = upvotes, violet = downvotes">
+        <div class="scorebar-likes" style="height: @likes%"></div>
+        <div class="scorebar-dislikes" style="height: @dislikes%"></div>
+    </div>*@
+}

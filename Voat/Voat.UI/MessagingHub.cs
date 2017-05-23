@@ -1,16 +1,26 @@
+#region LICENSE
+
 /*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+    
+    Copyright(c) Voat, Inc.
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+    This file is part of Voat.
 
-All portions of the code written by Voat are Copyright (c) 2014 Voat
-All Rights Reserved.
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
 */
+
+#endregion LICENSE
 
 using System;
 using System.Net;
@@ -35,24 +45,17 @@ namespace Voat
 
         // send a chat message to all users in a subverse room
         [Authorize]
-        public void SendChatMessage(string subverseName, string message)
+        public void SendChatMessage(string id, string message, string access)
         {
             if (message == null)
             {
                 return;
             }
 
-            message = message.Trim();
+            message = message.TrimSafe();
 
-            if (message != String.Empty && !String.IsNullOrEmpty(subverseName))
+            if (!String.IsNullOrEmpty(id))
             {
-                // check if user is banned
-                if (UserHelper.IsUserBannedFromSubverse(Context.User.Identity.Name, subverseName))
-                {
-                    // message won't be processed
-                    // this is necessary because banning a user from a subverse doesn't kick them from chat
-                    return;
-                }
 
                 // discard message if it contains unicode
                 if (Formatting.ContainsUnicode(message))
@@ -60,60 +63,86 @@ namespace Voat
                     return;
                 }
 
-                // trim message to 200 characters
-                if (message.Length > 200)
+                // check if user is banned
+                if (UserHelper.IsUserGloballyBanned(Context.User.Identity.Name))
                 {
-                    message = message.Substring(0, 200);
+                    // message won't be processed
+                    // this is necessary because banning a user from a subverse doesn't kick them from chat
+                    return;
                 }
 
-                // check if previous message from this user is in cache
-                //if (messageCache.ContainsKey(name))
-                //{
-                //    // discard duplicate message and update timestamp
-                //    if (message == messageCache[name].Item1)
-                //    {
-                //        messageCache.Remove(name);
-                //        messageCache.Add(name, new Tuple<string, DateTime>(message, DateTime.UtcNow));
-                //        return;
-                //    }
+               
 
-                //    // check timestamp and discard if diff less than 5 seconds
-                //    var timestamp = messageCache[name].Item2;
-                //    if (timestamp.AddSeconds(5) < DateTime.UtcNow)
-                //    {
-                //        return;
-                //    }
-                //}
-                //messageCache.Add(Context.User.Identity.Name, new Tuple<string, DateTime>(message, DateTime.UtcNow));
+                //Strip out annoying markdown
+                message = ChatMessage.SanitizeInput(message);
 
-                var formattedMessage = Formatting.FormatMessage(message, true, true);
+                if (!String.IsNullOrEmpty(message))
+                {
+                    var room = ChatRoom.Find(id);
+                    if (room != null)
+                    {
+                        if (room.IsAccessAllowed(Context.User.Identity.Name, access))
+                        {
+                            // check if user is banned from room (which is subverse right now too)
+                            if (UserHelper.IsUserBannedFromSubverse(Context.User.Identity.Name, room.ID))
+                            {
+                                // message won't be processed
+                                return;
+                            }
 
-                //var htmlEncodedMessage = WebUtility.HtmlEncode(formattedMessage);
+                            var formattedMessage = Formatting.FormatMessage(message, true, true);
 
-                Clients.Group(subverseName).appendChatMessage(Context.User.Identity.Name, formattedMessage);
+                            var chatMessage = room.CreateMessage(Context.User.Identity.Name, formattedMessage);
+
+                            var context = new Rules.VoatRuleContext();
+                            context.PropertyBag.ChatMessage = chatMessage;
+
+                            var outcome = Rules.VoatRulesEngine.Instance.EvaluateRuleSet(context, RulesEngine.RuleScope.PostChatMessage);
+                            if (outcome.IsAllowed)
+                            {
+                                ChatHistory.Add(chatMessage);
+                                //var htmlEncodedMessage = WebUtility.HtmlEncode(formattedMessage);
+                                Clients.Group(room.ID).appendChatMessage(chatMessage.User.DisplayName, chatMessage.Message, chatMessage.CreationDate.ToChatTimeDisplay());
+                            }
+                        }
+                    }
+                }
             }
         }
 
         // add a user to a subverse chat room
-        public async Task JoinChat(string subverseName)
+        public async Task JoinChat(string id, string access = null)
         {
-            // reject join request if user is banned if user is authenticated
-            if (Context.User.Identity.IsAuthenticated)
+            var room = ChatRoom.Find(id);
+            if (room != null && room.IsAccessAllowed(Context.User.Identity.Name, access))
             {
-                if (UserHelper.IsUserBannedFromSubverse(Context.User.Identity.Name, subverseName))
+                // reject join request if user is banned if user is authenticated
+                if (Context.User.Identity.IsAuthenticated)
                 {
-                    // abort join
-                    return;
+                    if (UserHelper.IsUserBannedFromSubverse(Context.User.Identity.Name, id))
+                    {
+                        // abort join
+                        return;
+                    }
+                    room.AddUser(Context.User.Identity.Name);
                 }
-            }            
 
-            await Groups.Add(Context.ConnectionId, subverseName);
+                await Groups.Add(Context.ConnectionId, id);
+            }
         }
 
         // remove a user from a subverse chat room
-        public async Task LeaveChat(string subverseName)
+        public async Task LeaveChat(string id)
         {
-            await Groups.Remove(Context.ConnectionId, subverseName);
+            var room = ChatRoom.Find(id);
+            if (room != null)
+            {
+                if (Context.User.Identity.IsAuthenticated)
+                {
+                    //room.RemoveUser(Context.User.Identity.Name);
+                }
+            }
+            await Groups.Remove(Context.ConnectionId, id);
         }
     }
 }

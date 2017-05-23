@@ -1,16 +1,26 @@
-﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+#region LICENSE
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+/*
+    
+    Copyright(c) Voat, Inc.
 
-All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
-All Rights Reserved.
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
 */
+
+#endregion LICENSE
 
 using System;
 using System.Linq;
@@ -155,38 +165,18 @@ namespace Voat.Controllers
             }
         }
 
-        // vote on a submission
-        // POST: vote/{messageId}/{typeOfVote}
-        [HttpPost]
-        [Authorize]
-        [VoatValidateAntiForgeryToken]
-        public async Task<JsonResult> Vote(int submissionID, int typeOfVote)
-        {
-            var cmd = new SubmissionVoteCommand(submissionID, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
-            var result = await cmd.Execute();
-            return Json(result);
-        }
-
-        // save a submission
-        // POST: save/{messageId}
-        [HttpPost]
-        [Authorize]
-        [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> Save(int messageId)
-        {
-            var cmd = new SaveCommand(Domain.Models.ContentType.Submission, messageId);
-            var response = await cmd.Execute();
-            //Saving.SaveSubmission(messageId, loggedInUser);
-
-            if (response.Success)
-            {
-                return Json("Saving ok", JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
-            }
-        }
+        //// vote on a submission
+        //// POST: vote/{messageId}/{typeOfVote}
+        //[HttpPost]
+        //[Authorize]
+        //[VoatValidateAntiForgeryToken]
+        //public async Task<JsonResult> Vote(int submissionID, int typeOfVote)
+        //{
+        //    System.Threading.Thread.Sleep(3000);
+        //    var cmd = new SubmissionVoteCommand(submissionID, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
+        //    var result = await cmd.Execute();
+        //    return Json(result);
+        //}
 
         // POST: editsubmission
         [Authorize]
@@ -311,7 +301,7 @@ namespace Voat.Controllers
             var r = await cmd.Execute();
             if (r.Success)
             {
-                return RedirectToRoute("SubverseIndex", new { subversetoshow = s.Subverse });
+                return RedirectToRoute(Models.ROUTE_NAMES.SUBVERSE_INDEX, new { subverse = s.Subverse });
             }
             else
             {

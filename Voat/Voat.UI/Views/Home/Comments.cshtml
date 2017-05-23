@@ -1,14 +1,22 @@
-﻿@*This source file is subject to version 3 of the GPL license,
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
-    available online at http://www.gnu.org/licenses/gpl.txt;
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
     you may not use this file except in compliance with the License.
 
-    Software distributed under the License is distributed on an "AS IS" basis,
-    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-    the specific language governing rights and limitations under the License.
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
 
-    All portions of the code written by Voat are Copyright (c) 2014 Voat
-    All Rights Reserved.*@
+    All Rights Reserved.
+
+*@
 
 @using Voat.Models;
 @using Voat.Domain.Models;
@@ -16,9 +24,7 @@
 @model CommentSegment
 
 @{
-    string highLight = "";
-
-    Voat.Data.Models.Submission submission = ViewBag.Submission;
+    Voat.Domain.Models.Submission submission = ViewBag.Submission;
 }
 
 <style type="text/css">
@@ -36,25 +42,23 @@
     @*
         display 1 submission with details and comments
     *@
-    @if (!submission.Subverse.Equals("user"))
-    {
 
-        @Html.Action("SidebarForSelectedSubverseComments", "Subverses", submission)
-    }
+    @Html.Action("SidebarForSelectedSubverseComments", "Subverses", submission)
+
     <div class="content" role="main">
         <br /><br />
         @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
 
         @{
             //type 1 = message submission
-            if (submission.Type == 1)
+            if (submission.Type == Voat.Domain.Models.SubmissionType.Text)
             {
                 //I don't know if we need this ViewBag setup
                 ViewBag.Title = submission.Title + " | " + submission.Subverse;
                 ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
                 ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
                 ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
-                @Html.Partial("~/Views/Shared/Submissions/_MessageSubmissionDetails.cshtml", submission,
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionDetail.cshtml", submission,
                     new ViewDataDictionary {
                         { "ModeratorList", ViewBag.ModeratorList },
                         { "SubverseAnonymized", ViewBag.SubverseAnonymized }
@@ -62,7 +66,7 @@
             }
 
             //type 2 = link submission
-            if (ViewBag.Submission.Type == 2)
+            else if (submission.Type == Voat.Domain.Models.SubmissionType.Link)
             {
                 //I don't know if we need this ViewBag setup
                 ViewBag.Title = submission.Title + " | " + submission.Subverse;
@@ -70,23 +74,16 @@
                 ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
 
                 //check if submission has a thumb, otherwise point to site logo
-                if (submission.Thumbnail != null)
+                if (submission.ThumbnailUrl != null)
                 {
-                    if (Settings.UseContentDeliveryNetwork)
-                    {
-                        ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://cdn." + HttpContext.Current.Request.Url.Authority + "/thumbs/" + @submission.Thumbnail;
-                    }
-                    else
-                    {
-                        ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + "/Thumbs/" + @submission.Thumbnail;
-                    }
+                    ViewBag.Image = submission.ThumbnailUrl; 
                 }
                 else
                 {
                     ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
                 }
 
-                @Html.Partial("~/Views/Shared/Submissions/_LinkSubmissionDetails.cshtml", submission,
+                @Html.Partial("~/Views/Shared/Submissions/_SubmissionDetail.cshtml", submission,
                     new ViewDataDictionary {
                         { "ModeratorList", ViewBag.ModeratorList },
                         { "SubverseAnonymized", ViewBag.SubverseAnonymized }
@@ -94,7 +91,7 @@
             }
         }
 
-        @if (User.Identity.IsAuthenticated)
+        @if (!submission.ArchiveDate.HasValue && User.Identity.IsAuthenticated)
         //if user logged in, show add comment form
         {
             @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", submission.ID } })
@@ -104,8 +101,8 @@
 
         @Html.Partial("~/Views/Shared/Comments/_CommentTree.cshtml", Model, new ViewDataDictionary {
                     { "ModeratorList", ViewBag.ModeratorList },
-                    { "SavedCommentCache", ViewBag.SavedCommentCache },
-                    { "VoteCache", ViewBag.VoteCache },
+                    //{ "SavedCommentCache", ViewBag.SavedCommentCache },
+                    //{ "VoteCache", ViewBag.VoteCache },
                     { "SortingMode", ViewBag.SortingMode },
                     { "NestingCount", 0 },
                     { "StartingCommentId", ViewBag.StartingCommentId },

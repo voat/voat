@@ -1,4 +1,28 @@
-﻿using Newtonsoft.Json;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using Voat.Utilities;
@@ -61,12 +85,12 @@ namespace Voat.Domain.Models
         }
 
         /// <summary>
-        /// Not Implemented. Specifies if the submission is NSFW or not.
+        /// Specifies if the submission is NSFW or not. If subverse is marked as adult, this setting is overridden
         /// </summary>
         public bool IsAdult { get; set; }
 
         /// <summary>
-        /// Not Implemented. Specifies if the submission is Anonymous or not.
+        /// Specifies if the submission is Anonymous or not. Used only if subverse allows user defined anonymous posts.
         /// </summary>
         public bool IsAnonymized { get; set; }
 

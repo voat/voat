@@ -1,4 +1,28 @@
-﻿using System;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -6,6 +30,7 @@ using System.Threading;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Models;
+using Voat.Domain.Query;
 using Voat.Utilities;
 
 namespace Voat.Domain
@@ -26,7 +51,7 @@ namespace Voat.Domain
 
         public static IEnumerable<Domain.Models.Comment> Map(this IEnumerable<Domain.Models.Comment> list, bool populateUserState = false)
         {
-            var mapped = list.Select(x => { ProcessComment(x); return x; }).ToList();
+            var mapped = list.Select(x => { HydrateUserData(x); return x; }).ToList();
             return mapped;
         }
 
@@ -88,7 +113,7 @@ namespace Voat.Domain
             //existing messages do not have formatted content saved - check here
             if (String.IsNullOrEmpty(m.FormattedContent))
             {
-                Debug.Print("Formatting PM Content!");
+                Debug.WriteLine("Formatting PM Content!");
                 m.FormattedContent = Formatting.FormatMessage(m.Content);
             }
 
@@ -160,12 +185,51 @@ namespace Voat.Domain
                     Type = submission.Type == 1 ? SubmissionType.Text : SubmissionType.Link,
                     Subverse = submission.Subverse,
                     IsAnonymized = submission.IsAnonymized,
+                    IsAdult = submission.IsAdult,
                     IsDeleted = submission.IsDeleted,
                     Rank = submission.Rank,
-                    RelativeRank = submission.RelativeRank
+                    RelativeRank = submission.RelativeRank,
+                    ArchiveDate = submission.ArchiveDate
                 };
+
+                //add flair if present
+                if (!String.IsNullOrEmpty(submission.FlairCss) && !String.IsNullOrEmpty(submission.FlairLabel))
+                {
+                    result.Attributes.Add(new ContentAttribute() { ID = -1, Type = AttributeType.Flair, Name = submission.FlairLabel, CssClass = submission.FlairCss } );
+                }
+                if (result.IsAdult)
+                {
+                    result.Attributes.Add(new ContentAttribute() { ID = -1, Type = AttributeType.Data, Name = "NSFW", CssClass = "linkflairlabel" });
+                }
+                if (result.ArchiveDate.HasValue)
+                {
+                    result.Attributes.Add(new ContentAttribute() { ID = -1, Type = AttributeType.Data, Name = "Archived", CssClass = "linkflairlabel" });
+                }
             }
             return result;
+        }
+        public static IEnumerable<Domain.Models.Set> Map(this IEnumerable<Voat.Data.Models.SubverseSet> list)
+        {
+            var mapped = list.Select(x => x.Map()).ToList();
+            return mapped;
+        }
+        public static Domain.Models.Set Map(this Voat.Data.Models.SubverseSet subverseSet)
+        {
+            if (subverseSet != null)
+            {
+                var s = new Set();
+                s.ID = subverseSet.ID;
+                s.Name = subverseSet.Name;
+                s.Title = subverseSet.Title;
+                s.Description = subverseSet.Description;
+                s.CreationDate = subverseSet.CreationDate;
+                s.Type = (SetType)subverseSet.Type;
+                s.UserName = subverseSet.UserName;
+                s.SubscriberCount = subverseSet.SubscriberCount;
+                s.IsPublic = subverseSet.IsPublic;
+                return s;
+            }
+            return null;
         }
 
         public static Domain.Models.Comment Map(this Data.Models.Comment comment, string subverse, bool populateUserState = false)
@@ -191,7 +255,7 @@ namespace Voat.Domain
                     CreationDate = subverse.CreationDate,
                     SubscriberCount = (subverse.SubscriberCount == null ? 0 : subverse.SubscriberCount.Value),
                     Sidebar = subverse.SideBar,
-                    Type = subverse.Type,
+                    //Type = subverse.Type,
                     IsAnonymized = subverse.IsAnonymized,
                     IsAdult = subverse.IsAdult,
 
@@ -262,7 +326,7 @@ namespace Voat.Domain
             return result;
         }
 
-        public static NestedComment Map(this usp_CommentTree_Result treeComment, string submissionOwnerName, IEnumerable<CommentVoteTracker> commentVotes = null)
+        public static NestedComment Map(this usp_CommentTree_Result treeComment, string submissionOwnerName, IEnumerable<VoteValue> commentVotes = null, IEnumerable<BlockedItem> userBlocks = null)
         {
             NestedComment result = null;
             if (treeComment != null)
@@ -287,7 +351,7 @@ namespace Voat.Domain
                 result.IsSubmitter = (treeComment.UserName == submissionOwnerName);
 
                 //Set User State and secure comment
-                ProcessComment(result, false, commentVotes);
+                HydrateUserData(result, false, commentVotes, userBlocks);
             }
             return result;
         }
@@ -325,7 +389,7 @@ namespace Voat.Domain
                 }
 
                 //Set User State and secure comment
-                ProcessComment(result, populateUserState);
+                HydrateUserData(result, populateUserState);
             }
             return result;
         }
@@ -353,12 +417,65 @@ namespace Voat.Domain
                 result.Subverse = comment.Subverse;
 
                 //Set User State and secure comment
-                ProcessComment(result, populateMissingUserState);
+                HydrateUserData(result, populateMissingUserState);
             }
             return result;
         }
+        public static void HydrateUserData(IEnumerable<Domain.Models.Submission> submissions)
+        {
+            if (Thread.CurrentPrincipal.Identity.IsAuthenticated && (submissions != null && submissions.Any()))
+            {
+                using (var repo = new Repository())
+                {
+                    var votes = repo.UserVoteStatus(Thread.CurrentPrincipal.Identity.Name, ContentType.Submission, submissions.Select(x => x.ID).ToArray());
+                    foreach (var s in submissions)
+                    {
+                        var voteValue = votes.FirstOrDefault(x => x.ID == s.ID);
+                        s.Vote = (voteValue == null ? 0 : voteValue.Value);
+                    }
+                    //saves are cached
+                }
+            }
+        }
+        public static void HydrateUserData(Domain.Models.Submission submission)
+        {
+            if (Thread.CurrentPrincipal.Identity.IsAuthenticated && (submission != null))
+            {
+                using (var repo = new Repository())
+                {
+                    var vote = repo.UserVoteStatus(Thread.CurrentPrincipal.Identity.Name, ContentType.Submission, submission.ID);
+                    submission.Vote = vote;
+                    //saves are cached
+                }
+            }
+        }
+        public static void HydrateUserData(IEnumerable<Domain.Models.Comment> comments)
+        {
+            if (Thread.CurrentPrincipal.Identity.IsAuthenticated && (comments != null && comments.Any()))
+            {
+                string userName = Thread.CurrentPrincipal.Identity.Name;
+                if (!String.IsNullOrEmpty(userName))
+                {
+                    using (var repo = new Repository())
+                    {
+                        var votes = repo.UserVoteStatus(userName, ContentType.Comment, comments.Select(x => x.ID).ToArray());
+                        var q = new QueryUserBlocks();
+                        var blockedUsers = q.Execute().Where(x => x.Type == DomainType.User);
 
-        public static void ProcessComment(Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<CommentVoteTracker> commentVotes = null)
+                        foreach (var comment in comments)
+                        {
+                            HydrateUserData(comment, false, votes, blockedUsers);
+                            //comment.IsOwner = comment.UserName == userName;
+                            //var voteValue = votes.FirstOrDefault(x => x.ID == comment.ID);
+                            //comment.Vote = (voteValue == null ? 0 : voteValue.Value);
+                            //comment.IsSaved = UserHelper.IsSaved(ContentType.Comment, comment.ID);
+                            //Protect(comment);
+                        }
+                    }
+                }
+            }
+        }
+        public static void HydrateUserData(Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<VoteValue> commentVotes = null, IEnumerable<BlockedItem> userBlocks = null)
         {
             if (comment != null)
             {
@@ -369,11 +486,8 @@ namespace Voat.Domain
                     comment.Vote = 0;
                     if (commentVotes != null)
                     {
-                        var vote = commentVotes.FirstOrDefault(x => x.CommentID == comment.ID);
-                        if (vote != null)
-                        {
-                            comment.Vote = vote.VoteStatus;
-                        }
+                        var vote = commentVotes.FirstOrDefault(x => x.ID == comment.ID);
+                        comment.Vote = vote == null ? 0 : vote.Value;
                     }
                     else if (populateMissingUserState)
                     {
@@ -383,12 +497,67 @@ namespace Voat.Domain
                             comment.Vote = repo.UserVoteStatus(userName, ContentType.Comment, comment.ID);
                         }
                     }
-
+                    //collapse comment threads when user is blocked
+                    if (!comment.IsAnonymized && userBlocks != null && userBlocks.Any())
+                    {
+                        comment.IsCollapsed = userBlocks.Any(x => comment.UserName.IsEqual(x.Name));
+                    }
                     comment.IsSaved = false;
                     comment.IsSaved = UserHelper.IsSaved(ContentType.Comment, comment.ID);
                 }
-                comment.UserName = (comment.IsAnonymized ? comment.ID.ToString() : comment.UserName);
+                Protect(comment);
+                ////Swap UserName
+                //comment.UserName = (comment.IsAnonymized ? comment.ID.ToString() : comment.UserName);
             }
+        }
+        private static void Protect(Domain.Models.Comment comment)
+        {
+            if (comment != null)
+            {
+                //Swap UserName
+                comment.UserName = (comment.IsAnonymized ? comment.ID.ToString() : comment.UserName);
+                //Ensure Deleted - this isn't going to work with comment moderation log, I think
+                if (comment.IsDeleted)
+                {
+                    comment.UserName = "";
+                    comment.Content = "Deleted";
+                    comment.FormattedContent = "<p>Deleted</p>";
+                }
+
+            }
+        }
+
+
+        public static Domain.Models.UserPreference Map(this Data.Models.UserPreference preferences)
+        {
+            Domain.Models.UserPreference model = null;
+            if (preferences != null)
+            {
+                model = new Domain.Models.UserPreference();
+
+                model.UserName = preferences.UserName;
+                model.Avatar = preferences.Avatar;
+                model.Bio = preferences.Bio;
+                model.BlockAnonymized = preferences.BlockAnonymized;
+                model.CollapseCommentLimit = preferences.CollapseCommentLimit;
+
+                model.CommentSort = Extensions.AssignIfValidEnumValue(preferences.CommentSort, CommentSortAlgorithm.Top);
+
+                model.DisableCSS = preferences.DisableCSS;
+                model.DisplayAds = preferences.DisplayAds;
+                model.DisplayCommentCount = preferences.DisplayCommentCount;
+                model.DisplaySubscriptions = preferences.DisplaySubscriptions;
+                model.DisplayVotes = preferences.DisplayVotes;
+                model.EnableAdultContent = preferences.EnableAdultContent;
+                model.HighlightMinutes = preferences.HighlightMinutes;
+                model.Language = preferences.Language;
+                model.NightMode = preferences.NightMode;
+                model.OpenInNewWindow = preferences.OpenInNewWindow;
+                model.UseSubscriptionsMenu = preferences.UseSubscriptionsMenu;
+                model.VanityTitle = preferences.VanityTitle;
+            }
+
+            return model;
         }
     }
 }

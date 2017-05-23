@@ -1,6 +1,10 @@
-﻿#region LICENSE
+#region LICENSE
 
 /*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
 
     This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
@@ -11,8 +15,6 @@
     "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
     or implied. See the License for the specific language governing
     rights and limitations under the License.
-
-    All portions of the code written by Voat, Inc. are Copyright(c) Voat, Inc.
 
     All Rights Reserved.
 
@@ -45,9 +47,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
         [TestCategory("Anon")]
-        public void CreateComment_Anon()
+        public async Task CreateComment_Anon()
         {
-            string userName = "TestUser1";
+            string userName = "TestUser01";
             TestHelper.SetPrincipal(userName);
 
             var cmd = new CreateCommentCommand(2, null, "This is my data");
@@ -62,7 +64,7 @@ namespace Voat.Tests.CommandTests
             //verify in db
             using (var db = new Voat.Data.Repository())
             {
-                var comment = db.GetComment(c.Response.ID);
+                var comment = await db.GetComment(c.Response.ID);
                 Assert.IsNotNull(comment, "Couldn't find comment in db", c.Response.ID);
 
                 Assert.AreEqual(c.Response.ID, comment.ID);
@@ -84,9 +86,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
-        public void CreateComment()
+        public async Task CreateComment()
         {
-            TestHelper.SetPrincipal("TestUser2");
+            TestHelper.SetPrincipal("TestUser02");
 
             var cmd = new CreateCommentCommand(1, null, "This is my data");
             var c = cmd.Execute().Result;
@@ -98,7 +100,7 @@ namespace Voat.Tests.CommandTests
             //verify in db
             using (var db = new Voat.Data.Repository())
             {
-                var comment = db.GetComment(c.Response.ID);
+                var comment = await db.GetComment(c.Response.ID);
                 Assert.IsNotNull(comment, "Couldn't find comment in db", c.Response.ID);
                 Assert.AreEqual(c.Response.ID, comment.ID);
                 Assert.AreEqual(c.Response.UserName, comment.UserName);
@@ -171,7 +173,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void CreateComment_BannedDomain()
         {
-            TestHelper.SetPrincipal("TestUser2");
+            TestHelper.SetPrincipal("TestUser02");
 
             var cmd = new CreateCommentCommand(1, null, "[Check out this killer website](http://fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!");
             var c = cmd.Execute().Result;
@@ -186,9 +188,25 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
         [TestCategory("Ban"), TestCategory("Ban.Domain")]
+        public void CreateComment_BannedDomain_NoProtocol()
+        {
+            TestHelper.SetPrincipal("TestUser02");
+
+            var cmd = new CreateCommentCommand(1, null, "[Check out this killer website](//fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!");
+            var c = cmd.Execute().Result;
+
+            Assert.IsFalse(c.Success);
+            Assert.AreEqual("Comment contains banned domains", c.Message);
+
+        }
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
+        [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void EditComment_BannedDomain()
         {
-            TestHelper.SetPrincipal("TestUser2");
+            TestHelper.SetPrincipal("TestUser02");
 
             var cmd = new CreateCommentCommand(1, null, "This is a unit test and I like it.");
             var c = cmd.Execute().Result;
@@ -242,9 +260,11 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
-        public void DeleteComment()
+        public void DeleteComment_Owner()
         {
-            TestHelper.SetPrincipal("TestUser1");
+            //Assert.Inconclusive("Complete this test");
+
+            TestHelper.SetPrincipal("TestUser01");
             var cmdcreate = new CreateCommentCommand(1, null, "This is my data too you know");
             var c = cmdcreate.Execute().Result;
 
@@ -259,19 +279,59 @@ namespace Voat.Tests.CommandTests
             Assert.IsTrue(r.Success);
 
             //verify
-            using (var db = new Voat.Data.Repository())
+            using (var db = new voatEntities())
             {
-                var comment = db.GetComment(id);
+                var comment = db.Comments.FirstOrDefault(x => x.ID == id);
                 Assert.AreEqual(true, comment.IsDeleted);
                 Assert.AreNotEqual(c.Response.Content, comment.Content);
+
+                //Ensure content is replaced in moderator deletion
+                Assert.IsTrue(comment.Content.StartsWith("Deleted by"));
+                Assert.AreEqual(comment.FormattedContent, Formatting.FormatMessage(comment.Content));
+
             }
         }
-
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
-        public void EditComment()
+        public void DeleteComment_Moderator()
+        {
+            //Assert.Inconclusive("Complete this test");
+            var content = "This is my data too you know 2";
+            TestHelper.SetPrincipal("TestUser01");
+            var cmdcreate = new CreateCommentCommand(1, null, content);
+            var c = cmdcreate.Execute().Result;
+
+            Assert.IsNotNull(c, "response null");
+            Assert.IsTrue(c.Success, c.Message);
+            Assert.IsNotNull(c.Response, "Response payload null");
+
+            int id = c.Response.ID;
+
+            //switch to mod of sub
+            TestHelper.SetPrincipal("unit");
+            var cmd = new DeleteCommentCommand(id, "This is spam");
+            var r = cmd.Execute().Result;
+            Assert.IsTrue(r.Success, r.Message);
+
+            //verify
+            using (var db = new voatEntities())
+            {
+                var comment = db.Comments.FirstOrDefault(x => x.ID == id);
+                Assert.AreEqual(true, comment.IsDeleted);
+                
+                //Content should remain unchanged in mod deletion
+                Assert.AreEqual(comment.Content, content);
+                Assert.AreEqual(comment.FormattedContent, Formatting.FormatMessage(content));
+
+            }
+        }
+        [TestMethod]
+        [TestCategory("Command")]
+        [TestCategory("Comment")]
+        [TestCategory("Comment.Post")]
+        public async Task EditComment()
         {
             string content = "This is data [howdy](http://www.howdy.com)";
             TestHelper.SetPrincipal("unit");
@@ -284,7 +344,7 @@ namespace Voat.Tests.CommandTests
             //verify
             using (var db = new Voat.Data.Repository())
             {
-                var comment = db.GetComment(1);
+                var comment = await db.GetComment(1);
                 Assert.IsNotNull(comment.LastEditDate);
                 Assert.AreEqual(cmd.Content, comment.Content);
             }
@@ -314,7 +374,7 @@ namespace Voat.Tests.CommandTests
                 db.SaveChanges();
             }
 
-            TestHelper.SetPrincipal("TestUser5");
+            TestHelper.SetPrincipal("TestUser05");
             var cmd = new CreateCommentCommand(submission.ID, null, "Are you @FuzzyWords?");
             var c = cmd.Execute().Result;
 

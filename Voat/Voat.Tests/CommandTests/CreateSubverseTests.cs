@@ -1,4 +1,28 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +52,7 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal("TestUser500CCP");
             var cmd = new CreateSubverseCommand(null, "Some title", null);
             var response = await cmd.Execute();
-            Assert.AreEqual(Status.Denied, response.Status);
+            Assert.AreEqual(Status.Denied, response.Status, response.Message);
         }
         [TestMethod]
         [TestCategory("Command"), TestCategory("Command.Subverse")]
@@ -37,7 +61,7 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal("TestUser500CCP");
             var cmd = new CreateSubverseCommand("", "Some title", null);
             var response = await cmd.Execute();
-            Assert.AreEqual(Status.Denied, response.Status);
+            Assert.AreEqual(Status.Denied, response.Status, response.Message);
         }
         [TestMethod]
         [TestCategory("Command"), TestCategory("Command.Subverse")]
@@ -46,7 +70,7 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal("TestUser500CCP");
             var cmd = new CreateSubverseCommand("    ", "Some title", null);
             var response = await cmd.Execute();
-            Assert.AreEqual(Status.Denied, response.Status);
+            Assert.AreEqual(Status.Denied, response.Status, response.Message);
         }
         [TestMethod]
         [TestCategory("Command"), TestCategory("Command.Subverse")]
@@ -55,7 +79,7 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal("TestUser500CCP");
             var cmd = new CreateSubverseCommand("My Subverse", "Some title", null);
             var response = await cmd.Execute();
-            Assert.AreEqual(Status.Denied, response.Status);
+            Assert.AreEqual(Status.Denied, response.Status, response.Message);
         }
 
         [TestMethod]
@@ -68,7 +92,7 @@ namespace Voat.Tests.CommandTests
             var description = "Some Description";
             var cmd = new CreateSubverseCommand(name, title, description);
             var response = await cmd.Execute();
-            Assert.AreEqual(Status.Success, response.Status);
+            Assert.AreEqual(Status.Success, response.Status, response.Message);
 
             using (var db = new voatEntities())
             {
@@ -92,7 +116,7 @@ namespace Voat.Tests.CommandTests
             var description = "Some Description";
             var cmd = new CreateSubverseCommand(name, title, description);
             var response = await cmd.Execute();
-            Assert.AreEqual(Status.Denied, response.Status);
+            Assert.AreEqual(Status.Denied, response.Status, response.Message);
 
             //using (var db = new voatEntities())
             //{

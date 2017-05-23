@@ -1,4 +1,28 @@
-﻿using System.Collections.Generic;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System.Collections.Generic;
 
 namespace Voat.Configuration
 {
@@ -47,7 +71,13 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.CaptchaDisabled, false);
             }
         }
-
+        public static bool ChatDisabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.ChatDisabled, true);
+            }
+        }
         public static int DailyCommentPostingQuota
         {
             get
@@ -119,7 +149,13 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.DestinationPathThumbs, "~/Storage/Thumbs");
             }
         }
-
+        public static string EmailAddress
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.EmailAddress, "noreply@voat.co");
+            }
+        }
         public static string EmailServiceKey
         {
             get
@@ -197,6 +233,15 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.MaximumOwnedSubs, 10);
             }
         }
+
+        public static int MaximumSetSubverseCount
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.MaximumSetSubverseCount, 50);
+            }
+        }
+        
         public static int MinimumAccountAgeInDaysForSubverseCreation
         {
             get
@@ -204,7 +249,14 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.MinimumAccountAgeInDaysForSubverseCreation, 30);
             }
         }
-
+        public static int MinimumCommentPointsForSendingMessages
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.MinimumCommentPointsForSendingMessages, 10);
+            }
+        }
+        
         public static int MinimumCommentPointsForSubverseCreation
         {
             get
@@ -235,6 +287,14 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.MinimumCommentPointsForCaptchaSubmission, 25);
             }
         }
+        public static int MinimumCommentPointsForSendingChatMessages
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.MinimumCommentPointsForSendingChatMessages, 100);
+            }
+        }
+
         public static Domain.Models.Origin Origin
         {
             get
@@ -275,7 +335,13 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.RegistrationDisabled, false);
             }
         }
-
+        public static bool SearchDisabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.SearchDisabled, true);
+            }
+        }
         public static bool SetsDisabled
         {
             get
@@ -283,7 +349,13 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.SetsDisabled, true);
             }
         }
-
+        public static bool SetCreationDisabled
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.SetCreationDisabled, true);
+            }
+        }
         public static bool SignalRDisabled
         {
             get
@@ -339,7 +411,14 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.SiteSlogan, "Voat - have your say");
             }
         }
-
+        public static int SubverseUpdateTimeLockInHours
+        {
+            get
+            {
+                return GetValue(CONFIGURATION.SubverseUpdateTimeLockInHours, 48);
+            }
+        }
+        
         public static bool UseContentDeliveryNetwork
         {
             get
@@ -352,7 +431,12 @@ namespace Voat.Configuration
         {
             if (configValues.ContainsKey(key))
             {
-                return (T)configValues[key];
+                var value = (T)configValues[key];
+                //I'm NOT liking where this is going. And I forgot exactly what situation I originally wrote this for. As Fuzzy and Dan say, "It's a future person problem."
+                if (typeof(T) == typeof(bool) || typeof(T) == typeof(int) || !value.IsDefault())
+                {
+                    return value;
+                }
             }
             return defaultIfMissing;
         }

@@ -1,4 +1,28 @@
-﻿using System;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -258,45 +282,48 @@ namespace Voat.Caching
         private void RefetchItem(CacheEntryUpdateArguments args)
         {
             var cacheKey = args.Key;
-            var meta = _meta[cacheKey];
-            int refreshLimit = meta.MaxCount;
-            int refreshCount = meta.CurrentCount + 1;
-
-            if (refreshLimit == 0 || refreshCount <= refreshLimit)
+            if (_meta.ContainsKey(cacheKey))
             {
-                string msg = String.Format("Refetching cache ({0}) - #{1}", cacheKey, refreshCount);
-                EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
-                Debug.Print(msg);
+                var meta = _meta[cacheKey];
+                int refreshLimit = meta.MaxCount;
+                int refreshCount = meta.CurrentCount + 1;
 
-                //_meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(meta.Item1, meta.Item2, meta.Item3, refreshCount);
-                _meta[cacheKey] = meta; 
-                //new Tuple<Func<object>, TimeSpan, int, int>(meta.Item1, meta.Item2, meta.Item3, refreshCount);
-
-                args.UpdatedCacheItem = new CacheItem(cacheKey, new object());
-
-                args.UpdatedCacheItemPolicy = new CacheItemPolicy()
+                if (refreshLimit == 0 || refreshCount <= refreshLimit)
                 {
-                    AbsoluteExpiration = Repository.CurrentDate.Add(meta.CacheTime),
-                    UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
-                };
+                    string msg = String.Format("Refetching cache ({0}) - #{1}", cacheKey, refreshCount);
+                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
+                    //Debug.WriteLine(msg);
 
-                try
-                {
-                    //throw new NotImplementedException("This needs implementing");
-                    var data = RefetchData(meta);
-                    SetItem(cacheKey, data, meta.CacheTime);
+                    //_meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(meta.Item1, meta.Item2, meta.Item3, refreshCount);
+                    _meta[cacheKey] = meta;
+                    //new Tuple<Func<object>, TimeSpan, int, int>(meta.Item1, meta.Item2, meta.Item3, refreshCount);
+
+                    args.UpdatedCacheItem = new CacheItem(cacheKey, new object());
+
+                    args.UpdatedCacheItemPolicy = new CacheItemPolicy()
+                    {
+                        AbsoluteExpiration = Repository.CurrentDate.Add(meta.CacheTime),
+                        UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
+                    };
+
+                    try
+                    {
+                        //throw new NotImplementedException("This needs implementing");
+                        var data = RefetchData(meta);
+                        SetItem(cacheKey, data, meta.CacheTime);
+                    }
+                    catch (Exception ex)
+                    {
+                        EventLogger.Log(ex, Domain.Models.Origin.Unknown);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    EventLogger.Log(ex, Domain.Models.Origin.Unknown);
+                    string msg = String.Format("Expiring cache ({0}) - #{1}", cacheKey, refreshCount);
+                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
+                    //Debug.WriteLine(msg);
+                    Remove(cacheKey, true);
                 }
-            }
-            else
-            {
-                string msg = String.Format("Expiring cache ({0}) - #{1}", cacheKey, refreshCount);
-                EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
-                Debug.Print(msg);
-                Remove(cacheKey, true);
             }
         }
 
@@ -306,7 +333,7 @@ namespace Voat.Caching
             {
                 string msg = String.Format("Expiring cache ({0})", args.CacheItem.Key);
                 EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
-                Debug.Print(msg);
+                //Debug.WriteLine(msg);
 
                 if (args.RemovedReason != CacheEntryRemovedReason.CacheSpecificEviction)
                 {
@@ -315,7 +342,8 @@ namespace Voat.Caching
             }
             catch (Exception ex)
             {
-                Debug.Print(ex.ToString());
+                //Debug.WriteLine(ex.ToString());
+                EventLogger.Instance.Log(ex);
             }
         }
 
@@ -348,7 +376,7 @@ namespace Voat.Caching
                                 var handlerInfo = CacheHandlerSection.Instance.Handler;
                                 if (handlerInfo != null)
                                 {
-                                    Debug.Print("CacheHandler.Instance.Contruct({0})", handlerInfo.Type);
+                                    Debug.WriteLine("CacheHandler.Instance.Contruct({0})", handlerInfo.Type);
                                     _instance = handlerInfo.Construct();
                                 }
                             }
@@ -498,7 +526,7 @@ namespace Voat.Caching
                                     if (data != null || data == null && !_ignoreNulls)
                                     {
                                         EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = $"Inserting Cache ({cacheKey})", Origin = Configuration.Settings.Origin.ToString() });
-                                        Debug.Print("Inserting Cache: " + cacheKey);
+                                        //Debug.WriteLine("Inserting Cache: " + cacheKey);
                                         SetItem(cacheKey, data, cacheTime);
 
                                         //Refetch Logic
@@ -524,7 +552,7 @@ namespace Voat.Caching
                                 }
                                 catch (Exception ex)
                                 {
-                                    Debug.Print(ex.ToString());
+                                    Debug.WriteLine(ex.ToString());
                                     //Cache now supports Tasks which throw aggregates, if agg has only 1 inner, throw it instead
                                     var aggEx = ex as AggregateException;
                                     if (aggEx != null && aggEx.InnerExceptions.Count == 1)
@@ -591,7 +619,7 @@ namespace Voat.Caching
                                 if (data != null || data == null && !_ignoreNulls)
                                 {
                                     EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = $"Inserting Cache ({cacheKey})", Origin = Configuration.Settings.Origin.ToString() });
-                                    Debug.Print("Inserting Cache: " + cacheKey);
+                                    //Debug.WriteLine("Inserting Cache: " + cacheKey);
                                     SetItem(cacheKey, data, cacheTime);
 
                                     //Refetch Logic
@@ -617,7 +645,7 @@ namespace Voat.Caching
                             }
                             catch (Exception ex)
                             {
-                                Debug.Print(ex.ToString());
+                                Debug.WriteLine(ex.ToString());
                                 //Cache now supports Tasks which throw aggregates, if agg has only 1 inner, throw it instead
                                 var aggEx = ex as AggregateException;
                                 if (aggEx != null && aggEx.InnerExceptions.Count == 1)

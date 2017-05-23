@@ -1,16 +1,26 @@
-﻿/*
-This source file is subject to version 3 of the GPL license,
-that is bundled with this package in the file LICENSE, and is
-available online at http://www.gnu.org/licenses/gpl.txt;
-you may not use this file except in compliance with the License.
+#region LICENSE
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+/*
+    
+    Copyright(c) Voat, Inc.
 
-All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
-All Rights Reserved.
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
 */
+
+#endregion LICENSE
 
 using System;
 using MarkdownDeep;
@@ -117,6 +127,30 @@ namespace Voat.Utilities
                 }
             }
             return scrubbed;
+        }
+        public static string PluralizeIt(int amount, string unit, string zeroText = null)
+        {
+            if (amount == 0 && !String.IsNullOrEmpty(zeroText))
+            {
+                return zeroText;
+            }
+            else
+            {
+                return String.Format("{0} {1}{2}", amount, unit, (amount == 1 ? "" : "s"));
+            }
+        }
+
+        public static string PluralizeIt(double amount, string unit, string zeroText = null)
+        {
+            if (amount == 0.0 && !String.IsNullOrEmpty(zeroText))
+            {
+                return zeroText;
+            }
+            else
+            {
+                return String.Format("{0} {1}{2}", (Math.Round(amount, 1)), unit, (Math.Round(amount, 1) == 1.0 ? "" : "s"));
+            }
+            
         }
     }
 }

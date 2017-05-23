@@ -1,6 +1,32 @@
-﻿using System;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace Voat.Utilities.Components
 {
@@ -46,7 +72,7 @@ namespace Voat.Utilities.Components
         #region IReplacer Members
 
         private string _regex = "";
-        private Func<Match, string, object, string> _replacementFunc;
+        private Func<Match, string, object, string> _replacementFunc = null;
         private int _matchThreshold = 0;
         private bool _ignoreDuplicateMatches = false;
 
@@ -62,10 +88,10 @@ namespace Voat.Utilities.Components
             set { _matchThreshold = value; }
         }
 
-        public MatchProcessingReplacer(string RegEx, Func<Match, string, object, string> Func)
+        public MatchProcessingReplacer(string regEx, Func<Match, string, object, string> replacementFunc)
         {
-            this.RegEx = RegEx;
-            this._replacementFunc = Func;
+            this.RegEx = regEx;
+            this._replacementFunc = replacementFunc;
         }
 
         public string RegEx
@@ -143,6 +169,23 @@ namespace Voat.Utilities.Components
             }
             return false;
         }
+        public virtual IList<Match> PreFilterMatches(MatchCollection matches)
+        {
+            List<Match> list = new List<Match>();
+            if (matches.Count > 0)
+            {
+                foreach (Match match in matches)
+                {
+                    list.Add(match);
+                }
+            }
+            return list;
+        }
+
+        public virtual bool IsDuplicate(Match currentMatch, IEnumerable<Match> processedMatches)
+        {
+            return processedMatches.Any(x => x.Value == currentMatch.Value);
+        }
 
         public virtual string Replace(string content, object state)
         {
@@ -150,12 +193,14 @@ namespace Voat.Utilities.Components
             {
                 return content;
             }
-            MatchCollection matches = Regex.Matches(content, RegEx, RegexOptions.IgnoreCase);
+            var matches = PreFilterMatches(Regex.Matches(content, RegEx, RegexOptions.IgnoreCase));
             string result = content;
             string[] escapeBlocks = { "~~~", "`" };
 
             int offset = 0;
-            List<string> matchvalues = new List<string>();
+
+            //List<string> matchvalues = new List<string>();
+            List<Match> processedMatches = new List<Match>();
             int maxIndex = (MatchThreshold > 0) ? Math.Min(MatchThreshold, matches.Count) : matches.Count;
 
             //flag content as having ignored areas if it has more than 1 match
@@ -171,7 +216,7 @@ namespace Voat.Utilities.Components
                     //make sure this match isn't in an anchor
                     if (!IsInMarkDownAnchor(m, content))
                     {
-                        if (!IgnoreDuplicateMatches || IgnoreDuplicateMatches && !matchvalues.Contains(m.Value))
+                        if (!IgnoreDuplicateMatches || IgnoreDuplicateMatches && !IsDuplicate(m, processedMatches))
                         {
                             //get the replacement value for match
                             string substitution = _replacementFunc(m, content, state);
@@ -184,7 +229,7 @@ namespace Voat.Utilities.Components
 
                             offset += substitution.Length - m.Length;
 
-                            matchvalues.Add(m.Value);
+                            processedMatches.Add(m);
                         }
                     }
                 }

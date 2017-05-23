@@ -1,16 +1,26 @@
-﻿/*
-This source file is subject to version 3 of the GPL license,
-that is bundled with this package in the file LICENSE, and is
-available online at http://www.gnu.org/licenses/gpl.txt;
-you may not use this file except in compliance with the License.
+#region LICENSE
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+/*
+    
+    Copyright(c) Voat, Inc.
 
-All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
-All Rights Reserved.
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
 */
+
+#endregion LICENSE
 
 using System;
 using System.Collections.Generic;
@@ -62,7 +72,7 @@ namespace Voat.Controllers
         }
         // GET: submit
         [Authorize]
-        public ActionResult Submit(string selectedsubverse)
+        public async Task<ActionResult> Submit(string selectedsubverse)
         {
             ViewBag.selectedSubverse = selectedsubverse;
 
@@ -86,7 +96,15 @@ namespace Voat.Controllers
 
             if (!String.IsNullOrWhiteSpace(selectedsubverse))
             {
-                model.Subverse = selectedsubverse;
+                var q = new QuerySubverse(selectedsubverse);
+                var subverse = await q.ExecuteAsync();
+                if (subverse != null)
+                {
+                    model.Subverse = subverse.Name;
+                    model.IsAdult = subverse.IsAdult;
+                    model.IsAnonymized = subverse.IsAnonymized.HasValue ? subverse.IsAnonymized.Value : false;
+                    model.AllowAnonymized = !subverse.IsAnonymized.HasValue;
+                }
             }
 
             var userData = UserData;
@@ -125,6 +143,8 @@ namespace Voat.Controllers
 
             //new pipeline
             var userSubmission = new Domain.Models.UserSubmission();
+            userSubmission.IsAdult = model.IsAdult;
+            userSubmission.IsAnonymized = model.IsAnonymized;
             userSubmission.Subverse = model.Subverse;
             userSubmission.Title = model.Title;
             userSubmission.Content = (model.Type == Domain.Models.SubmissionType.Text ? model.Content : null);
@@ -163,73 +183,73 @@ namespace Voat.Controllers
         }
 
         // GET: /v2
-        public ActionResult IndexV2(int? page)
-        {
-            if (Settings.SetsDisabled)
-            {
-                return RedirectToAction("UnAuthorized", "Error");
-            }
+        //public ActionResult IndexV2(int? page)
+        //{
+        //    if (Settings.SetsDisabled)
+        //    {
+        //        return RedirectToAction("UnAuthorized", "Error");
+        //    }
 
-            ViewBag.SelectedSubverse = "frontpage";
-            var submissions = new List<SetSubmission>();
+        //    ViewBag.SelectedSubverse = "frontpage";
+        //    var submissions = new List<SetSubmission>();
 
-            var frontPageResultModel = new SetFrontpageViewModel();
+        //    var frontPageResultModel = new SetFrontpageViewModel();
 
-            // show user sets
-            // get names of each set that user is subscribed to
-            // for each set name, get list of subverses that define the set
-            // for each subverse, get top ranked submissions
-            if (User.Identity.IsAuthenticated && UserHelper.SetsSubscriptionCount(User.Identity.Name) > 0)
-            {
-                var userSetSubscriptions = _db.UserSetSubscriptions.Where(usd => usd.UserName == User.Identity.Name);
-                var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
+        //    // show user sets
+        //    // get names of each set that user is subscribed to
+        //    // for each set name, get list of subverses that define the set
+        //    // for each subverse, get top ranked submissions
+        //    if (User.Identity.IsAuthenticated && UserHelper.SetsSubscriptionCount(User.Identity.Name) > 0)
+        //    {
+        //        var userSetSubscriptions = _db.UserSetSubscriptions.Where(usd => usd.UserName == User.Identity.Name);
+        //        var blockedSubverses = _db.UserBlockedSubverses.Where(x => x.UserName.Equals(User.Identity.Name)).Select(x => x.Subverse);
 
-                foreach (var set in userSetSubscriptions)
-                {
-                    UserSetSubscription setId = set;
-                    var userSetDefinition = _db.UserSetLists.Where(st => st.UserSetID == setId.UserSetID);
+        //        foreach (var set in userSetSubscriptions)
+        //        {
+        //            UserSetSubscription setId = set;
+        //            var userSetDefinition = _db.UserSetLists.Where(st => st.UserSetID == setId.UserSetID);
 
-                    foreach (var subverse in userSetDefinition)
-                    {
-                        // get top ranked submissions
-                        var submissionsExcludingBlockedSubverses = SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Submissions, subverse.UserSet.Name, 2, 0)
-                            .Where(x => !blockedSubverses.Contains(x.Subverse));
-                        submissions.AddRange(submissionsExcludingBlockedSubverses);
-                    }
-                }
+        //            foreach (var subverse in userSetDefinition)
+        //            {
+        //                // get top ranked submissions
+        //                var submissionsExcludingBlockedSubverses = SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Submissions, subverse.UserSet.Name, 2, 0)
+        //                    .Where(x => !blockedSubverses.Contains(x.Subverse));
+        //                submissions.AddRange(submissionsExcludingBlockedSubverses);
+        //            }
+        //        }
 
-                frontPageResultModel.HasSetSubscriptions = true;
-                frontPageResultModel.UserSets = userSetSubscriptions;
-                frontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
+        //        frontPageResultModel.HasSetSubscriptions = true;
+        //        frontPageResultModel.UserSets = userSetSubscriptions;
+        //        frontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
 
-                return View("~/Views/Home/IndexV2.cshtml", frontPageResultModel);
-            }
+        //        return View("~/Views/Home/IndexV2.cshtml", frontPageResultModel);
+        //    }
 
-            // show default sets since user is not logged in or has no set subscriptions
-            // get names of default sets
-            // for each set name, get list of subverses
-            // for each subverse, get top ranked submissions
-            var defaultSets = _db.UserSets.Where(ds => ds.IsDefault && ds.UserSetLists.Any());
-            var defaultFrontPageResultModel = new SetFrontpageViewModel();
+        //    // show default sets since user is not logged in or has no set subscriptions
+        //    // get names of default sets
+        //    // for each set name, get list of subverses
+        //    // for each subverse, get top ranked submissions
+        //    var defaultSets = _db.UserSets.Where(ds => ds.IsDefault && ds.UserSetLists.Any());
+        //    var defaultFrontPageResultModel = new SetFrontpageViewModel();
 
-            foreach (var set in defaultSets)
-            {
-                UserSet setId = set;
-                var defaultSetDefinition = _db.UserSetLists.Where(st => st.UserSetID == setId.ID);
+        //    foreach (var set in defaultSets)
+        //    {
+        //        UserSet setId = set;
+        //        var defaultSetDefinition = _db.UserSetLists.Where(st => st.UserSetID == setId.ID);
 
-                foreach (var subverse in defaultSetDefinition)
-                {
-                    // get top ranked submissions
-                    submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Submissions, set.Name, 2, 0));
-                }
-            }
+        //        foreach (var subverse in defaultSetDefinition)
+        //        {
+        //            // get top ranked submissions
+        //            submissions.AddRange(SetsUtility.TopRankedSubmissionsFromASub(subverse.Subverse, _db.Submissions, set.Name, 2, 0));
+        //        }
+        //    }
 
-            defaultFrontPageResultModel.DefaultSets = defaultSets;
-            defaultFrontPageResultModel.HasSetSubscriptions = false;
-            defaultFrontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
+        //    defaultFrontPageResultModel.DefaultSets = defaultSets;
+        //    defaultFrontPageResultModel.HasSetSubscriptions = false;
+        //    defaultFrontPageResultModel.SubmissionsList = new List<SetSubmission>(submissions.OrderByDescending(s => s.Rank));
 
-            return View("~/Views/Home/IndexV2.cshtml", defaultFrontPageResultModel);
-        }
+        //    return View("~/Views/Home/IndexV2.cshtml", defaultFrontPageResultModel);
+        //}
 
         // GET: /about
         public ActionResult About(string pagetoshow)
@@ -296,7 +316,7 @@ namespace Voat.Controllers
         //[OutputCache(Duration = 600)]
         public ActionResult StickiedSubmission()
         {
-            Submission sticky = StickyHelper.GetSticky("announcements");
+            var sticky = StickyHelper.GetSticky("announcements");
 
             if (sticky != null)
             {
@@ -323,16 +343,26 @@ namespace Voat.Controllers
 
         // GET: list of subverses user is subscribed to for sidebar
         [ChildActionOnly]
-        public ActionResult SubversesUserIsSubscribedTo(string userName)
+        public async Task<ActionResult> SubversesUserIsSubscribedTo(string userName)
         {
             if (userName != null)
             {
-                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserIsSubscribedTo.cshtml", _db.SubverseSubscriptions
-                .Where(x => x.UserName == userName)
-                .Select(s => new SelectListItem { Value = s.Subverse })
-                .OrderBy(s => s.Value)
-                .ToList()
-                .AsEnumerable());
+                var q = new QueryUserSubscriptions(userName);
+                var result = await q.ExecuteAsync();
+                var subs = result[Domain.Models.DomainType.Subverse];
+                var selectList = subs.OrderBy(x => x).Select(x => new SelectListItem() { Value = x }).ToList();
+
+                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserIsSubscribedTo.cshtml",
+                    selectList
+                );
+
+                //return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserIsSubscribedTo.cshtml", 
+                //    _db.SubverseSubscriptions
+                //.Where(x => x.UserName == userName)
+                //.Select(s => new SelectListItem { Value = s.Subverse })
+                //.OrderBy(s => s.Value)
+                //.ToList()
+                //.AsEnumerable());
             }
             return new EmptyResult();
         }
@@ -340,12 +370,18 @@ namespace Voat.Controllers
         [OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult FeaturedSub()
         {
-            var featuredSub = _db.FeaturedSubverses.OrderByDescending(s => s.CreationDate).FirstOrDefault();
-
-            if (featuredSub == null)
-                return new EmptyResult();
-
-            return PartialView("~/Views/Subverses/_FeaturedSub.cshtml", featuredSub);
+            using (var repo = new Repository())
+            {
+                var featured = repo.GetFeatured();
+                if (featured != null)
+                {
+                    return PartialView("~/Views/Shared/_Featured.cshtml", featured);
+                }
+                else
+                {
+                    return new EmptyResult();
+                }
+            }
         }
 
         [HttpGet]

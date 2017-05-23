@@ -1,4 +1,28 @@
-﻿using Newtonsoft.Json;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 using Voat.Caching;
@@ -33,14 +57,16 @@ namespace Voat.Domain.Query
                 using (var repo = new Repository())
                 {
                     var dbPolicy = repo.GetApiPermissionPolicy(_id.Value);
-                    return JsonConvert.DeserializeObject<ApiPermissionSet>(dbPolicy.Policy);
+                    var policy = JsonConvert.DeserializeObject<ApiPermissionSet>(dbPolicy.Policy);
+                    policy.Name = dbPolicy.Name;
+                    return policy;
                 }
             }
 
             //return default policy
             //TODO: Change these defaults when moving to production
             //return new ApiPermissionSet() { AllowLogin = false, AllowStream = false, AllowUnrestrictedLogin = false, RequireHmacOnLogin = false };
-            return new ApiPermissionSet() { AllowLogin = false, AllowStream = true, AllowUnrestrictedLogin = false, RequireHmacOnLogin = false };
+            return new ApiPermissionSet() { Name = "Default", AllowLogin = false, AllowStream = false, AllowUnrestrictedLogin = false, RequireHmacOnLogin = false };
         }
     }
 }

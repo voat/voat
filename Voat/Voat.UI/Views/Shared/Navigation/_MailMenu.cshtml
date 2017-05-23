@@ -1,0 +1,63 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@model Voat.Models.ViewModels.NavigationViewModel
+
+@{
+
+//var selectedView = ViewBag.selectedView ?? "";
+//var subverse = Request.RequestContext.RouteData.Values["subverse"];
+
+//var rootPath = "/messages";
+//var name = "Messages";
+
+//if ("Smail".Equals(selectedView, StringComparison.OrdinalIgnoreCase))
+//{
+//    rootPath = String.Format("/v/@subverse/about/messages";
+//    name = subverse + " Smail";
+//}
+
+    <span class="hover pagename"><a href="@Model.BasePath">@Model.Description</a></span>
+    <ul class="tabmenu ">
+        <li class='@(Model.Name.Equals("Inbox") ? "selected" : "disabled")'><a href="@Model.BasePath">Inbox</a></li>
+        <li class='@(Model.Name.Equals("Sent")  ? "selected" : "disabled")'><a href="@Model.BasePath/sent">Sent</a></li>
+        <li class='@(Model.Name.Equals("Compose")  ? "selected" : "disabled")'><a href="@Model.BasePath/compose">Compose</a></li>
+        <li class='@(Model.Name.Equals("Notifications")  ? "selected" : "disabled")'><a href="/messages/notifications">Summary</a></li>
+    </ul>
+
+    @*if ("Smail".Equals(selectedView, StringComparison.OrdinalIgnoreCase))
+    {
+        <ul class="tabmenu ">
+            <li class="@(Request.Url.AbsoluteUri.EndsWith("messages") ? "selected" : "disabled")"><a href="~/v/@subverse/about/messages">Inbox</a></li>
+            <li class="@(Request.Url.AbsoluteUri.Contains("sent") ? "selected" : "disabled")"><a href="~/v/@subverse/about/messages/sent">Sent</a></li>
+            <li class="@(Request.Url.AbsoluteUri.Contains("compose") ? "selected" : "disabled")"><a href="~/v/@subverse/about/messages/compose">Compose</a></li>
+            <li class="@(Request.Url.AbsoluteUri.Contains("notifications") ? "selected" : "disabled")"><a href="~/messages/notifications">Summary</a></li>
+        </ul>
+    }
+    else
+    {
+        <ul class="tabmenu ">
+            <li class="@(selectedView.Equals("Inbox") || selectedView.Equals("unread") ? "selected" : "disabled")"><a href="~/messages">Inbox</a></li>
+            <li class="@(selectedView.Equals("Sent") ? "selected" : "disabled")"><a href="~/messages/sent">Sent</a></li>
+            <li class="@(selectedView.Equals("Compose") ? "selected" : "disabled")"><a href="~/messages/compose">Compose</a></li>
+            <li class="@(selectedView.Equals("Notifications") ? "selected" : "disabled")"><a href="~/messages/notifications">Summary</a></li>
+        </ul>
+    }*@
+}

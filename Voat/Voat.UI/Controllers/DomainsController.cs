@@ -1,16 +1,26 @@
-﻿/*
-This source file is subject to version 3 of the GPL license,
-that is bundled with this package in the file LICENSE, and is
-available online at http://www.gnu.org/licenses/gpl.txt;
-you may not use this file except in compliance with the License.
+#region LICENSE
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+/*
+    
+    Copyright(c) Voat, Inc.
 
-All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
-All Rights Reserved.
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
 */
+
+#endregion LICENSE
 
 using System;
 using System.Collections.Generic;
@@ -19,7 +29,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Voat.Caching;
+using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain.Query;
+using Voat.Models.ViewModels;
 using Voat.Utilities;
 
 namespace Voat.Controllers
@@ -27,64 +40,82 @@ namespace Voat.Controllers
     public class DomainsController : BaseController
     {
        
-        public async Task<ActionResult> Index(int? page, string domainname, string sortingmode)
+        public async Task<ActionResult> Index(int? page, string domainName, string sortingMode)
         {
             const int pageSize = 25;
             int pageNumber = (page ?? 0);
 
-            if (pageNumber < 0 || String.IsNullOrWhiteSpace(domainname) || pageNumber > 9)
+            if (pageNumber < 0 || String.IsNullOrWhiteSpace(domainName) || pageNumber > 9)
             {
                 return NotFoundErrorView();
             }
-            if (domainname.Length < 4)
+            if (domainName.Length < 4)
             {
                 return RedirectToAction("UnAuthorized", "Error");
             }
 
-            sortingmode = (sortingmode == "new" ? "new" : "hot");
+            sortingMode = (sortingMode == "new" ? "new" : "hot");
 
             ViewBag.SelectedSubverse = "domains";
-            ViewBag.SelectedDomain = domainname;
-            domainname = domainname.Trim().ToLower();
+            ViewBag.SelectedDomain = domainName;
+            domainName = domainName.Trim().ToLower();
 
             //TODO: This needs to moved to Query/Repository
-            var results = CacheHandler.Instance.Register(CachingKey.DomainSearch(domainname, pageNumber, sortingmode), () => {
-                using (var db = new voatEntities())
-                {
-                    db.EnableCacheableOutput();
+            var options = new SearchOptions();
+            options.Page = pageNumber;
+            options.Sort = sortingMode == "new" ? Domain.Models.SortAlgorithm.New : Domain.Models.SortAlgorithm.Hot;
 
-                    //restrict disabled subs from result list
-                    IQueryable<Submission> q = (from m in db.Submissions
-                                                          join s in db.Subverses on m.Subverse equals s.Name
-                                                          where
-                                                          !s.IsAdminDisabled.Value
-                                                          && !m.IsDeleted
-                                                          && m.Type == 2
-                                                          && m.Url.ToLower().Contains(domainname)
-                                                          select m);
+            var q = new QuerySubmissionsByDomain(domainName, options);
+            var results = await q.ExecuteAsync();
+            //var results = CacheHandler.Instance.Register(CachingKey.DomainSearch(domainname, pageNumber, sortingmode), () => {
+            //    using (var db = new voatEntities())
+            //    {
+            //        db.EnableCacheableOutput();
 
-                    if (sortingmode == "new")
-                    {
-                        ViewBag.SortingMode = sortingmode;
-                        q = q.OrderByDescending(x => x.CreationDate);
-                    }
-                    else
-                    {
-                        ViewBag.SortingMode = "hot";
-                        q = q.OrderByDescending(x => x.Rank).ThenByDescending(x => x.CreationDate);
-                    }
+            //        //restrict disabled subs from result list
+            //        IQueryable<Submission> q = (from m in db.Submissions
+            //                                              join s in db.Subverses on m.Subverse equals s.Name
+            //                                              where
+            //                                              !s.IsAdminDisabled.Value
+            //                                              && !m.IsDeleted
+            //                                              && m.Type == 2
+            //                                              && m.Url.ToLower().Contains(domainname)
+            //                                              select m);
 
-                    var result = q.Skip(pageNumber * pageSize).Take(pageSize).ToList();
+            //        if (sortingmode == "new")
+            //        {
+            //            ViewBag.SortingMode = sortingmode;
+            //            q = q.OrderByDescending(x => x.CreationDate);
+            //        }
+            //        else
+            //        {
+            //            ViewBag.SortingMode = "hot";
+            //            q = q.OrderByDescending(x => x.Rank).ThenByDescending(x => x.CreationDate);
+            //        }
 
-                    return result;
-                }
-            }, TimeSpan.FromMinutes(60));
+            //        var result = q.Skip(pageNumber * pageSize).Take(pageSize).ToList();
 
-            var paginatedSubmissions = new PaginatedList<Submission>(results, page ?? 0, pageSize);
+            //        return result;
+            //    }
+            //}, TimeSpan.FromMinutes(60));
 
-            ViewBag.Title = "Showing all submissions which link to " + domainname;
-            return View("Index", paginatedSubmissions);
+            var paginatedSubmissions = new PaginatedList<Domain.Models.Submission>(results, page ?? 0, pageSize, -1);
+
+            var viewProperties = new SubmissionListViewModel();
+            viewProperties.Submissions = paginatedSubmissions;
+            viewProperties.Submissions.RouteName = "DomainIndex";
+
+            viewProperties.Title = "Domain: " + domainName;
+
+            ViewBag.NavigationViewModel = new NavigationViewModel()
+            {
+                Description = "Domain " + domainName,
+                Name = domainName,
+                MenuType = MenuType.Domain,
+                BasePath = $"/domains/{domainName}",
+                Sort = options.Sort
+            };
+            return View(VIEW_PATH.SUBMISSION_LIST, viewProperties);
         }
-        
     }
 }

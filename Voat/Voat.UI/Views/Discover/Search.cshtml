@@ -1,0 +1,50 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+
+
+@{ 
+    Voat.Domain.Models.DomainType type = ViewBag.DomainType;
+
+}
+
+<div id="container">
+    <div role="main">
+
+        @Html.Partial("_SubMenu", type)
+
+        <div class="alert-notice">
+            <p>Find a @type by name and/or description</p>
+        </div>
+        <div class="sitetable linklisting">
+            @using (Html.BeginForm("Index", "Discover", new { domainType = type }, FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
+            {
+                <h2>@Html.ValidationSummary(true)</h2>
+                @Html.TextBox("phrase", null, new { @class = "form-control", @placeholder = "Type a term to search for and press ENTER" })
+                @Html.ValidationMessage("phrase")
+
+                @*<input type="checkbox" name="d" value="true" id="d"
+                           @Html.Raw((Model.d) ? "checked=\"checked\"" : "") />
+                    @Html.Label("Also search in subverse descriptions")*@
+                <input type="submit" class="btn-voat" value="Submit" />
+            }
+        </div>
+    </div>
+</div>

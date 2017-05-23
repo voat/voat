@@ -1,22 +1,33 @@
-﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+#region LICENSE
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+/*
+    
+    Copyright(c) Voat, Inc.
 
-All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
-All Rights Reserved.
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
 */
+
+#endregion LICENSE
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Voat.Caching;
 using Voat.Data.Models;
@@ -147,7 +158,7 @@ namespace Voat.Controllers
                     {
                         // get only submissions from default subverses, order by rank
                         var frontpageSubmissions = (from message in db.Submissions
-                                                    where !message.IsArchived && !message.IsDeleted && message.Subverse1.IsAdminDisabled != true
+                                                    where message.ArchiveDate == null && !message.IsDeleted && message.Subverse1.IsAdminDisabled != true
                                                     join defaultsubverse in db.DefaultSubverses on message.Subverse equals defaultsubverse.Subverse
                                                     select message)
                                                     .OrderByDescending(s => s.Rank)
@@ -170,7 +181,7 @@ namespace Voat.Controllers
                                 MessageContent = (item.Type == 2 ? item.Url : item.Content)
                             };
 
-                            if (item.IsAnonymized || item.Subverse1.IsAnonymized)
+                            if (item.IsAnonymized || (item.Subverse1.IsAnonymized.HasValue && item.Subverse1.IsAnonymized.Value))
                             {
                                 resultModel.Name = item.ID.ToString();
                             }
@@ -205,6 +216,7 @@ namespace Voat.Controllers
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
+
             //IAmAGate: Perf mods for caching
             string cacheKey = String.Format("Legacy:Api:SubverseFrontpage.{0}", subverse).ToLower();
             object cacheData = CacheHandler.Instance.Retrieve<object>(cacheKey);
@@ -245,7 +257,7 @@ namespace Voat.Controllers
                                 MessageContent = (item.Type == 2 ? item.Url : item.Content)
                             };
 
-                            if (item.IsAnonymized || item.Subverse1.IsAnonymized)
+                            if (item.IsAnonymized || (item.Subverse1.IsAnonymized.HasValue && item.Subverse1.IsAnonymized.Value))
                             {
                                 resultModel.Name = item.ID.ToString();
                             }
@@ -279,56 +291,92 @@ namespace Voat.Controllers
         /// </summary>
         /// <param name="id">The ID of submission to fetch.</param>
         [HttpGet]
-        public ApiMessage SingleSubmission(int id)
+        public async Task<ApiMessage> SingleSubmission(int id)
         {
+            var q = new QuerySubmission(id);
+            var submission = await q.ExecuteAsync();
 
-            ApiMessage singleSubmission = CacheHandler.Instance.Register<ApiMessage>(String.Format("Legacy:Api:SingleSubmission.{0}", id),
-              new Func<ApiMessage>(() =>
-              {
-                  using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
-                  {
-                      var submission = db.Submissions.Find(id);
-
-                      if (submission == null || submission.Subverse1.IsAdminDisabled == true)
-                      {
-                          return null; // throw new HttpResponseException(HttpStatusCode.NotFound);
-                      }
-
-                      var resultModel = new ApiMessage
-                      {
-                          CommentCount = submission.Comments.Count,
-                          Id = submission.ID,
-                          Date = submission.CreationDate,
-                          LastEditDate = submission.LastEditDate,
-                          Likes = (int)submission.UpCount,
-                          Dislikes = (int)submission.DownCount
-                      };
-
-                      if (submission.IsAnonymized || submission.Subverse1.IsAnonymized)
-                      {
-                          resultModel.Name = submission.ID.ToString();
-                      }
-                      else
-                      {
-                          resultModel.Name = submission.UserName;
-                      }
-                      resultModel.Rank = submission.Rank;
-                      resultModel.Thumbnail = submission.Thumbnail;
-                      resultModel.Subverse = submission.Subverse;
-                      resultModel.Type = submission.Type;
-                      resultModel.Title = submission.Title;
-                      resultModel.Linkdescription = null;
-                      resultModel.MessageContent = (submission.Type == 2 ? submission.Content : submission.Content);
-
-                      return resultModel;
-                  }
-              }), TimeSpan.FromMinutes(5), 2);
-
-            if (singleSubmission == null)
+            if (submission == null)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                return null; // throw new HttpResponseException(HttpStatusCode.NotFound);
             }
-            return singleSubmission;
+
+            var resultModel = new ApiMessage
+            {
+                CommentCount = submission.CommentCount,
+                Id = submission.ID,
+                Date = submission.CreationDate,
+                LastEditDate = submission.LastEditDate,
+                Likes = (int)submission.UpCount,
+                Dislikes = (int)submission.DownCount
+            };
+
+            if (submission.IsAnonymized)
+            {
+                resultModel.Name = submission.ID.ToString();
+            }
+            else
+            {
+                resultModel.Name = submission.UserName;
+            }
+            resultModel.Rank = submission.Rank;
+            resultModel.Thumbnail = submission.ThumbnailUrl;
+            resultModel.Subverse = submission.Subverse;
+            resultModel.Type = (int)submission.Type;
+            resultModel.Title = submission.Title;
+            resultModel.Linkdescription = null;
+            resultModel.MessageContent = submission.Content;
+
+            return resultModel;
+
+            //ApiMessage singleSubmission = CacheHandler.Instance.Register<ApiMessage>(String.Format("Legacy:Api:SingleSubmission.{0}", id),
+            //  new Func<ApiMessage>(() =>
+            //  {
+            //      using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
+            //      {
+            //          var submission = db.Submissions.Find(id);
+
+            //          if (submission == null || submission.Subverse1.IsAdminDisabled == true)
+            //          {
+            //              return null; // throw new HttpResponseException(HttpStatusCode.NotFound);
+            //          }
+
+            //          var resultModel = new ApiMessage
+            //          {
+            //              CommentCount = submission.Comments.Count,
+            //              Id = submission.ID,
+            //              Date = submission.CreationDate,
+            //              LastEditDate = submission.LastEditDate,
+            //              Likes = (int)submission.UpCount,
+            //              Dislikes = (int)submission.DownCount
+            //          };
+
+            //          if (submission.IsAnonymized || submission.Subverse1.IsAnonymized)
+            //          {
+            //              resultModel.Name = submission.ID.ToString();
+            //          }
+            //          else
+            //          {
+            //              resultModel.Name = submission.UserName;
+            //          }
+            //          resultModel.Rank = submission.Rank;
+            //          resultModel.Thumbnail = submission.Thumbnail;
+            //          resultModel.Subverse = submission.Subverse;
+            //          resultModel.Type = submission.Type;
+            //          resultModel.Title = submission.Title;
+            //          resultModel.Linkdescription = null;
+            //          resultModel.MessageContent = (submission.Type == 2 ? submission.Content : submission.Content);
+
+            //          return resultModel;
+            //      }
+            //  }), TimeSpan.FromMinutes(5), 2);
+
+
+            //if (singleSubmission == null)
+            //{
+            //    throw new HttpResponseException(HttpStatusCode.NotFound);
+            //}
+            //return singleSubmission;
 
         }
 
@@ -361,7 +409,7 @@ namespace Voat.Controllers
                     MessageId = comment.SubmissionID
                 };
 
-                if (comment.Submission.IsAnonymized || comment.Submission.Subverse1.IsAnonymized)
+                if (comment.Submission.IsAnonymized || (comment.Submission.Subverse1.IsAnonymized.HasValue && comment.Submission.Subverse1.IsAnonymized.Value))
                 {
                     resultModel.Name = comment.ID.ToString();
                 }
@@ -401,7 +449,7 @@ namespace Voat.Controllers
                 Sidebar = subverse.SideBar,
                 SubscriberCount = subscriberCount,
                 Title = subverse.Title,
-                Type = subverse.Type
+                //Type = subverse.Type
             };
 
             return resultModel;
@@ -533,7 +581,7 @@ namespace Voat.Controllers
                                 CommentContent = firstComment.Content
                             };
 
-                            if (firstComment.Submission.IsAnonymized || firstComment.Submission.Subverse1.IsAnonymized)
+                            if (firstComment.Submission.IsAnonymized || (firstComment.Submission.Subverse1.IsAnonymized.HasValue && firstComment.Submission.Subverse1.IsAnonymized.Value))
                             {
                                 resultModel.Name = firstComment.ID.ToString();
                             }

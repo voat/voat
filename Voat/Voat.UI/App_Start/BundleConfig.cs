@@ -1,16 +1,26 @@
-﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+#region LICENSE
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+/*
+    
+    Copyright(c) Voat, Inc.
 
-All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
-All Rights Reserved.
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
 */
+
+#endregion LICENSE
 
 using System.Web.Optimization;
 
@@ -29,6 +39,7 @@ namespace Voat
                         "~/Scripts/libs/jquery.tooltipster.js",
                         "~/Scripts/libs/jquery.unobtrusive*",
                         "~/Scripts/libs/jquery.validate*",
+                        "~/Scripts/voat.dashboard.js", 
                         "~/Scripts/voat.ui.js",
                         "~/Scripts/voat.js",
                         "~/Scripts/markdownEditor.js"
@@ -47,8 +58,7 @@ namespace Voat
                       "~/Content/bootstrap.css",
                       "~/Content/Site.css",
                       "~/Content/tooltipster.css",
-                      "~/Content/Voat.css",
-                      "~/Content/PagedList.css",
+                      "~/Content/Voat-Light.css",
                       "~/Content/markdownEditor.css"
                       ));
 
@@ -57,7 +67,6 @@ namespace Voat
                       "~/Content/Site.css",
                       "~/Content/tooltipster.css",
                       "~/Content/Voat-Dark.css",
-                      "~/Content/PagedList.css",
                       "~/Content/markdownEditor.css"
                       ));
             #endregion

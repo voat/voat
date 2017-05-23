@@ -1,21 +1,24 @@
-﻿@*
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
     This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
-    available online at http://www.gnu.org/licenses/gpl.txt;
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
     you may not use this file except in compliance with the License.
 
-    Software distributed under the License is distributed on an "AS IS" basis,
-    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-    the specific language governing rights and limitations under the License.
-
-    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
 
     All Rights Reserved.
+
 *@
 
-@model PagedList.IPagedList<Voat.Domain.Models.Message>
-
-@using PagedList.Mvc;
+@model PaginatedList<Voat.Domain.Models.Message>
 
 @{
 
@@ -31,6 +34,8 @@
     var unreadSubmissionMentionCount = counts.GetCount(Voat.Domain.Models.MessageType.SubmissionMention);
     var formatString = " ({0} new)";
     var subContext = (context.ViewerContext.Type == Voat.Domain.Models.IdentityType.Subverse ? context.ViewerContext.Name : "");
+
+    Voat.Models.ViewModels.NavigationViewModel navModel = ViewBag.NavigationViewModel;
 }
 
 <style>
@@ -44,7 +49,7 @@
 <div id="container">
 
     <h1>@ViewBag.Title</h1>
-    @if (ViewBag.PmView != "mod")
+    @if (navModel.MenuType == Voat.Models.ViewModels.MenuType.UserMessages)
     {
         <a href="/messages/private" class="btn-whoaverse-paging">Inbox @(unreadPrivateCount > 0 ? String.Format(formatString, unreadPrivateCount) : "")</a>
         <a href="/messages/replies/comment" class="btn-whoaverse-paging">Comment Replies@(unreadCommentReplyCount > 0 ? String.Format(formatString, unreadCommentReplyCount) : "")</a>
@@ -54,7 +59,7 @@
     }
 
     <div id="about-main" class="" role="main">
-        <div class="md single-notification">
+        <div class="md">
             @if (Model.Count > 0)
             {
                 <p>Displaying @Model.Count message(s).</p>
@@ -157,42 +162,45 @@
 
                             case Voat.Domain.Models.MessageType.SubmissionMention:
 
-                                var submission = Voat.Caching.DataCache.Submission.Retrieve(message.SubmissionID);
-
-                                <div id="messageContainer-@message.ID" class="entry">
-                                    <div class="panel panel-default @(unreadCssClass)">
-                                        <div class="panel panel-heading">
-                                            <b>@submission.Title</b>
-                                        </div>
-
-                                        <div class="panel-message-body">
-                                            <div class="submission id-@submission.ID link" data-fullname="@submission.ID" data-ups="@submission.UpCount" data-downs="@submission.DownCount">
-                                                <p class="parent"></p>
-                                                @Html.Partial("_votingIconsSubmission", submission)
-                                                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
+                                var submission = message.Submission;
+                                try
+                                {
+                                    
+                                    <div id="messageContainer-@message.ID" class="entry">
+                                        <div class="panel panel-default @(unreadCssClass)">
+                                            <div class="panel panel-heading">
+                                                <b>@submission.Title</b>
+                                            </div>
+                                            <div class="panel-message-body">
+                                                   @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission, new ViewDataDictionary() { { "CssClass", new string[] { "" } } })
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                }
+                                catch (Exception ex)
+                                {
+                                    //catch traps when comment/submission was deleted as is the case with deleted subverses
+                                    Voat.Utilities.Components.EventLogger.Instance.Log(ex, new { message = message }, null);
+                                }
                                 break;
                             case Voat.Domain.Models.MessageType.CommentMention:
                             case Voat.Domain.Models.MessageType.CommentReply:
                             case Voat.Domain.Models.MessageType.SubmissionReply:
-                                
+
                                 try
                                 {
-                                    var q = new Voat.Domain.Query.QuerySubmission(message.SubmissionID.Value);
-                                    var submission2 = q.Execute();
+                                    //var q = new Voat.Domain.Query.QuerySubmission(message.SubmissionID.Value);
+                                    //var submission2 = q.Execute();
 
-                                    var qc = new Voat.Domain.Query.QueryComment(message.CommentID.Value);
-                                    var comment = qc.Execute();
+                                    //var qc = new Voat.Domain.Query.QueryComment(message.CommentID.Value);
+                                    var comment = message.Comment;
 
                                     <div id="messageContainer-@comment.ID" class="entry">
                                         <div class="panel panel-default @(unreadCssClass)">
-                                            @if (submission2 != null && comment != null)
+                                            @if (comment != null)
                                             {
                                                 <div class="panel panel-heading">
-                                                    <a href="@VoatPathHelper.CommentsPagePath(message.Subverse, message.SubmissionID.Value)"><b>@submission2.Title</b></a>
+                                                    <a href="@VoatPathHelper.CommentsPagePath(message.Subverse, message.SubmissionID.Value)"><b>@message.Title</b></a>
                                                 </div>
                                                 <div class="panel-message-body">
                                                     @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
@@ -218,6 +226,7 @@
                                 }
                                 catch (Exception ex)
                                 {
+                                    //catch traps when comment/submission was deleted as is the case with deleted subverses
                                     Voat.Utilities.Components.EventLogger.Instance.Log(ex, new { message = message }, null);
                                 }
 
@@ -233,8 +242,5 @@
             }
         </div>
     </div>
-    @if (Model.PageCount > 1)
-    {
-        @Html.PagedListPager(Model, page => Url.Action((string)Request.RequestContext.RouteData.Values["action"], new { page = (page - 1) }), VoatPagerOptions.PagedListRenderOptions())
-    }
+    @Html.DisplayFor(model => Model, "IPaginatedList")
 </div>

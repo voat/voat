@@ -1,6 +1,10 @@
-﻿#region LICENSE
+#region LICENSE
 
 /*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
 
     This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
@@ -12,15 +16,11 @@
     or implied. See the License for the specific language governing
     rights and limitations under the License.
 
-    All portions of the code written by Voat, Inc. are Copyright(c) Voat, Inc.
-
     All Rights Reserved.
 
 */
 
 #endregion LICENSE
-
-
 
 using Newtonsoft.Json;
 using System;
@@ -36,6 +36,7 @@ using Voat.Utilities;
 
 namespace Voat.Data
 {
+
     /// <summary>
     /// Provide these Query string key/value pairs at endpoints that support the SearchOptions parsing to manipulate search query. 
     /// </summary>
@@ -60,6 +61,23 @@ namespace Voat.Data
         private IEnumerable<KeyValuePair<string, string>> _queryStrings = null;
         private List<KeyValuePair<string, string>> _unknownPairs = new List<KeyValuePair<string, string>>();
 
+        //TODO: Needs to return IEnumerable<> but unit tests need updated
+        public static IList<KeyValuePair<string, string>> ParseQuery(NameValueCollection nameValueCollection)
+        {
+            List<KeyValuePair<string, string>> pairs = new List<KeyValuePair<string, string>>();
+
+            if (nameValueCollection != null && nameValueCollection.Count > 0)
+            {
+                foreach (var key in nameValueCollection.Keys)
+                {
+                    pairs.Add(new KeyValuePair<string, string>(key.ToString(), nameValueCollection[key.ToString()]));
+                }
+            }
+
+            return pairs;
+        }
+
+        //TODO: Needs to return IEnumerable<> but unit tests need updated
         public static IList<KeyValuePair<string, string>> ParseQuery(string queryString, bool urlDecodeValues = true)
         {
             List<KeyValuePair<string, string>> pairs = new List<KeyValuePair<string, string>>();
@@ -114,7 +132,10 @@ namespace Voat.Data
         {
 
         }
+        public SearchOptions(NameValueCollection nameValueCollection, int? maxPageCount = null, bool useRelativeDateSpans = true) : this(SearchOptions.ParseQuery(nameValueCollection), maxPageCount, useRelativeDateSpans)
+        {
 
+        }
         public SearchOptions(IEnumerable<KeyValuePair<string, string>> queryStrings, int? maxPageCount = null, bool useRelativeDateSpans = true) : this(maxPageCount, useRelativeDateSpans)
         {
             //TODO: Make sure the querystrings passed into this method from controller are url decoded values
@@ -227,20 +248,36 @@ namespace Voat.Data
         {
             if (this.Span != SortSpan.All)
             {
-                if (!StartDate.HasValue)
+                DateTime dateToBaseRangeOn;
+
+                if (StartDate.HasValue && !EndDate.HasValue)
                 {
-                    _startDate = Repository.CurrentDate;
+                    //Use start date
+                    dateToBaseRangeOn = StartDate.Value;
+                }
+                else if (!StartDate.HasValue && EndDate.HasValue)
+                {
+                    //Use end date
+                    dateToBaseRangeOn = EndDate.Value;
+                }
+                else if (StartDate.HasValue && EndDate.HasValue)
+                {
+                    //default previous logic
+                    dateToBaseRangeOn = StartDate.Value;
+                }
+                else {
+                    dateToBaseRangeOn = Repository.CurrentDate;
                 }
 
                 //get date range based on span
                 Tuple<DateTime, DateTime> range;
                 if (UseRelativeDateSpans)
                 {
-                    range = _startDate.Value.RelativeRange(this.Span);
+                    range = dateToBaseRangeOn.ToRelativeRange(this.Span);
                 }
                 else
                 {
-                    range = _startDate.Value.Range(this.Span);
+                    range = dateToBaseRangeOn.ToRange(this.Span);
                 }
                 this._startDate = range.Item1;
                 this._endDate = range.Item2;
@@ -374,7 +411,7 @@ namespace Voat.Data
         }
         
         /// <summary>
-        /// [NEW] The page in which to retrieve. This value simply overriddes 'Index' and calculates it for you. How nice are we? Fairly nice I must say. Paging starts on page 1 not page 0.
+        /// The page in which to retrieve.
         /// </summary>
         [JsonProperty("page")]
         [DataMember(Name = "page")]

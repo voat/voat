@@ -1,6 +1,10 @@
-﻿#region LICENSE
+#region LICENSE
 
 /*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
 
     This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
@@ -11,8 +15,6 @@
     "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
     or implied. See the License for the specific language governing
     rights and limitations under the License.
-
-    All portions of the code written by Voat, Inc. are Copyright(c) Voat, Inc.
 
     All Rights Reserved.
 
@@ -62,7 +64,7 @@ namespace Voat.Tests.QueryTests
     }
 
     //[TestClass]
-    public class QuerySubmissionTests : BaseUnitTest
+    public abstract class QuerySubmissionTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Query")]
@@ -126,34 +128,38 @@ namespace Voat.Tests.QueryTests
             Assert.AreEqual("en", result.Language, this.GetType().Name);
         }
 
-        [TestMethod]
-        [TestCategory("Query")]
-        [TestCategory("Submission")]
-        public void Query_v_All_Guest()
-        {
-            var q = new QuerySubmissions("_all", SearchOptions.Default, null);
-            //q.CachePolicy.Duration = TimeSpan.Zero; //Turn off caching on this request
-            var result = q.ExecuteAsync().Result;
+        //[TestMethod]
+        //[TestCategory("Query")]
+        //[TestCategory("Submission")]
+        //public void Query_v_All_Guest()
+        //{
+        //    var q = new QuerySubmissions("_all", SearchOptions.Default, null);
+        //    //q.CachePolicy.Duration = TimeSpan.Zero; //Turn off caching on this request
+        //    var result = q.ExecuteAsync().Result;
 
-            Assert.IsNotNull(result, this.GetType().Name);
-            Assert.IsTrue(result.Any(), this.GetType().Name);
-        }
+        //    Assert.IsNotNull(result, this.GetType().Name);
+        //    Assert.IsTrue(result.Any(), this.GetType().Name);
+        //}
 
         [TestMethod]
         [TestCategory("Query")]
         [TestCategory("Submission")]
         [TestCategory("Cache")]
-        public void Query_v_All_Guest_Cached()
+        public async Task Query_v_All_Guest_Cached()
         {
-            var q = new QuerySubmissions("_all", SearchOptions.Default, new CachePolicy(TimeSpan.FromSeconds(30)));
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), SearchOptions.Default, new CachePolicy(TimeSpan.FromSeconds(30)));
+
+            //DELETE Cached entry because other test could insert it
+            CacheHandler.Instance.Remove(q.CacheKey);
+
             //q.CachePolicy.Duration = TimeSpan.FromSeconds(30); //Cache this request
-            var result = q.ExecuteAsync().Result;
+            var result = await q.ExecuteAsync();
             Assert.IsNotNull(result);
             Assert.AreEqual(false, q.CacheHit);
             Assert.IsTrue(result.Any());
 
-            q = new QuerySubmissions("_all", SearchOptions.Default, new CachePolicy(TimeSpan.FromMinutes(10)));
-            result = q.ExecuteAsync().Result;
+            q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), SearchOptions.Default, new CachePolicy(TimeSpan.FromMinutes(10)));
+            result = await q.ExecuteAsync();
             Assert.AreEqual(CacheHandler.Instance.CacheEnabled, q.CacheHit, this.GetType().Name); //ensure second query hits cache
             Assert.IsNotNull(result, this.GetType().Name);
             Assert.IsTrue(result.Any(), this.GetType().Name);
@@ -164,11 +170,16 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Query")]
         [TestCategory("Submission")]
         [TestCategory("Cache")]
+        [NUnit.Framework.RequiresThread]
         public async Task Query_v_All_Guest_Cached_Expired_Correctly()
         {
             TimeSpan cacheTime = TimeSpan.FromSeconds(2);
 
-            var q = new QuerySubmissions("_all", new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
+
+            //Clear Cache - NUnit port 
+            CacheHandler.Instance.Remove(q.CacheKey);
+
             //q.CachePolicy.Duration = cacheTime; //Cache this request
             var result = await q.ExecuteAsync();
 
@@ -188,9 +199,10 @@ namespace Voat.Tests.QueryTests
             }
 
             //wait for cache to expire - Runtime caches aren't precise so wait long enough to ensure cached item is removed.
-            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(waitTime));
+            //System.Threading.Thread.Sleep(TimeSpan.FromSeconds(waitTime));
+            await Task.Delay(TimeSpan.FromSeconds(waitTime));
 
-            q = new QuerySubmissions("_all", new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
+            q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
             result = await q.ExecuteAsync();
             //ensure we had to retreive new data
             Assert.AreEqual(false, q.CacheHit, this.GetType().Name);
@@ -227,7 +239,7 @@ namespace Voat.Tests.QueryTests
             var cmd = new BlockCommand(Domain.Models.DomainType.Subverse, "unit");
             var r = await cmd.Execute();
 
-            var q = new QuerySubmissions("_all", SearchOptions.Default);
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), SearchOptions.Default);
             //q.CachePolicy.Duration = cacheTime; //Cache this request
             var result = q.ExecuteAsync().Result;
 

@@ -1,18 +1,22 @@
 ﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+    
+    Copyright(c) Voat, Inc.
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+    This file is part of Voat.
 
-All portions of the code written by Voat are Copyright (c) 2014 Voat
-All Rights Reserved.
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
 */
-
-// Please feel free to refactor this code, I wrote most of it when I first started playing with JavaScript
 
 $(document).ready(function () {
     // activate bootstrap popovers
@@ -50,11 +54,73 @@ $(document).ready(function () {
         }
         //$(this).find('ul').css('display', 'none');
     }
+    var postingSubverse = '';
+    $('#Subverse').blur(function () {
+        var sub = $('#Subverse').val();
+        if (sub.length > 0 && postingSubverse != sub) {
+            postingSubverse = sub;
+            var url = '/ajaxhelpers/autocompletesubversename?exact=true&term=' + sub;
+            //set up UI
+            $.ajax({
+                type: "GET",
+                url: url,
+                //data: $form.serialize(),
+                error: function (xhr, status, error) {
+                    var msg = getErrorMessage(error);
+                    //TODO: Why is this here? I know I did this but why? WHY!? Please find my why.
+                    //alert(msg);
+                },
+                success: function (response) {
+                    if (response && response.length > 0) {
+                        var item = response[0];
 
-    $('#Subverse').autocomplete(
-        {
-            source: '/ajaxhelpers/autocompletesubversename'
-        });
+                        var adultCheckBox = $('#IsAdult');
+                        var anonCheckBox = $('#IsAnonymized');
+                        var anonDiv = $('#AnonDiv')
+
+                        anonDiv.hide();
+                        anonCheckBox.prop("disabled", true);
+                        anonCheckBox.prop("readonly", true);
+
+                        if (item.isAdult) {
+                            if (!adultCheckBox.prop('checked')) {
+                                adultCheckBox.prop("checked", true);
+                            }
+                        }
+
+                        //allows anon content, leave alone
+                        if (item.isAnonymized == null) {
+                            anonCheckBox.prop("disabled", false);
+                            anonCheckBox.prop("readonly", false);
+                            anonDiv.show();
+                        } else if (item.isAnonymized == false) {
+                            anonCheckBox.prop("checked", false);
+
+                        } else if (item.isAnonymized == true) {
+                            anonCheckBox.prop("checked", true);
+                        }
+                    }
+                }
+            });
+        }
+
+    });
+    $('#Subverse').autocomplete({
+        source: '/ajaxhelpers/autocompletesubversename',
+        minLength: 2,
+        select: function (event, ui) {
+            $('#Subverse').val(ui.item.name);
+            return false;
+        },
+        focus: function () {
+            // prevent value inserted on focus
+            return false;
+        }
+    }).autocomplete("instance")._renderItem = function (ul, item) {
+        return $("<li>")
+        .append("<div>" + item.name + "</div>")
+        .appendTo(ul);
+    };
 
     // drag'n'drop link sharing
     //$(document).on('dragenter', function () {
@@ -66,16 +132,16 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
-    $('#share-a-link-overlay').on('dragleave', function (e) {
-        if (e.originalEvent.pageX < 10 || e.originalEvent.pageY < 10 || $(window).width() - e.originalEvent.pageX < 10 || $(window).height - e.originalEvent.pageY < 10) {
-            $("#share-a-link-overlay").hide();
-        }
-    });
+    //$('#share-a-link-overlay').on('dragleave', function (e) {
+    //    if (e.originalEvent.pageX < 10 || e.originalEvent.pageY < 10 || $(window).width() - e.originalEvent.pageX < 10 || $(window).height - e.originalEvent.pageY < 10) {
+    //        $("#share-a-link-overlay").hide();
+    //    }
+    //});
 
-    $('#share-a-link-overlay').on('dragover', function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-    });
+    //$('#share-a-link-overlay').on('dragover', function (e) {
+    //    e.stopPropagation();
+    //    e.preventDefault();
+    //});
 
     // tooltipster wireup
     wireTooltips();
@@ -141,8 +207,9 @@ $(document).ready(function () {
                 };
 
                 // Hub accessed function to append incoming chat message
-                proxy.client.appendChatMessage = function (sender, chatMessage) {
-                    $("#subverseChatRoom").append('<p><b><a href="/user/' + sender + '">' + sender + '</a></b>:</p>' + chatMessage );
+                proxy.client.appendChatMessage = function (sender, chatMessage, time) {
+                    //$("#subverseChatRoom").append('<p><b><a href="/user/' + sender + '">' + sender + '</a></b> (' + time + ' UTC):</p>' + chatMessage);
+                    $("#subverseChatRoom").append('<div class="chat-message"><div class="chat-message-head"><p><b><a href="/user/' + sender + '">' + sender + '</a></b> <span class="chat-message-timestamp">(' + time + ')</span>:</p></div><div class="chat-message-body">' + chatMessage + '</div></div>');
                     scrollChatToBottom();
                 };
             }
@@ -187,36 +254,36 @@ function wireTooltips() {
     });
 }
 
-// a function which handles mouse drop events (sharing links by dragging and dropping)
-function dropFunction(event) {
-    event.stopPropagation();
-    event.preventDefault();
+//// a function which handles mouse drop events (sharing links by dragging and dropping)
+//function dropFunction(event) {
+//    event.stopPropagation();
+//    event.preventDefault();
 
-    var droppedData = event.dataTransfer.getData('text/html');
+//    var droppedData = event.dataTransfer.getData('text/html');
 
-    var url;
-    if ($(droppedData).children().length > 0) {
-        url = $(droppedData).attr('href');
-    } else {
-        url = $(droppedData).attr('href');
-    }
+//    var url;
+//    if ($(droppedData).children().length > 0) {
+//        url = $(droppedData).attr('href');
+//    } else {
+//        url = $(droppedData).attr('href');
+//    }
 
-    // dropped data did not contain a HREF element, try to see if it has a SRC element instead
-    if (url != null) {
-        window.location.replace("/submit?linkpost=true&url=" + url);
-    } else {
-        url = $(droppedData).attr('src');
-        if (url != null) {
-            window.location.replace("/submit?linkpost=true&url=" + url);
-        }
-    }
+//    // dropped data did not contain a HREF element, try to see if it has a SRC element instead
+//    if (url != null) {
+//        window.location.replace("/submit?linkpost=true&url=" + url);
+//    } else {
+//        url = $(droppedData).attr('src');
+//        if (url != null) {
+//            window.location.replace("/submit?linkpost=true&url=" + url);
+//        }
+//    }
 
-    $("#share-a-link-overlay").hide();
-}
+//    $("#share-a-link-overlay").hide();
+//}
 
-function click_voting() {
-    $(this).toggleClass("arrow upmod login-required");
-}
+//function click_voting() {
+//    $(this).toggleClass("arrow upmod login-required");
+//}
 
 function mustLogin() {
     $('#mustbeloggedinModal').modal();
@@ -236,28 +303,36 @@ function firstTimeVisitorWelcome() {
 
 //locks vote operations
 var submissionVoteLock = null;
-function voteSubmission(submissionID, voteValue) {
+function voteSubmission(id, voteValue, errorSpan) {
 
     if (submissionVoteLock == null) {
         submissionVoteLock = new Object();
         voteValue = (voteValue == -1 ? -1 : 1);//standardize bad input
 
+        if (errorSpan) {
+            errorSpan.html('');
+        }
+
         //submitUpVote(submissionid);
         $.ajax({
             type: "POST",
-            url: "/vote/" + submissionID + "/" + voteValue.toString(),
+            url: "/user/vote/submission/" + id + "/" + voteValue.toString(),
             complete: function () {
                 submissionVoteLock = null;
             },
             error: function (data) {
-                //voting was not registered - show error
-                var submission = $(".submission.id-" + submissionID);
-                var div = submission.children(".entry");
-                div.children('span').remove();
-                div.prepend('<span class="vote-error">An Error Occured :(</span>');
+                if (errorSpan) {
+                    errorSpan.html("An Error Occured :(");
+                } else {
+                    //voting was not registered - show error
+                    var submission = $(".submission.id-" + id);
+                    var div = submission.children(".entry");
+                    div.children('span').remove();
+                    div.prepend('<span class="vote-error">An Error Occured :(</span>');
+                }
             },
             success: function (data) {
-                var submission = $(".submission.id-" + submissionID);
+                var submission = $(".submission.id-" + id);
                 //remove error span if present
                 submission.children(".entry").children('span').remove();
 
@@ -267,13 +342,17 @@ function voteSubmission(submissionID, voteValue) {
                     } else if (data.message.indexOf('4.0', 0) > 0 || data.message.indexOf('2.1', 0) > 0) {
                         notEnoughCCPUpVote();
                     }
-
-                    var err = submission.children(".entry");
-                    err.children('span').remove();
-                    err.prepend('<span class="vote-error">' + data.message + '</span>');
-                    return;
+                    if (errorSpan) {
+                        errorSpan.html(data.message);
+                        return;
+                    } else {
+                        var err = submission.children(".entry");
+                        err.children('span').remove();
+                        err.prepend('<span class="vote-error">' + data.message + '</span>');
+                        return;
+                    }
                 }
-                var div = submission.children(".midcol");
+                var div = submission.find(".voting-icons");
 
 
                 var scoreLikes = +(submission.find('.score.likes').html());
@@ -362,7 +441,7 @@ function voteSubmission(submissionID, voteValue) {
 }
 
 var commentVoteLock = null;
-function voteComment(commentid, voteValue) {
+function voteComment(id, voteValue) {
 
     if (commentVoteLock == null) {
 
@@ -372,13 +451,13 @@ function voteComment(commentid, voteValue) {
         //submitCommentUpVote(commentid);
         $.ajax({
             type: "POST",
-            url: "/votecomment/" + commentid + "/" + voteValue.toString(),
+            url: "/user/vote/comment/" + id + "/" + voteValue.toString(),
             complete: function () {
                 commentVoteLock = null;
             },
             error: function (data) {
                 //voting was not registered - show error
-                var comment = $(".comment.id-" + commentid);
+                var comment = $(".comment.id-" + id);
                 var div = comment.children(".entry");
                 div.children('span').remove();
                 div.prepend('<span class="vote-error">An Error Occured :(</span>');
@@ -386,7 +465,7 @@ function voteComment(commentid, voteValue) {
             success: function (data) {
                 //TODO: data object includes vote related json, the below code can use the values this object contains, but not changing right now.
                 //alert(data.message);
-                var comment = $(".comment.id-" + commentid);
+                var comment = $(".comment.id-" + id);
                 //remove error span if present
                 comment.children(".entry").children('span').remove();
 
@@ -575,6 +654,38 @@ function replyToCommentNotification(commentId, submissionId) {
     $.validator.unobtrusive.parse(form);
 }
 
+function getErrorObject(arguments) {
+    var request = arguments[2];
+    if (request.responseJSON) {
+        if (request.responseJSON.success === false) {
+            return request.responseJSON;
+        }
+    }
+    return null;
+}
+function getJsonResponse(arguments) {
+
+    //complete
+    var request = arguments[0];
+    if (request !== undefined && request.responseJSON !== undefined) {
+        return request.responseJSON;
+    }
+    //success
+    request = arguments[2];
+    if (request !== undefined && request.responseJSON !== undefined) {
+        return request.responseJSON;
+    }
+
+    if (arguments[0].status != 200) {
+        return {
+            success: false,
+            error: { type: arguments[0].status, message: arguments[0].statusText }
+        };
+    }
+    //return details i suppose...
+    return { success: false, data: arguments };
+}
+
 //attempting to clean up client side error handling
 function getErrorMessage(error, defaultMessage)
 {
@@ -591,8 +702,54 @@ function getErrorMessage(error, defaultMessage)
     }
     return msg;
 }
+function onSaveSet(sender, arguments)
+{
+    var response = getJsonResponse(arguments);
+    var messagePlaceHolder = sender.parents("form").find(".updateResult");
+    if (response.success) {
+        messagePlaceHolder.html("Set updated");
+    } else {
+        messagePlaceHolder.html(response.error.message);
+    }
+}
+function submitSetUpdateForm(sender, setName) {
+
+    var callBack = function (sender, arguments) {
+
+        var response = getJsonResponse(arguments);
+        var messagePlaceHolder = sender.parents("form").find(".updateResult");
+        if (response.success) {
+            if (response.data.fullName != setName) {
+                location.href = "/s/" + response.data.fullName + "/about/details?message=Set%20Updated";
+            }
+            else {
+                messagePlaceHolder.html("Set Updated");
+            }
+        } else {
+            messagePlaceHolder.html(response.error.message);
+        }
+    }
+
+    submitForm(sender, callBack);
+
+}
+function submitForm(sender, callBack)
+{
+    var $form = $(sender).parents('form');
+    $.ajax({
+        type: "POST",
+        url: $form.attr('action'),
+        data: $form.serialize(),
+        error: function (xhr, status, error) {
+            callBack(sender, arguments);
+        },
+        success: function (response) {
+            callBack(sender, arguments);
+        }
+    });
+}
 // post comment reply form through ajax
-function postCommentAjax(senderButton, parentCommentID) {
+function submitComment(senderButton, parentCommentID) {
     var $form = $(senderButton).parents('form');
     $form.find("#errorMessage").toggle(false);
 
@@ -605,30 +762,38 @@ function postCommentAjax(senderButton, parentCommentID) {
             url: $form.attr('action'),
             data: $form.serialize(),
             error: function (xhr, status, error) {
-                var msg = getErrorMessage(error);
                 // comment failed, likely cause: user triggered anti-spam throttle
                 $form.find("#submitbutton").val("Submit comment");
                 $form.find("#submitbutton").prop('disabled', false);
-                $form.find("#errorMessage").html(msg);
+                $form.find("#errorMessage").html("An unexpected error happened");
                 $form.find("#errorMessage").toggle(true);
             },
             success: function (response) {
 
-                if (parentCommentID) {
-                    removereplyform(parentCommentID);
-                    $(".id-" + parentCommentID).append(response);
-                    //notify UI framework of DOM insertion async
-                    window.setTimeout(function () { UI.Notifications.raise('DOM', $('.id-' + parentCommentID).last('div')); });
-                } else {
-                    $(".sitetable.nestedlisting > #no-comments").remove();
-                    $(".sitetable.nestedlisting").prepend(response);
-                    // reset submit button
+                var errorObj = getErrorObject(arguments);
+
+                if (errorObj) {
                     $form.find("#submitbutton").val("Submit comment");
                     $form.find("#submitbutton").prop('disabled', false);
-                    // reset textbox
-                    $form.find("#Content").val("");
-                    //notify UI framework of DOM insertion async
-                    window.setTimeout(function () { UI.Notifications.raise('DOM', $('.sitetable.nestedlisting').first()); });
+                    $form.find("#errorMessage").html(errorObj.error.message);
+                    $form.find("#errorMessage").toggle(true);
+                } else {
+                    if (parentCommentID) {
+                        removereplyform(parentCommentID);
+                        $(".id-" + parentCommentID).append(response);
+                        //notify UI framework of DOM insertion async
+                        window.setTimeout(function () { UI.Notifications.raise('DOM', $('.id-' + parentCommentID).last('div')); });
+                    } else {
+                        $(".sitetable.nestedlisting > #no-comments").remove();
+                        $(".sitetable.nestedlisting").prepend(response);
+                        // reset submit button
+                        $form.find("#submitbutton").val("Submit comment");
+                        $form.find("#submitbutton").prop('disabled', false);
+                        // reset textbox
+                        $form.find("#Content").val("");
+                        //notify UI framework of DOM insertion async
+                        window.setTimeout(function () { UI.Notifications.raise('DOM', $('.sitetable.nestedlisting').first()); });
+                    }
                 }
             }
         });
@@ -760,7 +925,7 @@ function removereplyform(parentcommentid) {
 }
 
 // remove edit form for given parent id and replace it with original comment
-function removeeditform(parentcommentid) {
+function removeEditForm(parentcommentid) {
     $("#" + parentcommentid).find(".usertext-body").show();
     $("#" + parentcommentid).find(".usertext-edit").hide();
 }
@@ -829,12 +994,17 @@ function editcommentsubmit(commentid) {
             $('#commenteditform-' + commentid + " span.field-validation-error").html(msg);
         },
         success: function (data) {
-            $("#" + commentid).find('.md').html(data.response);
 
-            removeeditform(commentid);
+            var errorObj = getErrorObject(arguments);
 
-            //notify UI framework of DOM insertion async
-            window.setTimeout(function () { UI.Notifications.raise('DOM', $('#' + commentid)); });
+            if (errorObj) {
+                $('#commenteditform-' + commentid + " span.field-validation-error").html(errorObj.error.message);
+            } else {
+                $("#" + commentid).find('.md').html(data.response);
+                removeEditForm(commentid);
+                //notify UI framework of DOM insertion async
+                window.setTimeout(function () { UI.Notifications.raise('DOM', $('#' + commentid)); });
+            }
         }
     });
 
@@ -862,7 +1032,7 @@ function deletecomment(commentid) {
     //hide "are you sure" option
     toggleback(commentid);
 
-    removeeditform(commentid);
+    removeEditForm(commentid);
 
     //execute POST call to remove comment from database
     deletecommentsubmit(commentid);
@@ -880,7 +1050,7 @@ function deletecommentsubmit(commentid) {
         datatype: "json"
     });
 
-    removeeditform(commentid);
+    removeEditForm(commentid);
     return false;
 }
 
@@ -907,17 +1077,102 @@ function deletesubmission(senderButton, submissionid) {
     });
 }
 
+function getReportDialog(sender, subverse, type, id) {
+    //"v/{subverse}/about/reports/{type}/{id}/dialog"
+    var urlComplete = "/v/" + subverse + "/about/reports/" + type + "/" + id + "/dialog?nocache=" + cachePrevention();
+
+    $.ajax({
+        type: "GET",
+        url: urlComplete,
+        success: function (arg1, request, value) {
+            $(sender).hide();
+            $(sender).parents('div').first().append(arg1);
+        },
+        error: function (error) {
+            $(sender).text("Oops... a problem");
+            //Something bad happened
+        }
+    });
+    //$(obj).parent().parent().find('.option, .main').toggleClass("active");
+    return false;
+}
+function cancelReportDialog(sender) {
+
+    //remove report form
+    var reportForm = $(sender).parents(".reportDialog").first()
+    var toggleButton = reportForm.parent().find('.togglebutton');
+    toggleButton.show();
+    reportForm.remove();
+
+    return false;
+}
+function sendReport(sender) {
+
+    var $form = $(sender).parents('form');
+
+    $.ajax({
+        type: "POST",
+        url: $form.attr('action'),
+        data: $form.serialize(),
+        error: function (xhr, status, error) {
+    
+        },
+        success: function (response) {
+
+            var errorObj = getErrorObject(arguments);
+            var reportForm = $(sender).parents(".reportDialog").first()
+            if (errorObj) {
+                var errorControl = reportForm.find(".error");
+
+                errorControl.text(errorObj.error.message);
+                errorControl.show();
+                //toggleButton.text("report failed");
+                
+            } else {
+                var toggleButton = reportForm.parent().find('.report-button');
+                toggleButton.show();
+                reportForm.remove();
+                toggleButton.text("thank you!");
+            }
+        }
+    });
+    return false;
+}
+function markReportAsReviewed(sender, subverse, type, id) {
+    //var $form = $(sender).parents('form');
+    //"v/{subverse}/about/reports/{type}/{id}/mark"
+    var urlComplete = "/v/" + subverse + "/about/reports/" + type + "/" + id + "/mark";
+
+    $.ajax({
+        type: "POST",
+        url: urlComplete,
+        error: function (xhr, status, error) {
+            $(sender).parents(".contentReport").remove();
+        },
+        success: function (response) {
+
+            var errorObj = getErrorObject(arguments);
+
+            if (errorObj) {
+                sender.text(errorObj.error.message);
+            } else {
+                $(sender).parents(".contentReport").remove();
+            }
+        }
+    });
+    return false;
+}
 // toggle are you sure question for comment deletion
 function toggle(obj, commentid) {
     $(obj).parent().parent().find('.option, .main').toggleClass("active");
     return false;
 }
 
-// toggle are you sure question for subverse block action
-function toggleblocksubverse(obj) {
-    $(obj).parent().parent().find('.option, .error').toggleClass("active");
-    return false;
-}
+//// toggle are you sure question for subverse block action
+//function blockSubverseToggle(obj) {
+//    $(obj).parent().parent().find('.option, .error').toggleClass("active");
+//    return false;
+//}
 
 // toggle are you sure question for comment report
 function togglereport(commentid) {
@@ -960,7 +1215,7 @@ function togglesubmission(obj, submissionid) {
 }
 
 // togle back are you sure question for submission deletion
-function togglesubmissionback(obj) {
+function toggleSubmissionBack(obj) {
     $(obj).parent().parent().find('.option, .error').toggleClass("active");
     return false;
 }
@@ -969,191 +1224,437 @@ function togglesubmissionback(obj) {
 $.fn.exists = function () {
     return this.length !== 0;
 };
-
-// subscribe to subverse
-function subscribe(obj, subverseName) {
-    //This is the famous undefined subscription bug - DO NOT ERASE - THIS IS VOAT FAMOUS - ATTN DAN.F. I found it first!
-    //$(obj).attr("onclick", "unsubscribe(this)");
-    $(obj).attr("onclick", "unsubscribe(this, '" + subverseName + "')");
-
-    $(obj).html("unsubscribe");
-    $(obj).toggleClass("btn-sub btn-unsub");
-
-    // call the subverse subscribe API
-    $.ajax({
-        type: "POST",
-        url: "/subscribe/" + subverseName,
-        success: function () {
-            var numberOfSubscribers = +($('#subscriberCount').html());
-            numberOfSubscribers++;
-            $('#subscriberCount').html(numberOfSubscribers);
-        },
-        error: function () {
-            alert('Something went wrong while sending a subscription request.');
+function setSubverseAddCallBack(sender, arguments) {
+    var response = new getJsonResponse(arguments);
+    var message = "";
+    if (response.success) {
+        if (response.data == true) {
+            message = "Subverse added to set";
+            //message = "Subverse " + subverseName + " was added to set " + setName;
         }
-    });
-}
-
-// unsubscribe from subverse
-function unsubscribe(obj, subverseName) {
-    //This is the famous undefined subscription bug - DO NOT ERASE - THIS IS VOAT FAMOUS - ATTN DAN.F. I found it first!
-    //$(obj).attr("onclick", "subscribe(this)");
-    $(obj).attr("onclick", "subscribe(this, '" + subverseName + "')");
-    $(obj).html("subscribe");
-    $(obj).toggleClass("btn-sub btn-unsub");
-
-    // call the subverse unsubscribe API
-    $.ajax({
-        type: "POST",
-        url: "/unsubscribe/" + subverseName,
-        success: function () {
-            var numberOfSubscribers = +($('#subscriberCount').html());
-            numberOfSubscribers--;
-            $('#subscriberCount').html(numberOfSubscribers);
-        },
-        error: function () {
-            alert('Something went wrong while sending unsubscription request.');
+        else {
+            message = "Subverse removed from set";
+            //message = "Subverse " + subverseName + " was removed from set " + setName;
         }
-    });
-}
-
-// subscribe to set
-function subscribeToSet(obj, setId) {
-    $(obj).attr("onclick", "unsubscribe(this)");
-    $(obj).html("unsubscribe");
-
-    // call the set subscribe API
-    $.ajax({
-        type: "POST",
-        url: "/subscribetoset/" + setId,
-        success: function () {
-            var numberOfSubscribers = +($('#subscribercount').html());
-            numberOfSubscribers++;
-            $('#subscribercount').html(numberOfSubscribers);
-        },
-        error: function () {
-            alert('Something went wrong while sending a set subscription request.');
-        }
-    });
-}
-
-// unsubscribe from set
-function unsubscribeFromSet(obj, setId) {
-    $(obj).attr("onclick", "subscribe(this)");
-    $(obj).html("subscribe");
-
-    // call the unsubscribe API
-    $.ajax({
-        type: "POST",
-        url: "/unsubscribefromset/" + setId,
-        success: function () {
-            var numberOfSubscribers = +($('#subscriberCount').html());
-            numberOfSubscribers--;
-            $('#subscriberCount').html(numberOfSubscribers);
-        },
-        error: function () {
-            alert('Something went wrong while sending unsubscription request.');
-        }
-    });
-}
-
-// remove a subverse from a set
-function removeSubFromSet(obj, setId, subverseName) {
-    $(obj).html("Hold on...");
-
-    // call remove subverse from set API
-    $.ajax({
-        type: "POST",
-        url: "/sets/removesubverse/" + setId + "/" + subverseName,
-        success: function () {
-            // remove the remove button along with sub info
-            $("#subverse-" + subverseName).remove();
-        },
-        error: function () {
-            $(obj).html("Something went wrong.");
-        }
-    });
-}
-
-// add a subverse to a set
-function addSubToSet(obj, setId) {
-    $(obj).html("Hold on...");
-    var subverseName = $("#Subverse").val();
-
-    if (!subverseName) {
-        $(obj).html("Add this subverse to set");
-        $("#status").html("please enter a subverse name to add");
-        $("#status").show();
-        return;
+    } else {
+        message = "Oops: " + response.error.message;
     }
+    $(sender).parents(".updateSection").find(".updateResult").html(message);
+    $('#subName').val('');
+}
+function setSubverseListToggleCallBack(s, arguments) {
 
-    // call add subverse to set API
+    var response = new getJsonResponse(arguments);
+    if (response.success) {
+
+        toggleButtonVisualState(s, response.data, "remove", "add");
+
+        //if (response.data) {
+        //    s.text("remove");
+        //    s.addClass("btn-voat-off");
+        //    //backwards compat
+        //    s.addClass("btn-unsub");
+        //    s.removeClass("btn-sub");
+
+        //} else {
+        //    s.text("add");
+        //    s.removeClass("btn-voat-off");
+        //    //backwards compat
+        //    s.addClass("btn-sub");
+        //    s.removeClass("btn-unsub");
+        //}
+    } else {
+        s.text(response.error.message);
+    }
+}
+function setSubverseListToggle(sender, setName, subverseName, action, callBack) {
+    if (subverseName != "") {
+        //$(obj).html("unsubscribe");
+        //$(obj).toggleClass("btn-sub btn-unsub");
+        var actionType = "toggle";
+        if (action !== undefined && action != null) {
+            actionType = action;
+        }
+        var url = "/s/" + setName + '/' + subverseName + '/' + actionType;
+        // call the set subverse list API
+        $.ajax({
+            type: "POST",
+            url: url,
+            complete: function () {
+                callBack(sender, arguments);
+            }
+        });
+    }
+}
+
+function subscribe(sender, type, name, callBack)
+{
+    //{pathPrefix}/subscribe/{domainType}/{name}/{ownerName}/{action}
+    var url = "/user/subscribe/" + type + "/" + name + "/toggle" ;
     $.ajax({
         type: "POST",
-        url: "/sets/addsubverse/" + setId + "/" + subverseName,
-        success: function () {
-            var subverseInfo = $.get(
-                "/ajaxhelpers/setsubverseinfo/" + setId + "/" + subverseName,
-                null,
-                function (data) {
-                    $("#subverselisting").append(data);
-                    $("#status").hide();
-                    $(obj).html("Add this subverse to set");
-                }
-             );
-        },
-        error: function () {
-            $("#status").html("Subverse probably does not exist.");
-            $("#status").show();
-            $(obj).html("Add this subverse to set");
+        url: url,
+        complete: function () {
+            callBack(sender, arguments);
         }
     });
 }
+
+function subscribeToSet(sender, name)
+{
+    subscribe(sender, "set", name,
+        function (s, args) {
+            var response = getJsonResponse(args);
+            if (response.success) {
+
+                toggleButtonVisualState(s, response.data, "unsubscribe", "subscribe");
+
+                //if (response.data) {
+                //    s.text("unsubscribe");
+                //    s.addClass("btn-voat-off");
+                //    //backwards compat
+                //    s.addClass("btn-unsub");
+                //    s.removeClass("btn-sub");
+
+                //} else {
+                //    s.text("subscribe");
+                //    s.removeClass("btn-voat-off");
+                //    //backwards compat
+                //    s.addClass("btn-sub");
+                //    s.removeClass("btn-unsub");
+                //}
+               
+            } else {
+                s.text(response.error.message);
+            }
+        }
+    );
+}
+function subscribeToSubverse(sender, name) {
+    subscribe(sender, "subverse", name,
+       function (s, args) {
+           var response = getJsonResponse(args);
+           if (response.success) {
+
+               toggleButtonVisualState(s, response.data, "unsubscribe", "subscribe");
+
+               //if (response.data) {
+               //    s.text("unsubscribe");
+               //    s.addClass("btn-voat-off");
+               //    //backwards compat
+               //    s.addClass("btn-unsub");
+               //    s.removeClass("btn-sub");
+
+               //} else {
+               //    s.text("subscribe");
+               //    s.removeClass("btn-voat-off");
+               //    //backwards compat
+               //    s.addClass("btn-sub");
+               //    s.removeClass("btn-unsub");
+               //}
+           } else {
+               s.text(response.error.message);
+           }
+       }
+   );
+}
+function toggleButtonVisualState(target, enabled, trueText, falseText) {
+
+    //So the enabled setting is the value of whether the item is subscribed or not
+    //true = subscribed (thus we show a non-highlighted button)
+    //false = we highlight it
+    if (enabled) {
+        target.text(trueText);
+        target.addClass("btn-voat-off");
+        //backwards compat
+        target.addClass("btn-unsub");
+        target.removeClass("btn-sub");
+
+    } else {
+        target.text(falseText);
+        target.removeClass("btn-voat-off");
+        //backwards compat
+        target.addClass("btn-sub");
+        target.removeClass("btn-unsub");
+    }
+}
+//// subscribe to subverse
+//function subscribe(obj, subverseName) {
+//    //This is the famous undefined subscription bug - DO NOT ERASE - THIS IS VOAT FAMOUS - ATTN DAN.F. I found it first!
+//    //$(obj).attr("onclick", "unsubscribe(this)");
+//    $(obj).attr("onclick", "unsubscribe(this, '" + subverseName + "')");
+
+//    $(obj).html("unsubscribe");
+//    $(obj).toggleClass("btn-sub btn-unsub");
+
+//    // call the subverse subscribe API
+//    $.ajax({
+//        type: "POST",
+//        url: "/subscribe/" + subverseName,
+//        success: function () {
+//            var numberOfSubscribers = +($('#subscriberCount').html());
+//            numberOfSubscribers++;
+//            $('#subscriberCount').html(numberOfSubscribers);
+//        },
+//        error: function () {
+//            alert('Something went wrong while sending a subscription request.');
+//        }
+//    });
+//}
+////function setSubscribeToggle(obje, setID, subverseName)
+////{
+
+////}
+//// unsubscribe from subverse
+//function unsubscribe(obj, subverseName) {
+//    //This is the famous undefined subscription bug - DO NOT ERASE - THIS IS VOAT FAMOUS - ATTN DAN.F. I found it first!
+//    //$(obj).attr("onclick", "subscribe(this)");
+//    $(obj).attr("onclick", "subscribe(this, '" + subverseName + "')");
+//    $(obj).html("subscribe");
+//    $(obj).toggleClass("btn-sub btn-unsub");
+
+//    // call the subverse unsubscribe API
+//    $.ajax({
+//        type: "POST",
+//        url: "/unsubscribe/" + subverseName,
+//        success: function () {
+//            var numberOfSubscribers = +($('#subscriberCount').html());
+//            numberOfSubscribers--;
+//            $('#subscriberCount').html(numberOfSubscribers);
+//        },
+//        error: function () {
+//            alert('Something went wrong while sending unsubscription request.');
+//        }
+//    });
+//}
+// *************************** SET **************************************
+
+//// subscribe to set
+//function subscribeToSet(obj, setId) {
+//    $(obj).attr("onclick", "unsubscribe(this)");
+//    $(obj).html("unsubscribe");
+
+//    // call the set subscribe API
+//    $.ajax({
+//        type: "POST",
+//        url: "/subscribetoset/" + setId,
+//        success: function () {
+//            var numberOfSubscribers = +($('#subscribercount').html());
+//            numberOfSubscribers++;
+//            $('#subscribercount').html(numberOfSubscribers);
+//        },
+//        error: function () {
+//            alert('Something went wrong while sending a set subscription request.');
+//        }
+//    });
+//}
+
+//// unsubscribe from set
+//function unsubscribeFromSet(obj, setId) {
+//    $(obj).attr("onclick", "subscribe(this)");
+//    $(obj).html("subscribe");
+
+//    // call the unsubscribe API
+//    $.ajax({
+//        type: "POST",
+//        url: "/unsubscribefromset/" + setId,
+//        success: function () {
+//            var numberOfSubscribers = +($('#subscriberCount').html());
+//            numberOfSubscribers--;
+//            $('#subscriberCount').html(numberOfSubscribers);
+//        },
+//        error: function () {
+//            alert('Something went wrong while sending unsubscription request.');
+//        }
+//    });
+//}
+
+//// remove a subverse from a set
+//function removeSubFromSet(obj, setId, subverseName) {
+//    $(obj).html("Hold on...");
+
+//    // call remove subverse from set API
+//    $.ajax({
+//        type: "POST",
+//        url: "/sets/removesubverse/" + setId + "/" + subverseName,
+//        success: function () {
+//            // remove the remove button along with sub info
+//            $("#subverse-" + subverseName).remove();
+//        },
+//        error: function () {
+//            $(obj).html("Something went wrong.");
+//        }
+//    });
+//}
+
+//// add a subverse to a set
+//function addSubToSet(obj, setId) {
+//    $(obj).html("Hold on...");
+//    var subverseName = $("#Subverse").val();
+
+//    if (!subverseName) {
+//        $(obj).html("Add this subverse to set");
+//        $("#status").html("please enter a subverse name to add");
+//        $("#status").show();
+//        return;
+//    }
+
+//    // call add subverse to set API
+//    $.ajax({
+//        type: "POST",
+//        url: "/sets/addsubverse/" + setId + "/" + subverseName,
+//        success: function () {
+//            var subverseInfo = $.get(
+//                "/ajaxhelpers/setsubverseinfo/" + setId + "/" + subverseName,
+//                null,
+//                function (data) {
+//                    $("#subverselisting").append(data);
+//                    $("#status").hide();
+//                    $(obj).html("Add this subverse to set");
+//                }
+//             );
+//        },
+//        error: function () {
+//            $("#status").html("Subverse probably does not exist.");
+//            $("#status").show();
+//            $(obj).html("Add this subverse to set");
+//        }
+//    });
+//}
+
+//// a function to fetch 1 page for a set and append to the bottom of the given set
+//var loadMoreSetRequest;
+//function loadMoreSetItems(obj, setId) {
+//    if (loadMoreSetRequest) { return; }
+//    $(obj).html("Sit tight...");
+
+//    // try to see if this request is a subsequent request
+//    var currentPage = $("#set-" + setId + "-page").html();
+//    if (currentPage == null) {
+//        currentPage = 1;
+//    } else {
+//        currentPage++;
+//    }
+
+//    loadMoreSetRequest = $.ajax({
+//        url: "/set/" + setId + "/" + currentPage + "/",
+//        success: function (data) {
+//            $("#set-" + setId + "-page").remove();
+//            $("#set-" + setId + "-container").append(data);
+//            $(obj).html("load more &#9660;");
+//        },
+//        error: function () {
+//            {
+//                $(obj).html("That's it. There was nothing else to show.");
+//            }
+//        },
+//        complete: function () {
+//            loadMoreSetRequest = null;
+//        }
+//    });
+//}
+
+//// a function to change set title name
+//function changeSetName() {
+//    $('#setName').removeAttr("onclick");
+//    $('#setName').hide();
+
+//    // show textbox
+//    $('#newSetName').show();
+//    $('#newSetNameEditBox').focus();
+
+//    $('#newSetNameEditBox').on('keypress', function (e) {
+//        if (e.keyCode === 13) {
+//            $('#setName').html($('#newSetNameEditBox').val());
+
+//            $('#setName').bind('click', changeSetName);
+//            $('#newSetName').hide();
+//            $('#setName').show();
+//        }
+//    });
+//}
+
+//function cancelSetTitleChange() {
+//    $('#setName').bind('click', changeSetName);
+//    $('#newSetName').hide();
+//    $('#setName').show();
+//}
+
+//function saveSetTitle(obj, setId) {
+//    $(obj).html('Please wait...');
+
+//    $.ajax({
+//        type: "POST",
+//        url: "/sets/modify/" + setId + "/" + $('#newSetNameEditBox').val(),
+//        success: function () {
+//            $('#setName').html($('#newSetNameEditBox').val());
+//            $('#setName').bind('click', changeSetName);
+//            $('#newSetName').hide();
+//            $('#setName').show();
+
+//            $(obj).html('Save');
+//        },
+//        error: function () {
+//            $(obj).html('Max 20 characters');
+//        }
+//    });
+//}
+
+//// a function to ask the user to confirm permanent set deletion request
+//function deleteSet(obj, setId) {
+//    $(obj).html("Are you sure?");
+
+//    $(obj).bind({
+//        click: function () {
+//            deleteSetExecute(obj, setId);
+//        }
+//    });
+
+//    return false;
+//}
+
+//// a function to permanently delete a given set
+//function deleteSetExecute(obj, setId) {
+//    $(obj).html('Please wait...');
+
+//    $.ajax({
+//        type: "POST",
+//        url: "/sets/delete/" + setId,
+//        success: function () {
+//            // remove the set from view
+//            $("#set-" + setId).remove();
+//        },
+//        error: function () {
+//            $(obj).html('Nope.');
+//        }
+//    });
+//}
+
+
+
+
 
 // a function to load content of a self post and append it to calling object
 function loadSelfText(obj, messageId) {
     // load content only if collapsed, don't cache as author may edit the submission
-    var isExpanded = false;
-    if ($(obj).hasClass('collapsed')) {
-        //fetch message content and append under class md
-        var messageContent = $.get(
-            "/ajaxhelpers/messagecontent/" + messageId,
-            null,
-            function (data) {
-                $(obj).parent().find(".expando").find(".md").html(data);
-                window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent().find(".expando")); });
-            }
-         );
-    }
+    //var isExpanded = false;
+    //if ($(obj).hasClass('collapsed')) {
+    //    //fetch message content and append under class md
+    //    var messageContent = $.get(
+    //        "/ajaxhelpers/messagecontent/" + messageId,
+    //        null,
+    //        function (data) {
+    //            $(obj).parent().find(".expando").find(".md").html(data);
+    //            window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent().find(".expando")); });
+    //        }
+    //     );
+    //}
 
     $(obj).toggleClass("collapsed");
     $(obj).toggleClass("expanded");
 
     // toggle message content display
     $(obj).parent().find(".expando").toggle();
-}
-
-//// a function to embed a video via expando
-//[Obsolete - Remove once UI Expandos are tested]
-function loadVideoPlayer(obj, messageId) {
-
-    $(obj).toggleClass("collapsed");
-    $(obj).toggleClass("expanded");
-
-    // fetch message content and append under class md
-    var messageContent = $.get(
-        "/ajaxhelpers/videoplayer/" + messageId,
-        null,
-        function (data) {
-            $(obj).parent().find(".expando").nextAll().find(".videoplayer").html(data);
-            window.setTimeout(function () {
-                UI.Notifications.raise('iFrameLoaded', $(obj).parent().find(".expando").nextAll().find(".videoplayer"));
-            });
-        }
-     );
-
-    // note: the nextnextnextnext thing is ugly, feel free to write a cleaner solution. Thanks!
-    $(obj).parent().find(".expando").next().next().next().toggle();
 }
 
 // function to post delete private message request to messaging controller and remove deleted message DOM
@@ -1362,37 +1863,6 @@ function showMessagePreview(senderButton, messageContent, previewArea) {
     return false;
 }
 
-// a function to fetch 1 page for a set and append to the bottom of the given set
-var loadMoreSetRequest;
-function loadMoreSetItems(obj, setId) {
-    if (loadMoreSetRequest) { return; }
-    $(obj).html("Sit tight...");
-
-    // try to see if this request is a subsequent request
-    var currentPage = $("#set-" + setId + "-page").html();
-    if (currentPage == null) {
-        currentPage = 1;
-    } else {
-        currentPage++;
-    }
-
-    loadMoreSetRequest = $.ajax({
-        url: "/set/" + setId + "/" + currentPage + "/",
-        success: function (data) {
-            $("#set-" + setId + "-page").remove();
-            $("#set-" + setId + "-container").append(data);
-            $(obj).html("load more &#9660;");
-        },
-        error: function () {
-            {
-                $(obj).html("That's it. There was nothing else to show.");
-            }
-        },
-        complete: function () {
-            loadMoreSetRequest = null;
-        }
-    });
-}
 
 // a function that toggles the visibility of the comment/submission/message source textarea
 function toggleSource(senderButton) {
@@ -1404,82 +1874,6 @@ function toggleSource(senderButton) {
     } else {
         senderButton.text = "source";
     }
-}
-
-// a function to change set title name
-function changeSetName() {
-    $('#setName').removeAttr("onclick");
-    $('#setName').hide();
-
-    // show textbox
-    $('#newSetName').show();
-    $('#newSetNameEditBox').focus();
-
-    $('#newSetNameEditBox').on('keypress', function (e) {
-        if (e.keyCode === 13) {
-            $('#setName').html($('#newSetNameEditBox').val());
-
-            $('#setName').bind('click', changeSetName);
-            $('#newSetName').hide();
-            $('#setName').show();
-        }
-    });
-}
-
-function cancelSetTitleChange() {
-    $('#setName').bind('click', changeSetName);
-    $('#newSetName').hide();
-    $('#setName').show();
-}
-
-function saveSetTitle(obj, setId) {
-    $(obj).html('Please wait...');
-
-    $.ajax({
-        type: "POST",
-        url: "/sets/modify/" + setId + "/" + $('#newSetNameEditBox').val(),
-        success: function () {
-            $('#setName').html($('#newSetNameEditBox').val());
-            $('#setName').bind('click', changeSetName);
-            $('#newSetName').hide();
-            $('#setName').show();
-
-            $(obj).html('Save');
-        },
-        error: function () {
-            $(obj).html('Max 20 characters');
-        }
-    });
-}
-
-// a function to ask the user to confirm permanent set deletion request
-function deleteSet(obj, setId) {
-    $(obj).html("Are you sure?");
-
-    $(obj).bind({
-        click: function () {
-            deleteSetExecute(obj, setId);
-        }
-    });
-
-    return false;
-}
-
-// a function to permanently delete a given set
-function deleteSetExecute(obj, setId) {
-    $(obj).html('Please wait...');
-
-    $.ajax({
-        type: "POST",
-        url: "/sets/delete/" + setId,
-        success: function () {
-            // remove the set from view
-            $("#set-" + setId).remove();
-        },
-        error: function () {
-            $(obj).html('Nope.');
-        }
-    });
 }
 
 // a function to fetch 1 comment bucket for a submission and append to the bottom of the page
@@ -1524,35 +1918,35 @@ function cachePrevention() {
     });
     return v;
 }
-// a function to fetch 1 comment bucket for a submission and append to the bottom of the page
-var loadCommentsRequest;
-function loadMoreComments(obj, submissionId) {
-    if (loadCommentsRequest) { return; }
-    $(obj).html("Sit tight...");
+//// a function to fetch 1 comment bucket for a submission and append to the bottom of the page
+//var loadCommentsRequest;
+//function loadMoreComments(obj, submissionId) {
+//    if (loadCommentsRequest) { return; }
+//    $(obj).html("Sit tight...");
 
-    // try to see if this request is a subsequent request
-    var currentPage = $("#comments-" + submissionId + "-page").html();
-    if (currentPage == null) {
-        currentPage = 1;
-    } else {
-        currentPage++;
-    }
-    loadCommentsRequest = $.ajax({
-        url: "/comments/" + submissionId + "/" + currentPage + "/",
-        success: function (data) {
-            $("#comments-" + submissionId + "-page").remove();
-            $(obj).before(data);
-            window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent()); });
-            $(obj).html("load more &#9660;");
-        },
-        error: function () {
-            $(obj).html("That's it. There was nothing else to show. Phew. This was hard.");
-        },
-        complete: function () {
-            loadCommentsRequest = null;
-        }
-    });
-}
+//    // try to see if this request is a subsequent request
+//    var currentPage = $("#comments-" + submissionId + "-page").html();
+//    if (currentPage == null) {
+//        currentPage = 1;
+//    } else {
+//        currentPage++;
+//    }
+//    loadCommentsRequest = $.ajax({
+//        url: "/comments/" + submissionId + "/" + currentPage + "/",
+//        success: function (data) {
+//            $("#comments-" + submissionId + "-page").remove();
+//            $(obj).before(data);
+//            window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent()); });
+//            $(obj).html("load more &#9660;");
+//        },
+//        error: function () {
+//            $(obj).html("That's it. There was nothing else to show. Phew. This was hard.");
+//        },
+//        complete: function () {
+//            loadCommentsRequest = null;
+//        }
+//    });
+//}
 
 // a function to fetch the parent of a comment.
 function goToParent(event, parentId) {
@@ -1564,40 +1958,50 @@ function goToParent(event, parentId) {
         window.location.hash = "#" + parentId;
     }
 }
+// ********************************** CHAT ****************************************
 
 // a function to scroll chat box content up
-function scrollChatToBottom() {
-    var elem = document.getElementById('subverseChatRoom');
-    elem.scrollTop = elem.scrollHeight;
+function scrollChatToBottom(force) {
+    
+    var chatWindow = document.getElementById('subverseChatRoom');
+    var margin = 100;
+    var difference = (chatWindow.scrollHeight - chatWindow.offsetHeight) - chatWindow.scrollTop;
+
+    var scroll = difference < margin;
+
+    if (force === true || scroll === true)
+    {
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
 }
 
 // a function to submit chat message to subverse chat room
-function sendChatMessage(subverseName) {
+function sendChatMessage(id, access) {
     if ($.connection != null) {
         var messageToSend = $("#chatInputBox").val();
         var chatProxy = $.connection.messagingHub;
-        chatProxy.server.sendChatMessage(subverseName, messageToSend);
-        scrollChatToBottom();
+        chatProxy.server.sendChatMessage(id, messageToSend, access);
+        scrollChatToBottom(true);
         // clear input
         $("#chatInputBox").val('');
     }
 }
 
 // a function to add a client to a subverse chat room
-function joinChat(subverseName) {
+function joinChat(id, access) {
     if ($.connection != null) {
         // Start the connection.
         $.connection.hub.start().done(function () {
             var chatProxy = $.connection.messagingHub;
-            chatProxy.server.joinChat(subverseName);
+            chatProxy.server.joinChat(id, access);
         });
     }
 }
 
-function leaveChat(subverseName) {
+function leaveChat(id) {
     if ($.connection != null) {
         var chatProxy = $.connection.messagingHub;
-        chatProxy.server.leaveChat(subverseName);
+        chatProxy.server.leaveChat(id);
     }
 }
 
@@ -1612,60 +2016,68 @@ function toggleNightMode() {
     });
 }
 
-function toggleSaveSubmission(submissionId) {
-    var saveLink = $(".submission.id-" + submissionId + " .savelink");
+function toggleSaveSubmission(id) {
+    var saveLink = $(".submission.id-" + id + " .savelink");
     if (saveLink.exists()) {
         if (saveLink.text() === "save") {
             saveLink.text("unsave");
         } else {
             saveLink.text("save");
         }
+        var url = "/user/save/submission/" + id.toString()
         $.ajax({
             type: "POST",
-            url: "/save/" + submissionId
+            url: url
         });
     }
 }
 
-function toggleSaveComment(commentId) {
-    var saveLink = $(".comment.id-" + commentId + " .savelink").first();
+function toggleSaveComment(id) {
+    var saveLink = $(".comment.id-" + id + " .savelink").first();
     if (saveLink.exists()) {
         if (saveLink.text() === "save") {
             saveLink.text("unsave");
         } else {
             saveLink.text("save");
         }
+        var url = "/user/save/comment/" + id.toString()
         $.ajax({
             type: "POST",
-            url: "/savecomment/" + commentId
+            url: url
         });
     }
 }
 
 // a function to submit subverse block/unblock request
-function toggleBlockSubverse(obj, subverseName) {
+function blockSubverseToggle(obj, subverseName) {
     $(obj).toggleClass("btn-blocksubverse btn-unblocksubverse");
     var blockButton = $(obj);
     if (blockButton.exists()) {
-        if (blockButton.text() === "block") {
-            blockButton.text("unblock");
-        } else {
-            blockButton.text("block");
-        }
+
+        toggleButtonVisualState(blockButton, blockButton.text() === "block", "unblock", "block");
+
+        //if (blockButton.text() === "block") {
+        //    blockButton.text("unblock");
+        //} else {
+        //    blockButton.text("block");
+        //}
 
         // submit block request
         postBlock('subverse', subverseName);
     }
 }
-function toggleBlockUser(obj, name) {
+function blockUserToggle(obj, name) {
     $(obj).toggleClass("btn-blocksubverse btn-unblocksubverse");
     var blockButton = $(obj);
     if (blockButton.exists()) {
-        if (blockButton.text() === "block") {
-            blockButton.text("unblock");
-        } else {
-            blockButton.text("block");
-        }
+
+        toggleButtonVisualState(blockButton, blockButton.text() === "block", "unblock", "block");
+
+        //if (blockButton.text() === "block") {
+        //    blockButton.text("unblock");
+        //} else {
+        //    blockButton.text("block");
+        //}
 
         // submit block request
         postBlock('user', name);
@@ -1675,6 +2087,7 @@ function toggleBlockUser(obj, name) {
 function toggleBlockSubverseFLButton(obj, subverseName) {
     var blockButton = $(obj);
     if (blockButton.exists()) {
+
         if (blockButton.text() === "block subverse") {
             blockButton.text("undo");
         } else {
@@ -1717,35 +2130,39 @@ function checkUsernameAvailability(obj) {
 
 // a function to preview stylesheet called from subverse stylesheet editor
 function previewStylesheet(obj, subverseName) {
-    var sendingButton = $(obj);
-    sendingButton.html('Hold on...');
-    sendingButton.prop('disabled', true);
+   
 
-    $.ajax({
-        type: 'GET',
-        url: '/ajaxhelpers/previewstylesheet?subversetoshow=' + subverseName + '&previewMode=true',
-        dataType: 'html',
-        success: function (data) {
-            $("#stylesheetpreviewarea").html(data);
-            sendingButton.html("Preview");
-            sendingButton.prop('disabled', false);
+    function replaceStyle() {
+        $('[id=custom_css]').remove();
+        // inject the new stylesheet
+        var sheetToAdd = document.createElement('style');
+        sheetToAdd.setAttribute('id', 'custom_css');
+        sheetToAdd.innerHTML = $('#Stylesheet').val();
+        document.body.appendChild(sheetToAdd);
+    }
 
-            // remove the old stylesheet from document
-            var sheetToRemove = document.getElementById('custom_css');
-            //if null, sneaky user has css disabled
-            if (sheetToRemove)
-            {
-                var sheetParent = sheetToRemove.parentNode;
-                sheetParent.removeChild(sheetToRemove);
+    //Only reload if not loaded
+    if ($.trim($("#stylesheetpreviewarea").html()) == '') {
+        var sendingButton = $(obj);
+        sendingButton.html('Hold on...');
+        sendingButton.prop('disabled', true);
+
+        $.ajax({
+            type: 'GET',
+            url: '/ajaxhelpers/previewstylesheet?subverse=' + subverseName + '&previewMode=true' + '&nocache=' + cachePrevention(),
+            dataType: 'html',
+            success: function (data) {
+                $("#stylesheetpreviewarea").html(data);
+                sendingButton.html("Preview");
+                sendingButton.prop('disabled', false);
+                registerDashboardHandler(); //hooks menu to newly loaded html
+                replaceStyle();
             }
+        });
+    } else {
+        replaceStyle();
+    }
 
-            // inject the new stylesheet
-            var sheetToAdd = document.createElement('style');
-            sheetToAdd.setAttribute('id', 'custom_css');
-            sheetToAdd.innerHTML = $('#Stylesheet').val();
-            document.body.appendChild(sheetToAdd);
-        }
-    });
 }
 // a function to preview stylesheet called from subverse stylesheet editor
 function getCommentTree(submissionID, sort) {

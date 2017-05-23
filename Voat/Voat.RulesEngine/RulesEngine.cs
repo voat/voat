@@ -1,6 +1,10 @@
-﻿#region LICENSE
+#region LICENSE
 
 /*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
 
     This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
@@ -11,8 +15,6 @@
     "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
     or implied. See the License for the specific language governing
     rights and limitations under the License.
-
-    All portions of the code written by Voat, Inc. are Copyright(c) Voat, Inc.
 
     All Rights Reserved.
 
@@ -97,7 +99,7 @@ namespace Voat.RulesEngine
                 {
                     if (!Initialized)
                     {
-                        Debug.Print("Starting: Initializing RulesEngine");
+                        Debug.WriteLine("Starting: Initializing RulesEngine");
                         if (config != null && config.Enabled)
                         {
                             if (config.DiscoverRules)
@@ -148,7 +150,7 @@ namespace Voat.RulesEngine
                                 }
                             }
                         }
-                        Debug.Print("Finished: Initializing RulesEngine");
+                        Debug.WriteLine("Finished: Initializing RulesEngine");
                         Initialized = true;
                     }
                 }
@@ -176,7 +178,7 @@ namespace Voat.RulesEngine
                 {
                     foreach (var rule in rules)
                     {
-                        Debug.Print(String.Format("Rule: {0}: {1} ({2} - {3})", rule.Name, rule.Number, scope.ToString(), typeof(Rule).Name));
+                        Debug.WriteLine(String.Format("Rule: {0}: {1} ({2} - {3})", rule.Name, rule.Number, scope.ToString(), typeof(Rule).Name));
                         RuleOutcome outcome = ((Rule<T>)rule).Evaluate(context);
                         if (!outcome.IsAllowed)
                         {
@@ -231,7 +233,7 @@ namespace Voat.RulesEngine
                 string errorMessage = String.Format("Rule '{0}' threw an error during construction. Ensure it has a default parameterless constructor and isn't abstract or static.", ruleType.Name);
 
                 Trace.WriteLine(errorMessage);
-                Debug.Print(errorMessage);
+                Debug.WriteLine(errorMessage);
 
                 if (!suppressTypeLoadException)
                 {

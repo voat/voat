@@ -1,14 +1,22 @@
-﻿@*This source file is subject to version 3 of the GPL license,
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
-    available online at http://www.gnu.org/licenses/gpl.txt;
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
     you may not use this file except in compliance with the License.
 
-    Software distributed under the License is distributed on an "AS IS" basis,
-    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-    the specific language governing rights and limitations under the License.
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
 
-    All portions of the code written by Voat are Copyright (c) 2014 Voat
-    All Rights Reserved.*@
+    All Rights Reserved.
+
+*@
 
 @using Voat.Domain.Models;
 
@@ -82,8 +90,8 @@
     <div id="siteTable" class="sitetable nestedlisting">
         @Html.Partial("~/Views/Shared/Comments/_CommentSegment.cshtml", Model, new ViewDataDictionary {
           { "ModeratorList", ViewBag.ModeratorList },
-            { "VoteCache", ViewBag.VoteCache },
-            { "SavedCommentCache", ViewBag.SavedCommentCache },
+            //{ "VoteCache", ViewBag.VoteCache },
+            //{ "SavedCommentCache", ViewBag.SavedCommentCache },
             { "Subverse", ViewBag.Subverse },
             { "Submission", ViewBag.Submission },
             { "CommentToHighlight", ViewBag.CommentToHighLight }

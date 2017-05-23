@@ -1,6 +1,10 @@
-﻿#region LICENSE
+#region LICENSE
 
 /*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
 
     This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
@@ -11,8 +15,6 @@
     "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
     or implied. See the License for the specific language governing
     rights and limitations under the License.
-
-    All portions of the code written by Voat, Inc. are Copyright(c) Voat, Inc.
 
     All Rights Reserved.
 
@@ -40,7 +42,8 @@ namespace Voat.RulesEngine
         Subverse = 512,
         Profile = 1024,
         Message = 2048,
-        //Set = 2048
+        Set = 4096,
+        Chat = 8192
     }
 
     /// <summary>
@@ -137,7 +140,24 @@ namespace Voat.RulesEngine
         /// <summary>
         /// Applies to creating a new subverse
         /// </summary>
-        CreateSubverse = RuleAction.Create | RuleArea.Subverse
+        CreateSubverse = RuleAction.Create | RuleArea.Subverse,
+
+
+        /// <summary>
+        /// Applies to creating a new set
+        /// </summary>
+        CreateSet = RuleAction.Create | RuleArea.Set,
+
+        /// <summary>
+        /// Applies to sending a chat message
+        /// </summary>
+        PostChatMessage = RuleAction.Create | RuleArea.Chat,
+
+        /// <summary>
+        /// Applies to joining a chat room
+        /// </summary>
+        ViewChat = RuleAction.View | RuleArea.Chat
+
 
         #endregion C-C-C-COMBOs
 

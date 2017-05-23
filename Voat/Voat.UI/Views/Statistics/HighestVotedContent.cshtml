@@ -1,0 +1,85 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+
+@model Voat.Domain.Models.Statistics<IEnumerable<Voat.Domain.Models.StatContentItem>>
+
+@{ 
+    Dictionary<string, IEnumerable<Voat.Domain.Models.StatContentItem>> segmented = new Dictionary<string, IEnumerable<Voat.Domain.Models.StatContentItem>>();
+
+    segmented.Add("Highest Upvoted Submissions", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Submission && x.VoteType == Voat.Domain.Models.Vote.Up));
+    segmented.Add("Highest Upvoted Comments", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Comment && x.VoteType == Voat.Domain.Models.Vote.Up));
+
+    segmented.Add("Most Downvoted Submissions", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Submission && x.VoteType == Voat.Domain.Models.Vote.Down));
+    segmented.Add("Most Downvoted Comments", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Comment && x.VoteType == Voat.Domain.Models.Vote.Down));
+
+}
+
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
+
+        <h1 class="alert-h1">Highest Voted Content</h1>
+        <p class="tagline">
+            <span>
+                <time title="@Model.BeginDate" datetime="@Model.BeginDate">@Model.BeginDate.ToShortDateString()</time> through <time title="@Model.EndDate" datetime="@Model.EndDate">@Model.EndDate.ToShortDateString()</time> generated <time title="@Model.CreationDate" datetime="@Model.CreationDate">@Age.ToRelative(Model.CreationDate)</time> ago.
+            </span>
+        </p>
+       @foreach (var key in segmented.Keys)
+       {
+           if (segmented[key].Any())
+           {
+               var records = segmented[key];
+                <section>
+                <h2>@key</h2>
+
+                @foreach (var record in records)
+                {
+                    switch (record.ContentType)
+                    {
+                        case Voat.Domain.Models.ContentType.Submission:
+                            <div>
+                                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", record.Submission,
+                                new ViewDataDictionary() {
+                                    { "VoteTypeAllowed", Voat.Domain.Models.VoteTypeAllowed.None }
+                                })
+                            </div>
+                            break;
+                        case Voat.Domain.Models.ContentType.Comment:
+                            <div>
+                                @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", record.Comment,
+                                new ViewDataDictionary {
+                                    { "CommentId", record.Comment.ID },
+                                    { "parentIsHidden", false },
+                                    { "SortingMode", "new" },
+                                    { "ShowContextLink", true },
+                                    { "VoteTypeAllowed", Voat.Domain.Models.VoteTypeAllowed.None }
+                                })
+                            </div>
+                            break;
+
+                    }
+
+
+                }
+                </section>
+           }
+                }
+    </div>
+</div>

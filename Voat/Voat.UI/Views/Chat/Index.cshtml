@@ -1,34 +1,53 @@
-﻿@*
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
 
     This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
-    available online at http://www.gnu.org/licenses/gpl.txt;
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
     you may not use this file except in compliance with the License.
 
-    Software distributed under the License is distributed on an "AS IS" basis,
-    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-    the specific language governing rights and limitations under the License.
-
-    All portions of the code written by Voat are Copyright (c) 2014 Voat
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
 
     All Rights Reserved.
-    
+
 *@
 
 @{
-    Layout = "~/Views/Chat/_Layout.cshtml";
+    Layout = "~/Views/Shared/Layouts/_LayoutContainer.cshtml";
 } 
 @using Voat.Models.ViewModels
 
 @model ChatViewModel
 
-@if (!Settings.SignalRDisabled)
+
+@{
+    ViewBag.Title = "Chat " + Model.Room.Name;
+    var history = ChatHistory.History(Model.Room.ID).ToList();
+    history.Add(new ChatMessage() { User = new UserContext(CONSTANTS.SYSTEM_USER_NAME), RoomID = Model.Room.Name, Message = "<p>You have joined the " + Model.Room.Name + " chatroom</p>", CreationDate = DateTime.UtcNow });
+}
+@if (!Settings.SignalRDisabled && !Settings.ChatDisabled)
 {
+    <div tabindex=0 role="banner">
+        <div>
+            <div>
+                <a title="@Settings.SiteSlogan" href="/">
+                    <img id="header-img" src="@Settings.SiteLogo" alt="@Settings.SiteName" height="31" width="112">
+                </a>
+            </div>
+        </div>
+    </div>
+
     <div class="chatContent">
-        <div class="spacer spacersection">
+        <div>
             <div class="sidecontentbox">
                 <div class="title">
-                    <h1 class="alert-h1">Voat's @Model.Room.Name chat</h1>
+                    <h1 class="alert-h1">@Model.Room.Name chat</h1>
                     <h2>@Model.Room.Description</h2>
                 </div>
                 <br/>
@@ -39,11 +58,9 @@
                     }
                 </div>
 
-                <div class="sidecontentbox content">
+                <div class="content">
                     <div id="subverseChatRoom" class="subverseChatRoomContent">
-                        <p>
-                            <b>Voat</b>: you have joined @Model.Room.Name chatroom.
-                        </p>
+                        @Html.Partial("_RoomHistory", history)
                     </div>
                 </div>
 
@@ -53,8 +70,12 @@
 
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <input id="chatInputBox" onkeydown="if (event.keyCode == 13) sendChatMessage('@Model.Room.ID');" class="form-control" data-val="true" data-val-length="Please write at least 3 characters." data-val-length-max="100" data-val-length-min="3" data-val-required="Please enter a message." name="chatInputBox" placeholder="Say something." value="" type="text">
-                    <button type="button" class="btn-whoaverse contribute" onclick="sendChatMessage('@Model.Room.ID');">send</button>
+                    if (Settings.MinimumCommentPointsForSendingChatMessages > 0)
+                    {
+                        <span>@Settings.MinimumCommentPointsForSendingChatMessages CCP is required to send messages</span>
+                    }
+                    <input id="chatInputBox" onkeydown="if (event.keyCode == 13) sendChatMessage('@Model.Room.ID', '@Request.QueryString["access"]');" class="form-control" data-val="true" data-val-length="Please write at least 3 characters." data-val-length-max="100" data-val-length-min="3" data-val-required="Please enter a message." name="chatInputBox" placeholder="Say something." value="" type="text">
+                    <button type="button" class="btn-whoaverse contribute" onclick="sendChatMessage('@Model.Room.ID', '@Request.QueryString["access"]');">send</button>
                 }
                 else
                 {
@@ -63,17 +84,32 @@
             </div>
         </div>
     </div>
-
-    @section PageScripts
-    {
-        <script type="text/javascript">
-            $(document).ready(function () {
-                joinChat('@Model.Room.ID');
-            });
-        </script>
-    }
 }
 else
 {
     <div>Chat is currently disabled :(</div>
+}
+
+@section PageScripts
+    {
+    <script type="text/javascript">
+            $(document).ready(function () {
+                joinChat('@Model.Room.ID', '@Request.QueryString["access"]');
+            });
+            scrollChatToBottom(true);
+    </script>
+}
+@section PageHeader
+    {
+    <style type="text/css">
+        .chat-message-body {
+            font-size: 1.35em;
+        }
+        .dark .chat-message-timestamp {
+            color: #9b9b9b;
+        }
+        .light .chat-message-timestamp {
+            color: #707070;
+        }
+    </style>
 }

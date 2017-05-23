@@ -1,6 +1,10 @@
-﻿#region LICENSE
+#region LICENSE
 
 /*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
 
     This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
@@ -11,8 +15,6 @@
     "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
     or implied. See the License for the specific language governing
     rights and limitations under the License.
-
-    All portions of the code written by Voat, Inc. are Copyright(c) Voat, Inc.
 
     All Rights Reserved.
 
@@ -132,7 +134,7 @@ namespace Voat.Tests.Utils
             string content = "/v/VoatIs";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == String.Format("[{0}]({1})", content, "https://voat.co" + content));
+            Assert.AreEqual(String.Format("[{0}]({1})", content, "https://voat.co" + content), processed);
         }
 
         [TestMethod]
@@ -143,7 +145,7 @@ namespace Voat.Tests.Utils
             string content = "nomatch/v/VoatIs/new";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == content);
+            Assert.AreEqual(content, processed);
         }
 
         [TestMethod]
@@ -154,7 +156,7 @@ namespace Voat.Tests.Utils
             string content = "/v/somesub/comments/3333#submissionTop";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == String.Format("[{0}](https://voat.co{1})", content, content));
+            Assert.AreEqual(String.Format("[{0}](https://voat.co{1})", content, content), processed);
         }
 
         [TestMethod]
@@ -165,7 +167,7 @@ namespace Voat.Tests.Utils
             string content = "/v/VoatIs/new";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == String.Format("[{0}]({1})", content, "https://voat.co" + content));
+            Assert.AreEqual(String.Format("[{0}]({1})", content, "https://voat.co" + content), processed);
         }
 
         [TestMethod]
@@ -176,7 +178,7 @@ namespace Voat.Tests.Utils
             string content = "/v/VoatIs/top";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == String.Format("[{0}]({1})", content, "https://voat.co" + content));
+            Assert.AreEqual(String.Format("[{0}]({1})", content, "https://voat.co" + content), processed);
         }
 
         [TestMethod]
@@ -187,7 +189,7 @@ namespace Voat.Tests.Utils
             string content = "/v/VoatIs/NotValid";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == String.Format("[{0}]({1})/NotValid", "/v/VoatIs", "https://voat.co/v/VoatIs"));
+            Assert.AreEqual(String.Format("[{0}]({1})/NotValid", "/v/VoatIs", "https://voat.co/v/VoatIs"), processed);
         }
 
         [TestMethod]
@@ -203,7 +205,7 @@ namespace Voat.Tests.Utils
             string content = "I have enabled this: v/api and r/golf matching [link](http://voat.co)";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "I have enabled this: [v/api](https://voat.co/v/api) and [r/golf](https://np.reddit.com/r/golf) matching [link](http://voat.co)");
+            Assert.AreEqual("I have enabled this: [v/api](https://voat.co/v/api) and [r/golf](https://np.reddit.com/r/golf) matching [link](http://voat.co)", processed);
         }
 
         [TestMethod]
@@ -214,12 +216,12 @@ namespace Voat.Tests.Utils
             string content = "-@User";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "[@User](https://voat.co/user/User)");
+            Assert.AreEqual("[@User](https://voat.co/user/User)", processed);
 
             content = "-/u/User";
 
             processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "[/u/User](https://voat.co/user/User)");
+            Assert.AreEqual("[/u/User](https://voat.co/user/User)", processed);
         }
 
         [TestMethod]
@@ -286,8 +288,10 @@ namespace Voat.Tests.Utils
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
 
             //right now we don't process upper case V's
-            Assert.IsTrue(content == processed);
-            //Assert.IsTrue(processed == String.Format("[{0}]({1})", content, "https://voat.co" + content));
+            //Assert.IsTrue(content == processed);
+
+            //now we do
+            Assert.AreEqual(String.Format("[{0}](https://voat.co/v/VoatIs)", content), processed);
         }
     }
 
@@ -306,7 +310,32 @@ namespace Voat.Tests.Utils
 
             Assert.AreEqual(expected, actual);
         }
+        [TestMethod]
+        [TestCategory("Utility")]
+        [TestCategory("Formatting")]
+        [TestCategory("Bug")]
+        public void Href_Raw_Bug_Trap_Dash_End()
+        {
+            string input = "http://www.domain.com/x-";
+            string expected = $"<p><a href=\"{input}\">{input}</a></p>";
 
+            string actual = Formatting.FormatMessage(input);
+
+            Assert.AreEqual(expected, actual);
+        }
+        [TestMethod]
+        [TestCategory("Utility")]
+        [TestCategory("Formatting")]
+        [TestCategory("Bug")]
+        public void Href_Raw_Bug_Trap_Underscore_End()
+        {
+            string input = "http://www.domain.com/x_";
+            string expected = $"<p><a href=\"{input}\">{input}</a></p>";
+
+            string actual = Formatting.FormatMessage(input);
+
+            Assert.AreEqual(expected, actual);
+        }
         [TestMethod]
         [TestCategory("Utility")]
         [TestCategory("Formatting")]

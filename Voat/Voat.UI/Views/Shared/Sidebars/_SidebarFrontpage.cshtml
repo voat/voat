@@ -1,14 +1,22 @@
-﻿@*This source file is subject to version 3 of the GPL license,
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
-    available online at http://www.gnu.org/licenses/gpl.txt;
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
     you may not use this file except in compliance with the License.
 
-    Software distributed under the License is distributed on an "AS IS" basis,
-    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-    the specific language governing rights and limitations under the License.
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
 
-    All portions of the code written by Voat are Copyright (c) 2014 Voat
-    All Rights Reserved.*@
+    All Rights Reserved.
+
+*@
 
 @using Voat.Models.ViewModels
 
@@ -40,17 +48,7 @@
             </a>
         </div>
     </div>
-    @if (!Settings.SetsDisabled)
-    {
-        <div class="spacer">
-            <div class="sidebox create">
-                <a href="/sets/create" class="btn-whoaverse btn-block">
-                    Create a new set
-                </a>
-            </div>
-        </div>
-    }
-    @if (!Settings.SignalRDisabled)
+    @if (!Settings.SignalRDisabled && !Settings.ChatDisabled)
     {
         <div class="spacer">
             <div class="sidebox">
@@ -62,7 +60,7 @@
     }
     <div class="spacer">
         <div class="sidebox">
-            <a href="/subverses" class="btn-whoaverse btn-block">
+            <a href="/discover" class="btn-whoaverse btn-block">
                 Explore @Settings.SiteName
             </a>
         </div>
@@ -92,7 +90,7 @@
     {
         <div class="spacer">
             <div class="sidebox">
-                <a href="/sets" class="btn-whoaverse btn-block">
+                <a href="/discover/set" class="btn-whoaverse btn-block">
                     Explore Sets
                 </a>
             </div>
@@ -112,13 +110,26 @@
     {
         <div class="spacer">
             <div class="sidecontentbox ">
-                <div class="title">
-                    <h1 class="alert-h1">Unofficial Voat Mobile Apps</h1>
-                </div>
+                
                 <div class="sidecontentbox content">
+                    <div class="title">
+                        <h1 class="alert-h1">Unofficial Voat Mobile Apps</h1>
+                    </div>
                     <p>
-                        We love these two, unofficial Android apps for Voat: <a href="https://play.google.com/store/apps/details?id=net.lumigo.vobrowser2">voBrowser</a> and <a href="https://play.google.com/store/apps/details?id=com.SpaceMonkey.Boats">Boats for Voat</a>.
+                        We love these apps!
                     </p>
+                    <p>
+                        Android: 
+                        <br />
+                        <a href="https://play.google.com/store/apps/details?id=com.SpaceMonkey.Boats">Boats for Voat</a>
+                        <br/>
+                        <a href="https://play.google.com/store/apps/details?id=net.pr0npaganda.appvoat&hl=en">Appvoat</a>
+                    </p>
+                    <p>iOS:
+                        <br/>
+                        <a href="https://voatify.com/">Voatify</a>
+                    </p>
+                    <br/>
                     <p>If you see another Voat apps in the wild, do let us know!</p>
                 </div>
             </div>

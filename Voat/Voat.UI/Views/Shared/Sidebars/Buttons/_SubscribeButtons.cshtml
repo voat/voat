@@ -1,0 +1,63 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+
+@model Voat.Domain.Models.DomainReference
+
+@{ 
+
+    Voat.Domain.UserData userData = ViewBag.UserData;
+    //Voat.Domain.Models.DomainReference domainReference = ViewBag.DomainReference;
+
+    var jsCommand = String.Format("return subscribeToSubverse($(this), '{0}')", Model.FullName);
+
+    if (Model.Type == Voat.Domain.Models.DomainType.Set)
+    {
+        jsCommand = String.Format("return subscribeToSet($(this), '{0}')", Model.FullName);
+    }
+    var subscriber = false;
+    if (userData != null)
+    {
+        subscriber = userData.IsSubscriber(Model);
+    }
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+    <button type="button" class='btn-whoaverse-paging btn-xs btn-default btn-voat @(subscriber ? "btn-unsub btn-voat-off" : "btn-sub")' onclick="@jsCommand">@(subscriber ? "unsubscribe" : "subscribe")</button>
+
+    if (Model.Type == Voat.Domain.Models.DomainType.Subverse)
+    {
+
+        if (userData.IsUserBlockingSubverse(Model.Name))
+        {
+            <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-unblocksubverse btn-voat btn-voat-off" onclick="return blockSubverseToggle(this, '@Model.Name')">unblock</button>
+        }
+        else
+        {
+            <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-blocksubverse btn-voat" onclick="return blockSubverseToggle(this, '@Model.Name')">block</button>
+        }
+    }
+
+}
+else
+{
+    <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-sub btn-voat" onclick="mustLogin();">subscribe</button>
+}

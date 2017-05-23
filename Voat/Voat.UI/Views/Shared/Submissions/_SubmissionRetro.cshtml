@@ -1,0 +1,146 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@model Voat.Domain.Models.Submission
+
+@{
+    //LINK
+    string ahrefTarget = "_self";
+    var showNSFWThumbs = false;
+
+    if (User.Identity.IsAuthenticated)
+    {
+        var userData = Voat.Domain.UserData.GetContextUserData();
+        showNSFWThumbs = userData.Preferences.EnableAdultContent;
+
+        if (userData.Preferences.OpenInNewWindow)
+        {
+            ahrefTarget = "_blank";
+        }
+    }
+
+    bool anonymizedSubverse = Model.IsAnonymized;
+
+    string routeActiveSubverse = (string)ViewContext.RouteData.Values["subverse"];
+
+    string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
+
+    //var x = this.Request.RequestContext.RouteData.Values["sort"];
+    //if (x != null && x.ToString() == "active")
+    //{
+    //    commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID, Voat.Domain.Models.CommentSortAlgorithm.New);
+    //}
+
+    DateTime submissionDate = Model.CreationDate;
+    string postAge = Age.ToRelative(submissionDate);
+
+    string submissionDomain = Model.Subverse;
+    string submissionDomainHref = "/v/" + Model.Subverse;
+    string titleUrl = commentsUrl;
+
+    if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
+    {
+        titleUrl = Model.Url;
+        submissionDomain = UrlUtility.GetDomainFromUri(Model.Url);
+        submissionDomainHref = "/domains/" + submissionDomain;
+    }
+    var submissionClass = Model.Type == Voat.Domain.Models.SubmissionType.Text ? "self" : "";
+    var classes = "";
+    if (ViewBag.CssClass != null)
+    {
+        classes = String.Join(" ", ViewBag.CssClass);
+    }
+    var highlight = DateTime.UtcNow.Subtract(Model.CreationDate) <= TimeSpan.FromHours(3);
+    if (highlight)
+    {
+        classes += " highlight";
+    }
+    bool showThumbnail = !String.IsNullOrEmpty(Model.ThumbnailUrl) && ((ViewBag.ShowThumbnail != null && ViewBag.ShowThumbnail == true) || (highlight && ViewBag.ShowThumbnailIfHighlighted != null && ViewBag.ShowThumbnailIfHighlighted == true));
+    bool showCommentsLink = Model.Type == Voat.Domain.Models.SubmissionType.Link && (ViewBag.ShowCommentsLink == null || ViewBag.ShowCommentsLink != null && ViewBag.ShowCommentsLink != true);
+    var title = String.Format("Submitted by {0} {1} ago to {2}. {3}, {4}, {5}.", Model.IsAnonymized ? "Anon" : Model.UserName, Age.ToRelative(Model.CreationDate), Model.Subverse, Formatting.PluralizeIt(Model.UpCount, "Up"), Formatting.PluralizeIt(Model.DownCount, "Down"), Formatting.PluralizeIt(Model.CommentCount, "Comment"));
+
+}
+
+<div class="submission id-@Model.ID @classes @submissionClass" data-fullname="@Model.ID" data-ups="@Model.UpCount" data-downs="@Model.DownCount">
+    @if (showThumbnail)
+    {
+        <div class="thumb">
+            <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
+        </div>
+    }
+    @if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
+    {
+        <a href="@Model.Url" title="@title" onclick="$(this).parent().find('.summary').toggle(); return false;">@Model.Title</a>
+    }
+    else
+    {
+        <a href="@commentsUrl" title="@title" onclick="$(this).parent().find('.summary').toggle(); return false;">@Model.Title</a>
+    }
+
+    <span><a href="@commentsUrl" title="@title">...</a></span>
+
+    <div class="summary panel panel-default unread" style="display:none;">
+            <div class="head panel-heading">
+                <p class="tagline">
+                    Submitted <time title="@Model.CreationDate" datetime="@Model.CreationDate">@Age.ToRelative(Model.CreationDate)</time> ago by <a href="/user/@Model.UserName" class="author may-blank userinfo" data-username="@Model.UserName">@Model.UserName</a>
+                    <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subverse hover may-blank">@Model.Subverse</a>
+                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
+                </p>
+            </div>
+            <div class="body panel-message-body">
+
+                @Html.Partial("~/Views/Shared/VotingIcons/_VotingIconsSubmissionFlat.cshtml", Model)
+
+                @if (!String.IsNullOrEmpty(Model.ThumbnailUrl))
+                {
+                    <div class="thumb">
+                        <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
+                    </div>
+                }
+
+                <div class="usertext-body may-blank-within">
+                    <div class="md">
+                        @if (Model.Type == Voat.Domain.Models.SubmissionType.Text)
+                        {
+                            if (!String.IsNullOrEmpty(Model.FormattedContent))
+                            {
+                                @Html.Raw(Model.FormattedContent)
+                            }
+                            @*else
+                            {
+                                <p>This post has a title only</p>
+                            }*@
+                        }
+                        else
+                        {
+                            <a href="@Model.Url" title="@title">@Model.Url</a>
+                        }
+                    </div>
+                </div>
+
+
+            </div>
+           
+            <div class="foot panel-message-body">
+                <a href="@commentsUrl" class="comments may-blank">@Formatting.PluralizeIt(Model.CommentCount, "comment", "discuss")</a>
+            </div>
+    </div>
+</div>
+

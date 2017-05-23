@@ -1,4 +1,28 @@
-﻿using System;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System;
 using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Models;
@@ -8,8 +32,8 @@ namespace Voat.Domain.Command
 {
     public class CommentVoteCommand : VoteCommand
     {
-        public CommentVoteCommand(int commentID, int voteValue, string addressHash, bool revokeOnRevote = true)
-            : base(voteValue, addressHash)
+        public CommentVoteCommand(int commentID, int voteStatus, string addressHash, bool revokeOnRevote = true)
+            : base(voteStatus, addressHash)
         {
             CommentID = commentID;
             RevokeOnRevote = revokeOnRevote;
@@ -21,7 +45,7 @@ namespace Voat.Domain.Command
         {
             using (var db = new Repository())
             {
-                var outcome = await Task.Run(() => db.VoteComment(CommentID, VoteValue, AddressHash, RevokeOnRevote)).ConfigureAwait(false);
+                var outcome = await Task.Run(() => db.VoteComment(CommentID, VoteStatus, AddressHash, RevokeOnRevote)).ConfigureAwait(false);
 
                 //Raise event
                 if (outcome.Success)
@@ -43,8 +67,8 @@ namespace Voat.Domain.Command
 
     public class SubmissionVoteCommand : VoteCommand
     {
-        public SubmissionVoteCommand(int submissionID, int voteValue, string addressHash, bool revokeOnRevote = true)
-            : base(voteValue, addressHash)
+        public SubmissionVoteCommand(int submissionID, int voteStatus, string addressHash, bool revokeOnRevote = true)
+            : base(voteStatus, addressHash)
         {
             SubmissionID = submissionID;
             RevokeOnRevote = revokeOnRevote;
@@ -56,7 +80,7 @@ namespace Voat.Domain.Command
         {
             using (var gateway = new Repository())
             {
-                var outcome = await Task.Run(() => gateway.VoteSubmission(SubmissionID, VoteValue, AddressHash, RevokeOnRevote)).ConfigureAwait(false);
+                var outcome = await Task.Run(() => gateway.VoteSubmission(SubmissionID, VoteStatus, AddressHash, RevokeOnRevote)).ConfigureAwait(false);
 
                 //Raise event
                 if (outcome.Success)
@@ -78,20 +102,20 @@ namespace Voat.Domain.Command
 
     public abstract class VoteCommand : CacheCommand<VoteResponse, VoteResponse>
     {
-        public VoteCommand(int voteValue, string addressHash, bool revokeOnRevote = true)
+        public VoteCommand(int voteStatus, string addressHash, bool revokeOnRevote = true)
         {
-            if (voteValue < -1 || voteValue > 1)
+            if (voteStatus < -1 || voteStatus > 1)
             {
-                throw new ArgumentOutOfRangeException("voteValue", voteValue, "Invalid vote value");
+                throw new ArgumentOutOfRangeException("voteValue", voteStatus, "Invalid vote value");
             }
-            this.VoteValue = voteValue;
+            this.VoteStatus = voteStatus;
             this.RevokeOnRevote = revokeOnRevote;
             this.AddressHash = addressHash;
         }
 
         public bool RevokeOnRevote { get; protected set; }
 
-        public int VoteValue { get; private set; }
+        public int VoteStatus { get; private set; }
 
         public string AddressHash { get; private set; }
     }

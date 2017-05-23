@@ -1,10 +1,37 @@
-﻿using System;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
+using Voat.Data;
 using Voat.Data.Models;
+using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
 using Voat.Models;
@@ -34,7 +61,13 @@ namespace Voat.Controllers
                 return NotFoundErrorView();
             }
             ViewBag.UserName = originalUserName;
-
+            ViewBag.NavigationViewModel = new NavigationViewModel()
+            {
+                MenuType = MenuType.UserProfile,
+                Name = originalUserName,
+                BasePath = "/user/" + originalUserName,
+                Description = originalUserName + "'s Overview",
+            };
             return View();
         }
         public async  Task<ActionResult> Comments(string userName, int? page = null)
@@ -69,9 +102,17 @@ namespace Voat.Controllers
             //                    //&& !c.Submission.Subverse1.IsAnonymized //Don't think we need this condition
             //                    select c;
 
-            PaginatedList<Domain.Models.SubmissionComment> paginatedUserComments = new PaginatedList<Domain.Models.SubmissionComment>(comments, page ?? 0, PAGE_SIZE, -1);
+            var paged = new PaginatedList<Domain.Models.SubmissionComment>(comments, page ?? 0, PAGE_SIZE, -1);
+            ViewBag.NavigationViewModel = new NavigationViewModel()
+            {
+                MenuType = MenuType.UserProfile,
+                Name = originalUserName,
+                BasePath = "/user/" + originalUserName,
+                Description = originalUserName + "'s Comments",
+            };
 
-            return View(paginatedUserComments);
+            ViewBag.RobotIndexing = Domain.Models.RobotIndexing.None;
+            return View(paged);
         }
         public async Task<ActionResult> Submissions(string userName, int? page = null)
         {
@@ -88,35 +129,33 @@ namespace Voat.Controllers
             }
             ViewBag.UserName = originalUserName;
 
-            //TODO: Convert this over to query syntax
             ////if user is accesing their own comments, increase max page size to 100, else use default
-            //int? maxPages = (originalUserName == User.Identity.Name ? 100 : (int?)null);
+            int? maxPages = (originalUserName == User.Identity.Name ? 100 : (int?)null);
 
-            //var q = new QueryUserSubmissions(userName,
-            //    new Data.SearchOptions(maxPages)
-            //    {
-            //        Page = page ?? 0,
-            //        Sort = Domain.Models.SortAlgorithm.New,
-            //    });
+            var q = new QueryUserSubmissions(userName,
+                new Data.SearchOptions(maxPages)
+                {
+                    Page = page ?? 0,
+                    Sort = Domain.Models.SortAlgorithm.New,
+                });
 
-            //var comments = await q.ExecuteAsync();
+            var data = await q.ExecuteAsync();
 
-            //PaginatedList<Domain.Models.SubmissionComment> paginatedUserComments = new PaginatedList<Submission>(comments, page ?? 0, PAGE_SIZE, -1);
+            var paged = new PaginatedList<Domain.Models.Submission>(data, page ?? 0, PAGE_SIZE, -1);
 
-            //return View(paginatedUserComments);
+            ViewBag.NavigationViewModel = new NavigationViewModel()
+            {
+                MenuType = MenuType.UserProfile,
+                Name = originalUserName,
+                BasePath = "/user/" + originalUserName,
+                Description = originalUserName + "'s Submissions",
+            };
 
-            var userSubmissions = from s in _db.Submissions.OrderByDescending(s => s.CreationDate)
-                                  where s.UserName.Equals(originalUserName)
-                                  && !s.IsAnonymized
-                                  && !s.IsDeleted
-                                  && !s.Subverse1.IsAnonymized //Don't think we need this condition
-                                  select s;
-
-            PaginatedList<Submission> paginatedUserSubmissions = new PaginatedList<Submission>(userSubmissions, page ?? 0, PAGE_SIZE);
-
-
-            return View(paginatedUserSubmissions);
+            ViewBag.RobotIndexing = Domain.Models.RobotIndexing.None;
+            return View(paged);
         }
+
+        //TODO: Rewrite this
         public ActionResult Saved(string userName, int? page = null)
         {
             if (page.HasValue && page.Value < 0)
@@ -135,15 +174,17 @@ namespace Voat.Controllers
             }
             ViewBag.UserName = originalUserName;
 
+            
+
             IQueryable<SavedItem> savedSubmissions = (from m in _db.Submissions
-                                                        join s in _db.SubmissionSaveTrackers on m.ID equals s.SubmissionID
-                                                        where !m.IsDeleted && s.UserName == User.Identity.Name
-                                                        select new SavedItem()
-                                                        {
-                                                            SaveDateTime = s.CreationDate,
-                                                            SavedSubmission = m,
-                                                            SavedComment = null
-                                                        });
+                                                          join s in _db.SubmissionSaveTrackers on m.ID equals s.SubmissionID
+                                                          where !m.IsDeleted && s.UserName == User.Identity.Name
+                                                          select new SavedItem()
+                                                          {
+                                                              SaveDateTime = s.CreationDate,
+                                                              SavedSubmission = m,
+                                                              SavedComment = null
+                                                          });
 
             IQueryable<SavedItem> savedComments = (from c in _db.Comments
                                                     join s in _db.CommentSaveTrackers on c.ID equals s.CommentID
@@ -159,6 +200,14 @@ namespace Voat.Controllers
             var mergedSubmissionsAndComments = savedSubmissions.Concat(savedComments).OrderByDescending(s => s.SaveDateTime).AsQueryable();
 
             var paginatedUserSubmissionsAndComments = new PaginatedList<SavedItem>(mergedSubmissionsAndComments, page ?? 0, PAGE_SIZE);
+
+            ViewBag.NavigationViewModel = new NavigationViewModel() {
+                MenuType = MenuType.UserProfile,
+                Name = originalUserName,
+                BasePath = "/user/" + originalUserName,
+                Description = originalUserName + "'s Saved",
+            };
+
             return View(paginatedUserSubmissionsAndComments);
         }
 
@@ -212,7 +261,7 @@ namespace Voat.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<ViewResult> Blocked(Domain.Models.DomainType blockType, int? page)
+        public async Task<ActionResult> Blocked(Domain.Models.DomainType blockType, int? page)
         {
 
             switch (blockType) {
@@ -222,6 +271,15 @@ namespace Voat.Controllers
 
                     var userBlocks = blocks.Where(x => x.Type == Domain.Models.DomainType.User).OrderBy(x => x.Name);
 
+                    var originalUserName = User.Identity.Name;
+                    ViewBag.NavigationViewModel = new NavigationViewModel()
+                    {
+                        MenuType = MenuType.UserProfile,
+                        Name = originalUserName,
+                        BasePath = "/user/" + originalUserName,
+                        Description = originalUserName + "'s Blocked Users",
+                    };
+
                     return View("BlockedUsers", userBlocks);
 
                     break;
@@ -229,41 +287,163 @@ namespace Voat.Controllers
                 case Domain.Models.DomainType.Subverse:
                 default:
 
-                    //Original Code below, leaving as is bc it works
-                    ViewBag.SelectedSubverse = "subverses";
-                    ViewBag.SubversesView = "blocked";
-                    const int pageSize = 25;
-                    int pageNumber = (page ?? 0);
+                    var domainReference = new Domain.Models.DomainReference(Domain.Models.DomainType.Set, Domain.Models.SetType.Blocked.ToString(), User.Identity.Name);
+                    return RedirectToAction("Details", "Set", new { name = domainReference.FullName });
 
-                    if (pageNumber < 0)
-                    {
-                        return NotFoundErrorView();
-                    }
-                    string userName = User.Identity.Name;
-                    // get a list of user blocked subverses with details and order by subverse name, ascending
-                    IQueryable<SubverseDetailsViewModel> blockedSubverses = from c in _db.Subverses
-                                                                            join a in _db.UserBlockedSubverses
-                                                                            on c.Name equals a.Subverse
-                                                                            where a.UserName.Equals(userName)
-                                                                            orderby a.Subverse ascending
-                                                                            select new SubverseDetailsViewModel
-                                                                            {
-                                                                                Name = c.Name,
-                                                                                Title = c.Title,
-                                                                                Description = c.Description,
-                                                                                Creation_date = c.CreationDate,
-                                                                                Subscribers = c.SubscriberCount
-                                                                            };
+                    ////Original Code below, leaving as is bc it works
+                    //ViewBag.SelectedSubverse = "subverses";
+                    //ViewBag.SubversesView = "blocked";
+                    //const int pageSize = 25;
+                    //int pageNumber = (page ?? 0);
 
-                    var paginatedBlockedSubverses = new PaginatedList<SubverseDetailsViewModel>(blockedSubverses, page ?? 0, pageSize);
+                    //if (pageNumber < 0)
+                    //{
+                    //    return NotFoundErrorView();
+                    //}
+                    //string userName = User.Identity.Name;
+                    //// get a list of user blocked subverses with details and order by subverse name, ascending
+                    //IQueryable<SubverseDetailsViewModel> blockedSubverses = from c in _db.Subverses
+                    //                                                        join a in _db.UserBlockedSubverses
+                    //                                                        on c.Name equals a.Subverse
+                    //                                                        where a.UserName.Equals(userName)
+                    //                                                        orderby a.Subverse ascending
+                    //                                                        select new SubverseDetailsViewModel
+                    //                                                        {
+                    //                                                            Name = c.Name,
+                    //                                                            Title = c.Title,
+                    //                                                            Description = c.Description,
+                    //                                                            CreationDate = c.CreationDate,
+                    //                                                            Subscribers = c.SubscriberCount
+                    //                                                        };
 
-                    return View("BlockedSubverses", paginatedBlockedSubverses);
+                    //var paginatedBlockedSubverses = new PaginatedList<SubverseDetailsViewModel>(blockedSubverses, page ?? 0, pageSize);
+
+                    //return View("BlockedSubverses", paginatedBlockedSubverses);
 
                     break;
 
             }
             
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult> Sets(string userName)
+        {
+
+            var originalUserName = UserHelper.OriginalUsername(userName);
+
+            if (String.IsNullOrEmpty(originalUserName))
+            {
+                return NotFoundErrorView();
+            }
+
+            ViewBag.UserName = originalUserName;
+
+            ViewBag.NavigationViewModel = new NavigationViewModel()
+            {
+                MenuType = MenuType.UserProfile,
+                Name = originalUserName,
+                BasePath = "/user/" + originalUserName,
+                Description = originalUserName + "'s Sets",
+            };
+
+            var q = new QueryUserSets(userName);
+            var results = await q.ExecuteAsync();
+
+            return View(results);
+            
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult> Subscribed(Domain.Models.DomainType domainType)
+        {
+            switch (domainType)
+            {
+                case Domain.Models.DomainType.Subverse:
+                    var domainReference = new Domain.Models.DomainReference(Domain.Models.DomainType.Set, Domain.Models.SetType.Front.ToString(), User.Identity.Name);
+                    return RedirectToAction("Details", "Set", new { name = domainReference.FullName });
+                    break;
+                case Domain.Models.DomainType.Set:
+
+
+                    var options = new SearchOptions(Request.QueryString);
+
+                    var q = new QueryUserSubscribedSets(options);
+                   
+                    var results = await q.ExecuteAsync();
+
+                    var paged = new Utilities.PaginatedList<Domain.Models.DomainReferenceDetails>(results, options.Page, options.Count);
+
+                    ViewBag.NavigationViewModel = new Models.ViewModels.NavigationViewModel()
+                    {
+                        Description = "Subscribed Sets",
+                        Name = "No Idea",
+                        MenuType = Models.ViewModels.MenuType.Discovery,
+                        BasePath = null,
+                        Sort = null
+                    };
+                    ViewBag.DomainType = Voat.Domain.Models.DomainType.Set;
+                    return View(paged);
+                    break;
+                default:
+                case Domain.Models.DomainType.User:
+                    throw new NotImplementedException("This isn't done yet!");
+                    break;
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        [VoatValidateAntiForgeryToken]
+        public async Task<JsonResult> Subscribe(Domain.Models.DomainType domainType, string name, Domain.Models.SubscriptionAction subscribeAction)
+        {
+            var domainReference = Domain.Models.DomainReference.Parse(name, domainType);
+
+            var cmd = new SubscribeCommand(domainReference, subscribeAction);
+            var result = await cmd.Execute();
+            return JsonResult(result); 
+
+        }
+
+
+        [HttpPost]
+        [Authorize]
+        [VoatValidateAntiForgeryToken]
+        public async Task<ActionResult> Save(Domain.Models.ContentType contentType, int id)
+        {
+            var cmd = new SaveCommand(contentType, id);
+            var response = await cmd.Execute();
+            if (response.Success)
+            {
+                return Json(new { success = true });
+            }
+            else
+            {
+                return JsonError(response.Message);
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        [VoatValidateAntiForgeryToken]
+        public async Task<JsonResult> Vote(Domain.Models.ContentType contentType, int id, int voteStatus)
+        {
+            VoteResponse result = null; 
+            switch (contentType) {
+                case Domain.Models.ContentType.Submission:
+                    var cmdV = new SubmissionVoteCommand(id, voteStatus, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
+                    result = await cmdV.Execute();
+                    break;
+                case Domain.Models.ContentType.Comment:
+                    var cmdC = new CommentVoteCommand(id, voteStatus, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
+                    result = await cmdC.Execute();
+                    break;
+            }
+            return Json(result);
+        }
+
         #endregion
     }
 }

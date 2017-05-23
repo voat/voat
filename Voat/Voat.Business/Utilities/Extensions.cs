@@ -1,9 +1,108 @@
-﻿using System;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 
 namespace Voat
 {
     public static class Extensions
     {
+
+        public static string ToYesNo(this bool value)
+        {
+            return value ? "Yes" : "No";
+        }
+        public static string ToYesNo(this bool? value, string nullValue)
+        {
+            if (value.HasValue)
+            {
+                return value.Value.ToYesNo();
+            }
+            return nullValue;
+        }
+
+        public static string BasePath(this Domain.Models.DomainReference domainReference, Domain.Models.SortAlgorithm? sort = null)
+        {
+            string path = "";
+            if (domainReference != null)
+            {
+                switch (domainReference.Type)
+                {
+                    case Domain.Models.DomainType.Subverse:
+                        path = String.Format("/v/{0}/{1}", domainReference.Name, sort == null ? "" : sort.Value.ToString().ToLower());
+                        break;
+                    case Domain.Models.DomainType.Set:
+                        path = String.Format("{0}/{1}", Utilities.VoatPathHelper.BasePath(domainReference), sort == null ? "" : sort.Value.ToString().ToLower());
+                        break;
+                    case Domain.Models.DomainType.User:
+                        path = String.Format("/u/{0}", domainReference.Name);
+                        break;
+                }
+            }
+            return path.TrimEnd('/');
+        }
+
+        //I don't like this
+        public static IEnumerable<T> GetEnumFlags<T>(this T value) where T : struct, IConvertible
+        {
+
+            var type = typeof(T);
+            if (!type.IsEnum)
+            {
+                throw new ArgumentException("T must be an enumerated type");
+            }
+
+            List<T> list = new List<T>();
+            var vals = Enum.GetValues(type);
+            int flag = (int)Enum.Parse(type, value.ToString());
+            foreach (T v in vals)
+            {
+                int i = 0;
+                if (((int)Enum.Parse(type, v.ToString()) & flag) > 0)
+                {
+                    list.Add(v);
+                }
+            }
+            return list;
+        }
+
+        public static T EnsureRange<T>(this T value, T low, T high) where T : IComparable
+        {
+            if (value.CompareTo(low) == -1)
+            {
+                return low;
+            }
+            else if (value.CompareTo(high) == 1)
+            {
+                return high;
+            }
+            return value;
+        }
+
         /// <summary>
         /// Runs case insensitive compare
         /// </summary>
@@ -109,6 +208,89 @@ namespace Voat
                 string typeName = typeof(V).Name;
                 throw new InvalidCastException($"Can not convert {typeName} to {typeof(T).Name}", ex);
             }
+        }
+
+        public static string ToQueryString(this object o, bool includeEmptyArguments = false)
+        {
+            if (o != null)
+            {
+
+                List<string> keyPairs = new List<string>();
+                var props = o.GetType().GetProperties();
+
+                foreach (var prop in props)
+                {
+                    var pValue = prop.GetValue(o);
+                    var qsValue = "";
+
+                    if (pValue != null)
+                    {
+                        qsValue = pValue.ToString();
+                    }
+                    if (includeEmptyArguments || (!includeEmptyArguments && !String.IsNullOrEmpty(qsValue)))
+                    {
+                        //I don't know if this encoding is correct: Uri.EscapeUriString
+                        keyPairs.Add($"{prop.Name.ToLower()}={Uri.EscapeDataString(qsValue)}");
+                    }
+                }
+                var result = String.Join("&", keyPairs);
+                return result;
+            }
+            return "";
+        }
+
+        public static bool IsValidEnumValue<T>(int? value) where T : struct, IConvertible
+        {
+            var result = false;
+            if (value.HasValue)
+            {
+                result = Enum.IsDefined(typeof(T), value.Value);
+            }
+            return result;
+        }
+        public static bool IsValidEnumValue<T>(T? value) where T : struct, IConvertible
+        {
+            var result = false;
+            if (value.HasValue)
+            {
+                result = Enum.IsDefined(typeof(T), value.Value);
+            }
+            return result;
+        }
+        public static bool IsValidEnumValue<T>(T value) where T : struct, IConvertible
+        {
+            var result = false;
+            result = Enum.IsDefined(typeof(T), value);
+            return result;
+        }
+
+        public static T AssignIfValidEnumValue<T>(int value, T defaultValue) where T : struct, IConvertible
+        {
+            return AssignIfValidEnumValue((int?)value, defaultValue);
+        }
+
+        public static T AssignIfValidEnumValue<T>(int? value, T defaultValue) where T : struct, IConvertible
+        {
+            if (IsValidEnumValue<T>(value))
+            {
+                return (T)Enum.Parse(typeof(T), value.ToString());
+            }
+            else
+            {
+                return defaultValue;
+            }
+        }
+
+        //public Dictionary<int, string> GetEnumValues(Type type)
+        //{
+        //    var dict = new Dictionary<int, string>();
+        //}
+        public static string ToChatTimeDisplay(this DateTime dateTime) 
+        {
+            CultureInfo ci = CultureInfo.InvariantCulture;
+
+            return dateTime.ToString("hh:mm:ss", ci) + " UTC";
+  
         }
     }
 }

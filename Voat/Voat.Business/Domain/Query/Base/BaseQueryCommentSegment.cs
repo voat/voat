@@ -1,4 +1,28 @@
-﻿using System;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,8 +43,9 @@ namespace Voat.Domain.Query.Base
 
         protected int _collapseThreshold = -4;
         protected int _count = 4;
-        protected IEnumerable<CommentVoteTracker> _commentVotes = null;
+        protected IEnumerable<VoteValue> _commentVotes = null;
         protected IEnumerable<CommentSaveTracker> _commentSaves = null;
+        protected IEnumerable<BlockedItem> _userBlocks = null;
 
         protected abstract IQueryable<usp_CommentTree_Result> FilterSegment(IQueryable<usp_CommentTree_Result> commentTree);
 
@@ -50,7 +75,11 @@ namespace Voat.Domain.Query.Base
             {
                 //var p = new QueryUserData(UserName).Execute();
                 //var preference = p.Preferences;
-                _commentVotes = new QueryUserCommentVotesForSubmission(_submissionID, CachePolicy.None).Execute();
+                var qvotes = new QueryUserCommentVotesForSubmission(_submissionID, CachePolicy.None);
+                _commentVotes = await qvotes.ExecuteAsync();
+
+                var qblocks = new QueryUserBlocks();
+                _userBlocks = (await qblocks.ExecuteAsync()).Where(x => x.Type == DomainType.User);
                 //_commentSaves = new QueryUserSavedCommentsForSubmission(_submissionID).Execute();
             }
 
@@ -93,14 +122,17 @@ namespace Voat.Domain.Query.Base
             //creating this to keep local vars in scope
             Func<usp_CommentTree_Result, NestedComment> mapToNestedCommentFunc = new Func<usp_CommentTree_Result, NestedComment>(commentTree =>
             {
-                return commentTree.Map(SubmitterName, _commentVotes);
+                return commentTree.Map(SubmitterName, _commentVotes, _userBlocks);
             });
 
             List<NestedComment> comments = new List<NestedComment>();
             foreach (var c in queryableTree)
             {
                 var n = mapToNestedCommentFunc(c);
-                n.IsCollapsed = (n.Sum <= _collapseThreshold);
+                if (!n.IsCollapsed)
+                {
+                    n.IsCollapsed = (n.Sum <= _collapseThreshold);
+                }
                 if (addChildren)
                 {
                     AddComments(fullTree, n, _count, nestLevel, 1, _collapseThreshold, _sort, mapToNestedCommentFunc);
@@ -139,7 +171,10 @@ namespace Voat.Domain.Query.Base
                         {
                             var c = mapToNestedCommentFunc(children[i]);
 
-                            c.IsCollapsed = (c.Sum <= collapseThreshold);
+                            if (!c.IsCollapsed)
+                            {
+                                c.IsCollapsed = (c.Sum <= _collapseThreshold);
+                            }
                             var nextNestLevel = currentNestLevel + 1;
                             AddComments(queryTree, c, count, nestLevel, nextNestLevel, collapseThreshold, sort, mapToNestedCommentFunc);
                             parent.AddChildComment(c);

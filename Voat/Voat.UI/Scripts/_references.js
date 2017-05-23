@@ -16,5 +16,6 @@
 /// <reference path="libs/respond.js" />
 /// <reference path="libs/respond.matchmedia.addListener.js" />
 /// <reference path="markdowneditor.js" />
+/// <reference path="voat.dashboard.js" />
 /// <reference path="voat.js" />
 /// <reference path="voat.ui.js" />

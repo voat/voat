@@ -1,19 +1,31 @@
-﻿/*
-This source file is subject to version 3 of the GPL license,
-that is bundled with this package in the file LICENSE, and is
-available online at http://www.gnu.org/licenses/gpl.txt;
-you may not use this file except in compliance with the License.
+#region LICENSE
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+/*
+    
+    Copyright(c) Voat, Inc.
 
-All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
-All Rights Reserved.
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
 */
+
+#endregion LICENSE
 
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Voat.Domain.Models
 {
@@ -91,6 +103,11 @@ namespace Voat.Domain.Models
         public bool IsAnonymized { get; set; }
 
         /// <summary>
+        /// Is this submission NSFW/Adult rated
+        /// </summary>
+        public bool IsAdult { get; set; }
+
+        /// <summary>
         /// Is this submission deleted
         /// </summary>
         public bool IsDeleted { get; set; }
@@ -100,10 +117,39 @@ namespace Voat.Domain.Models
         /// </summary>
         public int Views { get; set; }
 
+        public IList<ContentAttribute> Attributes { get; set; } = new List<ContentAttribute>();
+
+        [JsonIgnore]
+        public IEnumerable<ContentAttribute> Flairs
+        {
+            get
+            {
+                if (Attributes != null && Attributes.Any())
+                {
+                    return Attributes.Where(x => x.Type == AttributeType.Flair).ToList();
+                }
+                return Enumerable.Empty<ContentAttribute>();
+            }
+        }
+
+        //public string FlairLabel { get; set; }
+
+        //public string FlairCss { get; set; }
+
         [JsonIgnore]
         public double Rank { get; set; }
 
         [JsonIgnore]
         public double RelativeRank { get; set; }
+
+        /// <summary>
+        /// Marker for if current account owns this comment.
+        /// </summary>
+        public bool IsOwner { get; set; }
+
+        /// <summary>
+        /// Date Submission was archived
+        /// </summary>
+        public DateTime? ArchiveDate { get; set; }
     }
 }

@@ -1,14 +1,22 @@
-﻿@*This source file is subject to version 3 of the GPL license,
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
-    available online at http://www.gnu.org/licenses/gpl.txt;
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
     you may not use this file except in compliance with the License.
 
-    Software distributed under the License is distributed on an "AS IS" basis,
-    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-    the specific language governing rights and limitations under the License.
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
 
-    All portions of the code written by Voat are Copyright (c) 2014 Voat
-    All Rights Reserved.*@
+    All Rights Reserved.
+
+*@
 
 @using Voat.Models
 @model PaginatedList<SavedItem>
@@ -26,13 +34,14 @@
         {
             var submission = obj.SavedSubmission;
             var comment = obj.SavedComment;
-            
+
             if (submission != null)
             {
                 //Is a message
                 //type 2 = link
                 //type 1 = message
                 var submissionClass = "";
+                //if (submission.Type == Voat.Domain.Models.SubmissionType.Text)
                 if (submission.Type == 1)
                 {
                     submissionClass = "self";
@@ -41,13 +50,8 @@
                 {
                     submissionClass = "";
                 }
-                <div class="submission id-@submission.ID odd link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.UpCount" data-downs="@submission.DownCount">
-                    <p class="parent"></p>
-                    @Html.Partial("_VotingIconsSubmission", submission)
-                    @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
-                    <div class="child"></div>
-                    <div class="clearleft">@*IE6fix*@</div>
-                </div>
+                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", Voat.Domain.DomainMaps.Map(submission), new ViewDataDictionary() { { "CssClass", new string[] { submissionClass } } })
+                
             }
             if (comment != null)
             {

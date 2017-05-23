@@ -1,18 +1,24 @@
-﻿@*This source file is subject to version 3 of the GPL license,
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
-    available online at http://www.gnu.org/licenses/gpl.txt;
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
     you may not use this file except in compliance with the License.
 
-    Software distributed under the License is distributed on an "AS IS" basis,
-    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-    the specific language governing rights and limitations under the License.
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
 
-    All portions of the code written by Voat are Copyright (c) 2014 Voat
-    All Rights Reserved.*@
+    All Rights Reserved.
 
-@model Voat.Data.Models.Submission
-@using Voat.Configuration
+*@
 
+@model Voat.Domain.Models.Submission
 
 @* 1 user link submission with details without comments *@
 @{
@@ -27,20 +33,13 @@
         }
     }
 
-    //var commentCount = Model.Comments.Count(c => !c.IsDeleted);
-    var commentCount = CommentCounter.CommentCount(Model.ID);
-
     string postAge = Age.ToRelative(Model.CreationDate);
     string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
 
     bool ratedAdult = false;
-    if (Model.Subverse1 != null)
-    {
-        ratedAdult = Model.Subverse1.IsAdult;
-    }
-
+    
     //type 2 = urls, model.Url = url, model.linkdescription = link description
-    if (Model.Type == 2)
+    if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
     {
         string submissionDomain = UrlUtility.GetDomainFromUri(Model.Url);
         int submissionScore = (int)(Model.UpCount - Model.DownCount);
@@ -54,7 +53,7 @@
                 <div class="score likes">@Model.UpCount</div>
             </div>
 
-            @if (Model.Thumbnail != null)
+            @if (Model.ThumbnailUrl != null)
             {
                 if (Model.Title.ToLower().Contains("nsfw") || ratedAdult)
                 {
@@ -63,14 +62,7 @@
                 else
                 {
                     <a class="thumbnail may-blank" href="@Model.Url" target="@ahrefTarget">
-                        @if (Settings.UseContentDeliveryNetwork)
-                        {
-                            <img src="https://cdn.voat.co/thumbs/@Model.Thumbnail" alt="@Model.Title" />
-                        }
-                        else
-                        {
-                            <img src="~/Thumbs/@Model.Thumbnail" alt="@Model.Title" />
-                        }
+                        <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
                     </a>
                 }
             }
@@ -89,7 +81,7 @@
                 </p>
                 <ul class="flat-list buttons">
                     <li class="first">
-                        <a href="@commentsUrl" class="comments may-blank">@commentCount comments</a>
+                        <a href="@commentsUrl" class="comments may-blank">@Formatting.PluralizeIt(Model.CommentCount, "comment")</a>
                     </li>
                 </ul>
                 <div class="expando" style="display: none">

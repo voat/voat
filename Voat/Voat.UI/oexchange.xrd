@@ -1,18 +1,18 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <XRD xmlns='http://docs.oasis-open.org/ns/xri/xrd-1.0'>
   <Subject>https://voat.co</Subject>
-  <Property type='http://www.oexchange.org/spec/0.8/prop/vendor'>Voat GmbH</Property>
-  <Property type='http://www.oexchange.org/spec/0.8/prop/title'>Voat link sharing service</Property>
+  <Property type='http://www.oexchange.org/spec/0.8/prop/vendor'>Voat, Inc.</Property>
+  <Property type='http://www.oexchange.org/spec/0.8/prop/title'>Voat - have your say</Property>
   <Property type='http://www.oexchange.org/spec/0.8/prop/name'>Voat</Property>
   <Property type='http://www.oexchange.org/spec/0.8/prop/prompt'>Share with Voat</Property>
   <Link 
     rel='icon'
-    href='http://voat.co/favicon.ico'
+    href='https://voat.co/favicon.ico'
     type='image/png'
   />
   <Link 
     rel='icon32'
-    href='http://voat.co/graphics/voat-32x32.png'
+    href='https://voat.co/Graphics/Icons/Arrow/favicon-32x32.png'
     type='image/png'
   />
   <Link 

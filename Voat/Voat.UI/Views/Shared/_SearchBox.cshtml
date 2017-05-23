@@ -1,48 +1,59 @@
-﻿@*This source file is subject to version 3 of the GPL license,
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
-    available online at http://www.gnu.org/licenses/gpl.txt;
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
     you may not use this file except in compliance with the License.
 
-    Software distributed under the License is distributed on an "AS IS" basis,
-    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-    the specific language governing rights and limitations under the License.
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
 
-    All portions of the code written by Voat are Copyright (c) 2014 Voat
-    All Rights Reserved.*@
+    All Rights Reserved.
+
+*@
 
 @model Voat.Models.ViewModels.SearchViewModel
 
 @{
-    string selectedSubverse = "";
-    if (!String.IsNullOrEmpty(Request.QueryString["sub"]))
+    if (!Settings.SearchDisabled)
     {
-        selectedSubverse = Request.QueryString["sub"];
-    }
-    else if (!String.IsNullOrEmpty(ViewBag.SelectedSubverse))
-    {
-        selectedSubverse = ViewBag.SelectedSubverse;
+        string selectedSubverse = "";
+        if (!String.IsNullOrEmpty(Request.QueryString["sub"]))
+        {
+            selectedSubverse = Request.QueryString["sub"];
+        }
+        else if (!String.IsNullOrEmpty(ViewBag.SelectedSubverse))
+        {
+            selectedSubverse = ViewBag.SelectedSubverse;
+        }
+
+        <div class="spacersection spacer">
+    
+            <div class="alert-h1">
+                Search @Settings.SiteName
+            </div>
+
+            @using (Html.BeginForm("SearchResults", "Search", new { }, FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
+            {
+                <h2>@Html.ValidationSummary(true)</h2>
+                @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search " + Settings.SiteName })
+                @Html.ValidationMessage("q")
+
+                if (!String.IsNullOrEmpty(selectedSubverse))
+                {
+                    @Html.Hidden("sub", selectedSubverse)
+                    <input type="checkbox" name="l" value="true" id="l"
+                           @(!String.IsNullOrEmpty(selectedSubverse) ? "checked=\"checked\"" : "") />
+
+                    @Html.Label("Limit to v/" + selectedSubverse)
+                }
+            }
+        </div>
     }
 }
-
-<div class="spacersection spacer">
-    
-    <div class="alert-h1">
-        Search @Settings.SiteName
-    </div>
-
-    @using (Html.BeginForm("SearchResults", "Search", new { }, FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
-    {
-        <h2>@Html.ValidationSummary(true)</h2>
-        @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search " + Settings.SiteName })
-        @Html.ValidationMessage("q")
-
-        if (!String.IsNullOrEmpty(selectedSubverse))
-        {
-            @Html.Hidden("sub", selectedSubverse)
-            <input type="checkbox" name="l" value="true" id="l"
-                   @(!String.IsNullOrEmpty(selectedSubverse) ? "checked=\"checked\"" : "") />
-
-            @Html.Label("Limit to v/" + selectedSubverse)
-        }
-    }
-</div>

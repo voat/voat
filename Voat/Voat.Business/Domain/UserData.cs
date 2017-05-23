@@ -1,4 +1,28 @@
-﻿using Microsoft.AspNet.Identity;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Newtonsoft.Json;
 using System;
@@ -36,7 +60,7 @@ namespace Voat.Domain
     {
         protected string _userName;
         protected UserInformation _info;
-        protected Data.Models.UserPreference _prefs;
+        protected Domain.Models.UserPreference _prefs;
         //protected IEnumerable<string> _subverseSubscriptions;
         protected IDictionary<DomainType, IEnumerable<string>> _subscriptions;
         protected IEnumerable<string> _blockedSubverses;
@@ -88,7 +112,7 @@ namespace Voat.Domain
         public UserData(string userName, bool validateUserExists = false)
         {
 
-            System.Diagnostics.Debug.Print("UserData({0}, {1})", userName, validateUserExists.ToString());
+            System.Diagnostics.Debug.WriteLine("UserData({0}, {1})", userName, validateUserExists.ToString());
 
             var val = UserDefinition.Parse(userName);
             if (val == null)
@@ -120,7 +144,7 @@ namespace Voat.Domain
             {
                 var val = GetOrLoad(ref _votesInLast24Hours, userName =>
                 {
-                    Debug.Print("UserData[{0}].TotalVotesUsedIn24Hours(loading)", userName);
+                    Debug.WriteLine("UserData[{0}].TotalVotesUsedIn24Hours(loading)", userName);
                     using (var repo = new Repository())
                     {
                         return repo.UserVotingBehavior(userName, ContentType.Comment | ContentType.Submission, TimeSpan.FromDays(1)).Total;
@@ -144,7 +168,7 @@ namespace Voat.Domain
             {
                 var val = GetOrLoad(ref _submissionsInLast24Hours, userName =>
                 {
-                    Debug.Print("UserData[{0}].TotalSubmissionsPostedIn24Hours(loading)", userName);
+                    Debug.WriteLine("UserData[{0}].TotalSubmissionsPostedIn24Hours(loading)", userName);
                     using (var repo = new Repository())
                     {
                         return repo.UserSubmissionCount(userName, TimeSpan.FromDays(1));
@@ -168,7 +192,7 @@ namespace Voat.Domain
             {
                 var val = GetOrLoad(ref _blockedSubverses, userName =>
                 {
-                    Debug.Print("UserData[{0}].BlockedSubverses(loading)", userName);
+                    Debug.WriteLine("UserData[{0}].BlockedSubverses(loading)", userName);
                     var q = new QueryUserBlocks();
                     var r = q.Execute();
                     return r.Where(x => x.Type == DomainType.Subverse).Select(x => x.Name);
@@ -183,7 +207,7 @@ namespace Voat.Domain
             {
                 var val = GetOrLoad(ref _blockedUsers, userName =>
                 {
-                    Debug.Print("UserData[{0}].BlockedUsers(loading)", userName);
+                    Debug.WriteLine("UserData[{0}].BlockedUsers(loading)", userName);
                     var q = new QueryUserBlocks();
                     var r = q.Execute();
                     return r.Where(x => x.Type == DomainType.User).Select(x => x.Name);
@@ -193,13 +217,13 @@ namespace Voat.Domain
         }
         
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        public Data.Models.UserPreference Preferences
+        public Domain.Models.UserPreference Preferences
         {
             get
             {
                 return GetOrLoad(ref _prefs, userName =>
                 {
-                    Debug.Print("UserData[{0}].Preferences(loading)", userName);
+                    Debug.WriteLine("UserData[{0}].Preferences(loading)", userName);
                     var q = new QueryUserPreferences(userName);
                     var result = q.Execute();
                     return result;
@@ -219,7 +243,7 @@ namespace Voat.Domain
             {
                 return GetOrLoad(ref _subscriptions, userName =>
                 {
-                    Debug.Print("UserData[{0}].Subscriptions(loading)", userName);
+                    Debug.WriteLine("UserData[{0}].Subscriptions(loading)", userName);
                     var q = new QueryUserSubscriptions(userName);
                     var result = q.Execute();
                     return result;
@@ -251,7 +275,7 @@ namespace Voat.Domain
             {
                 return GetOrLoad(ref _info, userName =>
                 {
-                    Debug.Print("UserData[{0}].Information(loading)", userName);
+                    Debug.WriteLine("UserData[{0}].Information(loading)", userName);
                     var q = new QueryUserInformation(userName);
                     var result = q.Execute();
                     return result;
@@ -280,12 +304,12 @@ namespace Voat.Domain
 
         public bool IsUserSubverseSubscriber(string subverse)
         {
-            return IsSubscriber(DomainType.Subverse, subverse);
+            return IsSubscriber(new DomainReference(DomainType.Subverse, subverse));
         }
-        public bool IsSubscriber(DomainType type, string name)
+        public bool IsSubscriber(DomainReference domainReference)
         {
-            var subs = GetSubscriptions(type);
-            return subs.Any(x => x.IsEqual(name));
+            var subs = GetSubscriptions(domainReference.Type);
+            return subs.Any(x => x.IsEqual(domainReference.FullName));
         }
         private IEnumerable<string> GetSubscriptions(DomainType type)
         {
@@ -301,7 +325,8 @@ namespace Voat.Domain
         }
         public bool IsUserBlockingSubverse(string subverse)
         {
-            return BlockedSubverses.Any(x => x.Equals(subverse, StringComparison.OrdinalIgnoreCase));
+            var result = BlockedSubverses.Any(x => x.Equals(subverse, StringComparison.OrdinalIgnoreCase));
+            return result;
         }
         public bool HasSubscriptions(DomainType type = DomainType.Subverse)
         {

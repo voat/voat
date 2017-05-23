@@ -1,37 +1,34 @@
-﻿@*This source file is subject to version 3 of the GPL license,
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
-    available online at http://www.gnu.org/licenses/gpl.txt;
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
     you may not use this file except in compliance with the License.
 
-    Software distributed under the License is distributed on an "AS IS" basis,
-    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-    the specific language governing rights and limitations under the License.
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
 
-    All portions of the code written by Voat are Copyright (c) 2014 Voat
-    All Rights Reserved.*@
+    All Rights Reserved.
+
+*@
+
+@model Voat.Models.ViewModels.NavigationViewModel
 
 @{
-    var sortingMode = ViewBag.sortingMode;
-    var selectedSubverse = ViewBag.selectedSubverse;
-    var selectedDomain = ViewBag.selectedDomain;
 
-    var classHot = "selected";
-    var classNew = "disabled";
+    var url = Request.Url.AbsolutePath.ToLower();
 
-    if (sortingMode != null)
-    {
-        if (sortingMode.Equals("new"))
-        {
-            classHot = "disabled";
-            classNew = "selected";
-        }
-    }
 }
-
-<span class="hover pagename"><a href="@selectedSubverse">@selectedDomain</a></span>
+<span class="hover pagename"><a href="@Model.BasePath">@Model.Name</a></span>
 <ul class="tabmenu ">
-    <li class="@classHot"><a href="@selectedSubverse">Hot</a></li>
-    <li class="@classNew"><a href="/domains/@selectedDomain/new">New</a></li>
-    <li class="disabled submit-link"><a href="/submit?linkpost=true">Share a link</a></li>
-    <li class="disabled submit-text"><a href="/submit">Discuss</a></li>
+    <li class='@(url.EndsWith(Model.Name.ToLower()) ? "selected" : "disabled")'><a href="@Model.BasePath">Hot</a></li>
+    <li class='@(url.EndsWith("/new") ? "selected" : "disabled")'><a href="@Model.BasePath/new">New</a></li>
+    <li class="disabled"><a href="/submit?linkpost=true" class="contribute submit-link">Share a link</a></li>
+    <li class="disabled"><a href="/submit" class="contribute submit-text">Discuss</a></li>
 </ul>

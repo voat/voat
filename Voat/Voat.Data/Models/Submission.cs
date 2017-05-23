@@ -24,7 +24,6 @@ namespace Voat.Data.Models
         }
     
         public int ID { get; set; }
-        public bool IsArchived { get; set; }
         public string UserName { get; set; }
         public System.DateTime CreationDate { get; set; }
         public int Type { get; set; }
@@ -44,6 +43,8 @@ namespace Voat.Data.Models
         public double RelativeRank { get; set; }
         public string Url { get; set; }
         public string FormattedContent { get; set; }
+        public bool IsAdult { get; set; }
+        public Nullable<System.DateTime> ArchiveDate { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Comment> Comments { get; set; }

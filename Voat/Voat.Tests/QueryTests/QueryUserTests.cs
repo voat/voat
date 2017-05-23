@@ -1,4 +1,28 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,37 +41,47 @@ namespace Voat.Tests.QueryTests
     public class QueryUserTests : BaseUnitTest
     {
         
-        [TestMethod, TestCategory("UserData"), ExpectedException(typeof(ArgumentException))]
+        [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_1()
         {
-            string user = "";
-            var voatData = new Domain.UserData(user, true);
+            Assert.Throws<ArgumentException>(() => {
+                string user = "";
+                var voatData = new Domain.UserData(user, true);
+            });
         }
-        [TestMethod, TestCategory("UserData"), ExpectedException(typeof(ArgumentException))]
+        [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_2()
         {
-            string user = null;
-            var voatData = new Domain.UserData(user, true);
+            Assert.Throws<ArgumentException>(() => {
+                string user = null;
+                var voatData = new Domain.UserData(user, true);
+            });
 
         }
-        [TestMethod, TestCategory("UserData"), ExpectedException(typeof(ArgumentException))]
+        [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_3()
         {
-            string user = "____________Doesn't__Exist_________";
-            var voatData = new Domain.UserData(user, true);
+            Assert.Throws<ArgumentException>(() => {
+                string user = "____________Doesn't__Exist_________";
+                var voatData = new Domain.UserData(user, true);
+            });
         }
 
-        [TestMethod, TestCategory("UserData"), ExpectedException(typeof(VoatNotFoundException))]
+        [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_4()
         {
-            string user = "MyName-Is-Me";
-            var voatData = new Domain.UserData(user, true);
+            Assert.Throws<VoatNotFoundException>(() => {
+                string user = "MyName-Is-Me";
+                var voatData = new Domain.UserData(user, true);
+            });
         }
-        [TestMethod, TestCategory("UserData"), ExpectedException(typeof(VoatNotFoundException))]
+        [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_5()
         {
-            string user = "DoesntExist";
-            var voatData = new Domain.UserData(user, true);
+            Assert.Throws<VoatNotFoundException>(() => {
+                string user = "DoesntExist";
+                var voatData = new Domain.UserData(user, true);
+            });
         }
 
         [TestMethod]
@@ -69,7 +103,7 @@ namespace Voat.Tests.QueryTests
             VoatDataInitializer.CreateUser(subUserName);
 
             TestHelper.SetPrincipal(subUserName);
-            var cmd = new SubscriptionCommand(Domain.Models.DomainType.Subverse, Domain.Models.SubscriptionAction.Subscribe, "unit");
+            var cmd = new SubscribeCommand(new DomainReference(DomainType.Subverse, "unit"), Domain.Models.SubscriptionAction.Subscribe);
             var x = await cmd.Execute();
 
             userData = new Domain.UserData(subUserName);

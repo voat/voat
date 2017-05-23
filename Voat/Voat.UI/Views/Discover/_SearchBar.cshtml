@@ -1,0 +1,43 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+
+
+
+@model Voat.Domain.Models.DomainType
+
+@{
+    var type = Model.ToString().ToLower();
+    var url = Request.Url.AbsolutePath.ToLower().TrimEnd('/');
+    var phrase = Request.QueryString["phrase"];
+
+}
+<div>
+    <h3>Search</h3>
+    @using (Html.BeginForm("Index", "Discover", new { domainType = type }, FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
+    {
+        <h2>@Html.ValidationSummary(true)</h2>
+        @Html.TextBox("phrase", phrase, new { @class = "form-control", @placeholder = "Type a term to search for and press ENTER" })
+        @Html.ValidationMessage("phrase")
+        <input type="submit" class="btn-voat" value="Search" />
+    }
+    <hr />
+</div>
+

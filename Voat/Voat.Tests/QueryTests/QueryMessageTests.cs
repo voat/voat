@@ -1,4 +1,28 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,22 +42,21 @@ namespace Voat.Tests.QueryTests
 
         private List<Domain.Models.Message> messages = new List<Domain.Models.Message>();
 
-        [TestInitialize]
-        public void TestInitialize()
+        public override void ClassInitialize()
         {
             //create user inbox
             Message message = null;
 
             TestHelper.SetPrincipal(userName);
             var msg = "1";
-            var cmd = new SendMessageCommand(new Domain.Models.SendMessage() { Subject = "Chain", Recipient = "TestUser1", Message = msg });
+            var cmd = new SendMessageCommand(new Domain.Models.SendMessage() { Subject = "Chain", Recipient = "TestUser01", Message = msg });
             var response = cmd.Execute().Result;
-            Assert.IsTrue(response.Success, "Expecting true on send");
+            Assert.IsTrue(response.Success, response.Message);
             Assert.IsNotNull(response.Response, "Expecting non-null response");
             message = response.Response;
             messages.Add(message);
 
-            TestHelper.SetPrincipal("TestUser1");
+            TestHelper.SetPrincipal("TestUser01");
             msg = "1.1";
             var cmdReply = new SendMessageReplyCommand(message.ID, msg);
             var responseReply = cmdReply.Execute().Result;
@@ -52,7 +75,7 @@ namespace Voat.Tests.QueryTests
             message = responseReply.Response;
             messages.Add(message);
 
-            TestHelper.SetPrincipal("TestUser1");
+            TestHelper.SetPrincipal("TestUser01");
             msg = "1.1.1.1";
             cmdReply = new SendMessageReplyCommand(message.ID, msg);
             responseReply = cmdReply.Execute().Result;

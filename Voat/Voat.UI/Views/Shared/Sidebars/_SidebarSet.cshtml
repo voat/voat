@@ -1,0 +1,107 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@model Voat.Data.Models.SubverseSet
+
+@{
+    var userData = Voat.Domain.UserData.GetContextUserData();
+    var domainReference = new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Set, Model.Name, Model.UserName);
+
+    ViewBag.Title = Model.Title;
+    ViewBag.Description = Model.Description;
+
+}
+
+<div class="side">
+
+    <div class="spacer spacerbig">
+        <div class="titlebox">
+
+            @*@Html.Partial("Sidebars/_SidebarModToolbox")*@
+
+            <h1 class="hover whoaversename">
+                <a href="@VoatPathHelper.BasePath(domainReference)" class="hover">@Model.Name</a>
+            </h1>
+
+          
+
+            @Html.Partial("Sidebars/Buttons/_SubscribeButtons", domainReference, new ViewDataDictionary() { { "UserData", userData } })
+
+           
+
+            <span class="subscribers">
+                <span id="subscriberCount" class="number">@(Formatting.PluralizeIt(Model.SubscriberCount, "subscriber"))</span>
+            </span>
+            
+
+            <div class="spacer">
+                <p>
+                    <a class="btn-whoaverse" href='@(VoatPathHelper.BasePath(domainReference) + "/about/details")'>Details</a>
+                </p>
+            </div>
+
+
+            <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-xxxx">
+                <input name="submission-id" value="xxxx" type="hidden">
+                <div class="usertext-body may-blank-within">
+                    <div class="md">
+                        <p>
+                            @Html.Raw(@Formatting.FormatMessage(@Model.Description))
+                        </p>
+                    </div>
+                </div>
+            </form>
+
+            <div class="bottom">
+                <p>
+                    @if (!String.IsNullOrEmpty(Model.UserName))
+                    {
+                        <span>created by <a href="/user/@Model.UserName" class="author may-blank">@Model.UserName</a></span>
+                        <span class="userattrs"></span>
+                    }
+                    <span class="age">a set for <time title="@Model.CreationDate" datetime="@Model.CreationDate">@Age.ToRelative(Model.CreationDate)</time></span>
+                </p>    
+                <p>This set is @(Model.IsPublic ? "public" : "private")</p>
+                <div class="clear"></div>
+            </div>
+            <div class="spacer">
+                <div class="sidecontentbox">
+                    @{
+                        Html.RenderAction("RenderAd", "Ad", new { subverse = Model.Name });
+                    }
+                </div>
+            </div>
+            @*<div class="spacer">
+                <div class="sidecontentbox ">
+                    <a class="helplink message-moderators-temporary-class" title="Message the Moderators" href="/messages/compose?recipient=v/@Model.Name">message the moderators</a>
+                    <div class="title">
+                        <h1 class="alert-h1">MODERATORS</h1>
+                    </div>
+                    <ul class="content">
+                        @{
+                            Html.RenderAction("SubverseModeratorsList", "Subverses", new { subverseName = Model.Name });
+                        }
+                    </ul>
+                </div>
+            </div>
+            @Html.Partial("~/Views/ModLog/_ModLogSidebarLinks.cshtml", Model.Name)*@
+        </div>
+    </div>
+</div>

@@ -1,6 +1,10 @@
-﻿#region LICENSE
+#region LICENSE
 
 /*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
 
     This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
@@ -12,8 +16,6 @@
     or implied. See the License for the specific language governing
     rights and limitations under the License.
 
-    All portions of the code written by Voat, Inc. are Copyright(c) Voat, Inc.
-
     All Rights Reserved.
 
 */
@@ -24,6 +26,7 @@ using System;
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Voat.RulesEngine
@@ -137,6 +140,8 @@ namespace Voat.RulesEngine
 
     public abstract class Rule<T> : Rule where T : IRequestContext
     {
+        private IDictionary<string, Type> _requiredContext = null;
+
         public Rule(string name, string number, RuleScope scope, int order = 100) : base(name, number, scope, order)
         {
         }
@@ -168,7 +173,11 @@ namespace Voat.RulesEngine
         {
             get
             {
-                return null;// new Dictionary<string, Type>() { { "SubmissionID", typeof(int) }, { "UserName", typeof(int) } };
+                if (_requiredContext == null)
+                {
+                    _requiredContext = new Dictionary<string, Type>();
+                }
+                return _requiredContext;
             }
         }
 
@@ -176,8 +185,8 @@ namespace Voat.RulesEngine
         [Conditional("DEBUG")]
         protected void DemandContext(T context)
         {
-            var requiredContext = RequiredContext;
-            if (requiredContext != null)
+            var requiredContext = _requiredContext;
+            if (requiredContext != null && requiredContext.Any())
             {
                 foreach (var key in requiredContext.Keys)
                 {

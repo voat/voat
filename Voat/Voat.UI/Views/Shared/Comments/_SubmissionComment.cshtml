@@ -1,15 +1,21 @@
-﻿@*
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
     This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
-    available online at http://www.gnu.org/licenses/gpl.txt;
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
     you may not use this file except in compliance with the License.
 
-    Software distributed under the License is distributed on an "AS IS" basis,
-    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-    the specific language governing rights and limitations under the License.
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
 
-    All portions of the code written by Voat are Copyright (c) 2014 Voat
     All Rights Reserved.
+
 *@
 
 @using Voat.Domain.Models
@@ -51,9 +57,11 @@
 
     @if (!Model.IsDeleted)
     {
-        @Html.Partial("_votingIconsComment", Model,
+        @Html.Partial("~/Views/Shared/VotingIcons/_VotingIconsComment.cshtml", Model,
             new ViewDataDictionary {
-                { "collapsedStyle", uncollapsedComment }
+                { "collapsedStyle", uncollapsedComment },
+                { "Submission", ViewBag.Submission },
+                { "VoteTypeAllowed", ViewBag.VoteTypeAllowed }
             })
     }
 
@@ -84,7 +92,7 @@
             {
                 <span>(last edited <time title="@Model.LastEditDate" datetime="@Model.LastEditDate">@Age.ToRelative(Model.LastEditDate.Value)</time>&#32;ago)</span>
             }
-            &nbsp;<a href="#" class="expand" style="@showIfParent" onclick="return toggleComment(@Model.ID)">(show children)</a>
+            &nbsp;<a href="#" class="expand" style="@showIfParent" onclick="return toggleComment(@Model.ID)">(show)</a>
         </div>
         <div class="noncollapsed" id="@Model.ID" style="@uncollapsedComment">
             <p class="tagline">
@@ -127,22 +135,22 @@
                         <span class="userattrs"></span>
                     }
 
-                    <span class="score dislikes">
-                        <span class="number">@Model.DownCount</span> points
-                    </span>
-                    <span class="score unvoted">
-                        <span class="number">@Model.Sum</span> points
-                    </span>
-                    <span class="score likes">
-                        <span class="number">@Model.UpCount</span> points
-                    </span>
-                    <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
+                    
                 }
                 else
                 {
                     <span class="userattrs">[deleted]</span>
                 }
-
+                <span class="score dislikes">
+                    <span class="number">@Model.DownCount</span> points
+                </span>
+                <span class="score unvoted">
+                    <span class="number">@Model.Sum</span> points
+                </span>
+                <span class="score likes">
+                    <span class="number">@Model.UpCount</span> points
+                </span>
+                <span class="commentvotesratio">(<span class="post_upvotes">+@Model.UpCount</span>|<span class="post_downvotes">-@Model.DownCount</span>)</span>
                 <time title="@Model.CreationDate" datetime="@Model.CreationDate">@Age.ToRelative(Model.CreationDate)</time>&#32;ago&nbsp;
                 @if (Model.LastEditDate.HasValue)
                 {
@@ -186,7 +194,7 @@
                         <div class="usertext-buttons">
                             <input value="Save" class="btn-whoaverse-paging" type="submit">
                             <input type="button" id="previewButton" value="Preview" class="btn-whoaverse-paging" onclick="showMessagePreview(this,$(this.parentElement.parentElement).find('#Content'),$(this.parentElement.parentElement).find('#submission-preview-area'))">
-                            <button class="btn-whoaverse-paging" onclick="removeeditform(@Model.ID)" type="button">Cancel</button>
+                            <button class="btn-whoaverse-paging" onclick="removeEditForm(@Model.ID)" type="button">Cancel</button>
                         </div>
                         <div class="panel panel-default" id="submission-preview-area" style="display: none">
                             <div class="panel-heading">
@@ -208,7 +216,8 @@
             @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", Model,
                new ViewDataDictionary()
                {
-                   { "ModeratorList", ViewBag.ModeratorList }
+                   { "ModeratorList", ViewBag.ModeratorList },
+                   { "Submission", ViewBag.Submission }
                })
         </div>
     </div>

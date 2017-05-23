@@ -1,6 +1,10 @@
-﻿#region LICENSE
+#region LICENSE
 
 /*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
 
     This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
@@ -11,8 +15,6 @@
     "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
     or implied. See the License for the specific language governing
     rights and limitations under the License.
-
-    All portions of the code written by Voat, Inc. are Copyright(c) Voat, Inc.
 
     All Rights Reserved.
 
@@ -77,13 +79,13 @@ namespace Voat.Tests.Utils
             var graph = OpenGraph.ParseUrl(testUri);
 
             List<string> acceptable = new List<string>() {
-                "http://ichef.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test
-                "http://ichef-1.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test part 2
-                "http://news.bbcimg.co.uk/media/images/80755000/jpg/_80755021_163765270.jpg" //Yuro test
+                "://ichef.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test
+                "://ichef-1.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test part 2
+                "://news.bbcimg.co.uk/media/images/80755000/jpg/_80755021_163765270.jpg" //Yuro test
             };
             var expected = graph.Image.ToString();
 
-            var passed = acceptable.Any(x => x.Equals(expected, StringComparison.OrdinalIgnoreCase));
+            var passed = acceptable.Any(x => expected.EndsWith(x, StringComparison.OrdinalIgnoreCase));
 
             Assert.IsTrue(passed, "OpenGraph was unable to find an acceptable image path");
         }
@@ -222,5 +224,58 @@ namespace Voat.Tests.Utils
             result = Formatting.StripWhiteSpace(testString);
             Assert.IsNull(result, "Null should return null");
         }
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("Formatting")]
+        public void TestZeroPluralizer()
+        {
+
+            string result = Formatting.PluralizeIt(0, "xxx");
+            Assert.AreEqual("0 xxxs", result);
+
+            result = Formatting.PluralizeIt(0.0, "xxx");
+            Assert.AreEqual("0 xxxs", result);
+
+            result = Formatting.PluralizeIt(0, "xxx", "none");
+            Assert.AreEqual("none", result);
+
+            result = Formatting.PluralizeIt(0.0, "xxx", "none");
+            Assert.AreEqual("none", result);
+
+        }
+
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("DomainReference")]
+        public void DomainReference_Tests()
+        {
+            var d = Domain.Models.DomainReference.Parse("sub", Domain.Models.DomainType.Subverse);
+            Assert.AreEqual("sub", d.Name);
+
+            d = Domain.Models.DomainReference.Parse("&oarstI", Domain.Models.DomainType.Subverse);
+            Assert.IsNull(d);
+
+            d = Domain.Models.DomainReference.Parse("UpperDown_", Domain.Models.DomainType.Subverse);
+            Assert.IsNull(d);
+
+            //Sets
+
+            d = Domain.Models.DomainReference.Parse("sub", Domain.Models.DomainType.Set);
+            Assert.AreEqual("sub", d.Name);
+            Assert.AreEqual(null, d.OwnerName);
+
+            d = Domain.Models.DomainReference.Parse("sub" + CONSTANTS.SET_SEPERATOR + "owner", Domain.Models.DomainType.Set);
+            Assert.AreEqual("sub", d.Name);
+            Assert.AreEqual("owner", d.OwnerName);
+
+            d = Domain.Models.DomainReference.Parse("sub" + CONSTANTS.SET_SEPERATOR + "owner_-1", Domain.Models.DomainType.Set);
+            Assert.AreEqual("sub", d.Name);
+            Assert.AreEqual("owner_-1", d.OwnerName);
+
+            d = Domain.Models.DomainReference.Parse("sub/owner_-1", Domain.Models.DomainType.Set);
+            Assert.IsNull(d);
+
+
+        }
+
+
     }
 }

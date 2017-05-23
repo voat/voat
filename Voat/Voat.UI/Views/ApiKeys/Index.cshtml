@@ -1,4 +1,24 @@
-﻿@model IEnumerable<Tuple<Voat.Data.Models.ApiClient, Voat.Data.Models.ApiThrottlePolicy>>
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@model IEnumerable<Tuple<Voat.Data.Models.ApiClient, Voat.Data.Models.ApiThrottlePolicy, Voat.Domain.Models.ApiPermissionSet >>
 
 @{
     ViewBag.Title = "Voat Api Keys";
@@ -27,6 +47,7 @@
 
 <div id="container" class="md">
     <h1>Your Api Keys</h1>
+    <p>If you need different permissions or throttle policies please contact voat by email at hello@voat.co.</p>
     @if (Settings.ApiKeyCreationEnabled)
     {
         <p>
@@ -49,34 +70,45 @@
                 <th width="65%">
                     Keys
                 </th>
-                <th></th>
             </tr>
 
             @foreach (var tuple in Model)
             {
                 var item = tuple.Item1;
                 var policy = tuple.Item2;
+                var perms = tuple.Item3;
                 <tr>
                     <td>
 
                         <h3>@Html.DisplayFor(modelItem => item.AppName)</h3>
-                        @if (item.IsActive)
-                        {
-                            <span style="color:green;">Active</span>
-                        }
-                        else {
-                            <span style="color:red;">Inactive</span>
-                        }
-
+                        
+                       
                         <p>
                             @Html.DisplayFor(modelItem => item.AppDescription)
-                        <p />
+                        </p>
 
                         @if (!String.IsNullOrEmpty(item.AppAboutUrl))
                         {
                             <p class="breakword"><a href="@item.AppAboutUrl" target="_blank">@item.AppAboutUrl</a></p>
                         }
+
+                        @* Basically, we don't want a user to delete if a key has been turned off by an admin. *@
+                        @if (item.IsActive)
+                        {
+                            @Html.ActionLink("Edit", "Edit", new { id = item.PublicKey }, new { @class = "btn-whoaverse" })
+                        }
+
                         <p>
+                            Status - 
+                            @if (item.IsActive)
+                            {
+                                <span style="">Active</span>
+                            }
+                            else
+                            {
+                                <span style="color:red;">Inactive</span>
+                            }
+                            <br/>
                             Created - @Html.DisplayFor(modelItem => item.CreationDate)<br/>
                             Last Used -
                             @if (item.LastAccessDate.HasValue)
@@ -112,6 +144,22 @@
 
                             </div>
                         }
+                        @if (perms != null)
+                        {
+                            <div class="breakword indent">
+                                <strong>Permission Policy</strong>
+                                <h3>@perms.Name</h3>
+                                @{
+                                    <span>Unrestricted Login: </span><i>@perms.AllowUnrestrictedLogin</i><br />
+                                    <span>Owner Login: </span><i>@perms.AllowLogin</i><br />
+                                    <span>Allow Stream: </span><i>@perms.AllowStream</i><br />
+                                    <span>Require HMAC: </span><i>@perms.RequireHmacOnLogin</i><br />
+                                }
+
+                            </div>
+                        }
+                       
+
                     </td>
                     <td>
                         <div>
@@ -130,18 +178,19 @@
                                     @Html.DisplayFor(modelItem => item.RedirectUrl)<br />
                                 </p>
                             }
+
+                            @* Basically, we don't want a user to delete if a key has been turned off by an admin. *@
+                            @if (item.IsActive)
+                            {
+                                using (Html.BeginForm("Delete", "ApiKeys", new { id = item.ID }, FormMethod.Post))
+                                {
+                                    <input type="submit" value="Delete" class="btn-whoaverse" />
+                                }
+                            }
+
                         </div>
                     </td>
-                    <td>
-                        @* Basically, we don't want a user to delete if a key has been turned off by an admin. *@
-                        @if (item.IsActive)
-                        {
-                            using (Html.BeginForm("Delete", "ApiKeys", new { id = item.ID }, FormMethod.Post))
-                            {
-                                <input type="submit" value="Delete" class="form-control" />
-                            }
-                        }
-                    </td>
+                   
                 </tr>
             }
 

@@ -13,6 +13,12 @@ namespace Voat.Data.Models
             this.Configuration.ProxyCreationEnabled = false;
         }
 
+        //public voatEntities(bool readWrite)
+        //    : this(readWrite ? "voatEntities" : "voatEntitiesReadOnly")
+        //{
+        //    /*no-op*/
+        //}
+
         public voatEntities(string connectionName)
             : base(String.Format("name={0}", connectionName))
         {

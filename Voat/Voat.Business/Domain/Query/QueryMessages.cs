@@ -1,5 +1,30 @@
-﻿using System;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Domain.Models;
@@ -13,7 +38,7 @@ namespace Voat.Domain.Query
         protected MessageState _state;
         protected bool _markAsRead;
         protected MessageTypeFlag _type;
-        protected SearchOptions _options = SearchOptions.Default;
+        protected SearchOptions _options = new SearchOptions(100);
         //private int _pageNumber = 0;
         //private int _pageCount = 25;
 
@@ -79,12 +104,24 @@ namespace Voat.Domain.Query
             : base(type, state, markAsRead)
         {
         }
-
+        public QueryMessages(MessageTypeFlag type, MessageState state)
+           : base(type, state, (type == MessageTypeFlag.CommentMention || type == MessageTypeFlag.CommentReply || type == MessageTypeFlag.SubmissionMention || type == MessageTypeFlag.SubmissionReply))
+        {
+        }
         public override async Task<IEnumerable<Message>> ExecuteAsync()
         {
             using (var repo = new Repository())
             {
-                return await repo.GetMessages(_ownerName, _ownerType, _type, _state, _markAsRead, _options);
+                var result = await repo.GetMessages(_ownerName, _ownerType, _type, _state, _markAsRead, _options);
+
+                //Hydrate user data
+                var submissions = result.Where(x => x.Submission != null).Select(x => x.Submission);
+                DomainMaps.HydrateUserData(submissions);
+
+                var comments = result.Where(x => x.Comment != null).Select(x => x.Comment);
+                DomainMaps.HydrateUserData(comments);
+
+                return result;
             }
         }
     }

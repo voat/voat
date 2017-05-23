@@ -1,9 +1,36 @@
-﻿using System;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System;
 using System.Configuration;
 using Voat.Configuration;
+using Voat.Domain.Models;
 
 namespace Voat.Utilities
 {
+    //TODO: This class needs to be rewritten, this is all patched together over time and it's nasty imo - like warm beer. 
+    
     /// <summary>
     /// This utility can resolve image paths for Voat. The API benifits from qualified urls and the MVC UI benifits from partials which this utility supports
     /// </summary>
@@ -12,8 +39,8 @@ namespace Voat.Utilities
         private static string SiteRoot(bool provideProtocol, bool supportsContentDelivery, string forceDomain = null)
         {
             //Defaults
-            string domain = "voat.co";
-            string protocol = "https";
+            string domain = Settings.SiteDomain;
+            string protocol = Settings.ForceHTTPS ? "https" : "http";
 
             if (supportsContentDelivery && Settings.UseContentDeliveryNetwork)
             {
@@ -44,15 +71,6 @@ namespace Voat.Utilities
             {
                 return thumbnailFile;
             }
-
-            //@if(Settings.UseContentDeliveryNetwork)
-            //{
-            //    < img src = "https://cdn.voat.co/thumbs/@Model.Thumbnail" alt = "@Model.LinkDescription" />
-            //}
-            //else
-            //{
-            //    < img src = "~/Thumbs/@Model.Thumbnail" alt = "@Model.LinkDescription" />
-            //}
 
             return String.Format("{0}/thumbs/{1}", (fullyQualified ? SiteRoot(provideProtocol, true) : "~"), thumbnailFile);
         }
@@ -105,6 +123,34 @@ namespace Voat.Utilities
             //return $"/v/{subverse}/comments/{submissionID.ToString()}{commentPath}";
             //short
             return $"/v/{subverse}/{submissionID.ToString()}{commentPath}";
+        }
+        public static string CommentsPagePath(string subverse, int submissionID, CommentSortAlgorithm sort, object queryString = null)
+        {
+            //var sortPath = $"/{sort.Value.ToString().ToLower()}" : "";
+
+            //long
+            //return $"/v/{subverse}/comments/{submissionID.ToString()}{commentPath}";
+            //short
+            return $"/v/{subverse}/{submissionID.ToString()}/{sort.ToString().ToLower()}";
+        }
+
+        public static string BasePath(DomainReference domainReference)
+        {
+            string basePath = "";
+            switch (domainReference.Type)
+            {
+                case DomainType.Set:
+                    basePath = $"/s/{domainReference.Name}" + (!String.IsNullOrEmpty(domainReference.OwnerName) ? CONSTANTS.SET_SEPERATOR + $"{domainReference.OwnerName}" : "");
+                    break;
+                case DomainType.Subverse:
+                    basePath = $"/v/{domainReference.Name}";
+                    break;
+                case DomainType.User:
+                    basePath = $"/user/{domainReference.Name}";
+                    break;
+            }
+            return basePath;
+
         }
     }
 }

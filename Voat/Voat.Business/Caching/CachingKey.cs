@@ -1,4 +1,28 @@
-﻿using System;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System;
 using Voat.Data;
 using Voat.Domain.Models;
 
@@ -54,9 +78,9 @@ namespace Voat.Caching
             return String.Format("Comment:Tree:{0}", submissionID);
         }
 
-        public static string UserSet(string setName)
+        public static string Set(string setName, string setOwner)
         {
-            return String.Format("User:Set:{0}", setName);
+            return String.Format("Set:{0}:{1}", (String.IsNullOrEmpty(setOwner) ? "_" : setOwner), setName);
         }
 
         public static string UserPreferences(string userName)
@@ -68,8 +92,6 @@ namespace Voat.Caching
         {
             return String.Format("User:Subscriptions:{0}", userName);
         }
-
-      
 
         public static string UserInformation(string userName)
         {
@@ -97,7 +119,7 @@ namespace Voat.Caching
         }
         public static string UserOverview(string userName)
         {
-            return String.Format("User:Profile:Overview:{0}", userName);
+            return String.Format("User:Overview:{0}", userName);
         }
         public static string UserSavedItems(ContentType type, string userName)
         {
@@ -161,6 +183,12 @@ namespace Voat.Caching
         {
             return String.Format("System:AdCache");
         }
+        public static string Filters()
+        {
+            return String.Format("System:FilterCache");
+        }
+
+        
 
         public static string RssFeed(string subverse)
         {
@@ -185,7 +213,10 @@ namespace Voat.Caching
         {
             return $"Domain:{domain}:{sort}:page{page}";
         }
-        
+        public static string DomainObjectSearch(DomainType domainType, SearchOptions options)
+        {
+            return $"DomainSearch:{domainType.ToString()}:page{options.Page}:{options.Sort.ToString()}:{options.Phrase}";
+        }
         public static string ModLogBannedUsers(string subverse, SearchOptions options)
         {
             return $"Subverse:ModLog:{subverse}:Banned{options.ToString(":{0}", "page=0")}";
@@ -199,5 +230,20 @@ namespace Voat.Caching
             return $"Subverse:ModLog:{subverse}:Comments{options.ToString(":{0}", "page=0")}";
         }
 
+        public class Statistics
+        {
+            public static string UserVotesGiven(SearchOptions options)
+            {
+                return $"Statistics:UserVotesGiven";
+            }
+            public static string UserVotesReceived(SearchOptions options)
+            {
+                return $"Statistics:UserVotesReceived";
+            }
+            public static string HighestVotedContent(SearchOptions options)
+            {
+                return $"Statistics:HighestVotedContent";
+            }
+        }
     }
 }

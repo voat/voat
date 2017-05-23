@@ -1,4 +1,28 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Globalization;
 using Voat.Utilities;
@@ -8,7 +32,7 @@ namespace Voat.Tests.Utils
     [TestClass]
     public class DateTimeExtensionTests : BaseUnitTest
     {
-        private JulianCalendar julian = new JulianCalendar();
+        private Calendar calendar = CultureInfo.InvariantCulture.Calendar;
 
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Utility.DateTime")]
@@ -51,7 +75,7 @@ namespace Voat.Tests.Utils
 
             Assert.AreEqual(current.Year, processed.Year);
             Assert.AreEqual(current.Month, processed.Month);
-            Assert.AreEqual(julian.GetDaysInMonth(current.Year, current.Month), processed.Day);
+            Assert.AreEqual(calendar.GetDaysInMonth(current.Year, current.Month), processed.Day);
             Assert.AreEqual(23, processed.Hour);
             Assert.AreEqual(59, processed.Minute);
             Assert.AreEqual(59, processed.Second);
@@ -65,8 +89,8 @@ namespace Voat.Tests.Utils
             var current = DateTime.UtcNow;
             var processed = current.ToEndOfWeek();
 
-            Assert.AreEqual(DayOfWeek.Saturday, julian.GetDayOfWeek(processed));
-            Assert.IsTrue(julian.GetDayOfYear(current) <= julian.GetDayOfYear(processed));
+            Assert.AreEqual(DayOfWeek.Saturday, calendar.GetDayOfWeek(processed));
+            Assert.IsTrue(calendar.GetDayOfYear(current) <= calendar.GetDayOfYear(processed));
         }
 
         [TestMethod]
@@ -106,7 +130,7 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(3, end.Month, desc);
             //day
             Assert.AreEqual(1, start.Day, desc);
-            Assert.AreEqual(julian.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
+            Assert.AreEqual(calendar.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
 
             Assert.AreEqual(0, start.Minute, desc);
             Assert.AreEqual(0, start.Second, desc);
@@ -128,7 +152,7 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(6, end.Month, desc);
             //day
             Assert.AreEqual(1, start.Day, desc);
-            Assert.AreEqual(julian.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
+            Assert.AreEqual(calendar.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
 
             Assert.AreEqual(0, start.Minute, desc);
             Assert.AreEqual(0, start.Second, desc);
@@ -150,7 +174,7 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(9, end.Month, desc);
             //day
             Assert.AreEqual(1, start.Day, desc);
-            Assert.AreEqual(julian.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
+            Assert.AreEqual(calendar.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
 
             Assert.AreEqual(0, start.Minute, desc);
             Assert.AreEqual(0, start.Second, desc);
@@ -172,7 +196,7 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(12, end.Month, desc);
             //day
             Assert.AreEqual(1, start.Day, desc);
-            Assert.AreEqual(julian.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
+            Assert.AreEqual(calendar.GetDaysInMonth(current.Year, end.Month), end.Day, desc);
 
             Assert.AreEqual(0, start.Minute, desc);
             Assert.AreEqual(0, start.Second, desc);
@@ -275,8 +299,8 @@ namespace Voat.Tests.Utils
             var current = DateTime.UtcNow;
             var processed = current.ToStartOfWeek();
 
-            Assert.AreEqual(DayOfWeek.Sunday, julian.GetDayOfWeek(processed));
-            Assert.IsTrue(julian.GetDayOfYear(current) >= julian.GetDayOfYear(processed));
+            Assert.AreEqual(DayOfWeek.Sunday, calendar.GetDayOfWeek(processed));
+            Assert.IsTrue(calendar.GetDayOfYear(current) >= calendar.GetDayOfYear(processed));
         }
 
         [TestMethod]
@@ -288,8 +312,8 @@ namespace Voat.Tests.Utils
             var start = processed.Item1;
             var end = processed.Item2;
 
-            Assert.AreEqual(DayOfWeek.Sunday, julian.GetDayOfWeek(start));
-            Assert.AreEqual(DayOfWeek.Saturday, julian.GetDayOfWeek(end));
+            Assert.AreEqual(DayOfWeek.Sunday, calendar.GetDayOfWeek(start));
+            Assert.AreEqual(DayOfWeek.Saturday, calendar.GetDayOfWeek(end));
 
             Assert.AreEqual(13, start.Day);
             Assert.AreEqual(19, end.Day);
@@ -322,22 +346,22 @@ namespace Voat.Tests.Utils
         public void DateTimeExt_RelavtiveRanges()
         {
             var current = DateTime.UtcNow;
-            var range = current.RelativeRange(Domain.Models.SortSpan.Hour);
+            var range = current.ToRelativeRange(Domain.Models.SortSpan.Hour);
             Assert.AreEqual(TimeSpan.FromHours(1), range.Item2 - range.Item1);
 
-            range = current.RelativeRange(Domain.Models.SortSpan.Day);
+            range = current.ToRelativeRange(Domain.Models.SortSpan.Day);
             Assert.AreEqual(TimeSpan.FromHours(24), range.Item2 - range.Item1);
 
-            range = current.RelativeRange(Domain.Models.SortSpan.Week);
+            range = current.ToRelativeRange(Domain.Models.SortSpan.Week);
             Assert.AreEqual(TimeSpan.FromDays(7), range.Item2 - range.Item1);
 
-            range = current.RelativeRange(Domain.Models.SortSpan.Month);
+            range = current.ToRelativeRange(Domain.Models.SortSpan.Month);
             Assert.AreEqual(TimeSpan.FromDays(30), range.Item2 - range.Item1);
 
-            range = current.RelativeRange(Domain.Models.SortSpan.Quarter);
+            range = current.ToRelativeRange(Domain.Models.SortSpan.Quarter);
             Assert.AreEqual(TimeSpan.FromDays(90), range.Item2 - range.Item1);
 
-            range = current.RelativeRange(Domain.Models.SortSpan.Year);
+            range = current.ToRelativeRange(Domain.Models.SortSpan.Year);
             Assert.AreEqual(TimeSpan.FromDays(365), range.Item2 - range.Item1);
 
         }

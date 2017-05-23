@@ -1,0 +1,87 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@model Voat.Domain.Models.DomainReferenceDetails
+
+@{
+    string subverseAge = Age.ToRelative(Model.CreationDate);
+    var userData = Voat.Domain.UserData.GetContextUserData();
+
+    var userName = Settings.SiteName;
+    if (!String.IsNullOrEmpty(Model.OwnerName))
+    {
+        userName = Model.OwnerName;
+    }
+    var basePath = VoatPathHelper.BasePath(Model);
+    var objectDescription = Model.Type.ToString();
+
+    Voat.Domain.Models.SetPermission perms = new Voat.Domain.Models.SetPermission(); //everything should be off
+    bool showSetDetails = Model.Type == Voat.Domain.Models.DomainType.Set;
+    if (Model.Type == Voat.Domain.Models.DomainType.Set && Model.Object != null)
+    {
+        perms = Voat.Domain.Models.SetPermission.GetPermissions(Model.Object, User.Identity);
+        showSetDetails = ViewBag.ShowDetailButton == null ? false : ViewBag.ShowDetailButton;
+        objectDescription = (Model.Object.IsPublic ? "public" : "private") + " " + Model.Type.ToString();
+    }
+    var displayName = Model.Name + ": " + basePath;
+    if (!String.IsNullOrEmpty(Model.Title))
+    {
+        displayName = Model.Name + ": " + Model.Title ;
+    }
+
+}
+
+<div class="midcol">
+    @Html.Partial("Sidebars/Buttons/_SubscribeButtons", Model, new ViewDataDictionary() { { "UserData", userData } })
+</div>
+
+<div class="entry" style="padding-bottom:15px;">
+    <p class="titlerow">
+        <a class="h4" href="@basePath">@displayName</a>
+    </p>
+    <div class="well well-lg subversedescriptionbox">
+        <div class="usertext-body may-blank-within">
+            <div class="md">
+                @if (!String.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <p class="subversedescriptionboxcontent">@Model.Description</p>
+                }
+                else
+                {
+                    <p class="subversedescriptionboxcontent">No description provided</p>
+                }
+            </div>
+        </div>
+    </div>
+    <p class="">
+        <span>@Formatting.PluralizeIt(Model.SubscriberCount, "subscriber"), a @objectDescription created @Age.ToRelative(Model.CreationDate) ago</span>
+        @if (Model.Type == Voat.Domain.Models.DomainType.Set && !String.IsNullOrEmpty(Model.OwnerName))
+        {
+            <span> by <a href="/user/@Model.OwnerName">@Model.OwnerName</a></span>
+        }
+    </p>
+    @if (showSetDetails)
+    {
+        <div>
+            <a class="btn-whoaverse" href='@(basePath + "/about/details")'>Details</a>
+        </div>
+    }
+
+</div>

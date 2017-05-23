@@ -1,4 +1,28 @@
-﻿using System;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System;
 
 namespace Voat.Utilities
 {
@@ -9,22 +33,35 @@ namespace Voat.Utilities
         public const string CONNECTION_LIVE = "voatEntities";
         public const string CONNECTION_READONLY = "voatEntitiesReadOnly";
         public const int DEFAULT_GUEST_PAGE_CACHE_MINUTES = 3;
-        public const string USER_NAME_REGEX = @"casualwhoaversereader|anothercuriousredditor|[a-zA-Z0-9]{1}[a-zA-Z0-9-_]{1,19}|ted\.shield|o\.o|bill\.lee"; //Backwords compat for these three users with dots in their name. See, we love them.
+        public const string USER_NAME_REGEX = @"ted\.shield|o\.o|bill\.lee|casualwhoaversereader|anothercuriousredditor|[a-zA-Z0-9]{1}[a-zA-Z0-9-_]{1,19}"; //Backwords compat for these three users with dots in their name. See, we love them.
         public const string SUBVERSE_REGEX = "[a-zA-Z0-9]{1,20}";
         public const string SUBMISSION_ID_REGEX = @"\d*";
         public const string COMMENT_ID_REGEX = @"\d*";
+        public const string NSFW_FLAG = "nsfw|nsfl";
 
-        public const string SET_REGEX = SUBVERSE_REGEX + @"\-" + USER_NAME_REGEX;
-        public const string HTTP_LINK_REGEX = @"([hH][tT]|[fF])[tT][pP]([sS]?)\:\/\/(?<fullDomain>([wW]{3}\.)?(?<domain>[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*))(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_=!@:\(\)]*)(?<![\.\?\-_\,]|\s{1,})";
+        //public const string SET_REGEX = SUBVERSE_REGEX + @"\-" + USER_NAME_REGEX;
+        public static readonly string SET_REGEX = $"(?<name>{SUBVERSE_REGEX})(\\{SET_SEPERATOR}(?<ownerName>{USER_NAME_REGEX}))?";
 
-        public const string SUBVERSE_LINK_REGEX_SHORT = @"(/?v/)(?'sub'[a-zA-Z0-9]+)";
-        public const string SUBVERSE_LINK_REGEX_FULL = @"((/?v/)(?'sub'[a-zA-Z0-9]+((/(new|top(\?time=(day|week|month|year|all))?|comments/\d+(/\d+(?:/\d+(?:\d+)?)?)?)))?)(?'anchor'#(?:\d+|submissionTop))?)";
+        public const string SET_SEPERATOR = "@";
+
+        //matches url after protocol
+        public const string PROTOCOL_LESS_LINK_REGEX = @"(\/\/|%2[fF]%2[fF])(?<fullDomain>([wW]{3}\.)?(?<domain>[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*))(:(?<port>[0-9]*))?(\/?)(?<query>[a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_=!@:\(\)]*)(?<![\.\?\,]|\s{1,})";
+
+        public const string HTTP_LINK_REGEX = @"(?<protocol>([hH][tT]|[fF])[tT][pP]([sS]?))(\:|%3[aA])" + PROTOCOL_LESS_LINK_REGEX;
+
+        //used for apps OAuth redirects - no named capture or backtracking in js regex
+        public const string URI_LINK_REGEX_UI = @"([a-zA-Z0-9_-]+)(\:|%3[aA])(\/\/|%2[fF]%2[fF])([wW]{3}\.)?[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)[a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_=!@:\(\)]*";
+
+        public const string SET_LINK_REGEX_SHORT = @"/?(?<prefix>s)/(?<name>[a-zA-Z0-9]+)(/(?<owner>[a-zA-Z0-9]+))?";
+
+        public const string SUBVERSE_LINK_REGEX_SHORT = @"/?(?<prefix>v)/(?<name>[a-zA-Z0-9]+)";
+        public const string SUBVERSE_LINK_REGEX_FULL = "((" + SUBVERSE_LINK_REGEX_SHORT + @"(?<fullPath>(((/(new|top(\?time=(day|week|month|year|all))?|(comments/)?\d+(/\d+(?:/\d+(?:\d+)?)?)?)))?)(?<anchor>#(?:\d+|submissionTop))?)))";
 
         public static string USER_HOT_LINK_REGEX
         {
             get
             {
-                return String.Format(@"((?'notify'-)?(?'prefix'@|/u/)(?'user'{0}))", CONSTANTS.USER_NAME_REGEX);
+                return String.Format(@"((?<notify>-)?(?<prefix>@|/u/)(?'user'{0}))", CONSTANTS.USER_NAME_REGEX);
             }
         }
     }

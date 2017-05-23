@@ -1,0 +1,309 @@
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+//This file is an auto-generated file based on old style sheets, thus it is a work in progress as we convert the generic
+//scripted colors to named colors.
+
+
+//NAMED COLORS
+$body-background-color: #F4F4F4;
+$body-color: #404040;
+
+$dashboard-background-color: #FFF;
+$dashboard-item-background-color: #F4F4F4;
+$dashboard-item-color: #818181;
+$dashboard-item-color_hover: #56A8DA;
+
+$resign-moderator-background-color: #F4F4F4; 
+$resign-moderator-color: #9b9b9b;
+
+$highlight-border-color: #4B96C4;
+$highlight-background-color: #E7F7FF;
+
+$retro-highlight-link-color: #4B96C4;
+$retro-link-color: #404040; //#727272 < Standard default title color
+
+//SCRIPTED COLORS -- DO NOT REMOVE -- IF YOU MODIFY NAME - CREATE NAMED VAR ABOVE AND CHANGE REFS IN BASE.SCSS
+$background-1: #E7F7FF;
+$background-2: #C7EDFF;
+$background-3: #D8F3FF;
+$background-4: #F8F8F8;
+$background-5: #F4F4F4;
+$background-6: #E77777;
+$background-7: #FFE3E3;
+$background-8: #F56363;
+$background-9: #EF4444;
+$background-10: #E9E9E9;
+$background-11: #F5E163;
+$background-12: #E1CD4B;
+$background-13: #FFEA9A;
+$background-14: #F6F6F6;
+$background-15: #FFF;
+$background-16: #4AABE7;
+$background-17: #54B5F1;
+$background-18: #4AABE7;
+$background-19: #FFF;
+$background-20: #4AABE7;
+$background-21: #DDD;
+$background-22: #FFF;
+$background-23: #FCFCFC;
+$background-24: #F8F8F8;
+$background-25: #F8F8F8;
+$background-26: #FDFDFD;
+$background-27: #F7F7F7;
+$background-28: #F8F8F8;
+$background-29: #F2F2F2;
+$background-30: #BBE5FF;
+$background-31: #A6DDFF;
+$background-32: #A7DEFF;
+$background-33: #91D5FF;
+$background-34: #BBE5FF;
+$background-35: #A6DDFF;
+$background-36: #A7DEFF;
+$background-37: #91D5FF;
+$background-38: #4AABE7;
+$background-39: #54B5F1;
+$background-40: #4AABE7;
+$background-41: #66C2FB;
+$background-42: #5AB3EA;
+$background-43: #FFF;
+$background-44: #F5F5F5;
+$background-45: #EEE;
+$background-46: #E8E8E8;
+$background-47: #EEE;
+$background-48: #4AABE7;
+$background-49: #4AABE7;
+$background-50: #54B5F1;
+$background-51: #FAFAFA;
+$background-52: #FDFDFD;
+$background-53: #FCFCFC;
+$background-54: #EEE;
+$background-55: #82CFFF;
+$background-56: #B6A6FF;
+$background-57: #F8F8F8;
+$background-58: #A26DF9;
+$background-59: #5BACDE;
+$background-60: #F8F8F8;
+$background-61: #FFF;
+$background-62: #F6F6F6;
+$background-63: #F8F8F8;
+$background-64: #F2F2F2;
+$background-65: #F6F6F6;
+$background-66: #4AABE7;
+$background-67: #69C0F5;
+$background-68: #4AABE7;
+$background-69: #FBFBFB;
+$background-70: #F0F0F0;
+$background-71: #C4B7FF;
+$background-72: #BDAEFF;
+$background-color-1: #4AABE7;
+$background-color-2: #FDFDFD;
+$background-color-3: #F2F2F2;
+$background-color-4: #FF9DA4;
+$background-color-5: #FF4136;
+$background-color-6: #FFF;
+$background-color-7: #000000;
+$background-color-8: #F5F5F5;
+$background-color-9: #F8F8F8;
+$background-color-10: #FFF;
+$background-color-11: #FFF;
+$border-1: #4B96C4;
+$border-2: #4795C5;
+$border-3: #B44F4F;
+$border-4: #DCDCDC;
+$border-5: #DEC05F;
+$border-6: #DCDCDC;
+$border-7: #4C9FD2;
+$border-8: #DCDCDC;
+$border-9: #D0D0D0;
+$border-10: #FFF;
+$border-11: #888;
+$border-12: #E8E8E8;
+$border-13: #E2E2E2;
+$border-14: #DEDEDE;
+$border-15: #D3D3D3;
+$border-16: #D1D1D1;
+$border-17: #70B7E3;
+$border-18: #4C9FD2;
+$border-19: #CBCBCB;
+$border-20: #DDD;
+$border-21: #CCC;
+$border-22: #D0D0D0;
+$border-23: #70B7E3;
+$border-24: #D1D1D1;
+$border-25: #E4E4E4;
+$border-26: #999;
+$border-27: #FFF;
+$border-28: #E6E6E6;
+$border-29: #8358CB;
+$border-30: #5BACDE;
+$border-31: #D1D1D1;
+$border-32: #DFDFDF;
+$border-33: #DCDCDC;
+$border-34: #BABABA;
+$border-35: #D1D1D1;
+$border-36: #DEDEDE;
+$border-37: #C9C9C9;
+$border-bottom-1: #E9E9E9;
+$border-bottom-2: #DDD;
+$border-bottom-3: #999;
+$border-bottom-4: #BABABA;
+$border-bottom-5: #DCDCDC;
+$border-bottom-6: #404040;
+$border-bottom-7: #EDEDED;
+$border-bottom-8: #ADADAD;
+$border-bottom-9: #4C9FD2;
+$border-color-1: #C7EDFF;
+$border-color-2: #CCC;
+$border-color-3: #E14242;
+$border-color-4: #E1CB42;
+$border-color-5: #5BACDE;
+$border-color-6: #F6F6F6;
+$border-color-7: #5BACDE;
+$border-color-8: #B6B6B6;
+$border-color-9: #DDD;
+$border-color-10: #D3D3D3;
+$border-color-11: #FF1103;
+$border-color-12: #CCC;
+$border-color-13: #70B7E3;
+$border-color-14: #61AFE0;
+$border-color-15: #61AFE0;
+$border-color-16: #5BACDE;
+$border-color-17: #999;
+$border-color-18: #E8E8E8;
+$border-color-19: #DBDBDB;
+$border-color-20: #D6D6D6;
+$border-color-21: #DCDCDC;
+$border-color-22: #FFF;
+$border-color-23: #EDEDED;
+$border-color-24: #4AABE7;
+$border-color-25: #4AABE7;
+$border-color-26: #DCDCDC;
+$border-color-27: #CCC;
+$border-color-28: #4C9FD2;
+$border-color-29: #9B85FF;
+$border-top-1: #CCC;
+$border-top-2: #404040;
+$border-top-3: #DCDCDC;
+$border-top-4: #D5D5D5;
+$border-top-5: #FFF;
+$border-top-6: #D6D6D6;
+$color-1: #FFF;
+$color-2: #404040;
+$color-3: #4AABE7;
+$color-4: #66C2FB;
+$color-5: #333;
+$color-6: #E77777;
+$color-7: #FFF;
+$color-8: #5A5A5A;
+$color-9: #5AB3EA;
+$color-10: #746801;
+$color-11: #5A5A5A;
+$color-12: #505050;
+$color-13: #727272;
+$color-14: #4AABE7;
+$color-15: #666;
+$color-16: #505050;
+$color-17: #4AABE7;
+$color-18: #4AABE7;
+$color-19: #777;
+$color-20: #FF4136;
+$color-21: #555;
+$color-22: #DCDCDC;
+$color-23: #444;
+$color-24: #555;
+$color-25: #4AABE7;
+$color-26: #8870FF;
+$color-27: #666;
+$color-28: #707070;
+$color-29: #555;
+$color-30: #4399CD;
+$color-31: #3FBF4C;
+$color-32: #E12D39;
+$color-33: #5D5D5D;
+$color-34: #4AABE7;
+$color-35: #777;
+$color-36: #4C4C4C;
+$color-37: #444;
+$color-38: #2B4758;
+$color-39: #2B4758;
+$color-40: #333;
+$color-41: #484848;
+$color-42: #9178D0;
+$color-43: #333;
+$color-44: #818181;
+$color-45: #444;
+$color-46: #5A5A5A;
+$color-47: #4AABE7;
+$color-48: #555;
+$color-49: #2B4758;
+$color-50: #BBB;
+$color-51: #666;
+$color-52: #444;
+$color-53: #333;
+$color-54: #CCC;
+$color-55: #BBB;
+$color-56: #3A3A3A;
+$color-57: #4A4A4A;
+$color-58: #9178D0;
+$color-59: #666;
+$color-60: #888;
+$color-61: #6D6D6D;
+$color-62: #6A6A6A;
+$color-63: #AAA;
+$color-64: #555;
+$color-65: #888;
+$color-66: #6D6D6D;
+$color-67: #444;
+$color-68: #444;
+$color-69: #6F64BA;
+$color-70: #5B46BE;
+$color-71: #5A5A5A;
+
+$spritesheet: '/Graphics/Light-SpriteSheet.png';
+
+@import 'Base';
+
+.btn-voat,
+.btn-whoaverse-paging {
+    font-weight: bold;
+}
+
+    .btn-voat.disabled, .btn-voat[disabled],
+    .btn-whoaverse-paging.disabled, .btn-whoaverse-paging[disabled], fieldset[disabled] .btn {
+        color: $color-1;
+    }
+
+.btn-whoaverse-medium {
+    font-weight: bold;
+}
+
+    .md a:hover {
+        text-decoration: underline;
+    }
+
+    .comment .flat-list.buttons li a {
+        color: $color-62;
+    }
+
+            .link .flat-list.buttons li a {
+                border-radius: 3px;
+                border-width: 1px 1px 2px;
+            }

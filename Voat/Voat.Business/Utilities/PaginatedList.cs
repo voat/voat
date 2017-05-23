@@ -1,24 +1,35 @@
+#region LICENSE
+
 /*
-This source file is subject to version 3 of the GPL license,
-that is bundled with this package in the file LICENSE, and is
-available online at http://www.gnu.org/licenses/gpl.txt;
-you may not use this file except in compliance with the License.
+    
+    Copyright(c) Voat, Inc.
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+    This file is part of Voat.
 
-All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
-All Rights Reserved.
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
 */
+
+#endregion LICENSE
 
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 
 namespace Voat.Utilities
 {
-    public class PaginatedList<T> : List<T>
+    public class PaginatedList<T> : List<T>, IPaginatedList
     {
         public int PageIndex { get; private set; }
 
@@ -27,6 +38,25 @@ namespace Voat.Utilities
         public int TotalCount { get; private set; }
 
         public int TotalPages { get; private set; }
+
+        public string RouteName { get; set; }
+        public System.Web.Routing.RouteValueDictionary RouteData { get; set; } 
+
+        public bool HasPreviousPage
+        {
+            get
+            {
+                return (PageIndex > 0);
+            }
+        }
+
+        public bool HasNextPage
+        {
+            get
+            {
+                return (PageIndex + 1 < TotalPages);
+            }
+        }
 
         public PaginatedList(IQueryable<T> source, int pageIndex, int pageSize)
         {
@@ -38,9 +68,8 @@ namespace Voat.Utilities
             AddRange(source.Skip(PageIndex * PageSize).Take(PageSize));
         }
 
-        //IAmAGate: Perf mods for caching
         /// <summary>
-        /// 
+        /// Fake paging below bro
         /// </summary>
         /// <param name="source"></param>
         /// <param name="pageIndex"></param>
@@ -73,20 +102,6 @@ namespace Voat.Utilities
             AddRange(source);
         }
         
-        public bool HasPreviousPage
-        {
-            get
-            {
-                return (PageIndex > 0);
-            }
-        }
-
-        public bool HasNextPage
-        {
-            get
-            {
-                return (PageIndex + 1 < TotalPages);
-            }
-        }
+      
     }
 }

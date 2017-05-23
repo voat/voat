@@ -1,0 +1,40 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@model IEnumerable<ChatMessage>
+
+@if (Model != null && Model.Any())
+{
+    foreach (var message in Model)
+    {
+        if (message != null && message.User != null)
+        {
+            @* IF YOU CHANGE THIS HTML YOU MUST CHANGE THE proxy.client.appendChatMessage function TO MATCH!!! *@
+            <div class="chat-message">
+                <div class="chat-message-head">
+                    <p><b><a target="_blank" href="/user/@message.User.DisplayName">@message.User.DisplayName</a></b> <span class="chat-message-timestamp">(@message.CreationDate.ToChatTimeDisplay())</span>:</p>
+                </div>
+                <div class="chat-message-body">
+                    @Html.Raw(message.Message)
+                </div>
+            </div>
+        }
+    }
+}

@@ -17,9 +17,10 @@ namespace Voat.Data.Models
         public int ID { get; set; }
         public int SubmissionID { get; set; }
         public string UserName { get; set; }
-        public Nullable<int> VoteStatus { get; set; }
-        public Nullable<System.DateTime> CreationDate { get; set; }
+        public int VoteStatus { get; set; }
+        public System.DateTime CreationDate { get; set; }
         public string IPAddress { get; set; }
+        public double VoteValue { get; set; }
     
         public virtual Submission Submission { get; set; }
     }

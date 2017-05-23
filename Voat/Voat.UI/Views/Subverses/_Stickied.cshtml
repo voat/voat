@@ -1,21 +1,29 @@
-﻿@*This source file is subject to version 3 of the GPL license,
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
-    available online at http://www.gnu.org/licenses/gpl.txt;
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
     you may not use this file except in compliance with the License.
 
-    Software distributed under the License is distributed on an "AS IS" basis,
-    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-    the specific language governing rights and limitations under the License.
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
 
-    All portions of the code written by Voat are Copyright (c) 2014 Voat
-    All Rights Reserved.*@
+    All Rights Reserved.
 
-@model Voat.Data.Models.Submission
+*@
 
-<div class="submission id-@Model.ID even link stickied" data-fullname="@Model.ID" data-ups="@Model.UpCount" data-downs="@Model.DownCount">
+@model Voat.Domain.Models.Submission
+
+<div class="submission id-@Model.ID link stickied" data-fullname="@Model.ID" data-ups="@Model.UpCount" data-downs="@Model.DownCount">
     <p class="parent"></p>
 
-    @Html.Partial("_VotingIconsSubmission", Model)    
+    @Html.Partial("~/Views/Shared/VotingIcons/_VotingIconsSubmission.cshtml", Model)    
     @Html.Partial("~/Views/Shared/Submissions/_StickiedSubmission.cshtml", Model)
 
     <div class="child"></div>

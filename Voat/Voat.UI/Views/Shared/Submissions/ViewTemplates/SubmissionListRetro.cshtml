@@ -1,0 +1,191 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@using Voat.Domain.Models
+
+@model Voat.Models.ViewModels.SubmissionListViewModel
+
+@{
+    ViewBag.Title = Model.Title;
+    ViewBag.Description = Model.Description;
+    int counter = 0;
+    int columnCount = 3;
+    var submissionsPerColumn = Model.Submissions.Count() / columnCount;
+
+    var title = Model.Context.BasePath().TrimStart('/');
+    if (title.IsEqual("v"))
+    {
+        title = "front";
+    }
+
+    var turnOffLink = String.Format("{0}{1}{2}", Request.Url.AbsoluteUri, Request.Url.AbsoluteUri.Contains("?") ? "&" : "?", "view=list");
+}
+
+@section PageHeader {
+    @if (Model.IsActualSubverse)
+    {
+        @Html.Partial("_SubverseStylesheetLink", Model.Context.Name, new ViewDataDictionary())
+    }
+}
+
+<div id="container" class="retro">
+
+        @*Top Sort Span Buttons*@
+        @if (Model.Context != null && Model.Sort == Voat.Domain.Models.SortAlgorithm.Top)
+        {
+            <div>
+                <ul class="tabmenu submenu">
+                    @{
+                        var spans = new SortSpan[] { SortSpan.Day, SortSpan.Week, SortSpan.Month, SortSpan.Quarter, SortSpan.Year, SortSpan.All };
+                        foreach (var span in spans)
+                        {
+                            <li class='@(Model.Span.HasValue && Model.Span.Value == span ? "selected" : "disabled")'>@Html.RouteLink(span.ToString(), Model.Submissions.RouteName, new { sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), span = span.ToString().ToLower() })</li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+   
+
+    <div class="content retro" role="main">      
+        <div class="sitetable retro">
+            <div class="head">
+                <div class="centered">
+                    @{
+                        Voat.Domain.Models.Submission topSubmission = null;
+
+                        //try to get sticky if subverse
+                        if (Model.IsActualSubverse)
+                        {
+                            topSubmission = StickyHelper.GetSticky(Model.Context.Name);
+                        }
+                        else if (Model.Context == null || (Model.Context != null && Model.Context.Type != DomainType.Set))
+                        {
+                            topSubmission = StickyHelper.GetSticky("announcements");
+                        }
+
+                        if (topSubmission == null)
+                        {
+                            topSubmission = Model.Submissions.FirstOrDefault(x => !String.IsNullOrEmpty(x.ThumbnailUrl));
+                            if (topSubmission == null)
+                            {
+                                topSubmission = Model.Submissions.FirstOrDefault();
+                            }
+                        }
+                        if (topSubmission != null)
+                        {
+                            Model.Submissions.Remove(topSubmission);
+                            @Html.Partial("~/Views/Shared/Submissions/_SubmissionRetro.cshtml", topSubmission, new ViewDataDictionary() { { "ShowThumbnail", true }, { "CssClass", new string[] { "top-submission", "centered" } } })
+                        }
+                        <h2 class="context">@title</h2>
+                        <p class="bottommenu">* Retro layout inspired by DrudgeReport.com <a href='@turnOffLink'>(Turn this off. Eww!)</a></p>
+                    }
+                </div>
+            </div>
+            <div class="body">
+
+                @if (Model.Submissions != null && Model.Submissions.Any())
+                {
+
+                    for (int column = 1; column <= columnCount; column++)
+                    {
+                        <div class="column @String.Format("column{0}", column)">
+                            <!-- links -->
+                            @for (int i = 0; i < submissionsPerColumn; i++)
+                            {
+                                var submission = (counter >= Model.Submissions.Count ? null : Model.Submissions[counter]);
+                                if (submission != null)
+                                {
+                                    
+                                    @Html.Partial("~/Views/Shared/Submissions/_SubmissionRetro.cshtml", submission, new ViewDataDictionary() { { "ShowThumbnailIfHighlighted", false } })
+                                    counter++;
+                                    i = (column == columnCount && (i + 1) == submissionsPerColumn ? i - 1 : i); //keep looping to pick up remaining posts.
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+                        </div>
+                    }
+                }
+                
+            </div>
+            <div class="foot">
+            </div>
+        </div>
+
+        @{
+            Model.Submissions.RouteData = Request.RequestContext.RouteData.Values;
+            if (Model.Sort != null)
+            {
+                Model.Submissions.RouteData["sort"] = Model.Sort.ToString().ToLower();
+            }
+            if (Model.Span != null)
+            {
+                Model.Submissions.RouteData["span"] = Model.Span.ToString().ToLower();
+            }
+            if (!String.IsNullOrEmpty(Request.QueryString["frontpage"]))
+            {
+                Model.Submissions.RouteData["frontpage"] = Request.QueryString["frontpage"];
+            }
+        }
+        @Html.DisplayFor(model => Model.Submissions, "IPaginatedList")
+
+
+       
+    </div>
+
+    @if (Model.IsActualSubverse)
+    {
+        @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = Model.Context.Name })
+    }
+    else if (Model.Context != null && Model.Context.Type == Voat.Domain.Models.DomainType.Set)
+    {
+        @Html.Action("Sidebar", "Set", new { name = Model.Context.FullName })
+    }
+    else
+    {
+        @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
+    }
+
+</div>
+
+<style type="text/css">
+
+    .voting-icons {
+        margin-bottom: 10px;
+    }
+    
+    .voting-icons > div {
+        float: left;
+    }
+    .voting-icons > .score {
+        padding: 0px 10px 0px 10px;
+    }
+    .retro .thumb {
+        padding-top:5px;
+        padding-bottom:5px;
+    }
+    .arrow-downvote, .arrow-downvoted, .arrow-upvote, .arrow-upvoted {
+        margin:0;
+    }
+
+</style>

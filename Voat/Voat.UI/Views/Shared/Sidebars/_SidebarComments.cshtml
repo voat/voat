@@ -1,14 +1,22 @@
-﻿@*This source file is subject to version 3 of the GPL license,
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
-    available online at http://www.gnu.org/licenses/gpl.txt;
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
     you may not use this file except in compliance with the License.
 
-    Software distributed under the License is distributed on an "AS IS" basis,
-    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-    the specific language governing rights and limitations under the License.
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
 
-    All portions of the code written by Voat are Copyright (c) 2014 Voat
-    All Rights Reserved.*@
+    All Rights Reserved.
+
+*@
 
 @model Voat.Data.Models.Subverse
 
@@ -16,7 +24,7 @@
 
 @{
     string subverseAge = Age.ToRelative(Model.CreationDate);
-    string subverseOwner = "youcanclaimthissub";
+    string subverseOwner = "YouCanClaimThisSub";
 
     if (String.IsNullOrEmpty(Model.CreatedBy))
     {
@@ -35,7 +43,7 @@
 
 <div class="side">
     @Html.Partial("_SearchBox", new SearchViewModel(), new ViewDataDictionary { { "SelectedSubverse", Model.Name } })
-    @Html.Partial("~/Views/Shared/Sidebars/_SideBarSubmissionInfo.cshtml")
+    @Html.Partial("~/Views/Shared/Sidebars/_SideBarSubmissionInfo.cshtml", (Voat.Domain.Models.Submission)ViewBag.Submission)
     <div class="spacer">
         <a href="/v/@Model.Name/submit?linkpost=true" class="btn-whoaverse btn-block contribute submit-link">
             Share a link
@@ -46,7 +54,7 @@
             Discuss
         </a>
     </div>
-    <div class="spacer">
+    <div class="spacer spacerbig">
         <div class="titlebox">
             
             @Html.Partial("Sidebars/_SidebarModToolbox")
@@ -55,29 +63,9 @@
                 <a href="/v/@Model.Name" class="hover">@Model.Name</a>
                 <a href="/rss/@Model.Name"><img src="~/Graphics/feed-icon-14x14.png" alt="RSS feed for this subverse" /></a>
             </h1>
-            @if (userData != null)
-            {
-                if (userData.IsUserSubverseSubscriber(Model.Name))
-                {
-                    <button type="button" onclick="return unsubscribe(this, '@Model.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unsubscribe</button>
-                }
-                else
-                {
-                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-sub" onclick="return subscribe(this, '@Model.Name')">subscribe</button>
-                }
-                if (userData.IsUserBlockingSubverse(Model.Name))
-                {
-                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-unblocksubverse" onclick="return toggleBlockSubverse(this, '@Model.Name')">unblock</button>
-                }
-                else
-                {
-                    <button type="button" class="btn-whoaverse-paging btn-xs btn-default btn-blocksubverse" onclick="return toggleBlockSubverse(this, '@Model.Name')">block</button>
-                }
-            }
-            else
-            {
-                <button type="button" class="btn-whoaverse-paging btn-xs btn-default" onclick="mustLogin();">subscribe</button>
-            }
+           
+            @Html.Partial("Sidebars/Buttons/_SubscribeButtons", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Subverse, Model.Name), new ViewDataDictionary() { { "UserData", userData } })
+
             <span class="subscribers">
                 <span id="subscriberCount" class="number">@Model.SubscriberCount</span>
                 <span class="word">subscribers</span>
@@ -105,11 +93,29 @@
             <div class="bottom">
                 created by <a href="/user/@subverseOwner" class="author may-blank">@subverseOwner</a>
                 <span class="userattrs"></span>
-                <span class="age">a community for <time title="@Model.CreationDate" datetime="@Model.CreationDate">@subverseAge</time></span>
-                @if (Model.IsAnonymized)
+                <span class="age">@(Model.ExcludeSitewideBans ? "*" : "") a community for <time title="@Model.CreationDate" datetime="@Model.CreationDate">@subverseAge</time></span>
+                @if (Model.IsAnonymized.HasValue)
                 {
-                    <p>This subverse is anonymized: all usernames are hidden.</p>
+                    if (Model.IsAnonymized.Value)
+                    {
+                        <p>This subverse is anonymized: all usernames are hidden.</p>
+                    }
                 }
+                else
+                {
+                    <p>This subverse allows anonymized submissions.</p>
+                }
+                <div class="sub-attributes">
+                    <p>
+                        NSFW: @Model.IsAdult.ToYesNo()
+                        <br />
+                        Authorized: @Model.IsAuthorizedOnly.ToYesNo()
+                        <br />
+                        Anon: @Model.IsAnonymized.ToYesNo("Both")
+                        <br />
+                        Private: @Model.IsPrivate.ToYesNo()
+                    </p>
+                </div>
             </div>
             <div class="clear">
             </div>

@@ -1,0 +1,41 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@{
+    var url = Request.Url.AbsolutePath.ToLower().TrimEnd('/');
+    Voat.Domain.Models.DomainType? domainType = ViewBag.DomainType;
+
+    if (!domainType.HasValue)
+    {
+        domainType = Voat.Domain.Models.DomainType.Subverse;
+    }
+
+    var type = domainType.Value.ToString().ToLower();
+}
+
+<ul class="tabmenu">
+    <li class='@(domainType == Voat.Domain.Models.DomainType.Subverse ? "selected" : "disabled")'><a href="@Url.RouteUrl("Discover", new { domainType = "subverse", sort = Request.RequestContext.RouteData.Values["sort"] })">Subverses</a></li>
+    <li class='@(domainType == Voat.Domain.Models.DomainType.Set ? "selected" : "disabled")'><a href="@Url.RouteUrl("Discover", new { domainType = "set", sort = Request.RequestContext.RouteData.Values["sort"] })">Sets</a></li>
+</ul>
+
+@*<ul class="tabmenu">
+    <li class="disabled"><button href="@Url.RouteUrl("Discover", new { domainType = "subverse", sort = Request.RequestContext.RouteData.Values["sort"] })" class='@(domainType == Voat.Domain.Models.DomainType.Subverse ? "btn-voat" : "btn-voat btn-voat-off")'>Subverses</button></li>
+    <li class="disabled"><button href="@Url.RouteUrl("Discover", new { domainType = "set", sort = Request.RequestContext.RouteData.Values["sort"] })" class='@(domainType == Voat.Domain.Models.DomainType.Set ? "btn-voat" : "btn-voat btn-voat-off")'>Sets</button></li>
+</ul>*@

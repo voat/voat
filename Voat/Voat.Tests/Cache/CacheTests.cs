@@ -1,6 +1,10 @@
-﻿#region LICENSE
+#region LICENSE
 
 /*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
 
     This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
@@ -11,8 +15,6 @@
     "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
     or implied. See the License for the specific language governing
     rights and limitations under the License.
-
-    All portions of the code written by Voat, Inc. are Copyright(c) Voat, Inc.
 
     All Rights Reserved.
 
@@ -618,7 +620,7 @@ namespace Voat.Tests.Cache
     {
         public MemoryCacheTests() : base(new MemoryCacheHandler())
         {
-            Debug.Print("Starting MemoryCacheTests");
+            Debug.WriteLine("Starting MemoryCacheTests");
         }
     }
 
@@ -628,7 +630,7 @@ namespace Voat.Tests.Cache
         //Stop following me fuzzy
         public RedisCacheTests() : base(null)
         {
-            Debug.Print("Starting RedisCacheTests");
+            Debug.WriteLine("Starting RedisCacheTests");
 
             //Use connection info from CacheHandlerSection
             var handler = CacheHandlerSection.Instance.Handlers.First(x => x.Type.ToLower().Contains("redis")).Construct();
@@ -641,7 +643,7 @@ namespace Voat.Tests.Cache
     {
         public NullCacheTests() : base(new NullCacheHandler())
         {
-            Debug.Print("Starting NullCacheTests");
+            Debug.WriteLine("Starting NullCacheTests");
         }
     }
 }

@@ -1,4 +1,28 @@
-﻿using System;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System;
 
 namespace Voat.Domain.Models
 {
@@ -9,14 +33,14 @@ namespace Voat.Domain.Models
         Down = -1
     }
 
-    public enum CommentSort
-    {
-        New,
-        Top
-    }
+    //public enum CommentSort
+    //{
+    //    New,
+    //    Top
+    //}
 
     [Flags]
-
+    [DatabaseMappedValue]
     //Don't change these values
     public enum ContentType
     {
@@ -26,6 +50,7 @@ namespace Voat.Domain.Models
 
     public enum SubscriptionAction
     {
+        Toggle = 0,
         Subscribe = 1,
         Unsubscribe = 2
     }
@@ -61,12 +86,14 @@ namespace Voat.Domain.Models
         All = Unread | Read,
     }
     //DO NOT CHANGE THESE VALUES - ALIGNS WITH DB
+    [DatabaseMappedValue]
     public enum IdentityType
     {
         User = 1,
         Subverse = 2
     }
     //DO NOT CHANGE THESE VALUES - ALIGNS WITH DB
+    [DatabaseMappedValue]
     public enum MessageType
     {
         Private = 1,
@@ -142,12 +169,13 @@ namespace Voat.Domain.Models
         AJAX = 3
     }
 
+    [DatabaseMappedValue()]
     public enum CommentSortAlgorithm
     {
         /// <summary>
         /// Orders results by creation date
         /// </summary>
-        New, //order by date
+        New = 1, //order by date
 
         /// <summary>
         /// Orders results by creation date ascending
@@ -167,7 +195,13 @@ namespace Voat.Domain.Models
         /// <summary>
         /// Orders results by intensity of up/down votes
         /// </summary>
-        Intensity
+        Intensity,
+
+        ///// <summary>
+        ///// Orders results in a traditional forum style by date (uses new sort currently)
+        ///// </summary>
+        //Forum = New
+
     }
 
     /// <summary>
@@ -199,6 +233,11 @@ namespace Voat.Domain.Models
         /// Orders results by relative ranking (per subverse)
         /// </summary>
         RelativeRank, //order by rel rank
+
+        /// <summary>
+        /// Orders results by relative ranking (per subverse)
+        /// </summary>
+        Relative = RelativeRank, //order by rel rank
 
         /// <summary>
         /// Orders results by last comment date
@@ -288,12 +327,25 @@ namespace Voat.Domain.Models
         Year
     }
     //DO NOT CHANGE THESE VALUES - ALIGNS WITH DB
+    [DatabaseMappedValue]
     public enum SubmissionType
     {
         Text = 1,
-        Link = 2
+        Link = 2,
+        //New types
+        LinkText = 3, //Both a URL and a Body are provided
+        Status = 4 //Only message content is provided - an update/selfsub post
     }
 
+    //DO NOT CHANGE THESE VALUES - ALIGNS WITH DB
+    [DatabaseMappedValue]
+    public enum SubverseType
+    {
+        Subverse = 1,
+        User = 2,
+        Sponsored = 3
+    }
+    
     //It is CRITICAL these roles are numbered correctly as the value each one contains is used to rank
     //the role in permission based tasks. Where this is critical is role assignment. An Admin can not
     //change the permissions of a GlobalAdmin as a GlobalAdmin outranks them (Higer Value). A DelegateAdmin can not
@@ -305,6 +357,7 @@ namespace Voat.Domain.Models
         DelegateAdmin = 10000
     }
 
+    [DatabaseMappedValue]
     public enum ModeratorLevel
     {
         Owner = 1,
@@ -329,6 +382,43 @@ namespace Voat.Domain.Models
         InviteMods,
         RemoveMods,
         AssignStickies,
-        DistinguishContent
+        DistinguishContent,
+        AccessReports,
+        MarkReports
+    }
+
+    public enum ReviewStatus
+    {
+        Any,
+        Reviewed,
+        Unreviewed
+    }
+
+    [DatabaseMappedValue()]
+    public enum SetType
+    {
+        Front = 1,
+        Blocked = 2,
+        Following = 3,
+        Normal = 4,
+    }
+
+    [Flags]
+    public enum RobotIndexing
+    {
+        NoIndex = 1,
+        NoFollow = 2,
+        None = NoIndex | NoFollow,
+        Follow = 4,
+        Index = 8,
+        All = Follow | Index
+    }
+    [Flags]
+    public enum VoteTypeAllowed
+    {
+        None = 1,
+        Up = 2,
+        Down = 4,
+        Any = Up | Down,
     }
 }

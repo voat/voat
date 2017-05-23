@@ -1,4 +1,28 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +30,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Voat.Data.Models;
 using Voat.Domain.Command;
-
+using Voat.Domain.Models;
 namespace Voat.Tests.CommandTests
 {
     [TestClass]
@@ -28,8 +52,9 @@ namespace Voat.Tests.CommandTests
             var cmd = new SendMessageCommand(new Domain.Models.SendMessage() { Recipient = "Do you like chocolate", Message = id, Subject = "All That Matters" }, false, false);
             var response = await cmd.Execute();
 
-            Assert.IsTrue(response.Success, "Expecting success");
+            Assert.AreEqual(Status.Invalid, response.Status, response.Message);
             Assert.AreEqual(null, response.Response, "Expecting null return payload");
+
             using (var db = new voatEntities())
             {
                 var count = (from x in db.Messages
@@ -116,7 +141,7 @@ namespace Voat.Tests.CommandTests
             var response = await cmd.Execute();
 
             Assert.IsNotNull(response, "Response is null");
-            Assert.IsTrue(response.Success, response.Status.ToString());
+            Assert.IsTrue(response.Success, response.Message);
 
             using (var db = new voatEntities())
             {
@@ -174,7 +199,7 @@ namespace Voat.Tests.CommandTests
             var firstMessage = response.Response;
 
             Assert.IsNotNull(response, "Response is null");
-            Assert.IsTrue(response.Success, response.Status.ToString());
+            Assert.IsTrue(response.Success, response.Message);
 
             //Ensure first msg is in db
             using (var db = new voatEntities())
@@ -237,12 +262,12 @@ namespace Voat.Tests.CommandTests
                 var mod = "anon";
                 if (!record.Any(x => x.UserName == mod))
                 {
-                    db.SubverseModerators.Add(new SubverseModerator() { UserName = mod, Subverse = subverse, CreatedBy = "UnitTesting", CreationDate = DateTime.UtcNow, Power = 1 });
+                    db.SubverseModerators.Add(new Voat.Data.Models.SubverseModerator() { UserName = mod, Subverse = subverse, CreatedBy = "UnitTesting", CreationDate = DateTime.UtcNow, Power = 1 });
                 }
                 mod = "unit";
                 if (!record.Any(x => x.UserName == mod))
                 {
-                    db.SubverseModerators.Add(new SubverseModerator() { UserName = mod, Subverse = subverse, CreatedBy = "UnitTesting", CreationDate = DateTime.UtcNow, Power = 1 });
+                    db.SubverseModerators.Add(new Voat.Data.Models.SubverseModerator() { UserName = mod, Subverse = subverse, CreatedBy = "UnitTesting", CreationDate = DateTime.UtcNow, Power = 1 });
                 }
                 db.SaveChanges();
             }
@@ -260,7 +285,7 @@ namespace Voat.Tests.CommandTests
             var response = await cmd.Execute();
 
             Assert.IsNotNull(response, "Response is null");
-            Assert.IsTrue(response.Success, response.Status.ToString());
+            Assert.IsTrue(response.Success, response.Message);
 
             using (var db = new voatEntities())
             {
@@ -319,6 +344,46 @@ namespace Voat.Tests.CommandTests
         }
 
         [TestMethod]
+        [TestCategory("Command"), TestCategory("Messaging"), TestCategory("Command.Messaging"), TestCategory("Process")]
+        public async Task SendMessageReply_ToCommentRelatedMention()
+        {
+            //create a comment and ping another user aka comment mention
+            TestHelper.SetPrincipal("TestUser14");
+            var c = new CreateCommentCommand(1, null, "This is my comment @TestUser15, do you like it?");
+            var r = await c.Execute();
+            Assert.IsTrue(r.Success, r.Message);
+
+            //read ping message and reply to it using message gateway
+            TestHelper.SetPrincipal("TestUser15");
+            var mq = new Domain.Query.QueryMessages(MessageTypeFlag.CommentMention, MessageState.Unread);
+            var messages = await mq.ExecuteAsync();
+            Assert.IsTrue(messages.Any(), "Didn't return any messages");
+
+            var m = messages.FirstOrDefault(x => x.CommentID == r.Response.ID);
+            Assert.IsNotNull(m, "Cant find message");
+
+            var content = "I reply to you from messages";
+            var cmd = new SendMessageReplyCommand(m.ID, content);
+            var response = await cmd.Execute();
+
+            Assert.IsNotNull(response, "Response is null");
+            Assert.IsTrue(response.Success, response.Status.ToString());
+
+            //ensure comment exists in thread as message gateway should submit a comment based on message type and info
+            using (var db = new voatEntities())
+            {
+                var record = (from x in db.Comments
+                              where
+                                x.SubmissionID == m.SubmissionID.Value
+                                && x.ParentID == m.CommentID.Value
+                                && x.Content == content
+                                && x.UserName == "TestUser15"
+                              select x).FirstOrDefault();
+                Assert.IsNotNull(record, "Can not find message in database");
+            }
+        }
+
+        [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Messaging")]
         [TestCategory("Command.Messaging")]
@@ -334,7 +399,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Messaging")]
         public async Task SendCommentNotificationMessage_AnonSub()
         {
-            await TestCommentNotification("anon", "TestUser3", "TestUser4");
+            await TestCommentNotification("anon", "TestUser03", "TestUser04");
         }
 
         [TestMethod]
@@ -343,7 +408,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Messaging")]
         public async Task SendUserMentionNotificationMessage_Anon()
         {
-            await TestUserMentionNotification("anon", "UnitTestUser8", "UnitTestUser9", "UnitTestUser11");
+            await TestUserMentionNotification("anon", "UnitTestUser08", "UnitTestUser09", "UnitTestUser11");
         }
 
         [TestMethod]
@@ -352,7 +417,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Messaging")]
         public async Task SendUserMentionNotificationMessage()
         {
-            await TestUserMentionNotification("unit", "UnitTestUser5", "UnitTestUser10", "UnitTestUser7");
+            await TestUserMentionNotification("unit", "UnitTestUser05", "UnitTestUser10", "UnitTestUser07");
         }
         
         #region HelperMethods
@@ -410,7 +475,7 @@ namespace Voat.Tests.CommandTests
 
             //Post submission as TestUser1
             TestHelper.SetPrincipal(user1);
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = sub, Title = "I love you more than butter in my coffee", Content = $"Did you hear that @{user2}?" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = sub, Title = "I love you more than butter in my coffee", Content = $"Did you hear that @{user2} or /u/{user2}?" });
             var response = await cmd.Execute();
             Assert.IsTrue(response.Success, "Expected post submission to return true");
             var submission = response.Response;

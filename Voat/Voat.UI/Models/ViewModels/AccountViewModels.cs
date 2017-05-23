@@ -1,19 +1,30 @@
-﻿/*
-This source file is subject to version 3 of the GPL license, 
-that is bundled with this package in the file LICENSE, and is 
-available online at http://www.gnu.org/licenses/gpl.txt; 
-you may not use this file except in compliance with the License. 
+#region LICENSE
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+/*
+    
+    Copyright(c) Voat, Inc.
 
-All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
-All Rights Reserved.
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
 */
+
+#endregion LICENSE
 
 using System.ComponentModel.DataAnnotations;
 using System.Web;
+using Voat.Domain.Models;
 
 namespace Voat.Models.ViewModels
 {
@@ -45,43 +56,7 @@ namespace Voat.Models.ViewModels
         public string ConfirmPassword { get; set; }
     }
 
-    public class DeleteAccountViewModel
-    {
-        [Required(ErrorMessage = "Please type your UserName")]        
-        [Display(Name = "UserName")]
-        public string UserName { get; set; }
 
-        [Required(ErrorMessage = "Confirm your UserName here")]
-        [Display(Name = "Confirm UserName")]
-        [Compare("UserName", ErrorMessage = "UserName does not match")]
-        public string ConfirmUserName { get; set; }
-
-        [Required(ErrorMessage = "Current password is required")]
-        [DataType(DataType.Password)]
-        [Display(Name = "Current password")]
-        public string CurrentPassword { get; set; }
-    }
-
-    public class UserPreferencesViewModel
-    {
-        [Display(Name = "Disable custom subverse styles")]
-        public bool Disable_custom_css { get; set; }
-        
-        [Display(Name = "Enable night mode (use dark theme)")]
-        public bool Night_mode { get; set; }
-
-        [Display(Name = "Open links in new tab")]
-        public bool OpenLinksInNewTab { get; set; }
-
-        [Display(Name = "Display NSFW content")]
-        public bool Enable_adult_content { get; set; }
-
-        [Display(Name = "Publicly display my subscriptions on my profile")]
-        public bool Public_subscriptions { get; set; }
-
-        [Display(Name = "Replace top menu bar with my subscriptions")]
-        public bool Topmenu_from_subscriptions { get; set; }
-    }
 
     public class UserAboutViewModel
     {

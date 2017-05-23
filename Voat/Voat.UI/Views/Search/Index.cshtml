@@ -1,16 +1,24 @@
-@*This source file is subject to version 3 of the GPL license,
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
     that is bundled with this package in the file LICENSE, and is
-    available online at http://www.gnu.org/licenses/gpl.txt;
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
     you may not use this file except in compliance with the License.
 
-    Software distributed under the License is distributed on an "AS IS" basis,
-    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-    the specific language governing rights and limitations under the License.
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
 
-    All portions of the code written by Voat are Copyright (c) 2014 Voat
-    All Rights Reserved.*@
+    All Rights Reserved.
 
-@model PaginatedList<Voat.Data.Models.Submission>
+*@
+
+@model PaginatedList<Voat.Domain.Models.Submission>
 
 @using System.Globalization
 @using Voat.Models.ViewModels
@@ -60,34 +68,11 @@
             @{
                 int currentPageNumber = Model.PageIndex;
                 int counterCont = (currentPageNumber) * 25;
-
-                int counter = counterCont + 1;
-                string submissionClass = "";
             }
 
             @foreach (var submission in Model)
             {
-                //type 2 = link
-                //type 1 = message
-                if (submission.Type == 1)
-                {
-                    submissionClass = "self";
-                }
-                else
-                {
-                    submissionClass = "";
-                }
-
-                <div class="submission id-@submission.ID even link @submissionClass" data-fullname="@submission.ID" data-ups="@submission.UpCount" data-downs="@submission.DownCount">
-                    <p class="parent"></p>
-
-                    @Html.Partial("_VotingIconsSubmission", submission)
-                    @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
-
-                    <div class="child"></div>
-                    <div class="clearleft">@*IE6fix*@</div>
-                </div>
-                counter++;
+                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission)
             }
         </div>
 
@@ -96,14 +81,14 @@
                 @if (Model.HasPreviousPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("‹ prev", "Search", new { page = (Model.PageIndex - 1), q = searchTerm, sub = selectedSubverse, l = limitSearchToSubverse }, new { rel = "prev" })
+                        @Html.RouteLink("ï¿½ prev", "Search", new { page = (Model.PageIndex - 1), q = searchTerm, sub = selectedSubverse, l = limitSearchToSubverse }, new { rel = "prev" })
                     </li>
                 }
 
                 @if (Model.HasNextPage)
                 {
                     <li class="btn-whoaverse-paging">
-                        @Html.RouteLink("next ›", "Search", new { page = (Model.PageIndex + 1), q = searchTerm, sub = selectedSubverse, l = limitSearchToSubverse }, new { rel = "next" })
+                        @Html.RouteLink("next ï¿½", "Search", new { page = (Model.PageIndex + 1), q = searchTerm, sub = selectedSubverse, l = limitSearchToSubverse }, new { rel = "next" })
                     </li>
                 }
             </ul>

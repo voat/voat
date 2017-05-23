@@ -1,4 +1,28 @@
-﻿using System;
+#region LICENSE
+
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+
+#endregion LICENSE
+
+using System;
 using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
@@ -55,6 +79,40 @@ namespace Voat.Domain.Command
                     return new Tuple<CommandResponse, ApiClient>(CommandResponse.Successful(), apiClient);
                 }
             });
+        }
+
+        protected override void UpdateCache(ApiClient result)
+        {
+            if (result != null)
+            {
+                CacheHandler.Instance.Remove(CachingKey.ApiClient(result.PublicKey));
+            }
+        }
+    }
+    public class EditApiKeyCommand : CacheCommand<CommandResponse, ApiClient>
+    {
+        private string _apiKey = null;
+        private string _description = null;
+        private string _name = null;
+        private string _url = null;
+        private string _redirectUrl = null;
+
+        public EditApiKeyCommand(string apiKeyID, string name, string description, string url, string redirectUrl)
+        {
+            this._apiKey = apiKeyID;
+            this._name = name;
+            this._description = description;
+            this._url = url;
+            this._redirectUrl = redirectUrl;
+        }
+
+        protected override async Task<Tuple<CommandResponse, ApiClient>> CacheExecute()
+        {
+            using (var repo = new Repository())
+            {
+                var apiClient = await repo.EditApiKey(_apiKey, _name, _description, _url, _redirectUrl);
+                return new Tuple<CommandResponse, ApiClient>(CommandResponse.Successful(), apiClient);
+            }
         }
 
         protected override void UpdateCache(ApiClient result)

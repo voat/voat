@@ -1,0 +1,65 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@model Voat.Domain.Models.SubverseSubscriptionDetail
+
+@{
+
+    string subverseAge = Age.ToRelative(Model.CreationDate);
+    var userData = Voat.Domain.UserData.GetContextUserData();
+    System.Diagnostics.Debug.Assert(userData == null || userData.UserName == User.Identity.Name, "Context UserData and Identity UserName mismatch");
+
+    var actionName = ViewBag.ButtonName == null ? "remove" : ViewBag.ButtonName;
+    var unActionName = "un" + actionName;
+
+    var setViewModel = (Voat.Models.ViewModels.SetViewModel)ViewBag.SetViewModel;
+
+    System.Diagnostics.Debug.Assert(setViewModel != null, "setViewModel is required");
+
+}
+@if (setViewModel.Permissions.EditList)
+{
+    <div class="midcol">
+        <button type="button" onclick="return setSubverseListToggle($(this), '@setViewModel.Set.FullName', '@Model.Name', null, setSubverseListToggleCallBack)" class="btn-voat btn-voat-off">@actionName</button>
+    </div>
+}
+
+<div class="entry">
+    <p class="titlerow">
+        <a href="/v/@Model.Name" class="h4">@Model.Title: @Model.Name</a>
+    </p>
+    <div class="well well-lg subversedescriptionbox">
+        <div class="md">
+            @if (!String.IsNullOrWhiteSpace(Model.Description))
+            {
+                <p class="subversedescriptionboxcontent">@Model.Description</p>
+            }
+            else
+            {
+                <p class="subversedescriptionboxcontent">The owner of this subverse did not write a description yet.</p>
+            }
+        </div>
+    </div>
+    <p class="">
+        <span class="">
+            <span id="subscribercount">@Formatting.PluralizeIt(Model.SubscriberCount.Value, "subscriber"), a community for @Age.ToRelative(Model.CreationDate) added @Age.ToRelative(Model.SubscriptionDate) ago</span>
+        </span>
+    </p>
+</div>

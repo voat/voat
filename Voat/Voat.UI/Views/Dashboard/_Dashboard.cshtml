@@ -1,0 +1,132 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+
+
+@model Voat.Models.ViewModels.DashboardViewModel
+
+@{
+
+    IEnumerable<string> sets = Enumerable.Empty<string>();
+    IEnumerable<string> subs = Enumerable.Empty<string>();
+
+    if (Model.Subscriptions.ContainsKey(Voat.Domain.Models.DomainType.Set))
+    {
+        sets = Model.Subscriptions[Voat.Domain.Models.DomainType.Set];
+    }
+
+    if (Model.Subscriptions.ContainsKey(Voat.Domain.Models.DomainType.Subverse))
+    {
+        subs = Model.Subscriptions[Voat.Domain.Models.DomainType.Subverse];
+    }
+}
+<!-- This is the new container for dashboard menu -->
+<div id="dashboard-menu">
+    <!-- top bar is bar across top ;) -->
+    <div class="top-bar">
+        <nav>
+            <a href="#">subscriptions</a>
+            <span class="drop-arrow"></span>
+                <!-- !important - Do not match on sr-bar (class or id) - will be removed in future versions -->
+                <ul class="flat-list sr-bar hover" id="sr-bar">
+                    <!-- The passphrase to the secret club is: "I'm with thee Goat. No, not that one. That isn't a goat, that is a ram." -->
+                    <li><a title="Front" href="/">front</a></li>
+                    <li><a href="/v/all">all</a></li>
+                    <li><a href="/s/Default">default</a></li>
+                    <li><a href="/random">random</a></li>
+
+                    @if (Model.TopBar != null && Model.TopBar.Any())
+                    {
+                        foreach (var domainReference in Model.TopBar)
+                        {
+                            <li><a href="@VoatPathHelper.BasePath(domainReference)">@domainReference.FullName</a></li>
+                        }
+                    }
+                </ul>
+            
+        </nav>
+    </div>
+    <!-- This is the new drop down section -->
+    <div id="dashboard">
+        <div class="section head">
+            <!-- This section will likely include something at some time -->
+        </div>
+        <div class="section menu">
+            <h1>Menu</h1>
+            <nav>
+                <ul>
+                    <li><a href="/discover">Discover</a></li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li><a href="/u/@User.Identity.Name">Profile</a></li>
+                        <li><a href="/account/manage">Settings</a></li>
+                        <li><a href="/messages">Messages</a></li>
+                        <li><a href="/user/subscribed/subverse">Subverse Subscriptions</a></li>
+                        <li><a href="/user/subscribed/set">Set Subscriptions</a></li>
+                        <li><a href="/user/blocked/subverse">Blocked Subverses</a></li>
+                        <li><a href="/user/blocked/user">Blocked Users</a></li>
+                    }
+                    else
+                    {
+                        <li><a href="/account/login" onclick="mustLogin(); return false;">Login</a></li>
+                    }
+                </ul>
+            </nav>
+        </div>
+
+        @if (sets.Any())
+        {
+            <div class="section set">
+                <h1>Sets</h1>
+                <nav>
+                    <ul>
+                        @foreach (var set in sets)
+                        {
+                            <li><a href="/s/@set">@set</a></li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        }
+        @if (subs.Any())
+        {
+            <div class="section subverse">
+                <h1>Subverses</h1>
+                <nav>
+                    <ul>
+                        @foreach (var sub in subs)
+                        {
+                            <li><a href="/v/@sub">@sub</a></li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        }
+        <div class="section foot">
+            <!-- This section will likely include something at some time -->
+            @*<div class="centered">
+                <a title="@Settings.SiteName - @Settings.SiteSlogan" href="/">
+                    <img width="112" height="31" alt="@Settings.SiteName" src="@Settings.SiteLogo">
+                </a>
+            </div>*@
+        </div>
+    </div>
+   
+</div>

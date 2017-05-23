@@ -1,16 +1,26 @@
-﻿/*
-This source file is subject to version 3 of the GPL license,
-that is bundled with this package in the file LICENSE, and is
-available online at http://www.gnu.org/licenses/gpl.txt;
-you may not use this file except in compliance with the License.
+#region LICENSE
 
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
-the specific language governing rights and limitations under the License.
+/*
+    
+    Copyright(c) Voat, Inc.
 
-All portions of the code written by Voat are Copyright (c) 2015 Voat, Inc.
-All Rights Reserved.
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
 */
+
+#endregion LICENSE
 
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -21,7 +31,7 @@ using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Domain;
 using Voat.Domain.Query;
-using PagedList;
+
 using Voat.Models.ViewModels;
 using System.Net;
 using System.Linq;
@@ -43,23 +53,7 @@ namespace Voat.Controllers
             base.OnActionExecuting(filterContext);
         }
 
-        private PagedList.StaticPagedList<T> FakePaging<T>(IEnumerable<T> result, int page, int pageSize)
-        {
-            
-            int currentCount = result.Count();
-            int fakeTotal = currentCount;
-            if (currentCount < pageSize)
-            {
-                //no future pages
-                fakeTotal = Math.Max((page),0) * pageSize + currentCount;
-            }
-            else
-            {
-                fakeTotal = (page + 1) * pageSize + 1;
-            }
-            return new StaticPagedList<T>(result, page + 1, pageSize, fakeTotal);
-
-        }
+       
 
         public async Task<ActionResult> Index(int? page = null)
         {
@@ -97,34 +91,52 @@ namespace Voat.Controllers
         {
             return (page.HasValue && page.Value >= 0 ? page.Value : 0);
         }
+
+        private void SetMenuNavigationModel(string name, MenuType menuType, string subverse = null)
+        {
+            string suffix = "/messages";
+            ViewBag.NavigationViewModel = new NavigationViewModel()
+            {
+                Description = (String.IsNullOrEmpty(subverse) ? "Messages" : String.Format("v/{0} Smail", subverse)),
+                Name = name,
+                MenuType = menuType,
+                BasePath = (String.IsNullOrEmpty(subverse) ? suffix : String.Format("{0}/about{1}", VoatPathHelper.BasePath(new DomainReference(DomainType.Subverse, subverse)), suffix)),
+                Sort = null
+            };
+        }
+
         public async Task<ActionResult> Private(int? page = null)
         {
 
-            ViewBag.PmView = "inbox";
-            ViewBag.Title = "Inbox";
+            //ViewBag.PmView = "inbox";
+            //ViewBag.Title = "Inbox";
 
             var q = new QueryMessages(MessageTypeFlag.Private, MessageState.All, false);
             q.PageNumber = SetPage(page);
 
             var result = await q.ExecuteAsync();
 
-            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
+            var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
+
+            SetMenuNavigationModel("Inbox", MenuType.UserMessages);
 
             return View("Index", pagedList);
-
         }
 
         public async Task<ActionResult> Sent(int? page = null)
         {
 
-            ViewBag.PmView = "sent";
-            ViewBag.Title = "Sent";
+            //ViewBag.PmView = "sent";
+            //ViewBag.Title = "Sent";
 
             var q = new QueryMessages(MessageTypeFlag.Sent, MessageState.All, true);
             q.PageNumber = SetPage(page);
             var result = await q.ExecuteAsync();
 
-            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
+            var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
+
+            SetMenuNavigationModel("Sent", MenuType.UserMessages);
+            ViewBag.Title = "Sent";
 
             return View("Index", pagedList);
 
@@ -132,8 +144,8 @@ namespace Voat.Controllers
         public async Task<ActionResult> Replies(ContentType? type = null, int? page = null)
         {
 
-            ViewBag.PmView = "inbox";
-            ViewBag.Title = "Replies";
+            //ViewBag.PmView = "inbox";
+            //ViewBag.Title = "Replies";
 
             var contentType = MessageTypeFlag.CommentReply | MessageTypeFlag.SubmissionReply;
             if (type.HasValue)
@@ -147,7 +159,9 @@ namespace Voat.Controllers
 
             var result = await q.ExecuteAsync();
 
-            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
+            var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
+
+            SetMenuNavigationModel("Replies", MenuType.UserMessages);
 
             return View("Index", pagedList);
 
@@ -155,8 +169,8 @@ namespace Voat.Controllers
         public async Task<ActionResult> Mentions(ContentType? type = null, int? page = null)
         {
 
-            ViewBag.PmView = "inbox";
-            ViewBag.Title = "Mentions";
+            //ViewBag.PmView = "inbox";
+            //ViewBag.Title = "Mentions";
 
             var contentType = MessageTypeFlag.CommentMention | MessageTypeFlag.SubmissionMention;
             if (type.HasValue)
@@ -169,7 +183,9 @@ namespace Voat.Controllers
             q.PageNumber = SetPage(page);
 
             var result = await q.ExecuteAsync();
-            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
+            var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
+
+            SetMenuNavigationModel("Mentions", MenuType.UserMessages);
 
             return View("Index", pagedList);
         }
@@ -178,12 +194,15 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<ActionResult> Notifications()
         {
-            ViewBag.PmView = "notifications";
-            ViewBag.selectedView = "notifications";
-            ViewBag.Title = "All Unread Notifications";
-            ViewBag.SelectedSubverse = "";
+            //ViewBag.PmView = "notifications";
+            //ViewBag.selectedView = "notifications";
+            //ViewBag.Title = "All Unread Notifications";
+            //ViewBag.SelectedSubverse = "";
             var q = new QueryAllMessageCounts(Domain.Models.MessageTypeFlag.All, Domain.Models.MessageState.Unread);
             var model = await q.ExecuteAsync();
+
+            SetMenuNavigationModel("Notifications", MenuType.UserMessages);
+
             return View(model);
         }
 
@@ -191,8 +210,8 @@ namespace Voat.Controllers
         [System.Web.Mvc.Authorize]
         public ActionResult Compose()
         {
-            ViewBag.PmView = "compose";
-            ViewBag.Title = "Compose";
+            //ViewBag.PmView = "compose";
+            //ViewBag.Title = "Compose";
 
             var recipient = Request.Params["recipient"];
             var subject = Request.Params["subject"];
@@ -210,7 +229,14 @@ namespace Voat.Controllers
                 }
                 ViewBag.PmView = "mod";
                 model.Sender = UserDefinition.Format(subverse, IdentityType.Subverse);
+                SetMenuNavigationModel("Compose", MenuType.Smail, subverse);
             }
+            else
+            {
+                SetMenuNavigationModel("Compose", MenuType.UserMessages);
+
+            }
+
 
             // return compose view
             return View(model);
@@ -223,8 +249,8 @@ namespace Voat.Controllers
         public async Task<ActionResult> Compose(NewMessageViewModel message)
         {
 
-            ViewBag.PmView = "compose";
-            ViewBag.Title = "Compose";
+            //ViewBag.PmView = "compose";
+            //ViewBag.Title = "Compose";
 
             //set this incase invalid submittal 
             var userData = UserData;
@@ -256,8 +282,10 @@ namespace Voat.Controllers
                 Subject = message.Subject,
                 Sender = message.Sender
             };
-            var cmd = new SendMessageCommand(sendMessage);
+            var cmd = new SendMessageCommand(sendMessage, false, true);
             var response = await cmd.Execute();
+
+            
 
             if (response.Success)
             {
@@ -409,14 +437,20 @@ namespace Voat.Controllers
             var qSub = new QuerySubverse(subverse);
             var sub = await qSub.ExecuteAsync();
 
-            ViewBag.PmView = "mod";
-            ViewBag.Title = string.Format("v/{0} {1}", sub.Name, (type == MessageTypeFlag.Sent ? "Sent" : "Inbox"));
+            //ViewBag.PmView = "mod";
+            //ViewBag.Title = string.Format("v/{0} {1}", sub.Name, (type == MessageTypeFlag.Sent ? "Sent" : "Inbox"));
 
             var q = new QueryMessages(sub.Name, IdentityType.Subverse, type, MessageState.All, false);
             q.PageNumber = SetPage(page);
             var result = await q.ExecuteAsync();
 
-            var pagedList = FakePaging(result, q.PageNumber, q.PageCount);
+            var pagedList = new PaginatedList<Message>(result, q.PageNumber, q.PageCount);
+
+            //TODO: This needs to be the Smail Menu, right now it shows user menu
+            var name = type == MessageTypeFlag.Sent ? "Sent" : "Inbox";
+            ViewBag.Title = name;
+            SetMenuNavigationModel(name, MenuType.Smail, subverse);
+
             return View("Index", pagedList);
         }
 
