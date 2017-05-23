@@ -10,6 +10,7 @@
 namespace Voat.Data.Models
 {
     using System;
+    using Microsoft.EntityFrameworkCore;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     using System.Data.Entity.Core.Objects;

@@ -47,7 +47,7 @@ namespace Voat.Logging
         private static JsonSerializerSettings _jsonSettings;
         private string _loggerName;
 
-        static Log4NetLogger() 
+        static Log4NetLogger()
         {
             string path = String.Format("{0}.config", Assembly.GetExecutingAssembly().CodeBase);
             string fileName = LogSection.Instance.ConfigFile;
@@ -65,7 +65,7 @@ namespace Voat.Logging
                 }
             }
 
-            log4net.Config.XmlConfigurator.Configure(new Uri(path));
+            log4net.Config.XmlConfigurator.Configure(null);//new Uri(path));
 
             _jsonSettings = new JsonSerializerSettings();
             _jsonSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
@@ -78,7 +78,7 @@ namespace Voat.Logging
         {
 
         }
-        public Log4NetLogger(string loggerName) 
+        public Log4NetLogger(string loggerName)
         {
             _loggerName = loggerName;
         }
@@ -110,13 +110,13 @@ namespace Voat.Logging
             return level;
         }
 
-        protected override void ProtectedLog(ILogInformation info) 
+        protected override void ProtectedLog(ILogInformation info)
         {
 
             Debug.WriteLine(info.ToString());
 
-            ILog _log = LogManager.GetLogger(_loggerName);
-            
+            ILog _log = LogManager.GetLogger((string)null, _loggerName);
+
             if (_log != null)
             {
                 var level = Map(info.Type);
