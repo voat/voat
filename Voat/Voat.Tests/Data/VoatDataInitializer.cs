@@ -46,23 +46,25 @@ namespace Voat.Tests.Repository
             //TestEnvironmentSettings.DataStoreType = Voat.Data.DataStoreType.PostgreSQL;
             CreateSchema(context);
             Seed(context);
+            
         }
 
         protected void CreateSchema(voatEntities context)
         {
             //THIS METHOD MIGHT VERY WELL NEED A DIFFERENT IMPLEMENTATION FOR DIFFERENT STORES
 
+            //This is all a hack to get PG working with unit tests the fastest way possible.
 
             //Parse and run sql scripts
             var dbName = context.Database.Connection.Database;
             var originalConnectionString = context.Database.Connection.ConnectionString;
-
+            
             try
             {
 
                 var builder = new DbConnectionStringBuilder();
                 builder.ConnectionString = originalConnectionString;
-                builder["database"] = "master";
+                builder["database"] = TestEnvironmentSettings.DataStoreType == Voat.Data.DataStoreType.SqlServer ? "master" : "postgres";
                 context.Database.Connection.ConnectionString = builder.ConnectionString;
 
                 var cmd = context.Database.Connection.CreateCommand();
@@ -72,7 +74,9 @@ namespace Voat.Tests.Repository
                     cmd.Connection.Open();
                 }
 
-                cmd.CommandText = $"IF EXISTS (SELECT name FROM sys.databases WHERE name = '{dbName}') DROP DATABASE {dbName}";
+                cmd.CommandText = TestEnvironmentSettings.DataStoreType == Voat.Data.DataStoreType.SqlServer ?
+                                        $"IF EXISTS (SELECT name FROM sys.databases WHERE name = '{dbName}') DROP DATABASE {dbName}" :
+                                        $"DROP DATABASE IF EXISTS {dbName}";
                 cmd.ExecuteNonQuery();
 
                 cmd.CommandText = $"CREATE DATABASE {dbName}";
@@ -106,7 +110,7 @@ namespace Voat.Tests.Repository
                         var segments = contents.Split(new string[] { TestEnvironmentSettings.DataStoreType == Voat.Data.DataStoreType.SqlServer ? "GO" : ";" }, StringSplitOptions.RemoveEmptyEntries);
                         foreach (var batch in segments)
                         {
-                            cmd.CommandText = batch;
+                            cmd.CommandText = batch.Replace("{dbName}", dbName);
                             cmd.ExecuteNonQuery();
                         }
                     }

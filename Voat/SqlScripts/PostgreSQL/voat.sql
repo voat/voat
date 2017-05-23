@@ -1,6 +1,6 @@
 BEGIN;
 CREATE SCHEMA IF NOT EXISTS "dbo";
-ALTER DATABASE voat SET search_path TO dbo;
+alter database {dbName} set search_path to 'dbo';
 
 CREATE TABLE "dbo"."Ad"(
 	"ID" int NOT NULL,

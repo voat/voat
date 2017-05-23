@@ -4,499 +4,499 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="Models.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="Models.Store" Provider="Npgsql" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Ad">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IsActive" Type="bit" Nullable="false" />
-          <Property Name="GraphicUrl" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="DestinationUrl" Type="nvarchar" MaxLength="1000" />
-          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="Description" Type="nvarchar" MaxLength="2000" Nullable="false" />
-          <Property Name="StartDate" Type="datetime" />
-          <Property Name="EndDate" Type="datetime" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="50" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IsActive" Type="boolean" Nullable="false" />
+          <Property Name="GraphicUrl" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="DestinationUrl" Type="varchar" MaxLength="1000" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="2000" Nullable="false" />
+          <Property Name="StartDate" Type="timestamp" />
+          <Property Name="EndDate" Type="timestamp" />
+          <Property Name="Subverse" Type="varchar" MaxLength="50" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="ApiClient">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IsActive" Type="bit" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="100" />
-          <Property Name="AppName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="AppDescription" Type="nvarchar" MaxLength="2000" />
-          <Property Name="AppAboutUrl" Type="nvarchar" MaxLength="200" />
-          <Property Name="RedirectUrl" Type="nvarchar" MaxLength="200" />
-          <Property Name="PublicKey" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="PrivateKey" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="LastAccessDate" Type="datetime" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="ApiThrottlePolicyID" Type="int" />
-          <Property Name="ApiPermissionPolicyID" Type="int" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IsActive" Type="boolean" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="100" />
+          <Property Name="AppName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="AppDescription" Type="varchar" MaxLength="2000" />
+          <Property Name="AppAboutUrl" Type="varchar" MaxLength="200" />
+          <Property Name="RedirectUrl" Type="varchar" MaxLength="200" />
+          <Property Name="PublicKey" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="PrivateKey" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="LastAccessDate" Type="timestamp" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
+          <Property Name="ApiThrottlePolicyID" Type="int4" />
+          <Property Name="ApiPermissionPolicyID" Type="int4" />
         </EntityType>
         <EntityType Name="ApiCorsPolicy">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IsActive" Type="bit" Nullable="false" />
-          <Property Name="AllowOrigin" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="AllowMethods" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="AllowHeaders" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="AllowCredentials" Type="bit" />
-          <Property Name="MaxAge" Type="int" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="100" />
-          <Property Name="Description" Type="nvarchar" MaxLength="500" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IsActive" Type="boolean" Nullable="false" />
+          <Property Name="AllowOrigin" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="AllowMethods" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="AllowHeaders" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="AllowCredentials" Type="boolean" />
+          <Property Name="MaxAge" Type="int4" />
+          <Property Name="UserName" Type="varchar" MaxLength="100" />
+          <Property Name="Description" Type="varchar" MaxLength="500" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="ApiLog">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ApiClientID" Type="int" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ApiClientID" Type="int4" Nullable="false" />
           <Property Name="Method" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="Url" Type="varchar" MaxLength="500" Nullable="false" />
-          <Property Name="Headers" Type="varchar(max)" />
-          <Property Name="Body" Type="varchar(max)" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="Headers" Type="text" />
+          <Property Name="Body" Type="text" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="ApiPermissionPolicy">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="Policy" Type="nvarchar" MaxLength="2000" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Policy" Type="varchar" MaxLength="2000" Nullable="false" />
         </EntityType>
         <EntityType Name="ApiThrottlePolicy">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="Policy" Type="nvarchar" MaxLength="2000" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Policy" Type="varchar" MaxLength="2000" Nullable="false" />
         </EntityType>
         <EntityType Name="Badge">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Graphic" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="300" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ID" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Graphic" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Title" Type="varchar" MaxLength="300" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="BannedDomain">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Domain" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="Reason" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Domain" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
+          <Property Name="Reason" Type="varchar" MaxLength="500" Nullable="false" />
         </EntityType>
         <EntityType Name="BannedUser">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="Reason" Type="nvarchar" MaxLength="500" Nullable="false" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
+          <Property Name="Reason" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Comment">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Content" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="LastEditDate" Type="datetime" />
-          <Property Name="SubmissionID" Type="int" />
-          <Property Name="UpCount" Type="bigint" Nullable="false" />
-          <Property Name="DownCount" Type="bigint" Nullable="false" />
-          <Property Name="ParentID" Type="int" />
-          <Property Name="IsAnonymized" Type="bit" Nullable="false" />
-          <Property Name="IsDistinguished" Type="bit" Nullable="false" />
-          <Property Name="FormattedContent" Type="nvarchar(max)" />
-          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Content" Type="text" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
+          <Property Name="LastEditDate" Type="timestamp" />
+          <Property Name="SubmissionID" Type="int4" />
+          <Property Name="UpCount" Type="int8" Nullable="false" />
+          <Property Name="DownCount" Type="int8" Nullable="false" />
+          <Property Name="ParentID" Type="int4" />
+          <Property Name="IsAnonymized" Type="boolean" Nullable="false" />
+          <Property Name="IsDistinguished" Type="boolean" Nullable="false" />
+          <Property Name="FormattedContent" Type="text" />
+          <Property Name="IsDeleted" Type="boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="CommentRemovalLog">
           <Key>
             <PropertyRef Name="CommentID" />
           </Key>
-          <Property Name="CommentID" Type="int" Nullable="false" />
-          <Property Name="Moderator" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="Reason" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="CommentID" Type="int4" Nullable="false" />
+          <Property Name="Moderator" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
+          <Property Name="Reason" Type="varchar" MaxLength="500" Nullable="false" />
         </EntityType>
         <EntityType Name="CommentSaveTracker">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CommentID" Type="int" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CommentID" Type="int4" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="CommentVoteTracker">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CommentID" Type="int" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="VoteStatus" Type="int" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="IPAddress" Type="nvarchar" MaxLength="90" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CommentID" Type="int4" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="VoteStatus" Type="int4" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
+          <Property Name="IPAddress" Type="varchar" MaxLength="90" />
           <Property Name="VoteValue" Type="float" Nullable="false" />
         </EntityType>
         <EntityType Name="DefaultSubverse">
           <Key>
             <PropertyRef Name="Subverse" />
           </Key>
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Order" Type="int" Nullable="false" />
+          <Property Name="Subverse" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Order" Type="int4" Nullable="false" />
         </EntityType>
         <EntityType Name="EventLog">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ParentID" Type="int" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ParentID" Type="int4" />
           <Property Name="ActivityID" Type="varchar" MaxLength="50" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="100" />
+          <Property Name="UserName" Type="varchar" MaxLength="100" />
           <Property Name="Origin" Type="varchar" MaxLength="20" />
           <Property Name="Type" Type="varchar" MaxLength="300" Nullable="false" />
           <Property Name="Message" Type="varchar" MaxLength="1500" Nullable="false" />
           <Property Name="Category" Type="varchar" MaxLength="1000" Nullable="false" />
-          <Property Name="Exception" Type="varchar(max)" />
-          <Property Name="Data" Type="varchar(max)" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="Exception" Type="text" />
+          <Property Name="Data" Type="text" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="Featured">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="DomainType" Type="int" Nullable="false" />
-          <Property Name="DomainID" Type="int" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="100" />
-          <Property Name="Description" Type="nvarchar" MaxLength="500" />
-          <Property Name="StartDate" Type="smalldatetime" Nullable="false" />
-          <Property Name="EndDate" Type="smalldatetime" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DomainType" Type="int4" Nullable="false" />
+          <Property Name="DomainID" Type="int4" Nullable="false" />
+          <Property Name="Title" Type="varchar" MaxLength="100" />
+          <Property Name="Description" Type="varchar" MaxLength="500" />
+          <Property Name="StartDate" Type="timestamp" Nullable="false" />
+          <Property Name="EndDate" Type="timestamp" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Filter">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IsActive" Type="boolean" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="1000" />
           <Property Name="Pattern" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="Replacement" Type="varchar" MaxLength="1000" />
-          <Property Name="AppliesTo" Type="int" />
-          <Property Name="Action" Type="int" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="AppliesTo" Type="int4" />
+          <Property Name="Action" Type="int4" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="Message">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CorrelationID" Type="nvarchar" MaxLength="36" Nullable="false" />
-          <Property Name="ParentID" Type="int" />
-          <Property Name="Type" Type="int" Nullable="false" />
-          <Property Name="Sender" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="SenderType" Type="int" Nullable="false" />
-          <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="RecipientType" Type="int" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="500" />
-          <Property Name="Content" Type="nvarchar(max)" />
-          <Property Name="FormattedContent" Type="nvarchar(max)" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" />
-          <Property Name="SubmissionID" Type="int" />
-          <Property Name="CommentID" Type="int" />
-          <Property Name="IsAnonymized" Type="bit" Nullable="false" />
-          <Property Name="ReadDate" Type="datetime" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CorrelationID" Type="varchar" MaxLength="36" Nullable="false" />
+          <Property Name="ParentID" Type="int4" />
+          <Property Name="Type" Type="int4" Nullable="false" />
+          <Property Name="Sender" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="SenderType" Type="int4" Nullable="false" />
+          <Property Name="Recipient" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="RecipientType" Type="int4" Nullable="false" />
+          <Property Name="Title" Type="varchar" MaxLength="500" />
+          <Property Name="Content" Type="text" />
+          <Property Name="FormattedContent" Type="text" />
+          <Property Name="Subverse" Type="varchar" MaxLength="20" />
+          <Property Name="SubmissionID" Type="int4" />
+          <Property Name="CommentID" Type="int4" />
+          <Property Name="IsAnonymized" Type="boolean" Nullable="false" />
+          <Property Name="ReadDate" Type="timestamp" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="50" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="ModeratorInvitation">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="Recipient" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Power" Type="int" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
+          <Property Name="Recipient" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Subverse" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Power" Type="int4" Nullable="false" />
         </EntityType>
         <EntityType Name="RuleReport">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="50" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="100" />
-          <Property Name="SubmissionID" Type="int" />
-          <Property Name="CommentID" Type="int" />
-          <Property Name="RuleSetID" Type="int" Nullable="false" />
-          <Property Name="ReviewedBy" Type="nvarchar" MaxLength="100" />
-          <Property Name="ReviewedDate" Type="datetime" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="ID" Type="int8" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Subverse" Type="varchar" MaxLength="50" />
+          <Property Name="UserName" Type="varchar" MaxLength="100" />
+          <Property Name="SubmissionID" Type="int4" />
+          <Property Name="CommentID" Type="int4" />
+          <Property Name="RuleSetID" Type="int4" Nullable="false" />
+          <Property Name="ReviewedBy" Type="varchar" MaxLength="100" />
+          <Property Name="ReviewedDate" Type="timestamp" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="RuleSet">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IsActive" Type="bit" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="50" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IsActive" Type="boolean" Nullable="false" />
+          <Property Name="Subverse" Type="varchar" MaxLength="50" />
           <Property Name="ContentType" Type="tinyint" />
-          <Property Name="SortOrder" Type="int" />
-          <Property Name="Name" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="Description" Type="nvarchar" MaxLength="1000" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="SortOrder" Type="int4" />
+          <Property Name="Name" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="1000" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="SessionTracker">
           <Key>
             <PropertyRef Name="SessionID" />
             <PropertyRef Name="Subverse" />
           </Key>
-          <Property Name="SessionID" Type="nvarchar" MaxLength="90" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="SessionID" Type="varchar" MaxLength="90" Nullable="false" />
+          <Property Name="Subverse" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="StickiedSubmission">
           <Key>
             <PropertyRef Name="SubmissionID" />
           </Key>
-          <Property Name="SubmissionID" Type="int" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="SubmissionID" Type="int4" Nullable="false" />
+          <Property Name="Subverse" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="Submission">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Content" Type="nvarchar(max)" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="Type" Type="int" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="200" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Content" Type="text" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
+          <Property Name="Type" Type="int4" Nullable="false" />
+          <Property Name="Title" Type="varchar" MaxLength="200" />
           <Property Name="Rank" Type="float" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" />
-          <Property Name="UpCount" Type="bigint" Nullable="false" />
-          <Property Name="DownCount" Type="bigint" Nullable="false" />
+          <Property Name="Subverse" Type="varchar" MaxLength="20" />
+          <Property Name="UpCount" Type="int8" Nullable="false" />
+          <Property Name="DownCount" Type="int8" Nullable="false" />
           <Property Name="Thumbnail" Type="nchar" MaxLength="40" />
-          <Property Name="LastEditDate" Type="datetime" />
-          <Property Name="FlairLabel" Type="nvarchar" MaxLength="50" />
-          <Property Name="FlairCss" Type="nvarchar" MaxLength="50" />
-          <Property Name="IsAnonymized" Type="bit" Nullable="false" />
+          <Property Name="LastEditDate" Type="timestamp" />
+          <Property Name="FlairLabel" Type="varchar" MaxLength="50" />
+          <Property Name="FlairCss" Type="varchar" MaxLength="50" />
+          <Property Name="IsAnonymized" Type="boolean" Nullable="false" />
           <Property Name="Views" Type="float" Nullable="false" />
-          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="IsDeleted" Type="boolean" Nullable="false" />
           <Property Name="RelativeRank" Type="float" Nullable="false" />
-          <Property Name="Url" Type="nvarchar" MaxLength="3000" />
-          <Property Name="FormattedContent" Type="nvarchar(max)" />
-          <Property Name="IsAdult" Type="bit" Nullable="false" />
-          <Property Name="ArchiveDate" Type="smalldatetime" />
+          <Property Name="Url" Type="varchar" MaxLength="3000" />
+          <Property Name="FormattedContent" Type="text" />
+          <Property Name="IsAdult" Type="boolean" Nullable="false" />
+          <Property Name="ArchiveDate" Type="timestamp" />
         </EntityType>
         <EntityType Name="SubmissionRemovalLog">
           <Key>
             <PropertyRef Name="SubmissionID" />
           </Key>
-          <Property Name="SubmissionID" Type="int" Nullable="false" />
-          <Property Name="Moderator" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="Reason" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="SubmissionID" Type="int4" Nullable="false" />
+          <Property Name="Moderator" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
+          <Property Name="Reason" Type="varchar" MaxLength="500" Nullable="false" />
         </EntityType>
         <EntityType Name="SubmissionSaveTracker">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SubmissionID" Type="int" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SubmissionID" Type="int4" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="SubmissionVoteTracker">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SubmissionID" Type="int" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="VoteStatus" Type="int" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="IPAddress" Type="nvarchar" MaxLength="90" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SubmissionID" Type="int4" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="VoteStatus" Type="int4" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
+          <Property Name="IPAddress" Type="varchar" MaxLength="90" />
           <Property Name="VoteValue" Type="float" Nullable="false" />
         </EntityType>
         <EntityType Name="Subverse">
           <Key>
             <PropertyRef Name="Name" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="Description" Type="nvarchar" MaxLength="500" />
-          <Property Name="SideBar" Type="nvarchar" MaxLength="4000" />
-          <Property Name="IsAdult" Type="bit" Nullable="false" />
-          <Property Name="IsThumbnailEnabled" Type="bit" Nullable="false" />
-          <Property Name="ExcludeSitewideBans" Type="bit" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="Stylesheet" Type="nvarchar(max)" />
-          <Property Name="SubscriberCount" Type="int" />
-          <Property Name="IsPrivate" Type="bit" Nullable="false" />
-          <Property Name="IsAuthorizedOnly" Type="bit" Nullable="false" />
-          <Property Name="IsAnonymized" Type="bit" />
-          <Property Name="LastSubmissionDate" Type="datetime" />
-          <Property Name="MinCCPForDownvote" Type="int" Nullable="false" />
-          <Property Name="IsAdminPrivate" Type="bit" Nullable="false" />
-          <Property Name="IsAdminDisabled" Type="bit" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
-          <Property Name="LastUpdateDate" Type="smalldatetime" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Title" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="500" />
+          <Property Name="SideBar" Type="varchar" MaxLength="4000" />
+          <Property Name="IsAdult" Type="boolean" Nullable="false" />
+          <Property Name="IsThumbnailEnabled" Type="boolean" Nullable="false" />
+          <Property Name="ExcludeSitewideBans" Type="boolean" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
+          <Property Name="Stylesheet" Type="text" />
+          <Property Name="SubscriberCount" Type="int4" />
+          <Property Name="IsPrivate" Type="boolean" Nullable="false" />
+          <Property Name="IsAuthorizedOnly" Type="boolean" Nullable="false" />
+          <Property Name="IsAnonymized" Type="boolean" />
+          <Property Name="LastSubmissionDate" Type="timestamp" />
+          <Property Name="MinCCPForDownvote" Type="int4" Nullable="false" />
+          <Property Name="IsAdminPrivate" Type="boolean" Nullable="false" />
+          <Property Name="IsAdminDisabled" Type="boolean" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="50" />
+          <Property Name="LastUpdateDate" Type="timestamp" />
         </EntityType>
         <EntityType Name="SubverseBan">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
-          <Property Name="Reason" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Subverse" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
+          <Property Name="Reason" Type="varchar" MaxLength="500" Nullable="false" />
         </EntityType>
         <EntityType Name="SubverseFlair">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Label" Type="nvarchar" MaxLength="50" />
-          <Property Name="CssClass" Type="nvarchar" MaxLength="50" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Subverse" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Label" Type="varchar" MaxLength="50" />
+          <Property Name="CssClass" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="SubverseModerator">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Subverse" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Power" Type="int" Nullable="false" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
-          <Property Name="CreationDate" Type="datetime" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Subverse" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Power" Type="int4" Nullable="false" />
+          <Property Name="CreatedBy" Type="varchar" MaxLength="50" />
+          <Property Name="CreationDate" Type="timestamp" />
         </EntityType>
         <EntityType Name="SubverseSet">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="100" />
-          <Property Name="Description" Type="nvarchar" MaxLength="500" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
-          <Property Name="Type" Type="int" Nullable="false" />
-          <Property Name="IsPublic" Type="bit" Nullable="false" />
-          <Property Name="SubscriberCount" Type="int" Nullable="false" />
-          <Property Name="CreationDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Title" Type="varchar" MaxLength="100" />
+          <Property Name="Description" Type="varchar" MaxLength="500" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" />
+          <Property Name="Type" Type="int4" Nullable="false" />
+          <Property Name="IsPublic" Type="boolean" Nullable="false" />
+          <Property Name="SubscriberCount" Type="int4" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="SubverseSetList">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SubverseSetID" Type="int" Nullable="false" />
-          <Property Name="SubverseID" Type="int" Nullable="false" />
-          <Property Name="CreationDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SubverseSetID" Type="int4" Nullable="false" />
+          <Property Name="SubverseID" Type="int4" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="SubverseSetSubscription">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SubverseSetID" Type="int" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SubverseSetID" Type="int4" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="UserBadge">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="BadgeID" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="BadgeID" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="UserBlockedUser">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="BlockUser" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BlockUser" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CreationDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="UserContribution">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
-          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="IsReceived" Type="bit" Nullable="false" />
-          <Property Name="ContentType" Type="int" Nullable="false" />
-          <Property Name="VoteStatus" Type="int" Nullable="false" />
-          <Property Name="VoteCount" Type="int" Nullable="false" />
+          <Property Name="ID" Type="int4" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="IsReceived" Type="boolean" Nullable="false" />
+          <Property Name="ContentType" Type="int4" Nullable="false" />
+          <Property Name="VoteStatus" Type="int4" Nullable="false" />
+          <Property Name="VoteCount" Type="int4" Nullable="false" />
           <Property Name="VoteValue" Type="float" Nullable="false" />
-          <Property Name="ValidThroughDate" Type="datetime" Nullable="false" />
-          <Property Name="LastUpdateDate" Type="datetime" Nullable="false" />
+          <Property Name="ValidThroughDate" Type="timestamp" Nullable="false" />
+          <Property Name="LastUpdateDate" Type="timestamp" Nullable="false" />
         </EntityType>
         <EntityType Name="UserPreference">
           <Key>
             <PropertyRef Name="UserName" />
           </Key>
-          <Property Name="UserName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="DisableCSS" Type="bit" Nullable="false" />
-          <Property Name="NightMode" Type="bit" Nullable="false" />
-          <Property Name="Language" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="OpenInNewWindow" Type="bit" Nullable="false" />
-          <Property Name="EnableAdultContent" Type="bit" Nullable="false" />
-          <Property Name="DisplayVotes" Type="bit" Nullable="false" />
-          <Property Name="DisplaySubscriptions" Type="bit" Nullable="false" />
-          <Property Name="UseSubscriptionsMenu" Type="bit" Nullable="false" />
-          <Property Name="Bio" Type="nvarchar" MaxLength="100" />
-          <Property Name="Avatar" Type="nvarchar" MaxLength="50" />
-          <Property Name="DisplayAds" Type="bit" Nullable="false" />
-          <Property Name="DisplayCommentCount" Type="int" />
-          <Property Name="HighlightMinutes" Type="int" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="DisableCSS" Type="boolean" Nullable="false" />
+          <Property Name="NightMode" Type="boolean" Nullable="false" />
+          <Property Name="Language" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="OpenInNewWindow" Type="boolean" Nullable="false" />
+          <Property Name="EnableAdultContent" Type="boolean" Nullable="false" />
+          <Property Name="DisplayVotes" Type="boolean" Nullable="false" />
+          <Property Name="DisplaySubscriptions" Type="boolean" Nullable="false" />
+          <Property Name="UseSubscriptionsMenu" Type="boolean" Nullable="false" />
+          <Property Name="Bio" Type="varchar" MaxLength="100" />
+          <Property Name="Avatar" Type="varchar" MaxLength="50" />
+          <Property Name="DisplayAds" Type="boolean" Nullable="false" />
+          <Property Name="DisplayCommentCount" Type="int4" />
+          <Property Name="HighlightMinutes" Type="int4" />
           <Property Name="VanityTitle" Type="varchar" MaxLength="50" />
-          <Property Name="CollapseCommentLimit" Type="int" />
-          <Property Name="BlockAnonymized" Type="bit" Nullable="false" />
-          <Property Name="CommentSort" Type="int" />
+          <Property Name="CollapseCommentLimit" Type="int4" />
+          <Property Name="BlockAnonymized" Type="boolean" Nullable="false" />
+          <Property Name="CommentSort" Type="int4" />
         </EntityType>
         <EntityType Name="ViewStatistic">
           <Key>
             <PropertyRef Name="SubmissionID" />
             <PropertyRef Name="ViewerID" />
           </Key>
-          <Property Name="SubmissionID" Type="int" Nullable="false" />
-          <Property Name="ViewerID" Type="nvarchar" MaxLength="90" Nullable="false" />
+          <Property Name="SubmissionID" Type="int4" Nullable="false" />
+          <Property Name="ViewerID" Type="varchar" MaxLength="90" Nullable="false" />
         </EntityType>
         <Association Name="FK_ApiClient_ApiPermissionPolicy">
           <End Role="ApiPermissionPolicy" Type="Self.ApiPermissionPolicy" Multiplicity="0..1" />
@@ -782,9 +782,9 @@ warning 6035: The relationship 'FK_SubverseSetList_Subverse' has columns that ar
           </ReferentialConstraint>
         </Association>
         <Function Name="usp_CommentTree" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="SubmissionID" Type="int" Mode="In" />
-          <Parameter Name="Depth" Type="int" Mode="In" />
-          <Parameter Name="ParentID" Type="int" Mode="In" />
+          <Parameter Name="SubmissionID" Type="int4" Mode="In" />
+          <Parameter Name="Depth" Type="int4" Mode="In" />
+          <Parameter Name="ParentID" Type="int4" Mode="In" />
         </Function>
         <EntityContainer Name="ModelsStoreContainer">
           <EntitySet Name="Ad" EntityType="Self.Ad" Schema="dbo" store:Type="Tables" />

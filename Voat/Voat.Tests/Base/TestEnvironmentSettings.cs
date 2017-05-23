@@ -32,7 +32,7 @@ namespace Voat.Tests
 {
     public class TestEnvironmentSettings
     {
-        public static Voat.Data.DataStoreType DataStoreType = Voat.Data.DataStoreType.SqlServer;
+        public static Voat.Data.DataStoreType DataStoreType = Voat.Data.DataStoreType.PostgreSQL;
 
         public static string SqlScriptRelativePath { get; set; } = @"..\..\..\SqlScripts\" + DataStoreType.ToString();
     }

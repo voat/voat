@@ -43,10 +43,11 @@ public class UnitTestSetup
         if (ConfigurationManager.AppSettings["PreventDatabaseDrop"] != "true")
         {
             //Force db to drop & seed
-            Database.SetInitializer(new VoatDataInitializer());
+            //Database.SetInitializer();
             using (var db = new voatEntities())
             {
-                var data = db.DefaultSubverses.ToList();
+                var init = new VoatDataInitializer();
+                init.InitializeDatabase(db); //This attempts to create and seed unit test db
             }
         }
 
