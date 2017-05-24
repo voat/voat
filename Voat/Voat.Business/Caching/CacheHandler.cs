@@ -22,6 +22,7 @@
 
 #endregion LICENSE
 
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -107,7 +108,7 @@ namespace Voat.Caching
             //    return new Object();
             //}, TimeSpan.FromMinutes(30), 0);
         }
-       
+
         protected string StandardizeCacheKey(string cacheKey)
         {
             if (String.IsNullOrEmpty(cacheKey))
@@ -243,7 +244,7 @@ namespace Voat.Caching
         ///// <returns></returns>
         //public object Register(string cacheKey, Func<object> getData, TimeSpan cacheTime, int refetchLimit = -1)
         //{
-            
+
         //}
 
         //public Task Refresh(string cacheKey)
@@ -518,53 +519,53 @@ namespace Voat.Caching
                         //object o = _lockStore.GetLockObject(cacheKey);
                         //lock (o)
                         //{
-                            if (!Exists(cacheKey))
+                        if (!Exists(cacheKey))
+                        {
+                            try
                             {
-                                try
+                                var data = getData();
+                                if (data != null || data == null && !_ignoreNulls)
                                 {
-                                    var data = getData();
-                                    if (data != null || data == null && !_ignoreNulls)
-                                    {
-                                        EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = $"Inserting Cache ({cacheKey})", Origin = Configuration.Settings.Origin.ToString() });
-                                        //Debug.WriteLine("Inserting Cache: " + cacheKey);
-                                        SetItem(cacheKey, data, cacheTime);
+                                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = $"Inserting Cache ({cacheKey})", Origin = Configuration.Settings.Origin.ToString() });
+                                    //Debug.WriteLine("Inserting Cache: " + cacheKey);
+                                    SetItem(cacheKey, data, cacheTime);
 
-                                        //Refetch Logic
-                                        if (RefetchEnabled && refetchLimit >= 0)
+                                    //Refetch Logic
+                                    if (RefetchEnabled && refetchLimit >= 0)
+                                    {
+                                        //_meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, refetchLimit, 0);
+                                        _meta[cacheKey] = new RefetchEntryFunc<T>(getData) { CacheTime = cacheTime, CurrentCount = 0, MaxCount = refetchLimit };
+                                        var cache = System.Runtime.Caching.MemoryCache.Default;
+                                        var policy = new CacheItemPolicy()
                                         {
-                                            //_meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, refetchLimit, 0);
-                                            _meta[cacheKey] = new RefetchEntryFunc<T>(getData) { CacheTime = cacheTime, CurrentCount = 0, MaxCount = refetchLimit };
-                                            var cache = System.Runtime.Caching.MemoryCache.Default;
-                                            var policy = new CacheItemPolicy()
-                                            {
-                                                AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)),
-                                                UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
-                                            };
-                                            cache.Set(cacheKey, new object(), policy);
-                                        }
-                                        else if (RequiresExpirationRemoval)
-                                        {
-                                            var cache = System.Runtime.Caching.MemoryCache.Default;
-                                            cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
-                                        }
+                                            AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)),
+                                            UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
+                                        };
+                                        cache.Set(cacheKey, new object(), policy);
                                     }
-                                    return data;
+                                    else if (RequiresExpirationRemoval)
+                                    {
+                                        var cache = System.Runtime.Caching.MemoryCache.Default;
+                                        cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
+                                    }
                                 }
-                                catch (Exception ex)
+                                return data;
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine(ex.ToString());
+                                //Cache now supports Tasks which throw aggregates, if agg has only 1 inner, throw it instead
+                                var aggEx = ex as AggregateException;
+                                if (aggEx != null && aggEx.InnerExceptions.Count == 1)
                                 {
-                                    Debug.WriteLine(ex.ToString());
-                                    //Cache now supports Tasks which throw aggregates, if agg has only 1 inner, throw it instead
-                                    var aggEx = ex as AggregateException;
-                                    if (aggEx != null && aggEx.InnerExceptions.Count == 1)
-                                    {
-                                        throw aggEx.InnerException;
-                                    }
-                                    else
-                                    {
-                                        throw ex;
-                                    }
+                                    throw aggEx.InnerException;
+                                }
+                                else
+                                {
+                                    throw ex;
                                 }
                             }
+                        }
                         //}
                     }
                     finally
@@ -598,7 +599,7 @@ namespace Voat.Caching
             if (!Exists(cacheKey))
             {
                 //Log the duration this takes to pull fresh
-                using (var duration = new DurationLogger(EventLogger.Instance, 
+                using (var duration = new DurationLogger(EventLogger.Instance,
                     new LogInformation()
                     {
                         Type = LogType.Debug,
@@ -767,7 +768,7 @@ namespace Voat.Caching
 
         #region Dictionary
 
-        public virtual void DictionaryReplace<K,V>(string cacheKey, K key, Func<V, V> replaceAlg, bool bypassMissing = true)
+        public virtual void DictionaryReplace<K, V>(string cacheKey, K key, Func<V, V> replaceAlg, bool bypassMissing = true)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
 
@@ -802,16 +803,16 @@ namespace Voat.Caching
             DeleteItem(cacheKey, key, CacheType.Dictionary);
         }
 
-        public virtual void DictionaryReplace<K,V>(string cacheKey, K key, V newObject)
+        public virtual void DictionaryReplace<K, V>(string cacheKey, K key, V newObject)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
             SetItem(cacheKey, key, newObject, CacheType.Dictionary);
         }
 
-        public virtual V DictionaryRetrieve<K,V>(string cacheKey, K key)
+        public virtual V DictionaryRetrieve<K, V>(string cacheKey, K key)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
-            return (V)GetItem<K,V>(cacheKey, key, CacheType.Dictionary);
+            return (V)GetItem<K, V>(cacheKey, key, CacheType.Dictionary);
         }
 
         public virtual bool DictionaryExists<K>(string cacheKey, K key)
@@ -842,7 +843,7 @@ namespace Voat.Caching
             return ItemExists(cacheKey, key, CacheType.Set);
         }
 
-       
+
         #endregion
 
     }

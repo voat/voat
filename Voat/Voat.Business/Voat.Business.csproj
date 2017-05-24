@@ -1,11 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <Company>Voat</Company>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
+    <AssemblyTitle>Voat.Business</AssemblyTitle>
+    <AssemblyProduct>Voat.Business</AssemblyProduct>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.2" />
     <PackageReference Include="HtmlAgilityPack" Version="1.4.9.5" />
     <PackageReference Include="ImageLibrary" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.0.0-preview1-final" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.0.0-preview1-final" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.0.0-preview1-final" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0-preview1-final" />
@@ -14,6 +20,7 @@
     <PackageReference Include="Microsoft.Data.OData" Version="5.8.2" />
     <PackageReference Include="Microsoft.Data.Services.Client" Version="5.8.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.0-preview1-final" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0-preview1-final" />
     <PackageReference Include="Microsoft.Web.Infrastructure" Version="1.0.0.0" />
     <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
@@ -25,5 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Voat.Data\Voat.Data.csproj" />
+    <ProjectReference Include="..\Voat.Logging\Voat.Logging.csproj" />
+    <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj" />
   </ItemGroup>
 </Project>

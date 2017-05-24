@@ -42,7 +42,8 @@ namespace Voat.Tests.Utils
             using (var db = new voatEntities())
             {
                 //1
-                db.Filters.Add(new Filter() {
+                db.Filters.Add(new Filter()
+                {
                     Pattern = ".",
                     IsActive = false,
                     Name = "Match Anything",
