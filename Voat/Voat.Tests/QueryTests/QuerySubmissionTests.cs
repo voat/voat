@@ -251,6 +251,32 @@ namespace Voat.Tests.QueryTests
                 Assert.AreNotEqual("unit", s.Subverse.ToLower(), "Found blocked sub in BlocksUnit's v/all query");
             }
         }
+        [TestMethod]
+        [TestCategory("Query")]
+        [TestCategory("Submission")]
+        public async Task QuerySubmissions_By_Domain()
+        {
+            var domain = "LearnToGolfLikeCharlesBarkleyOrYourMoneyBack.com";
+
+            TestHelper.SetPrincipal("UnitTestUser47");
+
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Title = "Best Offer Ever!", Url = $"https://www.{domain}/limited-time-offer-{Guid.NewGuid().ToString()}.html", Subverse = "unit" });
+            var r = await cmd.Execute();
+            Assert.AreEqual(Status.Success, r.Status, r.Message);
+
+
+            var q = new QuerySubmissionsByDomain(domain, SearchOptions.Default);
+            //q.CachePolicy.Duration = cacheTime; //Cache this request
+            var result = q.ExecuteAsync().Result;
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Any(), "Found no results");
+
+            foreach (var s in result)
+            {
+                Assert.IsTrue(s.Url.ToLower().Contains(domain.ToLower()), $"Couldn't find {domain} in {s.Url}");
+            }
+        }
 
     }
 }
