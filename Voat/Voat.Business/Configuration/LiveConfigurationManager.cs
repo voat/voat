@@ -276,7 +276,7 @@ namespace Voat.Configuration
                     }
                     else if (typeof(T).IsEnum)
                     {
-                        T conValue = (T)Enum.Parse(typeof(T), value);
+                        T conValue = (T)Enum.Parse(typeof(T), value, true);
                         saveValue = conValue;
                     }
                     else

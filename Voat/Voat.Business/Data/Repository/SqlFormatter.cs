@@ -30,11 +30,10 @@ using System.Threading.Tasks;
 
 namespace Voat.Data
 {
-
     public enum DataStoreType
     {
         SqlServer,
-        PostgreSQL
+        PostgreSql
     }
 
     public class SqlFormatter
@@ -46,47 +45,48 @@ namespace Voat.Data
                 return "dbo";
             }
         }
-        public static string IfExists(bool exists, string existsClause, string trueClause, string falseClause = null)
-        {
-            var result = new StringBuilder();
-            var existNegation = exists ? " " : " NOT ";
-            switch (Configuration.Settings.DataStore)
-            {
-                case DataStoreType.SqlServer:
-                    result.AppendLine($"IF{existNegation}EXISTS ({existsClause})");
-                    result.AppendLine(trueClause);
-                    if (!String.IsNullOrEmpty(falseClause))
-                    {
-                        result.AppendLine($"ELSE");
-                        result.AppendLine(falseClause);
-                    }
-                    break;
-                case DataStoreType.PostgreSQL:
-                    result.AppendLine("load 'plpgsql';");
-                    result.AppendLine("DO");
-                    result.AppendLine("$$");
-                    result.AppendLine("BEGIN");
 
-                    result.AppendLine($"IF{existNegation}EXISTS ({existsClause}) THEN");
-                    result.AppendLine("");
-                    result.AppendLine(trueClause);
-                    if (!String.IsNullOrEmpty(falseClause))
-                    {
-                        result.AppendLine($"ELSE");
-                        result.AppendLine(falseClause);
-                    }
-                    result.AppendLine("END IF;");
-                    result.AppendLine("END;");
-                    result.AppendLine("$$");
+        //public static string IfExists(bool exists, string existsClause, string trueClause, string falseClause = null)
+        //{
+        //    var result = new StringBuilder();
+        //    var existNegation = exists ? " " : " NOT ";
+        //    switch (Configuration.Settings.DataStore)
+        //    {
+        //        case DataStoreType.SqlServer:
+        //            result.AppendLine($"IF{existNegation}EXISTS ({existsClause})");
+        //            result.AppendLine(trueClause);
+        //            if (!String.IsNullOrEmpty(falseClause))
+        //            {
+        //                result.AppendLine($"ELSE");
+        //                result.AppendLine(falseClause);
+        //            }
+        //            break;
+        //        case DataStoreType.PostgreSQL:
+        //            result.AppendLine("load 'plpgsql';");
+        //            result.AppendLine("DO");
+        //            result.AppendLine("$$");
+        //            result.AppendLine("BEGIN");
 
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
+        //            result.AppendLine($"IF{existNegation}EXISTS ({existsClause}) THEN");
+        //            result.AppendLine("");
+        //            result.AppendLine(trueClause);
+        //            if (!String.IsNullOrEmpty(falseClause))
+        //            {
+        //                result.AppendLine($"ELSE");
+        //                result.AppendLine(falseClause);
+        //            }
+        //            result.AppendLine("END IF;");
+        //            result.AppendLine("END;");
+        //            result.AppendLine("$$");
+
+        //            break;
+        //        default:
+        //            throw new NotImplementedException();
+        //    }
 
 
-            return result.ToString();
-        }
+        //    return result.ToString();
+        //}
         public static string DeleteBlock(string fromTable, string alias = null)
         {
             var result = "";
@@ -98,7 +98,7 @@ namespace Voat.Data
                 case DataStoreType.SqlServer:
                     result = $"DELETE {alias} FROM {fromTable}{aliasClause}";
                     break;
-                case DataStoreType.PostgreSQL:
+                case DataStoreType.PostgreSql:
                     result = result = $"DELETE FROM {fromTable}{aliasClause}";
                     break;
                 default:
@@ -117,9 +117,18 @@ namespace Voat.Data
             switch (Configuration.Settings.DataStore)
             {
                 case DataStoreType.SqlServer:
-                    result = $"UPDATE {alias} SET {setStatements} FROM {fromTable}{aliasClause}";
+
+                    if (String.IsNullOrEmpty(alias))
+                    {
+                        result = $"UPDATE {fromTable} SET {setStatements}";
+                    }
+                    else
+                    {
+                        result = $"UPDATE {alias} SET {setStatements} FROM {fromTable}{aliasClause}";
+                    }
+
                     break;
-                case DataStoreType.PostgreSQL:
+                case DataStoreType.PostgreSql:
                     result = result = $"UPDATE {fromTable}{aliasClause}SET {setStatements}";
                     break;
                 default:
@@ -138,7 +147,7 @@ namespace Voat.Data
                 case DataStoreType.SqlServer:
                     result = $"IN {parameter}";
                     break;
-                case DataStoreType.PostgreSQL:
+                case DataStoreType.PostgreSql:
                     result = $"= ANY({parameter})";
                     break;
                 default:
@@ -158,7 +167,7 @@ namespace Voat.Data
                 case DataStoreType.SqlServer:
                     result = $"ISNULL({parameter}, {defaultValue})";
                     break;
-                case DataStoreType.PostgreSQL:
+                case DataStoreType.PostgreSql:
                     result = $"CASE WHEN {parameter} IS NULL THEN {defaultValue} ELSE {parameter} END";
                     break;
                 default:
@@ -207,7 +216,7 @@ namespace Voat.Data
             var result = "";
             switch (Configuration.Settings.DataStore)
             {
-                case DataStoreType.PostgreSQL:
+                case DataStoreType.PostgreSql:
                     result = value ? "True" : "False";
                     break;
                 default:
@@ -223,7 +232,7 @@ namespace Voat.Data
             string result = null;
             switch (Configuration.Settings.DataStore)
             {
-                case DataStoreType.PostgreSQL:
+                case DataStoreType.PostgreSql:
                     result = String.Format("\"{0}\"", name);
                     break;
                 default:

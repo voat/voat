@@ -74,12 +74,20 @@ namespace Voat.Tests.Repository
                     cmd.Connection.Open();
                 }
 
-                //Kill connections
-                cmd.CommandText = Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ?
-                                       $"SELECT 0" :
-                                       $"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid() AND datname = '{dbName}'";
-                cmd.ExecuteNonQuery();
-                
+                try
+                {
+                    //Kill connections
+                    cmd.CommandText = Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ?
+                                           $"ALTER DATABASE {dbName} SET SINGLE_USER WITH ROLLBACK IMMEDIATE" :
+                                           $"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid() AND datname = '{dbName}'";
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.ToString());
+                }
+
+
                 cmd.CommandText = Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ?
                                         $"IF EXISTS (SELECT name FROM sys.databases WHERE name = '{dbName}') DROP DATABASE {dbName}" :
                                         $"DROP DATABASE IF EXISTS {dbName}";
@@ -115,7 +123,7 @@ namespace Voat.Tests.Repository
 
                         switch (Configuration.Settings.DataStore)
                         {
-                            case Voat.Data.DataStoreType.PostgreSQL:
+                            case Voat.Data.DataStoreType.PostgreSql:
                               
                             case Voat.Data.DataStoreType.SqlServer:
                                 var segments = contents.Split(new string[] { "GO" }, StringSplitOptions.RemoveEmptyEntries);

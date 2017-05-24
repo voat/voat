@@ -1993,7 +1993,7 @@ namespace Voat.Data
                 case DataStoreType.SqlServer:
                     commentTree = _db.usp_CommentTree(submissionID, depth, parentID);
                     break;
-                case DataStoreType.PostgreSQL:
+                case DataStoreType.PostgreSql:
 
                     var d = new DapperQuery();
                     d.Select = "* FROM \"dbo\".\"usp_CommentTree\"(@SubmissionID, @Depth, @ParentID)";

@@ -81,7 +81,7 @@ namespace Voat.Data.Models
                 new ObjectParameter("ParentID", parentID) :
                 new ObjectParameter("ParentID", typeof(int));
     
-            var result = ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_CommentTree_Result>("\"dbo\".\"usp_CommentTree\"", submissionIDParameter, depthParameter, parentIDParameter);
+            var result = ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_CommentTree_Result>("usp_CommentTree", submissionIDParameter, depthParameter, parentIDParameter);
             return result;
         }
     }

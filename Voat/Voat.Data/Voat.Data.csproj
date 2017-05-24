@@ -235,6 +235,7 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>VoatEntityDataModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
+    <None Include="~PostgreSql.App.Config" />
     <None Include="App.Config" />
     <None Include="~App.Config" />
     <None Include="Models\VoatEntityDataModel.edmx.diagram">
@@ -253,7 +254,10 @@
       <DependentUpon>VoatEntityDataModel.edmx</DependentUpon>
       <LastGenOutput>VoatEntityDataModel.cs</LastGenOutput>
     </Content>
+    <Content Include="~SqlServer.VoatEntityDataModel.edmx.xml" />
+    <Content Include="~PostgreSql.VoatEntityDataModel.edmx.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
