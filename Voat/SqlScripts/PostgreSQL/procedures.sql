@@ -1,5 +1,4 @@
 DROP FUNCTION IF EXISTS "dbo"."usp_CommentTree"(int, int, int);
-GO
 
 CREATE OR REPLACE FUNCTION "dbo"."usp_CommentTree"
 	(
@@ -117,9 +116,6 @@ BEGIN
         (h."Depth" <= Depth OR Depth IS NULL);
 END;
 $$ LANGUAGE 'plpgsql';
-GO
-
-
 
 
 CREATE OR REPLACE FUNCTION "dbo"."usp_Reports_UserVoteGivenStats"
@@ -178,7 +174,7 @@ BEGIN
 	);
 END;
 $$ LANGUAGE 'plpgsql';
-GO
+
 
 
 
@@ -237,9 +233,6 @@ BEGIN
 	);
 END;
 $$ LANGUAGE 'plpgsql';
-GO
-
-
 
 CREATE OR REPLACE FUNCTION "dbo"."usp_Reports_UserVoteReceivedStats"
 (
@@ -304,4 +297,5 @@ BEGIN
 	);
 END;
 $$ LANGUAGE 'plpgsql';
+
 
