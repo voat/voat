@@ -7,13 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.0-preview1-final" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170427-09" />
-    <PackageReference Include="xunit" Version="2.2.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.1.17" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.1.17" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj" />
+    <ProjectReference Include="..\Voat.Data\Voat.Data.csproj" />
+    <ProjectReference Include="..\Voat.Business\Voat.Business.csproj" />
   </ItemGroup>
 
 </Project>

@@ -27,7 +27,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using Voat.Domain.Query;
 using Voat.Common;
 using Voat.Data.Models;
@@ -49,6 +48,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Voat.Data
 {
@@ -546,7 +546,7 @@ namespace Voat.Data
         private int GetVoteValue(string sourceUser, string targetUser, ContentType contentType, int id, int voteStatus)
         {
             var q = new DapperQuery();
-            q.Select = $"sub.\"IsPrivate\", s.\"IsAnonymized\", sub.\"MinCCPForDownvote\" FROM {SqlFormatter.Table("Subverse", "sub", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Submission", "s", null,  "NOLOCK")} ON s.\"Subverse\" = sub.\"Name\"";
+            q.Select = $"sub.\"IsPrivate\", s.\"IsAnonymized\", sub.\"MinCCPForDownvote\" FROM {SqlFormatter.Table("Subverse", "sub", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} ON s.\"Subverse\" = sub.\"Name\"";
 
             switch (contentType)
             {
@@ -697,7 +697,7 @@ namespace Voat.Data
         public async Task<CommandResponse> CreateSubverse(string name, string title, string description, string sidebar = null)
         {
             DemandAuthentication();
-            
+
             //Evaulate Rules
             VoatRuleContext context = new VoatRuleContext();
             context.PropertyBag.SubverseName = name;
@@ -877,8 +877,8 @@ namespace Voat.Data
 
             query = (from x in _db.Submissions
                      where (
-                        x.UserName == userName 
-                        && !x.IsAnonymized 
+                        x.UserName == userName
+                        && !x.IsAnonymized
                         && !x.IsDeleted
                         )
                      && (x.Subverse == subverse || subverse == null)
@@ -895,7 +895,7 @@ namespace Voat.Data
         {
             var query = new DapperQuery();
             query.SelectColumns = "s.*";
-            query.Select = $"SELECT DISTINCT {"{0}"} FROM {SqlFormatter.Table("Submission", "s", null,  "NOLOCK")} INNER JOIN {SqlFormatter.Table("Subverse", "sub", null, "NOLOCK")} ON s.\"Subverse\" = sub.\"Name\"";
+            query.Select = $"SELECT DISTINCT {"{0}"} FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Subverse", "sub", null, "NOLOCK")} ON s.\"Subverse\" = sub.\"Name\"";
             query.Where = $"s.\"Type\" = {((int)SubmissionType.Link).ToString()} AND s.\"Url\" LIKE CONCAT('%', @Domain, '%')";
             ApplySubmissionSort(query, options);
 
@@ -918,7 +918,7 @@ namespace Voat.Data
             var query = new DapperQuery();
             query.SelectColumns = "s.*";
             query.Select = $"SELECT DISTINCT {"{0}"} FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")}";
-             
+
             query.Where = "s.\"ID\" IN @IDs";
             query.Parameters = (new { IDs = submissionID }).ToDynamicParameters();
 
@@ -960,7 +960,7 @@ namespace Voat.Data
             //string subverse = subverse;
             bool nsfw = false;
             string userName = null;
-            
+
             UserData userData = null;
             if (User.Identity.IsAuthenticated)
             {
@@ -969,9 +969,10 @@ namespace Voat.Data
             }
 
 
-            var joinSet = new Action<DapperQuery, string, string, SetType?, bool>((q, setName, setOwnerName, setType, include) => {
+            var joinSet = new Action<DapperQuery, string, string, SetType?, bool>((q, setName, setOwnerName, setType, include) =>
+            {
 
-                 var set = GetSet(setName, setOwnerName, setType);
+                var set = GetSet(setName, setOwnerName, setType);
                 if (set != null)
                 {
                     var joinAlias = $"set{setName}";
@@ -982,9 +983,10 @@ namespace Voat.Data
                 }
             });
 
-            switch (type) {
+            switch (type)
+            {
                 case DomainType.Subverse:
-           
+
                     bool filterBlockedSubverses = false;
 
                     switch (name.ToLower())
@@ -999,7 +1001,7 @@ namespace Voat.Data
                             //         join subscribed in _db.SubverseSubscriptions on x.Subverse equals subscribed.Subverse
                             //         where subscribed.UserName == User.Identity.Name
                             //         select x);
-                   
+
                             break;
                         case AGGREGATE_SUBVERSE.DEFAULT:
                             //if no user or user has no subscriptions or logged in user requests default page
@@ -1087,7 +1089,7 @@ namespace Voat.Data
 
                             ////Filter out stickies in subs
                             //query.Append(x => x.Where, "s.ID NOT IN (SELECT sticky.SubmissionID FROM StickiedSubmission sticky WITH (NOLOCK) WHERE sticky.SubmissionID = s.ID AND sticky.Subverse = s.Subverse)");
-                    
+
                             //query = (from x in _db.Submissions
                             //         where (x.Subverse == subverse || subverse == null)
                             //         select x);
@@ -1115,7 +1117,7 @@ namespace Voat.Data
                     }
 
 
-                    
+
 
                     if (User.Identity.IsAuthenticated)
                     {
@@ -1133,14 +1135,14 @@ namespace Voat.Data
 
                 case DomainType.Set:
                     joinSet(query, name, ownerName, null, true);
-                    
+
                     if (name.IsEqual("Default") && String.IsNullOrEmpty(ownerName))
                     {
                         ////sort default by relative rank on default if sorted by rank by default
                         //options.Sort = (options.Sort == SortAlgorithm.Rank ? Domain.Models.SortAlgorithm.Relative : options.Sort);
 
                         if (Settings.IsVoatBranded && options.Sort == SortAlgorithm.Relative)
-                        {    
+                        {
                             //This is a modification Voat uses in the default page
                             query.Append(x => x.Where, "(s.\"UpCount\" - s.\"DownCount\" >= 20) AND ABS(DATEDIFF(HH, s.\"CreationDate\", GETUTCDATE())) <= 24");
                         }
@@ -1549,7 +1551,8 @@ namespace Voat.Data
             }
 
             //Add User Vote to Submission
-            newSubmission.SubmissionVoteTrackers.Add(new SubmissionVoteTracker() {
+            newSubmission.SubmissionVoteTrackers.Add(new SubmissionVoteTracker()
+            {
                 UserName = newSubmission.UserName,
                 VoteStatus = (int)Vote.Up,
                 VoteValue = GetVoteValue(subverseObject, newSubmission, Vote.Up),
@@ -1565,7 +1568,7 @@ namespace Voat.Data
             {
                 ContentProcessor.Instance.Process(String.Concat(newSubmission.Title, " ", newSubmission.Content), ProcessingStage.InboundPostSave, newSubmission);
             }
-            
+
             return CommandResponse.Successful(newSubmission.Map());
         }
 
@@ -1715,7 +1718,7 @@ namespace Voat.Data
                                     :
                                     "[" + submission.Url + "](" + submission.Url + ")"
                                     )
-                       
+
                     };
                     var cmd = new SendMessageCommand(message, isAnonymized: submission.IsAnonymized);
                     cmd.Execute();
@@ -1834,7 +1837,8 @@ namespace Voat.Data
                             && (comment.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase))
                          select new Domain.Models.SubmissionComment()
                          {
-                             Submission = new SubmissionSummary() {
+                             Submission = new SubmissionSummary()
+                             {
                                  Title = submission.Title,
                                  IsDeleted = submission.IsDeleted,
                                  IsAnonymized = submission.IsAnonymized,
@@ -1924,7 +1928,7 @@ namespace Voat.Data
             q.Select = $"c.*, s.\"Subverse\" FROM {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} ON s.\"ID\" = c.\"SubmissionID\"";
             q.Where = "c.\"ID\" IN @IDs";
 
-            q.Parameters = (new { IDs = commentID}).ToDynamicParameters();
+            q.Parameters = (new { IDs = commentID }).ToDynamicParameters();
 
             //var query = (from comment in _db.Comments
             //             join submission in _db.Submissions on comment.SubmissionID equals submission.ID
@@ -2255,8 +2259,8 @@ namespace Voat.Data
 
             //Only allow users to edit ApiKeys if they IsActive == 1 and Current User owns it.
             var apiClient = (from x in _db.ApiClients
-                          where x.PublicKey == apiKey && x.UserName == User.Identity.Name && x.IsActive == true
-                          select x).FirstOrDefault();
+                             where x.PublicKey == apiKey && x.UserName == User.Identity.Name && x.IsActive == true
+                             select x).FirstOrDefault();
 
             if (apiClient != null)
             {
@@ -2268,7 +2272,7 @@ namespace Voat.Data
             }
 
             return apiClient;
-            
+
         }
 
         [Authorize]
@@ -3091,7 +3095,7 @@ namespace Voat.Data
                 d.Append(x => x.Where, "m.\"ID\" = @ID");
                 d.Parameters.Add("ID", id.Value);
             }
-           
+
             var result = await _db.Database.Connection.ExecuteAsync(d.ToString(), d.Parameters);
 
             //if (id.HasValue)
@@ -3202,7 +3206,8 @@ namespace Voat.Data
                 }
 
                 q.GroupBy = "\"Type\"";
-                q.Parameters = new {
+                q.Parameters = new
+                {
                     UserName = ownerName,
                     OwnerType = (int)ownerType,
                     SentType = (int)MessageType.Sent,
@@ -3230,7 +3235,7 @@ namespace Voat.Data
             //return result;
             #endregion
 
-           
+
         }
 
         [Authorize]
@@ -3253,7 +3258,8 @@ namespace Voat.Data
                 q.SkipCount = options.Index;
                 q.TakeCount = options.Count;
 
-                var messageMap = new Func<Data.Models.Message, Data.Models.Submission, Data.Models.Comment, Domain.Models.Message>((m, s, c) => {
+                var messageMap = new Func<Data.Models.Message, Data.Models.Submission, Data.Models.Comment, Domain.Models.Message>((m, s, c) =>
+                {
                     var msg = m.Map();
                     msg.Submission = s.Map();
                     msg.Comment = c.Map(m.Subverse);
@@ -3369,11 +3375,11 @@ namespace Voat.Data
 
         public IEnumerable<DomainReference> GetSubscriptions(string userName)
         {
-            
+
             var d = new DapperQuery();
             d.Select = $"SELECT 1 AS \"Type\", s.\"Name\", NULL AS \"OwnerName\" FROM{SqlFormatter.Table("SubverseSet", "subSet")} INNER JOIN {SqlFormatter.Table("SubverseSetList", "setList")} ON subSet.\"ID\" = setList.\"SubverseSetID\" INNER JOIN {SqlFormatter.Table("Subverse", "s")} ON setList.\"SubverseID\" = s.\"ID\" WHERE subSet.\"Type\" = @Type AND subSet.\"Name\" = @SetName AND subSet.\"UserName\" = @UserName ";
             d.Select += $"UNION ALL ";
-            d.Select += $"SELECT 2 AS \"Type\", subSet.\"Name\", subSet.\"UserName\" AS \"OwnerName\" FROM {SqlFormatter.Table("SubverseSetSubscription","setSub")} INNER JOIN {SqlFormatter.Table("SubverseSet", "subSet")} ON subSet.\"ID\" = setSub.\"SubverseSetID\" WHERE setSub.\"UserName\" = @UserName ";
+            d.Select += $"SELECT 2 AS \"Type\", subSet.\"Name\", subSet.\"UserName\" AS \"OwnerName\" FROM {SqlFormatter.Table("SubverseSetSubscription", "setSub")} INNER JOIN {SqlFormatter.Table("SubverseSet", "subSet")} ON subSet.\"ID\" = setSub.\"SubverseSetID\" WHERE setSub.\"UserName\" = @UserName ";
             d.Parameters = new DynamicParameters(new { UserName = userName, Type = (int)SetType.Front, SetName = SetType.Front.ToString() });
 
             var results = _db.Database.Connection.Query<DomainReference>(d.ToString(), d.Parameters);
@@ -3462,7 +3468,7 @@ namespace Voat.Data
             };
 
             var userPreferences = await GetUserPreferences(userName).ConfigureAwait(false);
-            
+
             //var pq = new QueryUserPreferences(userName);
             //var userPreferences = await pq.ExecuteAsync();
             //var userPreferences = await GetUserPreferences(userName);
@@ -3486,27 +3492,27 @@ namespace Voat.Data
 
             //Badges
             var userBadges = await (from b in _db.Badges
-                              join ub in _db.UserBadges on b.ID equals ub.BadgeID into ubn
-                              from uball in ubn.DefaultIfEmpty()
-                              where
-                              uball.UserName == userName
+                                    join ub in _db.UserBadges on b.ID equals ub.BadgeID into ubn
+                                    from uball in ubn.DefaultIfEmpty()
+                                    where
+                                    uball.UserName == userName
 
-                              //(virtual badges)
-                              ||
-                              (b.ID == "whoaverse" && (userInfo.RegistrationDate < new DateTime(2015, 1, 2)))
-                              ||
-                              (b.ID == "alphauser" && (userInfo.RegistrationDate > new DateTime(2015, 1, 2) && userInfo.RegistrationDate < new DateTime(2016, 10, 10)))
-                              ||
-                              (b.ID == "betauser" && userInfo.RegistrationDate > (new DateTime(2016, 10, 10)))
-                              ||
-                              (b.ID == "cakeday" && userInfo.RegistrationDate.Year < CurrentDate.Year && userInfo.RegistrationDate.Month == CurrentDate.Month && userInfo.RegistrationDate.Day == CurrentDate.Day)
-                              select new Voat.Domain.Models.UserBadge()
-                              {
-                                  CreationDate = (uball == null ? userInfo.RegistrationDate : uball.CreationDate),
-                                  Name = b.Name,
-                                  Title = b.Title,
-                                  Graphic = b.Graphic,
-                              }
+                                    //(virtual badges)
+                                    ||
+                                    (b.ID == "whoaverse" && (userInfo.RegistrationDate < new DateTime(2015, 1, 2)))
+                                    ||
+                                    (b.ID == "alphauser" && (userInfo.RegistrationDate > new DateTime(2015, 1, 2) && userInfo.RegistrationDate < new DateTime(2016, 10, 10)))
+                                    ||
+                                    (b.ID == "betauser" && userInfo.RegistrationDate > (new DateTime(2016, 10, 10)))
+                                    ||
+                                    (b.ID == "cakeday" && userInfo.RegistrationDate.Year < CurrentDate.Year && userInfo.RegistrationDate.Month == CurrentDate.Month && userInfo.RegistrationDate.Day == CurrentDate.Day)
+                                    select new Voat.Domain.Models.UserBadge()
+                                    {
+                                        CreationDate = (uball == null ? userInfo.RegistrationDate : uball.CreationDate),
+                                        Name = b.Name,
+                                        Title = b.Title,
+                                        Graphic = b.Graphic,
+                                    }
                               ).ToListAsync().ConfigureAwait(false);
 
             userInfo.Badges = userBadges;
@@ -3689,7 +3695,8 @@ namespace Voat.Data
         public Score UserContributionPoints(string userName, ContentType contentType, string subverse = null, bool isReceived = true, TimeSpan? timeSpan = null)
         {
 
-            Func<IEnumerable<dynamic>, Score> processRecords = new Func<IEnumerable<dynamic>, Score>(records => {
+            Func<IEnumerable<dynamic>, Score> processRecords = new Func<IEnumerable<dynamic>, Score>(records =>
+            {
                 Score score = new Score();
                 if (records != null && records.Any())
                 {
@@ -3727,8 +3734,8 @@ namespace Voat.Data
 
                             //basic point calc query
                             q.Select = $"SELECT @UserName AS \"UserName\", @IsReceived AS \"IsReceived\", @ContentType AS \"ContentType\", v.\"VoteStatus\" AS \"VoteStatus\", 1 AS \"VoteCount\", ABS(v.VoteValue) AS \"VoteValue\" FROM {SqlFormatter.Table("CommentVoteTracker", "v", null, "NOLOCK")}";
-                            q.Select += $"INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"ID\" = v.\"CommentID\" INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} ON s.\"ID\" = c.\"SubmissionID\""; 
-                                    
+                            q.Select += $"INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"ID\" = v.\"CommentID\" INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} ON s.\"ID\" = c.\"SubmissionID\"";
+
                             //This controls whether we search for given or received votes
                             alias = (isReceived ? "c" : "v");
                             q.Append(x => x.Where, $"{alias}.\"UserName\" = @UserName");
@@ -3872,7 +3879,7 @@ namespace Voat.Data
             switch (domainReference.Type)
             {
                 case DomainType.Subverse:
-                    
+
                     var subverse = GetSubverseInfo(domainReference.Name);
                     if (subverse == null)
                     {
@@ -3920,7 +3927,7 @@ namespace Voat.Data
                     var setb = GetSet(domainReference.Name, domainReference.OwnerName);
                     if (setb == null)
                     {
-                        return CommandResponse.FromStatus<bool?>(null,Status.Denied, "Set does not exist");
+                        return CommandResponse.FromStatus<bool?>(null, Status.Denied, "Set does not exist");
                     }
 
                     var subscribeAction = SubscriptionAction.Toggle;
@@ -4187,7 +4194,7 @@ namespace Voat.Data
                 var results = await data.ToListAsync().ConfigureAwait(false);
 
                 //TODO: Move to DomainMaps
-                var mapToDomain = new Func<Data.Models.CommentRemovalLog, Domain.Models.CommentRemovalLog>(d => 
+                var mapToDomain = new Func<Data.Models.CommentRemovalLog, Domain.Models.CommentRemovalLog>(d =>
                 {
                     var m = new Domain.Models.CommentRemovalLog();
                     m.CreatedBy = d.Moderator;
@@ -4214,7 +4221,7 @@ namespace Voat.Data
                     m.Comment.Submission.IsAnonymized = d.Comment.Submission.IsAnonymized;
                     m.Comment.Submission.UserName = m.Comment.Submission.IsAnonymized ? d.Comment.Submission.ID.ToString() : d.Comment.Submission.UserName;
                     m.Comment.Submission.IsDeleted = d.Comment.Submission.IsDeleted;
-                    
+
                     return m;
                 });
 
@@ -4224,7 +4231,7 @@ namespace Voat.Data
             }
         }
 
-        
+
 
         #endregion
 
@@ -4349,7 +4356,7 @@ namespace Voat.Data
         #endregion Moderator Functions
 
         #region RuleReports
-       
+
         public async Task<IEnumerable<Data.Models.RuleSet>> GetRuleSets(string subverse, ContentType? contentType)
         {
             var typeFilter = contentType == ContentType.Submission ? "r.SubmissionID IS NOT NULL" : "r.CommentID IS NOT NULL";
@@ -4372,15 +4379,15 @@ namespace Voat.Data
 
             q.Select = $"SELECT rr.\"Subverse\", rr.\"UserName\", rr.\"SubmissionID\", rr.\"CommentID\", rr.\"RuleSetID\", r.\"Name\", r.\"Description\", COUNT(*) AS \"Count\", MAX(rr.\"CreationDate\") AS \"MostRecent\" FROM {SqlFormatter.Table("RuleReport", "rr", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON rr.\"RuleSetID\" = r.\"ID\"";
 
-                        //--LEFT JOIN Submission s WITH (NOLOCK) ON s.ID = rr.SubmissionID
-                        //--LEFT JOIN Comment c WITH (NOLOCK) ON c.ID = rr.CommentID
-                        //WHERE
-                        //    (rr.Subverse = @Subverse OR @Subverse IS NULL)
-                        //    AND
-                        //    (rr.CreationDate >= @StartDate OR @StartDate IS NULL)
-                        //    AND
-                        //    (rr.CreationDate <= @EndDate OR @EndDate IS NULL)
-                        //    AND {typeFilter}
+            //--LEFT JOIN Submission s WITH (NOLOCK) ON s.ID = rr.SubmissionID
+            //--LEFT JOIN Comment c WITH (NOLOCK) ON c.ID = rr.CommentID
+            //WHERE
+            //    (rr.Subverse = @Subverse OR @Subverse IS NULL)
+            //    AND
+            //    (rr.CreationDate >= @StartDate OR @StartDate IS NULL)
+            //    AND
+            //    (rr.CreationDate <= @EndDate OR @EndDate IS NULL)
+            //    AND {typeFilter}
             q.Where = "(rr.\"Subverse\" = @Subverse OR @Subverse IS NULL) AND (rr.\"CreationDate\" >= @StartDate OR @StartDate IS NULL) AND (rr.\"CreationDate\" <= @EndDate OR @EndDate IS NULL)";
             q.OrderBy = "\"MostRecent\" DESC";
 
@@ -4423,7 +4430,7 @@ namespace Voat.Data
                 var ids = data.Where(x => x.SubmissionID != null && x.CommentID != null).Select(x => x.CommentID.Value).Distinct();
                 //Get associated content
                 var comments = await GetComments(ids.ToArray());
-                var dict = ids.ToDictionary(x => new ContentItem() { Comment = comments.FirstOrDefault(s => s.ID == x), ContentType = ContentType.Comment}, x => data.Where(y => y.CommentID.HasValue && y.CommentID.Value == x));
+                var dict = ids.ToDictionary(x => new ContentItem() { Comment = comments.FirstOrDefault(s => s.ID == x), ContentType = ContentType.Comment }, x => data.Where(y => y.CommentID.HasValue && y.CommentID.Value == x));
                 dict.ToList().ForEach(x => groupedData.Add(x.Key, x.Value));
             }
 
@@ -4446,7 +4453,7 @@ namespace Voat.Data
             }
 
             var q = new DapperUpdate();
-            q.Update = $"r SET r.\"ReviewedBy\" = @UserName, r.\"ReviewedDate\" = @CreationDate FROM {SqlFormatter.Table("RuleReport",  "r")}";
+            q.Update = $"r SET r.\"ReviewedBy\" = @UserName, r.\"ReviewedDate\" = @CreationDate FROM {SqlFormatter.Table("RuleReport", "r")}";
             if (contentType == ContentType.Submission)
             {
                 q.Where = "r.\"Subverse\" = @Subverse AND r.\"SubmissionID\" = @ID";
@@ -4502,7 +4509,7 @@ namespace Voat.Data
         }
 
         #endregion
-        
+
         #region Admin Functions
 
         //public void SaveAdminLogEntry(AdminLog log) {
@@ -4616,71 +4623,71 @@ namespace Voat.Data
 
             var response = new CommandResponse<bool?>();
 
-                switch (domainType)
-                {
-                    case DomainType.Subverse:
+            switch (domainType)
+            {
+                case DomainType.Subverse:
 
-                        var exists = _db.Subverses.Where(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                        if (exists == null)
-                        {
-                            throw new VoatNotFoundException("Subverse '{0}' does not exist", name);
-                        }
-                        //Add to user Block Set
-                        //Set propercased name
-                        name = exists.Name;
+                    var exists = _db.Subverses.Where(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                    if (exists == null)
+                    {
+                        throw new VoatNotFoundException("Subverse '{0}' does not exist", name);
+                    }
+                    //Add to user Block Set
+                    //Set propercased name
+                    name = exists.Name;
 
-                        var set = GetOrCreateSubverseSet(new SubverseSet() { Name = SetType.Blocked.ToString(), UserName = User.Identity.Name, Type = (int)SetType.Blocked, Description = "Blocked Subverses" });
-                        //var action = block == null ? (SubscriptionAction?)null : (block.Value ? SubscriptionAction.Subscribe : SubscriptionAction.Unsubscribe);
+                    var set = GetOrCreateSubverseSet(new SubverseSet() { Name = SetType.Blocked.ToString(), UserName = User.Identity.Name, Type = (int)SetType.Blocked, Description = "Blocked Subverses" });
+                    //var action = block == null ? (SubscriptionAction?)null : (block.Value ? SubscriptionAction.Subscribe : SubscriptionAction.Unsubscribe);
 
-                        response = await SetSubverseListChange(set, exists, action);
+                    response = await SetSubverseListChange(set, exists, action);
 
-                        //var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.Subverse.ToLower() == name.ToLower() && n.UserName == User.Identity.Name);
-                        //if (subverseBlock == null && ((block.HasValue && block.Value) || !block.HasValue))
-                        //{
-                        //    db.UserBlockedSubverses.Add(new UserBlockedSubverse { UserName = User.Identity.Name, Subverse = name, CreationDate = Repository.CurrentDate });
-                        //    response.Response = true;
-                        //}
-                        //else if (subverseBlock != null && ((block.HasValue && !block.Value) || !block.HasValue))
-                        //{
-                        //    db.UserBlockedSubverses.Remove(subverseBlock);
-                        //    response.Response = false;
-                        //}
-                        //db.SaveChanges();
-                        break;
+                    //var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.Subverse.ToLower() == name.ToLower() && n.UserName == User.Identity.Name);
+                    //if (subverseBlock == null && ((block.HasValue && block.Value) || !block.HasValue))
+                    //{
+                    //    db.UserBlockedSubverses.Add(new UserBlockedSubverse { UserName = User.Identity.Name, Subverse = name, CreationDate = Repository.CurrentDate });
+                    //    response.Response = true;
+                    //}
+                    //else if (subverseBlock != null && ((block.HasValue && !block.Value) || !block.HasValue))
+                    //{
+                    //    db.UserBlockedSubverses.Remove(subverseBlock);
+                    //    response.Response = false;
+                    //}
+                    //db.SaveChanges();
+                    break;
 
-                    case DomainType.User:
+                case DomainType.User:
 
-                        //Ensure user exists, get propercased user name
-                        name = UserHelper.OriginalUsername(name);
-                        if (String.IsNullOrEmpty(name))
-                        {
-                            return new CommandResponse<bool?>(null, Status.Error, "User does not exist");
-                        }
-                        if (User.Identity.Name.IsEqual(name))
-                        {
-                            return new CommandResponse<bool?>(null, Status.Error, "Attempting to open worm hold denied. Can not block yourself.");
-                        }
+                    //Ensure user exists, get propercased user name
+                    name = UserHelper.OriginalUsername(name);
+                    if (String.IsNullOrEmpty(name))
+                    {
+                        return new CommandResponse<bool?>(null, Status.Error, "User does not exist");
+                    }
+                    if (User.Identity.Name.IsEqual(name))
+                    {
+                        return new CommandResponse<bool?>(null, Status.Error, "Attempting to open worm hold denied. Can not block yourself.");
+                    }
 
-                        var userBlock = _db.UserBlockedUsers.FirstOrDefault(n => n.BlockUser.ToLower() == name.ToLower() && n.UserName == User.Identity.Name);
-                        if (userBlock == null && (action == SubscriptionAction.Subscribe || action == SubscriptionAction.Toggle))
-                        {
-                            _db.UserBlockedUsers.Add(new UserBlockedUser { UserName = User.Identity.Name, BlockUser = name, CreationDate = Repository.CurrentDate });
-                            response.Response = true;
-                        }
-                        else if (userBlock != null && (action == SubscriptionAction.Unsubscribe || action == SubscriptionAction.Toggle))
-                        {
-                            _db.UserBlockedUsers.Remove(userBlock);
-                            response.Response = false;
-                        }
+                    var userBlock = _db.UserBlockedUsers.FirstOrDefault(n => n.BlockUser.ToLower() == name.ToLower() && n.UserName == User.Identity.Name);
+                    if (userBlock == null && (action == SubscriptionAction.Subscribe || action == SubscriptionAction.Toggle))
+                    {
+                        _db.UserBlockedUsers.Add(new UserBlockedUser { UserName = User.Identity.Name, BlockUser = name, CreationDate = Repository.CurrentDate });
+                        response.Response = true;
+                    }
+                    else if (userBlock != null && (action == SubscriptionAction.Unsubscribe || action == SubscriptionAction.Toggle))
+                    {
+                        _db.UserBlockedUsers.Remove(userBlock);
+                        response.Response = false;
+                    }
 
-                        await _db.SaveChangesAsync();
-                        break;
+                    await _db.SaveChangesAsync();
+                    break;
 
-                    default:
-                        throw new NotImplementedException(String.Format("Blocking of {0} is not implemented yet", domainType.ToString()));
-                        break;
-                }
-            
+                default:
+                    throw new NotImplementedException(String.Format("Blocking of {0} is not implemented yet", domainType.ToString()));
+                    break;
+            }
+
             response.Status = Status.Success;
             return response;
         }
@@ -4725,7 +4732,8 @@ namespace Voat.Data
         public async Task<string> GetRandomSubverse(bool nsfw)
         {
             var sub = await GetRandomSubverse(nsfw, true);
-            if (String.IsNullOrEmpty(sub)) {
+            if (String.IsNullOrEmpty(sub))
+            {
                 sub = await GetRandomSubverse(nsfw, false);
             }
             return sub;
@@ -5355,7 +5363,7 @@ namespace Voat.Data
                         {
                             await _db.Database.Connection.ExecuteAsync(statement.ToString(), statement.Parameters);
                         }
-                    
+
 
                         // delete user preferences
                         var userPrefs = _db.UserPreferences.Find(userName);

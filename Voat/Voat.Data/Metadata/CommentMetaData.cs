@@ -4,13 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 
 namespace Voat.Data.Models
 {
     //TODO: This is a hack from the UI. We need to get rid of this but as AllowHtml requires a reference to the Mvc libraries and
     //the MetadataType needs to be compiled in the current assembly.
-    [MetadataType(typeof(CommentMetaData))]
+    //[MetadataType(typeof(CommentMetaData))]//FIXME: not supported
     public partial class Comment
     {
 
@@ -20,7 +19,7 @@ namespace Voat.Data.Models
     {
         [Required(ErrorMessage = "Comment text is required. Please fill this field.")]
         [StringLength(10000, ErrorMessage = "Comment text is limited to 10000 characters.")]
-        [AllowHtml]
+        //[AllowHtml]//FIXME: not supported
         public string Content { get; set; }
     }
 }
