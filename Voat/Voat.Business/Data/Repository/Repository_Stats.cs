@@ -41,7 +41,7 @@ namespace Voat.Data
             var procedure = SqlFormatter.Object("usp_Reports_UserVoteGivenStats");
 
             var result = await _db.Database.Connection.QueryAsync<UserVoteStats>(procedure,
-                 new { BeginDate = options.StartDate.Value, endDate = options.EndDate.Value, RecordCount = options.Count },
+                 new { BeginDate = options.StartDate.Value, EndDate = options.EndDate.Value, RecordCount = options.Count },
                 commandType: System.Data.CommandType.StoredProcedure);
 
             return new Statistics<IEnumerable<UserVoteStats>>() {
@@ -56,7 +56,7 @@ namespace Voat.Data
             var procedure = SqlFormatter.Object("usp_Reports_UserVoteReceivedStats");
 
             var result = await _db.Database.Connection.QueryAsync<UserVoteReceivedStats>(procedure,
-                  new { BeginDate = options.StartDate, endDate = options.EndDate, RecordCount = options.Count },
+                  new { BeginDate = options.StartDate, EndDate = options.EndDate, RecordCount = options.Count },
                 commandType: System.Data.CommandType.StoredProcedure);
 
             return new Statistics<IEnumerable<UserVoteReceivedStats>>()
@@ -73,7 +73,7 @@ namespace Voat.Data
             var procedure = SqlFormatter.Object("usp_Reports_HighestVotedContent");
 
             var result = await _db.Database.Connection.QueryAsync<StatContentItem>(procedure,
-               new { BeginDate = options.StartDate, endDate = options.EndDate, RecordCount = options.Count },
+               new { BeginDate = options.StartDate, EndDate = options.EndDate, RecordCount = options.Count },
                commandType: System.Data.CommandType.StoredProcedure);
 
             //Load content items
