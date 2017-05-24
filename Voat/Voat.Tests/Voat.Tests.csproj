@@ -197,9 +197,10 @@
     <Compile Include="QueryTests\QueryDomainObjectsTests.cs" />
     <Compile Include="QueryTests\QueryMessageTests.cs" />
     <Compile Include="QueryTests\QueryStatisticsTests.cs" />
+    <Compile Include="QueryTests\QuerySubmissionTests.cs" />
     <Compile Include="QueryTests\QuerySubverseTests.cs" />
     <Compile Include="QueryTests\QuerySubmissionSortTests.cs" />
-    <Compile Include="QueryTests\QuerySubmissionTests.cs" />
+    <Compile Include="QueryTests\QuerySubmissionCachingTests.cs" />
     <Compile Include="QueryTests\QueryUserTests.cs" />
     <Compile Include="Rules\Rules.cs" />
     <Compile Include="Rules\RulesTests.cs" />
