@@ -62,6 +62,7 @@ namespace Voat.Data
                     }
                     break;
                 case DataStoreType.PostgreSQL:
+                    result.AppendLine("load 'plpgsql';");
                     result.AppendLine("DO");
                     result.AppendLine("$$");
                     result.AppendLine("BEGIN");

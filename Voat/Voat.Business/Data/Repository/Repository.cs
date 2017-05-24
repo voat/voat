@@ -1780,26 +1780,22 @@ namespace Voat.Data
                     var exists = $"SELECT st.* FROM  {SqlFormatter.Table("SessionTracker", "st", null, "NOLOCK")} WHERE st.\"SessionID\" = @SessionID AND st.\"Subverse\" = (SELECT \"Subverse\" FROM {SqlFormatter.Table("Submission", null, null, "NOLOCK")} WHERE \"ID\" = @SubmissionID)";
 
                     var body = $"INSERT INTO {SqlFormatter.Table("SessionTracker")} (\"SessionID\", \"Subverse\", \"CreationDate\") ";
-                    body += $"SELECT @SessionID, s.\"Subverse\", @Date FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} WHERE \"ID\" = @SubmissionID;";
+                    body += $"SELECT @SessionID, s.\"Subverse\", @Date FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} WHERE \"ID\" = @SubmissionID ";
+                    body += $"AND NOT EXISTS ({exists})";
 
-                    var statement = SqlFormatter.IfExists(false, exists, body);
-
-                    await _db.Database.Connection.ExecuteAsync(statement, new { SessionID = hash, SubmissionID = submissionID, Date = CurrentDate }, commandType: System.Data.CommandType.Text).ConfigureAwait(false);
+                    await _db.Database.Connection.ExecuteAsync(body, new { SessionID = hash, SubmissionID = submissionID, Date = CurrentDate }, commandType: System.Data.CommandType.Text).ConfigureAwait(false);
 
 
-                    //SessionHelper.Add(subverse.Name, hash);
+                    exists = $"SELECT COUNT(*) FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID";
+                    var count = await _db.Database.Connection.ExecuteScalarAsync<int>(exists, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
 
-                    //current logic
-                    //if (SessionExists(sessionId, subverseName))
-                    //    return;
-                    //using (var db = new voatEntities())
-                    //{
-                    //    var newSession = new SessionTracker { SessionID = sessionId, Subverse = subverseName, CreationDate = Repository.CurrentDate };
-
-                    //    db.SessionTrackers.Add(newSession);
-                    //    db.SaveChanges();
-
-                    //}
+                    if (count == 0)
+                    {
+                        var sql = $"INSERT INTO {SqlFormatter.Table("ViewStatistic")} (\"SubmissionID\", \"ViewerID\") VALUES (@SubmissionID, @SessionID) ";
+                        await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                        sql = $"UPDATE {SqlFormatter.Table("Submission")} SET \"Views\" = (\"Views\" + 1) WHERE \"ID\" = @SubmissionID ";
+                        await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                    }
 
                     //sql = $"IF NOT EXISTS (SELECT * FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID) ";
                     //sql += $"BEGIN ";
@@ -1810,19 +1806,6 @@ namespace Voat.Data
                     //await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
 
 
-                    //// register a new view for this thread
-                    //// check if this hash is present for this submission id in viewstatistics table
-                    //var existingView = _db.ViewStatistics.Find(submissionID, hash);
-
-                    //// this IP has already viwed this thread, skip registering a new view
-                    //if (existingView == null)
-                    //{
-                    //    // this is a new view, register it for this submission
-                    //    var view = new ViewStatistic { SubmissionID = submissionID, ViewerID = hash };
-                    //    _db.ViewStatistics.Add(view);
-                    //    submission.Views++;
-                    //    await _db.SaveChangesAsync();
-                    //}
                 }
                 catch (Exception ex)
                 {
@@ -4614,15 +4597,16 @@ namespace Voat.Data
                     body += $"SELECT s.\"Subverse\", NULL, s.\"ID\", c.\"ID\", @RuleID, @UserName, @Date FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"SubmissionID\" = s.\"ID\" INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON r.\"ID\" = @RuleID AND (r.\"Subverse\" = s.\"Subverse\" OR r.\"Subverse\" IS NULL) AND (r.\"ContentType\" = @ContentType OR r.\"ContentType\" IS NULL) WHERE c.\"ID\" = @ID AND c.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)} AND r.\"IsActive\" = {SqlFormatter.BooleanLiteral(true)}";
                     break;
                 case ContentType.Submission:
-                    body += $"SELECT s.\"Subverse\", NULL, s.\"ID\", NULL, @RuleID, @UserName, @CurrentDate FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON r.\"ID\" = @RuleID AND (r.\"Subverse\" = s.\"Subverse\" OR r.\"Subverse\" IS NULL) AND (r.\"ContentType\" = @ContentType OR r.\"ContentType\" IS NULL) WHERE s.\"ID\" = @ID AND s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)} AND r.\"IsActive\" = {SqlFormatter.BooleanLiteral(true)}";
+                    body += $"SELECT s.\"Subverse\", NULL, s.\"ID\", NULL, @RuleID, @UserName, @Date FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON r.\"ID\" = @RuleID AND (r.\"Subverse\" = s.\"Subverse\" OR r.\"Subverse\" IS NULL) AND (r.\"ContentType\" = @ContentType OR r.\"ContentType\" IS NULL) WHERE s.\"ID\" = @ID AND s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)} AND r.\"IsActive\" = {SqlFormatter.BooleanLiteral(true)}";
                     break;
             }
             //filter out banned users
-            body += $" AND NOT EXISTS (SELECT * FROM {SqlFormatter.Table("BannedUser")} WHERE \"UserName\" = @UserName) AND NOT EXISTS (SELECT * FROM {SqlFormatter.Table("SubverseBan")} WHERE \"UserName\" = @UserName AND \"Subverse\" = s.\"Subverse\");";
+            body += $" AND NOT EXISTS (SELECT * FROM {SqlFormatter.Table("BannedUser")} WHERE \"UserName\" = @UserName) AND NOT EXISTS (SELECT * FROM {SqlFormatter.Table("SubverseBan")} WHERE \"UserName\" = @UserName AND \"Subverse\" = s.\"Subverse\")";
+            body += $" AND NOT EXISTS ({existsClause})";
 
-            var statement = SqlFormatter.IfExists(false, existsClause, body, null);
+            //var statement = SqlFormatter.IfExists(false, existsClause, body, null);
 
-           var result = await _db.Database.Connection.ExecuteAsync(statement, new { UserName = User.Identity.Name, ID = id, RuleID = ruleID, ContentType = (int)contentType, Date = CurrentDate });
+           var result = await _db.Database.Connection.ExecuteAsync(body, new { UserName = User.Identity.Name, ID = id, RuleID = ruleID, ContentType = (int)contentType, Date = CurrentDate });
 
             return CommandResponse.Successful();
         }

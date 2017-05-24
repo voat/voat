@@ -116,12 +116,9 @@ namespace Voat.Tests.Repository
                         switch (Configuration.Settings.DataStore)
                         {
                             case Voat.Data.DataStoreType.PostgreSQL:
-                                cmd.CommandText = contents.Replace("{dbName}", dbName);
-
-                                cmd.ExecuteNonQuery();
-                                break;
+                              
                             case Voat.Data.DataStoreType.SqlServer:
-                                var segments = contents.Split(new string[] { Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ? "GO" : ";" }, StringSplitOptions.RemoveEmptyEntries);
+                                var segments = contents.Split(new string[] { "GO" }, StringSplitOptions.RemoveEmptyEntries);
                                 foreach (var batch in segments)
                                 {
                                     cmd.CommandText = batch.Replace("{dbName}", dbName);

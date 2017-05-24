@@ -1,4 +1,5 @@
 DROP FUNCTION IF EXISTS "dbo"."usp_CommentTree"(int, int, int);
+GO
 
 CREATE OR REPLACE FUNCTION "dbo"."usp_CommentTree"
 	(
@@ -115,5 +116,192 @@ BEGIN
     WHERE 
         (h."Depth" <= Depth OR Depth IS NULL);
 END;
+$$ LANGUAGE 'plpgsql';
+GO
 
-$$ LANGUAGE 'plpgsql'
+
+
+
+CREATE OR REPLACE FUNCTION "dbo"."usp_Reports_UserVoteGivenStats"
+(
+	"BeginDate" TIMESTAMP,
+	"EndDate" TIMESTAMP,
+	"RecordCount" INT = 5
+)
+RETURNS TABLE
+(
+	"ContentType" INT,  
+	"VoteType" INT,  
+	"UserName" VARCHAR(50),
+	"TotalCount" BIGINT
+)
+AS $$
+BEGIN
+	RETURN QUERY (
+		(SELECT 1 AS "ContentType", 1 AS "VoteType", x."UserName", COUNT(*) AS "TotalCount" FROM "dbo"."SubmissionVoteTracker" x
+		WHERE 
+			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
+			AND "VoteStatus" = 1
+		GROUP BY x."UserName"
+		ORDER BY COUNT(*) DESC
+		LIMIT "RecordCount" OFFSET 0)
+
+		UNION ALL
+
+		(SELECT 1 AS "ContentType", -1 AS "VoteType", x."UserName", COUNT(*) AS "TotalCount" FROM "dbo"."SubmissionVoteTracker" x
+		WHERE 
+			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
+			AND "VoteStatus" = -1
+		GROUP BY x."UserName"
+		ORDER BY COUNT(*) DESC
+		LIMIT "RecordCount" OFFSET 0)
+
+		UNION ALL
+
+		(SELECT 2 AS "ContentType", 1 AS "VoteType", x."UserName", COUNT(*) AS "TotalCount" FROM "dbo"."CommentVoteTracker" x
+		WHERE 
+			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
+			AND "VoteStatus" = 1
+		GROUP BY x."UserName"
+		ORDER BY COUNT(*) DESC
+		LIMIT "RecordCount" OFFSET 0)
+
+		UNION ALL
+
+		(SELECT 2 AS "ContentType", -1 AS "VoteType", x."UserName", COUNT(*) AS "TotalCount" FROM "dbo"."CommentVoteTracker" x
+		WHERE 
+			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
+			AND "VoteStatus" = -1
+		GROUP BY x."UserName"
+		ORDER BY COUNT(*) DESC
+		LIMIT "RecordCount" OFFSET 0)
+	);
+END;
+$$ LANGUAGE 'plpgsql';
+GO
+
+
+
+CREATE OR REPLACE FUNCTION "dbo"."usp_Reports_HighestVotedContent"
+(
+	"BeginDate" TIMESTAMP,
+	"EndDate" TIMESTAMP,
+	"RecordCount" INT = 5
+)
+RETURNS TABLE
+(
+	"ContentType" INT,
+	"VoteType" INT,
+	"ID" INT
+)
+AS $$
+BEGIN
+	RETURN QUERY (
+		(SELECT 1 AS "ContentType", 1 AS "VoteType", x."ID"
+		FROM "dbo"."Submission" x
+		WHERE 
+			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
+			AND x."IsAnonymized" = False AND x."IsDeleted" = False
+		ORDER BY x."UpCount" DESC
+		LIMIT "RecordCount" OFFSET 0)
+		
+		UNION ALL
+		
+		(SELECT 2 AS "ContentType", 1 AS "VoteType", x."ID" 
+		FROM "dbo"."Comment" x
+		WHERE 
+			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
+			AND x."IsAnonymized" = False AND x."IsDeleted" = False
+		ORDER BY x."UpCount" DESC
+		LIMIT "RecordCount" OFFSET 0)
+		
+		UNION ALL
+		
+		(SELECT 1 AS "ContentType", -1 AS VoteType, x."ID"
+		FROM "dbo"."Submission" x
+		WHERE 
+			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
+			AND x."IsAnonymized" = False AND x."IsDeleted" = False
+		ORDER BY x."DownCount" DESC
+		LIMIT "RecordCount" OFFSET 0)
+		
+		UNION ALL
+		
+		(SELECT 2 AS "ContentType", -1 AS "VoteType", x."ID"
+		FROM "dbo"."Comment" x
+		WHERE 
+			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
+			AND x."IsAnonymized" = False AND x."IsDeleted" = False
+		ORDER BY x."DownCount" DESC
+		LIMIT "RecordCount" OFFSET 0)
+	);
+END;
+$$ LANGUAGE 'plpgsql';
+GO
+
+
+
+CREATE OR REPLACE FUNCTION "dbo"."usp_Reports_UserVoteReceivedStats"
+(
+	"BeginDate" TIMESTAMP,
+	"EndDate" TIMESTAMP,
+	"RecordCount" INT = 5
+)
+RETURNS TABLE
+(
+	"ContentType" INT,
+	"VoteType" INT,
+	"UserName" VARCHAR(50),
+	"AvgVotes" FLOAT,
+	"TotalVotes" NUMERIC,
+	"TotalCount" BIGINT
+)
+AS $$
+BEGIN
+	RETURN QUERY (
+		--- SUBMISSION AVG ---
+		-- Top 
+		(SELECT 1 AS "ContentType", 1 AS "VoteType", x."UserName", SUM(x."UpCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", SUM(x."UpCount") AS "TotalVotes", COUNT(x."ID") AS "TotalCount"  FROM "dbo"."Submission" x
+		WHERE 
+			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
+			AND x."IsAnonymized" = False
+		GROUP BY x."UserName"
+		ORDER BY SUM(x."UpCount") DESC
+		LIMIT "RecordCount" OFFSET 0)
+
+		--Bottom
+		UNION ALL
+		
+		(SELECT 1 AS "ContentType", -1 AS "VoteType", x."UserName", SUM(x."DownCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", SUM(x."DownCount") AS "TotalVotes", COUNT(x."ID") AS "TotalCount"  FROM "dbo"."Submission" x
+		WHERE 
+			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
+			AND x."IsAnonymized" = False
+		GROUP BY x."UserName"
+		ORDER BY SUM(x."DownCount") DESC
+		LIMIT "RecordCount" OFFSET 0)
+
+		UNION ALL
+		--- COMMENTS ---
+
+		-- Top 
+		(SELECT 2 AS "ContentType", 1 AS "VoteType", x."UserName", SUM(x."UpCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", SUM(x."UpCount") AS "TotalVotes", COUNT(x."ID") AS "TotalCount"  FROM "dbo"."Comment" x
+		WHERE 
+			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
+			AND x."IsAnonymized" = False
+		GROUP BY x."UserName"
+		ORDER BY SUM(x."UpCount") DESC
+		LIMIT "RecordCount" OFFSET 0)
+
+		UNION ALL
+		
+		(SELECT 2 AS "ContentType", -1 AS "VoteType", x."UserName", SUM(x."DownCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", SUM(x."DownCount") AS "TotalVotes", COUNT(x."ID") AS "TotalCount"  FROM "dbo"."Comment" x
+		WHERE 
+			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
+			AND x."IsAnonymized" = False
+		GROUP BY x."UserName"
+		ORDER BY SUM(x."DownCount") DESC
+		LIMIT "RecordCount" OFFSET 0)
+	);
+END;
+$$ LANGUAGE 'plpgsql';
+
