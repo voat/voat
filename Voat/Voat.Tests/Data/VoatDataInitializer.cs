@@ -74,6 +74,12 @@ namespace Voat.Tests.Repository
                     cmd.Connection.Open();
                 }
 
+                //Kill connections
+                cmd.CommandText = TestEnvironmentSettings.DataStoreType == Voat.Data.DataStoreType.SqlServer ?
+                                       $"SELECT 0" :
+                                       $"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid() AND datname = '{dbName}'";
+                cmd.ExecuteNonQuery();
+                
                 cmd.CommandText = TestEnvironmentSettings.DataStoreType == Voat.Data.DataStoreType.SqlServer ?
                                         $"IF EXISTS (SELECT name FROM sys.databases WHERE name = '{dbName}') DROP DATABASE {dbName}" :
                                         $"DROP DATABASE IF EXISTS {dbName}";
@@ -106,13 +112,25 @@ namespace Voat.Tests.Repository
                     using (var sr = new StreamReader(scriptFile))
                     {
                         var contents = sr.ReadToEnd();
-                       
-                        var segments = contents.Split(new string[] { TestEnvironmentSettings.DataStoreType == Voat.Data.DataStoreType.SqlServer ? "GO" : ";" }, StringSplitOptions.RemoveEmptyEntries);
-                        foreach (var batch in segments)
+
+                        switch (TestEnvironmentSettings.DataStoreType)
                         {
-                            cmd.CommandText = batch.Replace("{dbName}", dbName);
-                            cmd.ExecuteNonQuery();
+                            case Voat.Data.DataStoreType.PostgreSQL:
+                                cmd.CommandText = contents.Replace("{dbName}", dbName);
+
+                                cmd.ExecuteNonQuery();
+                                break;
+                            case Voat.Data.DataStoreType.SqlServer:
+                                var segments = contents.Split(new string[] { TestEnvironmentSettings.DataStoreType == Voat.Data.DataStoreType.SqlServer ? "GO" : ";" }, StringSplitOptions.RemoveEmptyEntries);
+                                foreach (var batch in segments)
+                                {
+                                    cmd.CommandText = batch.Replace("{dbName}", dbName);
+                                    cmd.ExecuteNonQuery();
+                                }
+                                break;
                         }
+
+
                     }
                 }
             }

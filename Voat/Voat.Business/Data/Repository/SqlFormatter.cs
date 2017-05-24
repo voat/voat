@@ -46,6 +46,64 @@ namespace Voat.Data
                 return "dbo";
             }
         }
+        public static string UpdateSetBlock(string setStatements, string fromTable, string alias)
+        {
+            var result = "";
+
+            switch (DataStore)
+            {
+                case DataStoreType.SqlServer:
+                    result = $"UPDATE {alias} SET {setStatements} FROM {fromTable} AS {alias}";
+                    break;
+                case DataStoreType.PostgreSQL:
+                    result = result = $"UPDATE {fromTable} AS {alias} SET {setStatements}";
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+
+            return result;
+        }
+        public static string In(string parameter)
+        {
+            var result = "";
+
+            switch (DataStore)
+            {
+                case DataStoreType.SqlServer:
+                    result = $"IN {parameter}";
+                    break;
+                case DataStoreType.PostgreSQL:
+                    result = $"= ANY({parameter})";
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+
+            return result;
+        }
+
+        public static string IsNull(string parameter, string defaultValue)
+        {
+            var result = "";
+
+            switch (DataStore)
+            {
+                case DataStoreType.SqlServer:
+                    result = $"ISNULL({parameter}, {defaultValue})";
+                    break;
+                case DataStoreType.PostgreSQL:
+                    result = $"CASE WHEN {parameter} IS NULL THEN {defaultValue} ELSE {parameter} END";
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+
+            return result;
+        }
 
         public static string Table(string name, string alias = null, string schema = null)
         {

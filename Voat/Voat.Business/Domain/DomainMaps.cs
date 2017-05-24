@@ -163,34 +163,35 @@ namespace Voat.Domain
             Domain.Models.Submission result = null;
             if (submission != null)
             {
-                result = new Domain.Models.Submission()
-                {
-                    ID = submission.ID,
-                    UserName = (submission.IsAnonymized ? submission.ID.ToString() : submission.UserName),
+                result = new Domain.Models.Submission();
 
-                    Title = submission.Title,
-                    Url = submission.Url,
-                    Content = (submission.Type == 1 ? submission.Content : (string)null),
 
-                    //Support For Backwards compat, if FormattedContent is empty, do it here.
-                    FormattedContent = (submission.Type == 1 && String.IsNullOrEmpty(submission.FormattedContent) ? Formatting.FormatMessage(submission.Content, true) : submission.FormattedContent),
+                result.ID = submission.ID;
+                result.UserName = (submission.IsAnonymized ? submission.ID.ToString() : submission.UserName);
 
-                    LastEditDate = submission.LastEditDate,
-                    ThumbnailUrl = VoatPathHelper.ThumbnailPath(submission.Thumbnail, true, true),
-                    CommentCount = CommentCounter.CommentCount(submission.ID),
-                    CreationDate = submission.CreationDate,
-                    UpCount = (int)submission.UpCount,
-                    Views = (int)submission.Views,
-                    DownCount = (int)submission.DownCount,
-                    Type = submission.Type == 1 ? SubmissionType.Text : SubmissionType.Link,
-                    Subverse = submission.Subverse,
-                    IsAnonymized = submission.IsAnonymized,
-                    IsAdult = submission.IsAdult,
-                    IsDeleted = submission.IsDeleted,
-                    Rank = submission.Rank,
-                    RelativeRank = submission.RelativeRank,
-                    ArchiveDate = submission.ArchiveDate
-                };
+                result.Title = submission.Title;
+                result.Url = submission.Url;
+                result.Content = (submission.Type == 1 ? submission.Content : (string)null);
+
+                //Support For Backwards compat, if FormattedContent is empty, do it here.
+                result.FormattedContent = (submission.Type == 1 && String.IsNullOrEmpty(submission.FormattedContent) ? Formatting.FormatMessage(submission.Content, true) : submission.FormattedContent);
+
+                result.LastEditDate = submission.LastEditDate;
+                result.ThumbnailUrl = VoatPathHelper.ThumbnailPath(submission.Thumbnail, true, true);
+                result.CommentCount = CommentCounter.CommentCount(submission.ID);
+                result.CreationDate = submission.CreationDate;
+                result.UpCount = (int)submission.UpCount;
+                result.Views = (int)submission.Views;
+                result.DownCount = (int)submission.DownCount;
+                result.Type = submission.Type == 1 ? SubmissionType.Text : SubmissionType.Link;
+                result.Subverse = submission.Subverse;
+                result.IsAnonymized = submission.IsAnonymized;
+                result.IsAdult = submission.IsAdult;
+                result.IsDeleted = submission.IsDeleted;
+                result.Rank = submission.Rank;
+                result.RelativeRank = submission.RelativeRank;
+                result.ArchiveDate = submission.ArchiveDate;
+
 
                 //add flair if present
                 if (!String.IsNullOrEmpty(submission.FlairCss) && !String.IsNullOrEmpty(submission.FlairLabel))

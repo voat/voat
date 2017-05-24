@@ -97,7 +97,7 @@ namespace Voat.Data
             switch (domainType)
             {
                 case DomainType.Subverse:
-                    q.SelectColumns = "\"Type\" = @DomainType, s.\"Name\", s.\"Title\", s.\"Description\", s.\"CreatedBy\" AS \"OwnerName\", s.\"SubscriberCount\", s.\"CreationDate\"";
+                    q.SelectColumns = "@DomainType as \"Type\", s.\"Name\", s.\"Title\", s.\"Description\", s.\"CreatedBy\" AS \"OwnerName\", s.\"SubscriberCount\", s.\"CreationDate\"";
                     q.Select = $"DISTINCT {"{0}"} FROM {SqlFormatter.Table("Subverse", "s", null, "NOLOCK")}";
                     if (hasPhrase)
                     {
@@ -106,7 +106,7 @@ namespace Voat.Data
                     q.Append(x => x.Where, $"s.\"IsAdminDisabled\" = {SqlFormatter.BooleanLiteral(false)} AND s.\"IsPrivate\" = {SqlFormatter.BooleanLiteral(false)}");
                     break;
                 case DomainType.Set:
-                    q.SelectColumns = "\"Type\" = @DomainType, s.\"Name\", s.\"Title\", s.\"Description\", s.\"UserName\" AS \"OwnerName\", s.\"SubscriberCount\", s.\"CreationDate\"";
+                    q.SelectColumns = "@DomainType as \"Type\", s.\"Name\", s.\"Title\", s.\"Description\", s.\"UserName\" AS \"OwnerName\", s.\"SubscriberCount\", s.\"CreationDate\"";
                     q.Select = $"DISTINCT {"{0}"} FROM {SqlFormatter.Table("SubverseSet", "s", null, "NOLOCK")}";
                     if (hasPhrase)
                     {

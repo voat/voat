@@ -163,7 +163,7 @@ namespace Voat.Tests.CommandTests
             string userName = "TestUser14";
             TestHelper.SetPrincipal(userName);
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "nsfw", Title = "This is a title", Url = "http://www.yahoo.com", IsAdult = false });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "NSFW", Title = "This is a title", Url = "http://www.yahoo.com", IsAdult = false });
 
             var r = await cmd.Execute();
 
@@ -548,12 +548,12 @@ namespace Voat.Tests.CommandTests
         public void PreventPostingToDisabledSub()
         {
             TestHelper.SetPrincipal("TestUser06");
-            var userSubmission = new Domain.Models.UserSubmission() { Subverse = "disabled", Title = "I am not paying attention", Content = "Why was this sub disabled?" };
+            var userSubmission = new Domain.Models.UserSubmission() { Subverse = "Disabled", Title = "I am not paying attention", Content = "Why was this sub disabled?" };
             var cmd = new CreateSubmissionCommand(userSubmission);
             var r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
             Assert.IsFalse(r.Success, r.Message);
-            Assert.AreEqual(r.Message, "Subverse is disabled");
+            Assert.AreEqual("Subverse is disabled", r.Message);
         }
 
         [TestMethod]
