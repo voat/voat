@@ -87,18 +87,40 @@ namespace Voat.Data
 
             return result.ToString();
         }
-
-        public static string UpdateSetBlock(string setStatements, string fromTable, string alias)
+        public static string DeleteBlock(string fromTable, string alias = null)
         {
             var result = "";
+
+            string aliasClause = String.IsNullOrEmpty(alias) ? " " : $" AS {alias} ";
 
             switch (Configuration.Settings.DataStore)
             {
                 case DataStoreType.SqlServer:
-                    result = $"UPDATE {alias} SET {setStatements} FROM {fromTable} AS {alias}";
+                    result = $"DELETE {alias} FROM {fromTable}{aliasClause}";
                     break;
                 case DataStoreType.PostgreSQL:
-                    result = result = $"UPDATE {fromTable} AS {alias} SET {setStatements}";
+                    result = result = $"DELETE FROM {fromTable}{aliasClause}";
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+
+            return result;
+        }
+        public static string UpdateSetBlock(string setStatements, string fromTable, string alias = null)
+        {
+            var result = "";
+
+            string aliasClause = String.IsNullOrEmpty(alias) ? " " : $" AS {alias} ";
+
+            switch (Configuration.Settings.DataStore)
+            {
+                case DataStoreType.SqlServer:
+                    result = $"UPDATE {alias} SET {setStatements} FROM {fromTable}{aliasClause}";
+                    break;
+                case DataStoreType.PostgreSQL:
+                    result = result = $"UPDATE {fromTable}{aliasClause}SET {setStatements}";
                     break;
                 default:
                     throw new NotImplementedException();

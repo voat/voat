@@ -404,8 +404,8 @@ namespace Voat.Tests.CommandTests
                     Assert.IsNull(passwordAccess, "Can access user account with old password");
 
                 }
-
-                Assert.AreEqual(1, db.UserBadges.Count(x => x.UserName == options.UserName && x.BadgeID == (String.IsNullOrEmpty(options.RecoveryEmailAddress) ? "deleted" : "deleted2")), "Can not find delete badge");
+                var badgeToCheck = String.IsNullOrEmpty(options.RecoveryEmailAddress) ? "deleted" : "deleted2";
+                Assert.AreEqual(1, db.UserBadges.Count(x => x.UserName == options.UserName && x.BadgeID == badgeToCheck), "Can not find delete badge");
 
                 //Verify Bio and Avatar cleared
                 var prefs = db.UserPreferences.Where(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase)).ToList();

@@ -5395,13 +5395,15 @@ namespace Voat.Data
                         {
                             case DeleteOption.Anonymize:
                                 var a = new DapperUpdate();
-                                a.Update = $"Update c SET c.\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)} FROM {SqlFormatter.Table("Comment", "c")} WHERE c.\"UserName\" = @UserName";
+                                a.Update = SqlFormatter.UpdateSetBlock($"\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)}", SqlFormatter.Table("Comment")); 
+                                a.Where = "\"UserName\" = @UserName";
                                 a.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(a);
                                 break;
                             case DeleteOption.Delete:
                                 var d = new DapperUpdate();
-                                d.Update = $"Update c SET c.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, \"Content\" = '{deleteText}' FROM {SqlFormatter.Table("Comment", "c")} WHERE c.\"UserName\" = @UserName";
+                                d.Update = SqlFormatter.UpdateSetBlock($"\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, \"Content\" = '{deleteText}'", SqlFormatter.Table("Comment"));
+                                d.Where = "\"UserName\" = @UserName";
                                 d.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(d);
                                 break;
@@ -5411,13 +5413,15 @@ namespace Voat.Data
                         {
                             case DeleteOption.Anonymize:
                                 var a = new DapperUpdate();
-                                a.Update = $"Update s SET s.\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)} FROM {SqlFormatter.Table("Submission", "s")} WHERE s.\"UserName\" = @UserName AND s.\"Type\" = {(int)SubmissionType.Text}";
+                                a.Update = SqlFormatter.UpdateSetBlock($"\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)}", SqlFormatter.Table("Submission"));
+                                a.Where = $"\"UserName\" = @UserName AND \"Type\" = {(int)SubmissionType.Text}";
                                 a.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(a);
                                 break;
                             case DeleteOption.Delete:
                                 var d = new DapperUpdate();
-                                d.Update = $"Update s SET s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, s.\"Title\" = '{deleteText}', s.\"Content\" = '{deleteText}' FROM {SqlFormatter.Table("Submission", "s")} WHERE s.\"UserName\" = @UserName AND s.\"Type\" = {(int)SubmissionType.Text}";
+                                d.Update = SqlFormatter.UpdateSetBlock($"\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, \"Title\" = '{deleteText}', \"Content\" = '{deleteText}'", SqlFormatter.Table("Submission"));
+                                d.Where = $"\"UserName\" = @UserName AND \"Type\" = {(int)SubmissionType.Text}";
                                 d.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(d);
                                 break;
@@ -5427,13 +5431,15 @@ namespace Voat.Data
                         {
                             case DeleteOption.Anonymize:
                                 var a = new DapperUpdate();
-                                a.Update = $"Update s SET s.\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)} FROM {SqlFormatter.Table("Submission", "s")} WHERE s.\"UserName\" = @UserName AND s.\"Type\" = {(int)SubmissionType.Link}";
+                                a.Update = SqlFormatter.UpdateSetBlock($"\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)}", SqlFormatter.Table("Submission"));
+                                a.Where = $"\"UserName\" = @UserName AND \"Type\" = {(int)SubmissionType.Link}";
                                 a.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(a);
                                 break;
                             case DeleteOption.Delete:
                                 var d = new DapperUpdate();
-                                d.Update = $"Update s SET s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, s.\"Title\" = '{deleteText}', s.\"Url\" = 'https://{Settings.SiteDomain}' FROM {SqlFormatter.Table("Submission", "s")} WHERE s.\"UserName\" = @UserName AND s.\"Type\" = {(int)SubmissionType.Link}";
+                                d.Update = SqlFormatter.UpdateSetBlock($"\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, \"Title\" = '{deleteText}', \"Url\" = 'https://{Settings.SiteDomain}'", SqlFormatter.Table("Submission"));
+                                d.Where = $"\"UserName\" = @UserName AND \"Type\" = {(int)SubmissionType.Link}";
                                 d.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(d);
                                 break;
@@ -5442,15 +5448,15 @@ namespace Voat.Data
                         // resign from all moderating positions
                         _db.SubverseModerators.RemoveRange(_db.SubverseModerators.Where(m => m.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase)));
                         var u = new DapperDelete();
-                        u.Delete = $"DELETE m FROM {SqlFormatter.Table("SubverseModerator", "m")}";
-                        u.Where = "m.\"UserName\" = @UserName";
+                        u.Delete = SqlFormatter.DeleteBlock(SqlFormatter.Table("SubverseModerator"));
+                        u.Where = "\"UserName\" = @UserName";
                         u.Parameters = new DynamicParameters(new { UserName = userName });
                         statements.Add(u);
 
                         //Messages
                         u = new DapperDelete();
-                        u.Delete = $"DELETE m FROM {SqlFormatter.Table("Message", "m")}";
-                        u.Where = $"((m.\"Recipient\" = @UserName AND m.\"RecipientType\" = {(int)IdentityType.User} AND m.\"Type\" {SqlFormatter.In("@RecipientTypes")}))";
+                        u.Delete = SqlFormatter.DeleteBlock(SqlFormatter.Table("Message"));
+                        u.Where = $"((\"Recipient\" = @UserName AND \"RecipientType\" = {(int)IdentityType.User} AND \"Type\" {SqlFormatter.In("@RecipientTypes")}))";
                         u.Parameters = new DynamicParameters(new
                         {
                             UserName = userName,
@@ -5501,7 +5507,7 @@ namespace Voat.Data
 
 
                             var updatePrefStatement = new DapperUpdate();
-                            updatePrefStatement.Update = $"{SqlFormatter.Table("UserPreference")} SET \"Bio\" = NULL, \"Avatar\" = NULL";
+                            updatePrefStatement.Update = SqlFormatter.UpdateSetBlock("\"Bio\" = NULL, \"Avatar\" = NULL", SqlFormatter.Table("UserPreference"));
                             updatePrefStatement.Where = "\"UserName\" = @UserName";
                             updatePrefStatement.Parameters.Add("UserName", userName);
                             await _db.Database.Connection.ExecuteAsync(updatePrefStatement.ToString(), updatePrefStatement.Parameters);
@@ -5518,8 +5524,12 @@ namespace Voat.Data
                             var badgeID = (setRecoveryEmail ? "deleted2" : "deleted");
 
                             //Get rid of EF
-                            var statement = "IF NOT EXISTS (SELECT * FROM \"dbo\".\"UserBadge\" WHERE \"UserName\" = @UserName AND \"BadgeID\" = @BadgeID) INSERT \"dbo\".\"UserBadge\" VALUES (@UserName, @BadgeID, GETUTCDATE())";
-                            await _db.Database.Connection.ExecuteAsync(statement, new { BadgeID = badgeID, UserName = userName });
+
+
+                            var statement = "INSERT INTO \"dbo\".\"UserBadge\" (\"UserName\", \"BadgeID\", \"CreationDate\") " +
+                                            "SELECT @UserName, @BadgeID, @Date " +
+                                            "WHERE NOT EXISTS (SELECT * FROM \"dbo\".\"UserBadge\" WHERE \"UserName\" = @UserName AND \"BadgeID\" = @BadgeID)";
+                            await _db.Database.Connection.ExecuteAsync(statement, new { BadgeID = badgeID, UserName = userName, Date = CurrentDate });
 
                             //var existing = _db.UserBadges.FirstOrDefault(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && x.BadgeID.Equals(badgeID, StringComparison.OrdinalIgnoreCase));
                             //if (existing == null)
