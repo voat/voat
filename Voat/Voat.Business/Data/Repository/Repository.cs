@@ -1777,11 +1777,14 @@ namespace Voat.Data
                     // register a new session for this subverse
                     //New logic
 
-                    var sql = $"IF NOT EXISTS (SELECT st.* FROM  {SqlFormatter.Table("SessionTracker", "st", null, "NOLOCK")} WHERE st.\"SessionID\" = @SessionID AND st.\"Subverse\" = (SELECT TOP 1 \"Subverse\" FROM {SqlFormatter.Table("Submission", null, null, "NOLOCK")} WHERE \"ID\" = @SubmissionID)) ";
-                    sql += $"INSERT {SqlFormatter.Table("SessionTracker")} (\"SessionID\", \"Subverse\", \"CreationDate\") ";
-                    sql += $"SELECT @SessionID, s.\"Subverse\", getutcdate() FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} WHERE \"ID\" = @SubmissionID ";
+                    var exists = $"SELECT st.* FROM  {SqlFormatter.Table("SessionTracker", "st", null, "NOLOCK")} WHERE st.\"SessionID\" = @SessionID AND st.\"Subverse\" = (SELECT \"Subverse\" FROM {SqlFormatter.Table("Submission", null, null, "NOLOCK")} WHERE \"ID\" = @SubmissionID)";
 
-                    await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                    var body = $"INSERT INTO {SqlFormatter.Table("SessionTracker")} (\"SessionID\", \"Subverse\", \"CreationDate\") ";
+                    body += $"SELECT @SessionID, s.\"Subverse\", @Date FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} WHERE \"ID\" = @SubmissionID;";
+
+                    var statement = SqlFormatter.IfExists(false, exists, body);
+
+                    await _db.Database.Connection.ExecuteAsync(statement, new { SessionID = hash, SubmissionID = submissionID, Date = CurrentDate }, commandType: System.Data.CommandType.Text).ConfigureAwait(false);
 
 
                     //SessionHelper.Add(subverse.Name, hash);
@@ -1798,13 +1801,13 @@ namespace Voat.Data
 
                     //}
 
-                    sql = $"IF NOT EXISTS (SELECT * FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID) ";
-                    sql += $"BEGIN ";
-                    sql += $"INSERT {SqlFormatter.Table("ViewStatistic")} (\"SubmissionID\", \"ViewerID\") VALUES (@SubmissionID, @SessionID) ";
-                    sql += $"UPDATE {SqlFormatter.Table("Submission")} SET \"Views\" = (\"Views\" + 1) WHERE \"ID\" = @SubmissionID ";
-                    sql += $"END";
+                    //sql = $"IF NOT EXISTS (SELECT * FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID) ";
+                    //sql += $"BEGIN ";
+                    //sql += $"INSERT {SqlFormatter.Table("ViewStatistic")} (\"SubmissionID\", \"ViewerID\") VALUES (@SubmissionID, @SessionID) ";
+                    //sql += $"UPDATE {SqlFormatter.Table("Submission")} SET \"Views\" = (\"Views\" + 1) WHERE \"ID\" = @SubmissionID ";
+                    //sql += $"END";
 
-                    await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                    //await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
 
 
                     //// register a new view for this thread
@@ -2002,7 +2005,7 @@ namespace Voat.Data
             //var commentTree = _db.usp_CommentTree(submissionID, depth, parentID);
 
             IEnumerable<usp_CommentTree_Result> commentTree = null;
-            switch (SqlFormatter.DataStore)
+            switch (Configuration.Settings.DataStore)
             {
                 case DataStoreType.SqlServer:
                     commentTree = _db.usp_CommentTree(submissionID, depth, parentID);
@@ -3415,8 +3418,9 @@ namespace Voat.Data
                 if (markAsRead && messages.Any(x => x.ReadDate == null))
                 {
                     var update = new DapperUpdate();
-                    update.Update = $"m SET m.\"ReadDate\" = @CurrentDate FROM {SqlFormatter.Table("Message", "m")}";
-                    update.Where = $"m.\"ReadDate\" IS NULL AND m.\"ID\" {SqlFormatter.In("@IDs")}";
+                    //Postgres Port: This db is crazy, according to docs UPDATE supports an alias but I can not get it working if I alias the columns
+                    update.Update = SqlFormatter.UpdateSetBlock("\"ReadDate\" = @CurrentDate", SqlFormatter.Table("Message"), "m");
+                    update.Where = $"\"ReadDate\" IS NULL AND \"ID\" {SqlFormatter.In("@IDs")}";
                     update.Parameters.Add("CurrentDate", Repository.CurrentDate);
                     update.Parameters.Add("IDs", messages.Where(x => x.ReadDate == null).Select(x => x.ID).ToArray());
 
@@ -4590,31 +4594,35 @@ namespace Voat.Data
             switch (contentType)
             {
                 case ContentType.Comment:
-                    duplicateFilter = "AND \"CommentID\" = @ID";
+                    duplicateFilter = "AND ruleExists.\"CommentID\" = @ID";
                     break;
                 case ContentType.Submission:
-                    duplicateFilter = "AND \"SubmissionID\" = @ID AND \"CommentID\" IS NULL";
+                    duplicateFilter = "AND ruleExists.\"SubmissionID\" = @ID AND ruleExists.\"CommentID\" IS NULL";
                     break;
                 default:
                     throw new NotImplementedException("ContentType not supported");
                     break;
             }
 
-            var q = $"IF NOT EXISTS (SELECT * FROM {SqlFormatter.Table("RuleReport")} WHERE \"CreatedBy\" = @UserName {duplicateFilter}) INSERT {SqlFormatter.Table("RuleReport")} (\"Subverse\", \"UserName\", \"SubmissionID\", \"CommentID\", \"RuleSetID\", \"CreatedBy\", \"CreationDate\") ";
+            var existsClause = $"SELECT * FROM {SqlFormatter.Table("RuleReport", "ruleExists")} WHERE ruleExists.\"CreatedBy\" = @UserName {duplicateFilter}";
+
+            var body = $"INSERT INTO {SqlFormatter.Table("RuleReport")} (\"Subverse\", \"UserName\", \"SubmissionID\", \"CommentID\", \"RuleSetID\", \"CreatedBy\", \"CreationDate\") ";
 
             switch (contentType)
             {
                 case ContentType.Comment:
-                    q += $"SELECT s.\"Subverse\", NULL, s.\"ID\", c.\"ID\", @RuleID, @UserName, GETUTCDATE() FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"SubmissionID\" = s.\"ID\" INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON r.\"ID\" = @RuleID AND (r.\"Subverse\" = s.\"Subverse\" OR r.\"Subverse\" IS NULL) AND (r.\"ContentType\" = @ContentType OR r.\"ContentType\" IS NULL) WHERE c.\"ID\" = @ID AND c.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)} AND r.\"IsActive\" = {SqlFormatter.BooleanLiteral(true)}";
+                    body += $"SELECT s.\"Subverse\", NULL, s.\"ID\", c.\"ID\", @RuleID, @UserName, @Date FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"SubmissionID\" = s.\"ID\" INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON r.\"ID\" = @RuleID AND (r.\"Subverse\" = s.\"Subverse\" OR r.\"Subverse\" IS NULL) AND (r.\"ContentType\" = @ContentType OR r.\"ContentType\" IS NULL) WHERE c.\"ID\" = @ID AND c.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)} AND r.\"IsActive\" = {SqlFormatter.BooleanLiteral(true)}";
                     break;
                 case ContentType.Submission:
-                    q += $"SELECT s.\"Subverse\", NULL, s.\"ID\", NULL, @RuleID, @UserName, GETUTCDATE() FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON r.\"ID\" = @RuleID AND (r.\"Subverse\" = s.Subverse OR r.\"Subverse\" IS NULL) AND (r.\"ContentType\" = @ContentType OR r.\"ContentType\" IS NULL) WHERE s.\"ID\" = @ID AND s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)} AND r.\"IsActive\" = {SqlFormatter.BooleanLiteral(true)}";
+                    body += $"SELECT s.\"Subverse\", NULL, s.\"ID\", NULL, @RuleID, @UserName, @CurrentDate FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON r.\"ID\" = @RuleID AND (r.\"Subverse\" = s.\"Subverse\" OR r.\"Subverse\" IS NULL) AND (r.\"ContentType\" = @ContentType OR r.\"ContentType\" IS NULL) WHERE s.\"ID\" = @ID AND s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)} AND r.\"IsActive\" = {SqlFormatter.BooleanLiteral(true)}";
                     break;
             }
             //filter out banned users
-            q += $" AND NOT EXISTS (SELECT * FROM {SqlFormatter.Table("BannedUser")} WHERE \"UserName\" = @UserName) AND NOT EXISTS(SELECT * FROM {SqlFormatter.Table("SubverseBan")} WHERE \"UserName\" = @UserName AND \"Subverse\" = s.Subverse)";
+            body += $" AND NOT EXISTS (SELECT * FROM {SqlFormatter.Table("BannedUser")} WHERE \"UserName\" = @UserName) AND NOT EXISTS (SELECT * FROM {SqlFormatter.Table("SubverseBan")} WHERE \"UserName\" = @UserName AND \"Subverse\" = s.\"Subverse\");";
 
-            var result = await _db.Database.Connection.ExecuteAsync(q, new { UserName = User.Identity.Name, ID = id, RuleID = ruleID, ContentType = (int)contentType });
+            var statement = SqlFormatter.IfExists(false, existsClause, body, null);
+
+           var result = await _db.Database.Connection.ExecuteAsync(statement, new { UserName = User.Identity.Name, ID = id, RuleID = ruleID, ContentType = (int)contentType, Date = CurrentDate });
 
             return CommandResponse.Successful();
         }

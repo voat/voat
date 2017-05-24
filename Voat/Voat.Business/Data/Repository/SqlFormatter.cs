@@ -46,11 +46,52 @@ namespace Voat.Data
                 return "dbo";
             }
         }
+        public static string IfExists(bool exists, string existsClause, string trueClause, string falseClause = null)
+        {
+            var result = new StringBuilder();
+            var existNegation = exists ? " " : " NOT ";
+            switch (Configuration.Settings.DataStore)
+            {
+                case DataStoreType.SqlServer:
+                    result.AppendLine($"IF{existNegation}EXISTS ({existsClause})");
+                    result.AppendLine(trueClause);
+                    if (!String.IsNullOrEmpty(falseClause))
+                    {
+                        result.AppendLine($"ELSE");
+                        result.AppendLine(falseClause);
+                    }
+                    break;
+                case DataStoreType.PostgreSQL:
+                    result.AppendLine("DO");
+                    result.AppendLine("$$");
+                    result.AppendLine("BEGIN");
+
+                    result.AppendLine($"IF{existNegation}EXISTS ({existsClause}) THEN");
+                    result.AppendLine("");
+                    result.AppendLine(trueClause);
+                    if (!String.IsNullOrEmpty(falseClause))
+                    {
+                        result.AppendLine($"ELSE");
+                        result.AppendLine(falseClause);
+                    }
+                    result.AppendLine("END IF;");
+                    result.AppendLine("END;");
+                    result.AppendLine("$$");
+
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+
+            return result.ToString();
+        }
+
         public static string UpdateSetBlock(string setStatements, string fromTable, string alias)
         {
             var result = "";
 
-            switch (DataStore)
+            switch (Configuration.Settings.DataStore)
             {
                 case DataStoreType.SqlServer:
                     result = $"UPDATE {alias} SET {setStatements} FROM {fromTable} AS {alias}";
@@ -69,7 +110,7 @@ namespace Voat.Data
         {
             var result = "";
 
-            switch (DataStore)
+            switch (Configuration.Settings.DataStore)
             {
                 case DataStoreType.SqlServer:
                     result = $"IN {parameter}";
@@ -89,7 +130,7 @@ namespace Voat.Data
         {
             var result = "";
 
-            switch (DataStore)
+            switch (Configuration.Settings.DataStore)
             {
                 case DataStoreType.SqlServer:
                     result = $"ISNULL({parameter}, {defaultValue})";
@@ -116,7 +157,7 @@ namespace Voat.Data
 
             result = result + (!String.IsNullOrEmpty(alias) ? String.Format(" AS {0}", alias) : "");
 
-            switch (DataStore) 
+            switch (Configuration.Settings.DataStore) 
             {
                 //Only add hints if sql, should really probably remove this
                 case DataStoreType.SqlServer:
@@ -141,7 +182,7 @@ namespace Voat.Data
         public static string BooleanLiteral(bool value)
         {
             var result = "";
-            switch (DataStore)
+            switch (Configuration.Settings.DataStore)
             {
                 case DataStoreType.PostgreSQL:
                     result = value ? "True" : "False";
@@ -157,7 +198,7 @@ namespace Voat.Data
         public static string QuoteIndentifier(string name)
         {
             string result = null;
-            switch (DataStore)
+            switch (Configuration.Settings.DataStore)
             {
                 case DataStoreType.PostgreSQL:
                     result = String.Format("\"{0}\"", name);
@@ -168,21 +209,6 @@ namespace Voat.Data
                     break;
             }
             return result;
-        }
-
-
-        private static DataStoreType _dataStore = DataStoreType.PostgreSQL;
-
-        public static DataStoreType DataStore
-        {
-            get
-            {
-                return _dataStore;
-            }
-            set
-            {
-                _dataStore = value;
-            }
         }
 
     }

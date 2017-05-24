@@ -64,7 +64,7 @@ namespace Voat.Tests.Repository
 
                 var builder = new DbConnectionStringBuilder();
                 builder.ConnectionString = originalConnectionString;
-                builder["database"] = TestEnvironmentSettings.DataStoreType == Voat.Data.DataStoreType.SqlServer ? "master" : "postgres";
+                builder["database"] = Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ? "master" : "postgres";
                 context.Database.Connection.ConnectionString = builder.ConnectionString;
 
                 var cmd = context.Database.Connection.CreateCommand();
@@ -75,12 +75,12 @@ namespace Voat.Tests.Repository
                 }
 
                 //Kill connections
-                cmd.CommandText = TestEnvironmentSettings.DataStoreType == Voat.Data.DataStoreType.SqlServer ?
+                cmd.CommandText = Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ?
                                        $"SELECT 0" :
                                        $"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid() AND datname = '{dbName}'";
                 cmd.ExecuteNonQuery();
                 
-                cmd.CommandText = TestEnvironmentSettings.DataStoreType == Voat.Data.DataStoreType.SqlServer ?
+                cmd.CommandText = Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ?
                                         $"IF EXISTS (SELECT name FROM sys.databases WHERE name = '{dbName}') DROP DATABASE {dbName}" :
                                         $"DROP DATABASE IF EXISTS {dbName}";
                 cmd.ExecuteNonQuery();
@@ -113,7 +113,7 @@ namespace Voat.Tests.Repository
                     {
                         var contents = sr.ReadToEnd();
 
-                        switch (TestEnvironmentSettings.DataStoreType)
+                        switch (Configuration.Settings.DataStore)
                         {
                             case Voat.Data.DataStoreType.PostgreSQL:
                                 cmd.CommandText = contents.Replace("{dbName}", dbName);
@@ -121,7 +121,7 @@ namespace Voat.Tests.Repository
                                 cmd.ExecuteNonQuery();
                                 break;
                             case Voat.Data.DataStoreType.SqlServer:
-                                var segments = contents.Split(new string[] { TestEnvironmentSettings.DataStoreType == Voat.Data.DataStoreType.SqlServer ? "GO" : ";" }, StringSplitOptions.RemoveEmptyEntries);
+                                var segments = contents.Split(new string[] { Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ? "GO" : ";" }, StringSplitOptions.RemoveEmptyEntries);
                                 foreach (var batch in segments)
                                 {
                                     cmd.CommandText = batch.Replace("{dbName}", dbName);

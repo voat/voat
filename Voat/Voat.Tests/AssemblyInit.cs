@@ -40,6 +40,10 @@ public class UnitTestSetup
     public void SetUp()
     {
 
+        //load web.config.live monitor
+        LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
+        LiveConfigurationManager.Start();
+
         if (ConfigurationManager.AppSettings["PreventDatabaseDrop"] != "true")
         {
             //Force db to drop & seed
@@ -50,10 +54,6 @@ public class UnitTestSetup
                 init.InitializeDatabase(db); //This attempts to create and seed unit test db
             }
         }
-
-        //load web.config.live monitor
-        LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
-        LiveConfigurationManager.Start();
 
         //This causes the voat rules engine to init using config section for load
         var rulesEngine = VoatRulesEngine.Instance;
