@@ -760,7 +760,7 @@ ImgurGifvExpando.prototype.process = function (source) {
 /* Raw .mp4 */
 var WebMExpando = function (options) {
 
-    LinkExpando.call(this, /(.+\.webm)/i, options);
+    LinkExpando.call(this,  /([^/]webm.*$)/i, options);
 
 
     this.preConditionMet = function () {
@@ -845,7 +845,7 @@ WebMExpando.prototype.process = function (source) {
 /* Raw .MP4 (should really combine .webm & .mp4 expandos */
 var MP4Expando = function (options) {
 
-    LinkExpando.call(this, /(.+\.mp4)/i, options);
+    LinkExpando.call(this, /([^/]mp4.*$)/i, options);
 
 
     this.preConditionMet = function () {
