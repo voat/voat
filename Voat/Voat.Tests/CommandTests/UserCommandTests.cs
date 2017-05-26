@@ -376,7 +376,7 @@ namespace Voat.Tests.CommandTests
                 checkSubmissions(options.UserName, Domain.Models.SubmissionType.Link, options.LinkSubmissions);
 
                 //Check account settings.
-                using (var userManager = new UserManager<Voat.Data.Models.VoatUser>(new UserStore<Voat.Data.Models.VoatUser>(new Voat.Data.Models.ApplicationDbContext())))
+                using (var userManager = new VoatUserManager<Voat.Data.Models.VoatUser>(new UserStore<Voat.Data.Models.VoatUser>(new Voat.Data.Models.ApplicationDbContext())))
                 {
                     var userAccount = userManager.FindByName(options.UserName);
 

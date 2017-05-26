@@ -78,7 +78,7 @@ namespace Voat.Domain.Query
                 db.Configuration.ProxyCreationEnabled = false;
                 db.Configuration.LazyLoadingEnabled = false;
                 */
-                using (var context = new UserManager<VoatUser>(new UserStore<VoatUser>(db)))
+                using (var context = VoatUserManager.Create())
                 {
                     var user = await context.FindByNameAsync(_userToRetrieve);
                     return user;

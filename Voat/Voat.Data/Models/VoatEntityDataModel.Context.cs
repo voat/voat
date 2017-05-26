@@ -11,12 +11,19 @@ namespace Voat.Data.Models
 {
     using System;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Infrastructure;
-    using Microsoft.EntityFrameworkCore.Metadata;
-    using System.Linq;
-
+    
     public partial class voatEntities : DbContext
     {
+
+        //CORE_PORT: Added this to ensure Dapper and direct connections can still execute
+        public System.Data.Common.DbConnection Connection
+        {
+            get
+            {
+                return this.Database.GetDbConnection();
+            }
+        }
+
         public class UnintentionalCodeFirstException : Exception { }
         public voatEntities()
             //CORE_PORT: not supported

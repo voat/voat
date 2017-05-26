@@ -143,7 +143,7 @@ namespace Voat.Utilities
             return spoofs;
         }
 
-        public static bool CanUserNameBeRegistered(UserManager<VoatUser> userManager, string userName, IEnumerable<Func<string, IEnumerable<string>>> spoofSubstitutionFuncList = null)
+        public static bool CanUserNameBeRegistered(VoatUserManager userManager, string userName, IEnumerable<Func<string, IEnumerable<string>>> spoofSubstitutionFuncList = null)
         {
             
             List<string> spoofsToCheck = new List<string>();
@@ -198,14 +198,22 @@ namespace Voat.Utilities
         // check which theme style user selected
         public static void SetUserStylePreferenceCookie(string theme)
         {
+            //CORE_PORT: HttpContext not available 
+            throw new NotImplementedException("Core Port: HttpContext access");
+            /*
             var cookie = new HttpCookie("theme", theme);
             cookie.Expires = Repository.CurrentDate.AddDays(14);
             System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
+            */
         }
 
         // check which theme style user selected
         public static string UserStylePreference()
         {
+            //CORE_PORT: HttpContext not available 
+            throw new NotImplementedException("Core Port: HttpContext access");
+            /*
+
             string theme = "light";
 
             var tc = System.Web.HttpContext.Current.Request.Cookies["theme"];
@@ -224,6 +232,7 @@ namespace Voat.Utilities
                 SetUserStylePreferenceCookie(theme);
             }
             return theme;
+            */
         }
        
 
@@ -264,7 +273,8 @@ namespace Voat.Utilities
 
                     // get 3 highest rated comments
                     var highestRatedComments = db.Comments
-                        .Include("Submission")
+                        //CORE_PORT: EF has changed
+                        //.Include("Submission")
                         .Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
                         .OrderByDescending(s => s.UpCount - s.DownCount)
                         .Take(3)
@@ -272,7 +282,8 @@ namespace Voat.Utilities
 
                     // get 3 lowest rated comments
                     var lowestRatedComments = db.Comments
-                        .Include("Submission")
+                        //CORE_PORT: EF has changed
+                        //.Include("Submission")
                         .Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
                         .OrderBy(s => s.UpCount - s.DownCount)
                         .Take(3)
@@ -488,8 +499,8 @@ namespace Voat.Utilities
         }
         */
 
-        //this is for the API
-        public static string UserIpAddress(HttpRequestMessage request)
+            //this is for the API
+            public static string UserIpAddress(HttpRequestMessage request)
         {
             const string HTTP_CONTEXT_KEY = "MS_HttpContext";
             const string REMOTE_ENDPOINT_KEY = "System.ServiceModel.Channels.RemoteEndpointMessageProperty";

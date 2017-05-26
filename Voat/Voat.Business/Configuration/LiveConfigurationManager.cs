@@ -117,6 +117,9 @@ namespace Voat.Configuration
                     {
                         if (_thewatchmen == null)
                         {
+                            //CORE_PORT: HttpContext not available 
+                            throw new NotImplementedException("Core Port: HttpContext access");
+                            /*
                             if (HttpContext.Current != null)
                             {
                                 _thewatchmen = new FileSystemWatcher(HttpContext.Current.Server.MapPath("~/"), "Web.config.live");
@@ -132,6 +135,7 @@ namespace Voat.Configuration
                             {
                                 Reload(e.FullPath);
                             };
+                            */
                         }
                     }
                 }

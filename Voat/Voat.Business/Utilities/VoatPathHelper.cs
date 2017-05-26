@@ -46,7 +46,9 @@ namespace Voat.Utilities
             {
                 domain = "cdn.voat.co";
             }
-
+            //CORE_PORT: HttpContext not available 
+            throw new NotImplementedException("Core Port: HttpContext access");
+            /*
             try
             {
                 if (System.Web.HttpContext.Current != null && System.Web.HttpContext.Current.Request != null)
@@ -56,7 +58,7 @@ namespace Voat.Utilities
                 }
             }
             catch { }
-
+            */
             if (!String.IsNullOrEmpty(forceDomain))
             {
                 domain = forceDomain;

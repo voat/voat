@@ -118,7 +118,7 @@ namespace Voat.Data
             var param = new DynamicParameters();
             param.Add("ID", set.ID);
 
-            var conn = _db.Database.Connection;
+            var conn = _db.Connection;
             //var tran = conn.BeginTransaction(System.Data.IsolationLevel.Serializable);
             try
             {
@@ -207,7 +207,7 @@ namespace Voat.Data
             q.OrderBy = "s.\"Name\" ASC";
             using (var db = new voatEntities())
             {
-                var result = await db.Database.Connection.QueryAsync<SubverseSubscriptionDetail>(q.ToString(), q.Parameters);
+                var result = await db.Connection.QueryAsync<SubverseSubscriptionDetail>(q.ToString(), q.Parameters);
                 return result;
             }
         }
@@ -256,7 +256,7 @@ namespace Voat.Data
             q.Parameters = new DynamicParameters(new { Name = name, UserName = userName, Type = (int?)type });
             using (var db = new voatEntities())
             {
-                var set = db.Database.Connection.QueryFirstOrDefault<SubverseSet>(q.ToString(), q.Parameters);
+                var set = db.Connection.QueryFirstOrDefault<SubverseSet>(q.ToString(), q.Parameters);
                 return set;
             }
         }
@@ -275,7 +275,7 @@ namespace Voat.Data
 
             using (var db = new voatEntities())
             {
-                var set = await db.Database.Connection.QueryAsync<SubverseSet>(q.ToString(), q.Parameters);
+                var set = await db.Connection.QueryAsync<SubverseSet>(q.ToString(), q.Parameters);
                 return set;
             }
         }
@@ -340,7 +340,7 @@ namespace Voat.Data
                     d.Parameters.Add("Type", (int)SetType.Normal);
                     d.Parameters.Add("UserName", User.Identity.Name);
 
-                    var setCount = _db.Database.Connection.ExecuteScalar<int>(d.ToString(), d.Parameters);
+                    var setCount = _db.Connection.ExecuteScalar<int>(d.ToString(), d.Parameters);
                     if (setCount >= Settings.MaximumOwnedSets)
                     {
                         return CommandResponse.FromStatus<Set>(null, Status.Denied, $"Sorry, Users are limited to {Settings.MaximumOwnedSets} sets and you currently have {setCount}");

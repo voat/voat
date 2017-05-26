@@ -64,7 +64,7 @@ namespace Voat.Tests.Utils
         {
             var originalUserName = "IHeartFuzzyLOL";
 
-            using (var userManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
+            using (var userManager = new VoatUserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
             {
                 var user = new VoatUser
                 {

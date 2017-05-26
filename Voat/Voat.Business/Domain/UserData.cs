@@ -124,7 +124,7 @@ namespace Voat.Domain
                 VoatUser user = null;
                 if (!String.IsNullOrWhiteSpace(userName))
                 {
-                    using (var repo = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
+                    using (var repo = VoatUserManager.Create())
                     {
                         user = repo.FindByName(userName);
                     }

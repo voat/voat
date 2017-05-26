@@ -56,8 +56,8 @@ namespace Voat.Tests.Repository
             //This is all a hack to get PG working with unit tests the fastest way possible.
 
             //Parse and run sql scripts
-            var dbName = context.Database.Connection.Database;
-            var originalConnectionString = context.Database.Connection.ConnectionString;
+            var dbName = context.Connection.Database;
+            var originalConnectionString = context.Connection.ConnectionString;
             
             try
             {
@@ -65,9 +65,9 @@ namespace Voat.Tests.Repository
                 var builder = new DbConnectionStringBuilder();
                 builder.ConnectionString = originalConnectionString;
                 builder["database"] = Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ? "master" : "postgres";
-                context.Database.Connection.ConnectionString = builder.ConnectionString;
+                context.Connection.ConnectionString = builder.ConnectionString;
 
-                var cmd = context.Database.Connection.CreateCommand();
+                var cmd = context.Connection.CreateCommand();
                 cmd.CommandType = System.Data.CommandType.Text;
                 if (cmd.Connection.State != System.Data.ConnectionState.Open)
                 {
@@ -96,7 +96,7 @@ namespace Voat.Tests.Repository
                 cmd.CommandText = $"CREATE DATABASE {dbName}";
                 cmd.ExecuteNonQuery();
 
-                context.Database.Connection.ChangeDatabase(dbName);
+                context.Connection.ChangeDatabase(dbName);
 
                 //Run Scripts in repo folder
                 var sqlFolderPathPublicRepo = TestEnvironmentSettings.SqlScriptRelativePath;
@@ -142,11 +142,11 @@ namespace Voat.Tests.Repository
             finally
             {
                 //revert connection 
-                if (context.Database.Connection.State != System.Data.ConnectionState.Closed)
+                if (context.Connection.State != System.Data.ConnectionState.Closed)
                 {
-                    context.Database.Connection.Close();
+                    context.Connection.Close();
                 }
-                context.Database.Connection.ConnectionString = originalConnectionString;
+                context.Connection.ConnectionString = originalConnectionString;
             }
         }
 
@@ -685,7 +685,7 @@ namespace Voat.Tests.Repository
         {
             //SchemaInitializerApplicationDbContext.ReferenceEquals(null, new object());
 
-            var manager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext()));
+            var manager = new VoatUserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext()));
 
             //if (!UserHelper.UserExists(userName))
             //{

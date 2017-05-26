@@ -40,7 +40,7 @@ namespace Voat.Data
         {
             var procedure = SqlFormatter.Object("usp_Reports_UserVoteGivenStats");
 
-            var result = await _db.Database.Connection.QueryAsync<UserVoteStats>(procedure,
+            var result = await _db.Connection.QueryAsync<UserVoteStats>(procedure,
                  new { BeginDate = options.StartDate.Value, EndDate = options.EndDate.Value, RecordCount = options.Count },
                 commandType: System.Data.CommandType.StoredProcedure);
 
@@ -55,7 +55,7 @@ namespace Voat.Data
         {
             var procedure = SqlFormatter.Object("usp_Reports_UserVoteReceivedStats");
 
-            var result = await _db.Database.Connection.QueryAsync<UserVoteReceivedStats>(procedure,
+            var result = await _db.Connection.QueryAsync<UserVoteReceivedStats>(procedure,
                   new { BeginDate = options.StartDate, EndDate = options.EndDate, RecordCount = options.Count },
                 commandType: System.Data.CommandType.StoredProcedure);
 
@@ -72,7 +72,7 @@ namespace Voat.Data
             //Get content items
             var procedure = SqlFormatter.Object("usp_Reports_HighestVotedContent");
 
-            var result = await _db.Database.Connection.QueryAsync<StatContentItem>(procedure,
+            var result = await _db.Connection.QueryAsync<StatContentItem>(procedure,
                new { BeginDate = options.StartDate, EndDate = options.EndDate, RecordCount = options.Count },
                commandType: System.Data.CommandType.StoredProcedure);
 

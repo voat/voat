@@ -60,7 +60,7 @@ namespace Voat.Utilities
             int count = 0;
             using (voatEntities db = new voatEntities())
             {
-                var cmd = db.Database.Connection.CreateCommand();
+                var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = "SELECT ISNULL(SUM(UpCount - DownCount), 0) FROM Submission WITH (NOLOCK) WHERE UserName = @UserName";
                 var param = cmd.CreateParameter();
                 param.ParameterName = "UserName";
@@ -93,7 +93,7 @@ namespace Voat.Utilities
             int count = 0;
             using (voatEntities db = new voatEntities())
             {
-                var cmd = db.Database.Connection.CreateCommand();
+                var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = "SELECT ISNULL(SUM(UpCount - DownCount), 0) FROM Submission WITH (NOLOCK) WHERE UserName = @UserName AND Subverse = @Subverse";
 
                 var param = cmd.CreateParameter();
@@ -134,7 +134,7 @@ namespace Voat.Utilities
             int count = 0;
             using (voatEntities db = new voatEntities())
             {
-                var cmd = db.Database.Connection.CreateCommand();
+                var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = "SELECT ISNULL(SUM(UpCount - DownCount), 0) FROM Comment WITH (NOLOCK) WHERE UserName = @UserName";
 
                 var param = cmd.CreateParameter();
@@ -170,7 +170,7 @@ namespace Voat.Utilities
             int count = 0;
             using (voatEntities db = new voatEntities())
             {
-                var cmd = db.Database.Connection.CreateCommand();
+                var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = @"SELECT ISNULL(SUM(c.UpCount - c.DownCount), 0) FROM Comment c WITH (NOLOCK)
                                     INNER JOIN Submission m WITH (NOLOCK) ON (m.ID = c.SubmissionID)
                                     WHERE c.UserName = @UserName AND m.Subverse = @Subverse";
@@ -213,7 +213,7 @@ namespace Voat.Utilities
             int count = 0;
             using (voatEntities db = new voatEntities())
             {
-                var cmd = db.Database.Connection.CreateCommand();
+                var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = @"SELECT
                                     (SELECT ISNULL(COUNT(*), 0) FROM CommentVoteTracker WITH (NOLOCK) WHERE UserName = @Name AND VoteStatus = 1)
                                     +

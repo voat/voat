@@ -44,7 +44,7 @@ namespace Voat.Data
 
             var query = q.ToString();
 
-            var results = await _db.Database.Connection.QueryAsync<DomainReferenceDetails>(query, q.Parameters);
+            var results = await _db.Connection.QueryAsync<DomainReferenceDetails>(query, q.Parameters);
 
             return results;
 
@@ -62,7 +62,7 @@ namespace Voat.Data
             q.Parameters.Add("IsPublic", (bool?)null);
 
             var query = q.ToString();
-            var results = await _db.Database.Connection.QueryAsync<DomainReferenceDetails>(query, q.Parameters);
+            var results = await _db.Connection.QueryAsync<DomainReferenceDetails>(query, q.Parameters);
 
             return results;
         }

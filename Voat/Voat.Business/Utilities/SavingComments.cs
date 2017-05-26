@@ -38,7 +38,7 @@ namespace Voat.Utilities
         {
             using (voatEntities db = new voatEntities())
             {
-                var cmd = db.Database.Connection.CreateCommand();
+                var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = "SELECT COUNT(*) FROM CommentSaveTracker WITH (NOLOCK) WHERE UserName = @UserName AND CommentID = @CommentID";
 
                 var param = cmd.CreateParameter();

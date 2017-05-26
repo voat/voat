@@ -35,6 +35,10 @@ namespace Voat.Caching
     {
         public static T Get<T>(string key)
         {
+            //CORE_PORT: HttpContext not available 
+            throw new NotImplementedException("Core Port: HttpContext access");
+            /*
+
             var context = System.Web.HttpContext.Current;
             if (context != null)
             {
@@ -44,15 +48,21 @@ namespace Voat.Caching
                 }
             }
             return default(T);
+            */
         }
 
         public static void Set<T>(string key, T value)
         {
+            //CORE_PORT: HttpContext not available 
+            throw new NotImplementedException("Core Port: HttpContext access");
+            /*
+
             var context = System.Web.HttpContext.Current;
             if (context != null)
             {
                 context.Items[key] = value;
             }
+            */
         }
     }
 }

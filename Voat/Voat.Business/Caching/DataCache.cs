@@ -73,7 +73,8 @@ namespace Voat.Caching
                     {
                         using (voatEntities db = new voatEntities())
                         {
-                            db.Configuration.ProxyCreationEnabled = false;
+                            //CORE_PORT: Property not available 
+                            //db.Configuration.ProxyCreationEnabled = false;
                             return db.Submissions.Where(x => x.ID == submissionID).FirstOrDefault();
                         }
                     }), TimeSpan.FromMinutes(30), -1);

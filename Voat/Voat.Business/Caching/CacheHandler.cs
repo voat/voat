@@ -23,6 +23,7 @@
 #endregion LICENSE
 
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -91,6 +92,8 @@ namespace Voat.Caching
         private bool _cacheEnabled = true;
         //BLOCK: Should be set to true, testing for blocking
         private bool _refetchEnabled = true;
+        private IMemoryCache _memoryCache;
+
 
         //holds meta data about the cache item such as the Func, expiration, recacheLimit, and current recaches
         //private ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>> _meta = new ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>>();
@@ -452,7 +455,23 @@ namespace Voat.Caching
                 _refetchEnabled = value;
             }
         }
+        private IMemoryCache SystemMemoryCache
+        {
+            get
+            {
+                throw new NotImplementedException("Core Port: Need to construct this");
+                //CORE_PORT: This is also not safe
+                if (_memoryCache == null)
+                {
+                    var moptions = new MemoryCacheOptions();
+                    var ioptions = Options.Create(moptions);
+                    var memoryCache = new MemoryCache(ioptions);
+                    _memoryCache = memoryCache;
+                }
 
+                return _memoryCache;
+            }
+        }
         #endregion
 
         #region Abstract Methods
@@ -543,20 +562,33 @@ namespace Voat.Caching
                                     //Refetch Logic
                                     if (RefetchEnabled && refetchLimit >= 0)
                                     {
-                                        //_meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, refetchLimit, 0);
+
+                                        //CORE_PORT: Cache has changed
+                                        //ALSO THIS CODE IS DUPLICATED!!! WHO WROTE THIS?
+                                        throw new NotImplementedException("Core Port: Caching with refresh has not been ported to core");
+                                        /*
                                         _meta[cacheKey] = new RefetchEntryFunc<T>(getData) { CacheTime = cacheTime, CurrentCount = 0, MaxCount = refetchLimit };
-                                        var cache = System.Runtime.Caching.MemoryCache.Default;
-                                        var policy = new CacheItemPolicy()
+                                        
+                                        var cache = SystemMemoryCache;
+                                        
+                                        var policy = new MemoryCacheEntryOptions()
                                         {
                                             AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)),
                                             UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
                                         };
+                                        
                                         cache.Set(cacheKey, new object(), policy);
+                                        */
                                     }
                                     else if (RequiresExpirationRemoval)
                                     {
-                                        var cache = System.Runtime.Caching.MemoryCache.Default;
+                                        //CORE_PORT: Cache has changed
+                                        throw new NotImplementedException("Core Port: Caching with refresh has not been ported to core");
+                                        /*
+
+                                        var cache = SystemMemoryCache;
                                         cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
+                                        */
                                     }
                                 }
                                 return data;
@@ -636,6 +668,10 @@ namespace Voat.Caching
                                     //Refetch Logic
                                     if (RefetchEnabled && refetchLimit >= 0)
                                     {
+                                        //CORE_PORT: Cache has changed
+                                        //ALSO THIS CODE IS DUPLICATED!!! WHO WROTE THIS?
+                                        throw new NotImplementedException("Core Port: Caching with refresh has not been ported to core");
+                                        /*
                                         //_meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, refetchLimit, 0);
                                         _meta[cacheKey] = new RefetchEntryTask<T>(getData) { CacheTime = cacheTime, CurrentCount = 0, MaxCount = refetchLimit };
                                         var cache = System.Runtime.Caching.MemoryCache.Default;
@@ -645,11 +681,17 @@ namespace Voat.Caching
                                             UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
                                         };
                                         cache.Set(cacheKey, new object(), policy);
+                                        */
                                     }
                                     else if (RequiresExpirationRemoval)
                                     {
+                                        //CORE_PORT: Cache has changed
+                                        //ALSO THIS CODE IS DUPLICATED!!! WHO WROTE THIS?
+                                        throw new NotImplementedException("Core Port: Caching with refresh has not been ported to core");
+                                        /*
                                         var cache = System.Runtime.Caching.MemoryCache.Default;
                                         cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
+                                        */
                                     }
                                 }
                                 return data;

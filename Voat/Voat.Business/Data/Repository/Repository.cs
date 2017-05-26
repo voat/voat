@@ -47,6 +47,8 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Voat.Data
 {
@@ -67,7 +69,8 @@ namespace Voat.Data
 
             //Prevent EF from creating dynamic proxies, those mother fathers. This killed
             //us during The Fattening, so we throw now -> (╯°□°)╯︵ ┻━┻
-            _db.Configuration.ProxyCreationEnabled = false;
+            //CORE_PORT: Prop not available
+            //_db.Configuration.ProxyCreationEnabled = false;
         }
         public void Dispose()
         {
@@ -557,7 +560,7 @@ namespace Voat.Data
                     break;
             }
 
-            var record = _db.Database.Connection.QueryFirst(q.ToString(), new { ID = id });
+            var record = _db.Connection.QueryFirst(q.ToString(), new { ID = id });
 
             if (record.IsPrivate || record.IsAnonymized || record.MinCCPForDownvote > 0)
             {
@@ -771,7 +774,7 @@ namespace Voat.Data
         {
             using (voatEntities db = new voatEntities())
             {
-                var cmd = db.Database.Connection.CreateCommand();
+                var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = $"SELECT COUNT(*) FROM {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} WHERE c.\"SubmissionID\" = @SubmissionID AND c.\"IsDeleted\" != {SqlFormatter.BooleanLiteral(true)}";
                 var param = cmd.CreateParameter();
                 param.ParameterName = "SubmissionID";
@@ -921,7 +924,7 @@ namespace Voat.Data
             query.Parameters = (new { Domain = domain }).ToDynamicParameters();
 
             //execute query
-            var data = await _db.Database.Connection.QueryAsync<Data.Models.Submission>(query.ToString(), query.Parameters);
+            var data = await _db.Connection.QueryAsync<Data.Models.Submission>(query.ToString(), query.Parameters);
             var results = data.Select(Selectors.SecureSubmission).ToList();
             return results;
         }
@@ -935,7 +938,7 @@ namespace Voat.Data
             query.Parameters = (new { IDs = submissionID }).ToDynamicParameters();
 
             //execute query
-            var data = await _db.Database.Connection.QueryAsync<Data.Models.Submission>(query.ToString(), query.Parameters);
+            var data = await _db.Connection.QueryAsync<Data.Models.Submission>(query.ToString(), query.Parameters);
             var results = data.Select(Selectors.SecureSubmission).ToList();
             return results;
         }
@@ -1210,7 +1213,7 @@ namespace Voat.Data
             //execute query
             var queryString = query.ToString();
 
-            var data = await _db.Database.Connection.QueryAsync<Data.Models.Submission>(queryString, query.Parameters);
+            var data = await _db.Connection.QueryAsync<Data.Models.Submission>(queryString, query.Parameters);
             var results = data.Select(Selectors.SecureSubmission).ToList();
             return results;
         }
@@ -1784,18 +1787,18 @@ namespace Voat.Data
                     body += $"SELECT @SessionID, s.\"Subverse\", @Date FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} WHERE \"ID\" = @SubmissionID ";
                     body += $"AND NOT EXISTS ({exists})";
 
-                    await _db.Database.Connection.ExecuteAsync(body, new { SessionID = hash, SubmissionID = submissionID, Date = CurrentDate }, commandType: System.Data.CommandType.Text).ConfigureAwait(false);
+                    await _db.Connection.ExecuteAsync(body, new { SessionID = hash, SubmissionID = submissionID, Date = CurrentDate }, commandType: System.Data.CommandType.Text).ConfigureAwait(false);
 
 
                     exists = $"SELECT COUNT(*) FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID";
-                    var count = await _db.Database.Connection.ExecuteScalarAsync<int>(exists, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                    var count = await _db.Connection.ExecuteScalarAsync<int>(exists, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
 
                     if (count == 0)
                     {
                         var sql = $"INSERT INTO {SqlFormatter.Table("ViewStatistic")} (\"SubmissionID\", \"ViewerID\") VALUES (@SubmissionID, @SessionID) ";
-                        await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                        await _db.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
                         sql = $"UPDATE {SqlFormatter.Table("Submission")} SET \"Views\" = (\"Views\" + 1) WHERE \"ID\" = @SubmissionID ";
-                        await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                        await _db.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
                     }
 
                     //sql = $"IF NOT EXISTS (SELECT * FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID) ";
@@ -1804,7 +1807,7 @@ namespace Voat.Data
                     //sql += $"UPDATE {SqlFormatter.Table("Submission")} SET \"Views\" = (\"Views\" + 1) WHERE \"ID\" = @SubmissionID ";
                     //sql += $"END";
 
-                    //await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                    //await _db.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
 
 
                 }
@@ -1993,20 +1996,14 @@ namespace Voat.Data
             switch (Configuration.Settings.DataStore)
             {
                 case DataStoreType.SqlServer:
-                    commentTree = _db.usp_CommentTree(submissionID, depth, parentID);
+                    commentTree = _db.Connection.Query<usp_CommentTree_Result>("usp_CommentTree", new { SubmissionID = submissionID, Depth = depth, ParentID = parentID }, commandType: System.Data.CommandType.StoredProcedure);
                     break;
                 case DataStoreType.PostgreSql:
-
                     var d = new DapperQuery();
                     d.Select = "* FROM \"dbo\".\"usp_CommentTree\"(@SubmissionID, @Depth, @ParentID)";
-                    commentTree = _db.Database.Connection.Query<usp_CommentTree_Result>(d.ToString(), new { SubmissionID = submissionID, Depth = depth, ParentID = parentID });
-
+                    commentTree = _db.Connection.Query<usp_CommentTree_Result>(d.ToString(), new { SubmissionID = submissionID, Depth = depth, ParentID = parentID });
                     break;
-
             }
-
-
-
 
             var results = commentTree.ToList();
             return results;
@@ -2050,7 +2047,7 @@ namespace Voat.Data
 
             //var record = query.FirstOrDefault();
 
-            var data = await _db.Database.Connection.QueryAsync<Domain.Models.Comment>(q.ToString(), q.Parameters);
+            var data = await _db.Connection.QueryAsync<Domain.Models.Comment>(q.ToString(), q.Parameters);
 
             DomainMaps.HydrateUserData(data);
 
@@ -2070,7 +2067,7 @@ namespace Voat.Data
                     throw new NotImplementedException($"Method not implemented for ContentType: {contentType.ToString()}");
                     break;
             }
-            int count = await _db.Database.Connection.ExecuteAsync(u.ToString(), new { ID = id, VoteStatus = (int)voteStatus, VoteValue = (int)voteValue });
+            int count = await _db.Connection.ExecuteAsync(u.ToString(), new { ID = id, VoteStatus = (int)voteStatus, VoteValue = (int)voteValue });
         }
 
         public async Task<CommandResponse<Data.Models.Comment>> DeleteComment(int commentID, string reason = null)
@@ -2818,7 +2815,9 @@ namespace Voat.Data
                     }
 
                     var mappedDataMessages = messages.Map();
-                    var addedMessages = db.Messages.AddRange(mappedDataMessages);
+                    db.Messages.AddRange(mappedDataMessages);
+                    var addedMessages = db.Messages;
+
                     await db.SaveChangesAsync().ConfigureAwait(false);
 
                     //send notices async
@@ -3192,7 +3191,7 @@ namespace Voat.Data
                 d.Parameters.Add("ID", id.Value);
             }
 
-            var result = await _db.Database.Connection.ExecuteAsync(d.ToString(), d.Parameters);
+            var result = await _db.Connection.ExecuteAsync(d.ToString(), d.Parameters);
 
             //if (id.HasValue)
             //{
@@ -3266,7 +3265,7 @@ namespace Voat.Data
 
             u.Parameters.Add("ReadDate", CurrentDate);
 
-            var result = await _db.Database.Connection.ExecuteAsync(u.ToString(), u.Parameters);
+            var result = await _db.Connection.ExecuteAsync(u.ToString(), u.Parameters);
 
             Task.Run(() => EventNotification.Instance.SendMessageNotice(
                         UserDefinition.Format(ownerName, ownerType),
@@ -3310,7 +3309,7 @@ namespace Voat.Data
                     MessageTypes = (types != null ? types.ToArray() : (int[])null)
                 }.ToDynamicParameters();
 
-                var results = await db.Database.Connection.QueryAsync<MessageCount>(q.ToString(), q.Parameters);
+                var results = await db.Connection.QueryAsync<MessageCount>(q.ToString(), q.Parameters);
 
                 var result = new MessageCounts(UserDefinition.Create(ownerName, ownerType));
                 result.Counts = results.ToList();
@@ -3399,7 +3398,7 @@ namespace Voat.Data
                     return msg;
                 });
 
-                var messages = await _db.Database.Connection.QueryAsync<Data.Models.Message, Data.Models.Submission, Data.Models.Comment, Domain.Models.Message>(q.ToString(), messageMap, q.Parameters, splitOn: "ID");
+                var messages = await _db.Connection.QueryAsync<Data.Models.Message, Data.Models.Submission, Data.Models.Comment, Domain.Models.Message>(q.ToString(), messageMap, q.Parameters, splitOn: "ID");
 
                 //mark as read
                 if (markAsRead && messages.Any(x => x.ReadDate == null))
@@ -3411,7 +3410,7 @@ namespace Voat.Data
                     update.Parameters.Add("CurrentDate", Repository.CurrentDate);
                     update.Parameters.Add("IDs", messages.Where(x => x.ReadDate == null).Select(x => x.ID).ToArray());
 
-                    await _db.Database.Connection.ExecuteAsync(update.ToString(), update.Parameters);
+                    await _db.Connection.ExecuteAsync(update.ToString(), update.Parameters);
 
                     //await q.Where(x => x.ReadDate == null).ForEachAsync<Models.Message>(x => x.ReadDate = CurrentDate).ConfigureAwait(false);
                     //await db.SaveChangesAsync().ConfigureAwait(false);
@@ -3440,7 +3439,7 @@ namespace Voat.Data
             q.Select = $"SELECT v.\"CommentID\" AS \"ID\", {SqlFormatter.IsNull("v.\"VoteStatus\"", "0")} AS \"Value\" FROM {SqlFormatter.Table("CommentVoteTracker", "v", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON v.\"CommentID\" = c.\"ID\"";
             q.Where = "v.\"UserName\" = @UserName AND c.\"SubmissionID\" = @ID";
 
-            result = _db.Database.Connection.Query<VoteValue>(q.ToString(), new { UserName = userName, ID = submissionID });
+            result = _db.Connection.Query<VoteValue>(q.ToString(), new { UserName = userName, ID = submissionID });
 
             return result;
 
@@ -3479,7 +3478,7 @@ namespace Voat.Data
             d.Select += $"SELECT 2 AS \"Type\", subSet.\"Name\", subSet.\"UserName\" AS \"OwnerName\" FROM {SqlFormatter.Table("SubverseSetSubscription", "setSub")} INNER JOIN {SqlFormatter.Table("SubverseSet", "subSet")} ON subSet.\"ID\" = setSub.\"SubverseSetID\" WHERE setSub.\"UserName\" = @UserName ";
             d.Parameters = new DynamicParameters(new { UserName = userName, Type = (int)SetType.Front, SetName = SetType.Front.ToString() });
 
-            var results = _db.Database.Connection.Query<DomainReference>(d.ToString(), d.Parameters);
+            var results = _db.Connection.Query<DomainReference>(d.ToString(), d.Parameters);
 
             ////TODO: Set Change - needs to retrun subs in user Front set instead.
             //var subs = (from x in _db.SubverseSets
@@ -3666,7 +3665,7 @@ namespace Voat.Data
                     compareDate = CurrentDate.Subtract(span.Value);
                 }
 
-                var cmd = db.Database.Connection.CreateCommand();
+                var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = $"SELECT x.\"VoteStatus\", ABS({SqlFormatter.IsNull("SUM(x.\"VoteStatus\")", "0")}) AS \"Count\" FROM {SqlFormatter.Table(type == ContentType.Comment ? "CommentVoteTracker" : "SubmissionVoteTracker", "x", null, "NOLOCK")} WHERE x.\"UserName\" = @UserName AND (x.\"CreationDate\" >= @CompareDate OR @CompareDate IS NULL) GROUP BY x.\"VoteStatus\"";
                 cmd.CommandType = System.Data.CommandType.Text;
 
@@ -3730,7 +3729,7 @@ namespace Voat.Data
                     break;
             }
 
-            result = _db.Database.Connection.Query<VoteValue>(q.ToString(), new { UserName = userName, ID = id });
+            result = _db.Connection.Query<VoteValue>(q.ToString(), new { UserName = userName, ID = id });
 
             return result;
         }
@@ -3774,7 +3773,7 @@ namespace Voat.Data
                 q.Append(x => x.Where, "\"Subverse\" = @Subverse");
             }
 
-            var count = _db.Database.Connection.ExecuteScalar<int>(q.ToString(), new { UserName = userName, StartDate = compareDate, Type = type, Subverse = subverse });
+            var count = _db.Connection.ExecuteScalar<int>(q.ToString(), new { UserName = userName, StartDate = compareDate, Type = type, Subverse = subverse });
 
             //Logic was buggy here
             //var result = (from x in _db.Submissions
@@ -3872,7 +3871,7 @@ namespace Voat.Data
                     string statement = String.Format(groupingClause, q.ToString());
                     System.Diagnostics.Debug.WriteLine("Query Output");
                     System.Diagnostics.Debug.WriteLine(statement);
-                    var records = db.Database.Connection.Query(statement, new
+                    var records = db.Connection.Query(statement, new
                     {
                         UserName = userName,
                         IsReceived = isReceived,
@@ -3894,7 +3893,7 @@ namespace Voat.Data
         //    {
         //        if ((type & ContentType.Comment) > 0)
         //        {
-        //            var cmd = db.Database.Connection.CreateCommand();
+        //            var cmd = db.Connection.CreateCommand();
         //            cmd.CommandText = @"SELECT 'UpCount' = CAST(ABS(ISNULL(SUM(c.UpCount),0)) AS INT), 'DownCount' = CAST(ABS(ISNULL(SUM(c.DownCount),0)) AS INT) FROM Comment c WITH (NOLOCK)
         //                            INNER JOIN Submission s WITH (NOLOCK) ON(c.SubmissionID = s.ID)
         //                            WHERE c.UserName = @UserName
@@ -3929,7 +3928,7 @@ namespace Voat.Data
 
         //        if ((type & ContentType.Submission) > 0)
         //        {
-        //            var cmd = db.Database.Connection.CreateCommand();
+        //            var cmd = db.Connection.CreateCommand();
         //            cmd.CommandText = @"SELECT 
         //                            'UpCount' = CAST(ABS(ISNULL(SUM(s.UpCount), 0)) AS INT), 
         //                            'DownCount' = CAST(ABS(ISNULL(SUM(s.DownCount), 0)) AS INT) 
@@ -4132,7 +4131,7 @@ namespace Voat.Data
                         throw new NotImplementedException("User subscriber count not implemented");
                         break;
                 }
-                var count = await _db.Database.Connection.ExecuteAsync(u.ToString(), u.Parameters);
+                var count = await _db.Connection.ExecuteAsync(u.ToString(), u.Parameters);
             }
         }
 
@@ -4276,8 +4275,8 @@ namespace Voat.Data
                             where s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
                             select b).Include(x => x.Submission);
 
-                data = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
-                var results = await data.ToListAsync().ConfigureAwait(false);
+                var data2 = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
+                var results = await data2.ToListAsync().ConfigureAwait(false);
                 return results;
             }
         }
@@ -4293,8 +4292,8 @@ namespace Voat.Data
                             where s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
                             select b).Include(x => x.Comment).Include(x => x.Comment.Submission);
 
-                data = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
-                var results = await data.ToListAsync().ConfigureAwait(false);
+                var data_ordered = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
+                var results = await data_ordered.ToListAsync().ConfigureAwait(false);
 
                 //TODO: Move to DomainMaps
                 var mapToDomain = new Func<Data.Models.CommentRemovalLog, Domain.Models.CommentRemovalLog>(d =>
@@ -4471,7 +4470,7 @@ namespace Voat.Data
 
             int? intContentType = contentType == null ? (int?)null : (int)contentType;
 
-            var data = await _db.Database.Connection.QueryAsync<Data.Models.RuleSet>(q.ToString(), new { Subverse = subverse, ContentType = intContentType });
+            var data = await _db.Connection.QueryAsync<Data.Models.RuleSet>(q.ToString(), new { Subverse = subverse, ContentType = intContentType });
 
             return data;
 
@@ -4514,7 +4513,7 @@ namespace Voat.Data
             DateTime? startDate = Repository.CurrentDate.AddHours(hours * -1);
             DateTime? endDate = null;
 
-            var data = await _db.Database.Connection.QueryAsync<ContentUserReport>(q.ToString(), new { Subverse = subverse, StartDate = startDate, EndDate = endDate, RuleSetID = ruleSetID });
+            var data = await _db.Connection.QueryAsync<ContentUserReport>(q.ToString(), new { Subverse = subverse, StartDate = startDate, EndDate = endDate, RuleSetID = ruleSetID });
 
             Dictionary<ContentItem, IEnumerable<ContentUserReport>> groupedData = new Dictionary<ContentItem, IEnumerable<ContentUserReport>>();
 
@@ -4567,7 +4566,7 @@ namespace Voat.Data
             }
             q.Append(x => x.Where, "r.\"ReviewedDate\" IS NULL AND r.\"ReviewedBy\" IS NULL");
 
-            var result = await _db.Database.Connection.ExecuteAsync(q.ToString(), new { Subverse = subverse, ID = id, UserName = User.Identity.Name, CreationDate = CurrentDate });
+            var result = await _db.Connection.ExecuteAsync(q.ToString(), new { Subverse = subverse, ID = id, UserName = User.Identity.Name, CreationDate = CurrentDate });
 
             return CommandResponse.FromStatus(Status.Success);
 
@@ -4611,7 +4610,7 @@ namespace Voat.Data
 
             //var statement = SqlFormatter.IfExists(false, existsClause, body, null);
 
-           var result = await _db.Database.Connection.ExecuteAsync(body, new { UserName = User.Identity.Name, ID = id, RuleID = ruleID, ContentType = (int)contentType, Date = CurrentDate });
+           var result = await _db.Connection.ExecuteAsync(body, new { UserName = User.Identity.Name, ID = id, RuleID = ruleID, ContentType = (int)contentType, Date = CurrentDate });
 
             return CommandResponse.Successful();
         }
@@ -4824,7 +4823,7 @@ namespace Voat.Data
                 q.Parameters.Add("EndDate", CurrentDate.AddHours(-24));
             }
 
-            return await _db.Database.Connection.ExecuteScalarAsync<string>(q.ToString(), q.Parameters);
+            return await _db.Connection.ExecuteScalarAsync<string>(q.ToString(), q.Parameters);
             /*
             SELECT TOP 1 s.Name FROM Subverse s
             INNER JOIN Submission sm ON s.Name = sm.Subverse
@@ -4857,7 +4856,7 @@ namespace Voat.Data
             //q.OrderBy = "\"Rank\" DESC";
             q.Parameters = new { Subverse = subverse }.ToDynamicParameters();
 
-            var result = _db.Database.Connection.ExecuteScalar<double?>(q.ToString(), q.Parameters);
+            var result = _db.Connection.ExecuteScalar<double?>(q.ToString(), q.Parameters);
             return result;
 
             //using (var db = new voatEntities())
@@ -5189,7 +5188,7 @@ namespace Voat.Data
                 q.Where = $"\"Domain\" {SqlFormatter.In("@Domains")}";
                 q.Parameters = new { Domains = alldomains.ToArray() }.ToDynamicParameters();
 
-                var bannedDomains = _db.Database.Connection.Query<BannedDomain>(q.ToString(), q.Parameters);
+                var bannedDomains = _db.Connection.Query<BannedDomain>(q.ToString(), q.Parameters);
                 return bannedDomains;
             }
 
@@ -5259,7 +5258,7 @@ namespace Voat.Data
         {
             var newLog = _db.EventLogs.Add(log);
             _db.SaveChanges();
-            return newLog;
+            return newLog.Entity;
         }
 
         public static DateTime CurrentDate
@@ -5279,7 +5278,7 @@ namespace Voat.Data
                 q.Where = "\"IsActive\" = @IsActive";
             }
             //will return empty list I believe, so should be runtime cacheable 
-            return _db.Database.Connection.Query<Data.Models.Filter>(q.ToString(), new { IsActive = activeOnly });
+            return _db.Connection.Query<Data.Models.Filter>(q.ToString(), new { IsActive = activeOnly });
         }
 
         protected CommandResponse<T> MapRuleOutCome<T>(RuleOutcome outcome, T result)
@@ -5321,7 +5320,7 @@ namespace Voat.Data
             d.OrderBy = "f.\"StartDate\" DESC";
             d.Parameters.Add("CurrentDate", CurrentDate); //I really have no idea why we are passing in a current time. In fact, it is both pointless and error prone, but for some reason, deep inside me, I cannot change this. True, it would take me all of 4 seconds, but this isn’t the time investment. It is something deeper, something unexplainable. I feel that somehow, for some reason, this will save us in the future. I shall leave it in order to save the future people! I am legend?
 
-            var result = _db.Database.Connection.QueryFirstOrDefault<FeaturedDomainReferenceDetails>(d.ToString(), d.Parameters);
+            var result = _db.Connection.QueryFirstOrDefault<FeaturedDomainReferenceDetails>(d.ToString(), d.Parameters);
 
             return result;
         }
@@ -5349,7 +5348,7 @@ namespace Voat.Data
                 q.TakeCount = 10;
             }
 
-            return await _db.Database.Connection.QueryAsync<SubverseSubmissionSetting>(q.ToString(), new { Name = subverseName });
+            return await _db.Connection.QueryAsync<SubverseSubmissionSetting>(q.ToString(), new { Name = subverseName });
 
         }
 
@@ -5377,9 +5376,9 @@ namespace Voat.Data
                     return CommandResponse.FromStatus(Status.Denied, "User is Globally Banned");
                 }
 
-                using (var userManager = new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
+                using (var userManager = VoatUserManager.Create())
                 {
-                    var userAccount = userManager.Find(userName, options.CurrentPassword);
+                    var userAccount = await userManager.FindByLoginAsync(userName, options.CurrentPassword);
                     if (userAccount != null)
                     {
 
@@ -5387,7 +5386,7 @@ namespace Voat.Data
                         var setRecoveryEmail = !String.IsNullOrEmpty(options.RecoveryEmailAddress) && options.RecoveryEmailAddress.IsEqual(options.ConfirmRecoveryEmailAddress);
                         if (setRecoveryEmail)
                         {
-                            var userWithEmail = userManager.FindByEmail(options.RecoveryEmailAddress);
+                            var userWithEmail = await userManager.FindByEmailAsync(options.RecoveryEmailAddress);
                             if (userWithEmail != null && userWithEmail.UserName != userAccount.UserName)
                             {
                                 return CommandResponse.FromStatus(Status.Error, "This email address is in use, please provide a unique address");
@@ -5477,11 +5476,11 @@ namespace Voat.Data
 
                         //Start Update Tasks
                         //TODO: Run this in better 
-                        //var updateTasks = statements.Select(x => Task.Factory.StartNew(() => { _db.Database.Connection.ExecuteAsync(x.ToString(), x.Parameters); }));
+                        //var updateTasks = statements.Select(x => Task.Factory.StartNew(() => { _db.Connection.ExecuteAsync(x.ToString(), x.Parameters); }));
 
                         foreach (var statement in statements)
                         {
-                            await _db.Database.Connection.ExecuteAsync(statement.ToString(), statement.Parameters);
+                            await _db.Connection.ExecuteAsync(statement.ToString(), statement.Parameters);
                         }
 
 
@@ -5516,7 +5515,7 @@ namespace Voat.Data
                             updatePrefStatement.Update = SqlFormatter.UpdateSetBlock("\"Bio\" = NULL, \"Avatar\" = NULL", SqlFormatter.Table("UserPreference"));
                             updatePrefStatement.Where = "\"UserName\" = @UserName";
                             updatePrefStatement.Parameters.Add("UserName", userName);
-                            await _db.Database.Connection.ExecuteAsync(updatePrefStatement.ToString(), updatePrefStatement.Parameters);
+                            await _db.Connection.ExecuteAsync(updatePrefStatement.ToString(), updatePrefStatement.Parameters);
                         }
 
 
@@ -5535,7 +5534,7 @@ namespace Voat.Data
                             var statement = "INSERT INTO \"dbo\".\"UserBadge\" (\"UserName\", \"BadgeID\", \"CreationDate\") " +
                                             "SELECT @UserName, @BadgeID, @Date " +
                                             "WHERE NOT EXISTS (SELECT * FROM \"dbo\".\"UserBadge\" WHERE \"UserName\" = @UserName AND \"BadgeID\" = @BadgeID)";
-                            await _db.Database.Connection.ExecuteAsync(statement, new { BadgeID = badgeID, UserName = userName, Date = CurrentDate });
+                            await _db.Connection.ExecuteAsync(statement, new { BadgeID = badgeID, UserName = userName, Date = CurrentDate });
 
                             //var existing = _db.UserBadges.FirstOrDefault(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && x.BadgeID.Equals(badgeID, StringComparison.OrdinalIgnoreCase));
                             //if (existing == null)
@@ -5560,10 +5559,10 @@ namespace Voat.Data
 
                             userAccount.Email = options.RecoveryEmailAddress;
                             userAccount.LockoutEnabled = true;
-                            userAccount.LockoutEndDateUtc = endLockOutDate;
-                            //await userManager.SetEmailAsync(userID, options.RecoveryEmailAddress);
-                            //await userManager.SetLockoutEnabledAsync(userID, true);
-                            //await userManager.SetLockoutEndDateAsync(userID, CurrentDate.AddDays(3 * 30));
+
+                            //CORE_PORT: Not available
+                            //userAccount.LockoutEndDateUtc = endLockOutDate;
+
                         }
                         else
                         {
@@ -5578,7 +5577,7 @@ namespace Voat.Data
                         {
                             randomPassword = Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(Path.GetRandomFileName())));
                         }
-                        await userManager.ChangePasswordAsync(userID, options.CurrentPassword, randomPassword).ConfigureAwait(false);
+                        await userManager.ChangePasswordAsync(userAccount, options.CurrentPassword, randomPassword).ConfigureAwait(false);
 
                         //log this to ensure delete options working as expected
                         var logEntry = new Logging.LogInformation();

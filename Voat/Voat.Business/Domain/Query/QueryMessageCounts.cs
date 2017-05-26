@@ -89,17 +89,23 @@ namespace Voat.Domain.Query
             get
             {
                 MessageCounts counts = null;
-
+                //CORE_PORT: HttpContext not available 
+                throw new NotImplementedException("Core Port: HttpContext access");
+                /*
                 if (System.Web.HttpContext.Current != null && _ownerType == IdentityType.User)
                 {
                     string key = _ownerName;
                     counts = (MessageCounts)System.Web.HttpContext.Current.Items[key];
                 }
+                */
                 return counts;
             }
 
             set
             {
+                //CORE_PORT: HttpContext not available 
+                throw new NotImplementedException("Core Port: HttpContext access");
+                /*
                 if (System.Web.HttpContext.Current != null && _ownerType == IdentityType.User)
                 {
                     string key = _ownerName;
@@ -111,6 +117,7 @@ namespace Voat.Domain.Query
                         }
                     }
                 }
+                */
             }
         }
 
