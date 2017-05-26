@@ -33,10 +33,20 @@ namespace Voat
         {
             throw new NotImplementedException("Core Port: UserManager not implemented");
         }
+
+        public IdentityResult Create(VoatUser user, string password)
+        {
+            
+            throw new NotImplementedException("Core Port: Create not implemented");
+        }
+
         public VoatUser FindByName(string name)
         {
-            throw new NotImplementedException("Core Port: UserManager not implemented");
+            throw new NotImplementedException("Core Port: FindByName not implemented");
         }
-        
+        public VoatUser Find(string userID, string password)
+        {
+            throw new NotImplementedException("Core Port: Find not implemented");
+        }
     }
 }

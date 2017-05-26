@@ -183,7 +183,7 @@ namespace Voat.Tests.Repository
                 IsAnonymized = false,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
                 IsAdminDisabled = false,
-            });
+            }).Entity;
 
             //ID:2 (Anon Subverse)
             var anonSubverse = context.Subverses.Add(new Subverse()
@@ -197,7 +197,7 @@ namespace Voat.Tests.Repository
                 CreationDate = DateTime.UtcNow.AddDays(-7),
                 IsAdminDisabled = false,
 
-            });
+            }).Entity;
 
             //ID:4 (Min Subverse)
             var minCCPSubverse = context.Subverses.Add(new Subverse()
@@ -212,7 +212,7 @@ namespace Voat.Tests.Repository
                 CreationDate = DateTime.UtcNow.AddDays(-7),
                 IsAdminDisabled = false,
 
-            });
+            }).Entity;
 
             //ID:5 (Private Subverse)
             var privateSubverse = context.Subverses.Add(new Subverse()
@@ -228,7 +228,7 @@ namespace Voat.Tests.Repository
                 CreationDate = DateTime.UtcNow.AddDays(-7),
                 IsAdminDisabled = false,
 
-            });
+            }).Entity;
 
             //ID:6 (AskVoat Subverse)
             var askSubverse = context.Subverses.Add(new Subverse()
@@ -244,7 +244,7 @@ namespace Voat.Tests.Repository
                 CreationDate = DateTime.UtcNow.AddDays(-7),
                 IsAdminDisabled = false,
 
-            });
+            }).Entity;
 
             //ID:7 (whatever Subverse)
             var whatever = context.Subverses.Add(new Subverse()
@@ -260,7 +260,7 @@ namespace Voat.Tests.Repository
                 CreationDate = DateTime.UtcNow.AddDays(-7),
                 IsAdminDisabled = false,
 
-            });
+            }).Entity;
 
             //ID:8 (news Subverse)
             var news = context.Subverses.Add(new Subverse()
@@ -276,7 +276,7 @@ namespace Voat.Tests.Repository
                 CreationDate = DateTime.UtcNow.AddDays(-7),
                 IsAdminDisabled = false,
 
-            });
+            }).Entity;
 
             //ID:9 (AuthorizedOnly Subverse)
             var authOnly = context.Subverses.Add(new Subverse()
@@ -292,7 +292,7 @@ namespace Voat.Tests.Repository
                 CreationDate = DateTime.UtcNow.AddDays(-7),
                 IsAdminDisabled = false,
 
-            });
+            }).Entity;
 
             //ID:10 (nsfw Subverse)
             var nsfwOnly = context.Subverses.Add(new Subverse()
@@ -308,7 +308,7 @@ namespace Voat.Tests.Repository
                 IsPrivate = false,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
                 IsAdminDisabled = false,
-            });
+            }).Entity;
 
             //ID:11 (allowAnon Subverse)
             var allowAnon = context.Subverses.Add(new Subverse()
@@ -324,7 +324,7 @@ namespace Voat.Tests.Repository
                 IsPrivate = false,
                 CreationDate = DateTime.UtcNow.AddDays(-7),
                 IsAdminDisabled = false,
-            });
+            }).Entity;
 
             context.SubverseModerators.Add(new SubverseModerator() { Subverse = "AuthorizedOnly", CreatedBy = "unit", CreationDate = DateTime.UtcNow, Power = 1, UserName = "unit" });
             context.SubverseModerators.Add(new SubverseModerator() { Subverse = "unit", CreatedBy = null, CreationDate = null, Power = 1, UserName = "unit" });
@@ -347,7 +347,7 @@ namespace Voat.Tests.Repository
                 Url = "https://www.youtube.com/watch?v=pnbJEg9r1o8",
                 Type = 2,
                 UserName = "anon"
-            });
+            }).Entity;
             context.SaveChanges();
             //ID: 1
             c = context.Comments.Add(new Comment()
@@ -357,7 +357,7 @@ namespace Voat.Tests.Repository
                 CreationDate = DateTime.UtcNow,
                 SubmissionID = unitSubmission.ID,
                 ParentID = null
-            });
+            }).Entity;
             context.SaveChanges();
             Debug.WriteLine("Comment ID: {0}", c.ID);
             //ID: 2
@@ -368,7 +368,7 @@ namespace Voat.Tests.Repository
                 CreationDate = DateTime.UtcNow,
                 SubmissionID = unitSubmission.ID,
                 ParentID = c.ID
-            });
+            }).Entity;
             context.SaveChanges();
             Debug.WriteLine("Comment ID: {0}", c.ID);
 
@@ -382,7 +382,7 @@ namespace Voat.Tests.Repository
                 Type = 1,
                 UserName = "anon",
                 IsAnonymized = true
-            });
+            }).Entity;
             context.SaveChanges();
             //ID: 3
             c = context.Comments.Add(new Comment()
@@ -393,7 +393,7 @@ namespace Voat.Tests.Repository
                 SubmissionID = anonSubmission.ID,
                 IsAnonymized = true,
                 ParentID = null
-            });
+            }).Entity;
             context.SaveChanges();
             Debug.WriteLine("Comment ID: {0}", c.ID);
 
@@ -406,7 +406,7 @@ namespace Voat.Tests.Repository
                 SubmissionID = anonSubmission.ID,
                 IsAnonymized = true,
                 ParentID = null
-            });
+            }).Entity;
             context.SaveChanges();
             Debug.WriteLine("Comment ID: {0}", c.ID);
 
@@ -420,7 +420,7 @@ namespace Voat.Tests.Repository
                 Type = 1,
                 UserName = "anon",
                 IsAnonymized = false
-            });
+            }).Entity;
             context.SaveChanges();
             //ID: 5
             c = context.Comments.Add(new Comment()
@@ -430,7 +430,7 @@ namespace Voat.Tests.Repository
                 CreationDate = DateTime.UtcNow,
                 SubmissionID = minCCPSubmission.ID,
                 ParentID = null
-            });
+            }).Entity;
             context.SaveChanges();
             Debug.WriteLine("Comment ID: {0}", c.ID);
 
@@ -442,7 +442,7 @@ namespace Voat.Tests.Repository
                 CreationDate = DateTime.UtcNow.AddHours(-4),
                 SubmissionID = minCCPSubmission.ID,
                 ParentID = null
-            });
+            }).Entity;
             context.SaveChanges();
             Debug.WriteLine("Comment ID: {0}", c.ID);
 
@@ -508,7 +508,7 @@ namespace Voat.Tests.Repository
                 CreationDate = DateTime.UtcNow,
                 //SubmissionID = unitSubmission.ID,
                 UpCount = 500,
-            });
+            }).Entity;
             context.SaveChanges();
             VoteContent(context, Domain.Models.ContentType.Submission, s.ID, 500, Domain.Models.Vote.Up);
 
@@ -520,7 +520,7 @@ namespace Voat.Tests.Repository
                 SubmissionID = unitSubmission.ID,
                 UpCount = 50,
                 ParentID = null
-            });
+            }).Entity;
             context.SaveChanges();
             VoteContent(context, Domain.Models.ContentType.Comment, c.ID, 50, Domain.Models.Vote.Up);
 
@@ -532,7 +532,7 @@ namespace Voat.Tests.Repository
                 SubmissionID = unitSubmission.ID,
                 UpCount = 100,
                 ParentID = null
-            });
+            }).Entity;
             context.SaveChanges();
             VoteContent(context, Domain.Models.ContentType.Comment, c.ID, 100, Domain.Models.Vote.Up);
 
@@ -544,7 +544,7 @@ namespace Voat.Tests.Repository
                 SubmissionID = unitSubmission.ID,
                 UpCount = 500,
                 ParentID = null
-            });
+            }).Entity;
             context.SaveChanges();
             VoteContent(context, Domain.Models.ContentType.Comment, c.ID, 500, Domain.Models.Vote.Up);
 
@@ -597,7 +597,7 @@ namespace Voat.Tests.Repository
                     IsAnonymized = false,
                     CreationDate = DateTime.UtcNow.AddDays(-70),
                     IsAdminDisabled = false
-                });
+                }).Entity;
                 context.SaveChanges();
 
                 for (int i = 0; i < 100; i++)
@@ -695,7 +695,7 @@ namespace Voat.Tests.Repository
                 {
                     pwd += userName;
                 }
-
+                
                 var result = manager.Create(user, pwd);
 
                 if (!result.Succeeded)

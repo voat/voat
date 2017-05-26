@@ -67,7 +67,7 @@ namespace Voat.Tests.CommandTests
                     Subverse = subName,
                     CreatedBy = "PuttItOut",
                     CreationDate = DateTime.Now.AddDays(100) //we want to ensure no-one can remove system at L1
-                });
+                }).Entity;
                 context.SaveChanges();
                 _subMods.Add(modName, mod);
 
@@ -79,7 +79,7 @@ namespace Voat.Tests.CommandTests
                     Subverse = subName,
                     CreatedBy = null,
                     CreationDate = null
-                });
+                }).Entity;
                 context.SaveChanges();
                 _subMods.Add(modName, mod);
 
@@ -91,7 +91,7 @@ namespace Voat.Tests.CommandTests
                     Subverse = subName,
                     CreatedBy = "Creator",
                     CreationDate = DateTime.UtcNow.AddDays(-100)
-                });
+                }).Entity;
                 context.SaveChanges();
                 _subMods.Add(modName, mod);
 
@@ -103,7 +103,7 @@ namespace Voat.Tests.CommandTests
                     Subverse = subName,
                     CreatedBy = "L1-0",
                     CreationDate = DateTime.UtcNow
-                });
+                }).Entity;
                 context.SaveChanges();
                 _subMods.Add(modName, mod);
 
@@ -115,7 +115,7 @@ namespace Voat.Tests.CommandTests
                     Subverse = subName,
                     CreatedBy = "Creator",
                     CreationDate = DateTime.UtcNow.AddDays(-10)
-                });
+                }).Entity;
                 context.SaveChanges();
                 _subMods.Add(modName, mod);
 
@@ -127,7 +127,7 @@ namespace Voat.Tests.CommandTests
                     Subverse = subName,
                     CreatedBy = "Creator",
                     CreationDate = DateTime.UtcNow
-                });
+                }).Entity;
                 context.SaveChanges();
                 _subMods.Add(modName, mod);
 
@@ -139,7 +139,7 @@ namespace Voat.Tests.CommandTests
                     Subverse = subName,
                     CreatedBy = "Creator",
                     CreationDate = DateTime.UtcNow.AddDays(-10)
-                });
+                }).Entity;
                 context.SaveChanges();
                 _subMods.Add(modName, mod);
 
@@ -151,7 +151,7 @@ namespace Voat.Tests.CommandTests
                     Subverse = subName,
                     CreatedBy = "Creator",
                     CreationDate = DateTime.UtcNow
-                });
+                }).Entity;
                 context.SaveChanges();
                 _subMods.Add(modName, mod);
 
@@ -164,7 +164,7 @@ namespace Voat.Tests.CommandTests
                     Subverse = subName,
                     CreatedBy = "Creator",
                     CreationDate = DateTime.UtcNow.AddDays(-10)
-                });
+                }).Entity;
                 context.SaveChanges();
                 _subMods.Add(modName, mod);
 
@@ -176,7 +176,7 @@ namespace Voat.Tests.CommandTests
                     Subverse = subName,
                     CreatedBy = "Creator",
                     CreationDate = DateTime.UtcNow
-                });
+                }).Entity;
                 context.SaveChanges();
                 _subMods.Add(modName, mod);
 
@@ -188,7 +188,7 @@ namespace Voat.Tests.CommandTests
                     Subverse = subName,
                     CreatedBy = "Creator",
                     CreationDate = DateTime.UtcNow.AddDays(-10)
-                });
+                }).Entity;
                 context.SaveChanges();
                 _subMods.Add(modName, mod);
 
@@ -200,7 +200,7 @@ namespace Voat.Tests.CommandTests
                     Subverse = subName,
                     CreatedBy = "Creator",
                     CreationDate = DateTime.UtcNow
-                });
+                }).Entity;
                 context.SaveChanges();
                 _subMods.Add(modName, mod);
 

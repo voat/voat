@@ -372,7 +372,7 @@ namespace Voat.Tests.CommandTests
                 checkSubmissions(options.UserName, Domain.Models.SubmissionType.Link, options.LinkSubmissions);
 
                 //Check account settings.
-                using (var userManager = new VoatUserManager<Voat.Data.Models.VoatUser>(new UserStore<Voat.Data.Models.VoatUser>(new Voat.Data.Models.ApplicationDbContext())))
+                using (var userManager = VoatUserManager.Create())
                 {
                     var userAccount = userManager.FindByName(options.UserName);
 
@@ -382,9 +382,12 @@ namespace Voat.Tests.CommandTests
                         //Verify recovery info
                         Assert.AreEqual(userAccount.Email, options.RecoveryEmailAddress);
                         Assert.IsTrue(userAccount.LockoutEnabled, "Lockout should be enabled");
+                        //CORE_PORT: Not available
+                        throw new NotImplementedException("Core Port not implemented");
+                        /*
                         Assert.IsNotNull(userAccount.LockoutEndDateUtc, "Lockout should not be null");
                         Assert.IsTrue(userAccount.LockoutEndDateUtc.Value.Subtract(DateTime.UtcNow) >= TimeSpan.FromDays(89), "Lockout be set to roughly 90 days");
-
+                        */
                        
                     }
                     else
