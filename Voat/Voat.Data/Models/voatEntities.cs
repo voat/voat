@@ -9,8 +9,11 @@ namespace Voat.Data.Models
 
         public void EnableCacheableOutput()
         {
-            // this.Configuration.LazyLoadingEnabled = false;//FIXME not supported
-            // this.Configuration.ProxyCreationEnabled = false;
+            //CORE_PORT: not supported
+            /*
+                this.Configuration.LazyLoadingEnabled = false;
+                this.Configuration.ProxyCreationEnabled = false;
+            */
         }
 
         //public voatEntities(bool readWrite)
@@ -20,15 +23,18 @@ namespace Voat.Data.Models
         //}
 
         public voatEntities(string connectionName)
-        //: base(String.Format("name={0}", connectionName))//FIXME
+        //CORE_PORT: not supported
+        //: base(String.Format("name={0}", connectionName))
         {
             /*no-op*/
         }
 
         //IAmAGate: Move queries to read-only mirror
-        public voatEntities(bool useReadOnlyOnUnAthenticated) //:
-                                                              //this(useReadOnlyOnUnAthenticated && (System.Web.HttpContext.Current != null && !System.Web.HttpContext.Current.User.Identity.IsAuthenticated)//FIXME
-                                                              //? "voatEntitiesReadOnly" : "voatEntities")
+        public voatEntities(bool useReadOnlyOnUnAthenticated)
+            //CORE_PORT: not supported
+            //:
+            //this(useReadOnlyOnUnAthenticated && (System.Web.HttpContext.Current != null && !System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+            //? "voatEntitiesReadOnly" : "voatEntities")
         {
             /*no-op*/
         }

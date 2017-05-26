@@ -19,7 +19,8 @@ namespace Voat.Data.Models
     {
         public class UnintentionalCodeFirstException : Exception { }
         public voatEntities()
-        //: base("name=voatEntities")//FIXME
+            //CORE_PORT: not supported
+            //: base("name=voatEntities")
         {
         }
 
@@ -68,26 +69,24 @@ namespace Voat.Data.Models
         public virtual DbSet<SubverseSetSubscription> SubverseSetSubscriptions { get; set; }
         public virtual DbSet<Featured> Featureds { get; set; }
 
-        public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
-        {
-			//CORE_PORT: Code not worky
-			throw new NotImplementedException("Core Port Problems");
-            /*
-			var submissionIDParameter = submissionID.HasValue ?
-                new ObjectParameter("SubmissionID", submissionID) :
-                new ObjectParameter("SubmissionID", typeof(int));
+        //CORE_PORT: Code no worky. Future people problems.
+        //public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
+        //{
+        //    var submissionIDParameter = submissionID.HasValue ?
+        //        new ObjectParameter("SubmissionID", submissionID) :
+        //        new ObjectParameter("SubmissionID", typeof(int));
 
-            var depthParameter = depth.HasValue ?
-                new ObjectParameter("Depth", depth) :
-                new ObjectParameter("Depth", typeof(int));
+        //    var depthParameter = depth.HasValue ?
+        //        new ObjectParameter("Depth", depth) :
+        //        new ObjectParameter("Depth", typeof(int));
 
-            var parentIDParameter = parentID.HasValue ?
-                new ObjectParameter("ParentID", parentID) :
-                new ObjectParameter("ParentID", typeof(int));
+        //    var parentIDParameter = parentID.HasValue ?
+        //        new ObjectParameter("ParentID", parentID) :
+        //        new ObjectParameter("ParentID", typeof(int));
 
-            var result = ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_CommentTree_Result>("usp_CommentTree", submissionIDParameter, depthParameter, parentIDParameter);
-            return result;
-			*/
-        }
-	}
+        //    var result = ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_CommentTree_Result>("usp_CommentTree", submissionIDParameter, depthParameter, parentIDParameter);
+        //    return result;
+        //}
+
+    }
 }

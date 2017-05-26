@@ -9,7 +9,8 @@ namespace Voat.Data.Models
 {
     //TODO: This is a hack from the UI. We need to get rid of this but as AllowHtml requires a reference to the Mvc libraries and
     //the MetadataType needs to be compiled in the current assembly.
-    //[MetadataType(typeof(CommentMetaData))]//FIXME: not supported
+    //CORE_PORT: not supported
+    //[MetadataType(typeof(CommentMetaData))]
     public partial class Comment
     {
 
@@ -19,7 +20,8 @@ namespace Voat.Data.Models
     {
         [Required(ErrorMessage = "Comment text is required. Please fill this field.")]
         [StringLength(10000, ErrorMessage = "Comment text is limited to 10000 characters.")]
-        //[AllowHtml]//FIXME: not supported
+        //CORE_PORT: not supported
+        //[AllowHtml]
         public string Content { get; set; }
     }
 }

@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace Voat.Data.Models
 {
-    //[MetadataType(typeof(DiscussionMetaData))]//FIXME: not supported
+    //CORE_PORT: not supported
+    //[MetadataType(typeof(DiscussionMetaData))]
     public partial class Submission
     {
 
@@ -15,7 +16,8 @@ namespace Voat.Data.Models
 
     public class DiscussionMetaData
     {
-        //[AllowHtml]//FIXME: not supported
+        //CORE_PORT: not supported
+        //[AllowHtml]
         [StringLength(10000, ErrorMessage = "Submission text is limited to 10.000 characters.")]
         public string Content { get; set; }
     }
