@@ -22,6 +22,7 @@
 
 #endregion LICENSE
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Configuration;
 using System.Linq;
 using Voat.Caching;
@@ -32,15 +33,17 @@ using Voat.Tests.Repository;
 
 
 [NUnit.Framework.SetUpFixture]
+[TestClass]
 public class UnitTestSetup
 {
     [NUnit.Framework.OneTimeSetUp()]
-    public void SetUp()
+    [AssemblyInitialize()]
+    public static void SetUp(TestContext context)
     {
 
         //load web.config.live monitor
-        LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
-        LiveConfigurationManager.Start();
+        //LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
+        //LiveConfigurationManager.Start();
 
         if (ConfigurationManager.AppSettings["PreventDatabaseDrop"] != "true")
         {
@@ -48,6 +51,9 @@ public class UnitTestSetup
             //Database.SetInitializer();
             using (var db = new voatEntities())
             {
+                //Force configuration
+                var x = db.Ad.FirstOrDefault();
+
                 var init = new VoatDataInitializer();
                 init.InitializeDatabase(db); //This attempts to create and seed unit test db
             }

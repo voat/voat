@@ -96,7 +96,7 @@ namespace Voat.Tests.CommandTests
 
             using (var db = new voatEntities())
             {
-                var subverse = db.Subverses.FirstOrDefault(x => x.Name == name);
+                var subverse = db.Subverse.FirstOrDefault(x => x.Name == name);
                 Assert.IsNotNull(subverse, "Expecting to find subverse");
                 Assert.AreEqual(name, subverse.Name);
                 Assert.AreEqual(description, subverse.Description);

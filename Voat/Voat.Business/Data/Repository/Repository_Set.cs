@@ -153,16 +153,16 @@ namespace Voat.Data
                 CommandResponse<bool?> response = new CommandResponse<bool?>(true, Status.Success, "");
                 var actionTaken = SubscriptionAction.Toggle;
 
-                var setSubverseRecord = db.SubverseSetLists.FirstOrDefault(n => n.SubverseSetID == set.ID && n.SubverseID == subverse.ID);
+                var setSubverseRecord = db.SubverseSetList.FirstOrDefault(n => n.SubverseSetID == set.ID && n.SubverseID == subverse.ID);
 
                 if (setSubverseRecord == null && ((action == SubscriptionAction.Subscribe) || action == SubscriptionAction.Toggle))
                 {
-                    db.SubverseSetLists.Add(new SubverseSetList { SubverseSetID = set.ID, SubverseID = subverse.ID, CreationDate = CurrentDate });
+                    db.SubverseSetList.Add(new SubverseSetList { SubverseSetID = set.ID, SubverseID = subverse.ID, CreationDate = CurrentDate });
                     actionTaken = SubscriptionAction.Subscribe;
                 }
                 else if (setSubverseRecord != null && ((action == SubscriptionAction.Unsubscribe) || action == SubscriptionAction.Toggle))
                 {
-                    db.SubverseSetLists.Remove(setSubverseRecord);
+                    db.SubverseSetList.Remove(setSubverseRecord);
                     actionTaken = SubscriptionAction.Unsubscribe;
                 }
 
@@ -216,12 +216,12 @@ namespace Voat.Data
         {
             using (var db = new voatEntities())
             {
-                var set = db.SubverseSets.FirstOrDefault(x => x.Name.Equals(setInfo.Name, StringComparison.OrdinalIgnoreCase) && x.UserName == setInfo.UserName);
+                var set = db.SubverseSet.FirstOrDefault(x => x.Name.Equals(setInfo.Name, StringComparison.OrdinalIgnoreCase) && x.UserName == setInfo.UserName);
                 if (set == null)
                 {
                     setInfo.CreationDate = CurrentDate;
                     setInfo.SubscriberCount = 1;
-                    db.SubverseSets.Add(setInfo);
+                    db.SubverseSet.Add(setInfo);
                     setInfo.SubverseSetSubscriptions.Add(new SubverseSetSubscription() { UserName = setInfo.UserName, CreationDate = CurrentDate });
                     db.SaveChanges();
                     return setInfo;
@@ -295,7 +295,7 @@ namespace Voat.Data
                 return MapRuleOutCome<Set>(outcome, null);
             }
 
-            var existingSet = _db.SubverseSets.FirstOrDefault(x => x.ID == set.ID);
+            var existingSet = _db.SubverseSet.FirstOrDefault(x => x.ID == set.ID);
             if (existingSet != null)
             {
                 var perms = SetPermission.GetPermissions(existingSet.Map(), User.Identity);
@@ -308,7 +308,7 @@ namespace Voat.Data
                 //HACK: Need to clear this entry out of cache if name changes and check name
                 if (!existingSet.Name.IsEqual(set.Name))
                 {
-                    if (_db.SubverseSets.Any(x => x.Name.Equals(set.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)))
+                    if (_db.SubverseSet.Any(x => x.Name.Equals(set.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)))
                     {
                         return CommandResponse.FromStatus<Set>(null, Status.Denied, "A set with this name already exists");
                     }
@@ -369,10 +369,10 @@ namespace Voat.Data
                         SubscriberCount = 1, //Owner is a subscriber. Reminds me of that hair club commercial: I"m not only the Set Owner, I'm also a subscriber.
                     };
 
-                    _db.SubverseSets.Add(newSet);
+                    _db.SubverseSet.Add(newSet);
                     await _db.SaveChangesAsync().ConfigureAwait(false);
 
-                    _db.SubverseSetSubscriptions.Add(new SubverseSetSubscription() { SubverseSetID = newSet.ID, UserName = User.Identity.Name, CreationDate = CurrentDate });
+                    _db.SubverseSetSubscription.Add(new SubverseSetSubscription() { SubverseSetID = newSet.ID, UserName = User.Identity.Name, CreationDate = CurrentDate });
                     await _db.SaveChangesAsync().ConfigureAwait(false);
 
                     return CommandResponse.Successful(newSet.Map());

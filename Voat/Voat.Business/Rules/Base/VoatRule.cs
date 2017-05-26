@@ -71,7 +71,7 @@ namespace Voat.Rules
             using (var db = new voatEntities())
             {
                 // check how many submission user made today
-                var userSubmissionsToTargetSub = db.Submissions.Count(
+                var userSubmissionsToTargetSub = db.Submission.Count(
                     m => m.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
                         && m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase)
                         && m.CreationDate >= fromDate && m.CreationDate <= toDate);
@@ -97,7 +97,7 @@ namespace Voat.Rules
             using (var db = new voatEntities())
             {
                 // check how many submission user made today
-                var userSubmissionsInPast24Hours = db.Submissions.Count(
+                var userSubmissionsInPast24Hours = db.Submission.Count(
                     m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase)
                         && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
@@ -122,7 +122,7 @@ namespace Voat.Rules
             using (var db = new voatEntities())
             {
                 // check how many submission user made today
-                var userCommentSubmissionsInPast24Hours = db.Comments.Count(
+                var userCommentSubmissionsInPast24Hours = db.Comment.Count(
                     m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase)
                         && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
@@ -147,7 +147,7 @@ namespace Voat.Rules
             using (var db = new voatEntities())
             {
                 // check how many submission user made today
-                var userCommentSubmissionsInPast24Hours = db.Comments.Count(
+                var userCommentSubmissionsInPast24Hours = db.Comment.Count(
                     m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase)
                         && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
@@ -172,7 +172,7 @@ namespace Voat.Rules
             using (var db = new voatEntities())
             {
                 // check how many comments user made in the last 59 minutes
-                var userCommentSubmissionsInPastHour = db.Comments.Count(
+                var userCommentSubmissionsInPastHour = db.Comment.Count(
                     m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase)
                         && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
@@ -197,7 +197,7 @@ namespace Voat.Rules
             using (var db = new voatEntities())
             {
                 // check how many submission user made in the last hour
-                var userSubmissionsToTargetSub = db.Submissions.Count(
+                var userSubmissionsToTargetSub = db.Submission.Count(
                     m => m.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
                         && m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase)
                         && m.CreationDate >= fromDate && m.CreationDate <= toDate);
@@ -240,7 +240,7 @@ namespace Voat.Rules
             using (var db = new voatEntities())
             {
                 // check how many submission user made in the last hour
-                var totalUserSubmissionsForTimeSpam = db.Submissions.Count(m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase) && m.CreationDate >= fromDate && m.CreationDate <= toDate);
+                var totalUserSubmissionsForTimeSpam = db.Submission.Count(m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase) && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
                 if (dpqps <= totalUserSubmissionsForTimeSpam)
                 {
@@ -281,7 +281,7 @@ namespace Voat.Rules
             using (var db = new voatEntities())
             {
                 // check how many submission user made today
-                var userSubmissionsToTargetSub = db.Submissions.Count(m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase) && m.CreationDate >= fromDate && m.CreationDate <= toDate);
+                var userSubmissionsToTargetSub = db.Submission.Count(m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase) && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 
                 if (dpqps <= userSubmissionsToTargetSub)
                 {
@@ -303,7 +303,7 @@ namespace Voat.Rules
 
             using (var db = new voatEntities())
             {
-                var numberOfTimesSubmitted = db.Submissions
+                var numberOfTimesSubmitted = db.Submission
                     .Where(m => m.Content.Equals(url, StringComparison.OrdinalIgnoreCase)
                     && m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase)
                     && m.CreationDate >= fromDate && m.CreationDate <= toDate);

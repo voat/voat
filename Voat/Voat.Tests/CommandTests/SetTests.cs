@@ -69,7 +69,7 @@ namespace Voat.Tests.CommandTests
             var currentSubscriberCount = 0;
             using (var db = new voatEntities())
             {
-                var count = db.Subverses.First(x => x.Name == subName).SubscriberCount;
+                var count = db.Subverse.First(x => x.Name == subName).SubscriberCount;
                 currentSubscriberCount = count.HasValue ? count.Value : 0;
 
             }
@@ -100,7 +100,7 @@ namespace Voat.Tests.CommandTests
             //Ensure Subverse Subscriber Count Updated
             using (var db = new voatEntities())
             {
-                var tc = db.Subverses.First(x => x.Name == subName).SubscriberCount;
+                var tc = db.Subverse.First(x => x.Name == subName).SubscriberCount;
                 var count = tc.HasValue ? tc.Value : 0;
                 Assert.AreEqual(currentSubscriberCount, count, "");
                 currentSubscriberCount = count;
@@ -120,7 +120,7 @@ namespace Voat.Tests.CommandTests
             //Ensure Subverse Subscriber Count Updated
             using (var db = new voatEntities())
             {
-                var count = db.Subverses.First(x => x.Name == subName).SubscriberCount;
+                var count = db.Subverse.First(x => x.Name == subName).SubscriberCount;
                 Assert.AreEqual(currentSubscriberCount, count.HasValue ? count.Value : 0, "");
             }
 
@@ -160,7 +160,7 @@ namespace Voat.Tests.CommandTests
             var currentSubscriberCount = 0;
             using (var db = new voatEntities())
             {
-                var count = db.Subverses.First(x => x.Name == subName).SubscriberCount;
+                var count = db.Subverse.First(x => x.Name == subName).SubscriberCount;
                 currentSubscriberCount = count.HasValue ? count.Value : 0;
 
             }
@@ -192,7 +192,7 @@ namespace Voat.Tests.CommandTests
             //Ensure Subverse Subscriber Count Updated
             using (var db = new voatEntities())
             {
-                var tc = db.Subverses.First(x => x.Name == subName).SubscriberCount;
+                var tc = db.Subverse.First(x => x.Name == subName).SubscriberCount;
                 var count = tc.HasValue ? tc.Value : 0;
                 Assert.AreEqual(currentSubscriberCount + 1,  count, "");
                 currentSubscriberCount = count;
@@ -212,7 +212,7 @@ namespace Voat.Tests.CommandTests
             //Ensure Subverse Subscriber Count Updated
             using (var db = new voatEntities())
             {
-                var count = db.Subverses.First(x => x.Name == subName).SubscriberCount;
+                var count = db.Subverse.First(x => x.Name == subName).SubscriberCount;
                 Assert.AreEqual(currentSubscriberCount - 1, count.HasValue ? count.Value : 0, "");
             }
 
@@ -262,11 +262,11 @@ namespace Voat.Tests.CommandTests
             //check data
             using (var db = new Voat.Data.Models.voatEntities())
             {
-                var dbSet = db.SubverseSets.FirstOrDefault(x => x.Name == set.Name && x.UserName == set.UserName && x.Type == (int)set.Type);
+                var dbSet = db.SubverseSet.FirstOrDefault(x => x.Name == set.Name && x.UserName == set.UserName && x.Type == (int)set.Type);
                 Assert.IsNotNull(dbSet, "Can not find set as created");
                 Assert.AreEqual(expectedCount, dbSet.SubscriberCount, "Subscriber Count Off on set");
 
-                var subscription = db.SubverseSetSubscriptions.FirstOrDefault(x => x.SubverseSetID == dbSet.ID && x.UserName == userName);
+                var subscription = db.SubverseSetSubscription.FirstOrDefault(x => x.SubverseSetID == dbSet.ID && x.UserName == userName);
                 if (exists)
                 {
                     Assert.IsNotNull(subscription, "Expecting a subscription but couldn't find it");
@@ -276,7 +276,7 @@ namespace Voat.Tests.CommandTests
                     Assert.IsNull(subscription, "Expecting to not find a subscription, but found one");
                 }
 
-                var count = db.SubverseSetSubscriptions.Count(x => x.SubverseSetID == dbSet.ID);
+                var count = db.SubverseSetSubscription.Count(x => x.SubverseSetID == dbSet.ID);
                 Assert.AreEqual(expectedCount, count, "SubverseSetSubscription record entries are off from expected count");
 
             }

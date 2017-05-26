@@ -164,7 +164,7 @@ namespace Voat.Utilities.Components
                     if (comment.ParentID != null && comment.Content != null)
                     {
                         // find the parent comment and its author
-                        var parentComment = _db.Comments.Find(comment.ParentID);
+                        var parentComment = _db.Comment.Find(comment.ParentID);
                         if (parentComment != null)
                         {
                             // check if recipient exists

@@ -248,7 +248,7 @@ namespace Voat.Utilities
                     db.EnableCacheableOutput();
 
                     // 5 subverses user submitted to most
-                    var subverses = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
+                    var subverses = db.Submission.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
                              .GroupBy(a => new { a.UserName, a.Subverse })
                              .Select(g => new SubverseStats { SubverseName = g.Key.Subverse, Count = g.Count() })
                              .OrderByDescending(s => s.Count)
@@ -256,7 +256,7 @@ namespace Voat.Utilities
                              .ToList();
 
                     // total comment count
-                    var comments = db.Comments.Count(a => a.UserName == userName && !a.IsDeleted);
+                    var comments = db.Comment.Count(a => a.UserName == userName && !a.IsDeleted);
 
                     // voting habits
                     var userData = new Domain.UserData(userName);
@@ -272,7 +272,7 @@ namespace Voat.Utilities
                     //var submissionDownvotes = db.SubmissionVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
 
                     // get 3 highest rated comments
-                    var highestRatedComments = db.Comments
+                    var highestRatedComments = db.Comment
                         //CORE_PORT: EF has changed
                         //.Include("Submission")
                         .Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
@@ -281,7 +281,7 @@ namespace Voat.Utilities
                         .ToList();
 
                     // get 3 lowest rated comments
-                    var lowestRatedComments = db.Comments
+                    var lowestRatedComments = db.Comment
                         //CORE_PORT: EF has changed
                         //.Include("Submission")
                         .Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
@@ -289,17 +289,17 @@ namespace Voat.Utilities
                         .Take(3)
                         .ToList();
 
-                    var linkSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 2 && !a.IsDeleted && !a.IsAnonymized);
-                    var messageSubmissionsCount = db.Submissions.Count(a => a.UserName == userName && a.Type == 1 && !a.IsDeleted && !a.IsAnonymized);
+                    var linkSubmissionsCount = db.Submission.Count(a => a.UserName == userName && a.Type == 2 && !a.IsDeleted && !a.IsAnonymized);
+                    var messageSubmissionsCount = db.Submission.Count(a => a.UserName == userName && a.Type == 1 && !a.IsDeleted && !a.IsAnonymized);
 
                     // get 5 highest rated submissions
-                    var highestRatedSubmissions = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
+                    var highestRatedSubmissions = db.Submission.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
                         .OrderByDescending(s => s.UpCount - s.DownCount)
                         .Take(5)
                         .ToList();
 
                     // get 5 lowest rated submissions
-                    var lowestRatedSubmissions = db.Submissions.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
+                    var lowestRatedSubmissions = db.Submission.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
                         .OrderBy(s => s.UpCount - s.DownCount)
                         .Take(5)
                         .ToList();
@@ -335,7 +335,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var bannedUser = db.BannedUsers.FirstOrDefault(n => n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
+                var bannedUser = db.BannedUser.FirstOrDefault(n => n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
                 return bannedUser != null;
             }
         }
@@ -345,7 +345,7 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var bannedUser = db.SubverseBans.FirstOrDefault(n => n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
+                var bannedUser = db.SubverseBan.FirstOrDefault(n => n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
                 return bannedUser != null;
             }
         }
@@ -443,8 +443,8 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // get voting habits
-                var commentUpvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                var commentDownvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+                var commentUpvotes = db.CommentVoteTracker.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                var commentDownvotes = db.CommentVoteTracker.Count(a => a.UserName == userName && a.VoteStatus == -1);
 
                 return commentDownvotes > commentUpvotes;
             }
@@ -456,8 +456,8 @@ namespace Voat.Utilities
             using (var db = new voatEntities())
             {
                 // get voting habits
-                var submissionUpvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                var submissionDownvotes = db.CommentVoteTrackers.Count(a => a.UserName == userName && a.VoteStatus == -1);
+                var submissionUpvotes = db.CommentVoteTracker.Count(a => a.UserName == userName && a.VoteStatus == 1);
+                var submissionDownvotes = db.CommentVoteTracker.Count(a => a.UserName == userName && a.VoteStatus == -1);
 
                 return submissionDownvotes > submissionUpvotes;
             }
@@ -471,7 +471,7 @@ namespace Voat.Utilities
 
             using (var db = new voatEntities())
             {
-                var previousComment = db.Comments.FirstOrDefault(m => m.Content.Equals(commentContent, StringComparison.OrdinalIgnoreCase)
+                var previousComment = db.Comment.FirstOrDefault(m => m.Content.Equals(commentContent, StringComparison.OrdinalIgnoreCase)
                     && m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
                     && m.CreationDate >= fromDate && m.CreationDate <= toDate);
 

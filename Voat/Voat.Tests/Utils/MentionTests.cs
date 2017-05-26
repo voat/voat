@@ -67,7 +67,7 @@ namespace Voat.Tests.Utils
 
             using (var db = new voatEntities())
             {
-                var count = db.Messages.Where(x => x.Sender == user1 && x.Recipient == user2 && x.CommentID == result.Response.ID).Count();
+                var count = db.Message.Where(x => x.Sender == user1 && x.Recipient == user2 && x.CommentID == result.Response.ID).Count();
                 Assert.AreEqual(1, count, "Received duplicates and now users are annoyed and burning down the village! Run!");
             }
 
@@ -81,7 +81,7 @@ namespace Voat.Tests.Utils
 
             using (var db = new voatEntities())
             {
-                var count = db.Messages.Where(x => x.Sender == user2 && x.Recipient == user1 && x.CommentID == result.Response.ID).Count();
+                var count = db.Message.Where(x => x.Sender == user2 && x.Recipient == user1 && x.CommentID == result.Response.ID).Count();
                 Assert.AreEqual(1, count, "Received duplicates and now users are annoyed and burning down the village! Run!");
             }
         }
@@ -112,7 +112,7 @@ namespace Voat.Tests.Utils
 
             using (var db = new voatEntities())
             {
-                var count = db.Messages.Where(x => x.Sender == user2 && x.Recipient == user1 && x.CommentID == result.Response.ID).Count();
+                var count = db.Message.Where(x => x.Sender == user2 && x.Recipient == user1 && x.CommentID == result.Response.ID).Count();
                 Assert.AreEqual(1, count, "Received duplicates and now users are annoyed and burning down the village! Run!");
             }
 
@@ -134,7 +134,7 @@ namespace Voat.Tests.Utils
 
             using (var db = new voatEntities())
             {
-                var count = db.Messages.Where(x => x.Sender == user1 && x.Recipient == user2 && x.CommentID == result.Response.ID).Count();
+                var count = db.Message.Where(x => x.Sender == user1 && x.Recipient == user2 && x.CommentID == result.Response.ID).Count();
                 Assert.AreEqual(1, count, "Expected to receive shill mention! THIS IS CENSORSHIP!");
             }
         }
@@ -158,7 +158,7 @@ namespace Voat.Tests.Utils
 
             using (var db = new voatEntities())
             {
-                var count = db.Messages.Where(x => 
+                var count = db.Message.Where(x => 
                     x.Sender == user1 
                     && x.Recipient == user2 
                     && x.SubmissionID == anonSubmission.ID 
@@ -176,7 +176,7 @@ namespace Voat.Tests.Utils
 
             using (var db = new voatEntities())
             {
-                var count = db.Messages.Where(x => 
+                var count = db.Message.Where(x => 
                     x.Sender == user1 
                     && x.Recipient == user2 
                     && x.CommentID == result.Response.ID 
@@ -212,7 +212,7 @@ namespace Voat.Tests.Utils
 
             using (var db = new voatEntities())
             {
-                var count = db.Messages.Where(x => 
+                var count = db.Message.Where(x => 
                     x.Sender == user1 
                     && x.Recipient == user2 
                     && x.SubmissionID == anonSubmission.ID 
@@ -230,7 +230,7 @@ namespace Voat.Tests.Utils
 
             using (var db = new voatEntities())
             {
-                var count = db.Messages.Where(x => 
+                var count = db.Message.Where(x => 
                     x.Sender == user1 
                     && x.Recipient == user2 
                     && x.CommentID == result.Response.ID 
@@ -256,7 +256,7 @@ namespace Voat.Tests.Utils
 
             using (var db = new voatEntities())
             {
-                var count = db.Messages.Where(x => 
+                var count = db.Message.Where(x => 
                     x.Sender == user1 
                     && x.Recipient == user2 
                     && x.CommentID == result.Response.ID 
@@ -281,7 +281,7 @@ namespace Voat.Tests.Utils
 
             using (var db = new voatEntities())
             {
-                var count = db.Messages.Where(x =>
+                var count = db.Message.Where(x =>
                     x.Sender == user1
                     && x.Recipient == user2
                     && x.SubmissionID == anonSubmission.ID

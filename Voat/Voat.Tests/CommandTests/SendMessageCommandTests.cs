@@ -57,7 +57,7 @@ namespace Voat.Tests.CommandTests
 
             using (var db = new voatEntities())
             {
-                var count = (from x in db.Messages
+                var count = (from x in db.Message
                              where
                                x.Content == id
                              select x).Count();
@@ -83,7 +83,7 @@ namespace Voat.Tests.CommandTests
             
             using (var db = new voatEntities())
             {
-                var count = (from x in db.Messages
+                var count = (from x in db.Message
                               where
                                 x.Content == id
                               select x).Count();
@@ -145,7 +145,7 @@ namespace Voat.Tests.CommandTests
 
             using (var db = new voatEntities())
             {
-                var record = (from x in db.Messages
+                var record = (from x in db.Message
                               where 
                                 x.Recipient == recipient 
                                 && x.Sender == sender 
@@ -159,7 +159,7 @@ namespace Voat.Tests.CommandTests
                                 select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find outbound in database");
 
-                record = (from x in db.Messages
+                record = (from x in db.Message
                               where
                                 x.Recipient == recipient
                                 && x.Sender == sender
@@ -204,7 +204,7 @@ namespace Voat.Tests.CommandTests
             //Ensure first msg is in db
             using (var db = new voatEntities())
             {
-                var record = (from x in db.Messages
+                var record = (from x in db.Message
                               where
                                 x.Recipient == recipient
                                 && x.Sender == sender
@@ -218,7 +218,7 @@ namespace Voat.Tests.CommandTests
                               select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find outbound in database");
 
-                record = (from x in db.Messages
+                record = (from x in db.Message
                           where
                             x.Recipient == recipient
                             && x.Sender == sender
@@ -255,19 +255,19 @@ namespace Voat.Tests.CommandTests
             //ensure v/Unit has moderators
             using (var db = new voatEntities())
             {
-                var record = (from x in db.SubverseModerators
+                var record = (from x in db.SubverseModerator
                               where
                                 x.Subverse == subverse
                               select x).ToList();
                 var mod = "anon";
                 if (!record.Any(x => x.UserName == mod))
                 {
-                    db.SubverseModerators.Add(new Voat.Data.Models.SubverseModerator() { UserName = mod, Subverse = subverse, CreatedBy = "UnitTesting", CreationDate = DateTime.UtcNow, Power = 1 });
+                    db.SubverseModerator.Add(new Voat.Data.Models.SubverseModerator() { UserName = mod, Subverse = subverse, CreatedBy = "UnitTesting", CreationDate = DateTime.UtcNow, Power = 1 });
                 }
                 mod = "unit";
                 if (!record.Any(x => x.UserName == mod))
                 {
-                    db.SubverseModerators.Add(new Voat.Data.Models.SubverseModerator() { UserName = mod, Subverse = subverse, CreatedBy = "UnitTesting", CreationDate = DateTime.UtcNow, Power = 1 });
+                    db.SubverseModerator.Add(new Voat.Data.Models.SubverseModerator() { UserName = mod, Subverse = subverse, CreatedBy = "UnitTesting", CreationDate = DateTime.UtcNow, Power = 1 });
                 }
                 db.SaveChanges();
             }
@@ -289,7 +289,7 @@ namespace Voat.Tests.CommandTests
 
             using (var db = new voatEntities())
             {
-                var record = (from x in db.Messages
+                var record = (from x in db.Message
                               where
                                 x.Sender == sender
                                 && x.SenderType == (int)Domain.Models.IdentityType.User
@@ -330,7 +330,7 @@ namespace Voat.Tests.CommandTests
 
             using (var db = new voatEntities())
             {
-                var record = (from x in db.Messages
+                var record = (from x in db.Message
                               where
                                 x.Sender == sender
                                 && x.SenderType == (int)Domain.Models.IdentityType.Subverse
@@ -372,7 +372,7 @@ namespace Voat.Tests.CommandTests
             //ensure comment exists in thread as message gateway should submit a comment based on message type and info
             using (var db = new voatEntities())
             {
-                var record = (from x in db.Comments
+                var record = (from x in db.Comment
                               where
                                 x.SubmissionID == m.SubmissionID.Value
                                 && x.ParentID == m.CommentID.Value
@@ -447,7 +447,7 @@ namespace Voat.Tests.CommandTests
             //Check to see if Comment notification exists in messages
             using (var db = new voatEntities())
             {
-                var record = (from x in db.Messages
+                var record = (from x in db.Message
                               where
                                 x.Recipient == user1
                                 && x.Sender == user2
@@ -493,7 +493,7 @@ namespace Voat.Tests.CommandTests
             //Check to see if Comment notification exists in messages
             using (var db = new voatEntities())
             {
-                var subverse = (from x in db.Subverses
+                var subverse = (from x in db.Subverse
                                 where x.Name.Equals(sub, StringComparison.OrdinalIgnoreCase)
                                 select x).FirstOrDefault();
 
@@ -501,7 +501,7 @@ namespace Voat.Tests.CommandTests
                 Assert.AreEqual(comment.IsAnonymized, subverse.IsAnonymized, "Expecting matching anon settings comment");
 
                 //test for submission notification
-                var record = (from x in db.Messages
+                var record = (from x in db.Message
                               where
                                 x.Recipient == user2
                                 && x.Sender == user1
@@ -516,7 +516,7 @@ namespace Voat.Tests.CommandTests
                 Assert.IsNotNull(record, "Can not find submission message in database");
 
                 //test for comment notification
-                record = (from x in db.Messages
+                record = (from x in db.Message
                               where
                                 x.Recipient == user3
                                 && x.Sender == user2

@@ -90,7 +90,7 @@ namespace Voat.Utilities
                         UserName = userWhichSaved,
                         CreationDate = Repository.CurrentDate
                     };
-                    db.CommentSaveTrackers.Add(tmpSavingTracker);
+                    db.CommentSaveTracker.Add(tmpSavingTracker);
                     db.SaveChanges();
                 }
             }
@@ -101,13 +101,13 @@ namespace Voat.Utilities
         {
             using (var db = new voatEntities())
             {
-                var votingTracker = db.CommentSaveTrackers.FirstOrDefault(b => b.CommentID == commentId && b.UserName == userWhichSaved);
+                var votingTracker = db.CommentSaveTracker.FirstOrDefault(b => b.CommentID == commentId && b.UserName == userWhichSaved);
 
                 if (votingTracker == null)
                     return;
 
                 // delete vote history
-                db.CommentSaveTrackers.Remove(votingTracker);
+                db.CommentSaveTracker.Remove(votingTracker);
                 db.SaveChanges();
             }
         }

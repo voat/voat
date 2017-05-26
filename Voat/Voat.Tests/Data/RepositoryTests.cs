@@ -398,7 +398,7 @@ namespace Voat.Tests.Repository
 
             using (var db = new voatEntities())
             {
-                db.BannedDomains.Add(new BannedDomain()
+                db.BannedDomain.Add(new BannedDomain()
                 {
                     Domain = domain,
                     Reason = reason,
@@ -436,7 +436,7 @@ namespace Voat.Tests.Repository
 
             using (var db = new voatEntities())
             {
-                db.BannedDomains.Add(new BannedDomain()
+                db.BannedDomain.Add(new BannedDomain()
                 {
                     Domain = domain,
                     Reason = reason,

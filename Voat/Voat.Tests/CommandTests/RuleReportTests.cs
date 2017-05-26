@@ -43,13 +43,13 @@ namespace Voat.Tests.CommandTests
             //create basic rules
             using (var db = new voatEntities())
             {
-                db.RuleSets.Add(new RuleSet() { IsActive = true, ContentType = null, SortOrder = -100, Name = "Spam", Description = "Spam", CreatedBy = "Voat", CreationDate = Voat.Data.Repository.CurrentDate });
-                db.RuleSets.Add(new RuleSet() { IsActive = true, ContentType = null, SortOrder = -90, Name = "No Dox", Description = "No Dox Description", CreatedBy = "Voat", CreationDate = Voat.Data.Repository.CurrentDate });
-                db.RuleSets.Add(new RuleSet() { IsActive = true, ContentType = null, SortOrder = -80, Name = "No Illegal", Description = "No Illegal Description", CreatedBy = "Voat", CreationDate = Voat.Data.Repository.CurrentDate });
+                db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, SortOrder = -100, Name = "Spam", Description = "Spam", CreatedBy = "Voat", CreationDate = Voat.Data.Repository.CurrentDate });
+                db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, SortOrder = -90, Name = "No Dox", Description = "No Dox Description", CreatedBy = "Voat", CreationDate = Voat.Data.Repository.CurrentDate });
+                db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, SortOrder = -80, Name = "No Illegal", Description = "No Illegal Description", CreatedBy = "Voat", CreationDate = Voat.Data.Repository.CurrentDate });
 
                 //add rules per sub
-                db.RuleSets.Add(new RuleSet() { IsActive = true, ContentType = null, Subverse = "unit", SortOrder = 1, Name = "Rule #1", Description = "Rule #1", CreatedBy = "unit", CreationDate = Voat.Data.Repository.CurrentDate });
-                db.RuleSets.Add(new RuleSet() { IsActive = true, ContentType = null, Subverse = "unit", SortOrder = 2, Name = "Rule #2", Description = "Rule #2", CreatedBy = "unit", CreationDate = Voat.Data.Repository.CurrentDate });
+                db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, Subverse = "unit", SortOrder = 1, Name = "Rule #1", Description = "Rule #1", CreatedBy = "unit", CreationDate = Voat.Data.Repository.CurrentDate });
+                db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, Subverse = "unit", SortOrder = 2, Name = "Rule #2", Description = "Rule #2", CreatedBy = "unit", CreationDate = Voat.Data.Repository.CurrentDate });
 
                 db.SaveChanges();
 
@@ -124,11 +124,11 @@ namespace Voat.Tests.CommandTests
             {
                 if (contentType == ContentType.Submission)
                 {
-                    count = db.RuleReports.Where(x => x.CreatedBy == userName && x.RuleSetID == ruleID && x.SubmissionID == id && x.CommentID == null).Count();
+                    count = db.RuleReport.Where(x => x.CreatedBy == userName && x.RuleSetID == ruleID && x.SubmissionID == id && x.CommentID == null).Count();
                 }
                 else
                 {
-                    count = db.RuleReports.Where(x => x.CreatedBy == userName && x.RuleSetID == ruleID && x.CommentID == id).Count();
+                    count = db.RuleReport.Where(x => x.CreatedBy == userName && x.RuleSetID == ruleID && x.CommentID == id).Count();
                 }
             }
             Assert.AreEqual(expectedCount, count);

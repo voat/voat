@@ -281,7 +281,7 @@ namespace Voat.Tests.CommandTests
             //verify
             using (var db = new voatEntities())
             {
-                var comment = db.Comments.FirstOrDefault(x => x.ID == id);
+                var comment = db.Comment.FirstOrDefault(x => x.ID == id);
                 Assert.AreEqual(true, comment.IsDeleted);
                 Assert.AreNotEqual(c.Response.Content, comment.Content);
 
@@ -318,7 +318,7 @@ namespace Voat.Tests.CommandTests
             //verify
             using (var db = new voatEntities())
             {
-                var comment = db.Comments.FirstOrDefault(x => x.ID == id);
+                var comment = db.Comment.FirstOrDefault(x => x.ID == id);
                 Assert.AreEqual(true, comment.IsDeleted);
                 
                 //Content should remain unchanged in mod deletion
@@ -370,7 +370,7 @@ namespace Voat.Tests.CommandTests
                     UserName = "unit",
                     CreationDate = DateTime.UtcNow
                 };
-                db.Submissions.Add(submission);
+                db.Submission.Add(submission);
                 db.SaveChanges();
             }
 
@@ -410,7 +410,7 @@ namespace Voat.Tests.CommandTests
             //check for comment reply entry
             using (var db = new voatEntities())
             {
-                var notice = db.Messages.FirstOrDefault(x => x.Sender == userName && x.Recipient == "unit" && x.SubmissionID == 1 && x.CommentID == c.Response.ID);
+                var notice = db.Message.FirstOrDefault(x => x.Sender == userName && x.Recipient == "unit" && x.SubmissionID == 1 && x.CommentID == c.Response.ID);
                 Assert.IsNotNull(notice, "Did not find a reply notification");
             }
         }
@@ -440,7 +440,7 @@ namespace Voat.Tests.CommandTests
             //check for comment reply entry
             using (var db = new voatEntities())
             {
-                var notice = db.Messages.FirstOrDefault(x => x.Sender == userName && x.Recipient == "anon" && x.SubmissionID == 1);
+                var notice = db.Message.FirstOrDefault(x => x.Sender == userName && x.Recipient == "anon" && x.SubmissionID == 1);
                 Assert.IsNotNull(notice, "Did not find a reply notification");
             }
         }

@@ -118,7 +118,7 @@ namespace Voat.Tests.CommandTests
                 //verify in db
                 using (var db = new voatEntities())
                 {
-                    var record = db.SubmissionVoteTrackers.Where(x => x.SubmissionID == id && x.UserName == userName).FirstOrDefault();
+                    var record = db.SubmissionVoteTracker.Where(x => x.SubmissionID == id && x.UserName == userName).FirstOrDefault();
                     Assert.IsNotNull(record, "Expecting a vote record");
                     Assert.AreEqual(voteStatus, record.VoteStatus);
                     Assert.AreEqual(voteValue, record.VoteValue);
@@ -141,7 +141,7 @@ namespace Voat.Tests.CommandTests
                 //verify in db
                 using (var db = new voatEntities())
                 {
-                    var record = db.CommentVoteTrackers.Where(x => x.CommentID == id && x.UserName == userName).FirstOrDefault();
+                    var record = db.CommentVoteTracker.Where(x => x.CommentID == id && x.UserName == userName).FirstOrDefault();
                     Assert.IsNotNull(record, "Expecting a vote record");
                     Assert.AreEqual(voteStatus, record.VoteStatus);
                     Assert.AreEqual(voteValue, record.VoteValue);

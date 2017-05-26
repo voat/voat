@@ -370,7 +370,7 @@ namespace Voat.Tests.CommandTests
         {
             using (var repo = new voatEntities())
             {
-                repo.BannedDomains.Add(new BannedDomain() { Domain = "saiddit.com", Reason = "No one really likes you.", CreatedBy = "UnitTest", CreationDate = DateTime.UtcNow });
+                repo.BannedDomain.Add(new BannedDomain() { Domain = "saiddit.com", Reason = "No one really likes you.", CreatedBy = "UnitTest", CreationDate = DateTime.UtcNow });
                 repo.SaveChanges(); 
             }
 
@@ -416,7 +416,7 @@ namespace Voat.Tests.CommandTests
         {
             using (var repo = new voatEntities())
             {
-                repo.BannedDomains.Add(new BannedDomain() { Domain = "one.two.three.com", Reason = "People hate counting", CreatedBy = "UnitTest", CreationDate = DateTime.UtcNow });
+                repo.BannedDomain.Add(new BannedDomain() { Domain = "one.two.three.com", Reason = "People hate counting", CreatedBy = "UnitTest", CreationDate = DateTime.UtcNow });
                 repo.SaveChanges();
             }
 
@@ -567,7 +567,7 @@ namespace Voat.Tests.CommandTests
             using (var context = new voatEntities())
             {
                 
-                var s = context.Submissions.Add(new Submission()
+                var s = context.Submission.Add(new Submission()
                 {
                     CreationDate = DateTime.UtcNow.AddHours(-12),
                     Subverse = "unit",

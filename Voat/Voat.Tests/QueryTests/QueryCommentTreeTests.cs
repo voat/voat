@@ -55,7 +55,7 @@ namespace Voat.Tests.QueryTests
             var commentID = 22;
             using (var db = new voatEntities())
             {
-                var nestedcomment = db.Comments.Where(x => x.SubmissionID == _unitSubmissionID && x.Content.Contains("Path 1:1:1:1:1")).FirstOrDefault();
+                var nestedcomment = db.Comment.Where(x => x.SubmissionID == _unitSubmissionID && x.Content.Contains("Path 1:1:1:1:1")).FirstOrDefault();
                 if (nestedcomment == null)
                 {
                     Assert.Fail("Can not find expected comment in database");

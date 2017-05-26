@@ -23,58 +23,83 @@ namespace Voat.Data.Models
                 return this.Database.GetDbConnection();
             }
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            //CORE_PORT: Change the connection string and comment out the throw statement 
+            throw new NotImplementedException("Connection String needs set here but Configuration reading is broken right now, hard code as a temp hack");
+            optionsBuilder.UseNpgsql("Server={server};port=5432;Database={database};User ID={userid};Password={password};persist security info=True;");
 
+            base.OnConfiguring(optionsBuilder);
+
+        }
         public class UnintentionalCodeFirstException : Exception { }
         public voatEntities()
+            //: base(new DbContextOptions(){ 
             //CORE_PORT: not supported
             //: base("name=voatEntities")
         {
+            
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            throw new UnintentionalCodeFirstException();
+            //CORE_PORT: Keys, will fix later and each table should have a ID INT PK
+            modelBuilder.Entity<CommentRemovalLog>().HasKey(x => new { x.CommentID });
+            modelBuilder.Entity<SubmissionRemovalLog>().HasKey(x => new { x.SubmissionID });
+            modelBuilder.Entity<DefaultSubverse>().HasKey(x => new { x.Subverse });
+            modelBuilder.Entity<SessionTracker>().HasKey(x => new { x.SessionID, x.Subverse });
+            modelBuilder.Entity<StickiedSubmission>().HasKey(x => new { x.SubmissionID, x.Subverse});
+            modelBuilder.Entity<UserPreference>().HasKey(x => new { x.UserName });
+            modelBuilder.Entity<ViewStatistic>().HasKey(x => new { x.SubmissionID, x.ViewerID });
+
+            //modelBuilder.Entity<CommentRemovalLog>().HasKey(x => new { x.CommentID });
+
         }
 
-        public virtual DbSet<Badge> Badges { get; set; }
-        public virtual DbSet<BannedDomain> BannedDomains { get; set; }
-        public virtual DbSet<BannedUser> BannedUsers { get; set; }
-        public virtual DbSet<Comment> Comments { get; set; }
-        public virtual DbSet<CommentRemovalLog> CommentRemovalLogs { get; set; }
-        public virtual DbSet<CommentSaveTracker> CommentSaveTrackers { get; set; }
-        public virtual DbSet<CommentVoteTracker> CommentVoteTrackers { get; set; }
-        public virtual DbSet<DefaultSubverse> DefaultSubverses { get; set; }
-        public virtual DbSet<ModeratorInvitation> ModeratorInvitations { get; set; }
-        public virtual DbSet<SessionTracker> SessionTrackers { get; set; }
-        public virtual DbSet<StickiedSubmission> StickiedSubmissions { get; set; }
-        public virtual DbSet<Submission> Submissions { get; set; }
-        public virtual DbSet<SubmissionRemovalLog> SubmissionRemovalLogs { get; set; }
-        public virtual DbSet<SubmissionSaveTracker> SubmissionSaveTrackers { get; set; }
-        public virtual DbSet<SubmissionVoteTracker> SubmissionVoteTrackers { get; set; }
-        public virtual DbSet<Subverse> Subverses { get; set; }
-        public virtual DbSet<SubverseBan> SubverseBans { get; set; }
-        public virtual DbSet<SubverseFlair> SubverseFlairs { get; set; }
-        public virtual DbSet<SubverseModerator> SubverseModerators { get; set; }
-        public virtual DbSet<UserBadge> UserBadges { get; set; }
-        public virtual DbSet<UserPreference> UserPreferences { get; set; }
-        public virtual DbSet<ViewStatistic> ViewStatistics { get; set; }
-        public virtual DbSet<ApiClient> ApiClients { get; set; }
-        public virtual DbSet<ApiLog> ApiLogs { get; set; }
-        public virtual DbSet<ApiThrottlePolicy> ApiThrottlePolicies { get; set; }
-        public virtual DbSet<EventLog> EventLogs { get; set; }
-        public virtual DbSet<ApiCorsPolicy> ApiCorsPolicies { get; set; }
-        public virtual DbSet<ApiPermissionPolicy> ApiPermissionPolicies { get; set; }
-        public virtual DbSet<UserBlockedUser> UserBlockedUsers { get; set; }
-        public virtual DbSet<Ad> Ads { get; set; }
-        public virtual DbSet<Message> Messages { get; set; }
-        public virtual DbSet<Filter> Filters { get; set; }
-        public virtual DbSet<RuleReport> RuleReports { get; set; }
-        public virtual DbSet<RuleSet> RuleSets { get; set; }
-        public virtual DbSet<UserContribution> UserContributions { get; set; }
-        public virtual DbSet<SubverseSet> SubverseSets { get; set; }
-        public virtual DbSet<SubverseSetList> SubverseSetLists { get; set; }
-        public virtual DbSet<SubverseSetSubscription> SubverseSetSubscriptions { get; set; }
-        public virtual DbSet<Featured> Featureds { get; set; }
+
+        public virtual DbSet<ApiClient> ApiClient { get; set; }
+        public virtual DbSet<ApiLog> ApiLog { get; set; }
+        public virtual DbSet<ApiThrottlePolicy> ApiThrottlePolicy { get; set; }
+        public virtual DbSet<ApiCorsPolicy> ApiCorsPolicy { get; set; }
+        public virtual DbSet<ApiPermissionPolicy> ApiPermissionPolicy { get; set; }
+
+
+        public virtual DbSet<Badge> Badge { get; set; }
+        public virtual DbSet<BannedDomain> BannedDomain { get; set; }
+        public virtual DbSet<BannedUser> BannedUser { get; set; }
+        public virtual DbSet<Comment> Comment { get; set; }
+        public virtual DbSet<CommentRemovalLog> CommentRemovalLog { get; set; }
+        public virtual DbSet<CommentSaveTracker> CommentSaveTracker { get; set; }
+        public virtual DbSet<CommentVoteTracker> CommentVoteTracker { get; set; }
+        public virtual DbSet<DefaultSubverse> DefaultSubverse { get; set; }
+        public virtual DbSet<ModeratorInvitation> ModeratorInvitation { get; set; }
+        public virtual DbSet<SessionTracker> SessionTracker { get; set; }
+        public virtual DbSet<StickiedSubmission> StickiedSubmission { get; set; }
+        public virtual DbSet<Submission> Submission { get; set; }
+        public virtual DbSet<SubmissionRemovalLog> SubmissionRemovalLog { get; set; }
+        public virtual DbSet<SubmissionSaveTracker> SubmissionSaveTracker { get; set; }
+        public virtual DbSet<SubmissionVoteTracker> SubmissionVoteTracker { get; set; }
+        public virtual DbSet<Subverse> Subverse { get; set; }
+        public virtual DbSet<SubverseBan> SubverseBan { get; set; }
+        public virtual DbSet<SubverseFlair> SubverseFlair { get; set; }
+        public virtual DbSet<SubverseModerator> SubverseModerator { get; set; }
+        public virtual DbSet<UserBadge> UserBadge { get; set; }
+        public virtual DbSet<UserPreference> UserPreference { get; set; }
+        public virtual DbSet<ViewStatistic> ViewStatistic { get; set; }
+
+        public virtual DbSet<EventLog> EventLog { get; set; }
+        public virtual DbSet<UserBlockedUser> UserBlockedUser { get; set; }
+        public virtual DbSet<Ad> Ad { get; set; }
+        public virtual DbSet<Message> Message { get; set; }
+        public virtual DbSet<Filter> Filter { get; set; }
+        public virtual DbSet<RuleReport> RuleReport { get; set; }
+        public virtual DbSet<RuleSet> RuleSet { get; set; }
+        public virtual DbSet<UserContribution> UserContribution { get; set; }
+        public virtual DbSet<SubverseSet> SubverseSet { get; set; }
+        public virtual DbSet<SubverseSetList> SubverseSetList { get; set; }
+        public virtual DbSet<SubverseSetSubscription> SubverseSetSubscription { get; set; }
+        public virtual DbSet<Featured> Featured { get; set; }
 
         //CORE_PORT: Code no worky. Future people problems.
         //public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)

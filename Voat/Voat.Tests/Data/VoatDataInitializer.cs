@@ -173,7 +173,7 @@ namespace Voat.Tests.Repository
             #region Subverses
 
             //ID:1 (Standard Subverse)
-            var unitSubverse = context.Subverses.Add(new Subverse()
+            var unitSubverse = context.Subverse.Add(new Subverse()
             {
                 Name = "unit",
                 Title = "v/unit",
@@ -186,7 +186,7 @@ namespace Voat.Tests.Repository
             }).Entity;
 
             //ID:2 (Anon Subverse)
-            var anonSubverse = context.Subverses.Add(new Subverse()
+            var anonSubverse = context.Subverse.Add(new Subverse()
             {
                 Name = "anon",
                 Title = "v/anon",
@@ -200,7 +200,7 @@ namespace Voat.Tests.Repository
             }).Entity;
 
             //ID:4 (Min Subverse)
-            var minCCPSubverse = context.Subverses.Add(new Subverse()
+            var minCCPSubverse = context.Subverse.Add(new Subverse()
             {
                 Name = "minCCP",
                 Title = "v/minCCP",
@@ -215,7 +215,7 @@ namespace Voat.Tests.Repository
             }).Entity;
 
             //ID:5 (Private Subverse)
-            var privateSubverse = context.Subverses.Add(new Subverse()
+            var privateSubverse = context.Subverse.Add(new Subverse()
             {
                 Name = "private",
                 Title = "v/private",
@@ -231,7 +231,7 @@ namespace Voat.Tests.Repository
             }).Entity;
 
             //ID:6 (AskVoat Subverse)
-            var askSubverse = context.Subverses.Add(new Subverse()
+            var askSubverse = context.Subverse.Add(new Subverse()
             {
                 Name = "AskVoat",
                 Title = "v/AskVoat",
@@ -247,7 +247,7 @@ namespace Voat.Tests.Repository
             }).Entity;
 
             //ID:7 (whatever Subverse)
-            var whatever = context.Subverses.Add(new Subverse()
+            var whatever = context.Subverse.Add(new Subverse()
             {
                 Name = "whatever",
                 Title = "v/whatever",
@@ -263,7 +263,7 @@ namespace Voat.Tests.Repository
             }).Entity;
 
             //ID:8 (news Subverse)
-            var news = context.Subverses.Add(new Subverse()
+            var news = context.Subverse.Add(new Subverse()
             {
                 Name = "news",
                 Title = "v/news",
@@ -279,7 +279,7 @@ namespace Voat.Tests.Repository
             }).Entity;
 
             //ID:9 (AuthorizedOnly Subverse)
-            var authOnly = context.Subverses.Add(new Subverse()
+            var authOnly = context.Subverse.Add(new Subverse()
             {
                 Name = "AuthorizedOnly",
                 Title = "v/AuthorizedOnly",
@@ -295,7 +295,7 @@ namespace Voat.Tests.Repository
             }).Entity;
 
             //ID:10 (nsfw Subverse)
-            var nsfwOnly = context.Subverses.Add(new Subverse()
+            var nsfwOnly = context.Subverse.Add(new Subverse()
             {
                 Name = "NSFW",
                 Title = "v/NSFW",
@@ -311,7 +311,7 @@ namespace Voat.Tests.Repository
             }).Entity;
 
             //ID:11 (allowAnon Subverse)
-            var allowAnon = context.Subverses.Add(new Subverse()
+            var allowAnon = context.Subverse.Add(new Subverse()
             {
                 Name = "AllowAnon",
                 Title = "v/AllowAnon",
@@ -326,9 +326,9 @@ namespace Voat.Tests.Repository
                 IsAdminDisabled = false,
             }).Entity;
 
-            context.SubverseModerators.Add(new SubverseModerator() { Subverse = "AuthorizedOnly", CreatedBy = "unit", CreationDate = DateTime.UtcNow, Power = 1, UserName = "unit" });
-            context.SubverseModerators.Add(new SubverseModerator() { Subverse = "unit", CreatedBy = null, CreationDate = null, Power = 1, UserName = "unit" });
-            context.SubverseModerators.Add(new SubverseModerator() { Subverse = "anon", CreatedBy = null, CreationDate = null, Power = 1, UserName = "anon" });
+            context.SubverseModerator.Add(new SubverseModerator() { Subverse = "AuthorizedOnly", CreatedBy = "unit", CreationDate = DateTime.UtcNow, Power = 1, UserName = "unit" });
+            context.SubverseModerator.Add(new SubverseModerator() { Subverse = "unit", CreatedBy = null, CreationDate = null, Power = 1, UserName = "unit" });
+            context.SubverseModerator.Add(new SubverseModerator() { Subverse = "anon", CreatedBy = null, CreationDate = null, Power = 1, UserName = "anon" });
 
             context.SaveChanges();
 
@@ -339,7 +339,7 @@ namespace Voat.Tests.Repository
             Comment c;
 
             //ID:1
-            var unitSubmission = context.Submissions.Add(new Submission()
+            var unitSubmission = context.Submission.Add(new Submission()
             {
                 CreationDate = DateTime.UtcNow.AddHours(-12),
                 Subverse = "unit",
@@ -350,7 +350,7 @@ namespace Voat.Tests.Repository
             }).Entity;
             context.SaveChanges();
             //ID: 1
-            c = context.Comments.Add(new Comment()
+            c = context.Comment.Add(new Comment()
             {
                 UserName = "unit",
                 Content = "This is a comment",
@@ -361,7 +361,7 @@ namespace Voat.Tests.Repository
             context.SaveChanges();
             Debug.WriteLine("Comment ID: {0}", c.ID);
             //ID: 2
-            c = context.Comments.Add(new Comment()
+            c = context.Comment.Add(new Comment()
             {
                 UserName = "unit",
                 Content = "This is a comment",
@@ -373,7 +373,7 @@ namespace Voat.Tests.Repository
             Debug.WriteLine("Comment ID: {0}", c.ID);
 
             //ID:2 (Anon Subverse submission)
-            var anonSubmission = context.Submissions.Add(new Submission()
+            var anonSubmission = context.Submission.Add(new Submission()
             {
                 CreationDate = DateTime.UtcNow.AddHours(-36),
                 Content = "Hello @tester, it's sure nice to be at /v/anon. No one knows me.",
@@ -385,7 +385,7 @@ namespace Voat.Tests.Repository
             }).Entity;
             context.SaveChanges();
             //ID: 3
-            c = context.Comments.Add(new Comment()
+            c = context.Comment.Add(new Comment()
             {
                 UserName = "anon",
                 Content = "You can't see my name with the data repository",
@@ -398,7 +398,7 @@ namespace Voat.Tests.Repository
             Debug.WriteLine("Comment ID: {0}", c.ID);
 
             //ID: 4
-            c = context.Comments.Add(new Comment()
+            c = context.Comment.Add(new Comment()
             {
                 UserName = "unit",
                 Content = "You can't see my name with the data repository, right?",
@@ -411,7 +411,7 @@ namespace Voat.Tests.Repository
             Debug.WriteLine("Comment ID: {0}", c.ID);
 
             //ID:3 (MinCCP Subverse submission)
-            var minCCPSubmission = context.Submissions.Add(new Submission()
+            var minCCPSubmission = context.Submission.Add(new Submission()
             {
                 CreationDate = DateTime.UtcNow,
                 Content = "Hello @tester, it's sure nice to be at /v/minCCP.",
@@ -423,7 +423,7 @@ namespace Voat.Tests.Repository
             }).Entity;
             context.SaveChanges();
             //ID: 5
-            c = context.Comments.Add(new Comment()
+            c = context.Comment.Add(new Comment()
             {
                 UserName = "anon",
                 Content = "This is a comment in v/MinCCP Sub from user anon",
@@ -435,7 +435,7 @@ namespace Voat.Tests.Repository
             Debug.WriteLine("Comment ID: {0}", c.ID);
 
             //ID: 6
-            c = context.Comments.Add(new Comment()
+            c = context.Comment.Add(new Comment()
             {
                 UserName = "unit",
                 Content = "This is a comment in v/MinCCP Sub from user unit",
@@ -450,7 +450,7 @@ namespace Voat.Tests.Repository
 
             #region UserPrefernces
 
-            context.UserPreferences.Add(new UserPreference()
+            context.UserPreference.Add(new UserPreference()
             {
                 UserName = "unit",
                 DisableCSS = false,
@@ -497,7 +497,7 @@ namespace Voat.Tests.Repository
             CreateUser("User500CCP", DateTime.UtcNow.AddDays(-60));
 
 
-            var s = context.Submissions.Add(new Submission()
+            var s = context.Submission.Add(new Submission()
             {
 
                 UserName = "User500CCP",
@@ -512,7 +512,7 @@ namespace Voat.Tests.Repository
             context.SaveChanges();
             VoteContent(context, Domain.Models.ContentType.Submission, s.ID, 500, Domain.Models.Vote.Up);
 
-            c = context.Comments.Add(new Comment()
+            c = context.Comment.Add(new Comment()
             {
                 UserName = "User50CCP",
                 Content = String.Format("Test Comment w/Upvotes 50"),
@@ -524,7 +524,7 @@ namespace Voat.Tests.Repository
             context.SaveChanges();
             VoteContent(context, Domain.Models.ContentType.Comment, c.ID, 50, Domain.Models.Vote.Up);
 
-            c = context.Comments.Add(new Comment()
+            c = context.Comment.Add(new Comment()
             {
                 UserName = "User100CCP",
                 Content = String.Format("Test Comment w/Upvotes 100"),
@@ -536,7 +536,7 @@ namespace Voat.Tests.Repository
             context.SaveChanges();
             VoteContent(context, Domain.Models.ContentType.Comment, c.ID, 100, Domain.Models.Vote.Up);
 
-            c = context.Comments.Add(new Comment()
+            c = context.Comment.Add(new Comment()
             {
                 UserName = "User500CCP",
                 Content = String.Format("Test Comment w/Upvotes 500"),
@@ -555,9 +555,9 @@ namespace Voat.Tests.Repository
             CreateUser("BannedFromVUnit");
             CreateUser("BannedGlobally");
 
-            context.BannedUsers.Add(new BannedUser() { CreatedBy = "unit", CreationDate = DateTime.UtcNow.AddDays(-30), Reason = "Unit Testing Global Ban", UserName = "BannedGlobally" });
-            context.SubverseBans.Add(new SubverseBan() { Subverse = "unit", CreatedBy = "unit", CreationDate = DateTime.UtcNow.AddDays(-30), Reason = "Unit Testing v/Unit Ban", UserName = "BannedFromVUnit" });
-            context.BannedDomains.Add(new BannedDomain() { CreatedBy = "unit", CreationDate = DateTime.UtcNow.AddDays(-15), Domain = "fleddit.com", Reason = "Turned Digg migrants into jelly fish" });
+            context.BannedUser.Add(new BannedUser() { CreatedBy = "unit", CreationDate = DateTime.UtcNow.AddDays(-30), Reason = "Unit Testing Global Ban", UserName = "BannedGlobally" });
+            context.SubverseBan.Add(new SubverseBan() { Subverse = "unit", CreatedBy = "unit", CreationDate = DateTime.UtcNow.AddDays(-30), Reason = "Unit Testing v/Unit Ban", UserName = "BannedFromVUnit" });
+            context.BannedDomain.Add(new BannedDomain() { CreatedBy = "unit", CreationDate = DateTime.UtcNow.AddDays(-15), Domain = "fleddit.com", Reason = "Turned Digg migrants into jelly fish" });
 
             context.SaveChanges();
 
@@ -565,7 +565,7 @@ namespace Voat.Tests.Repository
 
             #region Disabled Test Data
 
-            context.Subverses.Add(new Subverse() { Name = "Disabled", Title = "Disabled", IsAdminDisabled = true, CreatedBy = "unit", CreationDate = DateTime.Now.AddDays(-100), SideBar = "We will never be disabled"});
+            context.Subverse.Add(new Subverse() { Name = "Disabled", Title = "Disabled", IsAdminDisabled = true, CreatedBy = "unit", CreationDate = DateTime.Now.AddDays(-100), SideBar = "We will never be disabled"});
 
             context.SaveChanges();
 
@@ -573,9 +573,9 @@ namespace Voat.Tests.Repository
 
             #region AddDefaultSubs
 
-            context.DefaultSubverses.Add(new DefaultSubverse() { Subverse = "AskVoat", Order = 1 });
-            context.DefaultSubverses.Add(new DefaultSubverse() { Subverse = "whatever", Order = 2 });
-            context.DefaultSubverses.Add(new DefaultSubverse() { Subverse = "news", Order = 3 });
+            context.DefaultSubverse.Add(new DefaultSubverse() { Subverse = "AskVoat", Order = 1 });
+            context.DefaultSubverse.Add(new DefaultSubverse() { Subverse = "whatever", Order = 2 });
+            context.DefaultSubverse.Add(new DefaultSubverse() { Subverse = "news", Order = 3 });
             context.SaveChanges();
 
             #endregion AddDefaultSubs
@@ -587,7 +587,7 @@ namespace Voat.Tests.Repository
         public static void CreateSorted(string subverse) {
             using (var context = new voatEntities())
             {
-                var sortSubverse = context.Subverses.Add(new Subverse()
+                var sortSubverse = context.Subverse.Add(new Subverse()
                 {
                     Name =$"{subverse}",
                     Title = $"v/{subverse}",
@@ -615,7 +615,7 @@ namespace Voat.Tests.Repository
                     submission.UpCount = (!even ? i : i * 2);
                     submission.Views = i * i;
                     Ranking.RerankSubmission(submission);
-                    context.Submissions.Add(submission);
+                    context.Submission.Add(submission);
                     context.SaveChanges();
                 }
             }
@@ -624,7 +624,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new voatEntities())
             {
-                var s = db.Subverses.Where(x => x.Name == subverse).FirstOrDefault();
+                var s = db.Subverse.Where(x => x.Name == subverse).FirstOrDefault();
                 //create submission
                 var submission = new Submission()
                 {
@@ -636,7 +636,7 @@ namespace Voat.Tests.Repository
                     UserName = "TestUser01",
                     IsAnonymized = s.IsAnonymized.HasValue ? s.IsAnonymized.Value : false,
                 };
-                db.Submissions.Add(submission);
+                db.Submission.Add(submission);
                 db.SaveChanges();
 
                 Func<voatEntities, int?, string, string, int> createComment = (context, parentCommentID, content, userName) => {
@@ -650,7 +650,7 @@ namespace Voat.Tests.Repository
                         IsAnonymized = submission.IsAnonymized,
                         CreationDate = DateTime.UtcNow
                     };
-                    context.Comments.Add(comment);
+                    context.Comment.Add(comment);
                     context.SaveChanges();
                     System.Threading.Thread.Sleep(2);
                     return comment.ID;
@@ -711,7 +711,7 @@ namespace Voat.Tests.Repository
                 string userName = String.Format("VoteUser{0}", i.ToString().PadLeft(4, '0'));
                 if (contentType == Domain.Models.ContentType.Comment)
                 {
-                    context.CommentVoteTrackers.Add(
+                    context.CommentVoteTracker.Add(
                         new CommentVoteTracker()
                         {
                             UserName = userName,
@@ -725,7 +725,7 @@ namespace Voat.Tests.Repository
                 }
                 else if (contentType == Domain.Models.ContentType.Submission)
                 {
-                    context.SubmissionVoteTrackers.Add(
+                    context.SubmissionVoteTracker.Add(
                         new SubmissionVoteTracker()
                         {
                             UserName = userName,

@@ -187,17 +187,17 @@ namespace Voat.Tests.CommandTests
             //EnsureBadges
             using (var db = new voatEntities())
             {
-                if (!db.Badges.Any(x => x.ID == "deleted"))
+                if (!db.Badge.Any(x => x.ID == "deleted"))
                 {
-                    db.Badges.Add(new Badge() { ID = "deleted", Name = "Account Deleted", Graphic = "deleted.png", Title = "deleted" }); 
+                    db.Badge.Add(new Badge() { ID = "deleted", Name = "Account Deleted", Graphic = "deleted.png", Title = "deleted" }); 
                 }
-                if (!db.Badges.Any(x => x.ID == "deleted2"))
+                if (!db.Badge.Any(x => x.ID == "deleted2"))
                 {
-                    db.Badges.Add(new Badge() { ID = "deleted2", Name = "Account Deleted", Graphic = "deleted2.png", Title = "deleted" });
+                    db.Badge.Add(new Badge() { ID = "deleted2", Name = "Account Deleted", Graphic = "deleted2.png", Title = "deleted" });
                 }
-                if (!db.Badges.Any(x => x.ID == "donor_upto_30"))
+                if (!db.Badge.Any(x => x.ID == "donor_upto_30"))
                 {
-                    db.Badges.Add(new Badge() { ID = "donor_upto_30", Name = "Donor Up To Thirty", Graphic = "donor30.png", Title = "Donor" });
+                    db.Badge.Add(new Badge() { ID = "donor_upto_30", Name = "Donor Up To Thirty", Graphic = "donor30.png", Title = "Donor" });
                 }
 
                 
@@ -246,7 +246,7 @@ namespace Voat.Tests.CommandTests
             using (var db = new voatEntities())
             {
                 //Trying to trap a bug with a user not getting delete badge
-                db.UserBadges.Add(new Voat.Data.Models.UserBadge() { BadgeID = "donor_upto_30", CreationDate = DateTime.UtcNow, UserName = userName });
+                db.UserBadge.Add(new Voat.Data.Models.UserBadge() { BadgeID = "donor_upto_30", CreationDate = DateTime.UtcNow, UserName = userName });
                 db.SaveChanges();
             }
 
@@ -287,13 +287,13 @@ namespace Voat.Tests.CommandTests
             await prefUpdate.Execute();
             using (var db = new voatEntities())
             {
-                var prefs = db.UserPreferences.FirstOrDefault(x => x.UserName == userName);
+                var prefs = db.UserPreference.FirstOrDefault(x => x.UserName == userName);
                 Assert.IsNotNull(prefs, "Expected user to have preference record at this stage");
                 prefs.Avatar = userName + ".jpg";
 
                 //Add badges to prevent duplicates
-                db.UserBadges.Add(new Voat.Data.Models.UserBadge() { BadgeID = "deleted", CreationDate = DateTime.UtcNow, UserName = userName });
-                db.UserBadges.Add(new Voat.Data.Models.UserBadge() { BadgeID = "deleted2", CreationDate = DateTime.UtcNow, UserName = userName });
+                db.UserBadge.Add(new Voat.Data.Models.UserBadge() { BadgeID = "deleted", CreationDate = DateTime.UtcNow, UserName = userName });
+                db.UserBadge.Add(new Voat.Data.Models.UserBadge() { BadgeID = "deleted2", CreationDate = DateTime.UtcNow, UserName = userName });
 
                 db.SaveChanges();
 
@@ -339,13 +339,13 @@ namespace Voat.Tests.CommandTests
                 {
                     case Domain.Models.DeleteOption.Anonymize:
 
-                        count = db.Comments.Count(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase) && !x.IsAnonymized);
+                        count = db.Comment.Count(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase) && !x.IsAnonymized);
                         Assert.AreEqual(0, count, $"Comment {options.Comments.ToString()} setting found violations");
 
                         break;
                     case Domain.Models.DeleteOption.Delete:
 
-                        count = db.Comments.Count(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase) && !x.IsDeleted);
+                        count = db.Comment.Count(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase) && !x.IsDeleted);
                         Assert.AreEqual(0, count, $"Comment {options.Comments.ToString()} setting found violations");
                         break;
                 }
@@ -356,13 +356,13 @@ namespace Voat.Tests.CommandTests
                     {
                         case Domain.Models.DeleteOption.Anonymize:
 
-                            count = db.Submissions.Count(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase) && !x.IsAnonymized && x.Type == (int)submissionType);
+                            count = db.Submission.Count(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase) && !x.IsAnonymized && x.Type == (int)submissionType);
                             Assert.AreEqual(0, count, $"{submissionType.ToString()} Submission {deleteSetting.ToString()} setting found violations");
 
                             break;
                         case Domain.Models.DeleteOption.Delete:
 
-                            count = db.Submissions.Count(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase) && !x.IsDeleted && x.Type == (int)submissionType);
+                            count = db.Submission.Count(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase) && !x.IsDeleted && x.Type == (int)submissionType);
                             Assert.AreEqual(0, count, $"{submissionType.ToString()} Submission {deleteSetting.ToString()} setting found violations");
                             break;
                     }
@@ -404,10 +404,10 @@ namespace Voat.Tests.CommandTests
 
                 }
                 var badgeToCheck = String.IsNullOrEmpty(options.RecoveryEmailAddress) ? "deleted" : "deleted2";
-                Assert.AreEqual(1, db.UserBadges.Count(x => x.UserName == options.UserName && x.BadgeID == badgeToCheck), "Can not find delete badge");
+                Assert.AreEqual(1, db.UserBadge.Count(x => x.UserName == options.UserName && x.BadgeID == badgeToCheck), "Can not find delete badge");
 
                 //Verify Bio and Avatar cleared
-                var prefs = db.UserPreferences.Where(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase)).ToList();
+                var prefs = db.UserPreference.Where(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase)).ToList();
                 foreach (var pref in prefs)
                 {
                     Assert.AreEqual(null, pref.Avatar, "Avatar not cleared");

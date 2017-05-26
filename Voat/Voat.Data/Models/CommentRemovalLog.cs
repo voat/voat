@@ -11,7 +11,8 @@ namespace Voat.Data.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
     public partial class CommentRemovalLog
     {
         public int CommentID { get; set; }

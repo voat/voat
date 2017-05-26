@@ -44,7 +44,7 @@ namespace Voat.Tests.CommandTests
             using (var context = new voatEntities())
             {
 
-                var sub = context.Subverses.Add(new Subverse()
+                var sub = context.Subverse.Add(new Subverse()
                 {
                     Name = subName,
                     Title = "v/modPerms",
@@ -60,7 +60,7 @@ namespace Voat.Tests.CommandTests
                 SubverseModerator mod = null;
 
                 modName = "system";
-                mod = context.SubverseModerators.Add(new SubverseModerator()
+                mod = context.SubverseModerator.Add(new SubverseModerator()
                 {
                     Power = 1,
                     UserName = modName,
@@ -72,7 +72,7 @@ namespace Voat.Tests.CommandTests
                 _subMods.Add(modName, mod);
 
                 modName = "Creator";
-                mod = context.SubverseModerators.Add(new SubverseModerator()
+                mod = context.SubverseModerator.Add(new SubverseModerator()
                 {
                     Power = 1,
                     UserName = modName,
@@ -84,7 +84,7 @@ namespace Voat.Tests.CommandTests
                 _subMods.Add(modName, mod);
 
                 modName = "L1-0";
-                mod = context.SubverseModerators.Add(new SubverseModerator()
+                mod = context.SubverseModerator.Add(new SubverseModerator()
                 {
                     Power = 1,
                     UserName = modName,
@@ -96,7 +96,7 @@ namespace Voat.Tests.CommandTests
                 _subMods.Add(modName, mod);
 
                 modName = "L1-1";
-                mod = context.SubverseModerators.Add(new SubverseModerator()
+                mod = context.SubverseModerator.Add(new SubverseModerator()
                 {
                     Power = 1,
                     UserName = modName,
@@ -108,7 +108,7 @@ namespace Voat.Tests.CommandTests
                 _subMods.Add(modName, mod);
 
                 modName = "L2-0";
-                mod = context.SubverseModerators.Add(new SubverseModerator()
+                mod = context.SubverseModerator.Add(new SubverseModerator()
                 {
                     Power = 2,
                     UserName = modName,
@@ -120,7 +120,7 @@ namespace Voat.Tests.CommandTests
                 _subMods.Add(modName, mod);
 
                 modName = "L2-1";
-                mod = context.SubverseModerators.Add(new SubverseModerator()
+                mod = context.SubverseModerator.Add(new SubverseModerator()
                 {
                     Power = 2,
                     UserName = modName,
@@ -132,7 +132,7 @@ namespace Voat.Tests.CommandTests
                 _subMods.Add(modName, mod);
 
                 modName = "L3-0";
-                mod = context.SubverseModerators.Add(new SubverseModerator()
+                mod = context.SubverseModerator.Add(new SubverseModerator()
                 {
                     Power = 3,
                     UserName = modName,
@@ -144,7 +144,7 @@ namespace Voat.Tests.CommandTests
                 _subMods.Add(modName, mod);
 
                 modName = "L3-1";
-                mod = context.SubverseModerators.Add(new SubverseModerator()
+                mod = context.SubverseModerator.Add(new SubverseModerator()
                 {
                     Power = 3,
                     UserName = modName,
@@ -157,7 +157,7 @@ namespace Voat.Tests.CommandTests
 
 
                 modName = "L4-0";
-                mod = context.SubverseModerators.Add(new SubverseModerator()
+                mod = context.SubverseModerator.Add(new SubverseModerator()
                 {
                     Power = 4,
                     UserName = modName,
@@ -169,7 +169,7 @@ namespace Voat.Tests.CommandTests
                 _subMods.Add(modName, mod);
 
                 modName = "L4-1";
-                mod = context.SubverseModerators.Add(new SubverseModerator()
+                mod = context.SubverseModerator.Add(new SubverseModerator()
                 {
                     Power = 4,
                     UserName = modName,
@@ -181,7 +181,7 @@ namespace Voat.Tests.CommandTests
                 _subMods.Add(modName, mod);
 
                 modName = "L99-0";
-                mod = context.SubverseModerators.Add(new SubverseModerator()
+                mod = context.SubverseModerator.Add(new SubverseModerator()
                 {
                     Power = 99,
                     UserName = modName,
@@ -193,7 +193,7 @@ namespace Voat.Tests.CommandTests
                 _subMods.Add(modName, mod);
 
                 modName = "L99-1";
-                mod = context.SubverseModerators.Add(new SubverseModerator()
+                mod = context.SubverseModerator.Add(new SubverseModerator()
                 {
                     Power = 99,
                     UserName = modName,

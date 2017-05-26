@@ -42,7 +42,7 @@ namespace Voat.Tests.Utils
             using (var db = new voatEntities())
             {
                 //1
-                db.Filters.Add(new Filter()
+                db.Filter.Add(new Filter()
                 {
                     Pattern = ".",
                     IsActive = false,
@@ -50,7 +50,7 @@ namespace Voat.Tests.Utils
                     CreationDate = DateTime.UtcNow.AddDays(-10)
                 });
                 //2
-                db.Filters.Add(new Filter()
+                db.Filter.Add(new Filter()
                 {
                     Pattern = @"evildomain\.evil",
                     IsActive = true,
@@ -58,7 +58,7 @@ namespace Voat.Tests.Utils
                     CreationDate = DateTime.UtcNow.AddDays(-10)
                 });
                 //3
-                db.Filters.Add(new Filter()
+                db.Filter.Add(new Filter()
                 {
                     Pattern = @"google\.com/url",
                     IsActive = true,

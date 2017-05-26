@@ -75,7 +75,7 @@ namespace Voat.Caching
                         {
                             //CORE_PORT: Property not available 
                             //db.Configuration.ProxyCreationEnabled = false;
-                            return db.Submissions.Where(x => x.ID == submissionID).FirstOrDefault();
+                            return db.Submission.Where(x => x.ID == submissionID).FirstOrDefault();
                         }
                     }), TimeSpan.FromMinutes(30), -1);
                     return submission;
