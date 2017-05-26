@@ -22,9 +22,7 @@
 
 #endregion LICENSE
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Configuration;
-using System.Data.Entity;
 using System.Linq;
 using Voat.Caching;
 using Voat.Configuration;

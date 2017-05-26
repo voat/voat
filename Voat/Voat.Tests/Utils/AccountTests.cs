@@ -22,13 +22,10 @@
 
 #endregion LICENSE
 
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Voat.Data.Models;
 using Voat.Utilities;
 
@@ -60,11 +57,11 @@ namespace Voat.Tests.Utils
 
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Account")]
-        public void TestUserNameAvailability()
+        public async Task TestUserNameAvailability()
         {
             var originalUserName = "IHeartFuzzyLOL";
 
-            using (var userManager = new VoatUserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
+            using (var userManager = VoatUserManager.Create())
             {
                 var user = new VoatUser
                 {
@@ -75,7 +72,7 @@ namespace Voat.Tests.Utils
                 };
 
                 // try to create new user account
-                var createResult = userManager.Create(user, "topsecretpasswordgoeshere");
+                var createResult = await userManager.CreateAsync(user, "topsecretpasswordgoeshere");
 
                 Assert.AreEqual(true, createResult.Succeeded);
 

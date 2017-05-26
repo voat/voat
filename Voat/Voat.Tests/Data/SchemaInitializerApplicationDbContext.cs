@@ -22,8 +22,8 @@
 
 #endregion LICENSE
 
-using System.Data.Entity;
-
+//CORE_PORT: I think this is stale anyways
+/*
 using Voat.Data.Models;
 
 namespace Voat.Tests.Data
@@ -40,3 +40,4 @@ namespace Voat.Tests.Data
 
     public class UsersInit : CreateDatabaseIfNotExists<voatEntities> { }
 }
+*/

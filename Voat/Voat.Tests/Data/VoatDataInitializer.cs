@@ -22,12 +22,9 @@
 
 #endregion LICENSE
 
-using Microsoft.AspNet.Identity;
 
-using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Data.Common;
-using System.Data.Entity;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -37,7 +34,9 @@ using Voat.Utilities;
 
 namespace Voat.Tests.Repository
 {
-    public class VoatDataInitializer : IDatabaseInitializer<voatEntities>
+    public class VoatDataInitializer 
+        //CORE_PORT: Can't find this interface, but I don't think we need it.
+        //: IDatabaseInitializer<voatEntities>
     {
 
         public void InitializeDatabase(voatEntities context)
@@ -685,7 +684,7 @@ namespace Voat.Tests.Repository
         {
             //SchemaInitializerApplicationDbContext.ReferenceEquals(null, new object());
 
-            var manager = new VoatUserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext()));
+            var manager = VoatUserManager.Create();
 
             //if (!UserHelper.UserExists(userName))
             //{

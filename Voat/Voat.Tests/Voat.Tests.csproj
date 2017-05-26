@@ -4,6 +4,16 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <Copyright>Copyright © Voat, Inc.</Copyright>
+
+    <Authors>Voat, Inc.</Authors>
+
+    <Company>Voat, Inc.</Company>
+
+    <Version>2.0.0</Version>
+
+    <Description>Voat unit tests</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,12 +21,17 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170427-09" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.1.17" />
     <PackageReference Include="MSTest.TestFramework" Version="1.1.17" />
+    <PackageReference Include="NUnit" Version="3.6.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj" />
     <ProjectReference Include="..\Voat.Data\Voat.Data.csproj" />
     <ProjectReference Include="..\Voat.Business\Voat.Business.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

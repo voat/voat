@@ -25,20 +25,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Voat.Data.Models;
-using Voat.Data;
-using Voat.Tests.Repository;
 using Voat.Domain.Command;
 using Voat.Models;
-using Voat.Controllers;
 using System.Threading;
 using Voat.Utilities;
-using System.Diagnostics;
-using Moq;
-using System.Web.Mvc;
 
 namespace Voat.Tests.BugTraps
 {

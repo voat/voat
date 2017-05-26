@@ -22,6 +22,9 @@
 
 #endregion LICENSE
 
+//CORE_PORT: Will probably not test controllers like this
+/*
+
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -94,3 +97,4 @@ namespace Voat.Tests.ControllerTests
         }
     }
 }
+*/

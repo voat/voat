@@ -22,6 +22,9 @@
 
 #endregion LICENSE
 
+//CORE_PORT: This file is a ghost from the past... I think... 
+/*
+
 using System;
 using System.Globalization;
 using System.Threading;
@@ -161,3 +164,4 @@ namespace UnitTests
 
     }
 }
+*/

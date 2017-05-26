@@ -170,7 +170,8 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Query")]
         [TestCategory("Submission")]
         [TestCategory("Cache")]
-        [NUnit.Framework.RequiresThread]
+        //CORE_PORT: Not supported
+        //[NUnit.Framework.RequiresThread] 
         public async Task Query_v_All_Guest_Cached_Expired_Correctly()
         {
             TimeSpan cacheTime = TimeSpan.FromSeconds(2);
