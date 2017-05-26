@@ -23,18 +23,16 @@
 #endregion LICENSE
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Voat.Utilities
 {
     public static class CloudStorageUtility
     {
+        //CORE_PORT: Needs new cloud storage code
+        /*
         // validate the connection string information
-        public static CloudStorageAccount CreateStorageAccountFromConnectionString(string storageConnectionString)
+        private static CloudStorageAccount CreateStorageAccountFromConnectionString(string storageConnectionString)
         {
             CloudStorageAccount storageAccount;
             try
@@ -54,19 +52,27 @@ namespace Voat.Utilities
 
             return storageAccount;
         }
+        */
 
         // check if a blob exists
         public static bool BlobExists(string blobName, string containerName)
         {
+            //CORE_PORT: Incompatible
+            throw new NotImplementedException("Core Port Cloud Storage");
+            /*
             CloudStorageAccount storageAccount = CreateStorageAccountFromConnectionString(CloudConfigurationManager.GetSetting("StorageConnectionString"));
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
             return blobClient.GetContainerReference(containerName).GetBlockBlobReference(blobName).Exists();
+            */
         }
 
         // upload a blob to storage, requires full path
         public static async Task UploadBlobToStorageAsync(string blobToUpload, string containerName)
         {
+            //CORE_PORT: Incompatible
+            throw new NotImplementedException("Core Port Cloud Storage");
+            /*
             // Retrieve storage account information from connection string
             CloudStorageAccount storageAccount = CreateStorageAccountFromConnectionString(CloudConfigurationManager.GetSetting("StorageConnectionString"));
 
@@ -90,15 +96,20 @@ namespace Voat.Utilities
             // Upload a BlockBlob to the newly created container, default mode: overwrite existing
             CloudBlockBlob blockBlob = container.GetBlockBlobReference(Path.GetFileName(blobToUpload));
             await blockBlob.UploadFromFileAsync(blobToUpload, FileMode.Open);
+            */
         }
 
         // delete a blob from storage
         public static bool DeleteBlob(string blobName, string containerName)
         {
+            //CORE_PORT: Incompatible
+            throw new NotImplementedException("Core Port Cloud Storage");
+            /*
             CloudStorageAccount storageAccount = CreateStorageAccountFromConnectionString(CloudConfigurationManager.GetSetting("StorageConnectionString"));
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
             return blobClient.GetContainerReference(containerName).GetBlockBlobReference(blobName).DeleteIfExists();
+            */
         }
     }
 }

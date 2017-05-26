@@ -39,16 +39,14 @@ using Voat.Utilities.Components;
 using Voat.Domain.Command;
 using System.Text.RegularExpressions;
 using Voat.Domain;
-using System.Data.Entity;
 using Voat.Caching;
 using Dapper;
 using Voat.Configuration;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace Voat.Data
 {
@@ -830,7 +828,7 @@ namespace Voat.Data
         public Models.Submission FindSubverseLinkSubmission(string subverse, string url, TimeSpan cutOffTimeSpan)
         {
             var cutOffDate = CurrentDate.Subtract(cutOffTimeSpan);
-            return _db.Submissions.AsNoTracking().FirstOrDefault(s =>
+            return _db.Submissions.FirstOrDefault(s =>
                 s.Url.Equals(url, StringComparison.OrdinalIgnoreCase)
                 && s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
                 && s.CreationDate > cutOffDate
@@ -848,7 +846,7 @@ namespace Voat.Data
 
         private Models.Submission GetSubmissionUnprotected(int submissionID)
         {
-            var query = (from x in _db.Submissions.AsNoTracking()
+            var query = (from x in _db.Submissions
                          where x.ID == submissionID
                          select x);
 
@@ -1062,7 +1060,7 @@ namespace Voat.Data
                             //where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
                             //where !subverse.IsAdminDisabled.Value
                             //where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(userName)
-                            //select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
+                            //select message).OrderByDescending(s => s.CreationDate);
 
                             nsfw = (User.Identity.IsAuthenticated ? userData.Preferences.EnableAdultContent : false);
 
@@ -1099,7 +1097,7 @@ namespace Voat.Data
                             //    where !message.IsDeleted && message.Subverse == subverseName
                             //    where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
                             //    where !(from bu in _db.SubverseBans where bu.Subverse == subverse.Name select bu.UserName).Contains(message.UserName)
-                            //    select message).OrderByDescending(s => s.CreationDate).AsNoTracking();
+                            //    select message).OrderByDescending(s => s.CreationDate);
 
                             name = ToCorrectSubverseCasing(name);
                             query.Where = "s.\"Subverse\" = @Name";
@@ -3450,7 +3448,7 @@ namespace Voat.Data
 
             //if (!String.IsNullOrEmpty(userName))
             //{
-            //    vCache = (from cv in _db.CommentVoteTrackers.AsNoTracking()
+            //    vCache = (from cv in _db.CommentVoteTrackers
             //              join c in _db.Comments on cv.CommentID equals c.ID
             //              where c.SubmissionID == submissionID && cv.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
             //              select cv).ToList();
@@ -3464,7 +3462,7 @@ namespace Voat.Data
 
             if (!String.IsNullOrEmpty(userName))
             {
-                vCache = (from cv in _db.CommentSaveTrackers.AsNoTracking()
+                vCache = (from cv in _db.CommentSaveTrackers
                           join c in _db.Comments on cv.CommentID equals c.ID
                           where c.SubmissionID == submissionID && cv.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
                           select cv).ToList();

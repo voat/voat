@@ -65,7 +65,7 @@ namespace Voat.Utilities
 
             //using (var db = new voatEntities())
             //{
-            //    return db.Savingtrackers.Where(u => u.UserName == userToCheck && u.MessageId == messageId).AsNoTracking().Any();
+            //    return db.Savingtrackers.Where(u => u.UserName == userToCheck && u.MessageId == messageId).Any();
             //}
         }
         [Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]

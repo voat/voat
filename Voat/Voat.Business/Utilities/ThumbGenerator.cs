@@ -115,6 +115,12 @@ namespace Voat.Utilities
 
         }
 
+        //CORE_PORT: Image handling has changed in core, commenting out method until we know what we are doing
+        public static async Task<bool> GenerateAvatar(object inputImage, string userName, string mimetype, bool purgeTempFile = true)
+        {
+            throw new NotImplementedException("Core Port CacheHandler.ExpireItem");
+        }
+        /*
         // store uploaded avatar
         public static async Task<bool> GenerateAvatar(Image inputImage, string userName, string mimetype, bool purgeTempFile = true)
         {
@@ -154,7 +160,7 @@ namespace Voat.Utilities
                 return false;
             }
         }
-
+        */
         // Generate a random filename for a thumbnail and make sure that the file does not exist.
         private static string GenerateRandomFilename()
         {

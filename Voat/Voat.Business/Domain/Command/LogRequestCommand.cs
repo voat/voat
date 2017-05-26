@@ -73,6 +73,12 @@ namespace Voat.Domain.Command
         public Dictionary<string, string> Headers { get; set; }
         public string Body { get; set; }
 
+        //CORE_PORT: Incompatible, replacing both methods with one that generates an error
+        public static RequestInfo Parse(object o)
+        {
+            throw new NotImplementedException("Core Port Build");
+        }
+        /*
         public static RequestInfo Parse(HttpRequestBase request)
         {
             var r = new RequestInfo();
@@ -92,5 +98,6 @@ namespace Voat.Domain.Command
             //r.Headers = request.Headers;
             return r;
         }
+        */
     }
 }

@@ -41,7 +41,7 @@ namespace Voat.Utilities
             //using (var db = new voatEntities())
             //{
             //    var checkResult = db.SubmissionVoteTrackers.Where(u => u.UserName == userToCheck && u.SubmissionID == submissionID)
-            //            .AsNoTracking()
+            //            
             //            .FirstOrDefault();
 
             //    int intCheckResult = checkResult != null ? checkResult.VoteStatus.Value : 0;

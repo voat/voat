@@ -22,6 +22,8 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Routing;
+
 namespace Voat.Utilities
 {
     public interface IPaginatedList
@@ -33,6 +35,6 @@ namespace Voat.Utilities
         int TotalCount { get; }
         int TotalPages { get; }
         string RouteName { get; }
-        System.Web.Routing.RouteValueDictionary RouteData { get; set; }
+        RouteValueDictionary RouteData { get; set; }
     }
 }

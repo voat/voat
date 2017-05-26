@@ -24,31 +24,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
 using System.Threading.Tasks;
-using System.Web.Mvc;
-using Voat.Domain.Query;
-using Voat.Common;
-using Voat.Data.Models;
-using Voat.Models;
 using Voat.Domain.Models;
-using Voat.Rules;
-using Voat.RulesEngine;
-using Voat.Utilities;
-using Voat.Utilities.Components;
-using Voat.Domain.Command;
-using System.Text.RegularExpressions;
-using Voat.Domain;
-using System.Data.Entity;
-using Voat.Caching;
 using Dapper;
-using Voat.Configuration;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 
 
 namespace Voat.Data

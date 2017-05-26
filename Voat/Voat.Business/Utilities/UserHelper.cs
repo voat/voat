@@ -22,14 +22,9 @@
 
 #endregion LICENSE
 
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Web;
-using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Models;
 using Voat.Data;
@@ -39,6 +34,7 @@ using Voat.Caching;
 using System.Threading;
 using Voat.Domain;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Identity;
 
 namespace Voat.Utilities
 {
@@ -268,7 +264,7 @@ namespace Voat.Utilities
 
                     // get 3 highest rated comments
                     var highestRatedComments = db.Comments
-                        .Include("Submission").AsNoTracking()
+                        .Include("Submission")
                         .Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
                         .OrderByDescending(s => s.UpCount - s.DownCount)
                         .Take(3)
@@ -276,7 +272,7 @@ namespace Voat.Utilities
 
                     // get 3 lowest rated comments
                     var lowestRatedComments = db.Comments
-                        .Include("Submission").AsNoTracking()
+                        .Include("Submission")
                         .Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
                         .OrderBy(s => s.UpCount - s.DownCount)
                         .Take(3)
@@ -472,6 +468,8 @@ namespace Voat.Utilities
             }
         }
 
+        //CORE_PORT: Don't know what request obj to use so commenting out temp
+        /*
         // get user IP address from httprequestbase
         public static string UserIpAddress(HttpRequestBase request)
         {
@@ -488,6 +486,7 @@ namespace Voat.Utilities
             }
             return clientIpAddress;
         }
+        */
 
         //this is for the API
         public static string UserIpAddress(HttpRequestMessage request)

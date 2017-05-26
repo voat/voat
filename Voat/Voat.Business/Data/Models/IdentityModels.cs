@@ -22,11 +22,10 @@
 
 #endregion LICENSE
 
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -47,14 +46,18 @@ namespace Voat.Data.Models
         //For WebApi OAuth2
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<VoatUser> manager, string authenticationType)
         {
-            var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
-            return userIdentity;
+            //CORE_PORT: No extension
+            throw new NotImplementedException("Core Port Build");
+            //var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
+            //return userIdentity;
         }
     }
 
     public class ApplicationDbContext : IdentityDbContext<VoatUser>
     {
-        public ApplicationDbContext() : base("voatUsers")
+        public ApplicationDbContext() 
+            //CORE_PORT: Needs porting
+            //: base("voatUsers")
         {
         }
     }

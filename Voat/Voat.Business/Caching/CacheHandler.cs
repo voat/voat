@@ -278,6 +278,12 @@ namespace Voat.Caching
             }
             return null;
         }
+        //CORE_PORT: Param not found stubbing in method to throw exception
+        private void RefetchItem(object args)
+        {
+            throw new NotImplementedException("Core Port CacheHandler.RefetchItem");
+        }
+        /*
         private void RefetchItem(CacheEntryUpdateArguments args)
         {
             var cacheKey = args.Key;
@@ -325,7 +331,13 @@ namespace Voat.Caching
                 }
             }
         }
-
+        */
+        //CORE_PORT: Param not found stubbing in method to throw exception
+        private void ExpireItem(object args)
+        {
+            throw new NotImplementedException("Core Port CacheHandler.ExpireItem");
+        }
+        /*
         private void ExpireItem(CacheEntryRemovedArguments args)
         {
             try
@@ -345,7 +357,7 @@ namespace Voat.Caching
                 EventLogger.Instance.Log(ex);
             }
         }
-
+        */
         public bool Exists(string cacheKey)
         {
             cacheKey = StandardizeCacheKey(cacheKey);

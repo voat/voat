@@ -22,8 +22,8 @@
 
 #endregion LICENSE
 
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 using Voat.Caching;
@@ -73,9 +73,11 @@ namespace Voat.Domain.Query
         {
             using (var db = new ApplicationDbContext())
             {
+                //CORE_PORT: No worky, will most likely not need anyways but flagging
+                /*
                 db.Configuration.ProxyCreationEnabled = false;
                 db.Configuration.LazyLoadingEnabled = false;
-
+                */
                 using (var context = new UserManager<VoatUser>(new UserStore<VoatUser>(db)))
                 {
                     var user = await context.FindByNameAsync(_userToRetrieve);
