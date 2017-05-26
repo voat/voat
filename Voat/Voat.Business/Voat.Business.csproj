@@ -31,6 +31,7 @@
     <PackageReference Include="System.Spatial" Version="5.8.2" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\External\Source\toptensoftware\MarkdownDeep\MarkdownDeep.csproj" />
     <ProjectReference Include="..\Voat.Data\Voat.Data.csproj" />
     <ProjectReference Include="..\Voat.Logging\Voat.Logging.csproj" />
     <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj" />

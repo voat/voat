@@ -27,8 +27,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.Caching;
-using System.Threading;
 using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Data;

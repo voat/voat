@@ -22,14 +22,9 @@
 
 #endregion LICENSE
 
-using System;
-using System.Data.Entity;
-using System.Linq;
-using Voat.Common;
 using Voat.Data;
 
 //using Microsoft.AspNet.SignalR;
-using Voat.Data.Models;
 
 namespace Voat.Utilities
 {
