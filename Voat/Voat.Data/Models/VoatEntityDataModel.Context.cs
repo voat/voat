@@ -68,9 +68,12 @@ namespace Voat.Data.Models
         public virtual DbSet<SubverseSetSubscription> SubverseSetSubscriptions { get; set; }
         public virtual DbSet<Featured> Featureds { get; set; }
 
-        /*public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
+        public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
         {
-            var submissionIDParameter = submissionID.HasValue ?
+			//CORE_PORT: Code not worky
+			throw new NotImplementedException("Core Port Problems");
+            /*
+			var submissionIDParameter = submissionID.HasValue ?
                 new ObjectParameter("SubmissionID", submissionID) :
                 new ObjectParameter("SubmissionID", typeof(int));
 
@@ -82,7 +85,9 @@ namespace Voat.Data.Models
                 new ObjectParameter("ParentID", parentID) :
                 new ObjectParameter("ParentID", typeof(int));
 
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_CommentTree_Result>("usp_CommentTree", submissionIDParameter, depthParameter, parentIDParameter);
-        }*/ //FIXME
-    }
+            var result = ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<usp_CommentTree_Result>("usp_CommentTree", submissionIDParameter, depthParameter, parentIDParameter);
+            return result;
+			*/
+        }
+	}
 }

@@ -40,19 +40,20 @@ public class UnitTestSetup
     public void SetUp()
     {
 
-        if (ConfigurationManager.AppSettings["PreventDatabaseDrop"] != "true")
-        {
-            //Force db to drop & seed
-            Database.SetInitializer(new VoatDataInitializer());
-            using (var db = new voatEntities())
-            {
-                var data = db.DefaultSubverses.ToList();
-            }
-        }
-
         //load web.config.live monitor
         LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
         LiveConfigurationManager.Start();
+
+        if (ConfigurationManager.AppSettings["PreventDatabaseDrop"] != "true")
+        {
+            //Force db to drop & seed
+            //Database.SetInitializer();
+            using (var db = new voatEntities())
+            {
+                var init = new VoatDataInitializer();
+                init.InitializeDatabase(db); //This attempts to create and seed unit test db
+            }
+        }
 
         //This causes the voat rules engine to init using config section for load
         var rulesEngine = VoatRulesEngine.Instance;

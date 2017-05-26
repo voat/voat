@@ -551,7 +551,7 @@ namespace Voat.Data
             switch (contentType)
             {
                 case ContentType.Comment:
-                    q.Select += " INNER JOIN Comment c WITH (NOLOCK) ON c.\"SubmissionID\" = s.\"ID\"";
+                    q.Select += $" INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"SubmissionID\" = s.\"ID\"";
                     q.Where = "c.\"ID\" = @ID";
                     break;
                 case ContentType.Submission:
@@ -785,7 +785,8 @@ namespace Voat.Data
                 {
                     cmd.Connection.Open();
                 }
-                return (int)cmd.ExecuteScalar();
+                var result = cmd.ExecuteScalar();
+                return Convert.ToInt32(result); //PostgreSQL Fix for invalid cast. No idea why.
             }
         }
 
@@ -871,19 +872,32 @@ namespace Voat.Data
                 throw new VoatValidationException("User does not exist.");
             }
 
-            IQueryable<Models.Submission> query;
+            IQueryable<Models.Submission> query = null;
 
             subverse = ToCorrectSubverseCasing(subverse);
+            // Postgre Port: Something funky was going on with the original expression
+            //query = (from x in _db.Submissions
+            //         where
+            //            (x.UserName == userName && x.IsAnonymized == false && x.IsDeleted == false)
+            //            && (x.Subverse == subverse || subverse == null)
+            //         select x);
 
-            query = (from x in _db.Submissions
-                     where (
-                        x.UserName == userName
-                        && !x.IsAnonymized
-                        && !x.IsDeleted
-                        )
-                     && (x.Subverse == subverse || subverse == null)
-                     select x);
-
+            if (String.IsNullOrEmpty(subverse))
+            {
+                query = (from x in _db.Submissions
+                         where
+                            x.UserName == userName && x.IsAnonymized == false && x.IsDeleted == false
+                         select x);
+            }
+            else
+            {
+                query = (from x in _db.Submissions
+                         where
+                            x.UserName == userName && x.IsAnonymized == false && x.IsDeleted == false
+                            && (x.Subverse == subverse)
+                         select x);
+            }
+           
             query = ApplySubmissionSearch(options, query);
 
             //execute query
@@ -918,8 +932,8 @@ namespace Voat.Data
             var query = new DapperQuery();
             query.SelectColumns = "s.*";
             query.Select = $"SELECT DISTINCT {"{0}"} FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")}";
+            query.Where = $"s.\"ID\" {SqlFormatter.In("@IDs")}";
 
-            query.Where = "s.\"ID\" IN @IDs";
             query.Parameters = (new { IDs = submissionID }).ToDynamicParameters();
 
             //execute query
@@ -952,7 +966,7 @@ namespace Voat.Data
 
             var query = new DapperQuery();
             query.SelectColumns = "s.*";
-            query.Select = $"SELECT DISTINCT {"{0}"} FROM  {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN  {SqlFormatter.Table("Subverse", "sub", null, "NOLOCK")} ON s.\"Subverse\" = sub.\"Name\"";
+            query.Select = $"SELECT DISTINCT {"{0}"} FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN  {SqlFormatter.Table("Subverse", "sub", null, "NOLOCK")} ON s.\"Subverse\" = sub.\"Name\"";
 
             //Parameter Declarations
             DateTime? startDate = options.StartDate;
@@ -1014,7 +1028,10 @@ namespace Voat.Data
                             if (Settings.IsVoatBranded && options.Sort == SortAlgorithm.Relative)
                             {
                                 //This is a modification Voat uses in the default page
-                                query.Append(x => x.Where, "(s.\"UpCount\" - s.\"DownCount\" >= 20) AND ABS(DATEDIFF(HH, s.CreationDate, GETUTCDATE())) <= 24");
+                                //Postgre Port
+                                //query.Append(x => x.Where, "(s.\"UpCount\" - s.\"DownCount\" >= 20) AND ABS(DATEDIFF(HH, s.CreationDate, GETUTCDATE())) <= 24");
+                                query.Append(x => x.Where, "(s.\"UpCount\" - s.\"DownCount\" >= 20) AND s.\"CreationDate\" >= @EndDate");
+                                query.Parameters.Add("EndDate", CurrentDate.AddHours(-24));
                             }
 
                             //query = (from x in _db.Submissions
@@ -1054,7 +1071,7 @@ namespace Voat.Data
                             //2. Don't show private subs
                             //3. Don't show NSFW subs if nsfw isn't enabled in profile, if they are logged in
                             //4. Don't show blocked subs if logged in // not implemented
-                            query.Where = $"sub.\"MinCCPForDownvote\" = {SqlFormatter.BooleanLiteral(false)} AND sub.\"IsAdminPrivate\" = {SqlFormatter.BooleanLiteral(false)} AND sub.\"IsPrivate\" = {SqlFormatter.BooleanLiteral(false)}";
+                            query.Where = $"sub.\"MinCCPForDownvote\" = 0 AND sub.\"IsAdminPrivate\" = {SqlFormatter.BooleanLiteral(false)} AND sub.\"IsPrivate\" = {SqlFormatter.BooleanLiteral(false)}";
                             if (!nsfw)
                             {
                                 query.Where += $" AND sub.\"IsAdult\" = {SqlFormatter.BooleanLiteral(false)} AND s.\"IsAdult\" = {SqlFormatter.BooleanLiteral(false)}";
@@ -1144,8 +1161,11 @@ namespace Voat.Data
                         if (Settings.IsVoatBranded && options.Sort == SortAlgorithm.Relative)
                         {
                             //This is a modification Voat uses in the default page
-                            query.Append(x => x.Where, "(s.\"UpCount\" - s.\"DownCount\" >= 20) AND ABS(DATEDIFF(HH, s.\"CreationDate\", GETUTCDATE())) <= 24");
-                        }
+                            //Postgre Port
+                            //query.Append(x => x.Where, "(s.\"UpCount\" - s.\"DownCount\" >= 20) AND ABS(DATEDIFF(HH, s.\"CreationDate\", GETUTCDATE())) <= 24");
+                            query.Append(x => x.Where, "(s.\"UpCount\" - s.\"DownCount\" >= 20) AND s.\"CreationDate\" >= @EndDate");
+                            query.Parameters.Add("EndDate", CurrentDate.AddHours(-24));
+                       }
                     }
 
                     break;
@@ -1760,49 +1780,35 @@ namespace Voat.Data
                     // register a new session for this subverse
                     //New logic
 
-                    var sql = $"IF NOT EXISTS (SELECT st.* FROM  {SqlFormatter.Table("SessionTracker", "st", null, "NOLOCK")} WHERE st.\"SessionID\" = @SessionID AND st.\"Subverse\" = (SELECT TOP 1 \"Subverse\" FROM {SqlFormatter.Table("Submission", null, null, "NOLOCK")} WHERE \"ID\" = @SubmissionID)) ";
-                    sql += $"INSERT {SqlFormatter.Table("SessionTracker")} (\"SessionID\", \"Subverse\", \"CreationDate\") ";
-                    sql += $"SELECT @SessionID, s.\"Subverse\", getutcdate() FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} WHERE \"ID\" = @SubmissionID ";
+                    var exists = $"SELECT st.* FROM  {SqlFormatter.Table("SessionTracker", "st", null, "NOLOCK")} WHERE st.\"SessionID\" = @SessionID AND st.\"Subverse\" = (SELECT \"Subverse\" FROM {SqlFormatter.Table("Submission", null, null, "NOLOCK")} WHERE \"ID\" = @SubmissionID)";
 
-                    await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                    var body = $"INSERT INTO {SqlFormatter.Table("SessionTracker")} (\"SessionID\", \"Subverse\", \"CreationDate\") ";
+                    body += $"SELECT @SessionID, s.\"Subverse\", @Date FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} WHERE \"ID\" = @SubmissionID ";
+                    body += $"AND NOT EXISTS ({exists})";
 
-
-                    //SessionHelper.Add(subverse.Name, hash);
-
-                    //current logic
-                    //if (SessionExists(sessionId, subverseName))
-                    //    return;
-                    //using (var db = new voatEntities())
-                    //{
-                    //    var newSession = new SessionTracker { SessionID = sessionId, Subverse = subverseName, CreationDate = Repository.CurrentDate };
-
-                    //    db.SessionTrackers.Add(newSession);
-                    //    db.SaveChanges();
-
-                    //}
-
-                    sql = $"IF NOT EXISTS (SELECT * FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID) ";
-                    sql += $"BEGIN ";
-                    sql += $"INSERT {SqlFormatter.Table("ViewStatistic")} (\"SubmissionID\", \"ViewerID\") VALUES (@SubmissionID, @SessionID) ";
-                    sql += $"UPDATE {SqlFormatter.Table("Submission")} SET \"Views\" = (\"Views\" + 1) WHERE \"ID\" = @SubmissionID ";
-                    sql += $"END";
-
-                    await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                    await _db.Database.Connection.ExecuteAsync(body, new { SessionID = hash, SubmissionID = submissionID, Date = CurrentDate }, commandType: System.Data.CommandType.Text).ConfigureAwait(false);
 
 
-                    //// register a new view for this thread
-                    //// check if this hash is present for this submission id in viewstatistics table
-                    //var existingView = _db.ViewStatistics.Find(submissionID, hash);
+                    exists = $"SELECT COUNT(*) FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID";
+                    var count = await _db.Database.Connection.ExecuteScalarAsync<int>(exists, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
 
-                    //// this IP has already viwed this thread, skip registering a new view
-                    //if (existingView == null)
-                    //{
-                    //    // this is a new view, register it for this submission
-                    //    var view = new ViewStatistic { SubmissionID = submissionID, ViewerID = hash };
-                    //    _db.ViewStatistics.Add(view);
-                    //    submission.Views++;
-                    //    await _db.SaveChangesAsync();
-                    //}
+                    if (count == 0)
+                    {
+                        var sql = $"INSERT INTO {SqlFormatter.Table("ViewStatistic")} (\"SubmissionID\", \"ViewerID\") VALUES (@SubmissionID, @SessionID) ";
+                        await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                        sql = $"UPDATE {SqlFormatter.Table("Submission")} SET \"Views\" = (\"Views\" + 1) WHERE \"ID\" = @SubmissionID ";
+                        await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                    }
+
+                    //sql = $"IF NOT EXISTS (SELECT * FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID) ";
+                    //sql += $"BEGIN ";
+                    //sql += $"INSERT {SqlFormatter.Table("ViewStatistic")} (\"SubmissionID\", \"ViewerID\") VALUES (@SubmissionID, @SessionID) ";
+                    //sql += $"UPDATE {SqlFormatter.Table("Submission")} SET \"Views\" = (\"Views\" + 1) WHERE \"ID\" = @SubmissionID ";
+                    //sql += $"END";
+
+                    //await _db.Database.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+
+
                 }
                 catch (Exception ex)
                 {
@@ -1868,11 +1874,47 @@ namespace Voat.Data
 
         public IEnumerable<Domain.Models.SubmissionComment> GetComments(string subverse, SearchOptions options)
         {
-            var query = (from comment in _db.Comments
+
+            IQueryable<SubmissionComment> query = null;
+
+            //Postgre Port: Postgre has issues with || conditions so as a hack seperating for now
+            //var query = (from comment in _db.Comments
+            //             join submission in _db.Submissions on comment.SubmissionID equals submission.ID
+            //             where
+            //             !comment.IsDeleted
+            //             && (submission.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) || String.IsNullOrEmpty(subverse))
+            //             select new Domain.Models.SubmissionComment()
+            //             {
+            //                 Submission = new SubmissionSummary()
+            //                 {
+            //                     Title = submission.Title,
+            //                     IsDeleted = submission.IsDeleted,
+            //                     IsAnonymized = submission.IsAnonymized,
+            //                     UserName = (submission.IsAnonymized || submission.IsDeleted ? "" : submission.UserName)
+            //                 },
+            //                 ID = comment.ID,
+            //                 ParentID = comment.ParentID,
+            //                 Content = comment.Content,
+            //                 FormattedContent = comment.FormattedContent,
+            //                 UserName = comment.UserName,
+            //                 UpCount = (int)comment.UpCount,
+            //                 DownCount = (int)comment.DownCount,
+            //                 CreationDate = comment.CreationDate,
+            //                 IsAnonymized = comment.IsAnonymized,
+            //                 IsDeleted = comment.IsDeleted,
+            //                 IsDistinguished = comment.IsDistinguished,
+            //                 LastEditDate = comment.LastEditDate,
+            //                 SubmissionID = comment.SubmissionID,
+            //                 Subverse = submission.Subverse
+            //             });
+
+            if (String.IsNullOrEmpty(subverse))
+            {
+                query = (from comment in _db.Comments
                          join submission in _db.Submissions on comment.SubmissionID equals submission.ID
                          where
                          !comment.IsDeleted
-                         && (submission.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) || String.IsNullOrEmpty(subverse))
+                         //&& (submission.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase) || String.IsNullOrEmpty(subverse))
                          select new Domain.Models.SubmissionComment()
                          {
                              Submission = new SubmissionSummary()
@@ -1898,6 +1940,40 @@ namespace Voat.Data
                              Subverse = submission.Subverse
                          });
 
+            }
+            else {
+                query = (from comment in _db.Comments
+                         join submission in _db.Submissions on comment.SubmissionID equals submission.ID
+                         where
+                         !comment.IsDeleted
+                         && (submission.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase))
+                         select new Domain.Models.SubmissionComment()
+                         {
+                             Submission = new SubmissionSummary()
+                             {
+                                 Title = submission.Title,
+                                 IsDeleted = submission.IsDeleted,
+                                 IsAnonymized = submission.IsAnonymized,
+                                 UserName = (submission.IsAnonymized || submission.IsDeleted ? "" : submission.UserName)
+                             },
+                             ID = comment.ID,
+                             ParentID = comment.ParentID,
+                             Content = comment.Content,
+                             FormattedContent = comment.FormattedContent,
+                             UserName = comment.UserName,
+                             UpCount = (int)comment.UpCount,
+                             DownCount = (int)comment.DownCount,
+                             CreationDate = comment.CreationDate,
+                             IsAnonymized = comment.IsAnonymized,
+                             IsDeleted = comment.IsDeleted,
+                             IsDistinguished = comment.IsDistinguished,
+                             LastEditDate = comment.LastEditDate,
+                             SubmissionID = comment.SubmissionID,
+                             Subverse = submission.Subverse
+                         });
+
+            }
+
             query = ApplyCommentSearch(options, query);
             var results = query.ToList();
 
@@ -1911,7 +1987,29 @@ namespace Voat.Data
             {
                 depth = null;
             }
-            var commentTree = _db.usp_CommentTree(submissionID, depth, parentID);
+
+            //Postgre Port
+            //var commentTree = _db.usp_CommentTree(submissionID, depth, parentID);
+
+            IEnumerable<usp_CommentTree_Result> commentTree = null;
+            switch (Configuration.Settings.DataStore)
+            {
+                case DataStoreType.SqlServer:
+                    commentTree = _db.usp_CommentTree(submissionID, depth, parentID);
+                    break;
+                case DataStoreType.PostgreSql:
+
+                    var d = new DapperQuery();
+                    d.Select = "* FROM \"dbo\".\"usp_CommentTree\"(@SubmissionID, @Depth, @ParentID)";
+                    commentTree = _db.Database.Connection.Query<usp_CommentTree_Result>(d.ToString(), new { SubmissionID = submissionID, Depth = depth, ParentID = parentID });
+
+                    break;
+
+            }
+
+
+
+
             var results = commentTree.ToList();
             return results;
         }
@@ -1926,7 +2024,7 @@ namespace Voat.Data
 
             var q = new DapperQuery();
             q.Select = $"c.*, s.\"Subverse\" FROM {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} ON s.\"ID\" = c.\"SubmissionID\"";
-            q.Where = "c.\"ID\" IN @IDs";
+            q.Where = $"c.\"ID\" {SqlFormatter.In("@IDs")}";
 
             q.Parameters = (new { IDs = commentID }).ToDynamicParameters();
 
@@ -2936,7 +3034,7 @@ namespace Voat.Data
                         }
                     }
                 }
-                q.Append(x => x.Where, "m.\"Type\" IN @Types");
+                q.Append(x => x.Where, $"m.\"Type\" {SqlFormatter.In("@Types")}");
                 q.Parameters.Add("Types", messageTypes.ToArray());
                 //q = q.Where(x => messageTypes.Contains(x.Type));
             }
@@ -3202,7 +3300,7 @@ namespace Voat.Data
                 var types = ConvertMessageTypeFlag(type);
                 if (types != null)
                 {
-                    q.Where += String.Format(" AND \"Type\" IN @MessageTypes");
+                    q.Where += $" AND \"Type\" {SqlFormatter.In("@MessageTypes")}";
                 }
 
                 q.GroupBy = "\"Type\"";
@@ -3309,8 +3407,9 @@ namespace Voat.Data
                 if (markAsRead && messages.Any(x => x.ReadDate == null))
                 {
                     var update = new DapperUpdate();
-                    update.Update = $"m SET m.\"ReadDate\" = @CurrentDate FROM {SqlFormatter.Table("Message", "m")}";
-                    update.Where = "m.\"ReadDate\" IS NULL AND m.\"ID\" IN @IDs";
+                    //Postgres Port: This db is crazy, according to docs UPDATE supports an alias but I can not get it working if I alias the columns
+                    update.Update = SqlFormatter.UpdateSetBlock("\"ReadDate\" = @CurrentDate", SqlFormatter.Table("Message"), "m");
+                    update.Where = $"\"ReadDate\" IS NULL AND \"ID\" {SqlFormatter.In("@IDs")}";
                     update.Parameters.Add("CurrentDate", Repository.CurrentDate);
                     update.Parameters.Add("IDs", messages.Where(x => x.ReadDate == null).Select(x => x.ID).ToArray());
 
@@ -3340,7 +3439,7 @@ namespace Voat.Data
             IEnumerable<VoteValue> result = null;
             var q = new DapperQuery();
 
-            q.Select = $"SELECT v.\"CommentID\" AS \"ID\", IsNull(v.\"VoteStatus\", 0) AS \"Value\" FROM {SqlFormatter.Table("CommentVoteTracker", "v", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON v.\"CommentID\" = c.\"ID\"";
+            q.Select = $"SELECT v.\"CommentID\" AS \"ID\", {SqlFormatter.IsNull("v.\"VoteStatus\"", "0")} AS \"Value\" FROM {SqlFormatter.Table("CommentVoteTracker", "v", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON v.\"CommentID\" = c.\"ID\"";
             q.Where = "v.\"UserName\" = @UserName AND c.\"SubmissionID\" = @ID";
 
             result = _db.Database.Connection.Query<VoteValue>(q.ToString(), new { UserName = userName, ID = submissionID });
@@ -3570,7 +3669,7 @@ namespace Voat.Data
                 }
 
                 var cmd = db.Database.Connection.CreateCommand();
-                cmd.CommandText = $"SELECT x.\"VoteStatus\", ABS(ISNULL(SUM(x.\"VoteStatus\"), 0)) AS \"Count\" FROM {SqlFormatter.Table(type == ContentType.Comment ? "CommentVoteTracker" : "SubmissionVoteTracker", "x", null, "NOLOCK")} WHERE x.\"UserName\" = @UserName AND (x.\"CreationDate\" >= @CompareDate OR @CompareDate IS NULL) GROUP BY x.\"VoteStatus\"";
+                cmd.CommandText = $"SELECT x.\"VoteStatus\", ABS({SqlFormatter.IsNull("SUM(x.\"VoteStatus\")", "0")}) AS \"Count\" FROM {SqlFormatter.Table(type == ContentType.Comment ? "CommentVoteTracker" : "SubmissionVoteTracker", "x", null, "NOLOCK")} WHERE x.\"UserName\" = @UserName AND (x.\"CreationDate\" >= @CompareDate OR @CompareDate IS NULL) GROUP BY x.\"VoteStatus\"";
                 cmd.CommandType = System.Data.CommandType.Text;
 
                 var param = cmd.CreateParameter();
@@ -3624,12 +3723,12 @@ namespace Voat.Data
             switch (type)
             {
                 case ContentType.Comment:
-                    q.Select = $"SELECT \"CommentID\" AS \"ID\", IsNull(\"VoteStatus\", 0) AS \"Value\" FROM {SqlFormatter.Table("CommentVoteTracker", null, null, "NOLOCK")}";
-                    q.Where = "\"UserName\" = @UserName AND \"CommentID\" IN @ID";
+                    q.Select = $"SELECT \"CommentID\" AS \"ID\", {SqlFormatter.IsNull("\"VoteStatus\"", "0")} AS \"Value\" FROM {SqlFormatter.Table("CommentVoteTracker", null, null, "NOLOCK")}";
+                    q.Where = $"\"UserName\" = @UserName AND \"CommentID\" {SqlFormatter.In("@ID")}";
                     break;
                 case ContentType.Submission:
-                    q.Select = $"SELECT [ID] = SubmissionID, [Value] = IsNull(VoteStatus, 0) FROM {SqlFormatter.Table("SubmissionVoteTracker", null, null, "NOLOCK")}";
-                    q.Where = "\"UserName\" = @UserName AND \"SubmissionID\" IN @ID";
+                    q.Select = $"SELECT \"SubmissionID\" AS \"ID\", {SqlFormatter.IsNull("\"VoteStatus\"", "0")} AS \"Value\" FROM {SqlFormatter.Table("SubmissionVoteTracker", null, null, "NOLOCK")}";
+                    q.Where = $"\"UserName\" = @UserName AND \"SubmissionID\" {SqlFormatter.In("@ID")}";
                     break;
             }
 
@@ -3733,8 +3832,8 @@ namespace Voat.Data
                         case ContentType.Comment:
 
                             //basic point calc query
-                            q.Select = $"SELECT @UserName AS \"UserName\", @IsReceived AS \"IsReceived\", @ContentType AS \"ContentType\", v.\"VoteStatus\" AS \"VoteStatus\", 1 AS \"VoteCount\", ABS(v.VoteValue) AS \"VoteValue\" FROM {SqlFormatter.Table("CommentVoteTracker", "v", null, "NOLOCK")}";
-                            q.Select += $"INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"ID\" = v.\"CommentID\" INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} ON s.\"ID\" = c.\"SubmissionID\"";
+                            q.Select = $"SELECT @UserName AS \"UserName\", @IsReceived AS \"IsReceived\", @ContentType AS \"ContentType\", v.\"VoteStatus\" AS \"VoteStatus\", 1 AS \"VoteCount\", ABS(v.\"VoteValue\") AS \"VoteValue\" FROM {SqlFormatter.Table("CommentVoteTracker", "v", null, "NOLOCK")} ";
+                            q.Select += $"INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"ID\" = v.\"CommentID\" INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} ON s.\"ID\" = c.\"SubmissionID\""; 
 
                             //This controls whether we search for given or received votes
                             alias = (isReceived ? "c" : "v");
@@ -3743,7 +3842,7 @@ namespace Voat.Data
                             break;
                         case ContentType.Submission:
                             //basic point calc query
-                            q.Select = $"SELECT @UserName AS \"UserName\", @IsReceived AS \"IsReceived\", @ContentType AS \"ContentType\", v.\"VoteStatus\" AS \"VoteStatus\", 1 AS \"VoteCount\", ABS(v.VoteValue) AS \"VoteValue\" FROM {SqlFormatter.Table("SubmissionVoteTracker", "v", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} ON s.\"ID\" = v.\"SubmissionID\"";
+                            q.Select = $"SELECT @UserName AS \"UserName\", @IsReceived AS \"IsReceived\", @ContentType AS \"ContentType\", v.\"VoteStatus\" AS \"VoteStatus\", 1 AS \"VoteCount\", ABS(v.\"VoteValue\") AS \"VoteValue\" FROM {SqlFormatter.Table("SubmissionVoteTracker", "v", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} ON s.\"ID\" = v.\"SubmissionID\"";
 
                             //This controls whether we search for given or received votes
                             alias = (isReceived ? "s" : "v");
@@ -4005,14 +4104,20 @@ namespace Voat.Data
                 switch (domainReference.Type)
                 {
                     case DomainType.Subverse:
+                        //Postgre Port
+                        //u.Update = $"UPDATE s SET \"SubscriberCount\" = ({SqlFormatter.IsNull("\"SubscriberCount\"", "0")} + @IncrementValue) FROM {SqlFormatter.Table("Subverse", "s")}";
+                        u.Update = $"{SqlFormatter.UpdateSetBlock($"\"SubscriberCount\" = ({SqlFormatter.IsNull("\"SubscriberCount\"", "0")} + @IncrementValue)", SqlFormatter.Table("Subverse", null), "s")}";
 
-                        u.Update = $"UPDATE s SET \"SubscriberCount\" = (ISNULL(\"SubscriberCount\", 0) + @IncrementValue) FROM {SqlFormatter.Table("Subverse", "s")}";
                         u.Where = "s.\"Name\" = @Name";
                         u.Parameters = new DynamicParameters(new { Name = domainReference.Name, IncrementValue = incrementValue });
 
                         break;
                     case DomainType.Set:
-                        u.Update = $"UPDATE s SET \"SubscriberCount\" = (ISNULL(\"SubscriberCount\", 0) + @IncrementValue) FROM {SqlFormatter.Table("SubverseSet", "s")}";
+
+                        //Postgre Port 
+                        //u.Update = $"UPDATE s SET \"SubscriberCount\" = ({SqlFormatter.IsNull("\"SubscriberCount\"", "0")} + @IncrementValue) FROM {SqlFormatter.Table("SubverseSet", "s")}";
+                        u.Update = $"{SqlFormatter.UpdateSetBlock($"\"SubscriberCount\" = ({SqlFormatter.IsNull("\"SubscriberCount\"", "0")} + @IncrementValue)", SqlFormatter.Table("SubverseSet", null), "s")}";
+
                         u.Where = "s.\"Name\" = @Name";
 
                         if (!String.IsNullOrEmpty(domainReference.OwnerName))
@@ -4403,7 +4508,7 @@ namespace Voat.Data
 
             if (ruleSetID != null && ruleSetID.Any())
             {
-                q.Append(x => x.Where, "rr.\"RuleSetID\" IN @RuleSetID");
+                q.Append(x => x.Where, $"rr.\"RuleSetID\" {SqlFormatter.In("@RuleSetID")}");
             }
 
             q.GroupBy = "rr.\"Subverse\", rr.\"UserName\", rr.\"SubmissionID\", rr.\"CommentID\", rr.\"RuleSetID\", r.\"Name\", r.\"Description\"";
@@ -4479,31 +4584,36 @@ namespace Voat.Data
             switch (contentType)
             {
                 case ContentType.Comment:
-                    duplicateFilter = "AND \"CommentID\" = @ID";
+                    duplicateFilter = "AND ruleExists.\"CommentID\" = @ID";
                     break;
                 case ContentType.Submission:
-                    duplicateFilter = "AND \"SubmissionID\" = @ID AND \"CommentID\" IS NULL";
+                    duplicateFilter = "AND ruleExists.\"SubmissionID\" = @ID AND ruleExists.\"CommentID\" IS NULL";
                     break;
                 default:
                     throw new NotImplementedException("ContentType not supported");
                     break;
             }
 
-            var q = $"IF NOT EXISTS (SELECT * FROM {SqlFormatter.Table("RuleReport")} WHERE \"CreatedBy\" = @UserName {duplicateFilter}) INSERT {SqlFormatter.Table("RuleReport")} (\"Subverse\", \"UserName\", \"SubmissionID\", \"CommentID\", \"RuleSetID\", \"CreatedBy\", \"CreationDate\") ";
+            var existsClause = $"SELECT * FROM {SqlFormatter.Table("RuleReport", "ruleExists")} WHERE ruleExists.\"CreatedBy\" = @UserName {duplicateFilter}";
+
+            var body = $"INSERT INTO {SqlFormatter.Table("RuleReport")} (\"Subverse\", \"UserName\", \"SubmissionID\", \"CommentID\", \"RuleSetID\", \"CreatedBy\", \"CreationDate\") ";
 
             switch (contentType)
             {
                 case ContentType.Comment:
-                    q += $"SELECT s.\"Subverse\", NULL, s.\"ID\", c.\"ID\", @RuleID, @UserName, GETUTCDATE() FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"SubmissionID\" = s.\"ID\" INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON r.\"ID\" = @RuleID AND (r.\"Subverse\" = s.\"Subverse\" OR r.\"Subverse\" IS NULL) AND (r.\"ContentType\" = @ContentType OR r.\"ContentType\" IS NULL) WHERE c.\"ID\" = @ID AND c.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)} AND r.\"IsActive\" = {SqlFormatter.BooleanLiteral(true)}";
+                    body += $"SELECT s.\"Subverse\", NULL, s.\"ID\", c.\"ID\", @RuleID, @UserName, @Date FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"SubmissionID\" = s.\"ID\" INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON r.\"ID\" = @RuleID AND (r.\"Subverse\" = s.\"Subverse\" OR r.\"Subverse\" IS NULL) AND (r.\"ContentType\" = @ContentType OR r.\"ContentType\" IS NULL) WHERE c.\"ID\" = @ID AND c.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)} AND r.\"IsActive\" = {SqlFormatter.BooleanLiteral(true)}";
                     break;
                 case ContentType.Submission:
-                    q += $"SELECT s.\"Subverse\", NULL, s.\"ID\", NULL, @RuleID, @UserName, GETUTCDATE() FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON r.\"ID\" = @RuleID AND (r.\"Subverse\" = s.Subverse OR r.\"Subverse\" IS NULL) AND (r.\"ContentType\" = @ContentType OR r.\"ContentType\" IS NULL) WHERE s.\"ID\" = @ID AND s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)} AND r.\"IsActive\" = {SqlFormatter.BooleanLiteral(true)}";
+                    body += $"SELECT s.\"Subverse\", NULL, s.\"ID\", NULL, @RuleID, @UserName, @Date FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("RuleSet", "r", null, "NOLOCK")} ON r.\"ID\" = @RuleID AND (r.\"Subverse\" = s.\"Subverse\" OR r.\"Subverse\" IS NULL) AND (r.\"ContentType\" = @ContentType OR r.\"ContentType\" IS NULL) WHERE s.\"ID\" = @ID AND s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)} AND r.\"IsActive\" = {SqlFormatter.BooleanLiteral(true)}";
                     break;
             }
             //filter out banned users
-            q += $" AND NOT EXISTS (SELECT * FROM {SqlFormatter.Table("BannedUser")} WHERE \"UserName\" = @UserName) AND NOT EXISTS(SELECT * FROM {SqlFormatter.Table("SubverseBan")} WHERE \"UserName\" = @UserName AND \"Subverse\" = s.Subverse)";
+            body += $" AND NOT EXISTS (SELECT * FROM {SqlFormatter.Table("BannedUser")} WHERE \"UserName\" = @UserName) AND NOT EXISTS (SELECT * FROM {SqlFormatter.Table("SubverseBan")} WHERE \"UserName\" = @UserName AND \"Subverse\" = s.\"Subverse\")";
+            body += $" AND NOT EXISTS ({existsClause})";
 
-            var result = await _db.Database.Connection.ExecuteAsync(q, new { UserName = User.Identity.Name, ID = id, RuleID = ruleID, ContentType = (int)contentType });
+            //var statement = SqlFormatter.IfExists(false, existsClause, body, null);
+
+           var result = await _db.Database.Connection.ExecuteAsync(body, new { UserName = User.Identity.Name, ID = id, RuleID = ruleID, ContentType = (int)contentType, Date = CurrentDate });
 
             return CommandResponse.Successful();
         }
@@ -4710,7 +4820,10 @@ namespace Voat.Data
             if (restrict)
             {
                 q.Append(x => x.Where, "s.\"SubscriberCount\" > 10");
-                q.Having = "DATEDIFF(HH, MAX(sm.\"CreationDate\"), GETUTCDATE()) < @HourLimit";
+                //Postgre Port 
+                //q.Having = "DATEDIFF(HH, MAX(sm.\"CreationDate\"), GETUTCDATE()) < @HourLimit";
+                q.Having = "MAX(sm.\"CreationDate\") >= @EndDate";
+                q.Parameters.Add("EndDate", CurrentDate.AddHours(-24));
             }
 
             return await _db.Database.Connection.ExecuteScalarAsync<string>(q.ToString(), q.Parameters);
@@ -4741,9 +4854,9 @@ namespace Voat.Data
         public double? HighestRankInSubverse(string subverse)
         {
             var q = new DapperQuery();
-            q.Select = $"TOP 1 ISNULL(Rank, 0) FROM {SqlFormatter.Table("Submission", null, null, "NOLOCK")}";
+            q.Select = $"MAX({SqlFormatter.IsNull("\"Rank\"", "0")}) FROM {SqlFormatter.Table("Submission", null, null, "NOLOCK")}";
             q.Where = "\"Subverse\" = @Subverse AND \"ArchiveDate\" IS NULL";
-            q.OrderBy = "\"Rank\" DESC";
+            //q.OrderBy = "\"Rank\" DESC";
             q.Parameters = new { Subverse = subverse }.ToDynamicParameters();
 
             var result = _db.Database.Connection.ExecuteScalar<double?>(q.ToString(), q.Parameters);
@@ -5075,7 +5188,7 @@ namespace Voat.Data
 
                 var q = new DapperQuery();
                 q.Select = $"* FROM {SqlFormatter.Table("BannedDomain")}";
-                q.Where = "\"Domain\" IN @Domains";
+                q.Where = $"\"Domain\" {SqlFormatter.In("@Domains")}";
                 q.Parameters = new { Domains = alldomains.ToArray() }.ToDynamicParameters();
 
                 var bannedDomains = _db.Database.Connection.Query<BannedDomain>(q.ToString(), q.Parameters);
@@ -5189,7 +5302,7 @@ namespace Voat.Data
             var dayCutOff = 7;
 
             var d = new DapperQuery();
-            d.Select += $"SELECT d.\"Type\", d.\"ID\", \"Name\", ISNULL(f.\"Title\", d.\"Title\") AS \"Title\", ISNULL(f.\"Description\", d.\"Description\") AS \"Description\", d.\"SubscriberCount\", d.\"OwnerName\", d.\"CreationDate\", f.\"StartDate\" AS \"FeaturedDate\", f.\"CreatedBy\" AS \"FeaturedBy\" FROM {SqlFormatter.Table("Featured", "f")} ";
+            d.Select += $"SELECT d.\"Type\", d.\"ID\", \"Name\", {SqlFormatter.IsNull("f.\"Title\"", "d.\"Title\"")} AS \"Title\", {SqlFormatter.IsNull("f.\"Description\"", "d.\"Description\"")} AS \"Description\", d.\"SubscriberCount\", d.\"OwnerName\", d.\"CreationDate\", f.\"StartDate\" AS \"FeaturedDate\", f.\"CreatedBy\" AS \"FeaturedBy\" FROM {SqlFormatter.Table("Featured", "f")} ";
             d.Select += $"INNER JOIN ( ";
             d.Select += $"SELECT 1 AS \"Type\", \"ID\", \"Name\", \"Title\", \"Description\", \"CreationDate\", \"SubscriberCount\", \"CreatedBy\" AS \"OwnerName\" FROM {SqlFormatter.Table("Subverse")} WHERE \"IsAdminDisabled\" = {SqlFormatter.BooleanLiteral(false)} ";
             d.Select += $"UNION ";
@@ -5200,8 +5313,11 @@ namespace Voat.Data
 
             if (dayCutOff > 0)
             {
-                d.Append(x => x.Where, "(f.\"EndDate\" IS NOT NULL OR (f.\"EndDate\" IS NULL AND DATEDIFF(HH, f.\"StartDate\", GETUTCDATE()) <= @Hours))");
-                d.Parameters.Add("Hours", (dayCutOff * 24));
+                //Postgre Port
+                //d.Append(x => x.Where, "(f.\"EndDate\" IS NOT NULL OR (f.\"EndDate\" IS NULL AND DATEDIFF(HH, f.\"StartDate\", GETUTCDATE()) <= @Hours))");
+                //d.Parameters.Add("Hours", (dayCutOff * 24));
+                d.Append(x => x.Where, "(f.\"EndDate\" IS NOT NULL OR (f.\"EndDate\" IS NULL AND f.\"StartDate\" >= @EndDate))");
+                d.Parameters.Add("EndDate", Repository.CurrentDate.AddHours(dayCutOff * 24 * -1));
             }
 
             d.OrderBy = "f.\"StartDate\" DESC";
@@ -5287,13 +5403,15 @@ namespace Voat.Data
                         {
                             case DeleteOption.Anonymize:
                                 var a = new DapperUpdate();
-                                a.Update = $"Update c SET c.\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)} FROM {SqlFormatter.Table("Comment", "c")} WHERE c.\"UserName\" = @UserName";
+                                a.Update = SqlFormatter.UpdateSetBlock($"\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)}", SqlFormatter.Table("Comment")); 
+                                a.Where = "\"UserName\" = @UserName";
                                 a.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(a);
                                 break;
                             case DeleteOption.Delete:
                                 var d = new DapperUpdate();
-                                d.Update = $"Update c SET c.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, \"Content\" = '{deleteText}' FROM {SqlFormatter.Table("Comment", "c")} WHERE c.\"UserName\" = @UserName";
+                                d.Update = SqlFormatter.UpdateSetBlock($"\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, \"Content\" = '{deleteText}'", SqlFormatter.Table("Comment"));
+                                d.Where = "\"UserName\" = @UserName";
                                 d.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(d);
                                 break;
@@ -5303,13 +5421,15 @@ namespace Voat.Data
                         {
                             case DeleteOption.Anonymize:
                                 var a = new DapperUpdate();
-                                a.Update = $"Update s SET s.\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)} FROM {SqlFormatter.Table("Submission", "s")} WHERE s.\"UserName\" = @UserName AND s.\"Type\" = {(int)SubmissionType.Text}";
+                                a.Update = SqlFormatter.UpdateSetBlock($"\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)}", SqlFormatter.Table("Submission"));
+                                a.Where = $"\"UserName\" = @UserName AND \"Type\" = {(int)SubmissionType.Text}";
                                 a.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(a);
                                 break;
                             case DeleteOption.Delete:
                                 var d = new DapperUpdate();
-                                d.Update = $"Update s SET s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, s.\"Title\" = '{deleteText}', s.\"Content\" = '{deleteText}' FROM {SqlFormatter.Table("Submission", "s")} WHERE s.\"UserName\" = @UserName AND s.\"Type\" = {(int)SubmissionType.Text}";
+                                d.Update = SqlFormatter.UpdateSetBlock($"\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, \"Title\" = '{deleteText}', \"Content\" = '{deleteText}'", SqlFormatter.Table("Submission"));
+                                d.Where = $"\"UserName\" = @UserName AND \"Type\" = {(int)SubmissionType.Text}";
                                 d.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(d);
                                 break;
@@ -5319,13 +5439,15 @@ namespace Voat.Data
                         {
                             case DeleteOption.Anonymize:
                                 var a = new DapperUpdate();
-                                a.Update = $"Update s SET s.\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)} FROM {SqlFormatter.Table("Submission", "s")} WHERE s.\"UserName\" = @UserName AND s.\"Type\" = {(int)SubmissionType.Link}";
+                                a.Update = SqlFormatter.UpdateSetBlock($"\"IsAnonymized\" = {SqlFormatter.BooleanLiteral(true)}", SqlFormatter.Table("Submission"));
+                                a.Where = $"\"UserName\" = @UserName AND \"Type\" = {(int)SubmissionType.Link}";
                                 a.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(a);
                                 break;
                             case DeleteOption.Delete:
                                 var d = new DapperUpdate();
-                                d.Update = $"Update s SET s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, s.\"Title\" = '{deleteText}', s.\"Url\" = 'https://{Settings.SiteDomain}' FROM {SqlFormatter.Table("Submission", "s")} WHERE s.\"UserName\" = @UserName AND s.\"Type\" = {(int)SubmissionType.Link}";
+                                d.Update = SqlFormatter.UpdateSetBlock($"\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, \"Title\" = '{deleteText}', \"Url\" = 'https://{Settings.SiteDomain}'", SqlFormatter.Table("Submission"));
+                                d.Where = $"\"UserName\" = @UserName AND \"Type\" = {(int)SubmissionType.Link}";
                                 d.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(d);
                                 break;
@@ -5334,15 +5456,15 @@ namespace Voat.Data
                         // resign from all moderating positions
                         _db.SubverseModerators.RemoveRange(_db.SubverseModerators.Where(m => m.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase)));
                         var u = new DapperDelete();
-                        u.Delete = $"DELETE m FROM {SqlFormatter.Table("SubverseModerator", "m")}";
-                        u.Where = "m.\"UserName\" = @UserName";
+                        u.Delete = SqlFormatter.DeleteBlock(SqlFormatter.Table("SubverseModerator"));
+                        u.Where = "\"UserName\" = @UserName";
                         u.Parameters = new DynamicParameters(new { UserName = userName });
                         statements.Add(u);
 
                         //Messages
                         u = new DapperDelete();
-                        u.Delete = $"DELETE m FROM {SqlFormatter.Table("Message", "m")}";
-                        u.Where = $"((m.\"Recipient\" = @UserName AND m.\"RecipientType\" = {(int)IdentityType.User} AND m.\"Type\" IN @RecipientTypes))";
+                        u.Delete = SqlFormatter.DeleteBlock(SqlFormatter.Table("Message"));
+                        u.Where = $"((\"Recipient\" = @UserName AND \"RecipientType\" = {(int)IdentityType.User} AND \"Type\" {SqlFormatter.In("@RecipientTypes")}))";
                         u.Parameters = new DynamicParameters(new
                         {
                             UserName = userName,
@@ -5393,7 +5515,7 @@ namespace Voat.Data
 
 
                             var updatePrefStatement = new DapperUpdate();
-                            updatePrefStatement.Update = $"{SqlFormatter.Table("UserPreference")} SET \"Bio\" = NULL, \"Avatar\" = NULL";
+                            updatePrefStatement.Update = SqlFormatter.UpdateSetBlock("\"Bio\" = NULL, \"Avatar\" = NULL", SqlFormatter.Table("UserPreference"));
                             updatePrefStatement.Where = "\"UserName\" = @UserName";
                             updatePrefStatement.Parameters.Add("UserName", userName);
                             await _db.Database.Connection.ExecuteAsync(updatePrefStatement.ToString(), updatePrefStatement.Parameters);
@@ -5410,8 +5532,12 @@ namespace Voat.Data
                             var badgeID = (setRecoveryEmail ? "deleted2" : "deleted");
 
                             //Get rid of EF
-                            var statement = "IF NOT EXISTS (SELECT * FROM \"dbo\".\"UserBadge\" WHERE \"UserName\" = @UserName AND \"BadgeID\" = @BadgeID) INSERT \"dbo\".\"UserBadge\" VALUES (@UserName, @BadgeID, GETUTCDATE())";
-                            await _db.Database.Connection.ExecuteAsync(statement, new { BadgeID = badgeID, UserName = userName });
+
+
+                            var statement = "INSERT INTO \"dbo\".\"UserBadge\" (\"UserName\", \"BadgeID\", \"CreationDate\") " +
+                                            "SELECT @UserName, @BadgeID, @Date " +
+                                            "WHERE NOT EXISTS (SELECT * FROM \"dbo\".\"UserBadge\" WHERE \"UserName\" = @UserName AND \"BadgeID\" = @BadgeID)";
+                            await _db.Database.Connection.ExecuteAsync(statement, new { BadgeID = badgeID, UserName = userName, Date = CurrentDate });
 
                             //var existing = _db.UserBadges.FirstOrDefault(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && x.BadgeID.Equals(badgeID, StringComparison.OrdinalIgnoreCase));
                             //if (existing == null)

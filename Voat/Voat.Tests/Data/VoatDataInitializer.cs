@@ -46,23 +46,25 @@ namespace Voat.Tests.Repository
             //TestEnvironmentSettings.DataStoreType = Voat.Data.DataStoreType.PostgreSQL;
             CreateSchema(context);
             Seed(context);
+            
         }
 
         protected void CreateSchema(voatEntities context)
         {
             //THIS METHOD MIGHT VERY WELL NEED A DIFFERENT IMPLEMENTATION FOR DIFFERENT STORES
 
+            //This is all a hack to get PG working with unit tests the fastest way possible.
 
             //Parse and run sql scripts
             var dbName = context.Database.Connection.Database;
             var originalConnectionString = context.Database.Connection.ConnectionString;
-
+            
             try
             {
 
                 var builder = new DbConnectionStringBuilder();
                 builder.ConnectionString = originalConnectionString;
-                builder["database"] = "master";
+                builder["database"] = Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ? "master" : "postgres";
                 context.Database.Connection.ConnectionString = builder.ConnectionString;
 
                 var cmd = context.Database.Connection.CreateCommand();
@@ -72,7 +74,23 @@ namespace Voat.Tests.Repository
                     cmd.Connection.Open();
                 }
 
-                cmd.CommandText = $"IF EXISTS (SELECT name FROM sys.databases WHERE name = '{dbName}') DROP DATABASE {dbName}";
+                try
+                {
+                    //Kill connections
+                    cmd.CommandText = Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ?
+                                           $"ALTER DATABASE {dbName} SET SINGLE_USER WITH ROLLBACK IMMEDIATE" :
+                                           $"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid() AND datname = '{dbName}'";
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.ToString());
+                }
+
+
+                cmd.CommandText = Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ?
+                                        $"IF EXISTS (SELECT name FROM sys.databases WHERE name = '{dbName}') DROP DATABASE {dbName}" :
+                                        $"DROP DATABASE IF EXISTS {dbName}";
                 cmd.ExecuteNonQuery();
 
                 cmd.CommandText = $"CREATE DATABASE {dbName}";
@@ -102,13 +120,22 @@ namespace Voat.Tests.Repository
                     using (var sr = new StreamReader(scriptFile))
                     {
                         var contents = sr.ReadToEnd();
-                       
-                        var segments = contents.Split(new string[] { TestEnvironmentSettings.DataStoreType == Voat.Data.DataStoreType.SqlServer ? "GO" : ";" }, StringSplitOptions.RemoveEmptyEntries);
-                        foreach (var batch in segments)
+
+                        switch (Configuration.Settings.DataStore)
                         {
-                            cmd.CommandText = batch;
-                            cmd.ExecuteNonQuery();
+                            case Voat.Data.DataStoreType.PostgreSql:
+                              
+                            case Voat.Data.DataStoreType.SqlServer:
+                                var segments = contents.Split(new string[] { "GO" }, StringSplitOptions.RemoveEmptyEntries);
+                                foreach (var batch in segments)
+                                {
+                                    cmd.CommandText = batch.Replace("{dbName}", dbName);
+                                    cmd.ExecuteNonQuery();
+                                }
+                                break;
                         }
+
+
                     }
                 }
             }

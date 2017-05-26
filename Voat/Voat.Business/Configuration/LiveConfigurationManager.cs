@@ -40,7 +40,9 @@ namespace Voat.Configuration
         public const string ApiKeyCreationEnabled = "apiKeyCreationEnabled";
         public const string CacheDisabled = "cacheDisabled";
         public const string CaptchaDisabled = "captchaDisabled";
-        public const string ChatDisabled = "chatDisabled"; 
+        public const string ChatDisabled = "chatDisabled";
+
+        public const string DataStore = "dataStore";
 
         public const string DailyCommentPostingQuota = "dailyCommentPostingQuota";
         public const string DailyCommentPostingQuotaForNegativeScore = "dailyCommentPostingQuotaForNegativeScore";
@@ -204,7 +206,7 @@ namespace Voat.Configuration
                 SetValueIfPresent<bool>(CONFIGURATION.SearchDisabled, section[CONFIGURATION.SearchDisabled]);
                 SetValueIfPresent<int>(CONFIGURATION.SubverseUpdateTimeLockInHours, section[CONFIGURATION.SubverseUpdateTimeLockInHours]);
 
-
+                SetValueIfPresent<Data.DataStoreType>(CONFIGURATION.DataStore, section[CONFIGURATION.DataStore]);
                 SetValueIfPresent<Domain.Models.Origin>(CONFIGURATION.Origin, section[CONFIGURATION.Origin]);
 
                 //HACK ATTACK
@@ -274,7 +276,7 @@ namespace Voat.Configuration
                     }
                     else if (typeof(T).IsEnum)
                     {
-                        T conValue = (T)Enum.Parse(typeof(T), value);
+                        T conValue = (T)Enum.Parse(typeof(T), value, true);
                         saveValue = conValue;
                     }
                     else
