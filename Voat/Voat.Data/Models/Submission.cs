@@ -18,11 +18,13 @@ namespace Voat.Data.Models
         public Submission()
         {
             this.Comments = new HashSet<Comment>();
-            this.SubmissionSaveTrackers = new HashSet<SubmissionSaveTracker>();
-            this.ViewStatistics = new HashSet<ViewStatistic>();
             this.SubmissionVoteTrackers = new HashSet<SubmissionVoteTracker>();
+            
+            //CORE_PORT: Kill relationships... 
+            //this.SubmissionSaveTrackers = new HashSet<SubmissionSaveTracker>();
+            //this.ViewStatistics = new HashSet<ViewStatistic>();
         }
-    
+
         public int ID { get; set; }
         public string UserName { get; set; }
         public System.DateTime CreationDate { get; set; }
@@ -45,17 +47,19 @@ namespace Voat.Data.Models
         public string FormattedContent { get; set; }
         public bool IsAdult { get; set; }
         public Nullable<System.DateTime> ArchiveDate { get; set; }
-    
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Comment> Comments { get; set; }
-        public virtual StickiedSubmission StickiedSubmission { get; set; }
-        public virtual Subverse Subverse1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<SubmissionSaveTracker> SubmissionSaveTrackers { get; set; }
-        public virtual SubmissionRemovalLog SubmissionRemovalLog { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ViewStatistic> ViewStatistics { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SubmissionVoteTracker> SubmissionVoteTrackers { get; set; }
+
+        //CORE_PORT: Kill relationships... 
+        //public virtual StickiedSubmission StickiedSubmission { get; set; }
+        //public virtual Subverse Subverse1 { get; set; }
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        //public virtual ICollection<SubmissionSaveTracker> SubmissionSaveTrackers { get; set; }
+        //public virtual SubmissionRemovalLog SubmissionRemovalLog { get; set; }
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        //public virtual ICollection<ViewStatistic> ViewStatistics { get; set; }
     }
 }

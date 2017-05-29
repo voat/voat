@@ -6,10 +6,20 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Voat.Data.Models;
 
 namespace Voat
 {
+    public class VoatPasswordValidator : IPasswordValidator<VoatUser>
+    {
+        public Task<IdentityResult> ValidateAsync(UserManager<VoatUser> manager, VoatUser user, string password)
+        {
+            //no op
+            return Task.FromResult(IdentityResult.Success);
+        }
+    }
+
     //This class is a CORE PORT Shim 
     public class VoatUserManager : UserManager<VoatUser>
     {
@@ -31,13 +41,30 @@ namespace Voat
 
         public static VoatUserManager Create()
         {
-            throw new NotImplementedException("Core Port: UserManager not implemented");
+            var mgr = new VoatUserManager(
+                new UserStore<VoatUser>(new ApplicationDbContext()),
+                null,
+                new PasswordHasher<VoatUser>(),
+                null,
+                new[] { new VoatPasswordValidator() },
+                new UpperInvariantLookupNormalizer(),
+                new IdentityErrorDescriber(),
+                null,
+                new Logger<UserManager<VoatUser>>(new LoggerFactory()));
+
+            return mgr;
+
+
+
+            //throw new NotImplementedException("Core Port: UserManager not implemented");
         }
 
         public IdentityResult Create(VoatUser user, string password)
         {
-            
-            throw new NotImplementedException("Core Port: Create not implemented");
+            var task = Task.Run(() => CreateAsync(user, password));
+            task.Wait();
+            return task.Result;
+            //throw new NotImplementedException("Core Port: Create not implemented");
         }
 
         public VoatUser FindByName(string name)

@@ -326,6 +326,8 @@ namespace Voat.Tests.Repository
                 IsAdminDisabled = false,
             }).Entity;
 
+            context.SaveChanges();
+
             context.SubverseModerator.Add(new SubverseModerator() { Subverse = "AuthorizedOnly", CreatedBy = "unit", CreationDate = DateTime.UtcNow, Power = 1, UserName = "unit" });
             context.SubverseModerator.Add(new SubverseModerator() { Subverse = "unit", CreatedBy = null, CreationDate = null, Power = 1, UserName = "unit" });
             context.SubverseModerator.Add(new SubverseModerator() { Subverse = "anon", CreatedBy = null, CreationDate = null, Power = 1, UserName = "anon" });

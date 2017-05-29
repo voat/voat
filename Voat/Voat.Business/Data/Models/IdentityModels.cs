@@ -28,6 +28,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Voat.Data.Models
 {
@@ -59,6 +61,16 @@ namespace Voat.Data.Models
             //CORE_PORT: Needs porting
             //: base("voatUsers")
         {
+        }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.HasDefaultSchema("dbo");
+            base.OnModelCreating(builder);
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            this.Configure(optionsBuilder, "voatUsers");
+            base.OnConfiguring(optionsBuilder);
         }
     }
 }

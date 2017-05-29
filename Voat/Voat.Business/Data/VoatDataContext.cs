@@ -22,22 +22,7 @@ namespace Voat.Data.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var conn = DataConfigurationSettings.Instance.Connections.FirstOrDefault(x => x.Name.IsEqual(_connectionName));
-            if (conn == null)
-            {
-                throw new ArgumentException($"Can not find connection with name '{_connectionName}'", "connectionName");
-            }
-
-            switch (DataConfigurationSettings.Instance.StoreType)
-            {
-                case DataStoreType.SqlServer:
-                    optionsBuilder.UseSqlServer(conn.Value);
-                    break;
-                case DataStoreType.PostgreSql:
-                    optionsBuilder.UseNpgsql(conn.Value);
-                    break;
-            }
-
+            this.Configure(optionsBuilder, _connectionName);
             base.OnConfiguring(optionsBuilder);
         }
         //CORE_PORT: Added this to ensure Dapper and direct connections can still execute

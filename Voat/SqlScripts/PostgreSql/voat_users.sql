@@ -32,7 +32,7 @@ CREATE TABLE "dbo"."AspNetUsers"(
 	"PhoneNumber" char(10),
 	"PhoneNumberConfirmed" boolean,
 	"TwoFactorEnabled" boolean,
-	"LockoutEndDateUtc" timestamp,
+	"LockoutEnd" timestamp,
 	"LockoutEnabled" boolean,
 	"AccessFailedCount" int,
 	"RegistrationDateTime" timestamp NOT NULL,
@@ -40,7 +40,10 @@ CREATE TABLE "dbo"."AspNetUsers"(
 	"Answer" varchar(50),
 	"Partner" boolean NOT NULL,
 	"LastLoginFromIp" varchar(50),
-	"LastLoginDateTime" timestamp NOT NULL);
+	"LastLoginDateTime" timestamp NOT NULL,
+	"ConcurrencyStamp" varchar(100) NULL,
+	"NormalizedEmail" varchar NULL,
+	"NormalizedUserName" varchar(800) NOT NULL);
 
 CREATE TABLE "dbo"."Sessions"(
 	"SessionId" varchar(88) NOT NULL,

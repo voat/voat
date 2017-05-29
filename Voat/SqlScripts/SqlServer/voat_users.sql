@@ -405,7 +405,7 @@ CREATE TABLE [dbo].[AspNetUsers](
 	[PhoneNumber] [nchar](10) NULL,
 	[PhoneNumberConfirmed] [bit] NULL,
 	[TwoFactorEnabled] [bit] NULL,
-	[LockoutEndDateUtc] [datetime] NULL,
+	[LockoutEnd] [datetime] NULL,
 	[LockoutEnabled] [bit] NULL,
 	[AccessFailedCount] [int] NULL,
 	[RegistrationDateTime] [datetime] NOT NULL CONSTRAINT [DF__AspNetUse__Regis__47DBAE45]  DEFAULT ('1900-01-01T00:00:00.000'),
@@ -413,7 +413,11 @@ CREATE TABLE [dbo].[AspNetUsers](
 	[Answer] [nvarchar](50) NULL,
 	[Partner] [bit] NOT NULL CONSTRAINT [DF__AspNetUse__Partn__74AE54BC]  DEFAULT ((0)),
 	[LastLoginFromIp] [nvarchar](50) NULL,
-	[LastLoginDateTime] [datetime] NOT NULL CONSTRAINT [DF__AspNetUse__LastL__18EBB532]  DEFAULT ('1900-01-01T00:00:00.000')
+	[LastLoginDateTime] [datetime] NOT NULL CONSTRAINT [DF__AspNetUse__LastL__18EBB532]  DEFAULT ('1900-01-01T00:00:00.000'),
+	[ConcurrencyStamp] [nvarchar](max) NULL,
+	[NormalizedEmail] [nvarchar](max) NULL,
+	[NormalizedUserName] [nvarchar](800) NOT NULL
+	
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
