@@ -33,7 +33,7 @@ namespace Voat.Tests.Rules
             _engine = this;
             if (initialize)
             {
-                Initialize(RuleSection.Instance.Configuration);
+                Initialize(RuleConfigurationSettings.Instance);
             }
             Instance = this;
         }

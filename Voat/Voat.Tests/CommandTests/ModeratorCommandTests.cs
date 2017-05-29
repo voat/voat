@@ -41,7 +41,7 @@ namespace Voat.Tests.CommandTests
         {
             Dictionary<string, SubverseModerator> _subMods = new Dictionary<string, SubverseModerator>();
 
-            using (var context = new voatEntities())
+            using (var context = new VoatDataContext())
             {
 
                 var sub = context.Subverse.Add(new Subverse()

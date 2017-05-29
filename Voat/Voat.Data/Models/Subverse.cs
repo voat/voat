@@ -45,7 +45,7 @@ namespace Voat.Data.Models
         public Nullable<System.DateTime> LastUpdateDate { get; set; }
         public int ID { get; set; }
     
-        public virtual DefaultSubverse DefaultSubverse { get; set; }
+        //public virtual DefaultSubverse DefaultSubverse { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StickiedSubmission> StickiedSubmissions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

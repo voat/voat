@@ -67,7 +67,7 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(0, userSetResults.Count(), "A man can convince anyone he's somebody else, but never himself.");
 
             var currentSubscriberCount = 0;
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = db.Subverse.First(x => x.Name == subName).SubscriberCount;
                 currentSubscriberCount = count.HasValue ? count.Value : 0;
@@ -98,7 +98,7 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(1, set.SubscriberCount, "I got a whole new problem when I post bail.");
 
             //Ensure Subverse Subscriber Count Updated
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var tc = db.Subverse.First(x => x.Name == subName).SubscriberCount;
                 var count = tc.HasValue ? tc.Value : 0;
@@ -118,7 +118,7 @@ namespace Voat.Tests.CommandTests
             blockResult = await blockCmd.Execute();
 
             //Ensure Subverse Subscriber Count Updated
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = db.Subverse.First(x => x.Name == subName).SubscriberCount;
                 Assert.AreEqual(currentSubscriberCount, count.HasValue ? count.Value : 0, "");
@@ -158,7 +158,7 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(0, userSetResults.Count(), "A man can convince anyone he's somebody else, but never himself.");
 
             var currentSubscriberCount = 0;
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = db.Subverse.First(x => x.Name == subName).SubscriberCount;
                 currentSubscriberCount = count.HasValue ? count.Value : 0;
@@ -190,7 +190,7 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(1, set.SubscriberCount, "I got a whole new problem when I post bail.");
 
             //Ensure Subverse Subscriber Count Updated
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var tc = db.Subverse.First(x => x.Name == subName).SubscriberCount;
                 var count = tc.HasValue ? tc.Value : 0;
@@ -210,7 +210,7 @@ namespace Voat.Tests.CommandTests
             subResult = await subCmd.Execute();
 
             //Ensure Subverse Subscriber Count Updated
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = db.Subverse.First(x => x.Name == subName).SubscriberCount;
                 Assert.AreEqual(currentSubscriberCount - 1, count.HasValue ? count.Value : 0, "");
@@ -260,7 +260,7 @@ namespace Voat.Tests.CommandTests
         private void VerifySubscriber(Set set, string userName, int expectedCount, bool exists = true)
         {
             //check data
-            using (var db = new Voat.Data.Models.voatEntities())
+            using (var db = new Voat.Data.Models.VoatDataContext())
             {
                 var dbSet = db.SubverseSet.FirstOrDefault(x => x.Name == set.Name && x.UserName == set.UserName && x.Type == (int)set.Type);
                 Assert.IsNotNull(dbSet, "Can not find set as created");

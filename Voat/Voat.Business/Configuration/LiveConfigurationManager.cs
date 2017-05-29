@@ -22,7 +22,9 @@
 
 #endregion LICENSE
 
+using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Reflection;
@@ -103,6 +105,7 @@ namespace Voat.Configuration
         public const string UseContentDeliveryNetwork = "useContentDeliveryNetwork";
     }
 
+    //CORE_PORT: Figure out how to port the "Live Monitoring" we previously implemented.
     public class LiveConfigurationManager
     {
         private static FileSystemWatcher _thewatchmen;
@@ -143,9 +146,23 @@ namespace Voat.Configuration
             }
         }
 
-        public static void Reload(NameValueCollection section)
+
+        public static void Configure(IConfigurationRoot config)
         {
-            if (section != null && section.Count > 0)
+            CacheConfigurationSettings.Load(config, "voat:cache");
+            RulesEngine.RuleConfigurationSettings.Load(config, "voat:rules");
+            Logging.LoggingConfigurationSettings.Load(config, "voat:logging");
+            Data.DataConfigurationSettings.Load(config, "voat:data");
+
+            //load web.config.live monitor
+            Reload(config.GetSection("voat:settings"));
+            //CORE_PORT: Live Monitoring not ported
+            //LiveConfigurationManager.Start();
+        }
+        //Core_Port: Config Load Changes
+        public static void Reload(IConfigurationSection section)
+        {
+            if (section != null)
             {
                 SetValueIfPresent<string>(CONFIGURATION.RecaptchaPublicKey, section[CONFIGURATION.RecaptchaPublicKey]);
                 SetValueIfPresent<string>(CONFIGURATION.RecaptchaPrivateKey, section[CONFIGURATION.RecaptchaPrivateKey]);
@@ -214,7 +231,8 @@ namespace Voat.Configuration
                 SetValueIfPresent<Domain.Models.Origin>(CONFIGURATION.Origin, section[CONFIGURATION.Origin]);
 
                 //HACK ATTACK
-                CacheHandler.Instance.CacheEnabled = !Settings.CacheDisabled;
+                //CORE_PORT: Caused Error Because Config Set Isn't Fully Ported
+                //CacheHandler.Instance.CacheEnabled = !Settings.CacheDisabled;
             }
         }
 

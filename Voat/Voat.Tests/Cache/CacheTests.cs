@@ -633,7 +633,7 @@ namespace Voat.Tests.Cache
             Debug.WriteLine("Starting RedisCacheTests");
 
             //Use connection info from CacheHandlerSection
-            var handler = CacheHandlerSection.Instance.Handlers.First(x => x.Type.ToLower().Contains("redis")).Construct();
+            var handler = CacheConfigurationSettings.Instance.Handlers.First(x => x.Type.ToLower().Contains("redis")).Construct<ICacheHandler>();
             base.handler = handler;
 
         }

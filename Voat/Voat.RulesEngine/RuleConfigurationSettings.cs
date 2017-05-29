@@ -22,14 +22,30 @@
 
 #endregion LICENSE
 
-using Voat.Data;
+using System;
 
-namespace Voat.Tests
+using System.Collections.Generic;
+using System.Configuration;
+using System.Xml;
+using System.Xml.Serialization;
+using Voat.Common.Configuration;
+
+namespace Voat.RulesEngine
 {
-    public class TestEnvironmentSettings
+    public class RuleConfigurationSettings : ConfigurationSettings<RuleConfigurationSettings>
     {
-        //public static Voat.Data.DataStoreType DataStoreType = Voat.Data.DataStoreType.PostgreSQL;
 
-        public static string SqlScriptRelativePath { get; set; } = @"..\..\..\..\SqlScripts\" + DataConfigurationSettings.Instance.StoreType.ToString();
+        public bool DiscoverRules { get; set; }
+
+        public string DiscoverAssemblies { get; set; }
+
+        public List<RuleEntry> RuleSet { get; set; } = new List<RuleEntry>();
+    }
+
+    public class RuleEntry
+    {
+        public bool Enabled { get; set; }
+
+        public string Type { get; set; }
     }
 }

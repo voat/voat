@@ -22,13 +22,17 @@
 
 #endregion LICENSE
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Configuration;
 using System.Linq;
 using Voat.Caching;
 using Voat.Configuration;
+using Voat.Data;
 using Voat.Data.Models;
+using Voat.Logging;
 using Voat.Rules;
+using Voat.RulesEngine;
 using Voat.Tests.Repository;
 
 
@@ -36,23 +40,35 @@ using Voat.Tests.Repository;
 [TestClass]
 public class UnitTestSetup
 {
+
+
+
     [NUnit.Framework.OneTimeSetUp()]
     [AssemblyInitialize()]
     public static void SetUp(TestContext context)
     {
-
-        //load web.config.live monitor
-        //LiveConfigurationManager.Reload(ConfigurationManager.AppSettings);
-        //LiveConfigurationManager.Start();
-
-        if (ConfigurationManager.AppSettings["PreventDatabaseDrop"] != "true")
+        //Configure App
+        var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
+        LiveConfigurationManager.Configure(config); 
+       
+        if (config["voat:test:preventDatabaseDrop"] != "True")
         {
             //Force db to drop & seed
             //Database.SetInitializer();
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
-                //Force configuration
-                var x = db.Ad.FirstOrDefault();
+                try
+                {
+                    //Force configuration
+                    var x = db.Ad.FirstOrDefault();
+                }
+                catch {
+                    if (db.Connection.State == System.Data.ConnectionState.Open)
+                    {
+                        db.Connection.Close();
+
+                    }
+                }
 
                 var init = new VoatDataInitializer();
                 init.InitializeDatabase(db); //This attempts to create and seed unit test db
@@ -63,10 +79,10 @@ public class UnitTestSetup
         var rulesEngine = VoatRulesEngine.Instance;
 
         //purge redis for unit tests if enabled
-        var defaultHandler = CacheHandlerSection.Instance.Handlers.FirstOrDefault(x => x.Enabled && x.Type.ToLower().Contains("redis"));
+        var defaultHandler = CacheConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Enabled && x.Type.ToLower().Contains("redis"));
         if (defaultHandler != null)
         {
-            var instance = defaultHandler.Construct();
+            var instance = defaultHandler.Construct<ICacheHandler>();
             instance.Purge();
         }
 

@@ -91,7 +91,7 @@ namespace Voat.RulesEngine
                 _enabled = value;
             }
         }
-        public void Initialize(RulesConfiguration config)
+        public void Initialize(RuleConfigurationSettings config)
         {
             if (!Initialized)
             {
@@ -125,9 +125,9 @@ namespace Voat.RulesEngine
                                 }
                             }
                             //load rules specified in config file
-                            if (config.Rules != null && config.Rules.Count > 0)
+                            if (config.RuleSet != null && config.RuleSet.Count > 0)
                             {
-                                foreach (var ruleMeta in config.Rules)
+                                foreach (var ruleMeta in config.RuleSet)
                                 {
                                     Type t = Type.GetType(ruleMeta.Type);
                                     if (t != null)

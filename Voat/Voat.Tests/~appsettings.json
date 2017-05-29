@@ -1,0 +1,129 @@
+﻿{
+    "voat": {
+        "data": {
+            "storeType": "postgresql", //Valid Values: PostgreSql or SqlServer
+            "connections": [
+                {
+                    "name": "voatUsers",
+                    "value": "Server={server};port=5432;Database={database};User ID={userid};Password={password};Persist Security Info=True;"
+                },
+                {
+                    "name": "ReadWrite",
+                    "value": "Server={server};port=5432;Database={database};User ID={userid};Password={password};Persist Security Info=True;"
+                },
+                {
+                    "name": "ReadOnly",
+                    "value": "Server={server};port=5432;Database={database};User ID={userid};Password={password};Persist Security Info=True;"
+                }
+            ]
+        },
+        "logging": {
+            "enabled":  true,
+            "configurationFile": "Logging.config",
+            "handlers": [
+                {
+                    "enabled": true,
+                    "name": "Log4Net",
+                    "type": "Voat.Logging.Log4NetLogger, Voat.Logging"
+                },
+                {
+                    "enabled": false,
+                    "name": "Null",
+                    "type": "Voat.Logging.NullLogger, Voat.Logging"
+                }
+            ]
+        },
+        "cache": {
+            "enabled" :  true,
+            "handlers": [
+                {
+                    "enabled": true,
+                    "name": "Redis",
+                    "type": "Voat.Caching.RedisCacheHandler, Voat.Business",
+                    "arguments": "[System.String](127.0.1:6379,defaultDatabase=7,allowAdmin=true)"
+                },
+                {
+                    "enabled": false,
+                    "name": "Memory",
+                    "type": "Voat.Caching.MemoryCacheHandler, Voat.Business",
+                    "arguments": ""
+                },
+                {
+                    "enabled": false,
+                    "name": "Null",
+                    "type": "Voat.Caching.NullCacheHandler, Voat.Business"
+                }
+            ]
+        },
+        "rules": {
+            "enabled": true,
+            "discoverRules": true,
+            "discoverAssemblies": "Voat.Business",
+            "ruleSet": [
+                {
+                    "enabled": false,
+                    "type": "Voat.Tests.Rules.TestDeniedRule, Voat.Tests"
+                },
+                {
+                    "enabled": false,
+                    "type": "Voat.Tests.Rules.TestPassRule, Voat.Tests"
+                }
+            ]
+        },
+        "settings": {
+            //Site Settings
+            "siteName": "Voat",
+            "siteSlogan": "Voat - have your say",
+            "siteDescription": "a community platform where you can have your say. No censorship.",
+            "siteKeywords": "voat, voat.co, vote, submit, comment",
+            "footerText": "&amp;copy; 2016 Voat, Inc. All rights reserved. Voat and the Voat Mascot are trademarks of Voat, Inc.",
+            "siteLogo": "/Graphics/voat-logo.png",
+            "cookieDomain": ".voat.co",
+            "siteDomain": "voat.co",
+            "captchaDisabled": "false",
+            "recaptchaPublicKey": "<enter here>",
+            "recaptchaPrivateKey": "<enter here>",
+            "forceHTTPS": false,
+
+            //Thresholds
+            "minimumAccountAgeInDaysForSubverseCreation": 30,
+            "minimumSubmissionPointsForSubverseCreation": 10,
+            "minimumCommentPointsForSubverseCreation": 10,
+            "minimumCommentPointsForCaptchaSubmission": 25,
+            "minimumCommentPointsForCaptchaMessaging": 100,
+            "maximumOwnedSubs": 10,
+            "maximumOwnedSets": 20,
+            "dailyPostingQuotaPerSub": 10,
+            "dailyGlobalPostingQuota": 5,
+            "dailyVotingQuota": 100,
+            "hourlyGlobalPostingQuota": 3,
+            "hourlyPostingQuotaPerSub": 3,
+            "dailyCrossPostingQuota": 2,
+            "dailyPostingQuotaForNegativeScore": 3,
+            "dailyCommentPostingQuotaForNegativeScore": 10,
+            "dailyCommentPostingQuota": 20,
+            "hourlyCommentPostingQuota": 10,
+            "maxAllowedAccountsFromSingleIP": 100,
+            "maximumSetSubverseCount": 25,
+
+            //Runtime Settings
+            "runtimeState": "Enabled",
+            "signalrDisabled": "false",
+            "setsDisabled": "true",
+            "cacheDisabled": "false",
+            "registrationDisabled": "false",
+            "useContentDeliveryNetwork": "true",
+            "destinationPathThumbs": "~/Storage/Thumbs",
+            "destinationPathAvatars ": "~/Storage/Avatars",
+            "adsEnabled": "true",
+            "apiKeyCreationEnabled": "true",
+            "redirectToSiteDomain": "false",
+            "setCreationDisabled": "false",
+            "legacyApiEnabled": "false",
+
+            //Voat Settings
+            "StorageConnectionString": "<enter here>",
+            "emailServiceKey": "<enter here>"
+        }
+    }
+}

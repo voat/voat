@@ -116,7 +116,7 @@ namespace Voat.Tests.CommandTests
                 Assert.IsNotNull(voteSubmissionResponse, "Expecting non-null submission vote command");
 
                 //verify in db
-                using (var db = new voatEntities())
+                using (var db = new VoatDataContext())
                 {
                     var record = db.SubmissionVoteTracker.Where(x => x.SubmissionID == id && x.UserName == userName).FirstOrDefault();
                     Assert.IsNotNull(record, "Expecting a vote record");
@@ -139,7 +139,7 @@ namespace Voat.Tests.CommandTests
                 Assert.IsNotNull(voteCommentResponse, "Expecting non-null submission vote command");
 
                 //verify in db
-                using (var db = new voatEntities())
+                using (var db = new VoatDataContext())
                 {
                     var record = db.CommentVoteTracker.Where(x => x.CommentID == id && x.UserName == userName).FirstOrDefault();
                     Assert.IsNotNull(record, "Expecting a vote record");

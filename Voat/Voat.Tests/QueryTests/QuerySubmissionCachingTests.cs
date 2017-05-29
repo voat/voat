@@ -58,7 +58,7 @@ namespace Voat.Tests.QueryTests
     {
         public BaseQueryRedisCache()
         {
-            var handler = CacheHandlerSection.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis")).Construct();
+            var handler = CacheConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis")).Construct<ICacheHandler>();
             CacheHandler.Instance = handler;
         }
     }

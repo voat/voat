@@ -46,7 +46,7 @@ namespace Voat.Utilities.Components
             {
                 if (_logger == null)
                 {
-                    _logger = LogSection.Instance.GetDefault();
+                    _logger = LoggingConfigurationSettings.Instance.GetDefault();
                 }
                 return _logger;
             }

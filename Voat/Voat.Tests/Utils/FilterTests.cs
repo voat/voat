@@ -39,7 +39,7 @@ namespace Voat.Tests.Utils
     {
         public override void ClassInitialize()
         {
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 //1
                 db.Filter.Add(new Filter()

@@ -20,6 +20,7 @@ namespace Voat.Data.Models
         public System.DateTime CreationDate { get; set; }
     
         public virtual Submission Submission { get; set; }
-        public virtual Subverse Subverse1 { get; set; }
+        //CORE_PORT: 
+        //public virtual Subverse Subverse1 { get; set; }
     }
 }

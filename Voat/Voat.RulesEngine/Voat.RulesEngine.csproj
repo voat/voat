@@ -11,4 +11,7 @@
   <ItemGroup>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.0-preview1-25305-02" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Voat.Common\Voat.Common.csproj" />
+  </ItemGroup>
 </Project>

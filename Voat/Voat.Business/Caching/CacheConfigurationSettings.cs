@@ -22,14 +22,31 @@
 
 #endregion LICENSE
 
-using Voat.Data;
+using System;
+using System.Linq;
+using Voat.Common.Configuration;
+using Voat.Configuration;
 
-namespace Voat.Tests
+namespace Voat.Caching
 {
-    public class TestEnvironmentSettings
+    public class CacheConfigurationSettings : ConfigurationSettings<CacheConfigurationSettings>
     {
-        //public static Voat.Data.DataStoreType DataStoreType = Voat.Data.DataStoreType.PostgreSQL;
+        public HandlerInfo Handler
+        {
+            get
+            {
+                if (Handlers != null)
+                {
+                    return Handlers.FirstOrDefault(x => x.Enabled);
+                }
+                return null;
+            }
+        }
 
-        public static string SqlScriptRelativePath { get; set; } = @"..\..\..\..\SqlScripts\" + DataConfigurationSettings.Instance.StoreType.ToString();
+        public HandlerInfo[] Handlers
+        {
+            get;
+            set;
+        }
     }
 }

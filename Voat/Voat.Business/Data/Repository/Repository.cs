@@ -55,17 +55,17 @@ namespace Voat.Data
     public partial class Repository : IDisposable
     {
         private static LockStore _lockStore = new LockStore();
-        private voatEntities _db;
+        private VoatDataContext _db;
 
         #region Class
-        public Repository() : this(new voatEntities())
+        public Repository() : this(new VoatDataContext())
         {
             /*no-op*/
         }
 
-        public Repository(Models.voatEntities dbContext)
+        public Repository(VoatDataContext dataContext)
         {
-            _db = dbContext;
+            _db = dataContext;
 
             //Prevent EF from creating dynamic proxies, those mother fathers. This killed
             //us during The Fattening, so we throw now -> (╯°□°)╯︵ ┻━┻
@@ -653,7 +653,7 @@ namespace Voat.Data
 
         public Subverse GetSubverseInfo(string subverse, bool filterDisabled = false)
         {
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 db.EnableCacheableOutput();
                 var query = (from x in db.Subverse
@@ -772,7 +772,7 @@ namespace Voat.Data
 
         public int GetCommentCount(int submissionID)
         {
-            using (voatEntities db = new voatEntities())
+            using (VoatDataContext db = new VoatDataContext())
             {
                 var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = $"SELECT COUNT(*) FROM {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} WHERE c.\"SubmissionID\" = @SubmissionID AND c.\"IsDeleted\" != {SqlFormatter.BooleanLiteral(true)}";
@@ -1993,7 +1993,7 @@ namespace Voat.Data
             //var commentTree = _db.usp_CommentTree(submissionID, depth, parentID);
 
             IEnumerable<usp_CommentTree_Result> commentTree = null;
-            switch (Configuration.Settings.DataStore)
+            switch (DataConfigurationSettings.Instance.StoreType)
             {
                 case DataStoreType.SqlServer:
                     commentTree = _db.Connection.Query<usp_CommentTree_Result>("usp_CommentTree", new { SubmissionID = submissionID, Depth = depth, ParentID = parentID }, commandType: System.Data.CommandType.StoredProcedure);
@@ -2780,7 +2780,7 @@ namespace Voat.Data
         {
             DemandAuthentication();
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 try
                 {
@@ -3039,7 +3039,7 @@ namespace Voat.Data
         }
 
         [Obsolete("Packing up and moving to Dapper", true)]
-        private IQueryable<Data.Models.Message> GetMessageQueryBase(voatEntities context, string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state)
+        private IQueryable<Data.Models.Message> GetMessageQueryBase(VoatDataContext context, string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState state)
         {
             var q = (from m in context.Message
                          //join s in _db.Submissions on m.SubmissionID equals s.ID into ns
@@ -3282,7 +3282,7 @@ namespace Voat.Data
         {
             #region Dapper
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var q = new DapperQuery();
                 q.Select = $"SELECT \"Type\", COUNT(*) AS \"Count\" FROM {SqlFormatter.Table("Message")}";
@@ -3347,7 +3347,7 @@ namespace Voat.Data
             {
                 options = SearchOptions.Default;
             }
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var q = GetMessageQueryDapperBase(ownerName, ownerType, type, state);
                 q.SkipCount = options.Index;
@@ -3657,7 +3657,7 @@ namespace Voat.Data
         private Score GetUserVotingBehavior(string userName, ContentType type, TimeSpan? span = null)
         {
             var score = new Score();
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 DateTime? compareDate = null;
                 if (span.HasValue)
@@ -3817,7 +3817,7 @@ namespace Voat.Data
             var alias = "";
             DateTime? dateRange = timeSpan.HasValue ? CurrentDate.Subtract(timeSpan.Value) : (DateTime?)null;
             Score s = new Score();
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var contentTypes = contentType.GetEnumFlags();
                 foreach (var contentTypeToQuery in contentTypes)
@@ -4246,7 +4246,7 @@ namespace Voat.Data
 
         public async Task<IEnumerable<Domain.Models.SubverseBan>> GetModLogBannedUsers(string subverse, SearchOptions options)
         {
-            using (var db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
+            using (var db = new VoatDataContext(CONSTANTS.CONNECTION_READONLY))
             {
                 var data = (from b in db.SubverseBan
                             where b.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
@@ -4266,7 +4266,7 @@ namespace Voat.Data
         }
         public async Task<IEnumerable<Data.Models.SubmissionRemovalLog>> GetModLogRemovedSubmissions(string subverse, SearchOptions options)
         {
-            using (var db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
+            using (var db = new VoatDataContext(CONSTANTS.CONNECTION_READONLY))
             {
                 db.EnableCacheableOutput();
 
@@ -4282,7 +4282,7 @@ namespace Voat.Data
         }
         public async Task<IEnumerable<Domain.Models.CommentRemovalLog>> GetModLogRemovedComments(string subverse, SearchOptions options)
         {
-            using (var db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
+            using (var db = new VoatDataContext(CONSTANTS.CONNECTION_READONLY))
             {
                 db.EnableCacheableOutput();
 

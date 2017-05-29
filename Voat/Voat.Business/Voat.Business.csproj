@@ -32,6 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\External\Source\toptensoftware\MarkdownDeep\MarkdownDeep.csproj" />
+    <ProjectReference Include="..\Voat.Common\Voat.Common.csproj" />
     <ProjectReference Include="..\Voat.Data\Voat.Data.csproj" />
     <ProjectReference Include="..\Voat.Logging\Voat.Logging.csproj" />
     <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj" />

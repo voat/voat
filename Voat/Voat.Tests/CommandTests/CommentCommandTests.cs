@@ -26,6 +26,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
@@ -279,7 +280,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsTrue(r.Success);
 
             //verify
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var comment = db.Comment.FirstOrDefault(x => x.ID == id);
                 Assert.AreEqual(true, comment.IsDeleted);
@@ -316,7 +317,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsTrue(r.Success, r.Message);
 
             //verify
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var comment = db.Comment.FirstOrDefault(x => x.ID == id);
                 Assert.AreEqual(true, comment.IsDeleted);
@@ -361,7 +362,7 @@ namespace Voat.Tests.CommandTests
         {
             //insert post via db into disabled sub
             Submission submission = null;
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 submission = new Submission() {
                     Subverse = "Disabled",
@@ -408,7 +409,7 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(Status.Success, c.Status);
 
             //check for comment reply entry
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var notice = db.Message.FirstOrDefault(x => x.Sender == userName && x.Recipient == "unit" && x.SubmissionID == 1 && x.CommentID == c.Response.ID);
                 Assert.IsNotNull(notice, "Did not find a reply notification");
@@ -438,7 +439,7 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(Status.Success, c.Status);
 
             //check for comment reply entry
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var notice = db.Message.FirstOrDefault(x => x.Sender == userName && x.Recipient == "anon" && x.SubmissionID == 1);
                 Assert.IsNotNull(notice, "Did not find a reply notification");

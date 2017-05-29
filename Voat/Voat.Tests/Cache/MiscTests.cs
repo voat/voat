@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Voat.Caching;
+using Voat.Common.Configuration;
 using Voat.Configuration;
 
 namespace Voat.Tests.Cache
@@ -66,7 +67,7 @@ namespace Voat.Tests.Cache
         [TestMethod]
         public void TestDictionary()
         {
-            var args = ArgumentParser.Parse( CacheHandlerSection.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis")).Arguments);
+            var args = ArgumentParser.Parse(CacheConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis")).Arguments);
 
             var conn = StackExchange.Redis.ConnectionMultiplexer.Connect(args[0].ToString());
             var db = conn.GetDatabase(0);
@@ -139,7 +140,7 @@ namespace Voat.Tests.Cache
         //[TestMethod]
         public void TestSerializationWithRedis()
         {
-            var args = CacheHandlerSection.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis")).Arguments;
+            var args = CacheConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis")).Arguments;
 
             //These passes are intended to ballpark how diff .NET to redis serialization stacks up.
             var conn = StackExchange.Redis.ConnectionMultiplexer.Connect(args);

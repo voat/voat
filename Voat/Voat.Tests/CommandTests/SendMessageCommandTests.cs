@@ -55,7 +55,7 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(Status.Invalid, response.Status, response.Message);
             Assert.AreEqual(null, response.Response, "Expecting null return payload");
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = (from x in db.Message
                              where
@@ -81,7 +81,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsFalse(response.Success, "Expecting failure");
             Assert.AreNotEqual("Comment points too low to send messages. Need at least 10 CCP.", response.Message);
             
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = (from x in db.Message
                               where
@@ -143,7 +143,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsNotNull(response, "Response is null");
             Assert.IsTrue(response.Success, response.Message);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var record = (from x in db.Message
                               where 
@@ -202,7 +202,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsTrue(response.Success, response.Message);
 
             //Ensure first msg is in db
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var record = (from x in db.Message
                               where
@@ -253,7 +253,7 @@ namespace Voat.Tests.CommandTests
             var subverse = "unit";
 
             //ensure v/Unit has moderators
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var record = (from x in db.SubverseModerator
                               where
@@ -287,7 +287,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsNotNull(response, "Response is null");
             Assert.IsTrue(response.Success, response.Message);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var record = (from x in db.Message
                               where
@@ -328,7 +328,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsNotNull(response, "Response is null");
             Assert.IsTrue(response.Success, response.Status.ToString());
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var record = (from x in db.Message
                               where
@@ -370,7 +370,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsTrue(response.Success, response.Status.ToString());
 
             //ensure comment exists in thread as message gateway should submit a comment based on message type and info
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var record = (from x in db.Comment
                               where
@@ -445,7 +445,7 @@ namespace Voat.Tests.CommandTests
 
 
             //Check to see if Comment notification exists in messages
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var record = (from x in db.Message
                               where
@@ -491,7 +491,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsNotNull(comment, "Expected a non-null comment response");
 
             //Check to see if Comment notification exists in messages
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var subverse = (from x in db.Subverse
                                 where x.Name.Equals(sub, StringComparison.OrdinalIgnoreCase)

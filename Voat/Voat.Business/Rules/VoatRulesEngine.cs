@@ -46,8 +46,8 @@ namespace Voat.Rules
                         if (_engine == null)
                         {
                             _engine = new VoatRulesEngine(/*new RequestHttpContextHandler()*/);
-                            _engine.Initialize(RuleSection.Instance.Configuration);
-                            _engine.Enabled = RuleSection.Instance.Configuration.Enabled;
+                            _engine.Initialize(RuleConfigurationSettings.Instance);
+                            _engine.Enabled = RuleConfigurationSettings.Instance.Enabled;
                         }
                     }
                 }

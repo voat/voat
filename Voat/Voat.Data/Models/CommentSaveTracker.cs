@@ -18,7 +18,8 @@ namespace Voat.Data.Models
         public int CommentID { get; set; }
         public string UserName { get; set; }
         public System.DateTime CreationDate { get; set; }
-    
-        public virtual Comment Comment { get; set; }
+
+        //CORE_PORT:
+        //public virtual Comment Comment { get; set; }
     }
 }

@@ -30,12 +30,6 @@ using System.Threading.Tasks;
 
 namespace Voat.Data
 {
-    public enum DataStoreType
-    {
-        SqlServer,
-        PostgreSql
-    }
-
     public class SqlFormatter
     {
         public static string DefaultSchema
@@ -93,7 +87,7 @@ namespace Voat.Data
 
             string aliasClause = String.IsNullOrEmpty(alias) ? " " : $" AS {alias} ";
 
-            switch (Configuration.Settings.DataStore)
+            switch (DataConfigurationSettings.Instance.StoreType)
             {
                 case DataStoreType.SqlServer:
                     result = $"DELETE {alias} FROM {fromTable}{aliasClause}";
@@ -114,7 +108,7 @@ namespace Voat.Data
 
             string aliasClause = String.IsNullOrEmpty(alias) ? " " : $" AS {alias} ";
 
-            switch (Configuration.Settings.DataStore)
+            switch (DataConfigurationSettings.Instance.StoreType)
             {
                 case DataStoreType.SqlServer:
 
@@ -142,7 +136,7 @@ namespace Voat.Data
         {
             var result = "";
 
-            switch (Configuration.Settings.DataStore)
+            switch (DataConfigurationSettings.Instance.StoreType)
             {
                 case DataStoreType.SqlServer:
                     result = $"IN {parameter}";
@@ -162,7 +156,7 @@ namespace Voat.Data
         {
             var result = "";
 
-            switch (Configuration.Settings.DataStore)
+            switch (DataConfigurationSettings.Instance.StoreType)
             {
                 case DataStoreType.SqlServer:
                     result = $"ISNULL({parameter}, {defaultValue})";
@@ -189,7 +183,7 @@ namespace Voat.Data
 
             result = result + (!String.IsNullOrEmpty(alias) ? String.Format(" AS {0}", alias) : "");
 
-            switch (Configuration.Settings.DataStore) 
+            switch (DataConfigurationSettings.Instance.StoreType) 
             {
                 //Only add hints if sql, should really probably remove this
                 case DataStoreType.SqlServer:
@@ -214,7 +208,7 @@ namespace Voat.Data
         public static string BooleanLiteral(bool value)
         {
             var result = "";
-            switch (Configuration.Settings.DataStore)
+            switch (DataConfigurationSettings.Instance.StoreType)
             {
                 case DataStoreType.PostgreSql:
                     result = value ? "True" : "False";
@@ -230,7 +224,7 @@ namespace Voat.Data
         public static string QuoteIndentifier(string name)
         {
             string result = null;
-            switch (Configuration.Settings.DataStore)
+            switch (DataConfigurationSettings.Instance.StoreType)
             {
                 case DataStoreType.PostgreSql:
                     result = String.Format("\"{0}\"", name);

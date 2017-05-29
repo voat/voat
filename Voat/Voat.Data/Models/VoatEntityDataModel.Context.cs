@@ -12,51 +12,8 @@ namespace Voat.Data.Models
     using System;
     using Microsoft.EntityFrameworkCore;
     
-    public partial class voatEntities : DbContext
+    public partial class VoatEntityContext : DbContext
     {
-
-        //CORE_PORT: Added this to ensure Dapper and direct connections can still execute
-        public System.Data.Common.DbConnection Connection
-        {
-            get
-            {
-                return this.Database.GetDbConnection();
-            }
-        }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            //CORE_PORT: Change the connection string and comment out the throw statement 
-            throw new NotImplementedException("Connection String needs set here but Configuration reading is broken right now, hard code as a temp hack");
-            optionsBuilder.UseNpgsql("Server={server};port=5432;Database={database};User ID={userid};Password={password};persist security info=True;");
-
-            base.OnConfiguring(optionsBuilder);
-
-        }
-        public class UnintentionalCodeFirstException : Exception { }
-        public voatEntities()
-            //: base(new DbContextOptions(){ 
-            //CORE_PORT: not supported
-            //: base("name=voatEntities")
-        {
-            
-            
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            //CORE_PORT: Keys, will fix later and each table should have a ID INT PK
-            modelBuilder.Entity<CommentRemovalLog>().HasKey(x => new { x.CommentID });
-            modelBuilder.Entity<SubmissionRemovalLog>().HasKey(x => new { x.SubmissionID });
-            modelBuilder.Entity<DefaultSubverse>().HasKey(x => new { x.Subverse });
-            modelBuilder.Entity<SessionTracker>().HasKey(x => new { x.SessionID, x.Subverse });
-            modelBuilder.Entity<StickiedSubmission>().HasKey(x => new { x.SubmissionID, x.Subverse});
-            modelBuilder.Entity<UserPreference>().HasKey(x => new { x.UserName });
-            modelBuilder.Entity<ViewStatistic>().HasKey(x => new { x.SubmissionID, x.ViewerID });
-
-            //modelBuilder.Entity<CommentRemovalLog>().HasKey(x => new { x.CommentID });
-
-        }
-
 
         public virtual DbSet<ApiClient> ApiClient { get; set; }
         public virtual DbSet<ApiLog> ApiLog { get; set; }

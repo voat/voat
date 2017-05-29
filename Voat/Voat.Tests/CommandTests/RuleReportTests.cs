@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
@@ -41,7 +42,7 @@ namespace Voat.Tests.CommandTests
         public override void ClassInitialize()
         {
             //create basic rules
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, SortOrder = -100, Name = "Spam", Description = "Spam", CreatedBy = "Voat", CreationDate = Voat.Data.Repository.CurrentDate });
                 db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, SortOrder = -90, Name = "No Dox", Description = "No Dox Description", CreatedBy = "Voat", CreationDate = Voat.Data.Repository.CurrentDate });
@@ -120,7 +121,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsTrue(r.Success, r.Message);
             int count = 0;
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 if (contentType == ContentType.Submission)
                 {

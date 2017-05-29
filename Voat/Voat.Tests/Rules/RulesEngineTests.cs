@@ -105,7 +105,7 @@ namespace Voat.Tests.Rules
         {
             var x = new UnitTestRulesEngine();
 
-            RulesConfiguration config = new RulesConfiguration();
+            var config = new RuleConfigurationSettings();
             config.DiscoverAssemblies = "Voat.Tests;Voat.Data";
             config.DiscoverRules = true;
             config.Enabled = true;
@@ -120,9 +120,9 @@ namespace Voat.Tests.Rules
         [TestCategory("RulesEngine")]
         public void TestRulesSection()
         {
-            var config = RuleSection.Instance;
-            Assert.IsNotNull(config.Configuration.Rules, "Loaded no rules");
-            Assert.AreNotEqual(0, config.Configuration.Rules.Count);
+            var config = RuleConfigurationSettings.Instance;
+            Assert.IsNotNull(config.RuleSet, "Loaded no rules");
+            Assert.AreNotEqual(0, config.RuleSet.Count);
         }
     }
 

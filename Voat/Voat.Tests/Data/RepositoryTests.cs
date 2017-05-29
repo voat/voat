@@ -396,7 +396,7 @@ namespace Voat.Tests.Repository
             var createdBy = "AntiSpamcist";
             var createdDate = DateTime.UtcNow.AddDays(-10);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 db.BannedDomain.Add(new BannedDomain()
                 {
@@ -434,7 +434,7 @@ namespace Voat.Tests.Repository
             var createdBy = "AntiSpamcist";
             var createdDate = DateTime.UtcNow.AddDays(-10);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 db.BannedDomain.Add(new BannedDomain()
                 {

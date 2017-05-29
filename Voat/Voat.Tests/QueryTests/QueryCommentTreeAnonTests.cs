@@ -66,7 +66,7 @@ namespace Voat.Tests.QueryTests
         public void CommentContext_Anon()
         {
             int commentID = 0;
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var nestedcomment = db.Comment.Where(x => x.SubmissionID == _submissionID).OrderByDescending(x => x.ID).FirstOrDefault();
                 if (nestedcomment == null)

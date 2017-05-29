@@ -78,13 +78,13 @@ namespace Voat.Configuration
                 return GetValue(CONFIGURATION.ChatDisabled, true);
             }
         }
-        public static Data.DataStoreType DataStore
-        {
-            get
-            {
-                return GetValue(CONFIGURATION.DataStore, Data.DataStoreType.SqlServer);
-            }
-        }
+        //public static Data.DataStoreType DataStore
+        //{
+        //    get
+        //    {
+        //        return GetValue(CONFIGURATION.DataStore, Data.DataStoreType.SqlServer);
+        //    }
+        //}
 
         public static int DailyCommentPostingQuota
         {

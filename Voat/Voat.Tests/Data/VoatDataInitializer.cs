@@ -28,6 +28,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Voat.Data;
 using Voat.Data.Models;
 using Voat.Tests.Data;
 using Voat.Utilities;
@@ -39,7 +40,7 @@ namespace Voat.Tests.Repository
         //: IDatabaseInitializer<voatEntities>
     {
 
-        public void InitializeDatabase(voatEntities context)
+        public void InitializeDatabase(VoatDataContext context)
         {
             //For Postgre
             //TestEnvironmentSettings.DataStoreType = Voat.Data.DataStoreType.PostgreSQL;
@@ -48,7 +49,7 @@ namespace Voat.Tests.Repository
             
         }
 
-        protected void CreateSchema(voatEntities context)
+        protected void CreateSchema(VoatDataContext context)
         {
             //THIS METHOD MIGHT VERY WELL NEED A DIFFERENT IMPLEMENTATION FOR DIFFERENT STORES
 
@@ -63,7 +64,7 @@ namespace Voat.Tests.Repository
 
                 var builder = new DbConnectionStringBuilder();
                 builder.ConnectionString = originalConnectionString;
-                builder["database"] = Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ? "master" : "postgres";
+                builder["database"] = DataConfigurationSettings.Instance.StoreType == Voat.Data.DataStoreType.SqlServer ? "master" : "postgres";
                 context.Connection.ConnectionString = builder.ConnectionString;
 
                 var cmd = context.Connection.CreateCommand();
@@ -76,7 +77,7 @@ namespace Voat.Tests.Repository
                 try
                 {
                     //Kill connections
-                    cmd.CommandText = Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ?
+                    cmd.CommandText = DataConfigurationSettings.Instance.StoreType == Voat.Data.DataStoreType.SqlServer ?
                                            $"ALTER DATABASE {dbName} SET SINGLE_USER WITH ROLLBACK IMMEDIATE" :
                                            $"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid() AND datname = '{dbName}'";
                     cmd.ExecuteNonQuery();
@@ -87,7 +88,7 @@ namespace Voat.Tests.Repository
                 }
 
 
-                cmd.CommandText = Configuration.Settings.DataStore == Voat.Data.DataStoreType.SqlServer ?
+                cmd.CommandText = DataConfigurationSettings.Instance.StoreType == Voat.Data.DataStoreType.SqlServer ?
                                         $"IF EXISTS (SELECT name FROM sys.databases WHERE name = '{dbName}') DROP DATABASE {dbName}" :
                                         $"DROP DATABASE IF EXISTS {dbName}";
                 cmd.ExecuteNonQuery();
@@ -120,10 +121,9 @@ namespace Voat.Tests.Repository
                     {
                         var contents = sr.ReadToEnd();
 
-                        switch (Configuration.Settings.DataStore)
+                        switch (DataConfigurationSettings.Instance.StoreType)
                         {
                             case Voat.Data.DataStoreType.PostgreSql:
-                              
                             case Voat.Data.DataStoreType.SqlServer:
                                 var segments = contents.Split(new string[] { "GO" }, StringSplitOptions.RemoveEmptyEntries);
                                 foreach (var batch in segments)
@@ -150,7 +150,7 @@ namespace Voat.Tests.Repository
         }
 
 
-        protected void Seed(voatEntities context)
+        protected void Seed(VoatDataContext context)
         {
             CreateUserSchema(context);
             
@@ -585,7 +585,7 @@ namespace Voat.Tests.Repository
             //******************************************************************************************************************
         }
         public static void CreateSorted(string subverse) {
-            using (var context = new voatEntities())
+            using (var context = new VoatDataContext())
             {
                 var sortSubverse = context.Subverse.Add(new Subverse()
                 {
@@ -622,7 +622,7 @@ namespace Voat.Tests.Repository
         }
         public static int BuildCommentTree(string subverse, string commentContent, int rootDepth, int nestedDepth, int recurseCount)
         {
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var s = db.Subverse.Where(x => x.Name == subverse).FirstOrDefault();
                 //create submission
@@ -639,7 +639,7 @@ namespace Voat.Tests.Repository
                 db.Submission.Add(submission);
                 db.SaveChanges();
 
-                Func<voatEntities, int?, string, string, int> createComment = (context, parentCommentID, content, userName) => {
+                Func<VoatDataContext, int?, string, string, int> createComment = (context, parentCommentID, content, userName) => {
 
                     var comment = new Comment() {
                         SubmissionID = submission.ID,
@@ -655,7 +655,7 @@ namespace Voat.Tests.Repository
                     System.Threading.Thread.Sleep(2);
                     return comment.ID;
                 };
-                Action<voatEntities, int?, int, int, string, int> createNestedComments = null;
+                Action<VoatDataContext, int?, int, int, string, int> createNestedComments = null;
                 createNestedComments = (context, parentCommentID, depth, currentDepth, path, recurseDepth) => {
                     if (currentDepth <= depth)
                     {
@@ -704,7 +704,7 @@ namespace Voat.Tests.Repository
                 }
            // }
         }
-        public static void VoteContent(voatEntities context, Domain.Models.ContentType contentType, int id, int count, Domain.Models.Vote vote)
+        public static void VoteContent(VoatDataContext context, Domain.Models.ContentType contentType, int id, int count, Domain.Models.Vote vote)
         {
             for (int i = 0; i < count; i++)
             {
@@ -747,7 +747,7 @@ namespace Voat.Tests.Repository
                 CreateUser(String.Format(userNameTemplate, i.ToString().PadLeft(2, '0')));
             }
         }
-        private void CreateUserSchema(voatEntities context)
+        private void CreateUserSchema(VoatDataContext context)
         {
             
            

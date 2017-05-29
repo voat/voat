@@ -53,7 +53,7 @@ namespace Voat.Tests.QueryTests
         {
 
             var commentID = 22;
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var nestedcomment = db.Comment.Where(x => x.SubmissionID == _unitSubmissionID && x.Content.Contains("Path 1:1:1:1:1")).FirstOrDefault();
                 if (nestedcomment == null)

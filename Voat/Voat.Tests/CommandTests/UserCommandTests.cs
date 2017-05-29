@@ -185,7 +185,7 @@ namespace Voat.Tests.CommandTests
         public async Task DeleteAccount_Basic()
         {
             //EnsureBadges
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 if (!db.Badge.Any(x => x.ID == "deleted"))
                 {
@@ -243,7 +243,7 @@ namespace Voat.Tests.CommandTests
             VoatDataInitializer.CreateUser(userName);
             TestHelper.SetPrincipal(userName);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 //Trying to trap a bug with a user not getting delete badge
                 db.UserBadge.Add(new Voat.Data.Models.UserBadge() { BadgeID = "donor_upto_30", CreationDate = DateTime.UtcNow, UserName = userName });
@@ -285,7 +285,7 @@ namespace Voat.Tests.CommandTests
             //Need to ensure delete clears preferences
             var prefUpdate = new UpdateUserPreferencesCommand(new Domain.Models.UserPreferenceUpdate() { Bio = "My Bio" });
             await prefUpdate.Execute();
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var prefs = db.UserPreference.FirstOrDefault(x => x.UserName == userName);
                 Assert.IsNotNull(prefs, "Expected user to have preference record at this stage");
@@ -332,7 +332,7 @@ namespace Voat.Tests.CommandTests
 
         private void VerifyDelete(Domain.Models.DeleteAccountOptions options)
         {
-            using (var db = new Voat.Data.Models.voatEntities())
+            using (var db = new Voat.Data.Models.VoatDataContext())
             {
                 int count = 0;
                 switch (options.Comments.Value)

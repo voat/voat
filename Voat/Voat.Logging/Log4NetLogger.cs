@@ -50,7 +50,7 @@ namespace Voat.Logging
         static Log4NetLogger()
         {
             string path = String.Format("{0}.config", Assembly.GetExecutingAssembly().CodeBase);
-            string fileName = LogSection.Instance.ConfigFile;
+            string fileName = LoggingConfigurationSettings.Instance.ConfigurationFile;
             if (!String.IsNullOrEmpty(fileName))
             {
                 if (Path.GetFileName(fileName) == fileName)

@@ -36,7 +36,7 @@ namespace Voat.Utilities
         // returns true if saved, false otherwise
         public static bool? CheckIfSavedComment(string userToCheck, int commentID)
         {
-            using (voatEntities db = new voatEntities())
+            using (VoatDataContext db = new VoatDataContext())
             {
                 var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = "SELECT COUNT(*) FROM CommentSaveTracker WITH (NOLOCK) WHERE UserName = @UserName AND CommentID = @CommentID";
@@ -74,7 +74,7 @@ namespace Voat.Utilities
         {
             var result = CheckIfSavedComment(userWhichSaved, commentId);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 if (result == true)
                 {
@@ -99,7 +99,7 @@ namespace Voat.Utilities
         // a user has saved this comment earlier and wishes to unsave it, delete the record
         private static void UnSaveComment(string userWhichSaved, int commentId)
         {
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var votingTracker = db.CommentSaveTracker.FirstOrDefault(b => b.CommentID == commentId && b.UserName == userWhichSaved);
 

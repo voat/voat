@@ -19,6 +19,7 @@ namespace Voat.Data.Models
         public string Subverse { get; set; }
         public int Order { get; set; }
     
-        public virtual Subverse Subverse1 { get; set; }
+        //CORE_PORT: 
+        //public virtual Subverse Subverse1 { get; set; }
     }
 }

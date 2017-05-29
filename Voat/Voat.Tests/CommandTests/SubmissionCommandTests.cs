@@ -368,7 +368,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void PreventBannedDomainPost()
         {
-            using (var repo = new voatEntities())
+            using (var repo = new VoatDataContext())
             {
                 repo.BannedDomain.Add(new BannedDomain() { Domain = "saiddit.com", Reason = "No one really likes you.", CreatedBy = "UnitTest", CreationDate = DateTime.UtcNow });
                 repo.SaveChanges(); 
@@ -414,7 +414,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void PreventBannedDomainPost_MultiPartDomains()
         {
-            using (var repo = new voatEntities())
+            using (var repo = new VoatDataContext())
             {
                 repo.BannedDomain.Add(new BannedDomain() { Domain = "one.two.three.com", Reason = "People hate counting", CreatedBy = "UnitTest", CreationDate = DateTime.UtcNow });
                 repo.SaveChanges();
@@ -564,7 +564,7 @@ namespace Voat.Tests.CommandTests
             //Create user
             VoatDataInitializer.CreateUser(userName, DateTime.UtcNow.AddDays(-450));
             //Add submission with negatives directly to db
-            using (var context = new voatEntities())
+            using (var context = new VoatDataContext())
             {
                 
                 var s = context.Submission.Add(new Submission()

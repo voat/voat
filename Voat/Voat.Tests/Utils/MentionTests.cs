@@ -30,6 +30,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Tests.Repository;
@@ -65,7 +66,7 @@ namespace Voat.Tests.Utils
             var result = await cmd.Execute();
             Assert.IsTrue(result.Success, result.Message);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = db.Message.Where(x => x.Sender == user1 && x.Recipient == user2 && x.CommentID == result.Response.ID).Count();
                 Assert.AreEqual(1, count, "Received duplicates and now users are annoyed and burning down the village! Run!");
@@ -79,7 +80,7 @@ namespace Voat.Tests.Utils
             result = await cmd.Execute();
             Assert.IsTrue(result.Success, result.Message);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = db.Message.Where(x => x.Sender == user2 && x.Recipient == user1 && x.CommentID == result.Response.ID).Count();
                 Assert.AreEqual(1, count, "Received duplicates and now users are annoyed and burning down the village! Run!");
@@ -110,7 +111,7 @@ namespace Voat.Tests.Utils
             result = await cmd.Execute();
             Assert.IsTrue(result.Success, result.Message);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = db.Message.Where(x => x.Sender == user2 && x.Recipient == user1 && x.CommentID == result.Response.ID).Count();
                 Assert.AreEqual(1, count, "Received duplicates and now users are annoyed and burning down the village! Run!");
@@ -132,7 +133,7 @@ namespace Voat.Tests.Utils
             var result = await cmd.Execute();
             Assert.IsTrue(result.Success, result.Message);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = db.Message.Where(x => x.Sender == user1 && x.Recipient == user2 && x.CommentID == result.Response.ID).Count();
                 Assert.AreEqual(1, count, "Expected to receive shill mention! THIS IS CENSORSHIP!");
@@ -156,7 +157,7 @@ namespace Voat.Tests.Utils
 
             Thread.Sleep(2000);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = db.Message.Where(x => 
                     x.Sender == user1 
@@ -174,7 +175,7 @@ namespace Voat.Tests.Utils
             var result = await cmd.Execute();
             Assert.IsTrue(result.Success, result.Message);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = db.Message.Where(x => 
                     x.Sender == user1 
@@ -210,7 +211,7 @@ namespace Voat.Tests.Utils
             Assert.IsNotNull(anonSubmission, "Couldn't create test submission");
             Assert.AreNotEqual(0, anonSubmission.ID, "Doesn't appear we have a valid submission id");
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = db.Message.Where(x => 
                     x.Sender == user1 
@@ -228,7 +229,7 @@ namespace Voat.Tests.Utils
             var result = await cmd.Execute();
             Assert.IsTrue(result.Success, result.Message);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = db.Message.Where(x => 
                     x.Sender == user1 
@@ -254,7 +255,7 @@ namespace Voat.Tests.Utils
             result = await cmd.Execute();
             Assert.IsTrue(result.Success, result.Message);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = db.Message.Where(x => 
                     x.Sender == user1 
@@ -279,7 +280,7 @@ namespace Voat.Tests.Utils
             result = await cmd.Execute();
             Assert.IsTrue(result.Success, result.Message);
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var count = db.Message.Where(x =>
                     x.Sender == user1

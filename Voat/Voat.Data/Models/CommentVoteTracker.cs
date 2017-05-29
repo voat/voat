@@ -21,7 +21,8 @@ namespace Voat.Data.Models
         public System.DateTime CreationDate { get; set; }
         public string IPAddress { get; set; }
         public double VoteValue { get; set; }
-    
-        public virtual Comment Comment { get; set; }
+
+        //CORE_PORT:
+        //public virtual Comment Comment { get; set; }
     }
 }

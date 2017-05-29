@@ -44,10 +44,10 @@ namespace Voat.Tests.Logging
 
         public override void ClassInitialize()
         {
-            var logEntry = LogSection.Instance.Loggers.FirstOrDefault(x => x.Name == "Log4Net");
+            var logEntry = LoggingConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Name == "Log4Net");
             if (logEntry.Enabled)
             {
-                log = (ILogger)logEntry.Construct();
+                log = logEntry.Construct<ILogger>();
             }
         }
 
@@ -71,7 +71,7 @@ namespace Voat.Tests.Logging
 
                 log.Log(info);
 
-                using (var db = new voatEntities())
+                using (var db = new VoatDataContext())
                 {
                     var entry = db.EventLog.FirstOrDefault(x => x.ActivityID == info.ActivityID.ToString());
                     Assert.IsNotNull(entry, "Crickie! Where is the log data at!?");
@@ -108,7 +108,7 @@ namespace Voat.Tests.Logging
                 {
                     var activityID = Guid.NewGuid();
                     log.Log(ex, (Guid?)activityID);
-                    using (var db = new voatEntities())
+                    using (var db = new VoatDataContext())
                     {
                         var entry = db.EventLog.FirstOrDefault(x => x.ActivityID == activityID.ToString().ToUpper());
                         Assert.IsNotNull(entry, "If this isn't here, perhaps the narnia wormhole is open?");
@@ -131,7 +131,7 @@ namespace Voat.Tests.Logging
                 {
                     System.Threading.Thread.Sleep(1000);
                 }
-                using (var db = new voatEntities())
+                using (var db = new VoatDataContext())
                 {
                     var entry = db.EventLog.FirstOrDefault(x => x.ActivityID == activityID.ToString().ToUpper());
                     Assert.IsNotNull(entry, "Well, that didn't work now did it");
@@ -160,7 +160,7 @@ namespace Voat.Tests.Logging
                 {
                     System.Threading.Thread.Sleep(1000);
                 }
-                using (var db = new voatEntities())
+                using (var db = new VoatDataContext())
                 {
                     var entry = db.EventLog.FirstOrDefault(x => x.ActivityID == activityID.ToString().ToUpper());
                     Assert.IsNull(entry, "Should not have log entry with specified minimum");

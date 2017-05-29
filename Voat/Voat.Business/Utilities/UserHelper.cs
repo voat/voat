@@ -243,7 +243,7 @@ namespace Voat.Utilities
             {
                 var userStatsModel = new UserStatsModel();
 
-                using (var db = new voatEntities())
+                using (var db = new VoatDataContext())
                 {
                     db.EnableCacheableOutput();
 
@@ -333,7 +333,7 @@ namespace Voat.Utilities
         // check if a given user is globally banned
         public static bool IsUserGloballyBanned(string userName)
         {
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var bannedUser = db.BannedUser.FirstOrDefault(n => n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
                 return bannedUser != null;
@@ -343,7 +343,7 @@ namespace Voat.Utilities
         // check if a given user is banned from a subverse
         public static bool IsUserBannedFromSubverse(string userName, string subverseName)
         {
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var bannedUser = db.SubverseBan.FirstOrDefault(n => n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
                 return bannedUser != null;
@@ -440,7 +440,7 @@ namespace Voat.Utilities
         // check if a given user has downvoted more comments than upvoted
         public static bool IsUserCommentVotingMeanie(string userName)
         {
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 // get voting habits
                 var commentUpvotes = db.CommentVoteTracker.Count(a => a.UserName == userName && a.VoteStatus == 1);
@@ -453,7 +453,7 @@ namespace Voat.Utilities
         // check if a given user has downvoted more submissions than upvoted
         public static bool IsUserSubmissionVotingMeanie(string userName)
         {
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 // get voting habits
                 var submissionUpvotes = db.CommentVoteTracker.Count(a => a.UserName == userName && a.VoteStatus == 1);
@@ -469,7 +469,7 @@ namespace Voat.Utilities
             var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, 0, -59, 0, 0));
             var toDate = Repository.CurrentDate;
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var previousComment = db.Comment.FirstOrDefault(m => m.Content.Equals(commentContent, StringComparison.OrdinalIgnoreCase)
                     && m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)

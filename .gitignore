@@ -204,3 +204,4 @@ Voat/.vs/
 Logging.config
 Voat/Voat.UI/logs/
 Voat/Voat.Tests/[Aa]pp.config
+appsettings.json

@@ -24,6 +24,7 @@
 
 using System;
 using System.Linq;
+using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Query;
 
@@ -71,7 +72,7 @@ namespace Voat.Caching
                     string cacheKey = DataCache.Keys.Submission(submissionID.Value);
                     Voat.Data.Models.Submission submission = CacheHandler.Instance.Register<Voat.Data.Models.Submission>(cacheKey, new Func<Voat.Data.Models.Submission>(() =>
                     {
-                        using (voatEntities db = new voatEntities())
+                        using (var db = new VoatDataContext())
                         {
                             //CORE_PORT: Property not available 
                             //db.Configuration.ProxyCreationEnabled = false;

@@ -148,7 +148,7 @@ namespace Voat.Data
         }
         private async Task<CommandResponse<bool?>> SetSubverseListChange(SubverseSet set, Subverse subverse, SubscriptionAction action)
         {
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 CommandResponse<bool?> response = new CommandResponse<bool?>(true, Status.Success, "");
                 var actionTaken = SubscriptionAction.Toggle;
@@ -205,7 +205,7 @@ namespace Voat.Data
             }
 
             q.OrderBy = "s.\"Name\" ASC";
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var result = await db.Connection.QueryAsync<SubverseSubscriptionDetail>(q.ToString(), q.Parameters);
                 return result;
@@ -214,7 +214,7 @@ namespace Voat.Data
 
         private SubverseSet GetOrCreateSubverseSet(SubverseSet setInfo)
         {
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var set = db.SubverseSet.FirstOrDefault(x => x.Name.Equals(setInfo.Name, StringComparison.OrdinalIgnoreCase) && x.UserName == setInfo.UserName);
                 if (set == null)
@@ -254,7 +254,7 @@ namespace Voat.Data
             }
 
             q.Parameters = new DynamicParameters(new { Name = name, UserName = userName, Type = (int?)type });
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var set = db.Connection.QueryFirstOrDefault<SubverseSet>(q.ToString(), q.Parameters);
                 return set;
@@ -273,7 +273,7 @@ namespace Voat.Data
                 q.Append(x => x.Where, $"subSet.\"IsPublic\" = {SqlFormatter.BooleanLiteral(true)}");
             }
 
-            using (var db = new voatEntities())
+            using (var db = new VoatDataContext())
             {
                 var set = await db.Connection.QueryAsync<SubverseSet>(q.ToString(), q.Parameters);
                 return set;

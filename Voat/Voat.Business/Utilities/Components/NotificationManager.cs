@@ -157,7 +157,7 @@ namespace Voat.Utilities.Components
         {
             try
             {
-                using (var _db = new voatEntities())
+                using (var _db = new VoatDataContext())
                 {
                     Random _rnd = new Random();
 

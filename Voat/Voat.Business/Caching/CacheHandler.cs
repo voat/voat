@@ -387,11 +387,11 @@ namespace Voat.Caching
                         {
                             try
                             {
-                                var handlerInfo = CacheHandlerSection.Instance.Handler;
+                                var handlerInfo = CacheConfigurationSettings.Instance.Handler;
                                 if (handlerInfo != null)
                                 {
                                     Debug.WriteLine("CacheHandler.Instance.Contruct({0})", handlerInfo.Type);
-                                    _instance = handlerInfo.Construct();
+                                    _instance = handlerInfo.Construct<ICacheHandler>();
                                 }
                             }
                             catch (Exception ex)
