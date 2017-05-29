@@ -1,3 +1,10 @@
+# Quick Status Updates
+
+This branch is building on .NET Core 2 Preview. It does not have Voat.UI included in solution file as we want to get Voat.Tests all passing before converting the UI project to .NET Core.
+
+Right now we have the initializing and seeding of the databases working (PostgreSql, SqlServer), which means we can move into making unit tests pass. These are mostly releated to Entity Framework changes including keys and relationship changes.
+
+
 # Voat Branch for .NET Core Port (With the PostgreSQL Branch Merged)
 
 Currently using .NET Core 2 Preview
