@@ -22,14 +22,14 @@
 
 #endregion LICENSE
 
+using System.IO;
 using Voat.Data;
 
 namespace Voat.Tests
 {
     public class TestEnvironmentSettings
     {
-        //public static Voat.Data.DataStoreType DataStoreType = Voat.Data.DataStoreType.PostgreSQL;
-
-        public static string SqlScriptRelativePath { get; set; } = @"..\..\..\..\SqlScripts\" + DataConfigurationSettings.Instance.StoreType.ToString();
+        public static string SqlScriptRelativePath { get; set; } =
+            Path.Combine("..", "..", "..", "..", "SqlScripts", DataConfigurationSettings.Instance.StoreType.ToString() );
     }
 }

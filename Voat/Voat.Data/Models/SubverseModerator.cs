@@ -21,6 +21,7 @@ namespace Voat.Data.Models
         public string CreatedBy { get; set; }
         public Nullable<System.DateTime> CreationDate { get; set; }
     
-        public virtual Subverse Subverse1 { get; set; }
+        //CORE_PORT:
+        //public virtual Subverse Subverse1 { get; set; }
     }
 }

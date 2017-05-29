@@ -40,13 +40,15 @@ namespace Voat.Tests.Repository
         //: IDatabaseInitializer<voatEntities>
     {
 
-        public void InitializeDatabase(VoatDataContext context)
+        public void InitializeDatabase(VoatDataContext context, bool seed = true)
         {
             //For Postgre
             //TestEnvironmentSettings.DataStoreType = Voat.Data.DataStoreType.PostgreSQL;
             CreateSchema(context);
-            Seed(context);
-            
+            if (seed)
+            {
+                Seed(context);
+            }
         }
 
         protected void CreateSchema(VoatDataContext context)
@@ -152,8 +154,6 @@ namespace Voat.Tests.Repository
 
         protected void Seed(VoatDataContext context)
         {
-            CreateUserSchema(context);
-            
             //*******************************************************************************************************
             //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -747,19 +747,5 @@ namespace Voat.Tests.Repository
                 CreateUser(String.Format(userNameTemplate, i.ToString().PadLeft(2, '0')));
             }
         }
-        private void CreateUserSchema(VoatDataContext context)
-        {
-            
-           
-        }
     }
-
-    //public class VoatUsersInitializer : CreateDatabaseIfNotExists<ApplicationDbContext>
-    //{
-    //    public override void InitializeDatabase(ApplicationDbContext context)
-    //    {
-    //        //context.Database.Create();
-    //        //base.InitializeDatabase(context);
-    //    }
-    //}
 }

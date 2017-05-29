@@ -5,15 +5,15 @@
             "connections": [
                 {
                     "name": "voatUsers",
-                    "value": "Server={server};port=5432;Database={database};User ID={userid};Password={password};Persist Security Info=True;"
+                    "value": "Server={server};port=5432;Database={database};User ID={userid};Password={password};Persist Security Info=True;Keepalive=1;"
                 },
                 {
                     "name": "ReadWrite",
-                    "value": "Server={server};port=5432;Database={database};User ID={userid};Password={password};Persist Security Info=True;"
+                    "value": "Server={server};port=5432;Database={database};User ID={userid};Password={password};Persist Security Info=True;Keepalive=1;"
                 },
                 {
                     "name": "ReadOnly",
-                    "value": "Server={server};port=5432;Database={database};User ID={userid};Password={password};Persist Security Info=True;"
+                    "value": "Server={server};port=5432;Database={database};User ID={userid};Password={password};Persist Security Info=True;Keepalive=1;"
                 }
             ]
         },
