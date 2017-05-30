@@ -62,9 +62,9 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Block"), TestCategory("Repository.Block.Subverse")]
-        public void Block_Subverse_NoAuthentication()
+        public async Task Block_Subverse_NoAuthentication()
         {
-            Assert.ThrowsAsync<VoatSecurityException>(() => {
+            await VoatAssert.ThrowsAsync<VoatSecurityException>(() => {
                 TestHelper.SetPrincipal(null);
                 using (var db = new Voat.Data.Repository())
                 {
@@ -77,9 +77,9 @@ namespace Voat.Tests.Repository
 
         [TestMethod]
         [TestCategory("Repository"), TestCategory("Repository.Block"), TestCategory("Repository.Block.Subverse")]
-        public void Block_Subverse_SubverseDoesNotExist()
+        public async Task Block_Subverse_SubverseDoesNotExist()
         {
-            Assert.ThrowsAsync<VoatNotFoundException>(() => {
+            await VoatAssert.ThrowsAsync<VoatNotFoundException>(() => {
                 using (var db = new Voat.Data.Repository())
                 {
                     TestHelper.SetPrincipal("TestUser01");

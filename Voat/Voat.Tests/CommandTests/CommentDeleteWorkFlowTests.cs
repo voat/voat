@@ -33,8 +33,9 @@ using Voat.Domain.Query;
 
 namespace Voat.Tests.CommandTests
 {
+
     [TestClass]
-    public class CommentDeleteWorkFlowTests : BaseUnitTest
+    public partial class CommentDeleteWorkFlowTests : BaseUnitTest
     {
         private string AUTHOR_NAME = "TestUser13";
         private string MOD_NAME = "unit";

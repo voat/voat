@@ -111,7 +111,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Comment.Vote")]
         public void InvalidVoteValue_Comment_Low()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => {
+            VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
                 TestHelper.SetPrincipal("unit");
                 var cmd = new CommentVoteCommand(1, -2, IpHash.CreateHash("127.0.0.1"));
                 var c = cmd.Execute().Result;
@@ -270,7 +270,7 @@ namespace Voat.Tests.CommandTests
         public void InvalidVoteValue_Submission_High()
         {
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => {
+            VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
                 TestHelper.SetPrincipal("unit");
 
                 var cmd = new SubmissionVoteCommand(1, 2, IpHash.CreateHash("127.0.0.1"));
@@ -287,7 +287,7 @@ namespace Voat.Tests.CommandTests
         public void InvalidVoteValue_Submission_Low()
         {
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => {
+            VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
                 TestHelper.SetPrincipal("unit");
 
                 var cmd = new CommentVoteCommand(1, -2, IpHash.CreateHash("127.0.0.1"));

@@ -224,7 +224,7 @@ namespace Voat.Tests.Utils
         //[ExpectedException(typeof(InvalidCastException))]
         public void Convert_Object_2()
         {
-            Assert.Throws<InvalidCastException>(() => {
+            VoatAssert.Throws<InvalidCastException>(() => {
                 TestObject t = new TestObject();
                 TestObjectParent x = t.Convert<TestObjectParent, TestObject>();
             });
@@ -326,7 +326,7 @@ namespace Voat.Tests.Utils
         //[ExpectedException(typeof(TypeInitializationException))]
         public void TestSafeEnum_ConstructionError()
         {
-            Assert.Throws<TypeInitializationException>(() => {
+            VoatAssert.Throws<TypeInitializationException>(() => {
                 var s = new SomeStruct();
                 SafeEnum<SomeStruct> x = new SafeEnum<SomeStruct>(s);
             });
@@ -339,7 +339,7 @@ namespace Voat.Tests.Utils
         //[ExpectedException(typeof(TypeInitializationException))]
         public void TestSafeEnum_ConstructionError2()
         {
-            Assert.Throws<TypeInitializationException>(() => {
+            VoatAssert.Throws<TypeInitializationException>(() => {
                 SafeEnum<int> x = new SafeEnum<int>(45);
             });
 
@@ -350,7 +350,7 @@ namespace Voat.Tests.Utils
         //[ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TestSafeEnum_Errors()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => {
+            VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
                 var safeClass = new TestEnumClass();
                 safeClass.CommentSort = ((Domain.Models.CommentSortAlgorithm)(-203));
             });
@@ -361,7 +361,7 @@ namespace Voat.Tests.Utils
         //[ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TestSafeEnum_Errors_2()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => {
+            VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
                 var safeClass = new TestEnumClass();
                 safeClass.CommentSort = ((Domain.Models.CommentSortAlgorithm)(203));
             });
@@ -373,7 +373,7 @@ namespace Voat.Tests.Utils
         //[ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void TestSafeEnum_Errors_3()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => {
+            VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
                 var safeClass = new TestEnumClass();
                 safeClass.CommentSort = 203;
             });

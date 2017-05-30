@@ -22,7 +22,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170427-09" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.1.17" />
     <PackageReference Include="MSTest.TestFramework" Version="1.1.17" />
-    <PackageReference Include="NUnit" Version="3.6.1" />
+    <PackageReference Include="NUnit" Version="3.7.0" />
   </ItemGroup>
 
   <ItemGroup>

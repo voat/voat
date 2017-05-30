@@ -44,7 +44,7 @@ namespace Voat.Tests.QueryTests
         [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_1()
         {
-            Assert.Throws<ArgumentException>(() => {
+            VoatAssert.Throws<ArgumentException>(() => {
                 string user = "";
                 var voatData = new Domain.UserData(user, true);
             });
@@ -52,7 +52,7 @@ namespace Voat.Tests.QueryTests
         [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_2()
         {
-            Assert.Throws<ArgumentException>(() => {
+            VoatAssert.Throws<ArgumentException>(() => {
                 string user = null;
                 var voatData = new Domain.UserData(user, true);
             });
@@ -61,7 +61,7 @@ namespace Voat.Tests.QueryTests
         [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_3()
         {
-            Assert.Throws<ArgumentException>(() => {
+            VoatAssert.Throws<ArgumentException>(() => {
                 string user = "____________Doesn't__Exist_________";
                 var voatData = new Domain.UserData(user, true);
             });
@@ -70,7 +70,7 @@ namespace Voat.Tests.QueryTests
         [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_4()
         {
-            Assert.Throws<VoatNotFoundException>(() => {
+            VoatAssert.Throws<VoatNotFoundException>(() => {
                 string user = "MyName-Is-Me";
                 var voatData = new Domain.UserData(user, true);
             });
@@ -78,7 +78,7 @@ namespace Voat.Tests.QueryTests
         [TestMethod, TestCategory("UserData")]
         public void UserData_ValidateUser_Constructor_5()
         {
-            Assert.Throws<VoatNotFoundException>(() => {
+            VoatAssert.Throws<VoatNotFoundException>(() => {
                 string user = "DoesntExist";
                 var voatData = new Domain.UserData(user, true);
             });

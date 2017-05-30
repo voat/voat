@@ -31,8 +31,10 @@ using System.Threading.Tasks;
 
 namespace Voat.Tests.Base.NUnit
 {
+
+
     [TestClass]
-    public class UnitTestTestClass : BaseUnitTest
+    public partial class UnitTestTestClass : BaseUnitTest
     {
         private static int testInitCount = 0;
         private static int classInitCount = 0;
@@ -47,27 +49,26 @@ namespace Voat.Tests.Base.NUnit
         {
             classInitCount += 1;
         }
-
-       
+        
         [TestMethod]
         public void Method1()
         {
-            Assert.AreEqual(this.preInitCount + 1, testInitCount);
             Assert.AreEqual(1, classInitCount);
+            Assert.AreEqual(this.preInitCount + 1, testInitCount);
         }
 
         [TestMethod]
         public void Method2()
         {
-            Assert.AreEqual(this.preInitCount + 1, testInitCount);
             Assert.AreEqual(1, classInitCount);
+            Assert.AreEqual(this.preInitCount + 1, testInitCount);
         }
 
         [TestMethod]
         public void Method3()
         {
-            Assert.AreEqual(this.preInitCount + 1, testInitCount);
             Assert.AreEqual(1, classInitCount);
+            Assert.AreEqual(this.preInitCount + 1, testInitCount);
         }
     }
 }

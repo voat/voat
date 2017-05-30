@@ -203,7 +203,7 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote")]
         public void EnsureInvalidVoteValueThrowsException_Com()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => {
+            VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
                 using (var db = new Voat.Data.Repository())
                 {
                     db.VoteComment(121, -2, IpHash.CreateHash("127.0.0.1"));
@@ -216,7 +216,7 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote")]
         public void EnsureInvalidVoteValueThrowsException_Sub()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => {
+            VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
                 using (var db = new Voat.Data.Repository())
                 {
                     db.VoteSubmission(1, 21, IpHash.CreateHash("127.0.0.1"));

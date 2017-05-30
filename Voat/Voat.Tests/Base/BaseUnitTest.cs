@@ -36,8 +36,18 @@ namespace Voat.Tests
     [TestClass]
     public class BaseUnitTest
     {
+        private static bool _initialized = false;
+
         public BaseUnitTest()
         {
+#if !NUNIT
+            if (!_initialized)
+            {
+                _initialized = true;
+                ClassInitialize();
+            }
+            TestInitialize();
+#endif
         }
 
         //Different configurations of Test Suites will handle test context 
@@ -49,8 +59,14 @@ namespace Voat.Tests
         {
             TestHelper.SetPrincipal(null);
         }
-        
-        [TestClassInitialize]
+        ////This will not inherit with MS Tests but doesn't matter anyways because you don't have access to the test object instance.
+        //[ClassInitialize]
+        //public static void ClassInitialize(TestContext context)
+        //{
+        //    var props = context.Properties;
+        //}
+
+        [ClassInitialize]
         public virtual void ClassInitialize()
         {
 

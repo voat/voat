@@ -102,7 +102,9 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal(userToPost);
             var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = subverse, Title = "VerifyVoteStatus Test Submission in " + subverse });
             var response = cmd.Execute().Result;
-            Assert.AreEqual(Status.Success, response.Status, response.Message);
+
+            VoatAssert.IsValid(response, Status.Success);
+            //Assert.AreEqual(Status.Success, response.Status, response.Message);
             var submission = response.Response;
 
             //voting username
