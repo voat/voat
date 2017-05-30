@@ -29,7 +29,10 @@ using Voat.Domain.Command;
 
 //This is a start of a port to NUnit, the idea was to originally support both NUnit and MSTest, 
 //but MSTest is written so wacky it can not be cleanly abstracted without a lot of plumbing code,
-//so we are ditching it entirely, and eventually this attribute shim will go away.
+//so we are ditching it entirely, and eventually this attribute shim will go away. - Some date in the past
+
+//Update: 2017-05-30
+//We are back to MSTest for reasons, so we are reintroducing the wackiness. I hope you didn't really believe what was said directly before this.
 namespace Microsoft.VisualStudio.TestTools.UnitTesting
 {
 #if NUNIT
