@@ -28,6 +28,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Data;
@@ -36,6 +37,22 @@ using Voat.Utilities.Components;
 
 namespace Voat.Caching
 {
+    //Because MS loves to keep us on our toes. MemoryCache is not self monitoring
+    public class MonitoredMemoryCache : MemoryCache
+    {
+        private Timer _timer;
+
+        public MonitoredMemoryCache(IOptions<MemoryCacheOptions> options) : base(options)
+        {
+            _timer = new Timer(new TimerCallback(x => { this.Compact(0); }), this, options.Value.ExpirationScanFrequency, options.Value.ExpirationScanFrequency);
+        }
+        protected override void Dispose(bool disposing)
+        {
+            _timer.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+
     public enum CacheType
     {
         Object = 0,
@@ -281,15 +298,9 @@ namespace Voat.Caching
             }
             return null;
         }
-        //CORE_PORT: Param not found stubbing in method to throw exception
-        private void RefetchItem(object args)
+        private void RefetchItem(object key, object value, EvictionReason reason, object state)
         {
-            throw new NotImplementedException("Core Port CacheHandler.RefetchItem");
-        }
-        /*
-        private void RefetchItem(CacheEntryUpdateArguments args)
-        {
-            var cacheKey = args.Key;
+            var cacheKey = key.ToString();
             if (_meta.ContainsKey(cacheKey))
             {
                 var meta = _meta[cacheKey];
@@ -300,19 +311,19 @@ namespace Voat.Caching
                 {
                     string msg = String.Format("Refetching cache ({0}) - #{1}", cacheKey, refreshCount);
                     EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
-                    //Debug.WriteLine(msg);
 
-                    //_meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(meta.Item1, meta.Item2, meta.Item3, refreshCount);
                     _meta[cacheKey] = meta;
-                    //new Tuple<Func<object>, TimeSpan, int, int>(meta.Item1, meta.Item2, meta.Item3, refreshCount);
 
-                    args.UpdatedCacheItem = new CacheItem(cacheKey, new object());
+                    //Set Tracker Object
+                    AddEvictionTracker(cacheKey, new object(), meta.CacheTime.Subtract(_refreshOffset), new PostEvictionDelegate(RefetchItem));
+                    //AddEvictionTracker(cacheKey, new object(), Repository.CurrentDate.Add(meta.CacheTime), new PostEvictionDelegate(RefetchItem));
 
-                    args.UpdatedCacheItemPolicy = new CacheItemPolicy()
-                    {
-                        AbsoluteExpiration = Repository.CurrentDate.Add(meta.CacheTime),
-                        UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
-                    };
+                    //args.UpdatedCacheItem = new CacheItem(cacheKey, new object());
+                    //args.UpdatedCacheItemPolicy = new CacheItemPolicy()
+                    //{
+                    //    AbsoluteExpiration = Repository.CurrentDate.Add(meta.CacheTime),
+                    //    UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
+                    //};
 
                     try
                     {
@@ -334,24 +345,17 @@ namespace Voat.Caching
                 }
             }
         }
-        */
-        //CORE_PORT: Param not found stubbing in method to throw exception
-        private void ExpireItem(object args)
-        {
-            throw new NotImplementedException("Core Port CacheHandler.ExpireItem");
-        }
-        /*
-        private void ExpireItem(CacheEntryRemovedArguments args)
+        private void ExpireItem(object key, object value, EvictionReason reason, object state)
         {
             try
             {
-                string msg = String.Format("Expiring cache ({0})", args.CacheItem.Key);
+                string msg = String.Format("Expiring cache ({0})", key.ToString());
                 EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
                 //Debug.WriteLine(msg);
 
-                if (args.RemovedReason != CacheEntryRemovedReason.CacheSpecificEviction)
+                if (reason != EvictionReason.None)
                 {
-                    Remove(args.CacheItem.Key);
+                    Remove(key.ToString());
                 }
             }
             catch (Exception ex)
@@ -360,7 +364,7 @@ namespace Voat.Caching
                 EventLogger.Instance.Log(ex);
             }
         }
-        */
+        
         public bool Exists(string cacheKey)
         {
             cacheKey = StandardizeCacheKey(cacheKey);
@@ -459,14 +463,21 @@ namespace Voat.Caching
         {
             get
             {
-                throw new NotImplementedException("Core Port: Need to construct this");
+                //throw new NotImplementedException("Core Port: Need to construct this");
                 //CORE_PORT: This is also not safe
                 if (_memoryCache == null)
                 {
-                    var moptions = new MemoryCacheOptions();
-                    var ioptions = Options.Create(moptions);
-                    var memoryCache = new MemoryCache(ioptions);
-                    _memoryCache = memoryCache;
+                    lock (this)
+                    {
+                        if (_memoryCache == null)
+                        {
+                            var moptions = new MemoryCacheOptions();
+                            moptions.ExpirationScanFrequency = TimeSpan.FromSeconds(5); // For unit testing only
+                            var ioptions = Options.Create(moptions);
+                            var memoryCache = new MonitoredMemoryCache(ioptions);
+                            _memoryCache = memoryCache;
+                        }
+                    }
                 }
 
                 return _memoryCache;
@@ -494,7 +505,25 @@ namespace Voat.Caching
 
         protected abstract void ProtectedPurge();
         #endregion
+        private void AddEvictionTracker(string key, object item, TimeSpan expirationSpan, PostEvictionDelegate callback)
+        {
+            if (expirationSpan > TimeSpan.Zero)
+            {
+                var cache = SystemMemoryCache;
+                var options = new MemoryCacheEntryOptions()
+                {
+                    //AbsoluteExpiration = absoluteExpiration,
+                    AbsoluteExpirationRelativeToNow = expirationSpan
 
+                };
+                var callbackRegistration = new PostEvictionCallbackRegistration();
+                callbackRegistration.EvictionCallback = callback;
+                callbackRegistration.State = key;
+                options.PostEvictionCallbacks.Add(callbackRegistration);
+
+                cache.Set(key, new object(), options);
+            }
+        }
         #region Generic Interfaces
 
         /// <summary>
@@ -562,33 +591,29 @@ namespace Voat.Caching
                                     //Refetch Logic
                                     if (RefetchEnabled && refetchLimit >= 0)
                                     {
-
-                                        //CORE_PORT: Cache has changed
-                                        //ALSO THIS CODE IS DUPLICATED!!! WHO WROTE THIS?
-                                        throw new NotImplementedException("Core Port: Caching with refresh has not been ported to core");
-                                        /*
                                         _meta[cacheKey] = new RefetchEntryFunc<T>(getData) { CacheTime = cacheTime, CurrentCount = 0, MaxCount = refetchLimit };
-                                        
-                                        var cache = SystemMemoryCache;
-                                        
-                                        var policy = new MemoryCacheEntryOptions()
-                                        {
-                                            AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)),
-                                            UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
-                                        };
-                                        
-                                        cache.Set(cacheKey, new object(), policy);
-                                        */
+
+                                        AddEvictionTracker(cacheKey, new object(), cacheTime.Subtract(_refreshOffset), new PostEvictionDelegate(RefetchItem));
+                                        //AddEvictionTracker(cacheKey, new object(), Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)), new PostEvictionDelegate(RefetchItem));
+
+                                        //var cache = SystemMemoryCache;
+                                        //var policy = new MemoryCacheEntryOptions()
+                                        //{
+                                        //    AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)),
+                                        //};
+                                        //var callback = new PostEvictionCallbackRegistration();
+                                        //callback.EvictionCallback = new PostEvictionDelegate(RefetchItem);
+                                        //callback.State = cacheKey;
+                                        //policy.PostEvictionCallbacks.Add(callback);
+
+                                        //cache.Set(cacheKey, new object(), policy);
+
                                     }
                                     else if (RequiresExpirationRemoval)
                                     {
-                                        //CORE_PORT: Cache has changed
-                                        throw new NotImplementedException("Core Port: Caching with refresh has not been ported to core");
-                                        /*
-
-                                        var cache = SystemMemoryCache;
-                                        cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
-                                        */
+                                        AddEvictionTracker(cacheKey, new object(), cacheTime, new PostEvictionDelegate(ExpireItem));
+                                        //AddEvictionTracker(cacheKey, new object(), Repository.CurrentDate.Add(cacheTime), new PostEvictionDelegate(ExpireItem));
+                                        //cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
                                     }
                                 }
                                 return data;
@@ -668,30 +693,27 @@ namespace Voat.Caching
                                     //Refetch Logic
                                     if (RefetchEnabled && refetchLimit >= 0)
                                     {
-                                        //CORE_PORT: Cache has changed
-                                        //ALSO THIS CODE IS DUPLICATED!!! WHO WROTE THIS?
-                                        throw new NotImplementedException("Core Port: Caching with refresh has not been ported to core");
-                                        /*
-                                        //_meta[cacheKey] = new Tuple<Func<object>, TimeSpan, int, int>(getData, cacheTime, refetchLimit, 0);
                                         _meta[cacheKey] = new RefetchEntryTask<T>(getData) { CacheTime = cacheTime, CurrentCount = 0, MaxCount = refetchLimit };
-                                        var cache = System.Runtime.Caching.MemoryCache.Default;
-                                        var policy = new CacheItemPolicy()
-                                        {
-                                            AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)),
-                                            UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
-                                        };
-                                        cache.Set(cacheKey, new object(), policy);
-                                        */
+
+                                        AddEvictionTracker(cacheKey, new object(), cacheTime.Subtract(_refreshOffset), new PostEvictionDelegate(RefetchItem));
+                                        //AddEvictionTracker(cacheKey, new object(), Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)), new PostEvictionDelegate(RefetchItem));
+
+                                        //var cache = System.Runtime.Caching.MemoryCache.Default;
+                                        //var policy = new CacheItemPolicy()
+                                        //{
+                                        //    AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)),
+                                        //    UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
+                                        //};
+                                        //cache.Set(cacheKey, new object(), policy);
+
                                     }
                                     else if (RequiresExpirationRemoval)
                                     {
-                                        //CORE_PORT: Cache has changed
-                                        //ALSO THIS CODE IS DUPLICATED!!! WHO WROTE THIS?
-                                        throw new NotImplementedException("Core Port: Caching with refresh has not been ported to core");
-                                        /*
-                                        var cache = System.Runtime.Caching.MemoryCache.Default;
-                                        cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
-                                        */
+                                        AddEvictionTracker(cacheKey, new object(), cacheTime, new PostEvictionDelegate(ExpireItem));
+                                        //AddEvictionTracker(cacheKey, new object(), Repository.CurrentDate.Add(cacheTime), new PostEvictionDelegate(ExpireItem));
+                                        //var cache = System.Runtime.Caching.MemoryCache.Default;
+                                        //cache.Add(cacheKey, new object(), new CacheItemPolicy() { AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime), RemovedCallback = new CacheEntryRemovedCallback(ExpireItem) });
+
                                     }
                                 }
                                 return data;
