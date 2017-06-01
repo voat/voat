@@ -35,6 +35,8 @@ using System.Threading;
 using Voat.Domain;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace Voat.Utilities
 {
@@ -196,46 +198,39 @@ namespace Voat.Utilities
         }
 
         // check which theme style user selected
-        public static void SetUserStylePreferenceCookie(string theme)
+        public static void SetUserStylePreferenceCookie(HttpContext context, string theme)
         {
-            //CORE_PORT: HttpContext not available 
-            throw new NotImplementedException("Core Port: HttpContext access");
-            /*
-            var cookie = new HttpCookie("theme", theme);
-            cookie.Expires = Repository.CurrentDate.AddDays(14);
-            System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
-            */
+
+            context.Response.Cookies.Append("theme", 
+                theme, 
+                new CookieOptions() {
+                    Expires = Repository.CurrentDate.AddDays(14)
+                });
         }
 
         // check which theme style user selected
-        public static string UserStylePreference()
+        public static string UserStylePreference(HttpContext context)
         {
-            //CORE_PORT: HttpContext not available 
-            throw new NotImplementedException("Core Port: HttpContext access");
-            /*
 
             string theme = "light";
 
-            var tc = System.Web.HttpContext.Current.Request.Cookies["theme"];
-            if (tc != null && !String.IsNullOrEmpty(tc.Value))
+            var tc = context.Request.Cookies["theme"];
+            if (!String.IsNullOrEmpty(tc))
             {
-                theme = tc.Value;
+                theme = tc;
             }
             else if (Thread.CurrentPrincipal.Identity.IsAuthenticated)
             {
 
-                var userData = UserData.GetContextUserData();
+                var userData = UserData.GetContextUserData(context);
                 if (userData != null)
                 {
                     theme = userData.Preferences.NightMode ? "dark" : "light";
                 }
-                SetUserStylePreferenceCookie(theme);
+                SetUserStylePreferenceCookie(context, theme);
             }
             return theme;
-            */
         }
-       
-
         // return user statistics for user profile overview
         public static UserStatsModel UserStatsModel(string userName)
         {

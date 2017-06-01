@@ -129,7 +129,8 @@ namespace Voat.Domain.Query
                 using (var repo = new Repository())
                 {
                     counts = await repo.GetMessageCounts(_ownerName, _ownerType, _type, _state).ConfigureAwait(false);
-                    Context = counts;
+                    //CORE_PORT: Trying to ditch this query cache
+                    //Context = counts;
                 }
             }
             return counts;

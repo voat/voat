@@ -831,20 +831,31 @@ namespace Voat.Data
         public Models.Submission FindSubverseLinkSubmission(string subverse, string url, TimeSpan cutOffTimeSpan)
         {
             var cutOffDate = CurrentDate.Subtract(cutOffTimeSpan);
-            return _db.Submission.FirstOrDefault(s =>
-                s.Url.Equals(url, StringComparison.OrdinalIgnoreCase)
-                && s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
+
+            url = url.ToLower();
+            subverse = subverse.ToLower();
+
+            var submission =  _db.Submission.FirstOrDefault(s =>
+                s.Url.ToLower() == url
+                && s.Subverse.ToLower() == subverse
                 && s.CreationDate > cutOffDate
-                && !s.IsDeleted);
+                && s.IsDeleted == false);
+
+            return submission;
         }
 
         public int FindUserLinkSubmissionCount(string userName, string url, TimeSpan cutOffTimeSpan)
         {
             var cutOffDate = CurrentDate.Subtract(cutOffTimeSpan);
-            return _db.Submission.Count(s =>
-                s.Url.Equals(url, StringComparison.OrdinalIgnoreCase)
-                && s.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+            userName = userName.ToLower();
+            url = url.ToLower();
+
+            var count = _db.Submission.Count(s =>
+                s.Url.ToLower() == url
+                && s.UserName.ToLower() == userName
                 && s.CreationDate > cutOffDate);
+
+            return count; 
         }
 
         private Models.Submission GetSubmissionUnprotected(int submissionID)
@@ -5243,6 +5254,11 @@ namespace Voat.Data
 
         private void DemandAuthentication()
         {
+            //CORE_PORT: Loosing User Thread Context
+            if (User == null)
+            {
+                throw new VoatSecurityException("CorePort: User context not available");
+            }
             if (!User.Identity.IsAuthenticated || String.IsNullOrEmpty(User.Identity.Name))
             {
                 throw new VoatSecurityException("Current process not authenticated");

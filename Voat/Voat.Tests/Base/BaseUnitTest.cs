@@ -41,10 +41,13 @@ namespace Voat.Tests
         public BaseUnitTest()
         {
 #if !NUNIT
-            if (!_initialized)
+            lock (typeof(BaseUnitTest))
             {
-                _initialized = true;
-                ClassInitialize();
+                if (!_initialized)
+                {
+                    _initialized = true;
+                    ClassInitialize();
+                }
             }
             TestInitialize();
 #endif

@@ -22,6 +22,7 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,36 +34,25 @@ namespace Voat.Caching
     //Quick fix for trying to prevent excess task useage
     public static class ContextCache
     {
-        public static T Get<T>(string key)
+        
+        public static T Get<T>(HttpContext context, string key)
         {
-            //CORE_PORT: HttpContext not available 
-            throw new NotImplementedException("Core Port: HttpContext access");
-            /*
-
-            var context = System.Web.HttpContext.Current;
             if (context != null)
             {
-                if (context.Items.Contains(key))
+                if (context.Items.ContainsKey(key))
                 {
                     return context.Items[key].Convert<T>();
                 }
             }
             return default(T);
-            */
         }
 
-        public static void Set<T>(string key, T value)
+        public static void Set<T>(HttpContext context, string key, T value)
         {
-            //CORE_PORT: HttpContext not available 
-            throw new NotImplementedException("Core Port: HttpContext access");
-            /*
-
-            var context = System.Web.HttpContext.Current;
             if (context != null)
             {
                 context.Items[key] = value;
             }
-            */
         }
     }
 }

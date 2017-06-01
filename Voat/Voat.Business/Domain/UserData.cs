@@ -22,6 +22,7 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -87,7 +88,7 @@ namespace Voat.Domain
             }
         }
 
-        public static UserData GetContextUserData()
+        public static UserData GetContextUserData(HttpContext context)
         {
             UserData userData = null;
 
@@ -95,13 +96,13 @@ namespace Voat.Domain
             if (identity != null && identity.IsAuthenticated && !String.IsNullOrEmpty(identity.Name))
             {
                 var key = $"UserData:{identity.Name}";
-                userData = ContextCache.Get<UserData>(key);
+                userData = ContextCache.Get<UserData>(context, key);
                 if (userData == null)
                 {
                     EventLogger.Instance.Log(LogType.Debug, "ContextCache", $"Not found: {key}");
                     identity = System.Threading.Thread.CurrentPrincipal.Identity;
                     userData = new UserData(identity.Name);
-                    ContextCache.Set(key, userData);
+                    ContextCache.Set(context, key, userData);
                 }
             }
 
