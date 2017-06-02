@@ -28,6 +28,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Domain.Models;
+using Voat.Utilities;
 
 namespace Voat.Domain.Query
 {
@@ -61,7 +62,7 @@ namespace Voat.Domain.Query
             }
 
             var taskArray = tasks.ToArray();
-            await Task.WhenAll(taskArray).ConfigureAwait(false);
+            await Task.WhenAll(taskArray).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
             foreach (var task in taskArray)
             {
@@ -128,7 +129,7 @@ namespace Voat.Domain.Query
             {
                 using (var repo = new Repository())
                 {
-                    counts = await repo.GetMessageCounts(_ownerName, _ownerType, _type, _state).ConfigureAwait(false);
+                    counts = await repo.GetMessageCounts(_ownerName, _ownerType, _type, _state).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                     //CORE_PORT: Trying to ditch this query cache
                     //Context = counts;
                 }

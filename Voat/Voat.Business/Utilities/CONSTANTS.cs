@@ -64,6 +64,9 @@ namespace Voat.Utilities
                 return String.Format(@"((?<notify>-)?(?<prefix>@|/u/)(?'user'{0}))", CONSTANTS.USER_NAME_REGEX);
             }
         }
+
+        public const bool AWAIT_CAPTURE_CONTEXT = true;
+
     }
     //this is the start of localization for voat, going to start throwing messages in this class for later conversion
     public static class STRINGS

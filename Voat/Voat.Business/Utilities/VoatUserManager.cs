@@ -54,9 +54,6 @@ namespace Voat
 
             return mgr;
 
-
-
-            //throw new NotImplementedException("Core Port: UserManager not implemented");
         }
 
         public IdentityResult Create(VoatUser user, string password)
@@ -64,16 +61,19 @@ namespace Voat
             var task = Task.Run(() => CreateAsync(user, password));
             task.Wait();
             return task.Result;
-            //throw new NotImplementedException("Core Port: Create not implemented");
         }
 
         public VoatUser FindByName(string name)
         {
-            throw new NotImplementedException("Core Port: FindByName not implemented");
+            var task = Task.Run(() => FindByNameAsync(name));
+            task.Wait();
+            return task.Result;
         }
         public VoatUser Find(string userID, string password)
         {
-            throw new NotImplementedException("Core Port: Find not implemented");
+            var task = Task.Run(() => FindByLoginAsync(userID, password));
+            task.Wait();
+            return task.Result;
         }
     }
 }

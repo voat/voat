@@ -200,7 +200,7 @@ namespace Voat.Tests.CommandTests
             var d = new DeleteSubmissionCommand(r.Response.ID);
             var r2 = await d.Execute();
 
-            Assert.IsTrue(r.Success, r.Message);
+            VoatAssert.IsValid(r2);
 
             //verify
             using (var db = new Voat.Data.Repository())

@@ -68,7 +68,7 @@ namespace Voat.Utilities.Components
                             //var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
 
                             var q = new QuerySubmission(comment.SubmissionID.Value);
-                            var submission = await q.ExecuteAsync().ConfigureAwait(false);
+                            var submission = await q.ExecuteAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                             //var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
                             var message = new Domain.Models.Message();
@@ -179,7 +179,7 @@ namespace Voat.Utilities.Components
                                     {
                                         //var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
                                         //var q = new QuerySubmission(comment.SubmissionID.Value);
-                                        //var submission = await q.ExecuteAsync().ConfigureAwait(false);
+                                        //var submission = await q.ExecuteAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                                         if (submission != null)
                                         {
@@ -227,7 +227,7 @@ namespace Voat.Utilities.Components
                 // comment reply is sent to a root comment which has no parent id, trigger post reply notification
                 //var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
                 //var q = new QuerySubmission(comment.SubmissionID.Value);
-                //var submission = await q.ExecuteAsync().ConfigureAwait(false);
+                //var submission = await q.ExecuteAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 
                 if (submission != null)
                 {

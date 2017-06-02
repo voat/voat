@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Domain.Models;
+using Voat.Utilities;
 
 namespace Voat.Domain.Command
 {
@@ -68,7 +69,7 @@ namespace Voat.Domain.Command
                 {
                     return db.DeleteSubmission(_submissionID, _reason);
                 }
-            }).ConfigureAwait(false);
+            }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             return Tuple.Create(CommandResponse.Successful(), result);
         }
 

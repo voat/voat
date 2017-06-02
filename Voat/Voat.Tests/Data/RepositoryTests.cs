@@ -32,6 +32,7 @@ using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
+using Voat.Utilities;
 
 namespace Voat.Tests.Repository
 {
@@ -167,7 +168,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                var s = await db.GetSubmissionsDapper(new DomainReference(DomainType.Subverse, "unit"), new SearchOptions()).ConfigureAwait(false);
+                var s = await db.GetSubmissionsDapper(new DomainReference(DomainType.Subverse, "unit"), new SearchOptions()).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 Assert.IsTrue(s.Any());
             }
         }
@@ -179,7 +180,7 @@ namespace Voat.Tests.Repository
         {
             using (var db = new Voat.Data.Repository())
             {
-                var anon_sub = await db.GetSubmissionsDapper(new DomainReference(DomainType.Subverse, "anon"), SearchOptions.Default).ConfigureAwait(false);
+                var anon_sub = await db.GetSubmissionsDapper(new DomainReference(DomainType.Subverse, "anon"), SearchOptions.Default).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 var first = anon_sub.OrderBy(x => x.CreationDate).First();
                 Assert.IsNotNull(first, "no anon submissions found");
                 Assert.AreEqual("First Anon Post", first.Title);

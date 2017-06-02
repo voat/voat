@@ -729,9 +729,9 @@ namespace Voat.Data
                 };
 
                 _db.Subverse.Add(subverse);
-                await _db.SaveChangesAsync().ConfigureAwait(false);
+                await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
-                await SubscribeUser(new DomainReference(DomainType.Subverse, subverse.Name), SubscriptionAction.Subscribe).ConfigureAwait(false);
+                await SubscribeUser(new DomainReference(DomainType.Subverse, subverse.Name), SubscriptionAction.Subscribe).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
 
                 // register user as the owner of the newly created subverse
@@ -742,7 +742,7 @@ namespace Voat.Data
                     Power = 1
                 };
                 _db.SubverseModerator.Add(tmpSubverseAdmin);
-                await _db.SaveChangesAsync().ConfigureAwait(false);
+                await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
 
                 // go to newly created Subverse
@@ -755,7 +755,7 @@ namespace Voat.Data
         }
         public async Task<Domain.Models.Submission> GetSticky(string subverse)
         {
-            var x = await _db.StickiedSubmission.FirstOrDefaultAsync(s => s.Subverse == subverse).ConfigureAwait(false);
+            var x = await _db.StickiedSubmission.FirstOrDefaultAsync(s => s.Subverse == subverse).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             if (x != null)
             {
                 var submission = GetSubmission(x.SubmissionID);
@@ -913,7 +913,7 @@ namespace Voat.Data
             query = ApplySubmissionSearch(options, query);
 
             //execute query
-            var results = (await query.ToListAsync().ConfigureAwait(false)).Select(Selectors.SecureSubmission);
+            var results = (await query.ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT)).Select(Selectors.SecureSubmission);
 
             return results;
         }
@@ -1498,7 +1498,7 @@ namespace Voat.Data
         //    query = ApplySubmissionSearch(options, query);
 
         //    //execute query
-        //    var data = await query.ToListAsync().ConfigureAwait(false);
+        //    var data = await query.ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
         //    var results = data.Select(Selectors.SecureSubmission).ToList();
 
@@ -1578,7 +1578,7 @@ namespace Voat.Data
                 if (subverseObject.IsThumbnailEnabled)
                 {
                     // try to generate and assign a thumbnail to submission model
-                    newSubmission.Thumbnail = await ThumbGenerator.GenerateThumbFromWebpageUrl(userSubmission.Url).ConfigureAwait(false);
+                    newSubmission.Thumbnail = await ThumbGenerator.GenerateThumbFromWebpageUrl(userSubmission.Url).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 }
             }
 
@@ -1593,7 +1593,7 @@ namespace Voat.Data
             });
             _db.Submission.Add(newSubmission);
 
-            await _db.SaveChangesAsync().ConfigureAwait(false);
+            await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
             //This sends notifications by parsing content
             if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
@@ -1668,7 +1668,7 @@ namespace Voat.Data
 
             submission.LastEditDate = CurrentDate;
 
-            await _db.SaveChangesAsync().ConfigureAwait(false);
+            await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
             return CommandResponse.FromStatus(Selectors.SecureSubmission(submission), Status.Success, "");
         }
@@ -1798,18 +1798,18 @@ namespace Voat.Data
                     body += $"SELECT @SessionID, s.\"Subverse\", @Date FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} WHERE \"ID\" = @SubmissionID ";
                     body += $"AND NOT EXISTS ({exists})";
 
-                    await _db.Connection.ExecuteAsync(body, new { SessionID = hash, SubmissionID = submissionID, Date = CurrentDate }, commandType: System.Data.CommandType.Text).ConfigureAwait(false);
+                    await _db.Connection.ExecuteAsync(body, new { SessionID = hash, SubmissionID = submissionID, Date = CurrentDate }, commandType: System.Data.CommandType.Text).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
 
                     exists = $"SELECT COUNT(*) FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID";
-                    var count = await _db.Connection.ExecuteScalarAsync<int>(exists, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                    var count = await _db.Connection.ExecuteScalarAsync<int>(exists, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                     if (count == 0)
                     {
                         var sql = $"INSERT INTO {SqlFormatter.Table("ViewStatistic")} (\"SubmissionID\", \"ViewerID\") VALUES (@SubmissionID, @SessionID) ";
-                        await _db.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                        await _db.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                         sql = $"UPDATE {SqlFormatter.Table("Submission")} SET \"Views\" = (\"Views\" + 1) WHERE \"ID\" = @SubmissionID ";
-                        await _db.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                        await _db.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                     }
 
                     //sql = $"IF NOT EXISTS (SELECT * FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID) ";
@@ -1818,7 +1818,7 @@ namespace Voat.Data
                     //sql += $"UPDATE {SqlFormatter.Table("Submission")} SET \"Views\" = (\"Views\" + 1) WHERE \"ID\" = @SubmissionID ";
                     //sql += $"END";
 
-                    //await _db.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(false);
+                    //await _db.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
 
                 }
@@ -1879,7 +1879,7 @@ namespace Voat.Data
                          });
 
             query = ApplyCommentSearch(options, query);
-            var results = await query.ToListAsync().ConfigureAwait(false);
+            var results = await query.ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
             return results;
         }
@@ -2101,12 +2101,12 @@ namespace Voat.Data
                         comment.IsDeleted = true;
                         comment.Content = UserDeletedContentMessage();
                         comment.FormattedContent = Formatting.FormatMessage(comment.Content);
-                        await _db.SaveChangesAsync().ConfigureAwait(false);
+                        await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                         //User Deletions remove UpVoted CCP - This is one way ccp farmers accomplish their acts
                         if (comment.UpCount > comment.DownCount)
                         {
-                            await ResetVotes(ContentType.Comment, comment.ID, Vote.Up, Vote.None).ConfigureAwait(false);
+                            await ResetVotes(ContentType.Comment, comment.ID, Vote.Up, Vote.None).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                         }
                     }
 
@@ -2134,7 +2134,7 @@ namespace Voat.Data
                                         comment.Content
                         };
                         var cmd = new SendMessageCommand(message, isAnonymized: comment.IsAnonymized);
-                        await cmd.Execute().ConfigureAwait(false);
+                        await cmd.Execute().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                         comment.IsDeleted = true;
 
@@ -2149,7 +2149,7 @@ namespace Voat.Data
 
                         _db.CommentRemovalLog.Add(removalLog);
 
-                        await _db.SaveChangesAsync().ConfigureAwait(false);
+                        await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                     }
                     else
                     {
@@ -2199,7 +2199,7 @@ namespace Voat.Data
                     var formattedComment = Voat.Utilities.Formatting.FormatMessage(comment.Content);
                     comment.FormattedContent = formattedComment;
 
-                    await _db.SaveChangesAsync().ConfigureAwait(false);
+                    await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 }
                 else
                 {
@@ -2222,7 +2222,7 @@ namespace Voat.Data
                 throw new VoatNotFoundException("Can not find parent comment with id {0}", parentCommentID.ToString());
             }
             var submissionid = c.SubmissionID;
-            return await PostComment(submissionid.Value, parentCommentID, comment).ConfigureAwait(false);
+            return await PostComment(submissionid.Value, parentCommentID, comment).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
         }
 
         public async Task<CommandResponse<Domain.Models.Comment>> PostComment(int submissionID, int? parentCommentID, string commentContent)
@@ -2265,14 +2265,14 @@ namespace Voat.Data
                 c.FormattedContent = formattedComment;
 
                 _db.Comment.Add(c);
-                await _db.SaveChangesAsync().ConfigureAwait(false);
+                await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                 if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
                 {
                     ContentProcessor.Instance.Process(c.Content, ProcessingStage.InboundPostSave, c);
                 }
 
-                await NotificationManager.SendCommentNotification(submission, c).ConfigureAwait(false);
+                await NotificationManager.SendCommentNotification(submission, c).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                 return MapRuleOutCome(outcome, DomainMaps.Map(Selectors.SecureComment(c), submission.Subverse));
             }
@@ -2372,7 +2372,7 @@ namespace Voat.Data
                 apiClient.RedirectUrl = redirectUrl;
                 apiClient.AppDescription = description;
                 apiClient.AppName = name;
-                await _db.SaveChangesAsync().ConfigureAwait(false);
+                await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             }
 
             return apiClient;
@@ -2497,10 +2497,10 @@ namespace Voat.Data
             switch (type)
             {
                 case ContentType.Comment:
-                    savedIDs = await _db.CommentSaveTracker.Where(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).Select(x => x.CommentID).ToListAsync().ConfigureAwait(false);
+                    savedIDs = await _db.CommentSaveTracker.Where(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).Select(x => x.CommentID).ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                     break;
                 case ContentType.Submission:
-                    savedIDs = await _db.SubmissionSaveTracker.Where(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).Select(x => x.SubmissionID).ToListAsync().ConfigureAwait(false);
+                    savedIDs = await _db.SubmissionSaveTracker.Where(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).Select(x => x.SubmissionID).ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                     break;
             }
             return savedIDs;
@@ -2537,7 +2537,7 @@ namespace Voat.Data
                         _db.CommentSaveTracker.Remove(c);
                         isSaved = false;
                     }
-                    await _db.SaveChangesAsync().ConfigureAwait(false);
+                    await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                     break;
 
@@ -2555,7 +2555,7 @@ namespace Voat.Data
                         _db.SubmissionSaveTracker.Remove(s);
                         isSaved = false;
                     }
-                    await _db.SaveChangesAsync().ConfigureAwait(false);
+                    await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                     break;
             }
@@ -2755,7 +2755,7 @@ namespace Voat.Data
                         message.Content = messageContent;
                         message.FormattedContent = Formatting.FormatMessage(messageContent);
                         message.IsAnonymized = m.IsAnonymized;
-                        commandResponse = await SendMessage(message).ConfigureAwait(false);
+                        commandResponse = await SendMessage(message).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                         break;
                 }
@@ -2767,15 +2767,15 @@ namespace Voat.Data
         [Authorize]
         public async Task<IEnumerable<CommandResponse<Domain.Models.Message>>> SendMessages(params Domain.Models.Message[] messages)
         {
-            return await SendMessages(messages.AsEnumerable()).ConfigureAwait(false);
+            return await SendMessages(messages.AsEnumerable()).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
         }
 
         [Authorize]
         public async Task<IEnumerable<CommandResponse<Domain.Models.Message>>> SendMessages(IEnumerable<Domain.Models.Message> messages)
         {
-            var tasks = messages.Select(x => Task.Run(async () => { return await SendMessage(x).ConfigureAwait(false); }));
+            var tasks = messages.Select(x => Task.Run(async () => { return await SendMessage(x).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT); }));
 
-            var result = await Task.WhenAll(tasks).ConfigureAwait(false);
+            var result = await Task.WhenAll(tasks).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
             return result;
         }
@@ -2829,7 +2829,7 @@ namespace Voat.Data
                     db.Message.AddRange(mappedDataMessages);
                     var addedMessages = db.Message;
 
-                    await db.SaveChangesAsync().ConfigureAwait(false);
+                    await db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                     //send notices async
                     Task.Run(() => EventNotification.Instance.SendMessageNotice(
@@ -2947,7 +2947,7 @@ namespace Voat.Data
                 }
             }
 
-            var savedMessages = await SendMessages(messages).ConfigureAwait(false);
+            var savedMessages = await SendMessages(messages).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             var firstSent = savedMessages.FirstOrDefault();
             if (firstSent == null)
             {
@@ -3213,7 +3213,7 @@ namespace Voat.Data
             //    if (message != null)
             //    {
             //        _db.Messages.Remove(message);
-            //        await _db.SaveChangesAsync().ConfigureAwait(false);
+            //        await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             //    }
             //}
             //else
@@ -3221,8 +3221,8 @@ namespace Voat.Data
             //    using (var db = new voatEntities())
             //    {
             //        var q = GetMessageQueryBase(db, ownerName, ownerType, type, MessageState.All);
-            //        await q.ForEachAsync(x => db.Messages.Remove(x)).ConfigureAwait(false);
-            //        await db.SaveChangesAsync().ConfigureAwait(false);
+            //        await q.ForEachAsync(x => db.Messages.Remove(x)).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+            //        await db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             //    }
             //}
 
@@ -3347,7 +3347,7 @@ namespace Voat.Data
         [Authorize]
         public async Task<IEnumerable<Domain.Models.Message>> GetMessages(MessageTypeFlag type, MessageState state, bool markAsRead = true, SearchOptions options = null)
         {
-            return await GetMessages(User.Identity.Name, IdentityType.User, type, state, markAsRead, options).ConfigureAwait(false);
+            return await GetMessages(User.Identity.Name, IdentityType.User, type, state, markAsRead, options).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
         }
 
         [Authorize]
@@ -3423,8 +3423,8 @@ namespace Voat.Data
 
                     await _db.Connection.ExecuteAsync(update.ToString(), update.Parameters);
 
-                    //await q.Where(x => x.ReadDate == null).ForEachAsync<Models.Message>(x => x.ReadDate = CurrentDate).ConfigureAwait(false);
-                    //await db.SaveChangesAsync().ConfigureAwait(false);
+                    //await q.Where(x => x.ReadDate == null).ForEachAsync<Models.Message>(x => x.ReadDate = CurrentDate).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                    //await db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                     Task.Run(() => EventNotification.Instance.SendMessageNotice(
                        UserDefinition.Format(ownerName, ownerType),
@@ -3553,7 +3553,7 @@ namespace Voat.Data
             }
             //THIS COULD BE A SOURCE OF BLOCKING
             var q = new QueryUserRecord(userName, CachePolicy.None); //Turn off cache retrieval for this
-            var userRecord = await q.ExecuteAsync().ConfigureAwait(false);
+            var userRecord = await q.ExecuteAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
             if (userRecord == null)
             {
@@ -3574,7 +3574,7 @@ namespace Voat.Data
                                     Task<Score>.Factory.StartNew(() => UserContributionPoints(userName, ContentType.Comment, null, false)),
             };
 
-            var userPreferences = await GetUserPreferences(userName).ConfigureAwait(false);
+            var userPreferences = await GetUserPreferences(userName).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
             //var pq = new QueryUserPreferences(userName);
             //var userPreferences = await pq.ExecuteAsync();
@@ -3584,7 +3584,7 @@ namespace Voat.Data
             userInfo.ProfilePicture = VoatPathHelper.AvatarPath(userName, userPreferences.Avatar, true, true, !String.IsNullOrEmpty(userPreferences.Avatar));
 
             //Task.WaitAll(tasks);
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+            await Task.WhenAll(tasks).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
             userInfo.CommentPoints = tasks[0].Result;
             userInfo.SubmissionPoints = tasks[1].Result;
@@ -3620,7 +3620,7 @@ namespace Voat.Data
                                         Title = b.Title,
                                         Graphic = b.Graphic,
                                     }
-                              ).ToListAsync().ConfigureAwait(false);
+                              ).ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
             userInfo.Badges = userBadges;
 
@@ -3634,7 +3634,7 @@ namespace Voat.Data
             {
                 var query = _db.UserPreference.Where(x => (x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)));
 
-                result = await query.FirstOrDefaultAsync().ConfigureAwait(false);
+                result = await query.FirstOrDefaultAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             }
 
             if (result == null)
@@ -4023,10 +4023,10 @@ namespace Voat.Data
                     //    }
                     //}
 
-                    //await _db.SaveChangesAsync().ConfigureAwait(false);
+                    //await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                     //if (countChanged)
                     //{
-                    //    await UpdateSubverseSubscriberCount(domainReference, action).ConfigureAwait(false);
+                    //    await UpdateSubverseSubscriberCount(domainReference, action).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                     //}
 
                     break;
@@ -4085,10 +4085,10 @@ namespace Voat.Data
                     //    }
                     //}
 
-                    await _db.SaveChangesAsync().ConfigureAwait(false);
+                    await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                     if (subscribeAction != SubscriptionAction.Toggle)
                     {
-                        await UpdateSubverseSubscriberCount(domainReference, subscribeAction).ConfigureAwait(false);
+                        await UpdateSubverseSubscriberCount(domainReference, subscribeAction).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                     }
                     response.Status = Status.Success;
 
@@ -4218,13 +4218,13 @@ namespace Voat.Data
                     subverseBan.CreationDate = Repository.CurrentDate;
                     subverseBan.Reason = reason;
                     _db.SubverseBan.Add(subverseBan);
-                    await _db.SaveChangesAsync().ConfigureAwait(false);
+                    await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 }
                 else
                 {
                     status = false; //removed ban
                     _db.SubverseBan.Remove(existingBan);
-                    await _db.SaveChangesAsync().ConfigureAwait(false);
+                    await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 }
             }
 
@@ -4271,7 +4271,7 @@ namespace Voat.Data
                                 UserName = b.UserName
                             });
                 data = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
-                var results = await data.ToListAsync().ConfigureAwait(false);
+                var results = await data.ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 return results;
             }
         }
@@ -4287,7 +4287,7 @@ namespace Voat.Data
                             select b).Include(x => x.Submission);
 
                 var data2 = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
-                var results = await data2.ToListAsync().ConfigureAwait(false);
+                var results = await data2.ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 return results;
             }
         }
@@ -4304,7 +4304,7 @@ namespace Voat.Data
                             select b).Include(x => x.Comment).Include(x => x.Comment.Submission);
 
                 var data_ordered = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
-                var results = await data_ordered.ToListAsync().ConfigureAwait(false);
+                var results = await data_ordered.ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                 //TODO: Move to DomainMaps
                 var mapToDomain = new Func<Data.Models.CommentRemovalLog, Domain.Models.CommentRemovalLog>(d =>
@@ -4358,7 +4358,7 @@ namespace Voat.Data
             var originUserName = User.Identity.Name;
 
             // get moderator name for selected subverse
-            var subModerator = await _db.SubverseModerator.FindAsync(subverseModeratorRecordID).ConfigureAwait(false);
+            var subModerator = await _db.SubverseModerator.FindAsync(subverseModeratorRecordID).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             if (subModerator == null)
             {
                 return new CommandResponse<RemoveModeratorResponse>(response, Status.Invalid, "Can not find record");
@@ -4453,7 +4453,7 @@ namespace Voat.Data
             {
                 // execute removal
                 _db.SubverseModerator.Remove(subModerator);
-                await _db.SaveChangesAsync().ConfigureAwait(false);
+                await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                 ////clear mod cache
                 //CacheHandler.Instance.Remove(CachingKey.SubverseModerators(subverse.Name));
@@ -5218,7 +5218,7 @@ namespace Voat.Data
         {
             get
             {
-                return System.Threading.Thread.CurrentPrincipal;
+                return UserIdentity.Principal;
             }
         }
 
@@ -5537,7 +5537,7 @@ namespace Voat.Data
 
                         //// UNDONE: keep this updated as new features are added (delete sets etc)
                         //// username will stay permanently reserved to prevent someone else from registering it and impersonating
-                        //await _db.SaveChangesAsync().ConfigureAwait(false);
+                        //await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                         try
                         {
@@ -5556,7 +5556,7 @@ namespace Voat.Data
                             //if (existing == null)
                             //{
                             //    _db.UserBadges.Add(new Models.UserBadge() { BadgeID = badgeID, CreationDate = CurrentDate, UserName = userName });
-                            //    await _db.SaveChangesAsync().ConfigureAwait(false);
+                            //    await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                             //}
                         }
                         catch (Exception ex)
@@ -5585,7 +5585,7 @@ namespace Voat.Data
                             userAccount.Email = null;
                             //await userManager.SetEmailAsync(userID, null);
                         }
-                        await userManager.UpdateAsync(userAccount).ConfigureAwait(false);
+                        await userManager.UpdateAsync(userAccount).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                         //Password
                         string randomPassword = "";
@@ -5593,7 +5593,7 @@ namespace Voat.Data
                         {
                             randomPassword = Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(Path.GetRandomFileName())));
                         }
-                        await userManager.ChangePasswordAsync(userAccount, options.CurrentPassword, randomPassword).ConfigureAwait(false);
+                        await userManager.ChangePasswordAsync(userAccount, options.CurrentPassword, randomPassword).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                         //log this to ensure delete options working as expected
                         var logEntry = new Logging.LogInformation();

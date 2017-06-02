@@ -37,10 +37,7 @@ namespace Voat.Domain.Query
 
         public Query()
         {
-            //if (System.Threading.Thread.CurrentPrincipal.Identity.IsAuthenticated)
-            //{
-            //    _userName = System.Threading.Thread.CurrentPrincipal.Identity.Name;
-            //}
+            _userName = UserIdentity.UserName;
         }
 
         /// <summary>

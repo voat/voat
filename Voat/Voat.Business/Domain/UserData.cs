@@ -92,15 +92,15 @@ namespace Voat.Domain
         {
             UserData userData = null;
 
-            var identity = System.Threading.Thread.CurrentPrincipal.Identity;
-            if (identity != null && identity.IsAuthenticated && !String.IsNullOrEmpty(identity.Name))
+            
+            if (UserIdentity.IsAuthenticated)
             {
+                var identity = UserIdentity.Identity;
                 var key = $"UserData:{identity.Name}";
                 userData = ContextCache.Get<UserData>(context, key);
                 if (userData == null)
                 {
                     EventLogger.Instance.Log(LogType.Debug, "ContextCache", $"Not found: {key}");
-                    identity = System.Threading.Thread.CurrentPrincipal.Identity;
                     userData = new UserData(identity.Name);
                     ContextCache.Set(context, key, userData);
                 }

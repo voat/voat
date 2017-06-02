@@ -68,9 +68,9 @@ namespace Voat.Utilities.Components
                 string userName = null;
 
                 //log user info if possible
-                if (Thread.CurrentPrincipal != null && Thread.CurrentPrincipal.Identity != null && Thread.CurrentPrincipal.Identity.IsAuthenticated)
+                if (UserIdentity.IsAuthenticated)
                 {
-                    userName = Thread.CurrentPrincipal.Identity.Name;
+                    userName = UserIdentity.UserName;
                 }
 
                 //Execute this without blocking

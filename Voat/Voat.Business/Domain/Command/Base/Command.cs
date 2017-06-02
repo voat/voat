@@ -104,10 +104,7 @@ namespace Voat.Domain.Command
 
         public Command()
         {
-            if (System.Threading.Thread.CurrentPrincipal.Identity.IsAuthenticated)
-            {
-                _userName = System.Threading.Thread.CurrentPrincipal.Identity.Name;
-            }
+            _userName = UserIdentity.UserName;
         }
 
         public string UserName

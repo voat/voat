@@ -36,6 +36,7 @@ using Voat.Caching;
 using Dapper;
 using Voat.Configuration;
 using Microsoft.AspNetCore.Authorization;
+using Voat.Utilities;
 
 namespace Voat.Data
 {
@@ -68,7 +69,7 @@ namespace Voat.Data
                 return CommandResponse.FromStatus<bool?>(null, Status.Denied, "Subverse cannot be found");
             }
 
-            return await SetSubverseListChange(set, sub, action).ConfigureAwait(false);
+            return await SetSubverseListChange(set, sub, action).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
         }
         //[Authorize]
@@ -93,7 +94,7 @@ namespace Voat.Data
         //    set.Description = newSetProperties.Description;
         //    set.IsPublic = newSetProperties.IsPublic;
 
-        //    var records = await _db.SaveChangesAsync().ConfigureAwait(false);
+        //    var records = await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
         //    return CommandResponse.FromStatus<bool?>(records == 1, Status.Success);
         //}
@@ -166,7 +167,7 @@ namespace Voat.Data
                     actionTaken = SubscriptionAction.Unsubscribe;
                 }
 
-                await db.SaveChangesAsync().ConfigureAwait(false);
+                await db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                 //If Subscribe is to a front page, update subscriber count
                 if (set.Type == (int)SetType.Front && !String.IsNullOrEmpty(set.UserName))
@@ -184,7 +185,7 @@ namespace Voat.Data
             var set = GetSet(name, userName);
             if (set != null)
             {
-                return await GetSetListDescription(set.ID, page).ConfigureAwait(false);
+                return await GetSetListDescription(set.ID, page).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             }
             return Enumerable.Empty<SubverseSubscriptionDetail>();
         }
@@ -320,7 +321,7 @@ namespace Voat.Data
                 existingSet.Description = set.Description;
                 existingSet.IsPublic = set.IsPublic;
 
-                await _db.SaveChangesAsync().ConfigureAwait(false);
+                await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                 return CommandResponse.FromStatus<Set>(existingSet.Map(), Status.Success);
             }
@@ -370,10 +371,10 @@ namespace Voat.Data
                     };
 
                     _db.SubverseSet.Add(newSet);
-                    await _db.SaveChangesAsync().ConfigureAwait(false);
+                    await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                     _db.SubverseSetSubscription.Add(new SubverseSetSubscription() { SubverseSetID = newSet.ID, UserName = User.Identity.Name, CreationDate = CurrentDate });
-                    await _db.SaveChangesAsync().ConfigureAwait(false);
+                    await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                     return CommandResponse.Successful(newSet.Map());
                 }

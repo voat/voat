@@ -36,7 +36,7 @@ namespace Voat.Rules
 
         public VoatRuleContext()
         {
-            PropertyBag.UserName = System.Threading.Thread.CurrentPrincipal.Identity.Name;
+            PropertyBag.UserName = UserIdentity.UserName;
         }
 
         public UserData UserData

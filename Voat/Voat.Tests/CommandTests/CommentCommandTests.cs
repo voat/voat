@@ -56,8 +56,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateCommentCommand(2, null, "This is my data");
             var c = cmd.Execute().Result;
 
-            Assert.IsTrue(c.Success);
-            Assert.IsNotNull(c.Response);
+            VoatAssert.IsValid(c);
             Assert.AreNotEqual(0, c.Response.ID);
             Assert.AreEqual(true, c.Response.IsAnonymized);
             Assert.AreNotEqual(cmd.Content, c.Response.FormattedContent);
@@ -94,8 +93,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateCommentCommand(1, null, "This is my data");
             var c = cmd.Execute().Result;
 
-            Assert.IsTrue(c.Success);
-            Assert.IsNotNull(c.Response);
+            VoatAssert.IsValid(c);
             Assert.AreNotEqual(0, c.Response.ID);
 
             //verify in db
@@ -120,7 +118,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateCommentCommand(1, null, "          ");
             var c = cmd.Execute().Result;
 
-            Assert.IsFalse(c.Success, c.Message);
+            VoatAssert.IsValid(c, Status.Denied);
             Assert.AreEqual("Empty comments not allowed", c.Message);
         }
 
@@ -135,7 +133,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateCommentCommand(1, null, "This is a unit test and I like it.");
             var c = cmd.Execute().Result;
 
-            Assert.IsTrue(c.Success);
+            VoatAssert.IsValid(c);
 
             var editCmd = new EditCommentCommand(c.Response.ID, "            ");
             var editResult = editCmd.Execute().Result;
@@ -155,13 +153,13 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateCommentCommand(1, null, "This is a unit test and I like it.");
             var c = cmd.Execute().Result;
 
-            Assert.IsTrue(c.Success, c.Message);
+            VoatAssert.IsValid(c);
 
             TestHelper.SetPrincipal("TestUser12");
             var editCmd = new EditCommentCommand(c.Response.ID, "All your comment are belong to us!");
             var editResult = editCmd.Execute().Result;
 
-            Assert.IsFalse(editResult.Success, editResult.Message);
+            VoatAssert.IsValid(editResult, Status.Denied);
             Assert.AreEqual("User doesn't have permissions to perform requested action", editResult.Message);
         }
 
@@ -179,7 +177,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateCommentCommand(1, null, "[Check out this killer website](http://fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!");
             var c = cmd.Execute().Result;
 
-            Assert.IsFalse(c.Success);
+            VoatAssert.IsValid(c, Status.Denied);
             Assert.AreEqual("Comment contains banned domains", c.Message);
 
         }
@@ -196,7 +194,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateCommentCommand(1, null, "[Check out this killer website](//fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!");
             var c = cmd.Execute().Result;
 
-            Assert.IsFalse(c.Success);
+            VoatAssert.IsValid(c, Status.Denied);
             Assert.AreEqual("Comment contains banned domains", c.Message);
 
         }
@@ -212,14 +210,11 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateCommentCommand(1, null, "This is a unit test and I like it.");
             var c = cmd.Execute().Result;
 
-            Assert.IsTrue(c.Success);
+            VoatAssert.IsValid(c);
 
             var editCmd = new EditCommentCommand(c.Response.ID, "[Check out this killer website](http://fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!");
             var editResult = editCmd.Execute().Result;
-
-            Assert.IsFalse(editResult.Success, "Edit command with banned domain returned true");
-            Assert.AreEqual(Status.Denied, editResult.Status, "expecting denied status");
-
+            VoatAssert.IsValid(c, Status.Denied, "Expecting Denied Status");
             Assert.AreEqual("Comment contains banned domains", editResult.Message);
         }
 
@@ -237,8 +232,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateCommentCommand(1, null, "This is my data with banned user");
             var c = cmd.Execute().Result;
 
-            Assert.IsFalse(c.Success, "User should be banned from commenting");
-            Assert.AreEqual(Status.Denied, c.Status);
+            VoatAssert.IsValid(c, Status.Denied, "User should be banned from commenting");
         }
 
         [TestMethod]
@@ -253,8 +247,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateCommentCommand(1, null, "This is my data");
             var c = cmd.Execute().Result;
 
-            Assert.IsFalse(c.Success, "User should be banned from commenting");
-            Assert.AreEqual(Status.Denied, c.Status);
+            VoatAssert.IsValid(c, Status.Denied, "User should be banned from commenting");
         }
 
         [TestMethod]
@@ -269,15 +262,13 @@ namespace Voat.Tests.CommandTests
             var cmdcreate = new CreateCommentCommand(1, null, "This is my data too you know");
             var c = cmdcreate.Execute().Result;
 
-            Assert.IsNotNull(c, "response null");
-            Assert.IsTrue(c.Success, c.Message);
-            Assert.IsNotNull(c.Response, "Response payload null");
+            VoatAssert.IsValid(c);
 
             int id = c.Response.ID;
 
             var cmd = new DeleteCommentCommand(id);
             var r = cmd.Execute().Result;
-            Assert.IsTrue(r.Success);
+            VoatAssert.IsValid(r);
 
             //verify
             using (var db = new VoatDataContext())
@@ -304,9 +295,7 @@ namespace Voat.Tests.CommandTests
             var cmdcreate = new CreateCommentCommand(1, null, content);
             var c = cmdcreate.Execute().Result;
 
-            Assert.IsNotNull(c, "response null");
-            Assert.IsTrue(c.Success, c.Message);
-            Assert.IsNotNull(c.Response, "Response payload null");
+            VoatAssert.IsValid(c);
 
             int id = c.Response.ID;
 
@@ -314,7 +303,7 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal("unit");
             var cmd = new DeleteCommentCommand(id, "This is spam");
             var r = cmd.Execute().Result;
-            Assert.IsTrue(r.Success, r.Message);
+            VoatAssert.IsValid(r);
 
             //verify
             using (var db = new VoatDataContext())
@@ -337,8 +326,9 @@ namespace Voat.Tests.CommandTests
             string content = "This is data [howdy](http://www.howdy.com)";
             TestHelper.SetPrincipal("unit");
             var cmd = new EditCommentCommand(1, content);
-            var r = cmd.Execute().Result;
-            Assert.IsTrue(r.Success);
+            var r = await cmd.Execute();
+
+            VoatAssert.IsValid(r);
             Assert.AreEqual(content, r.Response.Content);
             Assert.AreEqual(Formatting.FormatMessage(content), r.Response.FormattedContent);
 
@@ -424,19 +414,8 @@ namespace Voat.Tests.CommandTests
             var body = Guid.NewGuid().ToString();
             var cmd = new CreateCommentCommand(1, null, body);
             var c = await cmd.Execute();
-            Assert.IsNotNull(c, "response null");
-            if (!c.Success)
-            {
-                if (c.Exception != null)
-                {
-                    Assert.Fail(c.Exception.ToString());
-                }
-                else
-                {
-                    Assert.Fail(c.Message);
-                }
-            }
-            Assert.AreEqual(Status.Success, c.Status);
+
+            VoatAssert.IsValid(c);
 
             //check for comment reply entry
             using (var db = new VoatDataContext())

@@ -25,6 +25,7 @@
 using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Domain.Models;
+using Voat.Utilities;
 
 namespace Voat.Domain.Command
 {
@@ -47,7 +48,7 @@ namespace Voat.Domain.Command
         {
             using (var repo = new Repository())
             {
-                return await repo.SendMessage(_message, _forceSend, _ensureUserExists, _isAnonymized).ConfigureAwait(false);
+                return await repo.SendMessage(_message, _forceSend, _ensureUserExists, _isAnonymized).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             }
         }
     }
@@ -67,7 +68,7 @@ namespace Voat.Domain.Command
         {
             using (var repo = new Repository())
             {
-                return await repo.SendMessageReply(_messageID, _message).ConfigureAwait(false);
+                return await repo.SendMessageReply(_messageID, _message).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             }
         }
     }

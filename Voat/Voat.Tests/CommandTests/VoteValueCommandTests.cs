@@ -115,6 +115,8 @@ namespace Voat.Tests.CommandTests
                 TestHelper.SetPrincipal(userName);
                 var voteSubmissionCommand = new SubmissionVoteCommand(id, voteStatus, Guid.NewGuid().ToString());
                 var voteSubmissionResponse = await voteSubmissionCommand.Execute();
+
+                VoatAssert.IsValid(voteSubmissionResponse);
                 Assert.IsNotNull(voteSubmissionResponse, "Expecting non-null submission vote command");
 
                 //verify in db
@@ -132,7 +134,8 @@ namespace Voat.Tests.CommandTests
                 //Create comment 
                 var cmdComment = new CreateCommentCommand(submission.ID, null, $"VerifyVoteStatus Test Submission in {subverse} - {Guid.NewGuid().ToString()}");
                 var responseComment = await cmdComment.Execute();
-                Assert.AreEqual(Status.Success, responseComment.Status, responseComment.Message);
+                VoatAssert.IsValid(responseComment);
+
                 id = responseComment.Response.ID;
 
                 TestHelper.SetPrincipal(userName);

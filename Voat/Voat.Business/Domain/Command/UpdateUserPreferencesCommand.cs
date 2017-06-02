@@ -25,6 +25,7 @@
 using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
+using Voat.Utilities;
 
 namespace Voat.Domain.Command
 {
@@ -45,7 +46,7 @@ namespace Voat.Domain.Command
                 {
                     repo.SaveUserPrefernces(_preferences);
                 }
-            }).ConfigureAwait(false);
+            }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             return CommandResponse.Successful();
         }
 

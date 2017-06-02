@@ -219,7 +219,7 @@ namespace Voat.Utilities
             {
                 theme = tc;
             }
-            else if (Thread.CurrentPrincipal.Identity.IsAuthenticated)
+            else if (UserIdentity.IsAuthenticated)
             {
 
                 var userData = UserData.GetContextUserData(context);
@@ -523,7 +523,7 @@ namespace Voat.Utilities
         }
         public static bool? IsSaved(Domain.Models.ContentType type, int id)
         {
-            var identity = System.Threading.Thread.CurrentPrincipal.Identity;
+            var identity = UserIdentity.Principal.Identity;
             if (identity.IsAuthenticated)
             {
                 string userName = identity.Name;

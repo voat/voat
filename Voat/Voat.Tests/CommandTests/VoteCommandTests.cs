@@ -52,8 +52,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CommentVoteCommand(1, -1, IpHash.CreateHash("127.0.0.1"));
 
             var c = cmd.Execute().Result;
-            Assert.IsTrue(c.Success, c.Message);
-            Assert.IsNotNull(c.Response);
+            VoatAssert.IsValid(c);
 
             //verify in db
             using (var db = new Voat.Data.Repository())
@@ -76,9 +75,7 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal("UnitTestUser45");
             var cmd = new SubmissionVoteCommand(1, 1, IpHash.CreateHash("1.1.1.1")); 
             var c = cmd.Execute().Result;
-            Assert.IsNotNull(c, "Response is null");
-            Assert.IsTrue(c.Success, c.Message);
-            Assert.IsNotNull(c.Response);
+            VoatAssert.IsValid(c);
 
             TestHelper.SetPrincipal("UnitTestUser46");
             cmd = new SubmissionVoteCommand(1, 1, IpHash.CreateHash("1.1.1.1"));
@@ -129,9 +126,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CommentVoteCommand(1, 1, IpHash.CreateHash("127.0.0.2"));
 
             var c = cmd.Execute().Result;
-            Assert.IsNotNull(c, "Response is null");
-            Assert.IsTrue(c.Success, c.Message);
-            Assert.IsNotNull(c.Response);
+            VoatAssert.IsValid(c);
 
             //verify in db
             using (var db = new Voat.Data.Repository())
@@ -170,8 +165,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new SubmissionVoteCommand(newSubmission.ID, -1, IpHash.CreateHash("127.0.0.100"));
 
             var c = cmd.Execute().Result;
-            Assert.IsTrue(c.Success, c.Message);
-            Assert.IsNotNull(c.Response, "Expecting payload");
+            VoatAssert.IsValid(c);
 
             //verify in db
             using (var db = new Voat.Data.Repository())
@@ -220,9 +214,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new SubmissionVoteCommand(newSubmission.ID, 1, IpHash.CreateHash("127.0.0.2"));
 
             var c = cmd.Execute().Result;
-            Assert.IsNotNull(c, "Response is null");
-            Assert.IsTrue(c.Success, c.Message);
-            Assert.IsNotNull(c.Response);
+            VoatAssert.IsValid(c);
 
             //verify in db
             using (var db = new Voat.Data.Repository())

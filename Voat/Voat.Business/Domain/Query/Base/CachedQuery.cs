@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Configuration;
 using Voat.Logging;
+using Voat.Utilities;
 using Voat.Utilities.Components;
 
 namespace Voat.Domain.Query
@@ -117,7 +118,7 @@ namespace Voat.Domain.Query
                     //if (!CacheHandler.Instance.Exists(FullCacheKey))
                     //{
                     //    CacheHit = false;
-                    //    result = await GetData().ConfigureAwait(false);
+                    //    result = await GetData().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                     //    if (!result.IsDefault())
                     //    {
                     //        CacheHandler.Instance.Replace(FullCacheKey, result, policy.Duration);
@@ -136,7 +137,7 @@ namespace Voat.Domain.Query
             else
             {
                 CacheHit = true;
-                result = await GetFreshData().ConfigureAwait(false);
+                result = await GetFreshData().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             }
             return result;
         }
@@ -153,7 +154,7 @@ namespace Voat.Domain.Query
             //BLOCK: This needs fixed
             CacheHit = false;
             Debug.WriteLine("{0}(loading)", this.GetType().Name);
-            T data = await GetData().ConfigureAwait(false);
+            T data = await GetData().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             return data;
         }
     }

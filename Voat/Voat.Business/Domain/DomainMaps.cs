@@ -424,11 +424,11 @@ namespace Voat.Domain
         }
         public static void HydrateUserData(IEnumerable<Domain.Models.Submission> submissions)
         {
-            if (Thread.CurrentPrincipal.Identity.IsAuthenticated && (submissions != null && submissions.Any()))
+            if (UserIdentity.IsAuthenticated && (submissions != null && submissions.Any()))
             {
                 using (var repo = new Repository())
                 {
-                    var votes = repo.UserVoteStatus(Thread.CurrentPrincipal.Identity.Name, ContentType.Submission, submissions.Select(x => x.ID).ToArray());
+                    var votes = repo.UserVoteStatus(UserIdentity.UserName, ContentType.Submission, submissions.Select(x => x.ID).ToArray());
                     foreach (var s in submissions)
                     {
                         var voteValue = votes.FirstOrDefault(x => x.ID == s.ID);
@@ -440,11 +440,11 @@ namespace Voat.Domain
         }
         public static void HydrateUserData(Domain.Models.Submission submission)
         {
-            if (Thread.CurrentPrincipal.Identity.IsAuthenticated && (submission != null))
+            if (UserIdentity.IsAuthenticated && (submission != null))
             {
                 using (var repo = new Repository())
                 {
-                    var vote = repo.UserVoteStatus(Thread.CurrentPrincipal.Identity.Name, ContentType.Submission, submission.ID);
+                    var vote = repo.UserVoteStatus(UserIdentity.UserName, ContentType.Submission, submission.ID);
                     submission.Vote = vote;
                     //saves are cached
                 }
@@ -452,9 +452,9 @@ namespace Voat.Domain
         }
         public static void HydrateUserData(IEnumerable<Domain.Models.Comment> comments)
         {
-            if (Thread.CurrentPrincipal.Identity.IsAuthenticated && (comments != null && comments.Any()))
+            if (UserIdentity.IsAuthenticated && (comments != null && comments.Any()))
             {
-                string userName = Thread.CurrentPrincipal.Identity.Name;
+                string userName = UserIdentity.UserName;
                 if (!String.IsNullOrEmpty(userName))
                 {
                     using (var repo = new Repository())
@@ -480,7 +480,7 @@ namespace Voat.Domain
         {
             if (comment != null)
             {
-                string userName = Thread.CurrentPrincipal.Identity.IsAuthenticated ? Thread.CurrentPrincipal.Identity.Name : null;
+                string userName = UserIdentity.UserName;
                 if (!String.IsNullOrEmpty(userName))
                 {
                     comment.IsOwner = comment.UserName == userName;

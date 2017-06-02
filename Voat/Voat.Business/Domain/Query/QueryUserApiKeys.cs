@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Data.Models;
+using Voat.Utilities;
 
 namespace Voat.Domain.Query
 {
@@ -45,10 +46,10 @@ namespace Voat.Domain.Query
                     if (key.ApiThrottlePolicyID.HasValue)
                     {
                         var q = new QueryApiThrottlePolicy(key.ApiThrottlePolicyID.Value);
-                        policy = await q.ExecuteAsync().ConfigureAwait(false);
+                        policy = await q.ExecuteAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                     }
                     var p = new QueryApiPermissionSet(key.ApiPermissionPolicyID);
-                    perms = await p.ExecuteAsync().ConfigureAwait(false);
+                    perms = await p.ExecuteAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                     var tuple = Tuple.Create(key, policy, perms);
                     output.Add(tuple);

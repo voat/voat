@@ -33,6 +33,7 @@ using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Data;
 using Voat.Logging;
+using Voat.Utilities;
 using Voat.Utilities.Components;
 
 namespace Voat.Caching
@@ -683,7 +684,7 @@ namespace Voat.Caching
                         {
                             try
                             {
-                                var data = await getData().ConfigureAwait(false);
+                                var data = await getData().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                                 if (data != null || data == null && !_ignoreNulls)
                                 {
                                     EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = $"Inserting Cache ({cacheKey})", Origin = Configuration.Settings.Origin.ToString() });

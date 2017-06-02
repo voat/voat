@@ -42,9 +42,9 @@ namespace Voat.Domain.Models
         {
             get
             {
-                if (string.IsNullOrEmpty(_sender) && System.Threading.Thread.CurrentPrincipal.Identity.IsAuthenticated)
+                if (string.IsNullOrEmpty(_sender) && UserIdentity.IsAuthenticated)
                 {
-                    return System.Threading.Thread.CurrentPrincipal.Identity.Name;
+                    return UserIdentity.UserName;
                 }
                 return _sender;
             }

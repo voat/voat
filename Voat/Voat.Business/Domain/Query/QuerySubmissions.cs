@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Domain.Models;
+using Voat.Utilities;
 
 namespace Voat.Domain.Query
 {
@@ -149,7 +150,7 @@ namespace Voat.Domain.Query
         {
             using (var db = new Repository())
             {
-                var result = await db.GetSubmissionsDapper(this._domainReference, this._options).ConfigureAwait(false);
+                var result = await db.GetSubmissionsDapper(this._domainReference, this._options).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 return result.Map();
             }
         }
