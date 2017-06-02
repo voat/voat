@@ -33,20 +33,26 @@ using System.Threading.Tasks;
 
 namespace Voat.Tests
 {
+    //Let me correct the record: I do not like what follows.
     [TestClass]
     public class BaseUnitTest
     {
-        private static bool _initialized = false;
 
+        private static List<Type> _initList = new List<Type>();
+        private static object _lock = new object();
         public BaseUnitTest()
         {
 #if !NUNIT
-            lock (typeof(BaseUnitTest))
+            var type = this.GetType();
+            if (!_initList.Contains(type))
             {
-                if (!_initialized)
+                lock (_lock)
                 {
-                    _initialized = true;
-                    ClassInitialize();
+                    if (!_initList.Contains(type))
+                    {
+                        ClassInitialize();
+                        _initList.Add(type);
+                    }
                 }
             }
             TestInitialize();

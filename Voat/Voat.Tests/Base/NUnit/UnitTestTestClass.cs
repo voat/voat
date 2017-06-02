@@ -32,9 +32,49 @@ using System.Threading.Tasks;
 namespace Voat.Tests.Base.NUnit
 {
 
-
     [TestClass]
-    public partial class UnitTestTestClass : BaseUnitTest
+    public partial class UnitTestTestClass2 : BaseUnitTest
+    {
+        private static int testInitCount = 0;
+        private static int classInitCount = 0;
+        private int preInitCount = 0;
+        public override void TestInitialize()
+        {
+            preInitCount = testInitCount;
+            testInitCount += 1;
+        }
+
+        public override void ClassInitialize()
+        {
+            classInitCount += 1;
+        }
+
+        [TestMethod]
+        [TestCategory("UnitTest.Framework")]
+        public void Method1_2()
+        {
+            Assert.AreEqual(1, classInitCount);
+            Assert.AreEqual(this.preInitCount + 1, testInitCount);
+        }
+
+        [TestMethod]
+        [TestCategory("UnitTest.Framework")]
+        public void Method2_2()
+        {
+            Assert.AreEqual(1, classInitCount);
+            Assert.AreEqual(this.preInitCount + 1, testInitCount);
+        }
+
+        [TestMethod]
+        [TestCategory("UnitTest.Framework")]
+        public void Method3_2()
+        {
+            Assert.AreEqual(1, classInitCount);
+            Assert.AreEqual(this.preInitCount + 1, testInitCount);
+        }
+    }
+    [TestClass]
+    public partial class UnitTestTestClass1 : BaseUnitTest
     {
         private static int testInitCount = 0;
         private static int classInitCount = 0;
@@ -51,6 +91,7 @@ namespace Voat.Tests.Base.NUnit
         }
         
         [TestMethod]
+        [TestCategory("UnitTest.Framework")]
         public void Method1()
         {
             Assert.AreEqual(1, classInitCount);
@@ -58,6 +99,7 @@ namespace Voat.Tests.Base.NUnit
         }
 
         [TestMethod]
+        [TestCategory("UnitTest.Framework")]
         public void Method2()
         {
             Assert.AreEqual(1, classInitCount);
@@ -65,6 +107,7 @@ namespace Voat.Tests.Base.NUnit
         }
 
         [TestMethod]
+        [TestCategory("UnitTest.Framework")]
         public void Method3()
         {
             Assert.AreEqual(1, classInitCount);

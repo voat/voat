@@ -129,9 +129,9 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
             {
                 throw response.Exception;
             }
-            else if (response.Status != status)
+            else 
             {
-                Assert.Fail(message?? response.Message);
+                Assert.AreEqual(status, response.Status, message?? response.Message);
             }
         }
     } 
