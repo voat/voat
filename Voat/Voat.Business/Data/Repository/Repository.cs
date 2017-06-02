@@ -5394,7 +5394,7 @@ namespace Voat.Data
 
                 using (var userManager = VoatUserManager.Create())
                 {
-                    var userAccount = await userManager.FindByLoginAsync(userName, options.CurrentPassword);
+                    var userAccount = await userManager.FindAsync(userName, options.CurrentPassword);
                     if (userAccount != null)
                     {
 
@@ -5574,10 +5574,8 @@ namespace Voat.Data
                             var endLockOutDate = CurrentDate.AddDays(3 * 30);
 
                             userAccount.Email = options.RecoveryEmailAddress;
+                            userAccount.LockoutEnd = endLockOutDate;
                             userAccount.LockoutEnabled = true;
-
-                            //CORE_PORT: Not available
-                            //userAccount.LockoutEndDateUtc = endLockOutDate;
 
                         }
                         else

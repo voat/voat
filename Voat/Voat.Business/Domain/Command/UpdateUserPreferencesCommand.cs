@@ -40,13 +40,10 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse> CacheExecute()
         {
-            await Task.Run(() =>
+            using (var repo = new Repository())
             {
-                using (var repo = new Repository())
-                {
-                    repo.SaveUserPrefernces(_preferences);
-                }
-            }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                repo.SaveUserPrefernces(_preferences);
+            }
             return CommandResponse.Successful();
         }
 

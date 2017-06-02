@@ -380,7 +380,7 @@ namespace Voat.Tests.CommandTests
                     {
                         //Verify recovery info
                         Assert.AreEqual(userAccount.Email, options.RecoveryEmailAddress);
-                        Assert.IsTrue(userAccount.LockoutEnabled, "Lockout should be enabled");
+                        Assert.IsNotNull(userAccount.LockoutEnd, "Lockout should be enabled");
                         //CORE_PORT: Not available
                         throw new NotImplementedException("Core Port not implemented");
                         /*
@@ -392,7 +392,7 @@ namespace Voat.Tests.CommandTests
                     else
                     {
                         Assert.AreEqual(userAccount.Email, null);
-                        Assert.IsFalse(userAccount.LockoutEnabled, "Lockout should be enabled");
+                        Assert.IsNull(userAccount.LockoutEnd, "Lockout should not be enabled");
                     }
 
                   

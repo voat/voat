@@ -82,23 +82,25 @@ namespace Voat
             task.Wait();
             return task.Result;
         }
+
         public VoatUser Find(string userName, string password)
         {
-            var task = Task.Run(async () => {
-
-                var user = await FindByNameAsync(userName);
-                if (user != null)
+            var t = Task.Run(() => FindAsync(userName, password));
+            t.Wait();
+            return t.Result;
+        }
+        public async Task<VoatUser> FindAsync(string userName, string password)
+        {
+            var user = await FindByNameAsync(userName);
+            if (user != null)
+            {
+                var result = await CheckPasswordAsync(user, password);
+                if (result)
                 {
-                    var result = await this.CheckPasswordAsync(user, password);
-                    if (result)
-                    {
-                        return user;
-                    }
+                    return user;
                 }
-                return null;
-            });
-            task.Wait();
-            return task.Result;
+            }
+            return null;
         }
     }
 }
