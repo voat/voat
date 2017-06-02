@@ -54,10 +54,8 @@ namespace Voat.Tests.CommandTests
             Assert.AreNotEqual(prefs.Bio, bio, "Bio returned unexpected data");
 
             var cmd = new UpdateUserPreferencesCommand(new Domain.Models.UserPreferenceUpdate() { Bio = bio });
-            var result = await cmd.Execute();
-
-            Assert.IsNotNull(result, "UpdatePref command returned null");
-            Assert.AreEqual(true, result.Success, "UpdatePref command returned non success");
+            var r = await cmd.Execute();
+            VoatAssert.IsValid(r);
 
             q = new QueryUserPreferences(userName);
             prefs = await q.ExecuteAsync();
@@ -79,10 +77,10 @@ namespace Voat.Tests.CommandTests
             using (var repo = new Voat.Data.Repository())
             {
                 var r = await repo.Save(Domain.Models.ContentType.Submission, 1);
-                Assert.AreEqual(Status.Success, r.Status);
+                VoatAssert.IsValid(r);
 
                 r = await repo.Save(Domain.Models.ContentType.Comment, 1);
-                Assert.AreEqual(Status.Success, r.Status);
+                VoatAssert.IsValid(r);
 
             }
 
@@ -109,25 +107,23 @@ namespace Voat.Tests.CommandTests
 
             var cmd = new SaveCommand(Domain.Models.ContentType.Submission, 2);
             var response = await cmd.Execute();
-            Assert.AreEqual(Status.Success, response.Status);
+            VoatAssert.IsValid(response);
 
 
             cmd = new SaveCommand(Domain.Models.ContentType.Comment, 2);
             response = await cmd.Execute();
-            Assert.AreEqual(Status.Success, response.Status);
-
+            VoatAssert.IsValid(response);
 
             Assert.AreEqual(true, UserHelper.IsSaved(Domain.Models.ContentType.Submission, 2));
             Assert.AreEqual(true, UserHelper.IsSaved(Domain.Models.ContentType.Comment, 2));
 
             cmd = new SaveCommand(Domain.Models.ContentType.Submission, 1);
             response = await cmd.Execute();
-            Assert.AreEqual(Status.Success, response.Status);
-
+            VoatAssert.IsValid(response);
 
             cmd = new SaveCommand(Domain.Models.ContentType.Comment, 1);
             response = await cmd.Execute();
-            Assert.AreEqual(Status.Success, response.Status);
+            VoatAssert.IsValid(response);
 
             Assert.AreEqual(false, UserHelper.IsSaved(Domain.Models.ContentType.Submission, 1));
             Assert.AreEqual(false, UserHelper.IsSaved(Domain.Models.ContentType.Comment, 1));
@@ -234,7 +230,7 @@ namespace Voat.Tests.CommandTests
             //Anon it all 
             cmd = new DeleteAccountCommand(options);
             result = await cmd.Execute();
-            Assert.IsTrue(result.Success, result.Message);
+            VoatAssert.IsValid(result);
             VerifyDelete(options);
 
 
@@ -272,7 +268,8 @@ namespace Voat.Tests.CommandTests
             //Delete
             cmd = new DeleteAccountCommand(options);
             result = await cmd.Execute();
-            Assert.IsTrue(result.Success, result.Message);
+            VoatAssert.IsValid(result);
+
             VerifyDelete(options);
 
 
@@ -284,7 +281,9 @@ namespace Voat.Tests.CommandTests
 
             //Need to ensure delete clears preferences
             var prefUpdate = new UpdateUserPreferencesCommand(new Domain.Models.UserPreferenceUpdate() { Bio = "My Bio" });
-            await prefUpdate.Execute();
+            var p = await prefUpdate.Execute();
+            VoatAssert.IsValid(p);
+
             using (var db = new VoatDataContext())
             {
                 var prefs = db.UserPreference.FirstOrDefault(x => x.UserName == userName);
@@ -324,7 +323,7 @@ namespace Voat.Tests.CommandTests
             //Delete
             cmd = new DeleteAccountCommand(options);
             result = await cmd.Execute();
-            Assert.IsTrue(result.Success, result.Message);
+            VoatAssert.IsValid(result);
             VerifyDelete(options);
 
         }

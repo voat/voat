@@ -107,7 +107,7 @@ namespace Voat.Data
                 throw new ArgumentOutOfRangeException("vote", "Valid values for vote are only: -1, 0, 1");
             }
 
-            string userName = User.Identity.Name;
+            string userName = UserIdentity.UserName;
             var ruleContext = new VoatRuleContext();
             ruleContext.PropertyBag.AddressHash = addressHash;
             RuleOutcome outcome = null;
@@ -317,7 +317,7 @@ namespace Voat.Data
                 throw new ArgumentOutOfRangeException("vote", "Valid values for vote are only: -1, 0, 1");
             }
 
-            string userName = User.Identity.Name;
+            string userName = UserIdentity.UserName;
             var ruleContext = new VoatRuleContext();
             ruleContext.PropertyBag.AddressHash = addressHash;
             RuleOutcome outcome = null;
@@ -724,7 +724,7 @@ namespace Voat.Data
                     IsPrivate = false,
                     MinCCPForDownvote = 0,
                     IsAdminDisabled = false,
-                    CreatedBy = User.Identity.Name,
+                    CreatedBy = UserIdentity.UserName,
                     SubscriberCount = 0
                 };
 
@@ -738,7 +738,7 @@ namespace Voat.Data
                 var tmpSubverseAdmin = new Models.SubverseModerator
                 {
                     Subverse = name,
-                    UserName = User.Identity.Name,
+                    UserName = UserIdentity.UserName,
                     Power = 1
                 };
                 _db.SubverseModerator.Add(tmpSubverseAdmin);
@@ -800,7 +800,7 @@ namespace Voat.Data
                         where !(from bu in _db.BannedUser select bu.UserName).Contains(submission.UserName)
                         where !subverse.IsAdminDisabled.Value
 
-                        //where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
+                        //where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(UserIdentity.UserName)
                         orderby submission.Views descending
                         select submission).Take(5).ToList();
             return data.AsEnumerable();
@@ -988,9 +988,9 @@ namespace Voat.Data
             string userName = null;
 
             UserData userData = null;
-            if (User.Identity.IsAuthenticated)
+            if (UserIdentity.IsAuthenticated)
             {
-                userData = new UserData(User.Identity.Name);
+                userData = new UserData(UserIdentity.UserName);
                 userName = userData.UserName;
             }
 
@@ -1025,7 +1025,7 @@ namespace Voat.Data
 
                             //query = (from x in _db.Submissions
                             //         join subscribed in _db.SubverseSubscriptions on x.Subverse equals subscribed.Subverse
-                            //         where subscribed.UserName == User.Identity.Name
+                            //         where subscribed.UserName == UserIdentity.UserName
                             //         select x);
 
                             break;
@@ -1076,7 +1076,7 @@ namespace Voat.Data
                             //where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(userName)
                             //select message).OrderByDescending(s => s.CreationDate);
 
-                            nsfw = (User.Identity.IsAuthenticated ? userData.Preferences.EnableAdultContent : false);
+                            nsfw = (UserIdentity.IsAuthenticated ? userData.Preferences.EnableAdultContent : false);
 
                             //v/all has certain conditions
                             //1. Only subs that have a MinCCP of zero
@@ -1148,7 +1148,7 @@ namespace Voat.Data
 
 
 
-                    if (User.Identity.IsAuthenticated)
+                    if (UserIdentity.IsAuthenticated)
                     {
                         if (filterBlockedSubverses)
                         {
@@ -1401,7 +1401,7 @@ namespace Voat.Data
         //    UserData userData = null;
         //    if (User.Identity.IsAuthenticated)
         //    {
-        //        userData = new UserData(User.Identity.Name);
+        //        userData = new UserData(UserIdentity.UserName);
         //    }
 
         //    switch (subverse.ToLower())
@@ -1412,7 +1412,7 @@ namespace Voat.Data
         //            {
         //                query = (from x in _db.Submissions
         //                         join subscribed in _db.SubverseSubscriptions on x.Subverse equals subscribed.Subverse
-        //                         where subscribed.UserName == User.Identity.Name
+        //                         where subscribed.UserName == UserIdentity.UserName
         //                         select x);
         //            }
         //            else
@@ -1482,12 +1482,12 @@ namespace Voat.Data
         //    {
         //        //filter blocked subs
         //        query = query.Where(s => !_db.UserBlockedSubverses.Where(b =>
-        //            b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+        //            b.UserName.Equals(UserIdentity.UserName, StringComparison.OrdinalIgnoreCase)
         //            && b.Subverse.Equals(s.Subverse, StringComparison.OrdinalIgnoreCase)).Any());
 
         //        //filter blocked users (Currently commented out do to a collation issue)
         //        query = query.Where(s => !_db.UserBlockedUsers.Where(b =>
-        //            b.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+        //            b.UserName.Equals(UserIdentity.UserName, StringComparison.OrdinalIgnoreCase)
         //            && s.UserName.Equals(b.BlockUser, StringComparison.OrdinalIgnoreCase)
         //            ).Any());
 
@@ -1529,7 +1529,7 @@ namespace Voat.Data
             //Save submission
             Models.Submission newSubmission = new Models.Submission();
             newSubmission.UpCount = 1; //https://voat.co/v/PreviewAPI/comments/877596
-            newSubmission.UserName = User.Identity.Name;
+            newSubmission.UserName = UserIdentity.UserName;
             newSubmission.CreationDate = CurrentDate;
             newSubmission.Subverse = subverseObject.Name;
 
@@ -1630,7 +1630,7 @@ namespace Voat.Data
                 throw new VoatValidationException("Deleted submissions cannot be edited");
             }
 
-            if (submission.UserName != User.Identity.Name)
+            if (submission.UserName != UserIdentity.UserName)
             {
                 throw new VoatSecurityException(String.Format("Submission can not be edited by account"));
             }
@@ -1685,7 +1685,7 @@ namespace Voat.Data
             if (submission != null && !submission.IsDeleted)
             {
                 // delete submission if delete request is issued by submission author
-                if (submission.UserName == User.Identity.Name)
+                if (submission.UserName == UserIdentity.UserName)
                 {
                     submission.IsDeleted = true;
 
@@ -1710,7 +1710,7 @@ namespace Voat.Data
                 }
 
                 // delete submission if delete request is issued by subverse moderator
-                else if (ModeratorPermission.HasPermission(User.Identity.Name, submission.Subverse, ModeratorAction.DeletePosts))
+                else if (ModeratorPermission.HasPermission(UserIdentity.UserName, submission.Subverse, ModeratorAction.DeletePosts))
                 {
                     if (String.IsNullOrEmpty(reason))
                     {
@@ -1726,7 +1726,7 @@ namespace Voat.Data
                     var removalLog = new SubmissionRemovalLog
                     {
                         SubmissionID = submission.ID,
-                        Moderator = User.Identity.Name,
+                        Moderator = UserIdentity.UserName,
                         Reason = reason,
                         CreationDate = Repository.CurrentDate
                     };
@@ -1741,7 +1741,7 @@ namespace Voat.Data
                         Recipient = submission.UserName,
                         Subject = $"Submission {contentPath} deleted",
                         Message = "Your submission [" + contentPath + "](" + contentPath + ") has been deleted by: " +
-                                    "@" + User.Identity.Name + " on " + Repository.CurrentDate + Environment.NewLine + Environment.NewLine +
+                                    "@" + UserIdentity.UserName + " on " + Repository.CurrentDate + Environment.NewLine + Environment.NewLine +
                                     "Reason given: " + reason + Environment.NewLine +
                                     "#Original Submission" + Environment.NewLine +
                                     "##" + submission.Title + Environment.NewLine +
@@ -2095,7 +2095,7 @@ namespace Voat.Data
                     var subverseName = submission.Subverse;
 
                     // delete comment if the comment author is currently logged in user
-                    if (comment.UserName == User.Identity.Name)
+                    if (comment.UserName == UserIdentity.UserName)
                     {
                         //User Deletion
                         comment.IsDeleted = true;
@@ -2111,7 +2111,7 @@ namespace Voat.Data
                     }
 
                     // delete comment if delete request is issued by subverse moderator
-                    else if (ModeratorPermission.HasPermission(User.Identity.Name, submission.Subverse, ModeratorAction.DeleteComments))
+                    else if (ModeratorPermission.HasPermission(UserIdentity.UserName, submission.Subverse, ModeratorAction.DeleteComments))
                     {
                         if (String.IsNullOrEmpty(reason))
                         {
@@ -2128,7 +2128,7 @@ namespace Voat.Data
                             Recipient = comment.UserName,
                             Subject = $"Comment {contentPath} deleted",
                             Message = "Your comment [" + contentPath + "](" + contentPath + ") has been deleted by: " +
-                                        "@" + User.Identity.Name + " on: " + Repository.CurrentDate + Environment.NewLine + Environment.NewLine +
+                                        "@" + UserIdentity.UserName + " on: " + Repository.CurrentDate + Environment.NewLine + Environment.NewLine +
                                         "Reason given: " + reason + Environment.NewLine +
                                         "#Original Comment" + Environment.NewLine +
                                         comment.Content
@@ -2142,7 +2142,7 @@ namespace Voat.Data
                         var removalLog = new Data.Models.CommentRemovalLog
                         {
                             CommentID = comment.ID,
-                            Moderator = User.Identity.Name,
+                            Moderator = UserIdentity.UserName,
                             Reason = reason,
                             CreationDate = Repository.CurrentDate
                         };
@@ -2171,7 +2171,7 @@ namespace Voat.Data
 
             if (comment != null)
             {
-                if (comment.UserName != User.Identity.Name)
+                if (comment.UserName != UserIdentity.UserName)
                 {
                     return CommandResponse.FromStatus((Data.Models.Comment)null, Status.Denied, "User doesn't have permissions to perform requested action");
                 }
@@ -2249,7 +2249,7 @@ namespace Voat.Data
                 //Save comment
                 var c = new Models.Comment();
                 c.CreationDate = Repository.CurrentDate;
-                c.UserName = User.Identity.Name;
+                c.UserName = UserIdentity.UserName;
                 c.ParentID = (parentCommentID > 0 ? parentCommentID : (int?)null);
                 c.SubmissionID = submissionID;
                 c.UpCount = 0;
@@ -2363,7 +2363,7 @@ namespace Voat.Data
 
             //Only allow users to edit ApiKeys if they IsActive == 1 and Current User owns it.
             var apiClient = (from x in _db.ApiClient
-                             where x.PublicKey == apiKey && x.UserName == User.Identity.Name && x.IsActive == true
+                             where x.PublicKey == apiKey && x.UserName == UserIdentity.UserName && x.IsActive == true
                              select x).FirstOrDefault();
 
             if (apiClient != null)
@@ -2390,7 +2390,7 @@ namespace Voat.Data
             c.RedirectUrl = redirectUrl;
             c.AppDescription = description;
             c.AppName = name;
-            c.UserName = User.Identity.Name;
+            c.UserName = UserIdentity.UserName;
             c.CreationDate = CurrentDate;
 
             var generatePublicKey = new Func<string>(() =>
@@ -2429,7 +2429,7 @@ namespace Voat.Data
 
             //Only allow users to delete ApiKeys if they IsActive == 1
             var apiKey = (from x in _db.ApiClient
-                          where x.ID == id && x.UserName == User.Identity.Name && x.IsActive == true
+                          where x.ID == id && x.UserName == UserIdentity.UserName && x.IsActive == true
                           select x).FirstOrDefault();
 
             if (apiKey != null)
@@ -2517,7 +2517,7 @@ namespace Voat.Data
         {
             //TODO: These save trackers should be stored in a single table in SQL. Two tables for such similar information isn't ideal... mmkay. Makes querying nasty.
             //TODO: There is a potential issue with this code. There is no validation that the ID belongs to a comment or a submission. This is nearly impossible to determine anyways but it's still an issue.
-            string currentUserName = User.Identity.Name;
+            string currentUserName = UserIdentity.UserName;
             bool isSaved = false;
 
             switch (type)
@@ -2587,13 +2587,13 @@ namespace Voat.Data
             DemandAuthentication();
 
             var p = (from x in _db.UserPreference
-                     where x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)
+                     where x.UserName.Equals(UserIdentity.UserName, StringComparison.OrdinalIgnoreCase)
                      select x).FirstOrDefault();
 
             if (p == null)
             {
                 p = new Data.Models.UserPreference();
-                p.UserName = User.Identity.Name;
+                p.UserName = UserIdentity.UserName;
                 SetDefaultUserPreferences(p);
                 _db.UserPreference.Add(p);
             }
@@ -2674,7 +2674,7 @@ namespace Voat.Data
         {
             DemandAuthentication();
 
-            var userName = User.Identity.Name;
+            var userName = UserIdentity.UserName;
 
             var m = (from x in _db.Message
                      where x.ID == id
@@ -2729,7 +2729,7 @@ namespace Voat.Data
 
                         if (m.RecipientType == (int)IdentityType.Subverse)
                         {
-                            if (!ModeratorPermission.HasPermission(User.Identity.Name, m.Recipient, ModeratorAction.SendMail))
+                            if (!ModeratorPermission.HasPermission(UserIdentity.UserName, m.Recipient, ModeratorAction.SendMail))
                             {
                                 commandResponse = new CommandResponse<Domain.Models.Message>(null, Status.NotProcessed, "Message integrity violated");
                             }
@@ -2799,7 +2799,7 @@ namespace Voat.Data
 
                     //increased subject line
                     int max = 500;
-                    message.CreatedBy = User.Identity.Name;
+                    message.CreatedBy = UserIdentity.UserName;
                     message.Title = message.Title.SubstringMax(max);
                     message.CreationDate = CurrentDate;
                     message.FormattedContent = Formatting.FormatMessage(message.Content);
@@ -2863,7 +2863,7 @@ namespace Voat.Data
             if (sender.Type == IdentityType.Subverse)
             {
                 var subverse = sender.Name;
-                if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, ModeratorAction.SendMail))
+                if (!ModeratorPermission.HasPermission(UserIdentity.UserName, subverse, ModeratorAction.SendMail))
                 {
                     return CommandResponse.FromStatus(responseMessage, Status.Denied, "User not allowed to send mail from subverse");
                 }
@@ -2871,7 +2871,7 @@ namespace Voat.Data
             else
             {
                 //Sender can be passed in from the UI , ensure it is replaced here
-                message.Sender = User.Identity.Name;
+                message.Sender = UserIdentity.UserName;
 
                 if (Voat.Utilities.BanningUtility.ContentContainsBannedDomain(null, message.Message))
                 {
@@ -3180,7 +3180,7 @@ namespace Voat.Data
             //verify if this is a sub request
             if (ownerType == IdentityType.Subverse)
             {
-                if (!ModeratorPermission.HasPermission(User.Identity.Name, ownerName, ModeratorAction.DeleteMail))
+                if (!ModeratorPermission.HasPermission(UserIdentity.UserName, ownerName, ModeratorAction.DeleteMail))
                 {
                     return CommandResponse.FromStatus(Status.Denied, "User does not have rights to modify mail");
                 }
@@ -3244,7 +3244,7 @@ namespace Voat.Data
             //verify if this is a sub request
             if (ownerType == IdentityType.Subverse)
             {
-                if (!ModeratorPermission.HasPermission(User.Identity.Name, ownerName, ModeratorAction.ReadMail))
+                if (!ModeratorPermission.HasPermission(UserIdentity.UserName, ownerName, ModeratorAction.ReadMail))
                 {
                     return CommandResponse.FromStatus(Status.Denied, "User does not have rights to modify mail");
                 }
@@ -3347,7 +3347,7 @@ namespace Voat.Data
         [Authorize]
         public async Task<IEnumerable<Domain.Models.Message>> GetMessages(MessageTypeFlag type, MessageState state, bool markAsRead = true, SearchOptions options = null)
         {
-            return await GetMessages(User.Identity.Name, IdentityType.User, type, state, markAsRead, options).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+            return await GetMessages(UserIdentity.UserName, IdentityType.User, type, state, markAsRead, options).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
         }
 
         [Authorize]
@@ -3997,7 +3997,7 @@ namespace Voat.Data
                         return CommandResponse.FromStatus<bool?>(null, Status.Denied, "Subverse is disabled");
                     }
 
-                    var set = GetOrCreateSubverseSet(new SubverseSet() { Name = SetType.Front.ToString(), UserName = User.Identity.Name, Type = (int)SetType.Front, Description = "Front Page Subverse Subscriptions" });
+                    var set = GetOrCreateSubverseSet(new SubverseSet() { Name = SetType.Front.ToString(), UserName = UserIdentity.UserName, Type = (int)SetType.Front, Description = "Front Page Subverse Subscriptions" });
 
                     response = await SetSubverseListChange(set, subverse, action);
 
@@ -4006,16 +4006,16 @@ namespace Voat.Data
 
                     //if (action == SubscriptionAction.Subscribe)
                     //{
-                    //    if (!_db.SubverseSubscriptions.Any(x => x.Subverse.Equals(domainReference.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)))
+                    //    if (!_db.SubverseSubscriptions.Any(x => x.Subverse.Equals(domainReference.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(UserIdentity.UserName, StringComparison.OrdinalIgnoreCase)))
                     //    {
-                    //        var sub = new SubverseSubscription { UserName = User.Identity.Name, Subverse = domainReference.Name };
+                    //        var sub = new SubverseSubscription { UserName = UserIdentity.UserName, Subverse = domainReference.Name };
                     //        _db.SubverseSubscriptions.Add(sub);
                     //        countChanged = true;
                     //    }
                     //}
                     //else
                     //{
-                    //    var sub = _db.SubverseSubscriptions.FirstOrDefault(x => x.Subverse.Equals(domainReference.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+                    //    var sub = _db.SubverseSubscriptions.FirstOrDefault(x => x.Subverse.Equals(domainReference.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(UserIdentity.UserName, StringComparison.OrdinalIgnoreCase));
                     //    if (sub != null)
                     //    {
                     //        _db.SubverseSubscriptions.Remove(sub);
@@ -4039,11 +4039,11 @@ namespace Voat.Data
 
                     var subscribeAction = SubscriptionAction.Toggle;
 
-                    var setSubscriptionRecord = _db.SubverseSetSubscription.FirstOrDefault(x => x.SubverseSetID == setb.ID && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+                    var setSubscriptionRecord = _db.SubverseSetSubscription.FirstOrDefault(x => x.SubverseSetID == setb.ID && x.UserName.Equals(UserIdentity.UserName, StringComparison.OrdinalIgnoreCase));
 
                     if (setSubscriptionRecord == null && ((action == SubscriptionAction.Subscribe) || action == SubscriptionAction.Toggle))
                     {
-                        var sub = new SubverseSetSubscription { UserName = User.Identity.Name, SubverseSetID = setb.ID, CreationDate = CurrentDate };
+                        var sub = new SubverseSetSubscription { UserName = UserIdentity.UserName, SubverseSetID = setb.ID, CreationDate = CurrentDate };
                         _db.SubverseSetSubscription.Add(sub);
                         subscribeAction = SubscriptionAction.Subscribe;
                         response.Response = true;
@@ -4066,9 +4066,9 @@ namespace Voat.Data
 
                     //if (action == SubscriptionAction.Subscribe)
                     //{
-                    //    if (!_db.SubverseSetSubscriptions.Any(x => x.SubverseSetID == setb.ID && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase)))
+                    //    if (!_db.SubverseSetSubscriptions.Any(x => x.SubverseSetID == setb.ID && x.UserName.Equals(UserIdentity.UserName, StringComparison.OrdinalIgnoreCase)))
                     //    {
-                    //        var sub = new SubverseSetSubscription { UserName = User.Identity.Name, SubverseSetID = setb.ID };
+                    //        var sub = new SubverseSetSubscription { UserName = UserIdentity.UserName, SubverseSetID = setb.ID };
                     //        _db.SubverseSetSubscriptions.Add(sub);
                     //        countChanged = true;
                     //        response.Response = true;
@@ -4076,7 +4076,7 @@ namespace Voat.Data
                     //}
                     //else
                     //{
-                    //    var sub = _db.SubverseSetSubscriptions.FirstOrDefault(x => x.SubverseSetID == setb.ID && x.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+                    //    var sub = _db.SubverseSetSubscriptions.FirstOrDefault(x => x.SubverseSetID == setb.ID && x.UserName.Equals(UserIdentity.UserName, StringComparison.OrdinalIgnoreCase));
                     //    if (sub != null)
                     //    {
                     //        _db.SubverseSetSubscriptions.Remove(sub);
@@ -4151,7 +4151,7 @@ namespace Voat.Data
             bool? status = null;
 
             //check perms
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.Banning))
+            if (!ModeratorPermission.HasPermission(UserIdentity.UserName, subverse, Domain.Models.ModeratorAction.Banning))
             {
                 return new CommandResponse<bool?>(status, Status.Denied, "User does not have permission to ban");
             }
@@ -4201,7 +4201,7 @@ namespace Voat.Data
                         return new CommandResponse<bool?>(status, Status.Denied, "Banning a user requires a reason to be given");
                     }
                     // prevent bans of the current user
-                    if (User.Identity.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
+                    if (UserIdentity.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase))
                     {
                         return new CommandResponse<bool?>(status, Status.Denied, "Can not ban yourself or a blackhole appears");
                     }
@@ -4214,7 +4214,7 @@ namespace Voat.Data
                     var subverseBan = new Data.Models.SubverseBan();
                     subverseBan.UserName = originalUserName;
                     subverseBan.Subverse = subverseModel.Name;
-                    subverseBan.CreatedBy = User.Identity.Name;
+                    subverseBan.CreatedBy = UserIdentity.UserName;
                     subverseBan.CreationDate = Repository.CurrentDate;
                     subverseBan.Reason = reason;
                     _db.SubverseBan.Add(subverseBan);
@@ -4238,13 +4238,13 @@ namespace Voat.Data
                 {
                     //send ban msg
                     msg.Subject = $"You've been banned from v/{subverse} :(";
-                    msg.Message = $"@{User.Identity.Name} has banned you from v/{subverseModel.Name} for the following reason: *{reason}*";
+                    msg.Message = $"@{UserIdentity.UserName} has banned you from v/{subverseModel.Name} for the following reason: *{reason}*";
                 }
                 else
                 {
                     //send unban msg
                     msg.Subject = $"You've been unbanned from v/{subverse} :)";
-                    msg.Message = $"@{User.Identity.Name} has unbanned you from v/{subverseModel.Name}. Play nice. Promise me. Ok, I believe you.";
+                    msg.Message = $"@{UserIdentity.UserName} has unbanned you from v/{subverseModel.Name}. Play nice. Promise me. Ok, I believe you.";
                 }
                 SendMessage(msg);
             }
@@ -4355,7 +4355,7 @@ namespace Voat.Data
             DemandAuthentication();
 
             var response = new RemoveModeratorResponse();
-            var originUserName = User.Identity.Name;
+            var originUserName = UserIdentity.UserName;
 
             // get moderator name for selected subverse
             var subModerator = await _db.SubverseModerator.FindAsync(subverseModeratorRecordID).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
@@ -4560,7 +4560,7 @@ namespace Voat.Data
             {
                 return CommandResponse.FromStatus(Status.Invalid, "Subverse does not exist");
             }
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, ModeratorAction.MarkReports))
+            if (!ModeratorPermission.HasPermission(UserIdentity.UserName, subverse, ModeratorAction.MarkReports))
             {
                 return CommandResponse.FromStatus(Status.Denied, "User does not have permissions to mark reports");
             }
@@ -4577,7 +4577,7 @@ namespace Voat.Data
             }
             q.Append(x => x.Where, "r.\"ReviewedDate\" IS NULL AND r.\"ReviewedBy\" IS NULL");
 
-            var result = await _db.Connection.ExecuteAsync(q.ToString(), new { Subverse = subverse, ID = id, UserName = User.Identity.Name, CreationDate = CurrentDate });
+            var result = await _db.Connection.ExecuteAsync(q.ToString(), new { Subverse = subverse, ID = id, UserName = UserIdentity.UserName, CreationDate = CurrentDate });
 
             return CommandResponse.FromStatus(Status.Success);
 
@@ -4621,7 +4621,7 @@ namespace Voat.Data
 
             //var statement = SqlFormatter.IfExists(false, existsClause, body, null);
 
-           var result = await _db.Connection.ExecuteAsync(body, new { UserName = User.Identity.Name, ID = id, RuleID = ruleID, ContentType = (int)contentType, Date = CurrentDate });
+           var result = await _db.Connection.ExecuteAsync(body, new { UserName = UserIdentity.UserName, ID = id, RuleID = ruleID, ContentType = (int)contentType, Date = CurrentDate });
 
             return CommandResponse.Successful();
         }
@@ -4645,7 +4645,7 @@ namespace Voat.Data
         //    }
 
         //    //Set specific info
-        //    log.UserName = User.Identity.Name;
+        //    log.UserName = UserIdentity.UserName;
         //    log.CreationDate = CurrentDate;
 
         //    _db.AdminLogs.Add(log);
@@ -4754,15 +4754,15 @@ namespace Voat.Data
                     //Set propercased name
                     name = exists.Name;
 
-                    var set = GetOrCreateSubverseSet(new SubverseSet() { Name = SetType.Blocked.ToString(), UserName = User.Identity.Name, Type = (int)SetType.Blocked, Description = "Blocked Subverses" });
+                    var set = GetOrCreateSubverseSet(new SubverseSet() { Name = SetType.Blocked.ToString(), UserName = UserIdentity.UserName, Type = (int)SetType.Blocked, Description = "Blocked Subverses" });
                     //var action = block == null ? (SubscriptionAction?)null : (block.Value ? SubscriptionAction.Subscribe : SubscriptionAction.Unsubscribe);
 
                     response = await SetSubverseListChange(set, exists, action);
 
-                    //var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.Subverse.ToLower() == name.ToLower() && n.UserName == User.Identity.Name);
+                    //var subverseBlock = db.UserBlockedSubverses.FirstOrDefault(n => n.Subverse.ToLower() == name.ToLower() && n.UserName == UserIdentity.UserName);
                     //if (subverseBlock == null && ((block.HasValue && block.Value) || !block.HasValue))
                     //{
-                    //    db.UserBlockedSubverses.Add(new UserBlockedSubverse { UserName = User.Identity.Name, Subverse = name, CreationDate = Repository.CurrentDate });
+                    //    db.UserBlockedSubverses.Add(new UserBlockedSubverse { UserName = UserIdentity.UserName, Subverse = name, CreationDate = Repository.CurrentDate });
                     //    response.Response = true;
                     //}
                     //else if (subverseBlock != null && ((block.HasValue && !block.Value) || !block.HasValue))
@@ -4781,15 +4781,15 @@ namespace Voat.Data
                     {
                         return new CommandResponse<bool?>(null, Status.Error, "User does not exist");
                     }
-                    if (User.Identity.Name.IsEqual(name))
+                    if (UserIdentity.UserName.IsEqual(name))
                     {
                         return new CommandResponse<bool?>(null, Status.Error, "Attempting to open worm hold denied. Can not block yourself.");
                     }
 
-                    var userBlock = _db.UserBlockedUser.FirstOrDefault(n => n.BlockUser.ToLower() == name.ToLower() && n.UserName == User.Identity.Name);
+                    var userBlock = _db.UserBlockedUser.FirstOrDefault(n => n.BlockUser.ToLower() == name.ToLower() && n.UserName == UserIdentity.UserName);
                     if (userBlock == null && (action == SubscriptionAction.Subscribe || action == SubscriptionAction.Toggle))
                     {
-                        _db.UserBlockedUser.Add(new UserBlockedUser { UserName = User.Identity.Name, BlockUser = name, CreationDate = Repository.CurrentDate });
+                        _db.UserBlockedUser.Add(new UserBlockedUser { UserName = UserIdentity.UserName, BlockUser = name, CreationDate = Repository.CurrentDate });
                         response.Response = true;
                     }
                     else if (userBlock != null && (action == SubscriptionAction.Unsubscribe || action == SubscriptionAction.Toggle))
@@ -5214,13 +5214,13 @@ namespace Voat.Data
             return subname;
         }
 
-        private IPrincipal User
-        {
-            get
-            {
-                return UserIdentity.Principal;
-            }
-        }
+        //private IPrincipal User
+        //{
+        //    get
+        //    {
+        //        return UserIdentity.Principal;
+        //    }
+        //}
 
         public bool SubverseExists(string subverse)
         {
@@ -5255,15 +5255,15 @@ namespace Voat.Data
         private void DemandAuthentication()
         {
             //CORE_PORT: Loosing User Thread Context
-            if (User == null)
+            if (UserIdentity.Principal == null)
             {
                 throw new VoatSecurityException("CorePort: User context not available");
             }
-            if (!User.Identity.IsAuthenticated || String.IsNullOrEmpty(User.Identity.Name))
+            if (!UserIdentity.IsAuthenticated || String.IsNullOrEmpty(UserIdentity.UserName))
             {
                 throw new VoatSecurityException("Current process not authenticated");
             }
-            if (UserDefinition.Parse(User.Identity.Name) == null)
+            if (UserDefinition.Parse(UserIdentity.UserName) == null)
             {
                 throw new VoatSecurityException("Invalid user identity detected");
             }
@@ -5381,10 +5381,10 @@ namespace Voat.Data
                 return CommandResponse.FromStatus(Status.Error, "Confirmation UserName does not match");
             }
 
-            if (User.Identity.Name.IsEqual(options.UserName))
+            if (UserIdentity.UserName.IsEqual(options.UserName))
             {
 
-                var userName = User.Identity.Name;
+                var userName = UserIdentity.UserName;
 
                 //ensure banned user blocked from operation
                 if (_db.BannedUser.Any(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase)))
@@ -5599,8 +5599,8 @@ namespace Voat.Data
                         var logEntry = new Logging.LogInformation();
                         logEntry.Type = Logging.LogType.Audit;
                         logEntry.Category = "DeleteAccount";
-                        logEntry.UserName = User.Identity.Name;
-                        logEntry.Message = String.Format("{0} deleted account", User.Identity.Name);
+                        logEntry.UserName = UserIdentity.UserName;
+                        logEntry.Message = String.Format("{0} deleted account", UserIdentity.UserName);
                         logEntry.Origin = Settings.Origin.ToString();
                         logEntry.Data = new
                         {

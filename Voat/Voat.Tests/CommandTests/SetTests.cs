@@ -236,7 +236,8 @@ namespace Voat.Tests.CommandTests
             var set = new Set() { Name = "HolyHell", Title = "Some Title", Type = SetType.Normal, UserName = userName };
             var cmd = new UpdateSetCommand(set);
             var result = await cmd.Execute();
-            Assert.IsTrue(result.Success, result.Message);
+            VoatAssert.IsValid(result);
+
             Assert.AreNotEqual(0, result.Response.ID);
             var setID = result.Response.ID;
             VerifySubscriber(set, userName, 1);
@@ -246,13 +247,13 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal(userName);
             var subCmd = new SubscribeCommand(new DomainReference(DomainType.Set, set.Name, set.UserName), SubscriptionAction.Subscribe);
             var subResult = await subCmd.Execute();
-            Assert.IsTrue(subResult.Success, subResult.Message);
+            VoatAssert.IsValid(result);
             VerifySubscriber(set, userName, 2);
 
             //unsub user
             subCmd = new SubscribeCommand(new DomainReference(DomainType.Set, set.Name, set.UserName), SubscriptionAction.Unsubscribe);
             subResult = await subCmd.Execute();
-            Assert.IsTrue(subResult.Success, subResult.Message);
+            VoatAssert.IsValid(result);
             VerifySubscriber(set, userName, 1, false);
 
 
@@ -358,7 +359,7 @@ namespace Voat.Tests.CommandTests
             };
             //Unathenticated on Public Set
             TestHelper.SetPrincipal(null);
-            loggedInUserName = (Thread.CurrentPrincipal.Identity.IsAuthenticated ? Thread.CurrentPrincipal.Identity.Name : "<not authenticated>");
+            loggedInUserName = (UserIdentity.IsAuthenticated ? UserIdentity.UserName : "<not authenticated>");
             perms = SetPermission.GetPermissions(s, Thread.CurrentPrincipal.Identity);
             Assert.AreEqual(true, perms.View, $"View permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditList, $"Edit List permission mismatch on {s.Name} with account {loggedInUserName}");
@@ -367,7 +368,7 @@ namespace Voat.Tests.CommandTests
 
             //Owner on Non-Normal Set
             TestHelper.SetPrincipal("Joe");
-            loggedInUserName = (Thread.CurrentPrincipal.Identity.IsAuthenticated ? Thread.CurrentPrincipal.Identity.Name : "<not authenticated>");
+            loggedInUserName = (UserIdentity.IsAuthenticated ? UserIdentity.UserName : "<not authenticated>");
             perms = SetPermission.GetPermissions(s, Thread.CurrentPrincipal.Identity);
             Assert.AreEqual(true, perms.View, $"View permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(true, perms.EditList, $"Edit List permission mismatch on {s.Name} with account {loggedInUserName}");
@@ -383,7 +384,7 @@ namespace Voat.Tests.CommandTests
             };
             //Unathenticated on Private Set
             TestHelper.SetPrincipal(null);
-            loggedInUserName = (Thread.CurrentPrincipal.Identity.IsAuthenticated ? Thread.CurrentPrincipal.Identity.Name : "<not authenticated>");
+            loggedInUserName = (UserIdentity.IsAuthenticated ? UserIdentity.UserName : "<not authenticated>");
             perms = SetPermission.GetPermissions(s, Thread.CurrentPrincipal.Identity);
             Assert.AreEqual(false, perms.View, $"View permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditList, $"Edit List permission mismatch on {s.Name} with account {loggedInUserName}");
@@ -392,7 +393,7 @@ namespace Voat.Tests.CommandTests
 
             //Owner on Normal Private Set
             TestHelper.SetPrincipal("Joe");
-            loggedInUserName = (Thread.CurrentPrincipal.Identity.IsAuthenticated ? Thread.CurrentPrincipal.Identity.Name : "<not authenticated>");
+            loggedInUserName = (UserIdentity.IsAuthenticated ? UserIdentity.UserName : "<not authenticated>");
             perms = SetPermission.GetPermissions(s, Thread.CurrentPrincipal.Identity);
             Assert.AreEqual(true, perms.View, $"View permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(true, perms.EditList, $"Edit List permission mismatch on {s.Name} with account {loggedInUserName}");
@@ -401,7 +402,7 @@ namespace Voat.Tests.CommandTests
 
             //Non-owner on Private Set
             TestHelper.SetPrincipal("Eddy");
-            loggedInUserName = (Thread.CurrentPrincipal.Identity.IsAuthenticated ? Thread.CurrentPrincipal.Identity.Name : "<not authenticated>");
+            loggedInUserName = (UserIdentity.IsAuthenticated ? UserIdentity.UserName : "<not authenticated>");
             perms = SetPermission.GetPermissions(s, Thread.CurrentPrincipal.Identity);
             Assert.AreEqual(false, perms.View, $"View permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditList, $"Edit List permission mismatch on {s.Name} with account {loggedInUserName}");
@@ -417,7 +418,7 @@ namespace Voat.Tests.CommandTests
             };
             //Unathenticated on Private Set
             TestHelper.SetPrincipal(null);
-            loggedInUserName = (Thread.CurrentPrincipal.Identity.IsAuthenticated ? Thread.CurrentPrincipal.Identity.Name : "<not authenticated>");
+            loggedInUserName = (UserIdentity.IsAuthenticated ? UserIdentity.UserName : "<not authenticated>");
             perms = SetPermission.GetPermissions(s, Thread.CurrentPrincipal.Identity);
             Assert.AreEqual(true, perms.View, $"View permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditList, $"Edit List permission mismatch on {s.Name} with account {loggedInUserName}");
@@ -426,7 +427,7 @@ namespace Voat.Tests.CommandTests
 
             //Non-Owner on Normal System Public Set
             TestHelper.SetPrincipal("Joe");
-            loggedInUserName = (Thread.CurrentPrincipal.Identity.IsAuthenticated ? Thread.CurrentPrincipal.Identity.Name : "<not authenticated>");
+            loggedInUserName = (UserIdentity.IsAuthenticated ? UserIdentity.UserName : "<not authenticated>");
             perms = SetPermission.GetPermissions(s, Thread.CurrentPrincipal.Identity);
             Assert.AreEqual(true, perms.View, $"View permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditList, $"Edit List permission mismatch on {s.Name} with account {loggedInUserName}");

@@ -52,12 +52,12 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Submission")]
         [TestCategory("Sort")]
         [TestCategory("Query.Submission.Sort")]
-        public void Search_Sort_RelativeRank()
+        public async Task Search_Sort_RelativeRank()
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Relative;
             var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), s);
-            var r = q.ExecuteAsync().Result;
+            var r = await q.ExecuteAsync();
             VerifySort(s, r);
         }
         //Need a way to test this, right now we don't have comments on these entries
@@ -79,11 +79,11 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Submission")]
         [TestCategory("Sort")]
         [TestCategory("Query.Submission.Sort")]
-        public void Search_Sort_Rank() {
+        public async Task Search_Sort_Rank() {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Rank;
             var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), s);
-            var r = q.ExecuteAsync().Result;
+            var r = await q.ExecuteAsync();
             VerifySort(s, r);
         }
 
@@ -92,12 +92,12 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Submission")]
         [TestCategory("Sort")]
         [TestCategory("Query.Submission.Sort")]
-        public void Search_Sort_New()
+        public async Task Search_Sort_New()
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.New;
             var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), s);
-            var r = q.ExecuteAsync().Result;
+            var r = await q.ExecuteAsync();
             VerifySort(s, r);
         }
         [TestMethod]
@@ -105,12 +105,12 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Submission")]
         [TestCategory("Sort")]
         [TestCategory("Query.Submission.Sort")]
-        public void Search_Sort_Top()
+        public async Task Search_Sort_Top()
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Top;
             var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), s);
-            var r = q.ExecuteAsync().Result;
+            var r = await q.ExecuteAsync();
             VerifySort(s, r);
         }
         [TestMethod]
@@ -118,12 +118,12 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Submission")]
         [TestCategory("Sort")]
         [TestCategory("Query.Submission.Sort")]
-        public void Search_Sort_Bottom()
+        public async Task Search_Sort_Bottom()
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Bottom;
             var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), s);
-            var r = q.ExecuteAsync().Result;
+            var r = await q.ExecuteAsync();
             VerifySort(s, r);
         }
 
@@ -132,12 +132,12 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Submission")]
         [TestCategory("Sort")]
         [TestCategory("Query.Submission.Sort")]
-        public void Search_Sort_Viewed()
+        public async Task Search_Sort_Viewed()
         {
             var s = new SearchOptions();
             s.Sort = SortAlgorithm.Viewed;
             var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), s);
-            var r = q.ExecuteAsync().Result;
+            var r = await q.ExecuteAsync();
             VerifySort(s, r);
         }
         [TestMethod]

@@ -131,7 +131,7 @@ namespace Voat.Tests.Utils
             string mentionTwiceContent = $"PSA: @{user2} is a shill. I saw him getting ready for work and his socks were standard shill issue.";
             var cmd = new CreateCommentCommand(submission.ID, null, mentionTwiceContent);
             var result = await cmd.Execute();
-            Assert.IsTrue(result.Success, result.Message);
+            VoatAssert.IsValid(result);
 
             using (var db = new VoatDataContext())
             {
@@ -173,7 +173,7 @@ namespace Voat.Tests.Utils
             string mentionTwiceContent = $"Hello @{user2}, I am mentioning you in an anon thread because I want to make you feel scared";
             var cmd = new CreateCommentCommand(anonSubmission.ID, null, mentionTwiceContent);
             var result = await cmd.Execute();
-            Assert.IsTrue(result.Success, result.Message);
+            VoatAssert.IsValid(result);
 
             using (var db = new VoatDataContext())
             {
@@ -203,7 +203,7 @@ namespace Voat.Tests.Utils
             TestHelper.SetPrincipal(user2);
             var prefCmd = new UpdateUserPreferencesCommand(new Domain.Models.UserPreferenceUpdate() { BlockAnonymized = true });
             var prefResult = await prefCmd.Execute();
-            Assert.IsTrue(prefResult.Success, prefResult.Message);
+            VoatAssert.IsValid(prefResult);
 
             //Submission Mention - NO NO
             TestHelper.SetPrincipal(user1);
@@ -227,7 +227,7 @@ namespace Voat.Tests.Utils
             string commentContent = $"Hello @{user2}, I am mentioning you in an anon thread because I want to make you feel scared";
             var cmd = new CreateCommentCommand(anonSubmission.ID, null, commentContent);
             var result = await cmd.Execute();
-            Assert.IsTrue(result.Success, result.Message);
+            VoatAssert.IsValid(result);
 
             using (var db = new VoatDataContext())
             {
@@ -246,14 +246,14 @@ namespace Voat.Tests.Utils
             commentContent = $"I'm {user2} won't someone reply to me so I can see if reply notifications work?";
             cmd = new CreateCommentCommand(anonSubmission.ID, null, commentContent);
             result = await cmd.Execute();
-            Assert.IsTrue(result.Success, result.Message);
+            VoatAssert.IsValid(result);
 
 
             TestHelper.SetPrincipal(user1);
             commentContent = $"I'm following you!";
             cmd = new CreateCommentCommand(anonSubmission.ID, result.Response.ID, commentContent);
             result = await cmd.Execute();
-            Assert.IsTrue(result.Success, result.Message);
+            VoatAssert.IsValid(result);
 
             using (var db = new VoatDataContext())
             {
@@ -278,7 +278,7 @@ namespace Voat.Tests.Utils
             commentContent = $"I know who you are and I've been following you this entire unit test. I might be in love with you, if stalking is a form of love.";
             cmd = new CreateCommentCommand(anonSubmission.ID, null, commentContent);
             result = await cmd.Execute();
-            Assert.IsTrue(result.Success, result.Message);
+            VoatAssert.IsValid(result);
 
             using (var db = new VoatDataContext())
             {

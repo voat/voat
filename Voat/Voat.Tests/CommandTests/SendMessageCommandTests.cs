@@ -323,10 +323,9 @@ namespace Voat.Tests.CommandTests
                 Message = id
             };
             var cmd = new SendMessageCommand(message);
-            var response = await cmd.Execute();
+            var r = await cmd.Execute();
 
-            Assert.IsNotNull(response, "Response is null");
-            Assert.IsTrue(response.Success, response.Status.ToString());
+            VoatAssert.IsValid(r);
 
             using (var db = new VoatDataContext())
             {

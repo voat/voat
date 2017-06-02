@@ -287,7 +287,7 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command")]
         [TestCategory("Comment")]
         [TestCategory("Comment.Post")]
-        public void DeleteComment_Moderator()
+        public async Task DeleteComment_Moderator()
         {
             //Assert.Inconclusive("Complete this test");
             var content = "This is my data too you know 2";
@@ -302,7 +302,7 @@ namespace Voat.Tests.CommandTests
             //switch to mod of sub
             TestHelper.SetPrincipal("unit");
             var cmd = new DeleteCommentCommand(id, "This is spam");
-            var r = cmd.Execute().Result;
+            var r = await cmd.Execute();
             VoatAssert.IsValid(r);
 
             //verify

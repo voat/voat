@@ -123,7 +123,7 @@ namespace Voat.Tests.CommandTests
                 using (var db = new VoatDataContext())
                 {
                     var record = db.SubmissionVoteTracker.Where(x => x.SubmissionID == id && x.UserName == userName).FirstOrDefault();
-                    Assert.IsNotNull(record, "Expecting a vote record");
+                    Assert.IsNotNull(record, "Did not find Vote Record in database");
                     Assert.AreEqual(voteStatus, record.VoteStatus);
                     Assert.AreEqual(voteValue, record.VoteValue);
                 }
@@ -147,7 +147,7 @@ namespace Voat.Tests.CommandTests
                 using (var db = new VoatDataContext())
                 {
                     var record = db.CommentVoteTracker.Where(x => x.CommentID == id && x.UserName == userName).FirstOrDefault();
-                    Assert.IsNotNull(record, "Expecting a vote record");
+                    Assert.IsNotNull(record, "Did not find Vote Record in database");
                     Assert.AreEqual(voteStatus, record.VoteStatus);
                     Assert.AreEqual(voteValue, record.VoteValue);
                 }
