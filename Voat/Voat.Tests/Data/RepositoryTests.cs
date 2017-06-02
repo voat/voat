@@ -47,8 +47,26 @@ namespace Voat.Tests.Repository
             {
                 string name = "whatever";
                 string userName = "TestUser01";
-                TestHelper.SetPrincipal(userName);
+
+                TestHelper.SetPrincipal(userName); //Sets Thread.CurrentPrincipal 
+
+
+                //This works because we have not awaited yet (executed a Task on a seperate thread) and security info in Thread.CurrentPrincipal is passed 
+                //correctly on first call.
+                Assert.AreEqual(userName, UserIdentity.UserName, "Port Issue: Lost User Context Before");
                 await db.Block(DomainType.Subverse, name);
+                
+                //After call returns, principal information on the thread is lost, thus this second assert will fail when it should pass as it did with full .net 
+                //This seems to only happen when the call returns after await
+                //I have tried various changes: .ConfigureAwait(true|false), Task.Run(...), t.Wait(), etc. and
+                //I can't seem to figure out how to get the security context associated with Thread.CurrentPrincipal to 
+                //sync after an await call or any Task execution for that matter.
+                Assert.AreEqual(userName, UserIdentity.UserName, "Port Issue: Lost User Context After");
+
+                //We need to figure out if this is a bug, an issue with changes between .net framework and core/standard, or if this is an MSTest issue
+
+                //We can not make calls to TestHelper.SetPrincipal(userName); repeatedly as this will not guarantee tests pass in API or UI as these areas often
+                //issue multiple commands as part of an action
 
                 var blocks = await db.GetBlockedSubverses(userName);
                 Assert.IsNotNull(blocks);
