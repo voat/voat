@@ -38,7 +38,7 @@ namespace Voat.Tests.Utils
 
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Account")]
-        public void TestLogin_Success()
+        public void TestLogin()
         {
             var userName = "TestLoginUser";
             VoatDataInitializer.CreateUser("TestLoginUser");
@@ -46,6 +46,10 @@ namespace Voat.Tests.Utils
             {
                 var r = m.Find(userName, userName);
                 Assert.IsNotNull(r, "Did not find user");
+
+                r = m.Find(userName, userName.ToUpper());
+                Assert.IsNull(r, "Incorrect password works");
+
             }
         }
 

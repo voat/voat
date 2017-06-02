@@ -5,15 +5,21 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Voat.Data.Models;
 
 namespace Voat
 {
-    public class VoatPasswordValidator : IPasswordValidator<VoatUser>
+    public class VoatPasswordValidator : PasswordValidator<VoatUser>
     {
-        public Task<IdentityResult> ValidateAsync(UserManager<VoatUser> manager, VoatUser user, string password)
+        public VoatPasswordValidator()
+        {
+            
+        }
+        
+        public override Task<IdentityResult> ValidateAsync(UserManager<VoatUser> manager, VoatUser user, string password)
         {
             //no op
             return Task.FromResult(IdentityResult.Success);
@@ -49,7 +55,7 @@ namespace Voat
                 new UserStore<VoatUser>(new ApplicationDbContext()),
                 ioptions,
                 new PasswordHasher<VoatUser>(),
-                null,
+                new[] { new UserValidator<VoatUser>() },
                 new[] { new VoatPasswordValidator() },
                 new UpperInvariantLookupNormalizer(),
                 new IdentityErrorDescriber(),
@@ -70,15 +76,27 @@ namespace Voat
             return task.Result;
         }
 
-        public VoatUser FindByName(string name)
+        public VoatUser FindByName(string userName)
         {
-            var task = Task.Run(() => FindByNameAsync(name));
+            var task = Task.Run(() => FindByNameAsync(userName));
             task.Wait();
             return task.Result;
         }
-        public VoatUser Find(string userID, string password)
+        public VoatUser Find(string userName, string password)
         {
-            var task = Task.Run(() => FindByLoginAsync(userID, password));
+            var task = Task.Run(async () => {
+
+                var user = await FindByNameAsync(userName);
+                if (user != null)
+                {
+                    var result = await this.CheckPasswordAsync(user, password);
+                    if (result)
+                    {
+                        return user;
+                    }
+                }
+                return null;
+            });
             task.Wait();
             return task.Result;
         }

@@ -70,7 +70,7 @@ namespace Voat.Tests.Utils
 
             Assert.IsFalse(room.IsAccessAllowed(userName, ""));
             Assert.IsFalse(room.IsAccessAllowed(userName, null));
-            Assert.IsFalse(room.IsAccessAllowed(userName, hash));
+            Assert.IsFalse(room.IsAccessAllowed(userName + "2", hash));
 
 
         }
