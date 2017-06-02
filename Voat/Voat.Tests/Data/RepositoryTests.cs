@@ -46,16 +46,16 @@ namespace Voat.Tests.Repository
             using (var db = new Voat.Data.Repository())
             {
                 string name = "whatever";
-
-                TestHelper.SetPrincipal("TestUser01");
+                string userName = "TestUser01";
+                TestHelper.SetPrincipal(userName);
                 await db.Block(DomainType.Subverse, name);
 
-                var blocks = await db.GetBlockedSubverses("TestUser01");
+                var blocks = await db.GetBlockedSubverses(userName);
                 Assert.IsNotNull(blocks);
                 Assert.IsTrue(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
 
                 await db.Unblock(DomainType.Subverse, name);
-                blocks = await db.GetBlockedSubverses("TestUser01");
+                blocks = await db.GetBlockedSubverses(userName);
                 Assert.IsNotNull(blocks);
                 Assert.IsFalse(blocks.Any(x => x.Name == name && x.Type == DomainType.Subverse));
             }
@@ -80,10 +80,11 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Block"), TestCategory("Repository.Block.Subverse")]
         public async Task Block_Subverse_SubverseDoesNotExist()
         {
+            string userName = "TestUser01";
             await VoatAssert.ThrowsAsync<VoatNotFoundException>(() => {
                 using (var db = new Voat.Data.Repository())
                 {
-                    TestHelper.SetPrincipal("TestUser01");
+                    TestHelper.SetPrincipal(userName);
                     return db.Block(DomainType.Subverse, "happyhappyjoyjoy");
                 }
             });
@@ -121,9 +122,10 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository")]
         public async Task PostSubmission_InvalidSubveseFails()
         {
+            string userName = "TestUser01";
             using (var db = new Voat.Data.Repository())
             {
-                TestHelper.SetPrincipal("TestUser01");
+                TestHelper.SetPrincipal(userName);
 
                 var response = await db.PostSubmission(new UserSubmission()
                 {
@@ -316,9 +318,11 @@ namespace Voat.Tests.Repository
         [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public async Task PostSubmission_BannedDomain()
         {
+            string userName = "TestUser10";
+
             using (var db = new Voat.Data.Repository())
             {
-                TestHelper.SetPrincipal("TestUser10");
+                TestHelper.SetPrincipal(userName);
 
                 var result = await db.PostSubmission(new UserSubmission() { Subverse = "unit", Title = "Can I get a banned domain past super secure code?", Content = "Check out my new post: http://www.fleddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics" });
                 Assert.IsNotNull(result, "Result was null");
@@ -332,9 +336,10 @@ namespace Voat.Tests.Repository
         [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public async Task PostComment_BannedDomain()
         {
+            string userName = "TestUser10";
             using (var db = new Voat.Data.Repository())
             {
-                TestHelper.SetPrincipal("TestUser10");
+                TestHelper.SetPrincipal(userName);
 
                 var result = await db.PostComment(1, null, "Check out my new post: http://www.fleddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics");
                 Assert.IsNotNull(result, "Result was null");
@@ -362,9 +367,10 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Submission")]
         public async Task PostSubmission_AuthorizedOnly_Denied()
         {
+            string userName = "TestUser11";
             using (var db = new Voat.Data.Repository())
             {
-                TestHelper.SetPrincipal("TestUser11");
+                TestHelper.SetPrincipal(userName);
 
                 var result = await db.PostSubmission( new UserSubmission() { Subverse= "AuthorizedOnly", Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
                 Assert.IsNotNull(result, "Result was null");

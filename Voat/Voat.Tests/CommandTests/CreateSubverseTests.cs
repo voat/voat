@@ -116,7 +116,7 @@ namespace Voat.Tests.CommandTests
             var description = "Some Description";
             var cmd = new CreateSubverseCommand(name, title, description);
             var response = await cmd.Execute();
-            Assert.AreEqual(Status.Denied, response.Status, response.Message);
+            VoatAssert.IsValid(response, Status.Denied);
 
             //using (var db = new voatEntities())
             //{

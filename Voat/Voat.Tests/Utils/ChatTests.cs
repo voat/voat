@@ -52,9 +52,10 @@ namespace Voat.Tests.Utils
             Assert.IsFalse(room.IsAccessAllowed(null, null));
             Assert.IsFalse(room.IsAccessAllowed(null, null));
 
-            TestHelper.SetPrincipal("TestUser01");
-            Assert.IsTrue(room.IsAccessAllowed("TestUser01", "SOMETHING"));
-            Assert.IsTrue(room.IsAccessAllowed("TestUser01", ""));
+            var userName = "TestUser01";
+            TestHelper.SetPrincipal(userName);
+            Assert.IsTrue(room.IsAccessAllowed(userName, "SOMETHING"));
+            Assert.IsTrue(room.IsAccessAllowed(userName, ""));
 
 
             room = new ChatRoom() { ID = "Passphrase", IsPrivate = false, Passphrase = "hello" };
@@ -62,13 +63,14 @@ namespace Voat.Tests.Utils
             Assert.IsFalse(room.IsAccessAllowed(null, String.Empty));
             Assert.IsFalse(room.IsAccessAllowed(null, null));
 
-            TestHelper.SetPrincipal("TestUser01");
-            var hash = ChatRoom.GetAccessHash("TestUser01", "hello");
-            Assert.IsTrue(room.IsAccessAllowed("TestUser01", hash));
+            userName = "TestUser01";
+            TestHelper.SetPrincipal(userName);
+            var hash = ChatRoom.GetAccessHash(userName, "hello");
+            Assert.IsTrue(room.IsAccessAllowed(userName, hash));
 
-            Assert.IsFalse(room.IsAccessAllowed("TestUser01", ""));
-            Assert.IsFalse(room.IsAccessAllowed("TestUser01", null));
-            Assert.IsFalse(room.IsAccessAllowed("TestUser02", hash));
+            Assert.IsFalse(room.IsAccessAllowed(userName, ""));
+            Assert.IsFalse(room.IsAccessAllowed(userName, null));
+            Assert.IsFalse(room.IsAccessAllowed(userName, hash));
 
 
         }

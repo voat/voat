@@ -62,41 +62,44 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Reports")]
         public async Task SubmitSubmissionReport_Basic()
         {
-            TestHelper.SetPrincipal("unit");
+            var userName = "unit";
+            TestHelper.SetPrincipal(userName);
 
             //first report
-            await SubmitAndVerify("unit", ContentType.Submission, 1, 1);
+            await SubmitAndVerify(userName, ContentType.Submission, 1, 1);
             //duplicate report
-            await SubmitAndVerify("unit", ContentType.Submission, 1, 1);
+            await SubmitAndVerify(userName, ContentType.Submission, 1, 1);
             //alt report, ignore
-            await SubmitAndVerify("unit", ContentType.Submission, 1, 2, 0);
+            await SubmitAndVerify(userName, ContentType.Submission, 1, 2, 0);
         }
 
         [TestMethod]
         [TestCategory("Reports")]
         public async Task SubmitCommentReport_Basic()
         {
-            TestHelper.SetPrincipal("unit");
+            var userName = "unit";
+            TestHelper.SetPrincipal(userName);
 
             //first report
-            await SubmitAndVerify("unit", ContentType.Comment, 1, 1);
+            await SubmitAndVerify(userName, ContentType.Comment, 1, 1);
             //duplicate report
-            await SubmitAndVerify("unit", ContentType.Comment, 1, 1);
+            await SubmitAndVerify(userName, ContentType.Comment, 1, 1);
             //alt report
-            await SubmitAndVerify("unit", ContentType.Comment, 1, 2, 0);
+            await SubmitAndVerify(userName, ContentType.Comment, 1, 2, 0);
         }
 
         [TestMethod]
         [TestCategory("Reports")]
         public async Task GroupedSubmissionReports()
         {
-            TestHelper.SetPrincipal("unit");
+            string userName = "unit";
+            TestHelper.SetPrincipal(userName);
             var cmd = new CreateSubmissionCommand(new UserSubmission() { Subverse = "unit", Title = "This is spammy spam", Content = "http://somespamsite.com" });
             var response = await cmd.Execute();
             Assert.IsTrue(response.Success, response.Message);
             var submission = response.Response;
 
-            string userName = "unit";
+            userName = "unit";
             TestHelper.SetPrincipal(userName);
             await SubmitAndVerify(userName, ContentType.Submission, submission.ID, 1);
             int ruleid = 1;

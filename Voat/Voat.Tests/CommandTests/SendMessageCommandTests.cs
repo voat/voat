@@ -313,7 +313,7 @@ namespace Voat.Tests.CommandTests
             var sender = "unit";
             var recipient = "User100CCP";
 
-            TestHelper.SetPrincipal("unit");
+            TestHelper.SetPrincipal(sender);
 
             var message = new Domain.Models.SendMessage()
             {
@@ -347,13 +347,15 @@ namespace Voat.Tests.CommandTests
         public async Task SendMessageReply_ToCommentRelatedMention()
         {
             //create a comment and ping another user aka comment mention
+
             TestHelper.SetPrincipal("TestUser14");
             var c = new CreateCommentCommand(1, null, "This is my comment @TestUser15, do you like it?");
             var r = await c.Execute();
             Assert.IsTrue(r.Success, r.Message);
 
             //read ping message and reply to it using message gateway
-            TestHelper.SetPrincipal("TestUser15");
+            var userName = "TestUser15";
+            TestHelper.SetPrincipal(userName);
             var mq = new Domain.Query.QueryMessages(MessageTypeFlag.CommentMention, MessageState.Unread);
             var messages = await mq.ExecuteAsync();
             Assert.IsTrue(messages.Any(), "Didn't return any messages");
@@ -376,7 +378,7 @@ namespace Voat.Tests.CommandTests
                                 x.SubmissionID == m.SubmissionID.Value
                                 && x.ParentID == m.CommentID.Value
                                 && x.Content == content
-                                && x.UserName == "TestUser15"
+                                && x.UserName == userName
                               select x).FirstOrDefault();
                 Assert.IsNotNull(record, "Can not find message in database");
             }

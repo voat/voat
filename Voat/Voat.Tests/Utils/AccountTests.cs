@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Voat.Data.Models;
+using Voat.Tests.Repository;
 using Voat.Utilities;
 
 namespace Voat.Tests.Utils
@@ -34,6 +35,19 @@ namespace Voat.Tests.Utils
     [TestClass]
     public class AccountTests : BaseUnitTest
     {
+
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("Account")]
+        public void TestLogin_Success()
+        {
+            var userName = "TestLoginUser";
+            VoatDataInitializer.CreateUser("TestLoginUser");
+            using (var m = VoatUserManager.Create())
+            {
+                var r = m.Find(userName, userName);
+                Assert.IsNotNull(r, "Did not find user");
+            }
+        }
 
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Account")]

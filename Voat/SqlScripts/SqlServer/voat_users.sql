@@ -346,6 +346,7 @@ CREATE TABLE [dbo].[AspNetUserLogins](
 	[UserId] [nvarchar](128) NOT NULL,
 	[LoginProvider] [nvarchar](128) NOT NULL,
 	[ProviderKey] [nvarchar](128) NOT NULL,
+	[ProviderDisplayName] [nvarchar](500) NOT NULL,
  CONSTRAINT [PK_AspNetUserLogins] PRIMARY KEY NONCLUSTERED 
 (
 	[UserId] ASC,

@@ -41,9 +41,13 @@ namespace Voat
 
         public static VoatUserManager Create()
         {
+
+            var options = new IdentityOptions();
+            var ioptions = Microsoft.Extensions.Options.Options.Create(options);
+
             var mgr = new VoatUserManager(
                 new UserStore<VoatUser>(new ApplicationDbContext()),
-                null,
+                ioptions,
                 new PasswordHasher<VoatUser>(),
                 null,
                 new[] { new VoatPasswordValidator() },
@@ -58,7 +62,10 @@ namespace Voat
 
         public IdentityResult Create(VoatUser user, string password)
         {
-            var task = Task.Run(() => CreateAsync(user, password));
+            var task = Task.Run(() => {
+                var x = CreateAsync(user, password);
+                return x;
+            });
             task.Wait();
             return task.Result;
         }

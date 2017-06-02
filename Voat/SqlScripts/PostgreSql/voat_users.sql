@@ -15,7 +15,8 @@ CREATE TABLE "dbo"."AspNetUserClaims"(
 CREATE TABLE "dbo"."AspNetUserLogins"(
 	"UserId" varchar(128) NOT NULL,
 	"LoginProvider" varchar(128) NOT NULL,
-	"ProviderKey" varchar(128) NOT NULL);
+	"ProviderKey" varchar(128) NOT NULL,
+	"ProviderDisplayName" varchar(500) NOT NULL);
 
 CREATE TABLE "dbo"."AspNetUserRoles"(
 	"UserId" varchar(128) NOT NULL,

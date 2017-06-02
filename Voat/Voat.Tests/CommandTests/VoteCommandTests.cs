@@ -44,10 +44,11 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Comment.Vote")]
         public async Task DownvoteComment()
         {
-            TestHelper.SetPrincipal("User500CCP");
+            var userName = "User500CCP";
+            TestHelper.SetPrincipal(userName);
             bool voteEventReceived = false;
             EventNotification.Instance.OnVoteReceived += (s, e) => {
-              voteEventReceived = e.TargetUserName == "unit" && e.SendingUserName == "User500CCP" && e.ChangeValue == -1 && e.ReferenceType == Domain.Models.ContentType.Comment && e.ReferenceID == 1;
+              voteEventReceived = e.TargetUserName == "unit" && e.SendingUserName == userName && e.ChangeValue == -1 && e.ReferenceType == Domain.Models.ContentType.Comment && e.ReferenceID == 1;
             };
             var cmd = new CommentVoteCommand(1, -1, IpHash.CreateHash("127.0.0.1"));
 
@@ -151,13 +152,14 @@ namespace Voat.Tests.CommandTests
             var submissionUser = "UnitTestUser47";
             var newSubmission = TestHelper.ContentCreation.CreateSubmission(submissionUser, new Domain.Models.UserSubmission() { Title = "This is what I think about you guys", Subverse = "unit" });
 
-            TestHelper.SetPrincipal("User500CCP");
+            var userName = "User500CCP";
+            TestHelper.SetPrincipal(userName);
             bool voteEventReceived = false;
 
             EventNotification.Instance.OnVoteReceived += (s, e) => {
                 voteEventReceived = 
                     e.TargetUserName == submissionUser
-                    && e.SendingUserName == "User500CCP" 
+                    && e.SendingUserName == userName
                     && e.ChangeValue == -1 
                     && e.ReferenceType == Domain.Models.ContentType.Submission 
                     && e.ReferenceID == newSubmission.ID;

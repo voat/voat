@@ -91,7 +91,7 @@ namespace Voat.Tests.CommandTests
             TestHelper.SetPrincipal("TestUser02");
 
             var cmd = new CreateCommentCommand(1, null, "This is my data");
-            var c = cmd.Execute().Result;
+            var c = await cmd.Execute();
 
             VoatAssert.IsValid(c);
             Assert.AreNotEqual(0, c.Response.ID);

@@ -39,15 +39,19 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void CreateSubmission()
         {
-            TestHelper.SetPrincipal("TestUser02");
-
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() {Subverse= "whatever", Title = "This is a title", Url = "http://www.yahoo.com" });
+            var userName = "TestUser02";
+            TestHelper.SetPrincipal(userName);
+            var s = new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "This is a title", Url = "http://www.yahoo.com" };
+            var cmd = new CreateSubmissionCommand(s);
 
             var r = cmd.Execute().Result;
 
             VoatAssert.IsValid(r);
             Assert.IsNotNull(r.Response, "Expecting a non null response");
             Assert.AreNotEqual(0, r.Response.ID);
+            Assert.AreEqual(userName, r.Response.UserName);
+            Assert.AreEqual(s.Subverse, r.Response.Subverse);
+            Assert.AreEqual(s.Title, r.Response.Title);
         }
 
         [TestMethod]
