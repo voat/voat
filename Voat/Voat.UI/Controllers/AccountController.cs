@@ -22,61 +22,53 @@
 
 #endregion LICENSE
 
-using System.Drawing;
-using System.Drawing.Imaging;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Owin.Security;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 using Voat.Models.ViewModels;
 using System.Net;
-using System.Security.Cryptography;
-using System.Text;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security.DataProtection;
 using Voat.App_Start;
-using Voat.Data.Models;
-using Voat.Utilities;
-using Voat.Configuration;
 using Voat.UI.Utilities;
-using Voat.Data;
-using Voat.Caching;
-using Voat.Domain;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Voat.Data.Models;
+using Microsoft.AspNetCore.Authorization;
+using Voat.Configuration;
+using Voat.Utilities;
+using Microsoft.AspNetCore.Authentication;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
-using System.Collections.Generic;
+using Microsoft.Owin.Security;
+using Voat.Data;
+using Voat.Caching;
 
 namespace Voat.Controllers
 {
     [Authorize]
     public class AccountController : BaseController
     {
+        //public AccountController()
+        //    : this(new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
+        //{
+        //    var provider = Startup.DataProtectionProvider;
+        //    UserManager.UserValidator = new UserValidator<VoatUser>(UserManager) { AllowOnlyAlphanumericUserNames = false };
+        //    //Email issues: http://stackoverflow.com/questions/23455579/generating-reset-password-token-does-not-work-in-azure-website
+        //    UserManager.UserTokenProvider = new DataProtectorTokenProvider<VoatUser>(provider.Create("VoatTokenProvider"));
+        //}
+
         public AccountController()
-            : this(new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
         {
-            var provider = Startup.DataProtectionProvider;
-            UserManager.UserValidator = new UserValidator<VoatUser>(UserManager) { AllowOnlyAlphanumericUserNames = false };
-            //Email issues: http://stackoverflow.com/questions/23455579/generating-reset-password-token-does-not-work-in-azure-website
-            UserManager.UserTokenProvider = new DataProtectorTokenProvider<VoatUser>(provider.Create("VoatTokenProvider"));
+            UserManager = VoatUserManager.Create();
+
+            //// Configure user lockout defaults
+            //UserManager.UserLockoutEnabledByDefault = true;
+            //UserManager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            //UserManager.MaxFailedAccessAttemptsBeforeLockout = 5;
+            //UserManager.EmailService = new IdentityConfig.EmailService();
         }
 
-        public AccountController(UserManager<VoatUser> userManager)
-        {
-            UserManager = userManager;
-
-            // Configure user lockout defaults
-            UserManager.UserLockoutEnabledByDefault = true;
-            UserManager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);
-            UserManager.MaxFailedAccessAttemptsBeforeLockout = 5;
-            UserManager.EmailService = new IdentityConfig.EmailService();
-        }
-
-        public UserManager<VoatUser> UserManager { get; private set; }
+        public VoatUserManager UserManager { get; private set; }
 
         // GET: /Account/Login
         [AllowAnonymous]
@@ -114,10 +106,10 @@ namespace Voat.Controllers
                 if (tmpuser != null)
                 {
                     // record failed login attempt and lockout account if failed login limit is reached
-                    await UserManager.AccessFailedAsync(tmpuser.Id);
+                    await UserManager.AccessFailedAsync(tmpuser);
 
                     // if account is locked out, notify the user
-                    if (await UserManager.IsLockedOutAsync(tmpuser.Id))
+                    if (await UserManager.IsLockedOutAsync(tmpuser))
                     {
                         ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
                         return View(model);
@@ -127,7 +119,7 @@ namespace Voat.Controllers
                 ModelState.AddModelError("", "Invalid username or password.");
                 return View(model);
             }
-            else if (await UserManager.IsLockedOutAsync(user.Id))
+            else if (await UserManager.IsLockedOutAsync(user))
             {
                 ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
                 return View(model);
@@ -138,7 +130,7 @@ namespace Voat.Controllers
                 //userData.PreLoad();
 
                 // when token is verified correctly, clear the access failed count used for lockout
-                await UserManager.ResetAccessFailedCountAsync(user.Id);
+                await UserManager.ResetAccessFailedCountAsync(user);
 
                 // get user IP address
                 string clientIpAddress = UserHelper.UserIpAddress(Request);
@@ -153,9 +145,11 @@ namespace Voat.Controllers
 
                 // remove the theme cookie, it will be set to the user preference after the page reloads
                 var cookie = HttpContext.Request.Cookies["theme"];
-                if(cookie != null && !String.IsNullOrEmpty(cookie.Value))
+                if(cookie != null && !String.IsNullOrEmpty(cookie))
                 {
-                    HttpContext.Response.Cookies["theme"].Expires = DateTime.Now.AddDays(-1);
+                    //CORE_PORT: 
+                    Response.Cookies.Append("theme", "", new Microsoft.AspNetCore.Http.CookieOptions() { Expires = DateTime.Now.AddDays(-1) });
+                    //HttpContext.Response.Cookies["theme"].Expires = DateTime.Now.AddDays(-1);
                 }
                 return RedirectToLocal(returnUrl);
             }
@@ -293,13 +287,18 @@ namespace Voat.Controllers
             var hasPassword = HasPassword();
             ViewBag.HasLocalPassword = hasPassword;
             ViewBag.ReturnUrl = Url.Action("Manage");
+            var user = await UserManager.FindByNameAsync(User.Identity.Name);
 
             if (hasPassword)
             {
                 if (!ModelState.IsValid)
+                {
                     return View(model);
+                }
 
-                var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
+                
+                var result = await UserManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
@@ -309,6 +308,8 @@ namespace Voat.Controllers
             else
             {
                 // User does not have a password so remove any validation errors caused by a missing OldPassword field
+                //WTF? Reading this comment just made me error out.
+                throw new NotImplementedException("Core Port: This code should never execute so help us all");
                 var state = ModelState["OldPassword"];
                 if (state != null)
                 {
@@ -319,7 +320,7 @@ namespace Voat.Controllers
                 {
                     return View(model);
                 }
-                var result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
+                var result = await UserManager.AddPasswordAsync(user, model.NewPassword);
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });
@@ -396,7 +397,7 @@ namespace Voat.Controllers
             //return PartialView("_UserPreferencesAbout", tmpModel);
             //try
             //{
-            //    using (var db = new voatEntities())
+            //    using (var db = new VoatUIDataContextAccessor())
             //    {
             //        var userPreferences = GetUserPreference(db);
 
@@ -420,12 +421,13 @@ namespace Voat.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> UserPreferencesAbout([Bind(Include = "Bio, Avatarfile")] UserAboutViewModel model)
+        public async Task<ActionResult> UserPreferencesAbout([Bind("Bio, Avatarfile")] UserAboutViewModel model)
         {
             ViewBag.UserName = User.Identity.Name;
-
-            // save changes
-            using (var db = new voatEntities())
+            //CORE_PORT: Not ported
+            throw new NotImplementedException("Core port not ported");
+            /*
+            using (var db = new VoatUIDataContextAccessor())
             {
                 var userPreferences = GetUserPreference(db);
 
@@ -492,7 +494,7 @@ namespace Voat.Controllers
                 }
                 await db.SaveChangesAsync();
             }
-
+            */
             ClearUserCache();
 
             return RedirectToAction("Manage");
@@ -509,7 +511,7 @@ namespace Voat.Controllers
 
             //try
             //{
-            //    using (var db = new voatEntities())
+            //    using (var db = new VoatUIDataContextAccessor())
             //    {
             //        var userPreferences = GetUserPreference(db);
 
@@ -554,12 +556,12 @@ namespace Voat.Controllers
             if (result.Success)
             {
                 var newTheme = model.NightMode.Value ? "dark" : "light";
-                UserHelper.SetUserStylePreferenceCookie(newTheme);
+                UserHelper.SetUserStylePreferenceCookie(HttpContext, newTheme);
             }
 
             //// save changes
             //string newTheme;
-            //using (var db = new voatEntities())
+            //using (var db = new VoatUIDataContextAccessor())
             //{
             //    var userPreferences = GetUserPreference(db);
 
@@ -580,16 +582,16 @@ namespace Voat.Controllers
             return RedirectToAction("Manage");
         }
 
-        private UserPreference GetUserPreference(voatEntities context)
+        private UserPreference GetUserPreference(VoatUIDataContextAccessor context)
         {
-            var userPreferences = context.UserPreferences.Find(User.Identity.Name);
+            var userPreferences = context.UserPreference.Find(User.Identity.Name);
 
             if (userPreferences == null)
             {
                 userPreferences = new UserPreference();
                 userPreferences.UserName = User.Identity.Name;
                 Repository.SetDefaultUserPreferences(userPreferences);
-                context.UserPreferences.Add(userPreferences);
+                context.UserPreference.Add(userPreferences);
             }
 
             return userPreferences;
@@ -619,7 +621,7 @@ namespace Voat.Controllers
             string newTheme = newPreferences.NightMode.Value ? "dark" : "light";
 
             //// save changes
-            //using (var db = new voatEntities())
+            //using (var db = new VoatUIDataContextAccessor())
             //{
             //    var userPreferences = GetUserPreference(db);
 
@@ -629,17 +631,20 @@ namespace Voat.Controllers
             //    newTheme = userPreferences.NightMode ? "dark" : "light";
             //}
 
-            UserHelper.SetUserStylePreferenceCookie(newTheme);
+            UserHelper.SetUserStylePreferenceCookie(HttpContext, newTheme);
             Response.StatusCode = 200;
-            return Json("Toggled Night Mode", JsonRequestBehavior.AllowGet);
+            return Json("Toggled Night Mode" /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         }
 
         // GET: /Account/UserAccountEmail
         [Authorize]
         [ChildActionOnly]
-        public ActionResult GetUserAccountEmail()
+        public async Task<ActionResult> GetUserAccountEmail()
         {
-            var existingEmail = UserManager.GetEmail(User.Identity.GetUserId());
+            //CORE_PORT: Changes in User Manager
+            //TODO: This code needs to be unit tested
+            var user = await UserManager.FindByNameAsync(User.Identity.Name);
+            var existingEmail = await UserManager.GetEmailAsync(user);
 
             if (existingEmail == null)
             {
@@ -659,7 +664,7 @@ namespace Voat.Controllers
         [HttpPost]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> UserAccountEmail([Bind(Include = "EmailAddress")] UserEmailViewModel model)
+        public async Task<ActionResult> UserAccountEmail([Bind("EmailAddress")] UserEmailViewModel model)
         {
             ViewBag.UserName = User.Identity.Name;
 
@@ -677,7 +682,7 @@ namespace Voat.Controllers
             }
 
             // save changes
-            var result = await UserManager.SetEmailAsync(User.Identity.GetUserId(), model.EmailAddress);
+            var result = await UserManager.SetEmailAsync(existingAccount, model.EmailAddress);
             if (result.Succeeded)
             {
                 return RedirectToAction("Manage");
@@ -691,11 +696,14 @@ namespace Voat.Controllers
         [PreventSpam(DelayRequest = 5, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         public JsonResult CheckUsernameAvailability()
         {
-            var userNameToCheck = Request.Params["userName"];
+            //CORE_PORT: Ported correctly?
+            //var userNameToCheck = Request.Params["userName"];
+            var userNameToCheck = Request.Form["userName"].FirstOrDefault();
+
             if (userNameToCheck == null)
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json("A username parameter is required for this function.", JsonRequestBehavior.AllowGet);
+                return Json("A username parameter is required for this function." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
             }
 
             // check username availability
@@ -709,7 +717,7 @@ namespace Voat.Controllers
                     Available = true
                 };
 
-                return Json(response, JsonRequestBehavior.AllowGet);
+                return Json(response /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
             }
             else
             {
@@ -719,7 +727,7 @@ namespace Voat.Controllers
                 {
                     Available = false
                 };
-                return Json(response, JsonRequestBehavior.AllowGet);
+                return Json(response /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
             }
         }
 
@@ -746,6 +754,9 @@ namespace Voat.Controllers
         [ValidateCaptcha]
         public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
+            //CORE_PORT: Not implemented
+            throw new NotImplementedException("Core port not implemented");
+            /*
             if (ModelState.IsValid)
             {
                 var user = await UserManager.FindByEmailAsync(model.Email);
@@ -756,10 +767,10 @@ namespace Voat.Controllers
                 }
 
                 // Send an email with this link
-                string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                string code = await UserManager.GeneratePasswordResetTokenAsync(user);
                 var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                 await UserManager.SendEmailAsync(
-                    user.Id, 
+                    user, 
                     "Voat Password Reset Request", 
                     $"You have requested to reset your Voat password.<br/><br/>If you did not do this, please ignore this email.<br/><br/>To reset your password please click the following link or copy and paste the url into your browser address bar: <a href=\"{callbackUrl}\">{callbackUrl}</a>");
                 return RedirectToAction("ForgotPasswordConfirmation", "Account");
@@ -768,6 +779,7 @@ namespace Voat.Controllers
             // If we got this far, something failed, redisplay form
             ViewBag.SelectedSubverse = string.Empty;
             return View(model);
+            */
         }
 
         //
@@ -805,7 +817,7 @@ namespace Voat.Controllers
                 // Don't reveal that the user does not exist
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }
-            var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
+            var result = await UserManager.ResetPasswordAsync(user, model.Code, model.Password);
             
             if (result.Succeeded)
             {
@@ -836,33 +848,40 @@ namespace Voat.Controllers
         {
             get
             {
-                return HttpContext.GetOwinContext().Authentication;
+                //CORE_PORT: Port
+                throw new NotImplementedException("Core port not implemented");
+                //return HttpContext.GetOwinContext().Authentication;
             }
         }
 
         private async Task SignInAsync(VoatUser user, bool isPersistent)
         {
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-            var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
-            AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent }, identity);
+            //CORE_PORT: Port
+            throw new NotImplementedException("Core port not implemented");
+            //AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
+            //var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
+            //AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent }, identity);
         }
 
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError("", error);
+                ModelState.AddModelError("", error.Description);
             }
         }
 
         private bool HasPassword()
         {
-            var user = UserManager.FindById(User.Identity.GetUserId());
-            if (user != null)
-            {
-                return user.PasswordHash != null;
-            }
-            return false;
+            //CORE_PORT: Port
+            throw new NotImplementedException("Core port not implemented");
+
+            //var user = UserManager.FindById(User.Identity.GetUserId());
+            //if (user != null)
+            //{
+            //    return user.PasswordHash != null;
+            //}
+            //return false;
         }
 
         public enum ManageMessageId
@@ -882,9 +901,9 @@ namespace Voat.Controllers
 
         private ActionResult RedirectToLocal(string returnUrl)
         {
-            if (String.IsNullOrEmpty(returnUrl) && !String.IsNullOrEmpty(Request.QueryString["ReturnUrl"]))
+            if (String.IsNullOrEmpty(returnUrl) && !String.IsNullOrEmpty(Request.Query["ReturnUrl"]))
             {
-                returnUrl = Request.QueryString["ReturnUrl"];
+                returnUrl = Request.Query["ReturnUrl"];
             }
             if (Url.IsLocalUrl(returnUrl))
             {
@@ -913,15 +932,16 @@ namespace Voat.Controllers
 
             public string UserId { get; set; }
 
-            public override void ExecuteResult(ControllerContext context)
-            {
-                var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
-                if (UserId != null)
-                {
-                    properties.Dictionary[XsrfKey] = UserId;
-                }
-                context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
-            }
+            //CORE_PORT: Not ported
+            //public override void ExecuteResult(ControllerContext context)
+            //{
+            //    var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
+            //    if (UserId != null)
+            //    {
+            //        properties.Dictionary[XsrfKey] = UserId;
+            //    }
+            //    context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
+            //}
         }
 
         #endregion Helpers

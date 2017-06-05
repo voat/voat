@@ -22,27 +22,15 @@
 
 #endregion LICENSE
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Mail;
-using System.Threading.Tasks;
-using System.Web.Http;
-using Voat.Caching;
-using Voat.Data.Models;
-using Voat.Domain;
-using Voat.Domain.Query;
-using Voat.Models;
-using Voat.Models.ApiModels;
-using Voat.Utilities;
 
 
 namespace Voat.Controllers
 {
+    //CORE_PORT: This is not getting ported
+    /*
     public class WebApiController : ApiController
     {
-        //private readonly voatEntities _db = new voatEntities();
+        //private readonly voatEntities _db = new VoatUIDataContextAccessor();
 
         public WebApiController()
         {
@@ -154,7 +142,7 @@ namespace Voat.Controllers
             {
                 cacheData = CacheHandler.Instance.Register(cacheKey, new Func<List<ApiMessage>>(() =>
                 {
-                    using (var db = new voatEntities())
+                    using (var db = new VoatUIDataContextAccessor())
                     {
                         // get only submissions from default subverses, order by rank
                         var frontpageSubmissions = (from message in db.Submissions
@@ -653,4 +641,5 @@ namespace Voat.Controllers
             public List<ResponseItem> Items { get; set; }
         }
     }
+    */
 }

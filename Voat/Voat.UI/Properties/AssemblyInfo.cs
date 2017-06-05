@@ -22,6 +22,8 @@
 
 #endregion LICENSE
 
+//CORE_PORT: Use project settings
+/*
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -38,3 +40,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("6df24492-bedc-43d6-9a3a-a225d889d176")]
 [assembly: AssemblyVersion("1.1.*")]
 [assembly: AssemblyFileVersion("1.1.*")]
+*/

@@ -22,38 +22,37 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Mvc.Filters;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Helpers;
-using System.Web.Mvc;
 
 namespace Voat
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    public class VoatValidateAntiForgeryTokenAttribute : FilterAttribute, IAuthorizationFilter
+    public class VoatValidateAntiForgeryTokenAttribute : ActionFilterAttribute, IAuthorizationFilter
     {
-        public void OnAuthorization(AuthorizationContext filterContext)
+        public void OnAuthorization(AuthorizationFilterContext filterContext)
         {
-            if (filterContext == null)
-            {
-                throw new ArgumentNullException("filterContext");
-            }
-            const string KEY_NAME = "__RequestVerificationToken";
 
-            var httpContext = filterContext.HttpContext;
-            var cookie = httpContext.Request.Cookies[AntiForgeryConfig.CookieName];
+            //CORE_PORT: Not Supported
+            throw new NotImplementedException("Core port issues");
+            //if (filterContext == null)
+            //{
+            //    throw new ArgumentNullException("filterContext");
+            //}
+            //const string KEY_NAME = "__RequestVerificationToken";
 
-            string token = httpContext.Request.Form[KEY_NAME];
+            //var httpContext = filterContext.HttpContext;
+            //var cookie = httpContext.Request.Cookies[AntiForgeryConfig.CookieName];
 
-            if (String.IsNullOrEmpty(token))
-            {
-                //look in headers collection 
-                token = httpContext.Request.Headers[KEY_NAME];
-            }
+            //string token = httpContext.Request.Form[KEY_NAME];
 
-            AntiForgery.Validate(cookie != null ? cookie.Value : null, token);
+            //if (String.IsNullOrEmpty(token))
+            //{
+            //    //look in headers collection 
+            //    token = httpContext.Request.Headers[KEY_NAME];
+            //}
+
+            //AntiForgery.Validate(cookie != null ? cookie.Value : null, token);
         }
     }
 }

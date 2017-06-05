@@ -22,14 +22,8 @@
 
 #endregion LICENSE
 
-using Microsoft.AspNet.Identity;
-using Microsoft.Owin;
-using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.DataProtection;
-using Owin;
+using Microsoft.AspNetCore.DataProtection;
 using System;
-using System.Web;
-using System.Web.Configuration;
 
 namespace Voat
 {
@@ -37,7 +31,12 @@ namespace Voat
     {
         internal static IDataProtectionProvider DataProtectionProvider { get; private set; }
 
-        // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
+        //CORE_PORT: Not ported
+        public void ConfigureAuth(object app)
+        {
+            throw new NotImplementedException("Not ported");
+        }
+        /*
         public void ConfigureAuth(IAppBuilder app)
         {
             DataProtectionProvider = app.GetDataProtectionProvider();
@@ -63,5 +62,6 @@ namespace Voat
             app.UseCookieAuthentication(settings);
 
         }
+        */
     }
 }

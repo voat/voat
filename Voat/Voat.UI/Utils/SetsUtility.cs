@@ -22,6 +22,9 @@
 
 #endregion LICENSE
 
+//CORE_PORT: This will be deleted
+/*
+
 using System.Data.Entity;
 using System.Linq;
 using Voat.Data.Models;
@@ -29,6 +32,7 @@ using Voat.Models;
 
 namespace Voat.UI.Utilities
 {
+
     //REFACTOR: Duplicate logic
     public static class SetsUtility
     {
@@ -104,3 +108,4 @@ namespace Voat.UI.Utilities
         }
     }
 }
+*/

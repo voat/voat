@@ -22,15 +22,15 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Web.Mvc;
-using Voat.Data.Models;
 
 namespace Voat.Controllers
 {
     public class HtmlElementsController : BaseController
     {
-        private readonly voatEntities _db = new voatEntities();
+        //CORE_PORT: No direct access
+        //private readonly voatEntities _db = new VoatUIDataContextAccessor();
 
         // GET: CommentReplyForm
         public ActionResult CommentReplyForm(int? parentCommentId, int? messageId)

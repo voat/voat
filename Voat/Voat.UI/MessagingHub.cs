@@ -30,6 +30,7 @@ using Microsoft.AspNet.SignalR.Hubs;
 
 using System.Collections.Generic;
 using Voat.Utilities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Voat
 {
@@ -44,7 +45,7 @@ namespace Voat
         }
 
         // send a chat message to all users in a subverse room
-        [Authorize]
+        [Microsoft.AspNet.SignalR.Authorize]
         public void SendChatMessage(string id, string message, string access)
         {
             if (message == null)

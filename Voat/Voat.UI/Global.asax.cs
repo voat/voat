@@ -31,15 +31,8 @@ using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Web;
-using System.Web.Http;
-using System.Web.Http.ExceptionHandling;
-using System.Web.Mvc;
-using System.Web.Optimization;
-using System.Web.Routing;
 using Voat.Configuration;
 using Voat.Data;
-using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.Logging;
@@ -47,10 +40,11 @@ using Voat.Rules;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 using Voat.Utilities.Components;
-using Voat.Utils;
 
 namespace Voat
 {
+    //CORE_PORT: Not supported
+    /*
     public class MvcApplication : HttpApplication
     {
         Timer timer;
@@ -277,4 +271,5 @@ namespace Voat
             }
         }
     }
+    */
 }

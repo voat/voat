@@ -22,20 +22,19 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 using Voat.Caching;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
-using Voat.Domain.Query;
 using Voat.Models.ViewModels;
 using Voat.UI.Utilities;
 using Voat.Utilities;
@@ -45,7 +44,7 @@ namespace Voat.Controllers
     [Authorize]
     public class SubverseModerationController : BaseController
     {
-        private readonly voatEntities _db = new voatEntities(true);
+        private readonly VoatDataContext _db = new VoatUIDataContextAccessor(CONSTANTS.CONNECTION_LIVE);
 
         private void SetNavigationViewModel(string subverseName)
         {
@@ -73,7 +72,7 @@ namespace Voat.Controllers
 
             // check that the user requesting to edit subverse settings is subverse owner!
             var subAdmin =
-                _db.SubverseModerators.FirstOrDefault(
+                _db.SubverseModerator.FirstOrDefault(
                     x => x.Subverse == subverse && x.UserName == User.Identity.Name && x.Power <= 2);
 
             if (subAdmin == null)
@@ -120,7 +119,7 @@ namespace Voat.Controllers
                     SetNavigationViewModel(updatedModel.Name);
                     return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
                 }
-                var existingSubverse = _db.Subverses.Find(updatedModel.Name);
+                var existingSubverse = _db.Subverse.Find(updatedModel.Name);
 
                 // check if subverse exists before attempting to edit it
                 if (existingSubverse != null)
@@ -256,7 +255,8 @@ namespace Voat.Controllers
         }
 
         [HttpPost]
-        [ValidateInput(false)]
+        //CORE_PORT: Not supported
+        //[ValidateInput(false)]
         [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SubverseStylesheetEditor(SubverseStylesheetViewModel model)
@@ -268,7 +268,7 @@ namespace Voat.Controllers
                     SetNavigationViewModel(model.Name);
                     return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
                 }
-                var existingSubverse = _db.Subverses.Find(model.Name);
+                var existingSubverse = _db.Subverse.Find(model.Name);
 
                 // check if subverse exists before attempting to edit it
                 if (existingSubverse != null)
@@ -333,7 +333,7 @@ namespace Voat.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var subverseModerators = _db.SubverseModerators
+            var subverseModerators = _db.SubverseModerator
                 .Where(n => n.Subverse == subverse)
                 .Take(20)
                 .OrderBy(s => s.Power)
@@ -361,7 +361,7 @@ namespace Voat.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var moderatorInvitations = _db.ModeratorInvitations
+            var moderatorInvitations = _db.ModeratorInvitation
                 .Where(mi => mi.Subverse == subverse)
                 .Take(20)
                 .OrderBy(s => s.Power)
@@ -397,7 +397,7 @@ namespace Voat.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var subverseBans = _db.SubverseBans.Where(n => n.Subverse == subverse).OrderByDescending(s => s.CreationDate);
+            var subverseBans = _db.SubverseBan.Where(n => n.Subverse == subverse).OrderByDescending(s => s.CreationDate);
             var paginatedSubverseBans = new PaginatedList<SubverseBan>(subverseBans, page ?? 0, pageSize);
 
             ViewBag.SubverseModel = subverseObject;
@@ -437,7 +437,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> AddBan([Bind(Include = "Id,Subverse,UserName,Reason")] SubverseBan subverseBan)
+        public async Task<ActionResult> AddBan([Bind("Id,Subverse,UserName,Reason")] SubverseBan subverseBan)
         {
             if (!ModelState.IsValid)
             {
@@ -485,7 +485,7 @@ namespace Voat.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            var subverseBan = _db.SubverseBans.Find(id);
+            var subverseBan = _db.SubverseBan.Find(id);
 
             if (subverseBan == null)
             {
@@ -506,7 +506,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> RemoveBan(int id)
         {
             // get ban name for selected subverse
-            var banToBeRemoved = await _db.SubverseBans.FindAsync(id);
+            var banToBeRemoved = await _db.SubverseBan.FindAsync(id);
 
             if (banToBeRemoved == null)
             {
@@ -544,7 +544,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var moderatorInvitation = _db.ModeratorInvitations.Find(invitationId);
+            var moderatorInvitation = _db.ModeratorInvitation.Find(invitationId);
 
             if (moderatorInvitation == null)
             {
@@ -574,7 +574,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> RecallModeratorInvitation(int invitationId)
         {
             // get invitation to remove
-            var invitationToBeRemoved = await _db.ModeratorInvitations.FindAsync(invitationId);
+            var invitationToBeRemoved = await _db.ModeratorInvitation.FindAsync(invitationId);
             if (invitationToBeRemoved == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -602,7 +602,7 @@ namespace Voat.Controllers
             }
 
             // execute invitation removal
-            _db.ModeratorInvitations.Remove(invitationToBeRemoved);
+            _db.ModeratorInvitation.Remove(invitationToBeRemoved);
             await _db.SaveChangesAsync();
 
             return RedirectToAction("SubverseModerators");
@@ -619,7 +619,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var subModerator = _db.SubverseModerators.FirstOrDefault(s => s.Subverse == subverse && s.UserName == User.Identity.Name);
+            var subModerator = _db.SubverseModerator.FirstOrDefault(s => s.Subverse == subverse && s.UserName == User.Identity.Name);
 
             if (subModerator == null)
             {
@@ -641,7 +641,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> ResignAsModeratorPost(string subverse)
         {
             // get moderator name for selected subverse
-            var subModerator = _db.SubverseModerators.FirstOrDefault(s => s.Subverse == subverse && s.UserName == User.Identity.Name);
+            var subModerator = _db.SubverseModerator.FirstOrDefault(s => s.Subverse == subverse && s.UserName == User.Identity.Name);
 
             if (subModerator == null)
             {
@@ -655,7 +655,7 @@ namespace Voat.Controllers
             }
 
             // execute removal
-            _db.SubverseModerators.Remove(subModerator);
+            _db.SubverseModerator.Remove(subModerator);
             await _db.SaveChangesAsync();
 
             //clear mod cache
@@ -684,7 +684,7 @@ namespace Voat.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var subverseFlairsettings = _db.SubverseFlairs
+            var subverseFlairsettings = _db.SubverseFlair
                 .Where(n => n.Subverse == subverse)
                 .Take(20)
                 .OrderBy(s => s.ID)
@@ -727,7 +727,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [VoatValidateAntiForgeryToken]
-        public ActionResult AddLinkFlair([Bind(Include = "Id,Subverse,Label,CssClass")] SubverseFlair subverseFlairSetting)
+        public ActionResult AddLinkFlair([Bind("Id,Subverse,Label,CssClass")] SubverseFlair subverseFlairSetting)
         {
             if (!ModelState.IsValid)
             {
@@ -746,7 +746,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             subverseFlairSetting.Subverse = subverseModel.Name;
-            _db.SubverseFlairs.Add(subverseFlairSetting);
+            _db.SubverseFlair.Add(subverseFlairSetting);
             _db.SaveChanges();
 
             return RedirectToAction("SubverseFlairSettings");
@@ -761,7 +761,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var subverseFlairSetting = _db.SubverseFlairs.Find(id);
+            var subverseFlairSetting = _db.SubverseFlair.Find(id);
 
             if (subverseFlairSetting == null)
             {
@@ -782,7 +782,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> RemoveLinkFlair(int id)
         {
             // get link flair for selected subverse
-            var linkFlairToRemove = await _db.SubverseFlairs.FindAsync(id);
+            var linkFlairToRemove = await _db.SubverseFlair.FindAsync(id);
             if (linkFlairToRemove == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -800,8 +800,8 @@ namespace Voat.Controllers
             }
 
             // execute removal
-            var subverseFlairSetting = await _db.SubverseFlairs.FindAsync(id);
-            _db.SubverseFlairs.Remove(subverseFlairSetting);
+            var subverseFlairSetting = await _db.SubverseFlair.FindAsync(id);
+            _db.SubverseFlair.Remove(subverseFlairSetting);
             await _db.SaveChangesAsync();
             return RedirectToAction("SubverseFlairSettings");
         }
@@ -815,7 +815,7 @@ namespace Voat.Controllers
 
             //TODO: These errors are not friendly - please update to redirect or something
             // check if there is an invitation for this user with this id
-            var userInvitation = _db.ModeratorInvitations.Find(invitationId);
+            var userInvitation = _db.ModeratorInvitation.Find(invitationId);
             if (userInvitation == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -828,7 +828,7 @@ namespace Voat.Controllers
             }
 
             // check if user is over modding limits
-            var amountOfSubsUserModerates = _db.SubverseModerators.Where(s => s.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+            var amountOfSubsUserModerates = _db.SubverseModerator.Where(s => s.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
             if (amountOfSubsUserModerates.Any())
             {
                 if (amountOfSubsUserModerates.Count() >= maximumOwnedSubs)
@@ -839,14 +839,14 @@ namespace Voat.Controllers
             }
 
             // check if subverse exists
-            var subverseToAddModTo = _db.Subverses.FirstOrDefault(s => s.Name.Equals(userInvitation.Subverse, StringComparison.OrdinalIgnoreCase));
+            var subverseToAddModTo = _db.Subverse.FirstOrDefault(s => s.Name.Equals(userInvitation.Subverse, StringComparison.OrdinalIgnoreCase));
             if (subverseToAddModTo == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             // check if user is already a moderator of this sub
-            var userModerating = _db.SubverseModerators.Where(s => s.Subverse.Equals(userInvitation.Subverse, StringComparison.OrdinalIgnoreCase) && s.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+            var userModerating = _db.SubverseModerator.Where(s => s.Subverse.Equals(userInvitation.Subverse, StringComparison.OrdinalIgnoreCase) && s.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
             if (userModerating.Any())
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -862,7 +862,7 @@ namespace Voat.Controllers
                 CreationDate = Repository.CurrentDate
             };
 
-            _db.SubverseModerators.Add(subAdm);
+            _db.SubverseModerator.Add(subAdm);
 
             // notify sender that user has accepted the invitation
             var message = new Domain.Models.SendMessage()
@@ -879,7 +879,7 @@ namespace Voat.Controllers
             CacheHandler.Instance.Remove(CachingKey.SubverseModerators(userInvitation.Subverse));
 
             // delete the invitation from database
-            _db.ModeratorInvitations.Remove(userInvitation);
+            _db.ModeratorInvitation.Remove(userInvitation);
             _db.SaveChanges();
 
             return RedirectToAction("SubverseSettings", "SubverseModeration", new { subverse = userInvitation.Subverse });
@@ -913,7 +913,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> AddModerator([Bind(Include = "ID,Subverse,Username,Power")] SubverseModerator subverseAdmin)
+        public async Task<ActionResult> AddModerator([Bind("ID,Subverse,Username,Power")] SubverseModerator subverseAdmin)
         {
             if (!ModelState.IsValid)
             {
@@ -981,18 +981,18 @@ namespace Voat.Controllers
             int maximumOwnedSubs = Settings.MaximumOwnedSubs;
 
             // check if the user being added is not already a moderator of 10 subverses
-            var currentlyModerating = _db.SubverseModerators.Where(a => a.UserName == originalRecipientUserName).ToList();
+            var currentlyModerating = _db.SubverseModerator.Where(a => a.UserName == originalRecipientUserName).ToList();
 
             SubverseModeratorViewModel tmpModel;
             if (currentlyModerating.Count <= maximumOwnedSubs)
             {
                 // check that user is not already moderating given subverse
-                var isAlreadyModerator = _db.SubverseModerators.FirstOrDefault(a => a.UserName == originalRecipientUserName && a.Subverse == subverseAdmin.Subverse);
+                var isAlreadyModerator = _db.SubverseModerator.FirstOrDefault(a => a.UserName == originalRecipientUserName && a.Subverse == subverseAdmin.Subverse);
 
                 if (isAlreadyModerator == null)
                 {
                     // check if this user is already invited
-                    var userModeratorInvitations = _db.ModeratorInvitations.Where(i => i.Recipient.Equals(originalRecipientUserName, StringComparison.OrdinalIgnoreCase) && i.Subverse.Equals(subverseModel.Name, StringComparison.OrdinalIgnoreCase));
+                    var userModeratorInvitations = _db.ModeratorInvitation.Where(i => i.Recipient.Equals(originalRecipientUserName, StringComparison.OrdinalIgnoreCase) && i.Subverse.Equals(subverseModel.Name, StringComparison.OrdinalIgnoreCase));
                     if (userModeratorInvitations.Any())
                     {
                         return sendFailureResult("Sorry, the user is already invited to moderate this subverse");
@@ -1008,7 +1008,7 @@ namespace Voat.Controllers
                         Power = subverseAdmin.Power
                     };
 
-                    _db.ModeratorInvitations.Add(modInv);
+                    _db.ModeratorInvitation.Add(modInv);
                     _db.SaveChanges();
 
                     int invitationId = modInv.ID;
@@ -1018,7 +1018,9 @@ namespace Voat.Controllers
                     invitationBody.Append($"@{User.Identity.Name} invited you to moderate v/" + subverseAdmin.Subverse + ".");
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append(Environment.NewLine);
-                    invitationBody.Append("Please visit the following link if you want to accept this invitation: " + "https://" + Request.ServerVariables["HTTP_HOST"] + "/acceptmodinvitation/" + invitationId);
+                    //CORE_PORT: Not ported
+                    throw new NotImplementedException("Core port");
+                    //invitationBody.Append("Please visit the following link if you want to accept this invitation: " + "https://" + Request.ServerVariables["HTTP_HOST"] + "/acceptmodinvitation/" + invitationId);
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append("Thank you.");
@@ -1053,7 +1055,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var subModerator = _db.SubverseModerators.Find(id);
+            var subModerator = _db.SubverseModerator.Find(id);
 
             if (subModerator == null)
             {

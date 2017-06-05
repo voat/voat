@@ -23,6 +23,8 @@
 #endregion LICENSE
 
 //using Microsoft.AspNet.SignalR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -30,7 +32,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+
 using Voat.Caching;
 using Voat.Configuration;
 using Voat.Data;
@@ -295,7 +297,7 @@ namespace Voat.Controllers
         [Authorize]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> SubmitComment([Bind(Include = "ID, Content, SubmissionID, ParentID")] Data.Models.Comment commentModel)
+        public async Task<ActionResult> SubmitComment([Bind("ID, Content, SubmissionID, ParentID")] Data.Models.Comment commentModel)
         {
 
             //return JsonError("This is an error message");
@@ -329,11 +331,12 @@ namespace Voat.Controllers
                         ViewBag.rootComment = comment.ParentID == null; //why?
                         return PartialView("~/Views/Shared/Comments/_SubmissionComment.cshtml", comment);
                     }
-                    else if (Request.UrlReferrer != null)
-                    {
-                        var url = Request.UrlReferrer.AbsolutePath;
-                        return Redirect(url);
-                    }
+                    //CORE_PORT: Don't think we use this anyways
+                    //else if (Request.UrlReferrer != null)
+                    //{
+                    //    var url = Request.UrlReferrer.AbsolutePath;
+                    //    return Redirect(url);
+                    //}
                     else
                     {
                         return new EmptyResult();
@@ -351,7 +354,7 @@ namespace Voat.Controllers
         [Authorize]
         [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public async Task<ActionResult> EditComment([Bind(Include = "ID, Content")] Data.Models.Comment commentModel)
+        public async Task<ActionResult> EditComment([Bind("ID, Content")] Data.Models.Comment commentModel)
         {
             if (ModelState.IsValid)
             {
@@ -390,8 +393,10 @@ namespace Voat.Controllers
                     {
                         return new HttpStatusCodeResult(HttpStatusCode.OK);
                     }
-                    var url = Request.UrlReferrer.AbsolutePath;
-                    return Redirect(url);
+                    //CORE_PORT: Not ported
+                    throw new NotImplementedException("Core port");
+                    //var url = Request.UrlReferrer.AbsolutePath;
+                    //return Redirect(url);
                 }
                 else
                 {
@@ -410,9 +415,9 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<JsonResult> DistinguishComment(int commentId)
         {
-            using (var _db = new voatEntities())
+            using (var _db = new VoatUIDataContextAccessor())
             {
-                var commentToDistinguish = _db.Comments.Find(commentId);
+                var commentToDistinguish = _db.Comment.Find(commentId);
 
                 if (commentToDistinguish != null)
                 {
@@ -438,14 +443,14 @@ namespace Voat.Controllers
                             CacheHandler.Instance.DictionaryReplace<int, usp_CommentTree_Result>(CachingKey.CommentTree(commentToDistinguish.SubmissionID.Value), commentToDistinguish.ID, x => { x.IsDistinguished = commentToDistinguish.IsDistinguished; return x; }, true);
 
                             Response.StatusCode = 200;
-                            return Json("Distinguish flag changed.", JsonRequestBehavior.AllowGet);
+                            return Json("Distinguish flag changed." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
                         }
                     }
                 }
             }
 
             Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            return Json("Unauthorized distinguish attempt.", JsonRequestBehavior.AllowGet);
+            return Json("Unauthorized distinguish attempt." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         }
 
         [HttpGet]

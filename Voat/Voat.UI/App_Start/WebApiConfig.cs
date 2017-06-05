@@ -22,16 +22,18 @@
 
 #endregion LICENSE
 
-using System.Net.Http.Headers;
-using System.Web.Http;
-using Newtonsoft.Json;
-using WebApiThrottle;
-using Voat.Configuration;
+using System;
 
 namespace Voat
 {
     public class WebApiConfig
     {
+        //CORE_PORT: Not implemented
+        public static void Register(object configuration)
+        {
+            throw new NotImplementedException("Core port not implemented");
+        }
+        /*
         public static void Register(HttpConfiguration configuration)
         {
             // configure throttling handler
@@ -95,5 +97,6 @@ namespace Voat
                     new { controller = "WebApi", action = "Top100ImagesByDate" });
             }
         }
+        */
     }
 }

@@ -80,7 +80,7 @@
             <p>@description</p>
         </div>
 
-        @if (Request.QueryString["phrase"] != null || Request.Url.AbsoluteUri.Contains("/search"))
+        @if (Request.Query["phrase"] != null || Request.Url.AbsoluteUri.Contains("/search"))
         {
             @Html.Partial("_SearchBar", domainType)
 
@@ -107,7 +107,7 @@
                     }
                 }
                 {
-                    var phrase = (string)Request.QueryString["phrase"];
+                    var phrase = (string)Request.Query["phrase"];
                     if (!String.IsNullOrEmpty(phrase))
                     {
                         Model.RouteData = Request.RequestContext.RouteData.Values;
@@ -118,7 +118,7 @@
             }
             else
             {
-                if (Request.QueryString["phrase"] != null)
+                if (Request.Query["phrase"] != null)
                 {
                     <p>We can't find it.</p>
                     if (User.Identity.IsAuthenticated)

@@ -24,7 +24,7 @@
 
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+
 using Voat.Domain.Models;
 
 namespace Voat.Models.ViewModels
@@ -39,7 +39,8 @@ namespace Voat.Models.ViewModels
         public string Subverse { get; set; }
 
         [MaxLength(10000, ErrorMessage = "Content is limited to 10000 characters")]
-        [AllowHtml]
+        //CORE_PORT: Not supported
+        //[AllowHtml]
         public string Content { get; set; }
 
         [Required(ErrorMessage = "URL is required. Please provide this field.")]

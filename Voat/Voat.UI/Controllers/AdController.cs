@@ -22,11 +22,12 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+
 using Voat.Caching;
 using Voat.Configuration;
 using Voat.Data;
@@ -82,9 +83,9 @@ namespace Voat.Controllers
 
             try
             {
-                using (var db = new voatEntities())
+                using (var db = new VoatUIDataContextAccessor())
                 {
-                    var ad = (from x in db.Ads
+                    var ad = (from x in db.Ad
                               where
                               ((subverse != null && x.Subverse.Equals(subverse, StringComparison.InvariantCultureIgnoreCase) || (x.Subverse == null)))
                               && (x.EndDate >= Repository.CurrentDate && x.StartDate <= Repository.CurrentDate)
@@ -107,9 +108,9 @@ namespace Voat.Controllers
                         {
                             var ads = CacheHandler.Instance.Register(CachingKey.AdCache(), new Func<IList<Ad>>(() =>
                             {
-                                using (var dbcontext = new voatEntities())
+                                using (var dbcontext = new VoatUIDataContextAccessor())
                                 {
-                                    var adCache = (from x in dbcontext.Ads
+                                    var adCache = (from x in dbcontext.Ad
                                                    where
                                                    x.Subverse == null
                                                    && x.IsActive

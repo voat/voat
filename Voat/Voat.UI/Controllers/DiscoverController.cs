@@ -22,12 +22,13 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
+
 using Voat.Data;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
@@ -65,7 +66,7 @@ namespace Voat.Controllers
         // GET: Discover
         public async Task<ActionResult> Index(DomainType? domainType = null, SortAlgorithm? sort = null)
         {
-            var options = new SearchOptions(Request.QueryString, 20);
+            var options = new SearchOptions(Request.QueryString.Value, 20);
 
             var type = domainType.HasValue ? domainType.Value : DomainType.Subverse;
             var sortValue = sort.HasValue ? sort.Value : SortAlgorithm.Hot;

@@ -22,17 +22,24 @@
 
 #endregion LICENSE
 
-using System.Web.Mvc;
+using System;
 using Voat.Utils;
 
 namespace Voat
 {
     public class FilterConfig
     {
+        //CORE_PORT: Different setup
+        public static void RegisterGlobalFilters(object filters)
+        {
+            throw new NotImplementedException("Differend filter setup");
+        }
+        /*
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
             filters.Add(new JsonNetActionFilter());
         }
+        */
     }
 }

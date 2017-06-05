@@ -22,7 +22,8 @@
 
 #endregion LICENSE
 
-using System.Web.Mvc;
+
+using Microsoft.AspNetCore.Mvc;
 using Voat.Models.ViewModels;
 
 namespace Voat.Controllers

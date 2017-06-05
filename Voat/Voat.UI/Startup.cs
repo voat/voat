@@ -22,17 +22,21 @@
 
 #endregion LICENSE
 
-using Microsoft.AspNet.SignalR;
-using Microsoft.Owin;
-using Owin;
-using Voat;
-using Voat.Configuration;
+using System;
 
-[assembly: OwinStartup(typeof(Startup))]
+//CORE_PORT: Unsupported
+//[assembly: OwinStartup(typeof(Startup))]
 namespace Voat
 {
     public partial class Startup
     {
+
+        //CORE_PORT: Changes in setup
+        public void Configuration(object app)
+        {
+            throw new NotImplementedException("Core port problem");
+        }
+        /*
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
@@ -49,5 +53,6 @@ namespace Voat
                 app.MapSignalR(config);
             }
         }
+        */
     }
 }

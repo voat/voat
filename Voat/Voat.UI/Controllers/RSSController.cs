@@ -22,21 +22,9 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
-using System.Web.Mvc;
-using Voat.Caching;
-using Voat.Configuration;
-using Voat.Data;
-using Voat.Data.Models;
-using Voat.Domain.Query;
-using Voat.Models;
-using Voat.UI.Utilities;
-using Voat.Utilities;
 
 namespace Voat.Controllers
 {
@@ -46,7 +34,9 @@ namespace Voat.Controllers
         // GET: rss/{subverseName}
         public async Task<ActionResult> Rss(string subverseName)
         {
-
+            //CORE_PORT: Not supported
+            throw new NotImplementedException("Core port not implemented");
+            /*
             subverseName = String.IsNullOrEmpty(subverseName) ? AGGREGATE_SUBVERSE.ALL : subverseName;
 
             var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverseName), new Data.SearchOptions());
@@ -133,6 +123,7 @@ namespace Voat.Controllers
 
             feed.Items = feedItems;
             return new FeedResult(new Rss20FeedFormatter(feed));
+            */
         }
     }
 }

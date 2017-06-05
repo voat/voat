@@ -107,9 +107,9 @@
             {
                 Model.Submissions.RouteData["span"] = Model.Span.ToString().ToLower();
             }
-            if (!String.IsNullOrEmpty(Request.QueryString["frontpage"]))
+            if (!String.IsNullOrEmpty(Request.Query["frontpage"]))
             {
-                Model.Submissions.RouteData["frontpage"] = Request.QueryString["frontpage"];
+                Model.Submissions.RouteData["frontpage"] = Request.Query["frontpage"];
             }
         }
         @Html.DisplayFor(model => Model.Submissions, "IPaginatedList")
@@ -123,7 +123,7 @@
                        page = (Model.Submissions.PageIndex - 1),
                        sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()),
                        time = (Model.Span == null ? "" : Model.Span.ToString().ToLower()),
-                       frontpage = Request.QueryString["frontpage"]
+                       frontpage = Request.Query["frontpage"]
                    }, new {rel = "prev"})
                     </li>
                 }
@@ -135,7 +135,7 @@
                        page = (Model.Submissions.PageIndex + 1),
                        sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()),
                        time = (Model.Span == null ? "" : Model.Span.ToString().ToLower()),
-                       frontpage = Request.QueryString["frontpage"]
+                       frontpage = Request.Query["frontpage"]
                    }, new { rel = "next" })
                     </li>
                 }

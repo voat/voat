@@ -28,8 +28,6 @@ using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Mvc;
-using Microsoft.Ajax.Utilities;
 using Voat.Models;
 using Voat.Models.ViewModels;
 
@@ -42,6 +40,9 @@ using Voat.Domain.Query;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Domain;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Routing;
 
 namespace Voat.Controllers
 {
@@ -70,7 +71,7 @@ namespace Voat.Controllers
             }
 
 
-            var options = new SearchOptions(Request.Url.Query);
+            var options = new SearchOptions(Request.QueryString.Value);
             //Set sort because it is part of path
             if (!String.IsNullOrEmpty(sort))
             {
@@ -85,7 +86,7 @@ namespace Voat.Controllers
                 }
             }
             //set span to day if not specified explicitly 
-            if (options.Sort == SortAlgorithm.Top && Request.QueryString["span"] == null)
+            if (options.Sort == SortAlgorithm.Top && !Request.Query.ContainsKey("span"))
             {
                 options.Span = SortSpan.Day;
             }
@@ -176,7 +177,7 @@ namespace Voat.Controllers
                     return GenericErrorView(new ErrorViewModel() { Title = "Set is Private", Description = "This set doesn't allow the viewing of its properties", FooterMessage = "It's ok, I can't see it either" });
                 }
 
-                var options = new SearchOptions(Request.QueryString);
+                var options = new SearchOptions(Request.QueryString.Value);
                 options.Count = 50;
 
                 var setList = await repo.GetSetListDescription(set.ID, options.Page);
@@ -244,7 +245,7 @@ namespace Voat.Controllers
                         }
                         else
                         {
-                            return new RedirectToRouteResult("UserSets", new System.Web.Routing.RouteValueDictionary() { { "pathPrefix", "user" }, { "userName", User.Identity.Name } });
+                            return new RedirectToRouteResult("UserSets", new RouteValueDictionary() { { "pathPrefix", "user" }, { "userName", User.Identity.Name } });
                         }
                     }
                     else
@@ -305,7 +306,7 @@ namespace Voat.Controllers
                         else
                         {
                             var domainReference = new DomainReference(DomainType.Set, result.Response.Name, result.Response.UserName);
-                            return new RedirectToRouteResult("SetDetails", new System.Web.Routing.RouteValueDictionary() { { "name", domainReference.FullName } });
+                            return new RedirectToRouteResult("SetDetails", new RouteValueDictionary() { { "name", domainReference.FullName } });
                         }
                     }
                     else
@@ -317,7 +318,7 @@ namespace Voat.Controllers
             return View(set);       
         }
         #region OLD CODE
-        //private readonly voatEntities _db = new voatEntities();
+        //private readonly voatEntities _db = new VoatUIDataContextAccessor();
 
         //// GET: /set/setid
         //// show single set frontpage
@@ -712,12 +713,12 @@ namespace Voat.Controllers
         //    if (Settings.SetsDisabled)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //        return Json("Sets disabled.", JsonRequestBehavior.AllowGet);
+        //        return Json("Sets disabled." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //    }
         //    var loggedInUser = User.Identity.Name;
 
         //    UserHelper.SubscribeToSet(loggedInUser, setId);
-        //    return Json("Subscription request was successful.", JsonRequestBehavior.AllowGet);
+        //    return Json("Subscription request was successful." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //}
 
         //// POST: unsubscribe from a set
@@ -729,12 +730,12 @@ namespace Voat.Controllers
         //    if (Settings.SetsDisabled)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //        return Json("Sets disabled.", JsonRequestBehavior.AllowGet);
+        //        return Json("Sets disabled." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //    }
         //    var loggedInUser = User.Identity.Name;
 
         //    UserHelper.UnSubscribeFromSet(loggedInUser, setId);
-        //    return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
+        //    return Json("Unsubscribe request was successful." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //}
 
         //// POST: add a subverse to set
@@ -746,21 +747,21 @@ namespace Voat.Controllers
         //    if (Settings.SetsDisabled)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //        return Json("Sets disabled.", JsonRequestBehavior.AllowGet);
+        //        return Json("Sets disabled." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //    }
         //    // check if set exists
         //    var setToModify = _db.UserSets.Find(setId);
         //    if (setToModify == null)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //        return Json("Set doesn't exist.", JsonRequestBehavior.AllowGet);
+        //        return Json("Set doesn't exist." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //    }
 
         //    // check if user is set owner
         //    if (!UserHelper.IsUserSetOwner(User.Identity.Name, setId))
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //        return Json("Unauthorized request.", JsonRequestBehavior.AllowGet);
+        //        return Json("Unauthorized request." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //    }
 
         //    // check if subverse exists
@@ -768,14 +769,14 @@ namespace Voat.Controllers
         //    if (subverseToAdd == null)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //        return Json("The subverse does not exist.", JsonRequestBehavior.AllowGet);
+        //        return Json("The subverse does not exist." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //    }
 
         //    // check if subverse is already a part of this set
         //    if (setToModify.UserSetLists.Any(sd => sd.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase)))
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //        return Json("The subverse is already a part of this set.", JsonRequestBehavior.AllowGet);
+        //        return Json("The subverse is already a part of this set." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //    }
 
         //    // add subverse to set
@@ -788,7 +789,7 @@ namespace Voat.Controllers
         //    _db.UserSetLists.Add(newUsersetdefinition);
         //    _db.SaveChangesAsync();
 
-        //    return Json("Add subverse to set request sucessful.", JsonRequestBehavior.AllowGet);
+        //    return Json("Add subverse to set request sucessful." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //}
 
         //// POST: remove a subverse from set
@@ -800,7 +801,7 @@ namespace Voat.Controllers
         //    if (Settings.SetsDisabled)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //        return Json("Sets disabled.", JsonRequestBehavior.AllowGet);
+        //        return Json("Sets disabled." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //    }
         //    // check if user is set owner
         //    if (!UserHelper.IsUserSetOwner(User.Identity.Name, setId))
@@ -815,7 +816,7 @@ namespace Voat.Controllers
         //    {
         //        _db.UserSetLists.Remove(setDefinitionToRemove);
         //        _db.SaveChangesAsync();
-        //        return Json("Add subverse to set request sucessful.", JsonRequestBehavior.AllowGet);
+        //        return Json("Add subverse to set request sucessful." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //    }
 
         //    // expected subverse was not found in user set definition
@@ -832,7 +833,7 @@ namespace Voat.Controllers
         //    if (Settings.SetsDisabled)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //        return Json("Sets disabled.", JsonRequestBehavior.AllowGet);
+        //        return Json("Sets disabled." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //    }
         //    // check if user is set owner
         //    if (!UserHelper.IsUserSetOwner(User.Identity.Name, setId))
@@ -852,7 +853,7 @@ namespace Voat.Controllers
         //            // TODO setToModify.Description = newSetDescription;
 
         //            _db.SaveChangesAsync();
-        //            return Json("Set info change was sucessful.", JsonRequestBehavior.AllowGet);
+        //            return Json("Set info change was sucessful." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //        }
         //        catch (Exception)
         //        {
@@ -874,7 +875,7 @@ namespace Voat.Controllers
         //    if (Settings.SetsDisabled)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
-        //        return Json("Sets disabled.", JsonRequestBehavior.AllowGet);
+        //        return Json("Sets disabled." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //    }
         //    // check if user is set owner
         //    if (!UserHelper.IsUserSetOwner(User.Identity.Name, setId))
@@ -889,7 +890,7 @@ namespace Voat.Controllers
         //    {
         //        _db.UserSets.Remove(setToRemove);
         //        _db.SaveChangesAsync();
-        //        return Json("Set has been deleted.", JsonRequestBehavior.AllowGet);
+        //        return Json("Set has been deleted." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //    }
 
         //    // expected set was not found in user sets

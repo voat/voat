@@ -22,7 +22,8 @@
 
 #endregion LICENSE
 
-using Microsoft.Ajax.Utilities;
+
+using System;
 
 namespace Voat.UI.Utilities
 {
@@ -30,15 +31,18 @@ namespace Voat.UI.Utilities
     {
         public string Minify(string source)
         {
-            CodeSettings settings = new CodeSettings
-            {
-                PreserveImportantComments = false,
-                PreserveFunctionNames = true
-            };
+            //CORE_PORT: Have no idea what this is
+            throw new NotImplementedException("Core port not implemented");
 
-            Minifier doMin = new Minifier();
-            string mind = doMin.MinifyJavaScript(source, settings);
-            return mind;
+            //CodeSettings settings = new CodeSettings
+            //{
+            //    PreserveImportantComments = false,
+            //    PreserveFunctionNames = true
+            //};
+
+            //Minifier doMin = new Minifier();
+            //string mind = doMin.MinifyJavaScript(source, settings);
+            //return mind;
         }
     }
 }

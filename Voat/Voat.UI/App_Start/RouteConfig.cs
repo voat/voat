@@ -22,9 +22,10 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Routing;
 using System;
 using System.Diagnostics;
-using System.Web.Mvc;
+
 using System.Web.Routing;
 using Voat.Configuration;
 using Voat.Domain.Models;
@@ -36,8 +37,12 @@ namespace Voat
     {
         public static void RegisterRoutes(RouteCollection routes)
         {
+            //CORE_PORT: Routes not ported
+            throw new NotImplementedException("Routes not ported");
+            /*
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.LowercaseUrls = true;
+
             var subverseSortConstraint = @"^$|new|hot|top";
             var setSortContraint = @"^$|new|hot|top|relative";
 
@@ -1158,7 +1163,7 @@ namespace Voat
             //Debug.WriteLine(sb.ToString());
 #endif
 
-
+    */
         }
     }
 }

@@ -23,20 +23,22 @@
 #endregion LICENSE
 
 using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Mail;
-using System.Net.Mime;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
-using SendGrid;
 using Voat.Configuration;
-using Voat.Utilities;
 
 namespace Voat.App_Start
 {
     public class IdentityConfig
     {
+        //CORE_PORT: Unsupported
+        public class EmailService 
+        {
+            public EmailService()
+            {
+                throw new NotImplementedException("Core port not ported");
+            }
+        }
+        /*
         public class EmailService : IIdentityMessageService
         {
             public async Task SendAsync(IdentityMessage message)
@@ -66,5 +68,6 @@ namespace Voat.App_Start
 
             }
         }
+        */
     }
 }

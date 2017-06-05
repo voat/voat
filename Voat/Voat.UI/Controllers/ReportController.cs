@@ -22,19 +22,12 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Globalization;
-using System.Net;
-using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
-using Voat.Caching;
 using Voat.Data;
-using Voat.Data.Models;
-using Voat.Domain.Command;
 using Voat.Domain.Models;
-using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.UI.Utilities;
 using Voat.Utilities;
@@ -132,7 +125,7 @@ namespace Voat.Controllers
         #endregion
 
         //#region OLD CODE
-        //private readonly voatEntities _db = new voatEntities();
+        //private readonly voatEntities _db = new VoatUIDataContextAccessor();
 
         //private TimeSpan contentReportTimeOut = TimeSpan.FromHours(6);
         //private TimeSpan contentUserCountTimeOut = TimeSpan.FromHours(2);

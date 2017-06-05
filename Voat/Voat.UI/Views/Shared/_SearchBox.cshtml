@@ -24,9 +24,9 @@
     if (!Settings.SearchDisabled)
     {
         string selectedSubverse = "";
-        if (!String.IsNullOrEmpty(Request.QueryString["sub"]))
+        if (!String.IsNullOrEmpty(Request.Query["sub"]))
         {
-            selectedSubverse = Request.QueryString["sub"];
+            selectedSubverse = Request.Query["sub"];
         }
         else if (!String.IsNullOrEmpty(ViewBag.SelectedSubverse))
         {
