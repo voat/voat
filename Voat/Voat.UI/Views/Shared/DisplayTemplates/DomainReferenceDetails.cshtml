@@ -22,7 +22,7 @@
 
 @{
     string subverseAge = Age.ToRelative(Model.CreationDate);
-    var userData = Voat.Domain.UserData.GetContextUserData();
+    var userData = Voat.Domain.UserData.GetContextUserData(Context);
 
     var userName = Settings.SiteName;
     if (!String.IsNullOrEmpty(Model.OwnerName))

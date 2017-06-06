@@ -23,7 +23,7 @@
 
 @{
     var subverseName = Model.Name;
-    var url = Request.Url.ToString().ToLower();
+    var url = Context.Request.GetUrl().ToString().ToLower();
 }
 
 @if (User.Identity.IsAuthenticated)

@@ -22,18 +22,16 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using Voat.Caching;
-using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
-using Voat.Domain;
 using Voat.Domain.Command;
-using Voat.Domain.Query;
 using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Utilities;
@@ -43,7 +41,7 @@ namespace Voat.Controllers
 {
     public class SubmissionsController : BaseController
     {
-        private readonly voatEntities _db = new voatEntities();
+        private readonly VoatDataContext _db = new VoatUIDataContextAccessor();
 
         // POST: apply a link flair to given submission
         [Authorize]
@@ -55,7 +53,7 @@ namespace Voat.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var submission = _db.Submissions.Find(submissionID);
+            var submission = _db.Submission.Find(submissionID);
             if (submission == null || submission.IsDeleted)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -67,7 +65,7 @@ namespace Voat.Controllers
             }
 
             // find flair by id, apply it to submission
-            var flairModel = _db.SubverseFlairs.Find(flairId);
+            var flairModel = _db.SubverseFlair.Find(flairId);
             if (flairModel == null || flairModel.Subverse != submission.Subverse) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // apply flair and save submission
@@ -90,7 +88,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             // get model for selected submission
-            var submissionModel = _db.Submissions.Find(submissionID);
+            var submissionModel = _db.Submission.Find(submissionID);
 
             if (submissionModel == null || submissionModel.IsDeleted)
             {
@@ -117,7 +115,7 @@ namespace Voat.Controllers
         public ActionResult ToggleSticky(int submissionID)
         {
             // get model for selected submission
-            var submissionModel = _db.Submissions.Find(submissionID);
+            var submissionModel = _db.Submission.Find(submissionID);
 
             if (submissionModel == null || submissionModel.IsDeleted)
             {
@@ -131,15 +129,15 @@ namespace Voat.Controllers
             try
             {
                 // find and clear current sticky if toggling
-                var existingSticky = _db.StickiedSubmissions.FirstOrDefault(s => s.SubmissionID == submissionID);
+                var existingSticky = _db.StickiedSubmission.FirstOrDefault(s => s.SubmissionID == submissionID);
                 if (existingSticky != null)
                 {
-                    _db.StickiedSubmissions.Remove(existingSticky);
+                    _db.StickiedSubmission.Remove(existingSticky);
                 }
                 else
                 {
                     // remove all stickies for subverse matching submission subverse
-                    _db.StickiedSubmissions.RemoveRange(_db.StickiedSubmissions.Where(s => s.Subverse == submissionModel.Subverse));
+                    _db.StickiedSubmission.RemoveRange(_db.StickiedSubmission.Where(s => s.Subverse == submissionModel.Subverse));
 
                     // set new submission as sticky
                     var stickyModel = new StickiedSubmission
@@ -150,7 +148,7 @@ namespace Voat.Controllers
                         Subverse = submissionModel.Subverse
                     };
 
-                    _db.StickiedSubmissions.Add(stickyModel);
+                    _db.StickiedSubmission.Add(stickyModel);
                 }
 
                 _db.SaveChanges();
@@ -218,7 +216,9 @@ namespace Voat.Controllers
                 }
                 else
                 {
-                    return Redirect(Request.Url.AbsolutePath);
+                    //CORE_PORT: Not Ported
+                    throw new NotImplementedException("Core port not implemented");
+                    //return Redirect(Request.Url.AbsolutePath);
                 }
             }
             else
@@ -228,8 +228,10 @@ namespace Voat.Controllers
                     return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, result.Message);
                 }
                 else
-                {
-                    return Redirect(Request.Url.AbsolutePath);
+                {  
+                    //CORE_PORT: Not Ported
+                    throw new NotImplementedException("Core port not implemented");
+                    //return Redirect(Request.Url.AbsolutePath);
                 }
             }
         }

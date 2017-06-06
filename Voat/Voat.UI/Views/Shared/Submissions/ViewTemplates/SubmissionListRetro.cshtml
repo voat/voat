@@ -35,13 +35,13 @@
         title = "front";
     }
 
-    var turnOffLink = String.Format("{0}{1}{2}", Request.Url.AbsoluteUri, Request.Url.AbsoluteUri.Contains("?") ? "&" : "?", "view=list");
+    var turnOffLink = String.Format("{0}{1}{2}", Context.Request.GetUrl().AbsoluteUri, Context.Request.GetUrl().AbsoluteUri.Contains("?") ? "&" : "?", "view=list");
 }
 
 @section PageHeader {
     @if (Model.IsActualSubverse)
     {
-        @Html.Partial("_SubverseStylesheetLink", Model.Context.Name, new ViewDataDictionary())
+        @Html.Partial("_SubverseStylesheetLink", Model.Context.Name, new ViewDataDictionary(ViewData))
     }
 }
 
@@ -133,7 +133,7 @@
         </div>
 
         @{
-            Model.Submissions.RouteData = Request.RequestContext.RouteData.Values;
+            Model.Submissions.RouteData = Context.Request.RouteData.Values;
             if (Model.Sort != null)
             {
                 Model.Submissions.RouteData["sort"] = Model.Sort.ToString().ToLower();
@@ -142,9 +142,9 @@
             {
                 Model.Submissions.RouteData["span"] = Model.Span.ToString().ToLower();
             }
-            if (!String.IsNullOrEmpty(Request.QueryString["frontpage"]))
+            if (!String.IsNullOrEmpty(Context.Request.Query["frontpage"]))
             {
-                Model.Submissions.RouteData["frontpage"] = Request.QueryString["frontpage"];
+                Model.Submissions.RouteData["frontpage"] = Context.Request.Query["frontpage"];
             }
         }
         @Html.DisplayFor(model => Model.Submissions, "IPaginatedList")

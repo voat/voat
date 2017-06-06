@@ -22,15 +22,10 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Mvc;
-using Voat.Caching;
 using Voat.Data;
-using Voat.Data.Models;
 using Voat.Domain.Query;
 using Voat.Models.ViewModels;
 using Voat.Utilities;
@@ -68,7 +63,7 @@ namespace Voat.Controllers
             var q = new QuerySubmissionsByDomain(domainName, options);
             var results = await q.ExecuteAsync();
             //var results = CacheHandler.Instance.Register(CachingKey.DomainSearch(domainname, pageNumber, sortingmode), () => {
-            //    using (var db = new voatEntities())
+            //    using (var db = new VoatUIDataContextAccessor())
             //    {
             //        db.EnableCacheableOutput();
 

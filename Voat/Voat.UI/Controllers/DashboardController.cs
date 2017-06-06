@@ -22,12 +22,13 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
+
 using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.Models.ViewModels;
@@ -43,7 +44,7 @@ namespace Voat.Controllers
             var showDashboard = (Request.Cookies["legacy"] == null);
 
             //Temp logic, parse querystring, allows showing both menus
-            var menuQueryString = Request.QueryString["menu"];
+            var menuQueryString = Request.Query["menu"];
             if (!String.IsNullOrEmpty(menuQueryString))
             {
                 if (menuQueryString.Equals("dashboard"))

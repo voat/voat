@@ -31,15 +31,8 @@ using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Web;
-using System.Web.Http;
-using System.Web.Http.ExceptionHandling;
-using System.Web.Mvc;
-using System.Web.Optimization;
-using System.Web.Routing;
 using Voat.Configuration;
 using Voat.Data;
-using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.Logging;
@@ -47,10 +40,11 @@ using Voat.Rules;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 using Voat.Utilities.Components;
-using Voat.Utils;
 
 namespace Voat
 {
+    //CORE_PORT: Not supported
+    /*
     public class MvcApplication : HttpApplication
     {
         Timer timer;
@@ -192,7 +186,7 @@ namespace Voat
         protected void Application_BeginRequest(Object sender, EventArgs e)
         {
             
-            var request = HttpContext.Current.Request;
+            var request = Context.Request;
             //Not logging ajax calls in DEV, leaving out until we can look at
             //var cmd = new LogRequestCommand(Origin.UI, RequestInfo.Parse(request));
             //cmd.Execute();
@@ -211,7 +205,7 @@ namespace Voat
                         try
                         {
                             var isAjax = request.RequestContext.HttpContext.Request.IsAjaxRequest();
-                            var response = HttpContext.Current.Response;
+                            var response = Context.Response;
                             if (isAjax)
                             {
                                 //js calls
@@ -277,4 +271,5 @@ namespace Voat
             }
         }
     }
+    */
 }

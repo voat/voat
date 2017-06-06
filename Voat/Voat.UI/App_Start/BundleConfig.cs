@@ -22,12 +22,18 @@
 
 #endregion LICENSE
 
-using System.Web.Optimization;
+using System;
 
 namespace Voat
 {
     public class BundleConfig
     {
+        //CORE_PORT: Different bundle config
+        public static void RegisterBundles(object bundles)
+        {
+            throw new NotImplementedException("Different bundle config");
+        }
+        /*
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
@@ -71,5 +77,6 @@ namespace Voat
                       ));
             #endregion
         }
+        */
     }
 }

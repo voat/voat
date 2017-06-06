@@ -493,9 +493,12 @@ namespace Voat.Utilities
             return clientIpAddress;
         }
         */
-
-            //this is for the API
-            public static string UserIpAddress(HttpRequestMessage request)
+        public static string UserIpAddress(HttpRequest request)
+        {
+            throw new NotImplementedException("Core_Port: Port this");
+        }
+        //this is for the API
+        public static string UserIpAddress(HttpRequestMessage request)
         {
             const string HTTP_CONTEXT_KEY = "MS_HttpContext";
             const string REMOTE_ENDPOINT_KEY = "System.ServiceModel.Channels.RemoteEndpointMessageProperty";

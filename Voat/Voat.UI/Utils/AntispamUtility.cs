@@ -24,23 +24,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.Entity.SqlServer.Utilities;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Caching;
-using System.Web.Mvc;
-using Voat.Models;
 using Newtonsoft.Json;
-using Voat.Data.Models;
 using Voat.Utilities;
 using Voat.Configuration;
 using Voat.Data;
-using Voat.Domain;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Voat.UI.Utilities
 {
@@ -52,13 +45,13 @@ namespace Voat.UI.Utilities
             {
                 if (!Settings.CaptchaDisabled)
                 {
-                    var request = filterContext.RequestContext.HttpContext.Request;
+                    var request = filterContext.HttpContext.Request;
                     var captchaValid = ReCaptchaUtility.Validate(request).Result;
 
                     if (!captchaValid)
                     {
                         // Add a model error if the captcha was not valid
-                        filterContext.Controller.ViewData.ModelState.AddModelError(string.Empty, "Incorrect recaptcha answer.");
+                        filterContext.ModelState.AddModelError(string.Empty, "Incorrect recaptcha answer.");
                     }
                 }
             }
@@ -86,6 +79,9 @@ namespace Voat.UI.Utilities
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            //CORE_PORT: Not ported
+            throw new NotImplementedException("This methods not ported");
+            /*
             var loggedInUser = filterContext.HttpContext.User.Identity.Name;
 
             //// user is submitting a message
@@ -114,7 +110,7 @@ namespace Voat.UI.Utilities
             //{
             //    Comment incomingComment = (Comment)filterContext.ActionParameters["comment"];
 
-            //    using (voatEntities db = new voatEntities())
+            //    using (voatEntities db = new VoatUIDataContextAccessor())
             //    {
             //        var relatedMessage = db.Submissions.Find(incomingComment.SubmissionID);
             //        if (relatedMessage != null)
@@ -174,9 +170,13 @@ namespace Voat.UI.Utilities
             }
 
             base.OnActionExecuting(filterContext);
+            */
         }
         public static void Reset()
         {
+            //CORE_PORT: Not ported
+            throw new NotImplementedException("Core Port: Not ported");
+            /*
             var context = System.Web.HttpContext.Current;
             if (context != null)
             {
@@ -189,12 +189,18 @@ namespace Voat.UI.Utilities
                     }
                 }
             }
+            */
         }
     }
 
     public static class ReCaptchaUtility
     {
-        public static async Task<bool> Validate(HttpRequestBase request)
+        public static async Task<bool> Validate(object request)
+        {
+            throw new NotImplementedException("Core port not implemented");
+        }
+        /*
+        public static async Task<bool> Validate(HttpRequestMessage request)
         {
             string privateKey = Settings.RecaptchaPrivateKey;
             string encodedResponse = request.Form["g-Recaptcha-Response"];
@@ -210,7 +216,7 @@ namespace Voat.UI.Utilities
 
             return captchaResponse.Success;
         }
-
+        */
         private class ReCaptchaResponse
         {
             [JsonProperty("success")]

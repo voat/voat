@@ -57,7 +57,7 @@
                 </div>
 
                 <div class="form-group">
-                    @Html.Label("Sidebar text, accepts Markdown formatting", htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(x => x.SideBar, "Sidebar text, accepts Markdown formatting", htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
                         @Html.MarkdownEditorFor(model => model.SideBar, new { @class = "form-control", rows = "5" })
                         @Html.ValidationMessageFor(model => model.SideBar, "", new { @class = "text-danger" })
@@ -77,16 +77,8 @@
                     </div>
                 </div>
 
-                @*<div class="form-group">
-                    @Html.Label("Custom stylesheet, max 50000 characters", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextAreaFor(model => model.Stylesheet, new { @class = "form-control", @rows = "20" })
-                        @Html.ValidationMessageFor(model => model.Stylesheet, "", new { @class = "text-danger" })
-                    </div>
-                </div>*@
-
                 <div class="form-group">
-                    @Html.Label("Rated adult", htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(x => x.IsAdult, "Rated adult", htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
                         @Html.EditorFor(model => model.IsAdult, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.IsAdult, "", new { @class = "text-danger" })
@@ -94,7 +86,7 @@
                 </div>
 
                 <div class="form-group">
-                    @Html.Label("Thumbnails enabled", htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(x => x.IsThumbnailEnabled, "Thumbnails enabled", htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
                         @Html.EditorFor(model => model.IsThumbnailEnabled, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.IsThumbnailEnabled, "", new { @class = "text-danger" })
@@ -102,7 +94,7 @@
                 </div>
 
                 <div class="form-group">
-                    @Html.Label("Only allow submissions from authorized submitters", htmlAttributes: new {@class = "control-label col-md-2"})
+                    @Html.LabelFor(x => x.IsAuthorizedOnly, "Only allow submissions from authorized submitters", htmlAttributes: new {@class = "control-label col-md-2"})
                     <div class="col-md-10">
                         @Html.EditorFor(model => model.IsAuthorizedOnly, new {@class = "form-control"})
                         @Html.ValidationMessageFor(model => model.IsAuthorizedOnly, "", new {@class = "text-danger"})
@@ -110,7 +102,7 @@
                 </div>
 
                 <div class="form-group">
-                    @Html.Label("Exclude sitewide bans", htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(x => x.ExcludeSitewideBans, "Exclude sitewide bans", htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
                         @Html.EditorFor(model => model.ExcludeSitewideBans, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.ExcludeSitewideBans, "", new { @class = "text-danger" })
@@ -118,7 +110,7 @@
                 </div>
 
                 <div class="form-group" style='@(ModeratorPermission.IsLevel(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorLevel.Owner) ? "" : "display:none")'>
-                    @Html.Label("Anonymized mode", htmlAttributes: new {@class = "control-label col-md-2"})
+                    @Html.LabelFor(x => x.IsAnonymized, "Anonymized mode", htmlAttributes: new {@class = "control-label col-md-2"})
                     <div class="col-md-10">
                         @Html.EditorFor(model => model.IsAnonymized, new {@class = "form-control"})
                         @Html.ValidationMessageFor(model => model.IsAnonymized, "", new {@class = "text-danger"})
@@ -155,7 +147,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    @Html.Label("Set private", htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(x => x.IsPrivate, "Set private", htmlAttributes: new { @class = "control-label col-md-2" })
                     <div class="col-md-10">
                         @Html.EditorFor(model => model.IsPrivate, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.IsPrivate, "", new { @class = "text-danger" })
@@ -168,7 +160,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    @Html.Label("Minimum CCP required for downvoting", htmlAttributes: new {@class = "control-label col-md-2"})
+                    @Html.LabelFor(x => x.MinCCPForDownvote, "Minimum CCP required for downvoting", htmlAttributes: new {@class = "control-label col-md-2"})
                     <div class="col-md-1">
                         @Html.TextBoxFor(model => model.MinCCPForDownvote, new {@class = "form-control"})
                     </div>

@@ -31,7 +31,7 @@
 @section PageHeader {
     @if (Model.IsActualSubverse)
     {
-        @Html.Partial("_SubverseStylesheetLink", Model.Context.Name, new ViewDataDictionary())
+        @Html.Partial("_SubverseStylesheetLink", Model.Context.Name, new ViewDataDictionary(ViewData))
     }
 }
 
@@ -44,11 +44,11 @@
 <div id="container">
     @if (Model.IsActualSubverse)
     {
-        @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = Model.Context.Name })
+        @Html.RenderAction("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = Model.Context.Name })
     }
     else if (Model.Context != null && Model.Context.Type == Voat.Domain.Models.DomainType.Set)
     {
-        @Html.Action("Sidebar", "Set", new { name = Model.Context.FullName })
+        @Html.RenderAction("Sidebar", "Set", new { name = Model.Context.FullName })
     }
     else
     {
@@ -76,29 +76,30 @@
         <div class="sitetable linklisting">
             @if (Model.IsActualSubverse)
             {
-                @Html.Action("StickiedSubmission", "Subverses", new { subverseName = Model.Context.Name })
+                @Html.RenderAction("StickiedSubmission", "Subverses", new { subverseName = Model.Context.Name })
             }
             else if (Model.Context == null || (Model.Context != null && Model.Context.Type != DomainType.Set))
             {
                 @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
-                @Html.Action("FeaturedSub", "Home")
-                @Html.Action("StickiedSubmission", "Home")
+                @Html.RenderAction("FeaturedSub", "Home")
+                @Html.RenderAction("StickiedSubmission", "Home")
             }
 
             @if (Model.Submissions.Count <= 0)
             {
-                Html.RenderPartial("_DefaultMessage", new ViewDataDictionary() {{"selectedSubverse", Model.Context.Name}});
+                Html.RenderPartial("_DefaultMessage");
             }
 
             @foreach (var submission in Model.Submissions)
             {
-                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission, new ViewDataDictionary() { { "CssClass", new string[] { counter % 2 == 0 ? "even" : "odd" } } })
+                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission, new ViewDataDictionary(ViewData) { { "CssClass", new string[] { counter % 2 == 0 ? "even" : "odd" } } })
                 counter++;
             }
         </div>
 
         @{
-            Model.Submissions.RouteData = Request.RequestContext.RouteData.Values;
+
+            Model.Submissions.RouteData = null; //Context.Request.RequestContext.RouteData.Values;
             if (Model.Sort != null)
             {
                 Model.Submissions.RouteData["sort"] = Model.Sort.ToString().ToLower();
@@ -107,9 +108,9 @@
             {
                 Model.Submissions.RouteData["span"] = Model.Span.ToString().ToLower();
             }
-            if (!String.IsNullOrEmpty(Request.QueryString["frontpage"]))
+            if (!String.IsNullOrEmpty(Context.Request.Query["frontpage"]))
             {
-                Model.Submissions.RouteData["frontpage"] = Request.QueryString["frontpage"];
+                Model.Submissions.RouteData["frontpage"] = Context.Request.Query["frontpage"];
             }
         }
         @Html.DisplayFor(model => Model.Submissions, "IPaginatedList")
@@ -123,7 +124,7 @@
                        page = (Model.Submissions.PageIndex - 1),
                        sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()),
                        time = (Model.Span == null ? "" : Model.Span.ToString().ToLower()),
-                       frontpage = Request.QueryString["frontpage"]
+                       frontpage = Request.Query["frontpage"]
                    }, new {rel = "prev"})
                     </li>
                 }
@@ -135,7 +136,7 @@
                        page = (Model.Submissions.PageIndex + 1),
                        sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()),
                        time = (Model.Span == null ? "" : Model.Span.ToString().ToLower()),
-                       frontpage = Request.QueryString["frontpage"]
+                       frontpage = Request.Query["frontpage"]
                    }, new { rel = "next" })
                     </li>
                 }

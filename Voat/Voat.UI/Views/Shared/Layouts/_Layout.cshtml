@@ -30,12 +30,10 @@
         Layout = "~/Views/Shared/Layouts/_LayoutEmpty.cshtml";
     }
 
-    var userData = Voat.Domain.UserData.GetContextUserData();
+    var userData = Voat.Domain.UserData.GetContextUserData(Context);
     System.Diagnostics.Debug.Assert(userData == null || userData.UserName == User.Identity.Name, "Context UserData and Identity UserName mismatch");
 
     NavigationViewModel navModel = ViewBag.NavigationViewModel;
-
-
 
     LoginViewModel loginViewModel = new LoginViewModel();
 
@@ -47,8 +45,8 @@
 
     ViewBag.Title = ViewBag.Title ?? Settings.SiteSlogan;
     ViewBag.Description = ViewBag.Description ?? Settings.SiteDescription;
-    ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.RawUrl;
-    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
+    ViewBag.Url = ViewBag.Url ?? Context.Request.GetUrl().ToString();
+    ViewBag.Image = ViewBag.Image ?? Context.Request.GetUrl().Scheme + "://" + Context.Request.GetUrl().Authority + Settings.SiteLogo;
 }
 
 <div style="display: none" id="share-a-link-overlay">
@@ -59,7 +57,7 @@
 
 <div id="header" tabindex=0 role="banner">
 
-    @Html.Action("Menu", "Dashboard")
+    @Html.RenderAction("Menu", "Dashboard")
 
     <div id="header-container">
         <div id="header-banner">
@@ -124,7 +122,7 @@
                     You can login if you already have an account or register by clicking the button below.
                     Registering is free and <strong>all you need is a username and password</strong>. We never ask you for your e-mail.
                     <div>
-                        @Html.Partial("~/Views/Account/_LoginModal.cshtml", new LoginViewModel(), new ViewDataDictionary { { "ReturnUrl", Request.Url.PathAndQuery } })
+                        @Html.Partial("~/Views/Account/_LoginModal.cshtml", new LoginViewModel(), new ViewDataDictionary(ViewData) { { "ReturnUrl", Context.Request.GetUrl().PathAndQuery } })
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -195,11 +193,11 @@
 
 @RenderBody()
 
-@if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
+@if (Context.Request.Cookies["NotFirstTime"] == null)
 {
     HttpCookie hc = new HttpCookie("NotFirstTime", "1");
     hc.Expires = Repository.CurrentDate.AddYears(1);
-    HttpContext.Current.Response.Cookies.Add(hc);
+    Context.Response.Cookies.Add(hc);
 
     @* First time visitor welcome *@
 if (!User.Identity.IsAuthenticated)

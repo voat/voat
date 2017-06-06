@@ -22,22 +22,21 @@
 
 #endregion LICENSE
 
-using Microsoft.AspNet.Identity;
-using Microsoft.Owin;
-using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.DataProtection;
-using Owin;
+using Microsoft.AspNetCore.DataProtection;
 using System;
-using System.Web;
-using System.Web.Configuration;
 
 namespace Voat
 {
-    public partial class Startup
+    public partial class Startup_COREPORT
     {
         internal static IDataProtectionProvider DataProtectionProvider { get; private set; }
 
-        // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
+        //CORE_PORT: Not ported
+        public void ConfigureAuth(object app)
+        {
+            throw new NotImplementedException("Not ported");
+        }
+        /*
         public void ConfigureAuth(IAppBuilder app)
         {
             DataProtectionProvider = app.GetDataProtectionProvider();
@@ -53,7 +52,7 @@ namespace Voat
             };
 
             //for local testing don't set cookiedomain
-            var localRequest = (HttpContext.Current != null && HttpContext.Current.Request != null && HttpContext.Current.Request.IsLocal);
+            var localRequest = (HttpContext.Current != null && Context.Request != null && Context.Request.IsLocal);
             var domain = WebConfigurationManager.AppSettings["CookieDomain"];
             if (!String.IsNullOrEmpty(domain) && !localRequest)
             {
@@ -63,5 +62,6 @@ namespace Voat
             app.UseCookieAuthentication(settings);
 
         }
+        */
     }
 }

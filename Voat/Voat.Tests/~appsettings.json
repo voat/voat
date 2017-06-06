@@ -108,18 +108,18 @@
 
             //Runtime Settings
             "runtimeState": "Enabled",
-            "signalrDisabled": "false",
-            "setsDisabled": "true",
-            "cacheDisabled": "false",
-            "registrationDisabled": "false",
-            "useContentDeliveryNetwork": "true",
+            "signalrDisabled": false,
+            "setsDisabled": true,
+            "cacheDisabled": false,
+            "registrationDisabled": false,
+            "useContentDeliveryNetwork": false,
             "destinationPathThumbs": "~/Storage/Thumbs",
             "destinationPathAvatars ": "~/Storage/Avatars",
-            "adsEnabled": "true",
-            "apiKeyCreationEnabled": "true",
-            "redirectToSiteDomain": "false",
-            "setCreationDisabled": "false",
-            "legacyApiEnabled": "false",
+            "adsEnabled": true,
+            "apiKeyCreationEnabled": true,
+            "redirectToSiteDomain": false,
+            "setCreationDisabled": false,
+            "legacyApiEnabled": false,
 
             //Voat Settings
             "StorageConnectionString": "<enter here>",

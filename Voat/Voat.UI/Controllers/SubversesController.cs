@@ -23,14 +23,9 @@
 #endregion LICENSE
 
 using System;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using Microsoft.Ajax.Utilities;
 using Voat.Models;
 using Voat.Models.ViewModels;
 
@@ -38,18 +33,19 @@ using System.Collections.Generic;
 using Voat.Data.Models;
 using Voat.Utilities;
 using Voat.UI.Utilities;
-using Voat.Configuration;
 using Voat.Caching;
 using Voat.Data;
 using Voat.Domain.Query;
 using Voat.Domain.Command;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Voat.Controllers
 {
     public class SubversesController : BaseController
     {
         //IAmAGate: Move queries to read-only mirror
-        private readonly voatEntities _db = new voatEntities(true);
+        private readonly VoatUIDataContextAccessor _db = new VoatUIDataContextAccessor(CONSTANTS.CONNECTION_LIVE);
 
         // GET: sidebar for selected subverse
         public ActionResult SidebarForSelectedSubverseComments(Domain.Models.Submission submission)
@@ -81,7 +77,7 @@ namespace Voat.Controllers
         public ActionResult SidebarForSelectedSubverse(string selectedSubverse)
         {
             //Can't cache as view is using Model to query
-            var subverse = _db.Subverses.Find(selectedSubverse);
+            var subverse = _db.Subverse.FirstOrDefault(x => x.Name.ToLower() == selectedSubverse.ToLower());
 
             // don't return a sidebar since subverse doesn't exist or is a system subverse
             if (subverse == null)
@@ -108,7 +104,7 @@ namespace Voat.Controllers
         [Authorize]
         [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public async Task<ActionResult> CreateSubverse([Bind(Include = "Name, Title, Description, Type, Sidebar, CreationDate, Owner")] AddSubverse subverseTmpModel)
+        public async Task<ActionResult> CreateSubverse([Bind("Name, Title, Description, Type, Sidebar, CreationDate, Owner")] AddSubverse subverseTmpModel)
         {
             // abort if model state is invalid
             if (!ModelState.IsValid)
@@ -189,7 +185,7 @@ namespace Voat.Controllers
                 // setup nswf cookie
                 HttpCookie hc = new HttpCookie("NSFWEnabled", "1");
                 hc.Expires = Repository.CurrentDate.AddYears(1);
-                System.Web.HttpContext.Current.Response.Cookies.Add(hc);
+                Response.Cookies.Add(hc);
 
                 // redirect to destination subverse
                 return RedirectToRoute(Models.ROUTE_NAMES.SUBVERSE_INDEX, new { subverse = destination });
@@ -302,11 +298,11 @@ namespace Voat.Controllers
         //    var r = await cmd.Execute();
         //    if (r.Success)
         //    {
-        //        return Json("Subscription request was successful.", JsonRequestBehavior.AllowGet);
+        //        return Json("Subscription request was successful." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //    }
         //    else
         //    {
-        //        return Json(r.Message, JsonRequestBehavior.AllowGet);
+        //        return Json(r.Message /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         //    }
         //}
 
@@ -317,16 +313,16 @@ namespace Voat.Controllers
             //var loggedInUser = User.Identity.Name;
 
             //Voat.Utilities.UserHelper.UnSubscribeFromSubverse(loggedInUser, subverseName);
-            //return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
+            //return Json("Unsubscribe request was successful." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
             var cmd = new SubscribeCommand(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverseName), Domain.Models.SubscriptionAction.Unsubscribe);
             var r = await cmd.Execute();
             if (r.Success)
             {
-                return Json("Unsubscribe request was successful.", JsonRequestBehavior.AllowGet);
+                return Json("Unsubscribe request was successful." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
             }
             else
             {
-                return Json(r.Message, JsonRequestBehavior.AllowGet);
+                return Json(r.Message /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
             }
 
         }
@@ -341,12 +337,12 @@ namespace Voat.Controllers
 
             if (response.Success)
             {
-                return Json("Subverse block request was successful.", JsonRequestBehavior.AllowGet);
+                return Json("Subverse block request was successful." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
             }
             else
             {
                 Response.StatusCode = 400;
-                return Json(response.Message, JsonRequestBehavior.AllowGet);
+                return Json(response.Message /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
             }
         }
 
@@ -374,7 +370,7 @@ namespace Voat.Controllers
         {
             // setup a cookie to find first time visitors and display welcome banner
             const string cookieName = "NotFirstTime";
-            if (ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+            if (ControllerContext.HttpContext.Request.Cookies.ContainsKey(cookieName))
             {
                 // not a first time visitor
                 ViewBag.FirstTimeVisitor = false;
@@ -384,7 +380,7 @@ namespace Voat.Controllers
                 // add a cookie for first time visitors
                 HttpCookie hc = new HttpCookie("NotFirstTime", "1");
                 hc.Expires = Repository.CurrentDate.AddYears(1);
-                System.Web.HttpContext.Current.Response.Cookies.Add(hc);
+                Response.Cookies.Add(hc);
 
                 ViewBag.FirstTimeVisitor = true;
             }
@@ -400,7 +396,7 @@ namespace Voat.Controllers
             ViewBag.PreviewMode = viewProperties.PreviewMode;
 
             //Set to DEFAULT if querystring is present
-            if (Request.QueryString["frontpage"] == "guest")
+            if (Request.Query["frontpage"] == "guest")
             {
                 subverse = AGGREGATE_SUBVERSE.DEFAULT;
             }
@@ -413,7 +409,7 @@ namespace Voat.Controllers
             RecordSession(subverse);
 
             //Parse query
-            var options = new SearchOptions(Request.Url.Query);
+            var options = new SearchOptions(Request.QueryString.Value);
 
             //Set sort because it is part of path
             if (!String.IsNullOrEmpty(sort))
@@ -422,7 +418,7 @@ namespace Voat.Controllers
             }
 
             //set span to day if not specified explicitly 
-            if (options.Sort == Domain.Models.SortAlgorithm.Top && Request.QueryString["span"] == null)
+            if (options.Sort == Domain.Models.SortAlgorithm.Top && !Request.Query.ContainsKey("span"))
             {
                 options.Span = Domain.Models.SortSpan.Day;
             }
@@ -467,7 +463,7 @@ namespace Voat.Controllers
                 {
                     // check if subverse exists, if not, send to a page not found error
                     //Can't use cached, view using to query db
-                    var subverseObject = _db.Subverses.Find(subverse);
+                    var subverseObject = _db.Subverse.FirstOrDefault(x => x.Name.ToLower() == subverse.ToLower());
 
                     if (subverseObject == null)
                     {
@@ -495,7 +491,7 @@ namespace Voat.Controllers
                             }
                         }
                         // check if user wants to see NSFW content by reading NSFW cookie
-                        else if (!ControllerContext.HttpContext.Request.Cookies.AllKeys.Contains(cookieName))
+                        else if (!ControllerContext.HttpContext.Request.Cookies.ContainsKey(cookieName))
                         {
                             return RedirectToAction("AdultContentWarning", "Subverses", new { destination = subverseObject.Name, nsfwok = false });
                         }
@@ -548,8 +544,9 @@ namespace Voat.Controllers
                 ViewBag.SortingMode = sort;
 
                 ViewBag.NavigationViewModel = navModel;
+                var viewPath = ViewPath(domainReference);
 
-                return View(ViewPath(domainReference), viewProperties);
+                return View(viewPath, viewProperties);
             }
             catch (Exception ex)
             {
@@ -559,20 +556,23 @@ namespace Voat.Controllers
 
         //TODO: Move to dedicated query object
         //[Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
-        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByViews24Hours(voatEntities _db)
+        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByViews24Hours(VoatDataContext _db)
         {
             if (_db == null)
             {
                 _db = this._db;
             }
             var startDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
-            IQueryable<Submission> sfwSubmissionsFromAllSubversesByViews24Hours = (from message in _db.Submissions
-                                                                                   join subverse in _db.Subverses on message.Subverse equals subverse.Name
-                                                                                   where message.ArchiveDate == null && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && message.CreationDate >= startDate && message.CreationDate <= Repository.CurrentDate
-                                                                                   where !(from bu in _db.BannedUsers select bu.UserName).Contains(message.UserName)
-                                                                                   where !subverse.IsAdminDisabled.Value
-                                                                                   //where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
-                                                                                   select message).OrderByDescending(s => s.Views).DistinctBy(m => m.Subverse).Take(5).AsQueryable().AsNoTracking();
+
+            IQueryable<Submission> sfwSubmissionsFromAllSubversesByViews24Hours =
+                (from message in _db.Submission
+                 join subverse in _db.Subverse on message.Subverse equals subverse.Name
+                 where message.ArchiveDate == null && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && message.CreationDate >= startDate && message.CreationDate <= Repository.CurrentDate
+                 where !(from bu in _db.BannedUser select bu.UserName).Contains(message.UserName)
+                 where !subverse.IsAdminDisabled.Value
+                 //where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
+                 select message).OrderByDescending(s => s.Views).Take(5).AsQueryable();
+                 //select message).OrderByDescending(s => s.Views).DistinctBy(m => m.Subverse).Take(5).AsQueryable().AsNoTracking();
 
             return sfwSubmissionsFromAllSubversesByViews24Hours;
         }
@@ -588,7 +588,7 @@ namespace Voat.Controllers
             //var submissions =
             var cacheData = CacheHandler.Instance.Register("legacy:TopViewedSubmissions24Hours", new Func<object>(() =>
             {
-                using (voatEntities db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
+                using (var db = new VoatUIDataContextAccessor(CONSTANTS.CONNECTION_READONLY))
                 {
                     db.EnableCacheableOutput();
 
@@ -830,7 +830,7 @@ namespace Voat.Controllers
         //        return NotFoundErrorView();
         //    }
         //    var subverses = CacheHandler.Instance.Register("Legacy:ActiveSubverses", new Func<IList<Subverse>>(() => {
-        //        using (var db = new voatEntities())
+        //        using (var db = new VoatUIDataContextAccessor())
         //        {
         //            db.EnableCacheableOutput();
 

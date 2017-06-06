@@ -24,17 +24,19 @@
 
 using System;
 using System.Text;
-using System.Web.Mvc;
 using System.Xml;
-using System.ServiceModel.Syndication;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Voat.UI.Utilities
 {
     /* special thanks to Damien Guard for writing an article on Creating RSS feeds in ASP.NET MVC     
-     * which helped me understand how to work with RSS in ASP.NET MVC
-     * article was published at: http://damieng.com/blog/2010/04/26/creating-rss-feeds-in-asp-net-mvc
-     * Atko
-     */
+    * which helped me understand how to work with RSS in ASP.NET MVC
+    * article was published at: http://damieng.com/blog/2010/04/26/creating-rss-feeds-in-asp-net-mvc
+    * Atko
+    */
+    //CORE_PORT: Probably not porting this
+    /*
+   
     public class FeedResult : ActionResult
     {
         public Encoding ContentEncoding { get; set; }
@@ -70,4 +72,5 @@ namespace Voat.UI.Utilities
             }
         }
     }
+    */
 }

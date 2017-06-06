@@ -22,12 +22,14 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
+
 using System.Web.Routing;
 using Voat.Data;
 using Voat.Data.Models;
@@ -50,8 +52,7 @@ namespace Voat.Controllers
         }
 
         private const int PAGE_SIZE = 20;
-        //Ported code requires this because views use EF Context.
-        private voatEntities _db = new voatEntities();
+        private VoatUIDataContextAccessor _db = new VoatUIDataContextAccessor();
 
         public ActionResult Overview(string userName)
         {
@@ -176,8 +177,8 @@ namespace Voat.Controllers
 
             
 
-            IQueryable<SavedItem> savedSubmissions = (from m in _db.Submissions
-                                                          join s in _db.SubmissionSaveTrackers on m.ID equals s.SubmissionID
+            IQueryable<SavedItem> savedSubmissions = (from m in _db.Submission
+                                                          join s in _db.SubmissionSaveTracker on m.ID equals s.SubmissionID
                                                           where !m.IsDeleted && s.UserName == User.Identity.Name
                                                           select new SavedItem()
                                                           {
@@ -186,8 +187,8 @@ namespace Voat.Controllers
                                                               SavedComment = null
                                                           });
 
-            IQueryable<SavedItem> savedComments = (from c in _db.Comments
-                                                    join s in _db.CommentSaveTrackers on c.ID equals s.CommentID
+            IQueryable<SavedItem> savedComments = (from c in _db.Comment
+                                                    join s in _db.CommentSaveTracker on c.ID equals s.CommentID
                                                     where !c.IsDeleted && s.UserName == User.Identity.Name
                                                     select new SavedItem()
                                                     {
@@ -368,7 +369,7 @@ namespace Voat.Controllers
                 case Domain.Models.DomainType.Set:
 
 
-                    var options = new SearchOptions(Request.QueryString);
+                    var options = new SearchOptions(Request.QueryString.Value);
 
                     var q = new QueryUserSubscribedSets(options);
                    

@@ -22,14 +22,10 @@
 
 #endregion LICENSE
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 using Voat.Configuration;
-using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
 using Voat.Models.ViewModels;

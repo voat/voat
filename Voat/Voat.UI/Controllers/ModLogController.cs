@@ -22,12 +22,13 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
+
 using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
@@ -53,7 +54,7 @@ namespace Voat.Controllers
                     return SubverseDisabledErrorView();
                 }
             }
-            var options = new SearchOptions(Request.Url.Query);
+            var options = new SearchOptions(Request.QueryString.Value);
             var q = new QueryModLogRemovedSubmissions(subverse, options);
             var results = await q.ExecuteAsync();
 
@@ -78,7 +79,7 @@ namespace Voat.Controllers
                 }
             }
 
-            var options = new SearchOptions(Request.Url.Query);
+            var options = new SearchOptions(Request.QueryString.Value);
             var q = new QueryModLogRemovedComments(subverse, options);
             var results = await q.ExecuteAsync();
 
@@ -100,13 +101,16 @@ namespace Voat.Controllers
                     return SubverseDisabledErrorView();
                 }
             }
-            var options = new SearchOptions(Request.Url.Query);
+            var options = new SearchOptions(Request.QueryString.Value);
             var q = new QueryModLogBannedUsers(subverse, options);
             var results = await q.ExecuteAsync();
-            using (var db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
-            {
-                ViewBag.TotalBannedUsersInSubverse = db.SubverseBans.Where(rl => rl.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)).Count();
-            }
+
+            //CORE_PORT: This is bad mmkay
+            ViewBag.TotalBannedUsersInSubverse = -666;
+            //using (var db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
+            //{
+            //    ViewBag.TotalBannedUsersInSubverse = db.SubverseBans.Where(rl => rl.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)).Count();
+            //}
 
             var list = new PaginatedList<Domain.Models.SubverseBan>(results, options.Page, options.Count);
 

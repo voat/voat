@@ -98,7 +98,7 @@ string description = "Showing sets you are subscribed to";
                 }
             }
             @*@{
-                var phrase = (string)Request.QueryString["phrase"];
+                var phrase = (string)Request.Query["phrase"];
                 if (!String.IsNullOrEmpty(phrase))
                 {
                     Model.RouteData = Request.RequestContext.RouteData.Values;

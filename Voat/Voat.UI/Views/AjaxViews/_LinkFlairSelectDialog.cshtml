@@ -37,7 +37,7 @@
                 <button type="button" class="btn btn-default btn-xs" onclick="return clearflair(@submissionId)">Clear current flair</button>
                 foreach (var item in Model)
                 {
-                    <button type="button" class="btn btn-default btn-xs" onclick="return applyflair(@submissionId, @item.ID, '@HttpUtility.JavaScriptStringEncode(item.Label)', '@HttpUtility.JavaScriptStringEncode(item.CssClass)')">@item.Label</button>
+                    <button type="button" class="btn btn-default btn-xs" onclick="return applyflair(@submissionId, @item.ID, '@System.Web.HttpUtility.JavaScriptStringEncode(item.Label)', '@System.Web.HttpUtility.JavaScriptStringEncode(item.CssClass)')">@item.Label</button>
                 }
             }
             else

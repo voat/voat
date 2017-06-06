@@ -22,23 +22,19 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Voat.Caching;
 using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Models.ViewModels;
-using Voat.Utilities.Components;
 
 namespace Voat.Controllers
 {
     public class BaseController : Controller
     {
-        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             base.OnActionExecuting(filterContext);
         }
@@ -46,14 +42,16 @@ namespace Voat.Controllers
         {
             get
             {
-                return UserData.GetContextUserData();
+                return UserData.GetContextUserData(HttpContext);
             }
         }
-        protected override void OnException(ExceptionContext filterContext)
-        {
-            //EventLogger.Log(filterContext.Exception);
-            base.OnException(filterContext);
-        }
+        
+        //CORE_PORT: No override found
+        //protected override void OnException(ExceptionContext filterContext)
+        //{
+        //    //EventLogger.Log(filterContext.Exception);
+        //    base.OnException(filterContext);
+        //}
 
         #region JSON Responses
         //These are beginning port to api structures
@@ -132,6 +130,9 @@ namespace Voat.Controllers
 
 
         #endregion
-
+        public ActionResult HttpNotFound()
+        {
+            throw new NotImplementedException("Core Port: Not implemented");
+        }
     }
 }

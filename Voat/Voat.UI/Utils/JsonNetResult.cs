@@ -22,13 +22,11 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Http.Results;
-using System.Web.Mvc;
+using System.IO;
 using Voat.Configuration;
 
 namespace Voat.Utils
@@ -36,27 +34,28 @@ namespace Voat.Utils
     //These classes for JSON.Net to be used by default instead of the runtime when returning JsonResult
     public class JsonNetResult : JsonResult
     {
-        public JsonNetResult()
+        public JsonNetResult() : base(null)
         {
             Settings = JsonSettings.GetSerializationSettings();
         }
 
         public JsonSerializerSettings Settings { get; private set; }
-
-        public override void ExecuteResult(ControllerContext context)
+        
+        public override void ExecuteResult(ActionContext context)
         {
             if (context == null)
             {
                 throw new ArgumentNullException("context");
             }
 
-            HttpResponseBase response = context.HttpContext.Response;
-
-            if (this.ContentEncoding != null)
-            {
-                response.ContentEncoding = this.ContentEncoding;
-            }
-            if (this.Data == null)
+            var response = context.HttpContext.Response;
+            //CORE_PORT: Content Encoding not found
+            throw new NotImplementedException("Content encoding not found");
+            //if (this.ContentEncoding != null)
+            //{
+            //    response.ContentEncoding = this.ContentEncoding;
+            //}
+            if (base.Value == null)
             {
                 return;
             }
@@ -65,7 +64,10 @@ namespace Voat.Utils
 
             var scriptSerializer = JsonSerializer.Create(this.Settings);
             // Serialize the data to the Output stream of the response
-            scriptSerializer.Serialize(response.Output, this.Data);
+            using (var tw = new StreamWriter(response.Body))
+            {
+                scriptSerializer.Serialize(tw, Value);
+            }
         }
     }
     public class JsonNetActionFilter : ActionFilterAttribute
@@ -80,10 +82,11 @@ namespace Voat.Utils
                 // Replace it with our new result object and transfer settings
                 filterContext.Result = new JsonNetResult
                 {
-                    ContentEncoding = result.ContentEncoding,
                     ContentType = result.ContentType,
-                    Data = result.Data,
-                    JsonRequestBehavior = result.JsonRequestBehavior
+                    Value = result.Value,
+                    //CORE_PORT: Not supported
+                    //ContentEncoding = result.ContentEncoding,
+                    //JsonRequestBehavior = result.JsonRequestBehavior
                 };
 
                 // Later on when ExecuteResult will be called it will be the

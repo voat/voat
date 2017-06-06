@@ -22,12 +22,13 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+
 using Voat.Caching;
 using Voat.Configuration;
 using Voat.Data;
@@ -42,9 +43,6 @@ namespace Voat.Controllers
 {
     public class SearchController : BaseController
     {
-        //IAmAGate: Move queries to read-only mirror
-        private readonly voatEntities _db = new voatEntities(CONSTANTS.CONNECTION_READONLY);
-        
         //TODO: Port to submission search alg
         [PreventSpam]
         public async Task<ActionResult> SearchResults(int? page, string q, string l, string sub)

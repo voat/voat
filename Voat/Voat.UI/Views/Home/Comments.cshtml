@@ -55,8 +55,8 @@
             {
                 //I don't know if we need this ViewBag setup
                 ViewBag.Title = submission.Title + " | " + submission.Subverse;
-                ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
-                ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
+                ViewBag.Url = ViewBag.Url ?? Context.Request.Url.AbsoluteUri;
+                ViewBag.Image = ViewBag.Image ?? Context.Request.Url.Scheme + "://" + Context.Request.Url.Authority + Settings.SiteLogo;
                 ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
                 @Html.Partial("~/Views/Shared/Submissions/_SubmissionDetail.cshtml", submission,
                     new ViewDataDictionary {
@@ -70,7 +70,7 @@
             {
                 //I don't know if we need this ViewBag setup
                 ViewBag.Title = submission.Title + " | " + submission.Subverse;
-                ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.Url.AbsoluteUri;
+                ViewBag.Url = ViewBag.Url ?? Context.Request.Url.AbsoluteUri;
                 ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
 
                 //check if submission has a thumb, otherwise point to site logo
@@ -80,7 +80,7 @@
                 }
                 else
                 {
-                    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
+                    ViewBag.Image = ViewBag.Image ?? Context.Request.Url.Scheme + "://" + Context.Request.Url.Authority + Settings.SiteLogo;
                 }
 
                 @Html.Partial("~/Views/Shared/Submissions/_SubmissionDetail.cshtml", submission,

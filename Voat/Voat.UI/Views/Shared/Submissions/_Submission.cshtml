@@ -27,7 +27,7 @@
 
     if (User.Identity.IsAuthenticated)
     {
-        var userData = Voat.Domain.UserData.GetContextUserData();
+        var userData = Voat.Domain.UserData.GetContextUserData(Context);
         showNSFWThumbs = userData.Preferences.EnableAdultContent;
 
         if (userData.Preferences.OpenInNewWindow)
@@ -71,7 +71,7 @@
 <div class="submission id-@Model.ID @classes link @submissionClass" data-fullname="@Model.ID" data-ups="@Model.UpCount" data-downs="@Model.DownCount">
     <p class="parent"></p>
 
-    @Html.Partial("~/Views/Shared/VotingIcons/_VotingIconsSubmission.cshtml", Model, new ViewDataDictionary() {
+    @Html.Partial("~/Views/Shared/VotingIcons/_VotingIconsSubmission.cshtml", Model, new ViewDataDictionary(ViewData) {
         { "VoteTypeAllowed", ViewBag.VoteTypeAllowed }
     })
     
@@ -156,12 +156,12 @@
                 if (!Model.IsDeleted)
                 {
                         <li>
-                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } })
+                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary(ViewData) { { "submissionId", Model.ID } })
                         </li>
                         if (!string.IsNullOrEmpty(routeActiveSubverse) && routeActiveSubverse == "all")
                         {
                             <li>
-                                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonBlockSubverse.cshtml", Model, new ViewDataDictionary { { "subverseName", Model.Subverse } })
+                                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonBlockSubverse.cshtml", Model, new ViewDataDictionary(ViewData) { { "subverseName", Model.Subverse } })
                             </li>
                         }
                     }

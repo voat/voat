@@ -22,26 +22,24 @@
 
 #endregion LICENSE
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Web.Mvc;
 using Voat.Models;
 using Voat.Models.ViewModels;
-
-using Voat.Data.Models;
 using Voat.Utilities;
 using Voat.Caching;
 using Voat.Common;
 using Voat.Domain.Query;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Voat.Controllers
 {
     public class AjaxGatewayController : BaseController
     {
-        private readonly voatEntities _db = new voatEntities();
+        private readonly VoatUIDataContextAccessor _db = new VoatUIDataContextAccessor();
         
         //// GET: MessageContent
         //public async Task<ActionResult> MessageContent(int? messageId)
@@ -95,7 +93,7 @@ namespace Voat.Controllers
                 return new HttpUnauthorizedResult();
             }
 
-            var subverseLinkFlairs = _db.SubverseFlairs
+            var subverseLinkFlairs = _db.SubverseFlair
                 .Where(n => n.Subverse == subverse)
                 .Take(10)
                 .ToList()
@@ -111,7 +109,10 @@ namespace Voat.Controllers
         [Authorize]
         public JsonResult TitleFromUri()
         {
-            var uri = Request.Params["uri"];
+            //CORE_PORT: Ported correctly?
+            //var uri = Request.Params["uri"];
+            var uri = Request.Form["uri"].FirstOrDefault();
+
             string title = UrlUtility.GetTitleFromUri(uri);
 
             if (title != null)
@@ -122,11 +123,11 @@ namespace Voat.Controllers
                     title
                 };
 
-                return Json(resultList, JsonRequestBehavior.AllowGet);
+                return Json(resultList /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
             }
 
             Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            return Json("Bad request.", JsonRequestBehavior.AllowGet);
+            return Json("Bad request." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         }
 
         // GET: subverse names containing search term (used for autocomplete on new submission views)
@@ -134,7 +135,7 @@ namespace Voat.Controllers
         {
             var q = new QuerySubmissionSubverseSettings(term, exact);
             var resultList = await q.ExecuteAsync().ConfigureAwait(false);
-            return Json(resultList, JsonRequestBehavior.AllowGet);
+            return Json(resultList /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         }
 
         // GET: markdown format a submission and return rendered result

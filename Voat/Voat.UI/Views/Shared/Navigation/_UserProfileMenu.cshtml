@@ -22,7 +22,7 @@
 
 @{
     
-    var url = Request.Url.AbsolutePath.ToLower();
+    var url = Context.Request.GetUrl().AbsolutePath.ToLower();
 
 }
 

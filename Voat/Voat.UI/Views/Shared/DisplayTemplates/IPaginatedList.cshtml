@@ -21,10 +21,10 @@
 
 @model Voat.Utilities.IPaginatedList
 
-@{
+@*@{
     if (Model.RouteData == null)
     {
-        Model.RouteData = new RouteValueDictionary();
+        Model.RouteData = new RouteValueDictionary(ViewData);
     }
     var routeLink = false;
     if (!String.IsNullOrEmpty(Model.RouteName))
@@ -69,4 +69,4 @@
             }
         </ul>
     </div>
-}
+}*@

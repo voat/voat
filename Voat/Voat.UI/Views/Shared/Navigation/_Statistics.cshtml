@@ -22,7 +22,7 @@
 
 
 @{
-    var url = Request.Url.ToString().ToLower();
+    var url = Context.Request.GetUrl().ToString().ToLower();
 }
 
 <ul class="tabmenu">

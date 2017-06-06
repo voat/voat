@@ -23,7 +23,6 @@
 #endregion LICENSE
 
 using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
 
 namespace Voat.Models.ViewModels
 {
@@ -35,7 +34,8 @@ namespace Voat.Models.ViewModels
 
         [Required(ErrorMessage = "Please enter some text")]
         [StringLength(10000, ErrorMessage = "Body is limited to 10000 characters")]
-        [AllowHtml]
+        //CORE_PORT: Not Supported
+        //[AllowHtml]
         public string Body { get; set; }
     }
 
@@ -55,7 +55,8 @@ namespace Voat.Models.ViewModels
 
         [Required(ErrorMessage = "Please enter some text")]
         [StringLength(10000, ErrorMessage = "Body is limited to 10000 characters")]
-        [AllowHtml]
+        //CORE_PORT: Not supported
+        //[AllowHtml]
         public string Body { get; set; }
 
         public bool RequireCaptcha { get; set; }

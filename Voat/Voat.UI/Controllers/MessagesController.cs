@@ -23,7 +23,7 @@
 #endregion LICENSE
 
 using System.Threading.Tasks;
-using System.Web.Mvc;
+
 
 using Voat.Utilities;
 using Voat.UI.Utilities;
@@ -39,6 +39,9 @@ using System.Collections.Generic;
 using System;
 using System.Web.Routing;
 using Voat.Configuration;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Voat.Controllers
 {
@@ -47,7 +50,7 @@ namespace Voat.Controllers
     public class MessagesController : BaseController
     {
         
-        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             ViewBag.Context = new MessageContextViewModel() { ViewerContext = UserDefinition.Parse(User.Identity.Name) };
             base.OnActionExecuting(filterContext);
@@ -207,14 +210,15 @@ namespace Voat.Controllers
         }
 
         // GET: Compose
-        [System.Web.Mvc.Authorize]
+        [Authorize]
         public ActionResult Compose()
         {
-            //ViewBag.PmView = "compose";
-            //ViewBag.Title = "Compose";
 
-            var recipient = Request.Params["recipient"];
-            var subject = Request.Params["subject"];
+            //CORE_PORT: Ported correctly?
+            //var recipient = Request.Params["recipient"];
+            //var subject = Request.Params["subject"];
+            var recipient = Request.Form["recipient"].FirstOrDefault();
+            var subject = Request.Form["subject"].FirstOrDefault();
             var subverse = (string)RouteData.Values["subverse"];
             var model = new NewMessageViewModel() { Recipient = recipient, Subject = subject };
 

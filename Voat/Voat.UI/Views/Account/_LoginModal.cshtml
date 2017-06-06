@@ -25,7 +25,7 @@
 }
 
         <section id="loginForm">
-            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ReturnUrl }, FormMethod.Post, false, new { @class = "form-horizontal", role = "form" }))
             {
                 @Html.AntiForgeryToken()
                 <div>
@@ -64,6 +64,6 @@
         </section>
 
     @section PageScripts {
-        @Scripts.Render("~/bundles/jqueryval")
+        @*@Scripts.Render("~/bundles/jqueryval")*@
     }
 

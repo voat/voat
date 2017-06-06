@@ -22,12 +22,7 @@
 
 #endregion LICENSE
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 using Voat.Utilities;
 
 namespace Voat.Models.ViewModels
@@ -41,7 +36,8 @@ namespace Voat.Models.ViewModels
 
         [Required(ErrorMessage = "Please enter a deletion reason")]
         [StringLength(500, ErrorMessage = "Deletion reason is limited to 500 characters")]
-        [AllowHtml]
+        //CORE_PORT: Not allowed
+        //[AllowHtml]
         public string Reason {
             get {
                 return _reason;

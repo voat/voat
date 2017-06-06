@@ -24,7 +24,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
+
 
 namespace Voat.Models.ViewModels
 {
@@ -45,7 +45,8 @@ namespace Voat.Models.ViewModels
 
         [Required(ErrorMessage = "Please enter a sidebar text.")]
         [StringLength(4000, ErrorMessage = "The sidebar text is limited to 4000 characters.")]
-        [AllowHtml]
+        //CORE_PORT: Not Supported
+        //[AllowHtml]
         public string SideBar { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]

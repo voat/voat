@@ -22,24 +22,39 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
 
 namespace Voat
 {
     public static class UIExtensions
     {
-        public static string GetFirstErrorMessage(this System.Web.Mvc.ModelStateDictionary modelState)
+        public static Uri GetUrl(this HttpRequest request)
+        {
+            var builder = new UriBuilder();
+            builder.Scheme = request.Scheme;
+            builder.Host = request.Host.Host;
+            if (request.Host.Port.HasValue)
+            {
+                builder.Port = request.Host.Port.Value;
+            }
+            builder.Path = request.Path;
+            builder.Query = request.QueryString.ToUriComponent();
+            return builder.Uri;
+        }
+
+        public static string GetFirstErrorMessage(this ModelStateDictionary modelState)
         {
             var message = ErrorMessages(modelState).FirstOrDefault();
             return message;
         }
-        private static IEnumerable<string> ErrorMessages(System.Web.Mvc.ModelStateDictionary modelState)
+        private static IEnumerable<string> ErrorMessages(ModelStateDictionary modelState)
         {
             foreach (var kp in modelState)
             {
@@ -53,13 +68,13 @@ namespace Voat
             }
         }
 
-        public static bool IsCookiePresent(this HttpRequestBase request, string keyName, string setValue, HttpResponseBase response = null, TimeSpan? expiration = null)
+        public static bool IsCookiePresent(this HttpRequest request, string keyName, string setValue, HttpResponse response = null, TimeSpan? expiration = null)
         {
             var result = false;
 
             var cookie = request.Cookies[keyName];
 
-            if (cookie != null && setValue.IsEqual(cookie.Value))
+            if (cookie != null && setValue.IsEqual(cookie))
             {
                 result = true;
             }
@@ -69,23 +84,24 @@ namespace Voat
             if (response != null)
             {
                 //Set if present in url
-                var qsKeyValue = request.QueryString[keyName];
+                var qsKeyValue = request.Query[keyName].FirstOrDefault();
                 if (!String.IsNullOrEmpty(qsKeyValue))
                 {
                     if (qsKeyValue.IsEqual(setValue))
                     {
-                        var newCookie = new HttpCookie(keyName);
-                        if (expiration.HasValue)
-                        {
-                            newCookie.Expires = DateTime.UtcNow.Add(expiration.Value); 
-                        }
-                        newCookie.Value = setValue;
-                        response.SetCookie(newCookie);
+                        //var newCookie = new HttpCookie(keyName);
+                        //if (expiration.HasValue)
+                        //{
+                        //    newCookie.Expires = DateTime.UtcNow.Add(expiration.Value); 
+                        //}
+                        //newCookie.Value = setValue;
+                        //response.SetCookie(newCookie);
+                        response.Cookies.Append(keyName, setValue, new CookieOptions() { Expires = DateTime.UtcNow.Add(expiration.Value) });
                         result = true;
                     }
                     else
                     {
-                        response.SetCookie(new HttpCookie(keyName) { Expires = DateTime.UtcNow.AddDays(-7) });
+                        response.Cookies.Append(keyName, setValue, new CookieOptions() { Expires = DateTime.UtcNow.AddDays(-7) });
                         result = false;
                     }
                 }
@@ -96,7 +112,7 @@ namespace Voat
 
         private static Dictionary<string, string> replacements = new Dictionary<string, string>() { { "%40", "@" } };
 
-        public static string RouteUrlPretty(this UrlHelper urlHelper, string routeName, RouteValueDictionary routeValues)
+        public static string RouteUrlPretty(this IUrlHelper urlHelper, string routeName, RouteValueDictionary routeValues)
         {
             
             var routedUrl = urlHelper.RouteUrl(routeName, routeValues);
@@ -104,7 +120,7 @@ namespace Voat
             return replacements.Aggregate(routedUrl, (value, keyPair) => value.Replace(keyPair.Key, keyPair.Value));
 
         }
-        public static string ActionPretty(this UrlHelper urlHelper, string routeName, RouteValueDictionary routeValues)
+        public static string ActionPretty(this IUrlHelper urlHelper, string routeName, RouteValueDictionary routeValues)
         {
             var routedUrl = urlHelper.Action(routeName, routeValues);
 

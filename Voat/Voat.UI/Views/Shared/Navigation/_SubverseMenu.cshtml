@@ -24,7 +24,7 @@
 
     var name = Model.Name;
     var path = Model.BasePath;
-    var url = Request.Url.AbsolutePath.ToLower();
+    var url = Context.Request.GetUrl().AbsolutePath.ToLower();
  
     if (!String.IsNullOrEmpty(name))
     {

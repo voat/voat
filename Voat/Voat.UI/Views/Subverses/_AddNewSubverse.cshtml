@@ -88,7 +88,7 @@
             </div>
 
             <div class="form-group">
-                @Html.Label("Sidebar text (optional)", htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(x => x.Sidebar, "Sidebar text (optional)", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-9">
                     @Html.TextAreaFor(m => m.Sidebar, new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.Sidebar)

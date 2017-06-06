@@ -22,6 +22,7 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 using System.Web;
 using Voat.Domain.Models;
@@ -67,7 +68,7 @@ namespace Voat.Models.ViewModels
         public string Avatar { get; set; }
 
         [Display(Name = "Avatar")]
-        public HttpPostedFileBase Avatarfile { get; set; }
+        public IFormFile Avatarfile { get; set; }
     }
 
     public class UserEmailViewModel

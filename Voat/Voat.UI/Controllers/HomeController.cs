@@ -22,20 +22,17 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using Voat.Caching;
 using Voat.Configuration;
 using Voat.Data;
-using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
-using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Rules;
 using Voat.RulesEngine;
@@ -47,14 +44,17 @@ namespace Voat.Controllers
     public class HomeController : BaseController
     {
         //IAmAGate: Move queries to read-only mirror
-        private readonly voatEntities _db = new voatEntities(true);
+        private readonly Data.Models.VoatDataContext _db = new Data.Models.VoatDataContext(CONSTANTS.CONNECTION_READONLY);
 
         // GET: submitlink
         [Authorize]
         public ActionResult SubmitLinkService(string selectedsubverse)
         {
+            //CORE_PORT: Not Ported
+            throw new NotImplementedException("Core port not implemented");
+            /*
             string linkDescription = Request.Params["title"];
-            string linkUrl = Request.QueryString["url"];
+            string linkUrl = Request.Query["url"];
 
             ViewBag.linkPost = "true";
             ViewBag.action = "link";
@@ -69,16 +69,19 @@ namespace Voat.Controllers
             }
 
             return View("~/Views/Home/Submit.cshtml");
+            */
         }
         // GET: submit
         [Authorize]
         public async Task<ActionResult> Submit(string selectedsubverse)
         {
             ViewBag.selectedSubverse = selectedsubverse;
-
-            string linkPost = Request.Params["linkpost"];
-            string title = Request.Params["title"];
-            string url = Request.QueryString["url"];
+            //CORE_PORT: Ported correctly?
+            //string linkPost = Request.Params["linkpost"];
+            //string title = Request.Params["title"];
+            string linkPost = Request.Form["linkpost"].FirstOrDefault();
+            string title = Request.Form["title"].FirstOrDefault();
+            string url = Request.Query["url"];
 
             CreateSubmissionViewModel model = new CreateSubmissionViewModel();
             model.Title = title;
@@ -366,8 +369,8 @@ namespace Voat.Controllers
             }
             return new EmptyResult();
         }
-
-        [OutputCache(Duration = 600, VaryByParam = "none")]
+        //CORE_PORT: Not Supported
+        //[OutputCache(Duration = 600, VaryByParam = "none")]
         public ActionResult FeaturedSub()
         {
             using (var repo = new Repository())

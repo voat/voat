@@ -23,7 +23,6 @@
 #endregion LICENSE
 
 using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
 
 namespace Voat.Models
 {
@@ -31,7 +30,8 @@ namespace Voat.Models
     {
         [Required(ErrorMessage = "Text is required. Please fill this field.")]
         [StringLength(10000, ErrorMessage = "Text is limited to 10000 characters.")]
-        [AllowHtml]
+        //CORE_PORT: Not Supported
+        //[AllowHtml]
         public string MessageContent { get; set; }
     }
 }

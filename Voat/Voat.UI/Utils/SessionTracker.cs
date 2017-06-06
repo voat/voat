@@ -39,10 +39,10 @@ namespace Voat.UI.Utilities
         {
             try
             {
-                using (var db = new voatEntities())
+                using (var db = new VoatUIDataContextAccessor())
                 {
                     // remove all records for given session id
-                    db.SessionTrackers.RemoveRange(db.SessionTrackers.Where(s => s.SessionID == sessionIdToRemove));
+                    db.SessionTracker.RemoveRange(db.SessionTracker.Where(s => s.SessionID == sessionIdToRemove));
                     db.SaveChanges();
                 }
             }
@@ -55,18 +55,21 @@ namespace Voat.UI.Utilities
         // clear all sessions
         public static void RemoveAllSessions()
         {
-            try
-            {
-                using (var db = new voatEntities())
-                {
-                    db.Database.ExecuteSqlCommand("TRUNCATE TABLE SESSIONTRACKER");
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception)
-            {
-                //
-            }
+            //CORE_PORT: Not ported
+            throw new NotImplementedException("Core port");
+
+            //try
+            //{
+            //    using (var db = new VoatUIDataContextAccessor())
+            //    {
+            //        db.Database.ExecuteSqlCommand("TRUNCATE TABLE SESSIONTRACKER");
+            //        db.SaveChanges();
+            //    }
+            //}
+            //catch (Exception)
+            //{
+            //    //
+            //}
         }
 
         // add a new session
@@ -75,11 +78,11 @@ namespace Voat.UI.Utilities
             try
             {
                 if (SessionExists(sessionId, subverseName)) return;
-                using (var db = new voatEntities())
+                using (var db = new VoatUIDataContextAccessor())
                 {
                     var newSession = new SessionTracker { SessionID = sessionId, Subverse = subverseName, CreationDate = Repository.CurrentDate };
 
-                    db.SessionTrackers.Add(newSession);
+                    db.SessionTracker.Add(newSession);
                     db.SaveChanges();
 
                 }
@@ -93,9 +96,9 @@ namespace Voat.UI.Utilities
         // check if session exists
         public static bool SessionExists(string sessionId, string subverseName)
         {
-            using (var db = new voatEntities())
+            using (var db = new VoatUIDataContextAccessor())
             {
-                var result = from sessions in db.SessionTrackers
+                var result = from sessions in db.SessionTracker
                              where sessions.Subverse.Equals(subverseName) && sessions.SessionID.Equals(sessionId)
                              select sessions;
 
@@ -107,11 +110,15 @@ namespace Voat.UI.Utilities
         //HACK: This query is expensive. Cache results.
         public static int ActiveSessionsForSubverse(string subverseName)
         {
+            //CORE_PORT: Cache not available
+            return -6666;
+
+            /*
             try
             {
                 string cacheKey = String.Format("legacy:activeSubSessions_{0}", subverseName);
 
-                object cacheData = System.Web.HttpContext.Current.Cache[cacheKey];
+                object cacheData = Context.Cache[cacheKey];
                 if (cacheData != null)
                 {
                     return (int)cacheData;
@@ -119,7 +126,7 @@ namespace Voat.UI.Utilities
 
 
                 int count = 0;
-                using (voatEntities db = new voatEntities())
+                using (var db = new VoatUIDataContextAccessor())
                 {
 
                     var cmd = db.Database.Connection.CreateCommand();
@@ -135,7 +142,7 @@ namespace Voat.UI.Utilities
                         cmd.Connection.Open();
                     }
                     count = (int)cmd.ExecuteScalar();
-                    System.Web.HttpContext.Current.Cache.Insert(cacheKey, count, null, Repository.CurrentDate.AddSeconds(120), System.Web.Caching.Cache.NoSlidingExpiration);
+                    context.Cache.Insert(cacheKey, count, null, Repository.CurrentDate.AddSeconds(120), System.Web.Caching.Cache.NoSlidingExpiration);
 
                 }
 
@@ -144,7 +151,7 @@ namespace Voat.UI.Utilities
 
 
 
-                //using (var db = new voatEntities())
+                //using (var db = new VoatUIDataContextAccessor())
                 //{
                 //    var result = from sessions in db.Sessiontrackers
                 //                 where sessions.Subverse.Equals(subverseName)
@@ -157,6 +164,7 @@ namespace Voat.UI.Utilities
             {
                 return -1;
             }
+            */
         }
 
         // get top 10 subverses by number of online users
@@ -164,9 +172,9 @@ namespace Voat.UI.Utilities
         {
             try
             {
-                using (var db = new voatEntities())
+                using (var db = new VoatUIDataContextAccessor())
                 {
-                    var groups = db.SessionTrackers
+                    var groups = db.SessionTracker
                                 .GroupBy(n => n.Subverse)
                                 .Select(n => new ActiveSubverseViewModel
                                 {
