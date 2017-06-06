@@ -35,13 +35,13 @@
         title = "front";
     }
 
-    var turnOffLink = String.Format("{0}{1}{2}", Request.Url.AbsoluteUri, Request.Url.AbsoluteUri.Contains("?") ? "&" : "?", "view=list");
+    var turnOffLink = String.Format("{0}{1}{2}", Context.Request.GetUrl().AbsoluteUri, Context.Request.GetUrl().AbsoluteUri.Contains("?") ? "&" : "?", "view=list");
 }
 
 @section PageHeader {
     @if (Model.IsActualSubverse)
     {
-        @Html.Partial("_SubverseStylesheetLink", Model.Context.Name, new ViewDataDictionary())
+        @Html.Partial("_SubverseStylesheetLink", Model.Context.Name, new ViewDataDictionary(ViewData))
     }
 }
 

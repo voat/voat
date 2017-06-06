@@ -33,7 +33,7 @@
         <hr />
         <dl class="dl-horizontal">
             <dt>
-                @Html.Label("Username:", new { @class = "control-label col-md-2" })
+                @Html.LabelFor(x => x.UserName, "Username:", new { @class = "control-label col-md-2" })
             </dt>
 
             <dd>
@@ -41,7 +41,7 @@
             </dd>
 
             <dt>
-                @Html.Label("Power:", new { @class = "control-label col-md-2" })
+                @Html.LabelFor(x => x.Power, "Power:", new { @class = "control-label col-md-2" })
             </dt>
 
             <dd>

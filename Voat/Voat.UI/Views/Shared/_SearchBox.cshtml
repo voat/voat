@@ -39,7 +39,7 @@
                 Search @Settings.SiteName
             </div>
 
-            @using (Html.BeginForm("SearchResults", "Search", new { }, FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
+            @using (Html.BeginForm("SearchResults", "Search", new { }, FormMethod.Get, false, new { @class = "form-horizontal", role = "form" }))
             {
                 <h2>@Html.ValidationSummary(true)</h2>
                 @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search " + Settings.SiteName })
@@ -51,7 +51,7 @@
                     <input type="checkbox" name="l" value="true" id="l"
                            @(!String.IsNullOrEmpty(selectedSubverse) ? "checked=\"checked\"" : "") />
 
-                    @Html.Label("Limit to v/" + selectedSubverse)
+                    @Html.Label("selectedSubverse", "Limit to v/" + selectedSubverse)
                 }
             }
         </div>

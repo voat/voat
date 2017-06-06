@@ -124,7 +124,7 @@
                     You can login if you already have an account or register by clicking the button below.
                     Registering is free and <strong>all you need is a username and password</strong>. We never ask you for your e-mail.
                     <div>
-                        @Html.Partial("~/Views/Account/_LoginModal.cshtml", new LoginViewModel(), new ViewDataDictionary { { "ReturnUrl", Request.Url.PathAndQuery } })
+                        @Html.Partial("~/Views/Account/_LoginModal.cshtml", new LoginViewModel(), new ViewDataDictionary(ViewData) { { "ReturnUrl", Context.Request.GetUrl().PathAndQuery } })
                     </div>
                 </div>
                 <div class="modal-footer">
