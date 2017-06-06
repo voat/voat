@@ -544,8 +544,9 @@ namespace Voat.Controllers
                 ViewBag.SortingMode = sort;
 
                 ViewBag.NavigationViewModel = navModel;
+                var viewPath = ViewPath(domainReference);
 
-                return View(ViewPath(domainReference), viewProperties);
+                return View(viewPath, viewProperties);
             }
             catch (Exception ex)
             {

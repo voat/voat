@@ -26,7 +26,7 @@
     // get user subscriptions
     if (User.Identity.IsAuthenticated)
     {
-        var userData = Voat.Domain.UserData.GetContextUserData();
+        var userData = Voat.Domain.UserData.GetContextUserData(Context);
         System.Diagnostics.Debug.Assert(userData == null || userData.UserName == User.Identity.Name, "Context UserData and Identity UserName mismatch");
 
         //subscriptionList = UserHelper.UserSubscriptions(User.Identity.Name);

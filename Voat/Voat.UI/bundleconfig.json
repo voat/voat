@@ -1,20 +1,22 @@
+// Configure bundling and minification for the project.
+// More info at https://go.microsoft.com/fwlink/?LinkId=808241
 [
-  {
-    "outputFileName": "ddos.min.htm",
-    "inputFiles": [
-      "ddos.htm"
-    ]
-  },
-  {
-    "outputFileName": "inactive.min.htm",
-    "inputFiles": [
-      "inactive.htm"
-    ]
-  },
-  {
-    "outputFileName": "Content/bootstrap.min.css",
-    "inputFiles": [
-      "Content/bootstrap.css"
-    ]
-  }
+    {
+        "outputFileName": "wwwroot/ddos.min.htm",
+        "inputFiles": [
+            "ddos.htm"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/inactive.min.htm",
+        "inputFiles": [
+            "inactive.htm"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/css/bootstrap.min.css",
+        "inputFiles": [
+            "wwwroot/css/bootstrap.css"
+        ]
+    }
 ]

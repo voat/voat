@@ -30,7 +30,7 @@
         Layout = "~/Views/Shared/Layouts/_LayoutEmpty.cshtml";
     }
 
-    var userData = Voat.Domain.UserData.GetContextUserData();
+    var userData = Voat.Domain.UserData.GetContextUserData(Context);
     System.Diagnostics.Debug.Assert(userData == null || userData.UserName == User.Identity.Name, "Context UserData and Identity UserName mismatch");
 
     NavigationViewModel navModel = ViewBag.NavigationViewModel;
@@ -47,8 +47,8 @@
 
     ViewBag.Title = ViewBag.Title ?? Settings.SiteSlogan;
     ViewBag.Description = ViewBag.Description ?? Settings.SiteDescription;
-    ViewBag.Url = ViewBag.Url ?? HttpContext.Current.Request.RawUrl;
-    ViewBag.Image = ViewBag.Image ?? HttpContext.Current.Request.Url.Scheme + "://" + HttpContext.Current.Request.Url.Authority + Settings.SiteLogo;
+    ViewBag.Url = ViewBag.Url ?? Context.Request.RawUrl;
+    ViewBag.Image = ViewBag.Image ?? Context.Request.Url.Scheme + "://" + Context.Request.Url.Authority + Settings.SiteLogo;
 }
 
 <div style="display: none" id="share-a-link-overlay">
@@ -195,11 +195,11 @@
 
 @RenderBody()
 
-@if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
+@if (Context.Request.Cookies["NotFirstTime"] == null)
 {
     HttpCookie hc = new HttpCookie("NotFirstTime", "1");
     hc.Expires = Repository.CurrentDate.AddYears(1);
-    HttpContext.Current.Response.Cookies.Add(hc);
+    Context.Response.Cookies.Add(hc);
 
     @* First time visitor welcome *@
 if (!User.Identity.IsAuthenticated)

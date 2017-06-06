@@ -48,7 +48,7 @@ namespace Voat
     {
         public ChildActionOnlyAttribute()
         {
-            throw new NotImplementedException("Core Port Shim. This code needs to be refactored to proper standards");
+            //throw new NotImplementedException("Core Port Shim. This code needs to be refactored to proper standards");
         }
     }
 

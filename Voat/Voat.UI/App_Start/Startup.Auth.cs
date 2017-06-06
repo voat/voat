@@ -27,7 +27,7 @@ using System;
 
 namespace Voat
 {
-    public partial class Startup
+    public partial class Startup_COREPORT
     {
         internal static IDataProtectionProvider DataProtectionProvider { get; private set; }
 
@@ -52,7 +52,7 @@ namespace Voat
             };
 
             //for local testing don't set cookiedomain
-            var localRequest = (HttpContext.Current != null && HttpContext.Current.Request != null && HttpContext.Current.Request.IsLocal);
+            var localRequest = (HttpContext.Current != null && Context.Request != null && Context.Request.IsLocal);
             var domain = WebConfigurationManager.AppSettings["CookieDomain"];
             if (!String.IsNullOrEmpty(domain) && !localRequest)
             {

@@ -186,7 +186,7 @@ namespace Voat
         protected void Application_BeginRequest(Object sender, EventArgs e)
         {
             
-            var request = HttpContext.Current.Request;
+            var request = Context.Request;
             //Not logging ajax calls in DEV, leaving out until we can look at
             //var cmd = new LogRequestCommand(Origin.UI, RequestInfo.Parse(request));
             //cmd.Execute();
@@ -205,7 +205,7 @@ namespace Voat
                         try
                         {
                             var isAjax = request.RequestContext.HttpContext.Request.IsAjaxRequest();
-                            var response = HttpContext.Current.Response;
+                            var response = Context.Response;
                             if (isAjax)
                             {
                                 //js calls

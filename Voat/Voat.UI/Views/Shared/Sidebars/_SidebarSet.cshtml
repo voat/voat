@@ -21,7 +21,7 @@
 @model Voat.Data.Models.SubverseSet
 
 @{
-    var userData = Voat.Domain.UserData.GetContextUserData();
+    var userData = Voat.Domain.UserData.GetContextUserData(Context);
     var domainReference = new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Set, Model.Name, Model.UserName);
 
     ViewBag.Title = Model.Title;

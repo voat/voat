@@ -20,7 +20,7 @@
 
 @model Voat.Domain.Models.DeleteAccountOptions
 @{ 
-    var userData = Voat.Domain.UserData.GetContextUserData();
+    var userData = Voat.Domain.UserData.GetContextUserData(Context);
     var isLoved = userData.Information.CommentPoints.Sum > 0 && userData.Information.CommentPoints.Sum > 0;
 
 

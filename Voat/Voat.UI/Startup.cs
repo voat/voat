@@ -22,37 +22,87 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
+using Voat.Configuration;
 
-//CORE_PORT: Unsupported
-//[assembly: OwinStartup(typeof(Startup))]
 namespace Voat
 {
-    public partial class Startup
+    public class Startup
     {
-
-        //CORE_PORT: Changes in setup
-        public void Configuration(object app)
+        public Startup(IHostingEnvironment env)
         {
-            throw new NotImplementedException("Core port problem");
-        }
-        /*
-        public void Configuration(IAppBuilder app)
-        {
-            ConfigureAuth(app);
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
-            if (!Settings.SignalRDisabled)
+            if (env.IsDevelopment())
             {
-                // wire up SignalR
-                var config = new HubConfiguration()
-                {
-                    EnableDetailedErrors = false,
-                    EnableJSONP = false,
-                    EnableJavaScriptProxies = true
-                };
-                app.MapSignalR(config);
+                // For more details on using the user secret store see https://go.microsoft.com/fwlink/?LinkID=532709
+                builder.AddUserSecrets<Startup>();
             }
+
+            builder.AddEnvironmentVariables();
+            Configuration = builder.Build();
+
+            //Voat config
+            LiveConfigurationManager.Configure(Configuration);
         }
-        */
+
+        public IConfigurationRoot Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            // Add framework services.
+            //services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            //services.AddIdentity<ApplicationUser, IdentityRole>()
+            //    .AddEntityFrameworkStores<ApplicationDbContext>()
+            //    .AddDefaultTokenProviders();
+
+            services.AddMvc();
+
+            // Add application services.
+            //services.AddTransient<IEmailSender, AuthMessageSender>();
+            //services.AddTransient<ISmsSender, AuthMessageSender>();
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        {
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddDebug();
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
+                app.UseBrowserLink();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+            }
+
+            app.UseStaticFiles();
+
+            //app.UseIdentity();
+
+            //// Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
+
+            app.UseMvc(routes =>
+            {
+
+                RouteConfig.RegisterRoutes(routes);
+
+            });
+        }
     }
 }

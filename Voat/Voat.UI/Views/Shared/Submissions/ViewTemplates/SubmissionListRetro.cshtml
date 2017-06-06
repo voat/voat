@@ -133,7 +133,7 @@
         </div>
 
         @{
-            Model.Submissions.RouteData = Request.RequestContext.RouteData.Values;
+            Model.Submissions.RouteData = Context.Request.RouteData.Values;
             if (Model.Sort != null)
             {
                 Model.Submissions.RouteData["sort"] = Model.Sort.ToString().ToLower();
@@ -142,9 +142,9 @@
             {
                 Model.Submissions.RouteData["span"] = Model.Span.ToString().ToLower();
             }
-            if (!String.IsNullOrEmpty(Request.Query["frontpage"]))
+            if (!String.IsNullOrEmpty(Context.Request.Query["frontpage"]))
             {
-                Model.Submissions.RouteData["frontpage"] = Request.Query["frontpage"];
+                Model.Submissions.RouteData["frontpage"] = Context.Request.Query["frontpage"];
             }
         }
         @Html.DisplayFor(model => Model.Submissions, "IPaginatedList")

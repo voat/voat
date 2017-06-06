@@ -1,4 +1,4 @@
-@*
+﻿@*
     
     Copyright(c) Voat, Inc.
 
@@ -18,16 +18,14 @@
 
 *@
 
-@using System.Configuration
-@model HandleErrorInfo
 
 @{
     ViewBag.Title = "Ouch!";
     Layout = null;
 
     var theme = "light";
-    var tc = HttpContext.Current.Request.Cookies["theme"];
-    if(tc != null && tc.Value == "dark")
+    var tc = Context.Request.Cookies["theme"];
+    if(tc != null && tc == "dark")
     {
         theme = "dark";
     }
@@ -155,11 +153,11 @@
     </div>
     @Html.Partial("_Footer")
     <br />
-    @if (HttpContext.Current.Request.Cookies["NotFirstTime"] == null)
+    @if (Context.Request.Cookies["NotFirstTime"] == null)
     {
         HttpCookie hc = new HttpCookie("NotFirstTime", "1");
         hc.Expires = Repository.CurrentDate.AddYears(1);
-        HttpContext.Current.Response.Cookies.Add(hc);
+        Context.Response.Cookies.Add(hc);
 
         <div class="alert eppnotice alert-dismissible" role="alert">
             <button type="button" class="btn-whoaverse-medium" data-dismiss="alert" aria-hidden="true">&times;</button>

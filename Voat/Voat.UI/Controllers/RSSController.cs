@@ -46,7 +46,7 @@ namespace Voat.Controllers
             {
                 Language = "en-US",
                 ImageUrl =
-                    new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority +
+                    new Uri("http://" + System.Web.Context.Request.Url.Authority +
                             "/Graphics/voat-logo.png")
             };
 
@@ -54,16 +54,16 @@ namespace Voat.Controllers
 
             foreach (var submission in submissions)
             {
-                var commentsUrl = new Uri("https://" + System.Web.HttpContext.Current.Request.Url.Authority + "/v/" + submission.Subverse + "/comments/" + submission.ID);
-                var subverseUrl = new Uri("https://" + System.Web.HttpContext.Current.Request.Url.Authority + "/v/" + submission.Subverse);
-                var authorUrl = new Uri("https://" + System.Web.HttpContext.Current.Request.Url.Authority + "/user/" + submission.UserName);
+                var commentsUrl = new Uri("https://" + System.Web.Context.Request.Url.Authority + "/v/" + submission.Subverse + "/comments/" + submission.ID);
+                var subverseUrl = new Uri("https://" + System.Web.Context.Request.Url.Authority + "/v/" + submission.Subverse);
+                var authorUrl = new Uri("https://" + System.Web.Context.Request.Url.Authority + "/user/" + submission.UserName);
 
                 var authorName = submission.UserName;
                 // submission type submission
                 if (submission.IsAnonymized)
                 {
                     authorName = submission.ID.ToString(CultureInfo.InvariantCulture);
-                    authorUrl = new Uri("https://" + System.Web.HttpContext.Current.Request.Url.Authority);
+                    authorUrl = new Uri("https://" + System.Web.Context.Request.Url.Authority);
                 }
 
                 if (submission.Type == Voat.Domain.Models.SubmissionType.Text)
@@ -89,11 +89,11 @@ namespace Voat.Controllers
 
                         //if (Settings.UseContentDeliveryNetwork)
                         //{
-                        //    thumbnailUrl = new Uri("http://cdn." + System.Web.HttpContext.Current.Request.Url.Authority + "/thumbs/" + submission.Thumbnail).ToString();
+                        //    thumbnailUrl = new Uri("http://cdn." + System.Web.Context.Request.Url.Authority + "/thumbs/" + submission.Thumbnail).ToString();
                         //}
                         //else
                         //{
-                        //    thumbnailUrl = new Uri("http://" + System.Web.HttpContext.Current.Request.Url.Authority + "/Thumbs/" + submission.Thumbnail).ToString();
+                        //    thumbnailUrl = new Uri("http://" + System.Web.Context.Request.Url.Authority + "/Thumbs/" + submission.Thumbnail).ToString();
                         //}
                         
                         var item = new SyndicationItem(

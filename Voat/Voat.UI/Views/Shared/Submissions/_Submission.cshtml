@@ -27,7 +27,7 @@
 
     if (User.Identity.IsAuthenticated)
     {
-        var userData = Voat.Domain.UserData.GetContextUserData();
+        var userData = Voat.Domain.UserData.GetContextUserData(Context);
         showNSFWThumbs = userData.Preferences.EnableAdultContent;
 
         if (userData.Preferences.OpenInNewWindow)

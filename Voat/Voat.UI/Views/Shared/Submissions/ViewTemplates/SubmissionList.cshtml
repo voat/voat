@@ -31,7 +31,7 @@
 @section PageHeader {
     @if (Model.IsActualSubverse)
     {
-        @Html.Partial("_SubverseStylesheetLink", Model.Context.Name, new ViewDataDictionary())
+        @Html.Partial("_SubverseStylesheetLink", Model.Context.Name, new ViewDataDictionary(ViewData))
     }
 }
 

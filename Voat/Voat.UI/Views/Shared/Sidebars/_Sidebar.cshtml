@@ -23,7 +23,7 @@
 @using Voat.Models.ViewModels;
 
 @{
-    var userData = Voat.Domain.UserData.GetContextUserData();
+    var userData = Voat.Domain.UserData.GetContextUserData(Context);
     System.Diagnostics.Debug.Assert(userData == null || userData.UserName == User.Identity.Name, "Context UserData and Identity UserName mismatch");
 
     string subverseAge = Age.ToRelative(Model.CreationDate);
