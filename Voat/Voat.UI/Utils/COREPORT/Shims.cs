@@ -24,11 +24,11 @@ namespace Voat
 
         public static void Add(this IResponseCookies cookies, HttpCookie cookie)
         {
-            throw new NotImplementedException("Core Port Not Ported");
+            cookies.Append(cookie.Name, cookie.Value, new CookieOptions() { Expires = cookie.Expires });
         }
         public static void SetCookie(this HttpResponse response, HttpCookie cookie)
         {
-            throw new NotImplementedException("Core Port Not Ported");
+            response.Cookies.Add(cookie);
         }
         
     }

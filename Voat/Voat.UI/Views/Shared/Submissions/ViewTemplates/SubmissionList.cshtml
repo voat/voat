@@ -44,11 +44,11 @@
 <div id="container">
     @if (Model.IsActualSubverse)
     {
-        @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = Model.Context.Name })
+        @Html.RenderAction("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = Model.Context.Name })
     }
     else if (Model.Context != null && Model.Context.Type == Voat.Domain.Models.DomainType.Set)
     {
-        @Html.Action("Sidebar", "Set", new { name = Model.Context.FullName })
+        @Html.RenderAction("Sidebar", "Set", new { name = Model.Context.FullName })
     }
     else
     {
@@ -76,18 +76,18 @@
         <div class="sitetable linklisting">
             @if (Model.IsActualSubverse)
             {
-                @Html.Action("StickiedSubmission", "Subverses", new { subverseName = Model.Context.Name })
+                @Html.RenderAction("StickiedSubmission", "Subverses", new { subverseName = Model.Context.Name })
             }
             else if (Model.Context == null || (Model.Context != null && Model.Context.Type != DomainType.Set))
             {
                 @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
-                @Html.Action("FeaturedSub", "Home")
-                @Html.Action("StickiedSubmission", "Home")
+                @Html.RenderAction("FeaturedSub", "Home")
+                @Html.RenderAction("StickiedSubmission", "Home")
             }
 
             @if (Model.Submissions.Count <= 0)
             {
-                Html.RenderPartial("_DefaultMessage", new ViewDataDictionary(ViewData) {{"selectedSubverse", Model.Context.Name}});
+                Html.RenderPartial("_DefaultMessage");
             }
 
             @foreach (var submission in Model.Submissions)
@@ -98,8 +98,8 @@
         </div>
 
         @{
-           
-            Model.Submissions.RouteData = Context.Request.RequestContext.RouteData.Values;
+
+            Model.Submissions.RouteData = null; //Context.Request.RequestContext.RouteData.Values;
             if (Model.Sort != null)
             {
                 Model.Submissions.RouteData["sort"] = Model.Sort.ToString().ToLower();

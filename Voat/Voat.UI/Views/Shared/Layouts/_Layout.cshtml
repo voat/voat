@@ -35,8 +35,6 @@
 
     NavigationViewModel navModel = ViewBag.NavigationViewModel;
 
-
-
     LoginViewModel loginViewModel = new LoginViewModel();
 
     string routeController = (string)ViewContext.RouteData.Values["controller"];
@@ -47,8 +45,8 @@
 
     ViewBag.Title = ViewBag.Title ?? Settings.SiteSlogan;
     ViewBag.Description = ViewBag.Description ?? Settings.SiteDescription;
-    ViewBag.Url = ViewBag.Url ?? Context.Request.RawUrl;
-    ViewBag.Image = ViewBag.Image ?? Context.Request.Url.Scheme + "://" + Context.Request.Url.Authority + Settings.SiteLogo;
+    ViewBag.Url = ViewBag.Url ?? Context.Request.GetUrl().ToString();
+    ViewBag.Image = ViewBag.Image ?? Context.Request.GetUrl().Scheme + "://" + Context.Request.GetUrl().Authority + Settings.SiteLogo;
 }
 
 <div style="display: none" id="share-a-link-overlay">
@@ -59,7 +57,7 @@
 
 <div id="header" tabindex=0 role="banner">
 
-    @Html.Action("Menu", "Dashboard")
+    @Html.RenderAction("Menu", "Dashboard")
 
     <div id="header-container">
         <div id="header-banner">

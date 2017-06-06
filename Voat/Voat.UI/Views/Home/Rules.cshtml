@@ -19,7 +19,6 @@
 *@
 
 @model IEnumerable<Voat.Rules.RuleInformationWithOutcome>
-
 <style type="text/css">
     h1, h2, h3 { 
         font-size:1.3em;
@@ -126,16 +125,4 @@
     }
     </div>
 
-@section PageScripts {
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $(".rule > div > h2").click(function (e) {
-                $(this).next().slideToggle();
-            });
-            $(".series").click(function (e) {
-                var series = $(this).data("series");
-                $("." + series + " > div > h2").next().slideToggle();
-            });
-        });
-    </script>
-}
+

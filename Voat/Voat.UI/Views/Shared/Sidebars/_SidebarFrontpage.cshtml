@@ -22,7 +22,7 @@
 
 <div class="side">
 
-    @Html.Partial("_SearchBox", new SearchViewModel(), new ViewDataDictionary())
+    @Html.Partial("_SearchBox", new SearchViewModel(), new ViewDataDictionary(ViewData))
 
     <div class="spacer">
         <a href="/submit?linkpost=true" class="btn-whoaverse btn-block contribute submit-link">

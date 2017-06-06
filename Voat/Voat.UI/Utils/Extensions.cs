@@ -39,7 +39,11 @@ namespace Voat
         {
             var builder = new UriBuilder();
             builder.Scheme = request.Scheme;
-            builder.Host = request.Host.Value;
+            builder.Host = request.Host.Host;
+            if (request.Host.Port.HasValue)
+            {
+                builder.Port = request.Host.Port.Value;
+            }
             builder.Path = request.Path;
             builder.Query = request.QueryString.ToUriComponent();
             return builder.Uri;

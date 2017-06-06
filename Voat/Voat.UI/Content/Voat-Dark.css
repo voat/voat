@@ -861,7 +861,7 @@ select.form-control {
 ------------------------------------------------------------------------------------ */
 /* Global */
 .arrow-downvote, .arrow-downvoted, .arrow-upvote, .arrow-upvoted {
-  background: url("/Graphics/Dark-SpriteSheet.png");
+  background: url("/images/Dark-SpriteSheet.png");
   cursor: pointer;
   height: 16px;
   margin: auto;
@@ -889,7 +889,7 @@ select.form-control {
 /* Comments */
 .comment .arrow-downvote, .comment .arrow-downvoted,
 .comment .arrow-upvote, .comment .arrow-upvoted {
-  background: url("/Graphics/Dark-SpriteSheet.png");
+  background: url("/images/Dark-SpriteSheet.png");
   height: 12px;
   width: 12px; }
 
@@ -1480,7 +1480,7 @@ pre, code {
   text-decoration: underline; }
 
 #manage {
-  background: url("/Graphics/Dark-SpriteSheet.png");
+  background: url("/images/Dark-SpriteSheet.png");
   background-position: -56px 0;
   cursor: pointer;
   display: inline-block;
@@ -1492,7 +1492,7 @@ pre, code {
   top: 4px; }
 
 #nightmodetoggle {
-  background: url("/Graphics/Dark-SpriteSheet.png");
+  background: url("/images/Dark-SpriteSheet.png");
   background-position: -86px 0;
   display: inline-block;
   cursor: pointer;
@@ -1509,14 +1509,14 @@ pre, code {
   top: 2px; }
 
 #mail.havemail {
-  background: url("/Graphics/Dark-SpriteSheet.png");
+  background: url("/images/Dark-SpriteSheet.png");
   background-position: -18px 0;
   cursor: pointer;
   height: 12px;
   width: 18px; }
 
 #mail.nohavemail {
-  background: url("/Graphics/Dark-SpriteSheet.png");
+  background: url("/images/Dark-SpriteSheet.png");
   background-position: 0 0;
   cursor: pointer;
   height: 12px;
@@ -1908,37 +1908,37 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
   cursor: pointer; }
 
 .expando-button.selftext.collapsed {
-  background: url("/Graphics/Dark-SpriteSheet.png");
+  background: url("/images/Dark-SpriteSheet.png");
   background-position: 0 -44px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.collapsed:hover {
-  background: url("/Graphics/Dark-SpriteSheet.png");
+  background: url("/images/Dark-SpriteSheet.png");
   background-position: -16px -44px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.expanded {
-  background: url("/Graphics/Dark-SpriteSheet.png");
+  background: url("/images/Dark-SpriteSheet.png");
   background-position: 0 -60px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.expanded:hover {
-  background: url("/Graphics/Dark-SpriteSheet.png");
+  background: url("/images/Dark-SpriteSheet.png");
   background-position: -16px -60px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.loading {
-  background: url("/Graphics/Dark-SpriteSheet.png");
+  background: url("/images/Dark-SpriteSheet.png");
   background-position: 0 -76px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.loading:hover {
-  background: url("/Graphics/Dark-SpriteSheet.png");
+  background: url("/images/Dark-SpriteSheet.png");
   background-position: -16px -76px;
   height: 16px;
   width: 16px; }
@@ -2556,7 +2556,7 @@ input[type=checkbox].form-control {
     padding: 0 0 4px 4px; }
   .comment .arrow-downvote, .comment .arrow-downvoted,
   .comment .arrow-upvote, .comment .arrow-upvoted {
-    background: url("/Graphics/Dark-SpriteSheet.png");
+    background: url("/images/Dark-SpriteSheet.png");
     height: 16px;
     width: 16px; }
   .comment .arrow-upvote {
@@ -2604,27 +2604,27 @@ input[type=checkbox].form-control {
     margin: 5px 5px 2px 0;
     width: 32px; }
   .expando-button.selftext.collapsed {
-    background: url("/Graphics/Dark-SpriteSheet.png");
+    background: url("/images/Dark-SpriteSheet.png");
     background-position: -32px -44px;
     height: 32px;
     width: 32px; }
   .expando-button.selftext.collapsed:hover {
-    background: url("/Graphics/Dark-SpriteSheet.png");
+    background: url("/images/Dark-SpriteSheet.png");
     background-position: -32px -44px;
     height: 32px;
     width: 32px; }
   .expando-button.selftext.expanded {
-    background: url("/Graphics/Dark-SpriteSheet.png");
+    background: url("/images/Dark-SpriteSheet.png");
     background-position: -64px -44px;
     height: 32px;
     width: 32px; }
   .expando-button.selftext.expanded:hover {
-    background: url("/Graphics/Dark-SpriteSheet.png");
+    background: url("/images/Dark-SpriteSheet.png");
     background-position: -64px -44px;
     height: 32px;
     width: 32px; }
   .expando-button.selftext.loading, .expando-button.selftext.loading:hover {
-    background: url("/Graphics/Dark-SpriteSheet.png");
+    background: url("/images/Dark-SpriteSheet.png");
     background-position: -32px -76px;
     height: 32px;
     width: 32px; }
