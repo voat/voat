@@ -56,7 +56,7 @@
                         case Voat.Domain.Models.ContentType.Submission:
                             <div>
                                 @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", record.Submission,
-                                new ViewDataDictionary() {
+                                new ViewDataDictionary(ViewData) {
                                     { "VoteTypeAllowed", Voat.Domain.Models.VoteTypeAllowed.None }
                                 })
                             </div>
@@ -64,7 +64,7 @@
                         case Voat.Domain.Models.ContentType.Comment:
                             <div>
                                 @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", record.Comment,
-                                new ViewDataDictionary {
+                                new ViewDataDictionary(ViewData) {
                                     { "CommentId", record.Comment.ID },
                                     { "parentIsHidden", false },
                                     { "SortingMode", "new" },

@@ -42,7 +42,7 @@
 
           
 
-            @Html.Partial("Sidebars/Buttons/_SubscribeButtons", domainReference, new ViewDataDictionary() { { "UserData", userData } })
+            @Html.Partial("Sidebars/Buttons/_SubscribeButtons", domainReference, new ViewDataDictionary(ViewData) { { "UserData", userData } })
 
            
 

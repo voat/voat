@@ -32,7 +32,7 @@ namespace Voat.UI.Utilities
 {
     public static class HtmlHelperExtensions {
 
-        public static HtmlString MarkdownEditorFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes) {
+        public static HtmlString MarkdownEditorFor<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes) {
 
 
             //CORE_PORT: Issues 

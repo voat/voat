@@ -1,0 +1,55 @@
+﻿/* Markdown Editor */
+.markdownEditor{
+    display:none;
+	max-width: 100%;
+	font-size: 11px;
+}
+.markdownEditorMainMenu{
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+.markdownEditorSubMenu{
+	display: inline-block;
+	margin-top: 3px;
+	margin-bottom: 3px;
+	margin-right: 3px;
+	padding: 4px;
+	border: 1px solid grey;
+	text-align: center;
+}
+.markdownEditorImgButton{
+	display: inline-block;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	margin-left: 1px;
+	margin-right: 1px;
+	height: 16px;
+	width: 32px;
+	vertical-align: middle;
+	background-color: whitesmoke;
+	background-image: url('../Graphics/markdownEditorSprite.png');
+	border: 1px solid grey;
+	box-sizing: content-box;
+	cursor: pointer;
+}
+.markdownEditorTextButton{
+	display: inline-block;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	margin-left: 1px;
+	margin-right: 1px;
+	padding: 0px 2px 1px 2px;
+	
+	min-width: 32px;
+	vertical-align: middle;
+	background-color: whitesmoke;
+	border: 1px solid grey;
+	color: black!important;
+	text-decoration: none!important;
+	cursor: pointer;
+}
+@media (min-width: 870px) {
+    .markdownEditor { 
+        display:block;
+    }
+}

@@ -4,19 +4,63 @@
     {
         "outputFileName": "wwwroot/ddos.min.htm",
         "inputFiles": [
-            "ddos.htm"
+            "wwwroot/ddos.htm"
         ]
     },
     {
         "outputFileName": "wwwroot/inactive.min.htm",
         "inputFiles": [
-            "inactive.htm"
+            "wwwroot/inactive.htm"
         ]
     },
     {
-        "outputFileName": "wwwroot/css/bootstrap.min.css",
+        "outputFileName": "wwwroot/css/min/voat.dark.min.css",
         "inputFiles": [
-            "wwwroot/css/bootstrap.css"
+            "wwwroot/css/bootstrap.css",
+            "wwwroot/css/Site.css",
+            "wwwroot/css/tooltipster.css",
+            "wwwroot/css/Voat-Dark.css",
+            "wwwroot/css/markdownEditor.css"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/css/min/voat.light.min.css",
+        "inputFiles": [
+            "wwwroot/css/bootstrap.css",
+            "wwwroot/css/Site.css",
+            "wwwroot/css/tooltipster.css",
+            "wwwroot/css/Voat-Light.css",
+            "wwwroot/css/markdownEditor.css"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/min/bootstrap.min.js",
+        "inputFiles": [
+            "wwwroot/lib/legacy/bootstrap.js",
+            "wwwroot/lib/legacy/respond.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/min/voat.min.js",
+        "inputFiles": [
+            "wwwroot/lib/legacy/modernizr-2.8.3.js",
+            "wwwroot/lib/legacy/jquery-2.1.4.js",
+            "wwwroot/lib/legacy/jquery-ui.js",
+            "wwwroot/lib/legacy/jquery.tooltipster.js",
+            "wwwroot/lib/legacy/jquery.unobtrusive-ajax.js",
+            "wwwroot/lib/legacy/jquery.validate.js",
+            "wwwroot/lib/legacy/jquery.validate.unobtrusive.js",
+            "wwwroot/js/voat.dashboard.js",
+            "wwwroot/js/voat.ui.js",
+            "wwwroot/js/voat.js",
+            "wwwroot/js/voat.markdownEditor.js"
+        ]
+    },
+    {
+        "outputFileName": "wwwroot/js/min/jquery.validate.min.js",
+        "inputFiles": [
+            "wwwroot/lib/legacy/jquery.validate.js",
+            "wwwroot/lib/legacy/jquery.validate.unobtrusive.js"
         ]
     }
 ]

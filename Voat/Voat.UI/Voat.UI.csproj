@@ -24,15 +24,71 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\css\min\" />
     <Folder Include="wwwroot\images\" />
+    <Folder Include="wwwroot\js\min\" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\css\bootstrap.css" />
+    <None Include="wwwroot\css\markdowneditor.css" />
+    <None Include="wwwroot\css\Site.css" />
+    <None Include="wwwroot\css\tooltipster.css" />
+    <None Include="wwwroot\css\Voat-Dark.css" />
+    <None Include="wwwroot\css\Voat-Light.css" />
     <None Include="wwwroot\ddos.htm" />
     <None Include="wwwroot\ddos.min.htm" />
     <None Include="wwwroot\favicon.ico" />
     <None Include="wwwroot\inactive.htm" />
     <None Include="wwwroot\inactive.min.htm" />
+    <None Include="wwwroot\js\voat.markdownEditor.js" />
+    <None Include="wwwroot\js\voat.dashboard.js" />
+    <None Include="wwwroot\js\voat.js" />
+    <None Include="wwwroot\js\voat.ui.js" />
+    <None Include="wwwroot\lib\gizmo\index.html" />
+    <None Include="wwwroot\lib\gizmo\lib\ios-orientationchange-fix.js" />
+    <None Include="wwwroot\lib\gizmo\lib\jquery-2.1.0.min.js" />
+    <None Include="wwwroot\lib\gizmo\src\css\bagpakk.min.css" />
+    <None Include="wwwroot\lib\gizmo\src\css\normalize.css" />
+    <None Include="wwwroot\lib\gizmo\src\css\style.css" />
+    <None Include="wwwroot\lib\gizmo\src\css\swipebox.css" />
+    <None Include="wwwroot\lib\gizmo\src\css\swipebox.min.css" />
+    <None Include="wwwroot\lib\gizmo\src\img\icons.png" />
+    <None Include="wwwroot\lib\gizmo\src\img\icons.svg" />
+    <None Include="wwwroot\lib\gizmo\src\img\loader.gif" />
+    <None Include="wwwroot\lib\gizmo\src\js\jquery.swipebox.js" />
+    <None Include="wwwroot\lib\gizmo\src\js\jquery.swipebox.min.js" />
+    <None Include="wwwroot\lib\gizmo\src\js\jquery.swipebox.min.js.map" />
+    <None Include="wwwroot\lib\gizmo\src\js\voatgallery.js" />
+    <None Include="wwwroot\lib\legacy\bootstrap.js" />
+    <None Include="wwwroot\lib\legacy\bootstrap.min.js" />
+    <None Include="wwwroot\lib\legacy\jquery-2.1.4.intellisense.js" />
+    <None Include="wwwroot\lib\legacy\jquery-2.1.4.js" />
+    <None Include="wwwroot\lib\legacy\jquery-2.1.4.min.js" />
+    <None Include="wwwroot\lib\legacy\jquery-2.1.4.min.map" />
+    <None Include="wwwroot\lib\legacy\jquery-ui.css" />
+    <None Include="wwwroot\lib\legacy\jquery-ui.js" />
+    <None Include="wwwroot\lib\legacy\jquery-ui.min.css" />
+    <None Include="wwwroot\lib\legacy\jquery-ui.min.js" />
+    <None Include="wwwroot\lib\legacy\jquery-ui.structure.css" />
+    <None Include="wwwroot\lib\legacy\jquery-ui.structure.min.css" />
+    <None Include="wwwroot\lib\legacy\jquery.signalR-2.2.0.js" />
+    <None Include="wwwroot\lib\legacy\jquery.signalR-2.2.0.min.js" />
+    <None Include="wwwroot\lib\legacy\jquery.tooltipster.js" />
+    <None Include="wwwroot\lib\legacy\jquery.tooltipster.min.js" />
+    <None Include="wwwroot\lib\legacy\jquery.unobtrusive-ajax.js" />
+    <None Include="wwwroot\lib\legacy\jquery.unobtrusive-ajax.min.js" />
+    <None Include="wwwroot\lib\legacy\jquery.validate-vsdoc.js" />
+    <None Include="wwwroot\lib\legacy\jquery.validate.js" />
+    <None Include="wwwroot\lib\legacy\jquery.validate.min.js" />
+    <None Include="wwwroot\lib\legacy\jquery.validate.unobtrusive.js" />
+    <None Include="wwwroot\lib\legacy\jquery.validate.unobtrusive.min.js" />
+    <None Include="wwwroot\lib\legacy\modernizr-2.8.3.js" />
+    <None Include="wwwroot\lib\legacy\npm.js" />
+    <None Include="wwwroot\lib\legacy\respond.js" />
+    <None Include="wwwroot\lib\legacy\respond.matchmedia.addListener.js" />
+    <None Include="wwwroot\lib\legacy\respond.matchmedia.addListener.min.js" />
+    <None Include="wwwroot\lib\legacy\respond.min.js" />
     <None Include="wwwroot\oexchange.xrd" />
     <None Include="wwwroot\robots.txt" />
     <None Include="wwwroot\sitemap.xml" />

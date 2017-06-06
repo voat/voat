@@ -25,13 +25,12 @@
 
 @{
     var type = Model.ToString().ToLower();
-    var url = Request.Url.AbsolutePath.ToLower().TrimEnd('/');
-    var phrase = Request.Query["phrase"];
+    var phrase = Context.Request.Query["phrase"];
 
 }
 <div>
     <h3>Search</h3>
-    @using (Html.BeginForm("Index", "Discover", new { domainType = type }, FormMethod.Get, new { @class = "form-horizontal", role = "form" }))
+    @using (Html.BeginForm("Index", "Discover", new { domainType = type }, FormMethod.Get, false, new { @class = "form-horizontal", role = "form" }))
     {
         <h2>@Html.ValidationSummary(true)</h2>
         @Html.TextBox("phrase", phrase, new { @class = "form-control", @placeholder = "Type a term to search for and press ENTER" })

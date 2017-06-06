@@ -54,7 +54,7 @@
                         }
 
                         <div class="form-group">
-                            @Html.Label("Recipient", htmlAttributes: new { @class = "control-label col-md-2" })
+                            @Html.LabelFor(x => x.Recipient, "Recipient", htmlAttributes: new { @class = "control-label col-md-2" })
                             <div class="col-md-4">
                                 @Html.TextBoxFor(m => m.Recipient, new { @class = "form-control", value = Model.Recipient })
                                 @Html.ValidationMessageFor(model => model.Recipient)
@@ -62,7 +62,7 @@
                         </div>
 
                         <div class="form-group">
-                            @Html.Label("Subject", htmlAttributes: new { @class = "control-label col-md-2" })
+                            @Html.LabelFor(x => x.Subject, "Subject", htmlAttributes: new { @class = "control-label col-md-2" })
                             <div class="col-md-9">
                                 @Html.TextBoxFor(m => m.Subject, new { @class = "form-control" })
                                 @Html.ValidationMessageFor(model => model.Subject)
@@ -71,7 +71,7 @@
                         </div>
 
                         <div class="form-group">
-                            @Html.Label("Message body", htmlAttributes: new { @class = "control-label col-md-2" })
+                            @Html.LabelFor(x => x.Body, "Message body", htmlAttributes: new { @class = "control-label col-md-2" })
                             <div class="col-md-9">
                                 @Html.MarkdownEditorFor(m => m.Body, new { rows="8", cols="1", @class = "form-control" })
                                 @Html.ValidationMessageFor(model => model.Body)

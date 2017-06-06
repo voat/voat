@@ -18,8 +18,6 @@
 
 *@
 
-@using Microsoft.AspNet.Identity;
-
 @if (User.Identity.IsAuthenticated)
 {
     var userData = Voat.Domain.UserData.GetContextUserData(this.Context);

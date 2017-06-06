@@ -156,12 +156,12 @@
                 if (!Model.IsDeleted)
                 {
                         <li>
-                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } })
+                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary(ViewData) { { "submissionId", Model.ID } })
                         </li>
                         if (!string.IsNullOrEmpty(routeActiveSubverse) && routeActiveSubverse == "all")
                         {
                             <li>
-                                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonBlockSubverse.cshtml", Model, new ViewDataDictionary { { "subverseName", Model.Subverse } })
+                                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonBlockSubverse.cshtml", Model, new ViewDataDictionary(ViewData) { { "subverseName", Model.Subverse } })
                             </li>
                         }
                     }

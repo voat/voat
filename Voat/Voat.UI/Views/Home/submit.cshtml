@@ -26,7 +26,7 @@
 @{
     ViewBag.Title = "subverse: submit";
 
-    string linkPost = Request.Params["linkpost"];
+    string linkPost = Context.Request.Query["linkpost"];
 
     string selectedSubverse = ViewBag.selectedSubverse;
     string loggedinUser = User.Identity.Name;
@@ -35,7 +35,7 @@
 }
 
 @section PageHeader {
-    @Html.Partial("_SubverseStylesheetLink", Model.Subverse, new ViewDataDictionary())
+    @Html.Partial("_SubverseStylesheetLink", Model.Subverse, new ViewDataDictionary(ViewData))
 }
 
 <div id="container">
@@ -52,7 +52,7 @@
                 @if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
                 {
                     <div class="form-group">
-                        @Html.Label("URL:", new { @class = "control-label col-md-2" })
+                        @Html.LabelFor(x => x.Url, "URL:", new { @class = "control-label col-md-2" })
                         <div class="col-md-9">
                             @Html.TextBoxFor(model => model.Url, new { @class = "form-control", Value = Model.Url })
                             @Html.ValidationMessageFor(model => model.Url)
@@ -65,7 +65,7 @@
                 }
 
                 <div class="form-group">
-                    @Html.Label("Title:", new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(x => x.Title, "Title:", new { @class = "control-label col-md-2" })
                     <div class="col-md-9">
                         @Html.TextBoxFor(model => model.Title, new { @class = "form-control", Value = Model.Title })
                         @Html.ValidationMessageFor(model => model.Title)
@@ -80,7 +80,7 @@
                 </div>
 
                 <div class="form-group">
-                    @Html.Label("Subverse:", new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(x => x.Subverse, "Subverse:", new { @class = "control-label col-md-2" })
                     <div class="col-md-4">
                         @Html.TextBoxFor(model => model.Subverse, new { @class = "form-control", value = Model.Subverse, id = "Subverse", @placeholder = "Start typing to get suggestions" })
                         @Html.ValidationMessageFor(model => model.Subverse)
@@ -119,7 +119,7 @@
                 @if (Model.Type == Voat.Domain.Models.SubmissionType.Text)
                 {
                     <div class="form-group">
-                        @Html.Label("Message (optional):", htmlAttributes: new { @class = "control-label col-md-2" })
+                        @Html.LabelFor(x => x.Content, "Message (optional):", htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-9">
                             @Html.MarkdownEditorFor(model => model.Content, new { @class = "form-control", rows = "5", value = Model.Content })
                             @Html.ValidationMessageFor(model => model.Content)
@@ -139,7 +139,7 @@
                     </div>
                 </div>
                 @if (Model.RequireCaptcha && !Settings.CaptchaDisabled)
-                {
+                        {
                     <div class="alert alert-info">Are you a human? Please solve the reCAPTCHA challenge below (sorry, this is to prevent spam):</div>
 
                     <div class="panel panel-default panel-transparent">

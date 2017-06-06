@@ -31,19 +31,19 @@
         <hr />
         <dl class="dl-horizontal">
             <dt>
-                @Html.Label("Username:", new { @class = "control-label col-md-2" })
+                @Html.LabelFor(x => x.UserName, "Username:", new { @class = "control-label col-md-2" })
             </dt>
             <dd>
                 @Html.DisplayFor(model => model.UserName)
             </dd>
             <dt>
-                @Html.Label("Banned by:", new { @class = "control-label col-md-2" })
+                @Html.LabelFor(x => x.CreatedBy, "Banned by:", new { @class = "control-label col-md-2" })
             </dt>
             <dd>
                 @Html.DisplayFor(model => model.CreatedBy)
             </dd>
             <dt>
-                @Html.Label("Banned on:", new { @class = "control-label col-md-2" })
+                @Html.LabelFor(x => x.CreationDate, "Banned on:", new { @class = "control-label col-md-2" })
             </dt>
             <dd>
                 @Html.DisplayFor(model => model.CreationDate)

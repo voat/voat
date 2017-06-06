@@ -106,21 +106,24 @@
                     <div class="form-group">
                         @Html.LabelFor(m => m.TextSubmissions, new { @class = "col-md-4 control-label" })
                         <div class="col-md-3">
-                            @Html.EnumDropDownListFor(m => m.TextSubmissions.Value, new { Name = "TextSubmissions", id = "TextSubmissions", @class = "form-control" })
+                            <select asp-for="TextSubmissions.Value" asp-items="Html.GetEnumSelectList(typeof(Voat.Domain.Models.DeleteOption))" class="form-control"></select>
+                            @*@Html.EnumDropDownListFor(m => m.TextSubmissions.Value, new { Name = "TextSubmissions", id = "TextSubmissions", @class = "form-control" })*@
                             @Html.ValidationMessageFor(model => model.TextSubmissions)
                         </div>
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.LinkSubmissions, new { @class = "col-md-4 control-label" })
                         <div class="col-md-3">
-                            @Html.EnumDropDownListFor(m => m.LinkSubmissions.Value, new { Name = "LinkSubmissions", id = "LinkSubmissions", @class = "form-control" })
+                            <select asp-for="LinkSubmissions.Value" asp-items="Html.GetEnumSelectList(typeof(Voat.Domain.Models.DeleteOption))" class="form-control"></select>
+                            @*@Html.EnumDropDownListFor(m => m.LinkSubmissions.Value, new { Name = "LinkSubmissions", id = "LinkSubmissions", @class = "form-control" })*@
                             @Html.ValidationMessageFor(model => model.LinkSubmissions)
                         </div>
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.Comments, new { @class = "col-md-4 control-label" })
                         <div class="col-md-3">
-                            @Html.EnumDropDownListFor(m => m.Comments.Value, new { Name = "Comments", id = "Comments", @class = "form-control" })
+                            <select asp-for="Comments.Value" asp-items="Html.GetEnumSelectList(typeof(Voat.Domain.Models.DeleteOption))" class="form-control"></select>
+                            @*@Html.EnumDropDownListFor(m => m.Comments.Value, new { Name = "Comments", id = "Comments", @class = "form-control" })*@
                             @Html.ValidationMessageFor(model => model.Comments)
                         </div>
                     </div>

@@ -98,7 +98,7 @@ namespace Voat
 
         private static Dictionary<string, string> replacements = new Dictionary<string, string>() { { "%40", "@" } };
 
-        public static string RouteUrlPretty(this UrlHelper urlHelper, string routeName, RouteValueDictionary routeValues)
+        public static string RouteUrlPretty(this IUrlHelper urlHelper, string routeName, RouteValueDictionary routeValues)
         {
             
             var routedUrl = urlHelper.RouteUrl(routeName, routeValues);
@@ -106,7 +106,7 @@ namespace Voat
             return replacements.Aggregate(routedUrl, (value, keyPair) => value.Replace(keyPair.Key, keyPair.Value));
 
         }
-        public static string ActionPretty(this UrlHelper urlHelper, string routeName, RouteValueDictionary routeValues)
+        public static string ActionPretty(this IUrlHelper urlHelper, string routeName, RouteValueDictionary routeValues)
         {
             var routedUrl = urlHelper.Action(routeName, routeValues);
 

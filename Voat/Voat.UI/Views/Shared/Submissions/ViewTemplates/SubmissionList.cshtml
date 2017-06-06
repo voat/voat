@@ -87,18 +87,19 @@
 
             @if (Model.Submissions.Count <= 0)
             {
-                Html.RenderPartial("_DefaultMessage", new ViewDataDictionary() {{"selectedSubverse", Model.Context.Name}});
+                Html.RenderPartial("_DefaultMessage", new ViewDataDictionary(ViewData) {{"selectedSubverse", Model.Context.Name}});
             }
 
             @foreach (var submission in Model.Submissions)
             {
-                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission, new ViewDataDictionary() { { "CssClass", new string[] { counter % 2 == 0 ? "even" : "odd" } } })
+                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission, new ViewDataDictionary(ViewData) { { "CssClass", new string[] { counter % 2 == 0 ? "even" : "odd" } } })
                 counter++;
             }
         </div>
 
         @{
-            Model.Submissions.RouteData = Request.RequestContext.RouteData.Values;
+           
+            Model.Submissions.RouteData = Context.Request.RequestContext.RouteData.Values;
             if (Model.Sort != null)
             {
                 Model.Submissions.RouteData["sort"] = Model.Sort.ToString().ToLower();
@@ -107,9 +108,9 @@
             {
                 Model.Submissions.RouteData["span"] = Model.Span.ToString().ToLower();
             }
-            if (!String.IsNullOrEmpty(Request.Query["frontpage"]))
+            if (!String.IsNullOrEmpty(Context.Request.Query["frontpage"]))
             {
-                Model.Submissions.RouteData["frontpage"] = Request.Query["frontpage"];
+                Model.Submissions.RouteData["frontpage"] = Context.Request.Query["frontpage"];
             }
         }
         @Html.DisplayFor(model => Model.Submissions, "IPaginatedList")
