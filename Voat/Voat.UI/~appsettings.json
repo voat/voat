@@ -1,7 +1,7 @@
 ﻿{
     "voat": {
         "data": {
-            "storeType": "postgresql", //Valid Values: PostgreSql or SqlServer
+            "storeType": "PostgreSql", //Valid Values: PostgreSql or SqlServer
             "connections": [
                 {
                     "name": "voatUsers",
