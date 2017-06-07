@@ -42,9 +42,6 @@ namespace Voat.Data.Models
         [StringLength(50)]
         public string LastLoginFromIp { get; set; }
 
-        // user registered as partner: original content creator - in form of submissions or comments
-        public bool Partner { get; set; }
-
         //For WebApi OAuth2
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<VoatUser> manager, string authenticationType)
         {
