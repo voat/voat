@@ -45,12 +45,12 @@
                 <div class="alert-title">User preferences</div>
 
                 <section id="userPreferences">
-                    @Html.Action("GetUserPreferences")
+                    @Html.RenderAction("GetUserPreferences")
                 </section>
 
                 <div class="alert-title">Account e-mail</div>
                 <section id="userEmail">
-                    @Html.Action("GetUserAccountEmail")
+                    @Html.RenderAction("GetUserAccountEmail")
                 </section>
 
                 <div class="alert-title">Change your password</div>
@@ -60,9 +60,9 @@
 
                 @Html.ActionLink("Go To Delete Page", "Delete")
             </div>
-            @section PageScripts {
+            @*@section PageScripts {
                 @Scripts.Render("~/bundles/jqueryval")
-            }
+            }*@
 
         </div>
     </div>

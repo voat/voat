@@ -172,7 +172,7 @@
                                                 <b>@submission.Title</b>
                                             </div>
                                             <div class="panel-message-body">
-                                                   @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission, new ViewDataDictionary() { { "CssClass", new string[] { "" } } })
+                                                   @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission, new ViewDataDictionary(ViewData) { { "CssClass", new string[] { "" } } })
                                             </div>
                                         </div>
                                     </div>
@@ -205,7 +205,7 @@
                                                 <div class="panel-message-body">
                                                     @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
                                                     Voat.Domain.DomainMaps.Map(comment, true),
-                                                    new ViewDataDictionary {
+                                                    new ViewDataDictionary(ViewData) {
                                                         { "parentIsHidden", false },
                                                         { "SortOrder", Voat.Domain.Models.CommentSortAlgorithm.New },
                                                         { "ShowContextLink", true } }

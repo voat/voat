@@ -31,8 +31,8 @@
 }
 
 <ul class="tabmenu">
-    <li class='@(domainType == Voat.Domain.Models.DomainType.Subverse ? "selected" : "disabled")'><a href="@Url.RouteUrl("Discover", new { domainType = "subverse", sort = Request.RequestContext.RouteData.Values["sort"] })">Subverses</a></li>
-    <li class='@(domainType == Voat.Domain.Models.DomainType.Set ? "selected" : "disabled")'><a href="@Url.RouteUrl("Discover", new { domainType = "set", sort = Request.RequestContext.RouteData.Values["sort"] })">Sets</a></li>
+    <li class='@(domainType == Voat.Domain.Models.DomainType.Subverse ? "selected" : "disabled")'><a href="@Url.RouteUrl("Discover", new { domainType = "subverse", sort = ViewContext.RouteData.Values["sort"] })">Subverses</a></li>
+    <li class='@(domainType == Voat.Domain.Models.DomainType.Set ? "selected" : "disabled")'><a href="@Url.RouteUrl("Discover", new { domainType = "set", sort = ViewContext.RouteData.Values["sort"] })">Sets</a></li>
 </ul>
 
 @*<ul class="tabmenu">

@@ -26,15 +26,7 @@
     string subverseAge = Age.ToRelative(Model.CreationDate);
     string subverseOwner = "YouCanClaimThisSub";
 
-    if (String.IsNullOrEmpty(Model.CreatedBy))
-    {
-        var subOwner = Model.SubverseModerators.FirstOrDefault(n => n.Subverse == Model.Name && n.Power == 1);
-        if (subOwner != null)
-        {
-            subverseOwner = subOwner.UserName;
-        }
-    }
-    else
+    if (!String.IsNullOrEmpty(Model.CreatedBy))
     {
         subverseOwner = Model.CreatedBy;
     }
@@ -42,7 +34,7 @@
 }
 
 <div class="side">
-    @Html.Partial("_SearchBox", new SearchViewModel(), new ViewDataDictionary { { "SelectedSubverse", Model.Name } })
+    @Html.Partial("_SearchBox", new SearchViewModel(), new ViewDataDictionary(ViewData) { { "SelectedSubverse", Model.Name } })
     @Html.Partial("~/Views/Shared/Sidebars/_SideBarSubmissionInfo.cshtml", (Voat.Domain.Models.Submission)ViewBag.Submission)
     <div class="spacer">
         <a href="/v/@Model.Name/submit?linkpost=true" class="btn-whoaverse btn-block contribute submit-link">
@@ -64,7 +56,7 @@
                 <a href="/rss/@Model.Name"><img src="~/Graphics/feed-icon-14x14.png" alt="RSS feed for this subverse" /></a>
             </h1>
            
-            @Html.Partial("Sidebars/Buttons/_SubscribeButtons", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Subverse, Model.Name), new ViewDataDictionary() { { "UserData", userData } })
+            @Html.Partial("Sidebars/Buttons/_SubscribeButtons", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Subverse, Model.Name), new ViewDataDictionary(ViewData) { { "UserData", userData } })
 
             <span class="subscribers">
                 <span id="subscriberCount" class="number">@Model.SubscriberCount</span>

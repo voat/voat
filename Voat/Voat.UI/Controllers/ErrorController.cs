@@ -42,10 +42,10 @@ namespace Voat.Controllers
             return View("~/Views/Error/Error.cshtml");
         }
 
-        public ActionResult HeavyLoad()
-        {
-            return View("~/Views/Error/DbNotResponding.cshtml");
-        }
+        //public ActionResult HeavyLoad()
+        //{
+        //    return View("~/Views/Error/DbNotResponding.cshtml");
+        //}
 
         public ActionResult UnAuthorized()
         {

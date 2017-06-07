@@ -49,7 +49,7 @@
 }
 
 <div class="midcol">
-    @Html.Partial("Sidebars/Buttons/_SubscribeButtons", Model, new ViewDataDictionary() { { "UserData", userData } })
+    @Html.Partial("Sidebars/Buttons/_SubscribeButtons", Model, new ViewDataDictionary(ViewData) { { "UserData", userData } })
 </div>
 
 <div class="entry" style="padding-bottom:15px;">

@@ -112,7 +112,7 @@
                     if (!Model.IsDeleted)
                     {
                         <li>
-                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary { { "submissionId", Model.ID } })
+                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary(ViewData) { { "submissionId", Model.ID } })
                         </li>
                     }
                 }

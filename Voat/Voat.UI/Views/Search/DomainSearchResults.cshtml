@@ -26,12 +26,12 @@
     ViewBag.Title = "subverses";
     string searchTerm = "";
 
-    if (!String.IsNullOrEmpty(Request.Query["q"]))
+    if (!String.IsNullOrEmpty(Context.Request.Query["q"]))
     {
-        searchTerm = Request.Query["q"].ToString(CultureInfo.InvariantCulture);
+        searchTerm = Context.Request.Query["q"].ToString();
     }
 
-    bool includeDescriptions = Request.Query["d"].AsBool();
+    bool includeDescriptions = !String.IsNullOrEmpty(Context.Request.Query["d"]);
 }
 
 <style type="text/css">
@@ -74,7 +74,7 @@
             </div>
         }
         @{ 
-            Model.RouteData = Request.RequestContext.RouteData.Values;
+            Model.RouteData = ViewContext.RouteData.Values;
             Model.RouteData.Add("q", searchTerm);
         }
         @Html.DisplayFor(model => Model, "IPaginatedList")

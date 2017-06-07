@@ -127,25 +127,28 @@ namespace Voat.RulesEngine
                             //load rules specified in config file
                             if (config.RuleSet != null && config.RuleSet.Count > 0)
                             {
-                                foreach (var ruleMeta in config.RuleSet)
+                                foreach (var ruleReference in config.RuleSet)
                                 {
-                                    Type t = Type.GetType(ruleMeta.Type);
-                                    if (t != null)
+                                    if (ruleReference.Enabled)
                                     {
-                                        var ruleDescription = t.GetCustomAttribute<RuleDiscoveryAttribute>();
-                                        var ruleInfo = RuleDiscoveryProvider.Map(new Tuple<Type, RuleDiscoveryAttribute>(t, ruleDescription));
-
-                                        //force enabled from config
-                                        ruleInfo.Enabled = ruleMeta.Enabled;
-
-                                        if (ruleInfo.Enabled)
+                                        Type t = Type.GetType(ruleReference.Type);
+                                        if (t != null)
                                         {
-                                            AddRule(ruleInfo.Rule);
+                                            var ruleDescription = t.GetCustomAttribute<RuleDiscoveryAttribute>();
+                                            var ruleInfo = RuleDiscoveryProvider.Map(new Tuple<Type, RuleDiscoveryAttribute>(t, ruleDescription));
+
+                                            //force enabled from config
+                                            ruleInfo.Enabled = ruleReference.Enabled;
+
+                                            if (ruleInfo.Enabled)
+                                            {
+                                                AddRule(ruleInfo.Rule);
+                                            }
                                         }
-                                    }
-                                    else
-                                    {
-                                        throw new RuleException(String.Format("Can not load rule type. Type: {0}", ruleMeta.Type));
+                                        else
+                                        {
+                                            throw new RuleException(String.Format("Can not load rule type. Type: {0}", ruleReference.Type));
+                                        }
                                     }
                                 }
                             }

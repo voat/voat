@@ -27,17 +27,17 @@
     string searchTerm = "";
     string selectedSubverse = "";
 
-    if (!String.IsNullOrEmpty(Request.Query["q"]))
+    if (!String.IsNullOrEmpty(Context.Request.Query["q"]))
     {
-        searchTerm = Request.Query["q"].ToString(CultureInfo.InvariantCulture);
+        searchTerm = Context.Request.Query["q"].ToString();
     }
 
-    if (!String.IsNullOrEmpty(Request.Query["sub"]))
+    if (!String.IsNullOrEmpty(Context.Request.Query["sub"]))
     {
-        selectedSubverse = Request.Query["sub"].ToString(CultureInfo.InvariantCulture);
+        selectedSubverse = Context.Request.Query["sub"].ToString();
     }
 
-    bool limitSearchToSubverse = Request.Query["l"].AsBool();
+    bool limitSearchToSubverse = !String.IsNullOrEmpty(Context.Request.Query["l"]);
 
 }
 

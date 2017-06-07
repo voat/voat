@@ -20,7 +20,7 @@
 
 @{
     ViewBag.Title = "Speedy Gonzales";
-    string cameFrom = Request.UrlReferrer.AbsolutePath;
+    string cameFrom = Context.Request.Headers["Referer"].ToString();
 }
 
 <div id="about-main" class="content about-page" role="main">

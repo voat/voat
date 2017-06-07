@@ -214,7 +214,7 @@
             </form>
             <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Model.Content</textarea>
             @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", Model,
-               new ViewDataDictionary()
+               new ViewDataDictionary(ViewData)
                {
                    { "ModeratorList", ViewBag.ModeratorList },
                    { "Submission", ViewBag.Submission }
@@ -233,7 +233,7 @@
             foreach (var childComment in Model.Children.Comments)
             {
                 @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", childComment,
-                    new ViewDataDictionary {
+                    new ViewDataDictionary(ViewData) {
                     { "ModeratorList", ViewBag.ModeratorList },
                     { "SortOrder", ViewBag.SortOrder },
                     { "ParentIsHidden", parentIsHidden },

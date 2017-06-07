@@ -107,11 +107,11 @@
                 </div>
             </div>
         </div>
-        @Html.Action("SubversesUserModerates", "Home", new { userName = userName })
+        @Html.RenderAction("SubversesUserModerates", "Home", new { userName = userName })
 
         @if (userData.Preferences.DisplaySubscriptions)
         {
-            @Html.Action("SubversesUserIsSubscribedTo", "Home", new { userName = userName })
+            @Html.RenderAction("SubversesUserIsSubscribedTo", "Home", new { userName = userName })
         }
     </div>
 }

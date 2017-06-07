@@ -65,7 +65,7 @@
                 </li>
                 if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.DeleteComments, ViewBag.ModeratorList))
                 {
-                    @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonModeratorDelete.cshtml", Model, new ViewDataDictionary { { "CommentId", Model.ID } })
+                    @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonModeratorDelete.cshtml", Model, new ViewDataDictionary(ViewData) { { "CommentId", Model.ID } })
                 }
             }
 
@@ -75,7 +75,7 @@
                 <li>
                     <a class="" href="javascript:void(0)" onclick="return edit(@Model.ID, @Model.SubmissionID)">edit</a>
                 </li>
-                @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary { { "CommentId", Model.ID } })
+                @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonDelete.cshtml", null, new ViewDataDictionary(ViewData) { { "CommentId", Model.ID } })
 
                 // if user is comment author but also sub mod or sub admin show distinguish button
                 if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.DistinguishContent, ViewBag.ModeratorList))
@@ -92,7 +92,7 @@
                     <a class="" href="javascript:void(0)" onclick="return reply(@Model.ID, @Model.SubmissionID)">reply</a>
                 </li>
             }
-            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonReport.cshtml", Model, new ViewDataDictionary { { "CommentId", Model.ID } })
+            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CFLButtonReport.cshtml", Model, new ViewDataDictionary(ViewData) { { "CommentId", Model.ID } })
         }
     }
 </ul>

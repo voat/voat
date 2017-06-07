@@ -21,10 +21,10 @@
 
 @model Voat.Utilities.IPaginatedList
 
-@*@{
+@{
     if (Model.RouteData == null)
     {
-        Model.RouteData = new RouteValueDictionary(ViewData);
+        Model.RouteData = new Microsoft.AspNetCore.Routing.RouteValueDictionary();
     }
     var routeLink = false;
     if (!String.IsNullOrEmpty(Model.RouteName))
@@ -46,7 +46,7 @@
                     }
                     else
                     {
-                        <a href='@Url.ActionPretty((string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)'>< prev</a>
+                        <a href='@Url.ActionPretty((string)ViewContext.RouteData.Values["action"], Model.RouteData)'>< prev</a>
                         //@Html.ActionLink("< prev", (string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)
                     }
                 </li>
@@ -62,11 +62,11 @@
                     }
                     else
                     {
-                        <a href='@Url.ActionPretty((string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)'>next ></a>
+                        <a href='@Url.ActionPretty((string)ViewContext.RouteData.Values["action"], Model.RouteData)'>next ></a>
                         //@Html.ActionLink("next >", (string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)
                     }
                 </li>
             }
         </ul>
     </div>
-}*@
+}

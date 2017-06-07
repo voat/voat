@@ -34,7 +34,7 @@
 </style>
 
 @section PageHeader {
-    @Html.Partial("_SubverseStylesheetLink", submission.Subverse, new ViewDataDictionary())
+    @Html.Partial("_SubverseStylesheetLink", submission.Subverse, new ViewDataDictionary(ViewData))
 }
 
 
@@ -43,7 +43,7 @@
         display 1 submission with details and comments
     *@
 
-    @Html.Action("SidebarForSelectedSubverseComments", "Subverses", submission)
+    @Html.RenderAction("SidebarForSelectedSubverseComments", "Subverses", submission)
 
     <div class="content" role="main">
         <br /><br />
@@ -55,11 +55,11 @@
             {
                 //I don't know if we need this ViewBag setup
                 ViewBag.Title = submission.Title + " | " + submission.Subverse;
-                ViewBag.Url = ViewBag.Url ?? Context.Request.Url.AbsoluteUri;
-                ViewBag.Image = ViewBag.Image ?? Context.Request.Url.Scheme + "://" + Context.Request.Url.Authority + Settings.SiteLogo;
+                //ViewBag.Url = ViewBag.Url ?? Context.Request.Url.AbsoluteUri;
+                //ViewBag.Image = ViewBag.Image ?? Context.Request.Url.Scheme + "://" + Context.Request.Url.Authority + Settings.SiteLogo;
                 ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
                 @Html.Partial("~/Views/Shared/Submissions/_SubmissionDetail.cshtml", submission,
-                    new ViewDataDictionary {
+                    new ViewDataDictionary(ViewData) {
                         { "ModeratorList", ViewBag.ModeratorList },
                         { "SubverseAnonymized", ViewBag.SubverseAnonymized }
                     })
@@ -70,21 +70,21 @@
             {
                 //I don't know if we need this ViewBag setup
                 ViewBag.Title = submission.Title + " | " + submission.Subverse;
-                ViewBag.Url = ViewBag.Url ?? Context.Request.Url.AbsoluteUri;
+                //ViewBag.Url = ViewBag.Url ?? Context.Request.Url.AbsoluteUri;
                 ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
 
-                //check if submission has a thumb, otherwise point to site logo
-                if (submission.ThumbnailUrl != null)
-                {
-                    ViewBag.Image = submission.ThumbnailUrl; 
-                }
-                else
-                {
-                    ViewBag.Image = ViewBag.Image ?? Context.Request.Url.Scheme + "://" + Context.Request.Url.Authority + Settings.SiteLogo;
-                }
+                ////check if submission has a thumb, otherwise point to site logo
+                //if (submission.ThumbnailUrl != null)
+                //{
+                //    ViewBag.Image = submission.ThumbnailUrl; 
+                //}
+                //else
+                //{
+                //    ViewBag.Image = ViewBag.Image ?? Context.Request.Url.Scheme + "://" + Context.Request.Url.Authority + Settings.SiteLogo;
+                //}
 
                 @Html.Partial("~/Views/Shared/Submissions/_SubmissionDetail.cshtml", submission,
-                    new ViewDataDictionary {
+                    new ViewDataDictionary(ViewData) {
                         { "ModeratorList", ViewBag.ModeratorList },
                         { "SubverseAnonymized", ViewBag.SubverseAnonymized }
                     })
@@ -94,12 +94,12 @@
         @if (!submission.ArchiveDate.HasValue && User.Identity.IsAuthenticated)
         //if user logged in, show add comment form
         {
-            @Html.Partial("_AddComment", new ViewDataDictionary { { "messageId", submission.ID } })
+            @Html.Partial("_AddComment", new ViewDataDictionary(ViewData) { { "messageId", submission.ID } })
         }
 
         <div class="horizontal-line"></div>
 
-        @Html.Partial("~/Views/Shared/Comments/_CommentTree.cshtml", Model, new ViewDataDictionary {
+        @Html.Partial("~/Views/Shared/Comments/_CommentTree.cshtml", Model, new ViewDataDictionary(ViewData) {
                     { "ModeratorList", ViewBag.ModeratorList },
                     //{ "SavedCommentCache", ViewBag.SavedCommentCache },
                     //{ "VoteCache", ViewBag.VoteCache },

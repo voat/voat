@@ -126,7 +126,7 @@
                                 <h3>@policy.Name</h3>
 
                                 @{
-                                    var result = Newtonsoft.Json.JsonConvert.DeserializeObject<WebApiThrottle.RateLimits>(policy.Policy);
+                                    var result = Newtonsoft.Json.JsonConvert.DeserializeObject<Voat.Domain.Models.RateLimits>(policy.Policy);
                                     if (result != null)
                                     {
                                         <span>Per Second: </span><i>@result.PerSecond</i><br/>

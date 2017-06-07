@@ -92,7 +92,7 @@
                         if (topSubmission != null)
                         {
                             Model.Submissions.Remove(topSubmission);
-                            @Html.Partial("~/Views/Shared/Submissions/_SubmissionRetro.cshtml", topSubmission, new ViewDataDictionary() { { "ShowThumbnail", true }, { "CssClass", new string[] { "top-submission", "centered" } } })
+                            @Html.Partial("~/Views/Shared/Submissions/_SubmissionRetro.cshtml", topSubmission, new ViewDataDictionary(ViewData) { { "ShowThumbnail", true }, { "CssClass", new string[] { "top-submission", "centered" } } })
                         }
                         <h2 class="context">@title</h2>
                         <p class="bottommenu">* Retro layout inspired by DrudgeReport.com <a href='@turnOffLink'>(Turn this off. Eww!)</a></p>
@@ -114,7 +114,7 @@
                                 if (submission != null)
                                 {
                                     
-                                    @Html.Partial("~/Views/Shared/Submissions/_SubmissionRetro.cshtml", submission, new ViewDataDictionary() { { "ShowThumbnailIfHighlighted", false } })
+                                    @Html.Partial("~/Views/Shared/Submissions/_SubmissionRetro.cshtml", submission, new ViewDataDictionary(ViewData) { { "ShowThumbnailIfHighlighted", false } })
                                     counter++;
                                     i = (column == columnCount && (i + 1) == submissionsPerColumn ? i - 1 : i); //keep looping to pick up remaining posts.
                                 }
@@ -133,7 +133,7 @@
         </div>
 
         @{
-            Model.Submissions.RouteData = Context.Request.RouteData.Values;
+            Model.Submissions.RouteData = ViewContext.RouteData.Values;
             if (Model.Sort != null)
             {
                 Model.Submissions.RouteData["sort"] = Model.Sort.ToString().ToLower();
@@ -155,11 +155,11 @@
 
     @if (Model.IsActualSubverse)
     {
-        @Html.Action("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = Model.Context.Name })
+        @Html.RenderAction("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = Model.Context.Name })
     }
     else if (Model.Context != null && Model.Context.Type == Voat.Domain.Models.DomainType.Set)
     {
-        @Html.Action("Sidebar", "Set", new { name = Model.Context.FullName })
+        @Html.RenderAction("Sidebar", "Set", new { name = Model.Context.FullName })
     }
     else
     {

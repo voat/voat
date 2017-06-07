@@ -495,7 +495,23 @@ namespace Voat.Utilities
         */
         public static string UserIpAddress(HttpRequest request)
         {
-            throw new NotImplementedException("Core_Port: Port this");
+            string IPAddressHeaderKeys = "CF-Connecting-IP, X-Original-For"; //TODO: Move to Settings
+
+            var keys = IPAddressHeaderKeys.Split(',', ';').Select(x => x.TrimSafe());
+            string clientIpAddress = String.Empty;
+
+            foreach (var key in keys)
+            {
+                if (request.Headers.ContainsKey(key))
+                {
+                    clientIpAddress = request.Headers[key];
+                    if (!String.IsNullOrEmpty(clientIpAddress))
+                    {
+                        break;
+                    }
+                }
+            }
+            return clientIpAddress;
         }
         //this is for the API
         public static string UserIpAddress(HttpRequestMessage request)

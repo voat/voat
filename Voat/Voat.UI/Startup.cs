@@ -68,7 +68,7 @@ namespace Voat
             //    .AddDefaultTokenProviders();
 
             services.AddMvc();
-
+            services.AddAntiforgery();
             // Add application services.
             //services.AddTransient<IEmailSender, AuthMessageSender>();
             //services.AddTransient<ISmsSender, AuthMessageSender>();

@@ -4819,11 +4819,11 @@ namespace Voat.Data
         {
 
             var q = new DapperQuery();
-            q.Select = $"SELECT TOP 1 s.\"Name\" FROM {SqlFormatter.Table("Subverse", "s")} INNER JOIN {SqlFormatter.Table("Submission", "sm")} ON s.\"Name\" = sm.\"Subverse\"";
-            q.Where = $"s.\"Name\" != 'all' AND s.IsAdult = @IsAdult AND s.\"IsAdminDisabled\" = {SqlFormatter.BooleanLiteral(false)}";
+            q.Select = $"SELECT s.\"Name\" FROM {SqlFormatter.Table("Subverse", "s")} INNER JOIN {SqlFormatter.Table("Submission", "sm")} ON s.\"Name\" = sm.\"Subverse\"";
+            q.Where = $"s.\"Name\" != 'all' AND s.\"IsAdult\" = @IsAdult AND s.\"IsAdminDisabled\" = {SqlFormatter.BooleanLiteral(false)}";
             q.GroupBy = "s.\"Name\"";
-            q.OrderBy = "NEWID()";
-            q.Parameters = new DynamicParameters(new { IsAdult = nsfw, HourLimit = (24 * 7) });
+            q.OrderBy = DataConfigurationSettings.Instance.StoreType == DataStoreType.PostgreSql ? "random()" : "NEWID()";
+            q.Parameters = new DynamicParameters(new { IsAdult = nsfw});
 
             if (restrict)
             {

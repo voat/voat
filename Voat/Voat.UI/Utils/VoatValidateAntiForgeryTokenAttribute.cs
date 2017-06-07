@@ -22,37 +22,42 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 
 namespace Voat
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    public class VoatValidateAntiForgeryTokenAttribute : ActionFilterAttribute, IAuthorizationFilter
+    public class VoatValidateAntiForgeryTokenAttribute : ValidateAntiForgeryTokenAttribute //, IAuthorizationFilter
     {
-        public void OnAuthorization(AuthorizationFilterContext filterContext)
-        {
+        //CORE_PORT: Don't think we need to implement this like we did before. Framework should cover our uses
+        //public void OnAuthorization(AuthorizationFilterContext filterContext)
+        //{
 
-            //CORE_PORT: Not Supported
-            throw new NotImplementedException("Core port issues");
-            //if (filterContext == null)
-            //{
-            //    throw new ArgumentNullException("filterContext");
-            //}
-            //const string KEY_NAME = "__RequestVerificationToken";
+        //    IAntiforgery x = (IAntiforgery)filterContext.HttpContext.RequestServices.GetService(typeof(IAntiforgery));
+            
+        //    //CORE_PORT: Not Supported
+        //    throw new NotImplementedException("Core port issues");
+        //    //if (filterContext == null)
+        //    //{
+        //    //    throw new ArgumentNullException("filterContext");
+        //    //}
+        //    //const string KEY_NAME = "__RequestVerificationToken";
 
-            //var httpContext = filterContext.HttpContext;
-            //var cookie = httpContext.Request.Cookies[AntiForgeryConfig.CookieName];
+        //    //var httpContext = filterContext.HttpContext;
+        //    //var cookie = httpContext.Request.Cookies[AntiForgeryConfig.CookieName];
 
-            //string token = httpContext.Request.Form[KEY_NAME];
+        //    //string token = httpContext.Request.Form[KEY_NAME];
 
-            //if (String.IsNullOrEmpty(token))
-            //{
-            //    //look in headers collection 
-            //    token = httpContext.Request.Headers[KEY_NAME];
-            //}
+        //    //if (String.IsNullOrEmpty(token))
+        //    //{
+        //    //    //look in headers collection 
+        //    //    token = httpContext.Request.Headers[KEY_NAME];
+        //    //}
 
-            //AntiForgery.Validate(cookie != null ? cookie.Value : null, token);
-        }
+        //    //AntiForgery.Validate(cookie != null ? cookie.Value : null, token);
+        //}
     }
 }

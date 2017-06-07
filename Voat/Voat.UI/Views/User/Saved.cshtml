@@ -50,7 +50,7 @@
                 {
                     submissionClass = "";
                 }
-                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", Voat.Domain.DomainMaps.Map(submission), new ViewDataDictionary() { { "CssClass", new string[] { submissionClass } } })
+                @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", Voat.Domain.DomainMaps.Map(submission), new ViewDataDictionary(ViewData) { { "CssClass", new string[] { submissionClass } } })
                 
             }
             if (comment != null)
@@ -60,7 +60,7 @@
                 m.IsSaved = true;
                     @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
                         m,
-                        new ViewDataDictionary {
+                        new ViewDataDictionary(ViewData) {
                             { "CommentId", comment.ID },
                             { "parentIsHidden", false },
                             { "SortingMode", "new" },

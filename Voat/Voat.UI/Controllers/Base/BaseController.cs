@@ -104,10 +104,10 @@ namespace Voat.Controllers
         {
             return View("~/Views/Error/UnAuthorized.cshtml");
         }
-        protected ViewResult HeavyLoadErrorView()
-        {
-            return View("~/Views/Error/DbNotResponding.cshtml");
-        }
+        //protected ViewResult HeavyLoadErrorView()
+        //{
+        //    return View("~/Views/Error/DbNotResponding.cshtml");
+        //}
         protected ViewResult SubverseDisabledErrorView()
         {
             return View("~/Views/Error/SubverseDisabled.cshtml");

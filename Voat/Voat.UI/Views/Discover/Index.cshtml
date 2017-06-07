@@ -110,7 +110,7 @@
                     var phrase = (string)Context.Request.Query["phrase"];
                     if (!String.IsNullOrEmpty(phrase))
                     {
-                        Model.RouteData = Request.RequestContext.RouteData.Values;
+                        Model.RouteData = ViewContext.RouteData.Values;
                         Model.RouteData.Add("phrase", phrase);
                     }
                 }

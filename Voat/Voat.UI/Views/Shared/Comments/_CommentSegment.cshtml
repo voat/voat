@@ -36,7 +36,7 @@
                 continue;
             }
             @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", comment,
-                new ViewDataDictionary {
+                new ViewDataDictionary(ViewData) {
                     { "ModeratorList", ViewBag.ModeratorList },
                     { "SortOrder", Model.Sort },
                     { "Submission", ViewBag.Submission },

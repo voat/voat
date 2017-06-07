@@ -34,7 +34,7 @@ using Voat.Domain.Query;
 namespace Voat.Tests.QueryTests
 {
     [TestClass]
-    public class MiscTests
+    public class MiscTests : BaseUnitTest
     {
         [TestMethod]
         public void TestSubmissionCacheVolatileLogic()
@@ -74,6 +74,7 @@ namespace Voat.Tests.QueryTests
 
 
         [TestMethod]
+        [TestCategory("Query")]
         public void GetFeatured_Test()
         {
             //Just makes sure query doesn't choke
@@ -82,5 +83,22 @@ namespace Voat.Tests.QueryTests
                 var result = repo.GetFeatured();
             }
         }
+
+        [TestMethod]
+        [TestCategory("Query")]
+        public async Task GetRandomSubverse_Test()
+        {
+            //Right now we just want to make sure no error occurs 
+
+            var q = new QueryRandomSubverse(false);
+            var randomSubverse = await q.ExecuteAsync();
+            //Assert.IsNotNull(randomSubverse);
+
+            q = new QueryRandomSubverse(true);
+            randomSubverse = await q.ExecuteAsync();
+            //Assert.IsNotNull(randomSubverse);
+
+        }
+
     }
 }

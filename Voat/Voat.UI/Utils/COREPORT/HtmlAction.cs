@@ -29,7 +29,10 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
         public static IHtmlContent RenderAction(this IHtmlHelper helper, string action, string controller, object parameters = null)
         {
             var area = (string)helper.ViewContext.RouteData.Values["area"];
-
+            if (area == null)
+            {
+                area = "";
+            }
             return RenderAction(helper, action, controller, area, parameters);
         }
 
