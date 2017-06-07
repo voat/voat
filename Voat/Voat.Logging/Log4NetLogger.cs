@@ -46,6 +46,7 @@ namespace Voat.Logging
     {
         private static JsonSerializerSettings _jsonSettings;
         private string _loggerName;
+        private static string _repositoryName = "somename";
 
         static Log4NetLogger()
         {
@@ -64,8 +65,14 @@ namespace Voat.Logging
                     path = fileName;
                 }
             }
+            
+            if (!File.Exists(path))
+            {
+                throw new FileNotFoundException("Can not find file: " + path);
+            }
+            var repository = LoggerManager.CreateRepository(_repositoryName);
 
-            log4net.Config.XmlConfigurator.Configure(null);//new Uri(path));
+            log4net.Config.XmlConfigurator.Configure(repository, new Uri(path));
 
             _jsonSettings = new JsonSerializerSettings();
             _jsonSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
@@ -112,10 +119,9 @@ namespace Voat.Logging
 
         protected override void ProtectedLog(ILogInformation info)
         {
-
             Debug.WriteLine(info.ToString());
 
-            ILog _log = LogManager.GetLogger((string)null, _loggerName);
+            ILog _log = LogManager.GetLogger(_repositoryName, _loggerName);
 
             if (_log != null)
             {

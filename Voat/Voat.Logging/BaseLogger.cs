@@ -36,11 +36,20 @@ namespace Voat.Logging
     public abstract class BaseLogger : ILogger
     {
         protected abstract void ProtectedLog(ILogInformation info);
+        public LogType LogLevel { get; set; } = LogType.All;
+
+        public virtual bool IsEnabledFor(LogType logType)
+        {
+            return (int)logType >= (int)LogLevel || LogLevel == LogType.All;
+        }
 
         public void Log(ILogInformation info)
         {
             Debug.WriteLine(info.ToString());
-            ProtectedLog(info);
+            if (IsEnabledFor(info.Type))
+            {
+                ProtectedLog(info);
+            }
         }
 
         public void Log(LogType type, string category, string formatMessage, params object[] formatParameters)

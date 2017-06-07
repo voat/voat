@@ -40,11 +40,12 @@ namespace Voat.Tests.Logging
     [TestClass]
     public class LoggingTests : BaseUnitTest
     {
-        private ILogger log = null;
+        private static ILogger log = null;
+        private const string loggerName = "DatabaseLogger";
 
         public override void ClassInitialize()
         {
-            var logEntry = LoggingConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Name == "Log4Net");
+            var logEntry = LoggingConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Name == loggerName);
             if (logEntry.Enabled)
             {
                 log = logEntry.Construct<ILogger>();
@@ -57,7 +58,7 @@ namespace Voat.Tests.Logging
         {
             if (log == null)
             {
-                Assert.Inconclusive("Log4Net Logger disabled");
+                Assert.Inconclusive($"{loggerName} Logger disabled");
             }
             else
             {
@@ -80,20 +81,58 @@ namespace Voat.Tests.Logging
                     Assert.AreEqual(info.Category, entry.Category);
                     Assert.AreEqual(info.Message, entry.Message);
                     Assert.AreEqual(JsonConvert.SerializeObject(new { url = "http://www.com" }), entry.Data);
-                    Assert.AreEqual(info.ActivityID.ToString().ToUpper(), entry.ActivityID);
+                    Assert.AreEqual(info.ActivityID.ToString().ToUpper(), entry.ActivityID.ToUpper());
                 }
 
             }
 
         }
+        [TestMethod]
+        [TestCategory("Logging")]
+        public void TestLogEntryLevel()
+        {
+            if (log == null)
+            {
+                Assert.Inconclusive($"{loggerName} Logger disabled");
+            }
+            else
+            {
+                var level = log.LogLevel;
+                try
+                {
+                    log.LogLevel = LogType.Critical;
 
+                    LogInformation info = new LogInformation();
+                    info.Type = LogType.Information;
+                    info.Origin = "UnitTests";
+                    info.Category = "Unit Test";
+                    info.Message = "Test Message";
+                    info.Data = new { url = "http://www.com" };
+                    info.ActivityID = Guid.NewGuid();
+
+                    log.Log(info);
+
+                    using (var db = new VoatDataContext())
+                    {
+                        var entry = db.EventLog.FirstOrDefault(x => x.ActivityID == info.ActivityID.ToString());
+                        Assert.IsNull(entry, "Crickie! Data magically appeared when it shouldn't have!?");
+                    }
+
+                }
+                finally {
+                    log.LogLevel = level;
+                }
+
+            }
+
+        }
         [TestMethod]
         [TestCategory("Logging")]
         public void TestLogException()
         {
             if (log == null)
             {
-                Assert.Inconclusive("Log4Net Logger disabled");
+                Assert.Inconclusive($"{loggerName} Logger disabled");
             }
             else
             {
@@ -110,7 +149,7 @@ namespace Voat.Tests.Logging
                     log.Log(ex, (Guid?)activityID);
                     using (var db = new VoatDataContext())
                     {
-                        var entry = db.EventLog.FirstOrDefault(x => x.ActivityID == activityID.ToString().ToUpper());
+                        var entry = db.EventLog.FirstOrDefault(x => x.ActivityID.ToUpper() == activityID.ToString().ToUpper());
                         Assert.IsNotNull(entry, "If this isn't here, perhaps the narnia wormhole is open?");
                     }
                 }
@@ -122,7 +161,7 @@ namespace Voat.Tests.Logging
         {
             if (log == null)
             {
-                Assert.Inconclusive("Log4Net Logger disabled");
+                Assert.Inconclusive($"{loggerName} Logger disabled");
             }
             else
             {
@@ -133,7 +172,7 @@ namespace Voat.Tests.Logging
                 }
                 using (var db = new VoatDataContext())
                 {
-                    var entry = db.EventLog.FirstOrDefault(x => x.ActivityID == activityID.ToString().ToUpper());
+                    var entry = db.EventLog.FirstOrDefault(x => x.ActivityID.ToUpper() == activityID.ToString().ToUpper());
                     Assert.IsNotNull(entry, "Well, that didn't work now did it");
                 }
             }
@@ -144,7 +183,7 @@ namespace Voat.Tests.Logging
         {
             if (log == null)
             {
-                Assert.Inconclusive("Log4Net Logger disabled");
+                Assert.Inconclusive($"{loggerName} Logger disabled");
             }
             else
             {

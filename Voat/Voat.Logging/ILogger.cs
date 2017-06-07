@@ -30,6 +30,11 @@ namespace Voat.Logging
 
     public interface ILogger
     {
+
+        LogType LogLevel { get; set; }
+
+        bool IsEnabledFor(LogType logType);
+
         void Log(ILogInformation info);
         void Log(LogType type, string category, string formatMessage, params object[] formatParameters);
         void Log(LogType type, string category, string message);

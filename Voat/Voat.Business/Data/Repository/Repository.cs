@@ -5272,6 +5272,10 @@ namespace Voat.Data
         //TODO: Make async
         public Models.EventLog Log(EventLog log)
         {
+            if (log == null)
+            {
+                return null;
+            }
             var newLog = _db.EventLog.Add(log);
             _db.SaveChanges();
             return newLog.Entity;

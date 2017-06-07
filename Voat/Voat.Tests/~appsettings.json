@@ -23,6 +23,12 @@
             "handlers": [
                 {
                     "enabled": true,
+                    "name": "DatabaseLogger",
+                    "type": "Voat.Data.DatabaseLogger, Voat.Business",
+                    "arguments": ""
+                },
+                {
+                    "enabled": false,
                     "name": "Log4Net",
                     "type": "Voat.Logging.Log4NetLogger, Voat.Logging"
                 },

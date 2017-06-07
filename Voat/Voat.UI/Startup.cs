@@ -67,8 +67,10 @@ namespace Voat
             //    .AddEntityFrameworkStores<ApplicationDbContext>()
             //    .AddDefaultTokenProviders();
 
-            services.AddMvc();
+            var mvcBuilder = services.AddMvc();
+            //mvcBuilder.AddMvcOptions(o => o.Filters.Add(
             services.AddAntiforgery();
+
             // Add application services.
             //services.AddTransient<IEmailSender, AuthMessageSender>();
             //services.AddTransient<ISmsSender, AuthMessageSender>();
@@ -79,6 +81,7 @@ namespace Voat
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+            //loggerFactory.AddCHANGETHIS();
 
             if (env.IsDevelopment())
             {
@@ -96,7 +99,7 @@ namespace Voat
             //app.UseIdentity();
 
             //// Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
-
+           
             app.UseMvc(routes =>
             {
 
