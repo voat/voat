@@ -42,32 +42,37 @@ using Voat.Domain.Query;
 using Microsoft.Owin.Security;
 using Voat.Data;
 using Voat.Caching;
+using Microsoft.Extensions.Options;
 
 namespace Voat.Controllers
 {
     [Authorize]
     public class AccountController : BaseController
     {
-        //public AccountController()
-        //    : this(new UserManager<VoatUser>(new UserStore<VoatUser>(new ApplicationDbContext())))
-        //{
-        //    var provider = Startup.DataProtectionProvider;
-        //    UserManager.UserValidator = new UserValidator<VoatUser>(UserManager) { AllowOnlyAlphanumericUserNames = false };
-        //    //Email issues: http://stackoverflow.com/questions/23455579/generating-reset-password-token-does-not-work-in-azure-website
-        //    UserManager.UserTokenProvider = new DataProtectorTokenProvider<VoatUser>(provider.Create("VoatTokenProvider"));
-        //}
+        private readonly UserManager<VoatIdentityUser> _userManager;
+        private readonly SignInManager<VoatIdentityUser> _signInManager;
+        //private readonly IEmailSender _emailSender;
+        //private readonly ISmsSender _smsSender;
+        //private readonly ILogger _logger;
+        private readonly string _externalCookieScheme;
 
-        public AccountController()
+        public AccountController(
+            UserManager<VoatIdentityUser> userManager,
+            SignInManager<VoatIdentityUser> signInManager,
+            IOptions<IdentityCookieOptions> identityCookieOptions
+            //IEmailSender emailSender,
+            //ISmsSender smsSender,
+            //ILoggerFactory loggerFactory
+            )
         {
-            UserManager = VoatUserManager.Create();
-
-            //// Configure user lockout defaults
-            //UserManager.UserLockoutEnabledByDefault = true;
-            //UserManager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);
-            //UserManager.MaxFailedAccessAttemptsBeforeLockout = 5;
-            //UserManager.EmailService = new IdentityConfig.EmailService();
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
+            //_emailSender = emailSender;
+            //_smsSender = smsSender;
+            //_logger = loggerFactory.CreateLogger<AccountController>();
         }
-
+       
         public VoatUserManager UserManager { get; private set; }
 
         // GET: /Account/Login
@@ -91,68 +96,112 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            ViewBag.ReturnUrl = returnUrl;
-            if (!ModelState.IsValid)
+            ViewData["ReturnUrl"] = returnUrl;
+            if (ModelState.IsValid)
             {
-                return View(model);
-            }
-            var user = await UserManager.FindAsync(model.UserName, model.Password);
-
-            // invalid credentials, increment failed login attempt and lockout account
-            if (user == null)
-            {
-                var tmpuser = await UserManager.FindByNameAsync(model.UserName);
-                // correct username was entered with wrong credentials
-                if (tmpuser != null)
+                var user = await _userManager.FindByNameAsync(model.UserName);
+                if (user != null)
                 {
-                    // record failed login attempt and lockout account if failed login limit is reached
-                    await UserManager.AccessFailedAsync(tmpuser);
-
-                    // if account is locked out, notify the user
-                    if (await UserManager.IsLockedOutAsync(tmpuser))
+                    // This doesn't count login failures towards account lockout
+                    // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+                    var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+                    if (result.Succeeded)
                     {
-                        ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
+
+                        var cookie = HttpContext.Request.Cookies["theme"];
+                        if (cookie != null && !String.IsNullOrEmpty(cookie))
+                        {
+                            //CORE_PORT: 
+                            Response.Cookies.Append("theme", "", new Microsoft.AspNetCore.Http.CookieOptions() { Expires = DateTime.Now.AddDays(-1) });
+                            //HttpContext.Response.Cookies["theme"].Expires = DateTime.Now.AddDays(-1);
+                        }
+
+                        return RedirectToLocal(returnUrl);
+                    }
+                    //if (result.RequiresTwoFactor)
+                    //{
+                    //    return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    //}
+                    if (result.IsLockedOut)
+                    {
+                        return View("Lockout");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Invalid login attempt");
                         return View(model);
                     }
                 }
-
-                ModelState.AddModelError("", "Invalid username or password.");
-                return View(model);
             }
-            else if (await UserManager.IsLockedOutAsync(user))
-            {
-                ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
-                return View(model);
-            }
-            else
-            {
-                //var userData = new UserData(user.UserName);
-                //userData.PreLoad();
 
-                // when token is verified correctly, clear the access failed count used for lockout
-                await UserManager.ResetAccessFailedCountAsync(user);
+            // If we got this far, something failed, redisplay form
+            return View(model);
 
-                // get user IP address
-                string clientIpAddress = UserHelper.UserIpAddress(Request);
+            //CORE_PORT: Original code
+            /*
+             ViewBag.ReturnUrl = returnUrl;
+             if (!ModelState.IsValid)
+             {
+                 return View(model);
+             }
+             var user = await UserManager.FindAsync(model.UserName, model.Password);
 
-                // save last login ip and timestamp
-                user.LastLoginFromIp = clientIpAddress;
-                user.LastLoginDateTime = Repository.CurrentDate;
-                await UserManager.UpdateAsync(user);
+             // invalid credentials, increment failed login attempt and lockout account
+             if (user == null)
+             {
+                 var tmpuser = await UserManager.FindByNameAsync(model.UserName);
+                 // correct username was entered with wrong credentials
+                 if (tmpuser != null)
+                 {
+                     // record failed login attempt and lockout account if failed login limit is reached
+                     await UserManager.AccessFailedAsync(tmpuser);
 
-                // sign in and continue
-                await SignInAsync(user, model.RememberMe);
+                     // if account is locked out, notify the user
+                     if (await UserManager.IsLockedOutAsync(tmpuser))
+                     {
+                         ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
+                         return View(model);
+                     }
+                 }
 
-                // remove the theme cookie, it will be set to the user preference after the page reloads
-                var cookie = HttpContext.Request.Cookies["theme"];
-                if(cookie != null && !String.IsNullOrEmpty(cookie))
-                {
-                    //CORE_PORT: 
-                    Response.Cookies.Append("theme", "", new Microsoft.AspNetCore.Http.CookieOptions() { Expires = DateTime.Now.AddDays(-1) });
-                    //HttpContext.Response.Cookies["theme"].Expires = DateTime.Now.AddDays(-1);
-                }
-                return RedirectToLocal(returnUrl);
-            }
+                 ModelState.AddModelError("", "Invalid username or password.");
+                 return View(model);
+             }
+             else if (await UserManager.IsLockedOutAsync(user))
+             {
+                 ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
+                 return View(model);
+             }
+             else
+             {
+                 //var userData = new UserData(user.UserName);
+                 //userData.PreLoad();
+
+                 // when token is verified correctly, clear the access failed count used for lockout
+                 await UserManager.ResetAccessFailedCountAsync(user);
+
+                 // get user IP address
+                 string clientIpAddress = UserHelper.UserIpAddress(Request);
+
+                 // save last login ip and timestamp
+                 user.LastLoginFromIp = clientIpAddress;
+                 user.LastLoginDateTime = Repository.CurrentDate;
+                 await UserManager.UpdateAsync(user);
+
+                 // sign in and continue
+                 await SignInAsync(user, model.RememberMe);
+
+                 // remove the theme cookie, it will be set to the user preference after the page reloads
+                 var cookie = HttpContext.Request.Cookies["theme"];
+                 if(cookie != null && !String.IsNullOrEmpty(cookie))
+                 {
+                     //CORE_PORT: 
+                     Response.Cookies.Append("theme", "", new Microsoft.AspNetCore.Http.CookieOptions() { Expires = DateTime.Now.AddDays(-1) });
+                     //HttpContext.Response.Cookies["theme"].Expires = DateTime.Now.AddDays(-1);
+                 }
+                 return RedirectToLocal(returnUrl);
+             } 
+            */
         }
 
         // GET: /Account/Register
@@ -217,7 +266,7 @@ namespace Voat.Controllers
                     return View(model);
                 }
 
-                var user = new VoatUser
+                var user = new VoatIdentityUser
                 {
                     UserName = model.UserName,
                     RegistrationDateTime = Repository.CurrentDate,
@@ -230,7 +279,7 @@ namespace Voat.Controllers
 
                 if (result.Succeeded)
                 {
-                    await SignInAsync(user, isPersistent: false);
+                    await _signInManager.SignInAsync(user, isPersistent: false);
 
                     // redirect new users to Welcome actionresult
                     return RedirectToAction("Welcome", "Home");
@@ -335,9 +384,9 @@ namespace Voat.Controllers
         // POST: /Account/LogOff
         [HttpPost]
         [VoatValidateAntiForgeryToken]
-        public ActionResult LogOff()
+        public async Task<ActionResult> LogOff()
         {
-            AuthenticationManager.SignOut();
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
 
@@ -371,7 +420,7 @@ namespace Voat.Controllers
                 var response = await cmd.Execute();
                 if (response.Success)
                 {
-                    AuthenticationManager.SignOut();
+                    await _signInManager.SignOutAsync();
                     return View("~/Views/Account/AccountDeleted.cshtml");
                 }
                 else
@@ -844,24 +893,24 @@ namespace Voat.Controllers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
-        private IAuthenticationManager AuthenticationManager
-        {
-            get
-            {
-                //CORE_PORT: Port
-                throw new NotImplementedException("Core port not implemented");
-                //return HttpContext.GetOwinContext().Authentication;
-            }
-        }
+        //private IAuthenticationManager AuthenticationManager
+        //{
+        //    get
+        //    {
+        //        //CORE_PORT: Port
+        //        throw new NotImplementedException("Core port not implemented");
+        //        //return HttpContext.GetOwinContext().Authentication;
+        //    }
+        //}
 
-        private async Task SignInAsync(VoatUser user, bool isPersistent)
-        {
-            //CORE_PORT: Port
-            throw new NotImplementedException("Core port not implemented");
-            //AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-            //var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
-            //AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent }, identity);
-        }
+        //private async Task SignInAsync(VoatIdentityUser user, bool isPersistent)
+        //{
+        //    //CORE_PORT: Port
+        //    throw new NotImplementedException("Core port not implemented");
+        //    //AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
+        //    //var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
+        //    //AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent }, identity);
+        //}
 
         private void AddErrors(IdentityResult result)
         {

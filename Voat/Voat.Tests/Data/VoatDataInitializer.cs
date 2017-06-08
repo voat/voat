@@ -690,7 +690,7 @@ namespace Voat.Tests.Repository
 
             //if (!UserHelper.UserExists(userName))
             //{
-                var user = new Voat.Data.Models.VoatUser() { UserName = userName, RegistrationDateTime = (registrationDate.HasValue ? registrationDate.Value : DateTime.UtcNow), LastLoginDateTime = new DateTime(1900, 1, 1, 0, 0, 0, 0), LastLoginFromIp = "0.0.0.0" };
+                var user = new Voat.Data.Models.VoatIdentityUser() { UserName = userName, RegistrationDateTime = (registrationDate.HasValue ? registrationDate.Value : DateTime.UtcNow), LastLoginDateTime = new DateTime(1900, 1, 1, 0, 0, 0, 0), LastLoginFromIp = "0.0.0.0" };
 
                 string pwd = userName;
                 while (pwd.Length < 6)

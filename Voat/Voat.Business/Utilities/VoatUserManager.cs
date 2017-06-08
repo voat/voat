@@ -12,14 +12,14 @@ using Voat.Data.Models;
 
 namespace Voat
 {
-    public class VoatPasswordValidator : PasswordValidator<VoatUser>
+    public class VoatPasswordValidator : PasswordValidator<VoatIdentityUser>
     {
         public VoatPasswordValidator()
         {
             
         }
         
-        public override Task<IdentityResult> ValidateAsync(UserManager<VoatUser> manager, VoatUser user, string password)
+        public override Task<IdentityResult> ValidateAsync(UserManager<VoatIdentityUser> manager, VoatIdentityUser user, string password)
         {
             //no op
             return Task.FromResult(IdentityResult.Success);
@@ -27,18 +27,18 @@ namespace Voat
     }
 
     //This class is a CORE PORT Shim 
-    public class VoatUserManager : UserManager<VoatUser>
+    public class VoatUserManager : UserManager<VoatIdentityUser>
     {
         private VoatUserManager(
-            UserStore<VoatUser> store, 
+            UserStore<VoatIdentityUser> store, 
             IOptions<IdentityOptions> optionsAccessor, 
-            IPasswordHasher<VoatUser> passwordHasher, 
-            IEnumerable<IUserValidator<VoatUser>> userValidators, 
-            IEnumerable<IPasswordValidator<VoatUser>> passwordValidators, 
+            IPasswordHasher<VoatIdentityUser> passwordHasher, 
+            IEnumerable<IUserValidator<VoatIdentityUser>> userValidators, 
+            IEnumerable<IPasswordValidator<VoatIdentityUser>> passwordValidators, 
             ILookupNormalizer keyNormalizer, 
             IdentityErrorDescriber errorDescribers, 
             IServiceProvider services, 
-            ILogger<UserManager<VoatUser>> logger
+            ILogger<UserManager<VoatIdentityUser>> logger
             ) 
             : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errorDescribers, services, logger)
         {
@@ -52,21 +52,21 @@ namespace Voat
             var ioptions = Microsoft.Extensions.Options.Options.Create(options);
 
             var mgr = new VoatUserManager(
-                new UserStore<VoatUser>(new ApplicationDbContext()),
+                new UserStore<VoatIdentityUser>(new IdentityDataContext()),
                 ioptions,
-                new PasswordHasher<VoatUser>(),
-                new[] { new UserValidator<VoatUser>() },
+                new PasswordHasher<VoatIdentityUser>(),
+                new[] { new UserValidator<VoatIdentityUser>() },
                 new[] { new VoatPasswordValidator() },
                 new UpperInvariantLookupNormalizer(),
                 new IdentityErrorDescriber(),
                 null,
-                new Logger<UserManager<VoatUser>>(new LoggerFactory()));
+                new Logger<UserManager<VoatIdentityUser>>(new LoggerFactory()));
 
             return mgr;
 
         }
 
-        public IdentityResult Create(VoatUser user, string password)
+        public IdentityResult Create(VoatIdentityUser user, string password)
         {
             var task = Task.Run(() => {
                 var x = CreateAsync(user, password);
@@ -76,20 +76,20 @@ namespace Voat
             return task.Result;
         }
 
-        public VoatUser FindByName(string userName)
+        public VoatIdentityUser FindByName(string userName)
         {
             var task = Task.Run(() => FindByNameAsync(userName));
             task.Wait();
             return task.Result;
         }
 
-        public VoatUser Find(string userName, string password)
+        public VoatIdentityUser Find(string userName, string password)
         {
             var t = Task.Run(() => FindAsync(userName, password));
             t.Wait();
             return t.Result;
         }
-        public async Task<VoatUser> FindAsync(string userName, string password)
+        public async Task<VoatIdentityUser> FindAsync(string userName, string password)
         {
             var user = await FindByNameAsync(userName);
             if (user != null)

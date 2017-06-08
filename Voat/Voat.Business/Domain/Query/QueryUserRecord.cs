@@ -31,7 +31,7 @@ using Voat.Data.Models;
 
 namespace Voat.Domain.Query
 {
-    public class QueryUserRecord : CachedQuery<VoatUser>
+    public class QueryUserRecord : CachedQuery<VoatIdentityUser>
     {
         private string _userToRetrieve;
 
@@ -69,9 +69,9 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override async Task<VoatUser> GetData()
+        protected override async Task<VoatIdentityUser> GetData()
         {
-            using (var db = new ApplicationDbContext())
+            using (var db = new IdentityDataContext())
             {
                 //CORE_PORT: No worky, will most likely not need anyways but flagging
                 /*

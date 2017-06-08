@@ -122,7 +122,7 @@ namespace Voat.Domain
 
             if (validateUserExists)
             {
-                VoatUser user = null;
+                VoatIdentityUser user = null;
                 if (!String.IsNullOrWhiteSpace(userName))
                 {
                     using (var repo = VoatUserManager.Create())

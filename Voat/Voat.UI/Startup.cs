@@ -24,11 +24,14 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using Voat.Configuration;
+using Voat.Data.Models;
+using Voat.UI.Runtime;
 
 namespace Voat
 {
@@ -59,16 +62,16 @@ namespace Voat
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<IdentityDataContext>();
 
-            //services.AddIdentity<ApplicationUser, IdentityRole>()
-            //    .AddEntityFrameworkStores<ApplicationDbContext>()
-            //    .AddDefaultTokenProviders();
+            services.AddIdentity<VoatIdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<IdentityDataContext>()
+                .AddDefaultTokenProviders();
 
             var mvcBuilder = services.AddMvc();
-            //mvcBuilder.AddMvcOptions(o => o.Filters.Add(
+
+            mvcBuilder.AddMvcOptions(o => o.Filters.Add(typeof(GlobalExceptionFilter)));
+
             services.AddAntiforgery();
 
             // Add application services.
@@ -96,7 +99,7 @@ namespace Voat
 
             app.UseStaticFiles();
 
-            //app.UseIdentity();
+            app.UseIdentity();
 
             //// Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
            

@@ -33,7 +33,8 @@ using System.Linq;
 
 namespace Voat.Data.Models
 {
-    public class VoatUser : IdentityUser
+
+    public class VoatIdentityUser : IdentityUser
     {
         public DateTime RegistrationDateTime { get; set; }
 
@@ -43,7 +44,7 @@ namespace Voat.Data.Models
         public string LastLoginFromIp { get; set; }
 
         //For WebApi OAuth2
-        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<VoatUser> manager, string authenticationType)
+        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<VoatIdentityUser> manager, string authenticationType)
         {
             //CORE_PORT: No extension
             throw new NotImplementedException("Core Port Build");
@@ -52,9 +53,9 @@ namespace Voat.Data.Models
         }
     }
 
-    public class ApplicationDbContext : IdentityDbContext<VoatUser>
+    public class IdentityDataContext : IdentityDbContext<VoatIdentityUser>
     {
-        public ApplicationDbContext() 
+        public IdentityDataContext() 
             //CORE_PORT: Needs porting
             //: base("voatUsers")
         {

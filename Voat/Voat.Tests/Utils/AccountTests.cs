@@ -81,7 +81,7 @@ namespace Voat.Tests.Utils
 
             using (var userManager = VoatUserManager.Create())
             {
-                var user = new VoatUser
+                var user = new VoatIdentityUser
                 {
                     UserName = originalUserName,
                     RegistrationDateTime = DateTime.UtcNow,
