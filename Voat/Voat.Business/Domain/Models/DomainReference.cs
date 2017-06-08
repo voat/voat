@@ -27,6 +27,13 @@ using System.Text.RegularExpressions;
 
 namespace Voat.Domain.Models
 {
+    public class ContentReference
+    {
+        public int ID { get; set; }
+
+        public ContentType Type { get; set; }
+
+    }
     public class DomainReference
     {
         public DomainReference() { }

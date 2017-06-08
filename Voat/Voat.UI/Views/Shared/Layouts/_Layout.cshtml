@@ -80,16 +80,13 @@
                         @Html.Partial("~/Views/Shared/Navigation/_UserProfileMenu.cshtml", navModel)
                         break;
                     case MenuType.Discovery:
-                        //Html.RenderAction("SubversesMenu", "Nav", new { sortingMode = sortingMode, subversesView = ViewBag.SubversesView });
                         @Html.Partial("~/Views/Shared/Navigation/_DiscoveryMenu.cshtml", navModel)
                         break;
                     case MenuType.Subverse:
-                        //Html.RenderAction("TabMenu", "Nav", new { selectedSubverse = selectedSubverse, sortingMode = sortingMode, action = ViewBag.action, selectedSubverseName = ViewBag.SelectedSubverse });
                         @Html.Partial("~/Views/Shared/Navigation/_SubverseMenu.cshtml", navModel)
                         break;
                     case MenuType.UserMessages:
                     case MenuType.Smail:
-                        //Html.RenderAction("PmMenu", "Nav", new { selectedView = navModel.Name, sortingMode = sortingMode });
                         @Html.Partial("~/Views/Shared/Navigation/_MailMenu.cshtml", navModel)
                         break;
                     case MenuType.Domain:

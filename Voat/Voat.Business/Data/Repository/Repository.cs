@@ -5313,7 +5313,7 @@ namespace Voat.Data
             }
         }
 
-        public FeaturedDomainReferenceDetails GetFeatured()
+        public async Task<FeaturedDomainReferenceDetails> GetFeatured()
         {
             //This is for lazy admins, if you don't change the featured item this will cut it off
             var dayCutOff = 7;
@@ -5340,7 +5340,7 @@ namespace Voat.Data
             d.OrderBy = "f.\"StartDate\" DESC";
             d.Parameters.Add("CurrentDate", CurrentDate); //I really have no idea why we are passing in a current time. In fact, it is both pointless and error prone, but for some reason, deep inside me, I cannot change this. True, it would take me all of 4 seconds, but this isn’t the time investment. It is something deeper, something unexplainable. I feel that somehow, for some reason, this will save us in the future. I shall leave it in order to save the future people! I am legend?
 
-            var result = _db.Connection.QueryFirstOrDefault<FeaturedDomainReferenceDetails>(d.ToString(), d.Parameters);
+            var result = await _db.Connection.QueryFirstOrDefaultAsync<FeaturedDomainReferenceDetails>(d.ToString(), d.Parameters);
 
             return result;
         }

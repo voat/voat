@@ -1,5 +1,5 @@
 @*
-    
+
     Copyright(c) Voat, Inc.
 
     This file is part of Voat.
@@ -31,11 +31,18 @@
         subverseOwner = Model.CreatedBy;
     }
     var userData = Voat.Domain.UserData.GetContextUserData(Context);
+    //TODO: Pull this in throug the View Model
+    var submission = (Voat.Domain.Models.Submission)ViewBag.Submission;
+
 }
 
 <div class="side">
-    @Html.Partial("_SearchBox", new SearchViewModel(), new ViewDataDictionary(ViewData) { { "SelectedSubverse", Model.Name } })
-    @Html.Partial("~/Views/Shared/Sidebars/_SideBarSubmissionInfo.cshtml", (Voat.Domain.Models.Submission)ViewBag.Submission)
+    @Html.Partial("_SearchBox", new SearchViewModel(), ViewData)
+    @if (submission != null)
+    {
+        @Html.Partial("~/Views/Shared/Sidebars/_SideBarSubmissionInfo.cshtml", submission)
+    }
+
     <div class="spacer">
         <a href="/v/@Model.Name/submit?linkpost=true" class="btn-whoaverse btn-block contribute submit-link">
             Share a link
@@ -48,14 +55,17 @@
     </div>
     <div class="spacer spacerbig">
         <div class="titlebox">
-            
+
             @Html.Partial("Sidebars/_SidebarModToolbox")
 
             <h1 class="hover whoaversename">
                 <a href="/v/@Model.Name" class="hover">@Model.Name</a>
-                <a href="/rss/@Model.Name"><img src="~/Graphics/feed-icon-14x14.png" alt="RSS feed for this subverse" /></a>
+                @*
+                    Rss is deaded this isn't 1999 
+                    <a href="/rss/@Model.Name"><img src="~/Graphics/feed-icon-14x14.png" alt="RSS feed for this subverse" /></a>
+                *@
             </h1>
-           
+
             @Html.Partial("Sidebars/Buttons/_SubscribeButtons", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Subverse, Model.Name), new ViewDataDictionary(ViewData) { { "UserData", userData } })
 
             <span class="subscribers">
@@ -67,7 +77,7 @@
                 <span class="word">users here now</span>
             </p>
             @if (User.Identity.IsAuthenticated && ModeratorPermission.IsModerator(User.Identity.Name, Model.Name))
-            {
+        {
                 <div class="leavemoderator">
                     you are a moderator of this subverse. (<a href="/v/@Model.Name/about/moderators/resign">resign</a>)
                 </div>
@@ -115,9 +125,7 @@
     </div>
     <div class="spacer">
         <div class="sidecontentbox ">
-            @{
-                Html.RenderAction("RenderAd", "Ad", new { subverse = Model.Name });
-            }
+            @await Component.InvokeAsync("SidebarAd", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Subverse, Model.Name))
         </div>
     </div>
     <div class="spacer">
@@ -127,9 +135,7 @@
                 <h1 class="alert-h1">MODERATORS</h1>
             </div>
             <ul class="content">
-                @{
-                    Html.RenderAction("SubverseModeratorsList", "Subverses", new { subverseName = Model.Name });
-                }
+                 @await Component.InvokeAsync("SubverseModeratorList", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Subverse, Model.Name))
             </ul>
         </div>
     </div>

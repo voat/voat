@@ -137,9 +137,7 @@
     }
     <div class="spacer">
         <div class="sidecontentbox ">
-            @{
-                Html.RenderAction("RenderAd", "Ad");
-            }
+            @await Component.InvokeAsync("SidebarAd", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Subverse, null))
         </div>
     </div>
     @if (Settings.IsVoatBranded)

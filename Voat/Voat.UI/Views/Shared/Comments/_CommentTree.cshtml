@@ -88,13 +88,6 @@
     }
 
     <div id="siteTable" class="sitetable nestedlisting">
-        @Html.Partial("~/Views/Shared/Comments/_CommentSegment.cshtml", Model, new ViewDataDictionary(ViewData) {
-          { "ModeratorList", ViewBag.ModeratorList },
-            //{ "VoteCache", ViewBag.VoteCache },
-            //{ "SavedCommentCache", ViewBag.SavedCommentCache },
-            { "Subverse", ViewBag.Subverse },
-            { "Submission", ViewBag.Submission },
-            { "CommentToHighlight", ViewBag.CommentToHighLight }
-        })
+        @Html.Partial("~/Views/Shared/Comments/_CommentSegment.cshtml", Model, ViewData)
     </div>
 </div>

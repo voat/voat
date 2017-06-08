@@ -35,13 +35,7 @@
             {
                 continue;
             }
-            @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", comment,
-                new ViewDataDictionary(ViewData) {
-                    { "ModeratorList", ViewBag.ModeratorList },
-                    { "SortOrder", Model.Sort },
-                    { "Submission", ViewBag.Submission },
-                    { "CommentToHighlight", ViewBag.CommentToHighLight }
-            })
+            @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", comment, ViewData)
         }
         if (Model.HasMore)
         {

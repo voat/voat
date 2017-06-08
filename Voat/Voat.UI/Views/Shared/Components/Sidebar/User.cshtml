@@ -17,9 +17,10 @@
     All Rights Reserved.
 
 *@
+@model Voat.Domain.Models.DomainReference
 
 @{
-    string userName = ViewBag.UserName ?? User.Identity.Name;
+    string userName = Model.Name;
     //This is an acceptable constructor call
     var userData = new Voat.Domain.UserData(userName);
 
@@ -107,11 +108,11 @@
                 </div>
             </div>
         </div>
-        @Html.RenderAction("SubversesUserModerates", "Home", new { userName = userName })
+        @Html.Partial("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", userData.Information.Moderates);
 
         @if (userData.Preferences.DisplaySubscriptions)
         {
-            @Html.RenderAction("SubversesUserIsSubscribedTo", "Home", new { userName = userName })
+            @Html.Partial("~/Views/Shared/Userprofile/_SidebarSubsUserIsSubscribedTo.cshtml", userData.Subscriptions[Voat.Domain.Models.DomainType.Subverse].OrderBy(x => x).Select(x => new SelectListItem() { Value = x }).ToList())
         }
     </div>
 }

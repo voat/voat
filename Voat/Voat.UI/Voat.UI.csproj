@@ -15,6 +15,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\storage\avatars\Placeholder.txt" />
+    <Content Include="wwwroot\storage\thumbs\Placeholder.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0-preview1-final" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.0.0-preview1-final" />
@@ -170,6 +175,8 @@
     <None Include="wwwroot\oexchange.xrd" />
     <None Include="wwwroot\robots.txt" />
     <None Include="wwwroot\sitemap.xml" />
+    <None Include="wwwroot\storage\avatars\Placeholder.txt" />
+    <None Include="wwwroot\storage\thumbs\Placeholder.txt" />
     <None Include="wwwroot\voat-btc-qr.png" />
     <None Include="~appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

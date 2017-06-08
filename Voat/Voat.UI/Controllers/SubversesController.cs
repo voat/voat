@@ -47,58 +47,6 @@ namespace Voat.Controllers
         //IAmAGate: Move queries to read-only mirror
         private readonly VoatUIDataContextAccessor _db = new VoatUIDataContextAccessor(CONSTANTS.CONNECTION_LIVE);
 
-        // GET: sidebar for selected subverse
-        public ActionResult SidebarForSelectedSubverseComments(Domain.Models.Submission submission)
-        {
-            //Can't cache as view is using model to query
-            //var subverse = _db.Subverses.Find(submission.Subverse);
-            var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-
-            //don't return a sidebar since subverse doesn't exist or is a system subverse
-            if (subverse == null)
-            {
-                return new EmptyResult();
-            }
-            
-            try
-            {
-                ViewBag.OnlineUsers = SessionHelper.ActiveSessionsForSubverse(submission.Subverse);
-            }
-            catch (Exception)
-            {
-                ViewBag.OnlineUsers = -1;
-            }
-
-            ViewBag.Submission = submission;
-            return PartialView("~/Views/Shared/Sidebars/_SidebarComments.cshtml", subverse);
-        }
-
-        // GET: sidebar for selected subverse
-        public ActionResult SidebarForSelectedSubverse(string selectedSubverse)
-        {
-            //Can't cache as view is using Model to query
-            var subverse = _db.Subverse.FirstOrDefault(x => x.Name.ToLower() == selectedSubverse.ToLower());
-
-            // don't return a sidebar since subverse doesn't exist or is a system subverse
-            if (subverse == null)
-            {
-                return new EmptyResult();
-            }
-            
-            ViewBag.SelectedSubverse = selectedSubverse;
-
-            try
-            {
-                ViewBag.OnlineUsers = SessionHelper.ActiveSessionsForSubverse(selectedSubverse);
-            }
-            catch (Exception)
-            {
-                ViewBag.OnlineUsers = -1;
-            }
-
-            return PartialView("~/Views/Shared/Sidebars/_Sidebar.cshtml", subverse);
-        }
-
         // POST: Create a new Subverse
         [HttpPost]
         [Authorize]
@@ -257,38 +205,6 @@ namespace Voat.Controllers
                 ContentType = "text/css"
             };
         }
-
-
-
-        // GET: render a partial view with list of moderators for a given subverse, if no moderators are found, return subverse owner
-        [ChildActionOnly]
-        public ActionResult SubverseModeratorsList(string subverseName)
-        {
-            var q = new QuerySubverseModerators(subverseName);
-            var r = q.Execute();
-            return PartialView("~/Views/Subverses/_SubverseModerators.cshtml", r);
-        }
-
-        // GET: stickied submission
-        [ChildActionOnly]
-        public ActionResult StickiedSubmission(string subverseName)
-        {
-            var stickiedSubmission = StickyHelper.GetSticky(subverseName);
-
-            if (stickiedSubmission != null)
-            {
-                return PartialView("_Stickied", stickiedSubmission);
-            }
-            else
-            {
-                return new EmptyResult();
-            }
-        }
-
-
-        [Authorize]
-
-       
 
         //// POST: subscribe to a subverse
         //[Authorize]

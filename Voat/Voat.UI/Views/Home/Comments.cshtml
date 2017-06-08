@@ -43,7 +43,11 @@
         display 1 submission with details and comments
     *@
 
-    @Html.RenderAction("SidebarForSelectedSubverseComments", "Subverses", submission)
+    @await Component.InvokeAsync("Sidebar",
+        new {
+            domainReference = new Voat.Domain.Models.DomainReference(DomainType.Subverse, submission.Subverse),
+            contentReference = new ContentReference() { Type = ContentType.Submission, ID = submission.ID }
+        })
 
     <div class="content" role="main">
         <br /><br />
@@ -60,7 +64,7 @@
                 ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
                 @Html.Partial("~/Views/Shared/Submissions/_SubmissionDetail.cshtml", submission,
                     new ViewDataDictionary(ViewData) {
-                        { "ModeratorList", ViewBag.ModeratorList },
+                        //{ "ModeratorList", ViewBag.ModeratorList },
                         { "SubverseAnonymized", ViewBag.SubverseAnonymized }
                     })
             }
@@ -85,7 +89,7 @@
 
                 @Html.Partial("~/Views/Shared/Submissions/_SubmissionDetail.cshtml", submission,
                     new ViewDataDictionary(ViewData) {
-                        { "ModeratorList", ViewBag.ModeratorList },
+                        //{ "ModeratorList", ViewBag.ModeratorList },
                         { "SubverseAnonymized", ViewBag.SubverseAnonymized }
                     })
             }
@@ -99,16 +103,6 @@
 
         <div class="horizontal-line"></div>
 
-        @Html.Partial("~/Views/Shared/Comments/_CommentTree.cshtml", Model, new ViewDataDictionary(ViewData) {
-                    { "ModeratorList", ViewBag.ModeratorList },
-                    //{ "SavedCommentCache", ViewBag.SavedCommentCache },
-                    //{ "VoteCache", ViewBag.VoteCache },
-                    { "SortingMode", ViewBag.SortingMode },
-                    { "NestingCount", 0 },
-                    { "StartingCommentId", ViewBag.StartingCommentId },
-                    { "Subverse", ViewBag.Subverse },
-                    { "Submission", ViewBag.Submission },
-                    { "CommentToHighLight", ViewBag.CommentToHighLight } }
-            )
+        @Html.Partial("~/Views/Shared/Comments/_CommentTree.cshtml", Model, ViewData);
     </div>
 </div>

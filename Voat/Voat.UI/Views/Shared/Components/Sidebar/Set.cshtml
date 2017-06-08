@@ -83,25 +83,9 @@
             </div>
             <div class="spacer">
                 <div class="sidecontentbox">
-                    @{
-                        Html.RenderAction("RenderAd", "Ad", new { subverse = Model.Name });
-                    }
+                    @await Component.InvokeAsync("SidebarAd", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Set, Model.Name))
                 </div>
             </div>
-            @*<div class="spacer">
-                <div class="sidecontentbox ">
-                    <a class="helplink message-moderators-temporary-class" title="Message the Moderators" href="/messages/compose?recipient=v/@Model.Name">message the moderators</a>
-                    <div class="title">
-                        <h1 class="alert-h1">MODERATORS</h1>
-                    </div>
-                    <ul class="content">
-                        @{
-                            Html.RenderAction("SubverseModeratorsList", "Subverses", new { subverseName = Model.Name });
-                        }
-                    </ul>
-                </div>
-            </div>
-            @Html.Partial("~/Views/ModLog/_ModLogSidebarLinks.cshtml", Model.Name)*@
         </div>
     </div>
 </div>

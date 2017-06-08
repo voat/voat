@@ -12,20 +12,21 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using System.Diagnostics;
 
 namespace Microsoft.AspNetCore.Mvc.Rendering
 {
 
     public static class HtmlHelperViewExtensions
     {
-
+        [Obsolete("Convert to ViewComponent - This is a port path helper class that 40% of the time fails every time")]
         public static IHtmlContent RenderAction(this IHtmlHelper helper, string action, object parameters = null)
         {
             var controller = (string)helper.ViewContext.RouteData.Values["controller"];
 
             return RenderAction(helper, action, controller, parameters);
         }
-
+        [Obsolete("Convert to ViewComponent - This is a port path helper class that 40% of the time fails every time")]
         public static IHtmlContent RenderAction(this IHtmlHelper helper, string action, string controller, object parameters = null)
         {
             var area = (string)helper.ViewContext.RouteData.Values["area"];
@@ -35,7 +36,7 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
             }
             return RenderAction(helper, action, controller, area, parameters);
         }
-
+        [Obsolete("Convert to ViewComponent - This is a port path helper class that 40% of the time fails every time")]
         public static IHtmlContent RenderAction(this IHtmlHelper helper, string action, string controller, string area, object parameters = null)
         {
             if (action == null)
@@ -51,9 +52,11 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
 
             return task.Result;
         }
-
+        [Obsolete("Convert to ViewComponent - This is a port path helper class that 40% of the time fails every time")]
         private static async Task<IHtmlContent> RenderActionAsync(this IHtmlHelper helper, string action, string controller, string area, object parameters = null)
         {
+            Debug.WriteLine($"RenderActionAsync: {area} {controller}.{action}");
+
             // fetching required services for invocation
             var currentHttpContext = helper.ViewContext?.HttpContext;
             var httpContextFactory = GetServiceOrFail<IHttpContextFactory>(currentHttpContext);

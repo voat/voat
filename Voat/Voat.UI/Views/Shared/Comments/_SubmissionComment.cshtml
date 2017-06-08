@@ -59,9 +59,7 @@
     {
         @Html.Partial("~/Views/Shared/VotingIcons/_VotingIconsComment.cshtml", Model,
             new ViewDataDictionary(ViewData) {
-                { "collapsedStyle", uncollapsedComment },
-                { "Submission", ViewBag.Submission },
-                { "VoteTypeAllowed", ViewBag.VoteTypeAllowed }
+                { "collapsedStyle", uncollapsedComment }
             })
     }
 
@@ -213,12 +211,7 @@
 
             </form>
             <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Model.Content</textarea>
-            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", Model,
-               new ViewDataDictionary(ViewData)
-               {
-                   { "ModeratorList", ViewBag.ModeratorList },
-                   { "Submission", ViewBag.Submission }
-               })
+            @Html.Partial("~/Views/Shared/Comments/CommentFlatListButtons/_CommentFlatListButtons.cshtml", Model, ViewData)
         </div>
     </div>
 
@@ -232,16 +225,7 @@
         {
             foreach (var childComment in Model.Children.Comments)
             {
-                @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", childComment,
-                    new ViewDataDictionary(ViewData) {
-                    { "ModeratorList", ViewBag.ModeratorList },
-                    { "SortOrder", ViewBag.SortOrder },
-                    { "ParentIsHidden", parentIsHidden },
-                    { "Subverse", ViewBag.Subverse },
-                    { "Submission", ViewBag.Submission },
-                    { "ShowContextLink", ViewBag.ShowContextLink },
-                    { "CommentToHighlight", ViewBag.CommentToHighLight }
-                })
+                @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", childComment, ViewData)
             }
             remaining = Model.Children.TotalCount - Model.Children.SegmentCount;
             System.Diagnostics.Debug.Assert(remaining == Model.Children.RemainingCount, "Remaining Count invalid");

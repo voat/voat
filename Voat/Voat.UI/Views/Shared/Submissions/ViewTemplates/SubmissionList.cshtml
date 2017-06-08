@@ -43,18 +43,7 @@
 
 <div id="container">
 
-    @if (Model.IsActualSubverse)
-    {
-        @Html.RenderAction("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = Model.Context.Name })
-    }
-    else if (Model.Context != null && Model.Context.Type == Voat.Domain.Models.DomainType.Set)
-    {
-        @Html.RenderAction("Sidebar", "Set", new { name = Model.Context.FullName })
-    }
-    else
-    {
-        @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
-    }
+    @await Component.InvokeAsync("Sidebar", new { domainReference = Model.Context })
 
     <div class="content" role="main">
 
@@ -77,13 +66,13 @@
         <div class="sitetable linklisting">
             @if (Model.IsActualSubverse)
             {
-                @Html.RenderAction("StickiedSubmission", "Subverses", new { subverseName = Model.Context.Name })
+                await Component.InvokeAsync("StickiedSubmission", Model.Context);
             }
             else if (Model.Context == null || (Model.Context != null && Model.Context.Type != DomainType.Set))
             {
                 @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
-                @Html.RenderAction("FeaturedSub", "Home")
-                @Html.RenderAction("StickiedSubmission", "Home")
+                await Component.InvokeAsync("Featured");
+                await Component.InvokeAsync("StickiedSubmission", null);
             }
 
             @if (Model.Submissions.Count <= 0)

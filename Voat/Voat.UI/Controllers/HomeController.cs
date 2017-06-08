@@ -313,37 +313,6 @@ namespace Voat.Controllers
             return View("~/Views/Help/Privacy.cshtml");
         }
 
-        // GET: stickied submission from /v/announcements for the frontpage
-        [ChildActionOnly]
-
-        //[OutputCache(Duration = 600)]
-        public ActionResult StickiedSubmission()
-        {
-            var sticky = StickyHelper.GetSticky("announcements");
-
-            if (sticky != null)
-            {
-                return PartialView("~/Views/Subverses/_Stickied.cshtml", sticky);
-            }
-            else
-            {
-                return new EmptyResult();
-            }
-        }
-
-        // GET: list of subverses user moderates
-        //[OutputCache(Duration = 600, VaryByParam = "*")]
-        public ActionResult SubversesUserModerates(string userName)
-        {
-            if (userName != null)
-            {
-                //This is expensive to hydrate the userData.Information for the moderation list
-                var userData = new Domain.UserData(userName);
-                return PartialView("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", userData.Information.Moderates);
-            }
-            return new EmptyResult();
-        }
-
         // GET: list of subverses user is subscribed to for sidebar
         [ChildActionOnly]
         public async Task<ActionResult> SubversesUserIsSubscribedTo(string userName)
@@ -369,24 +338,7 @@ namespace Voat.Controllers
             }
             return new EmptyResult();
         }
-        //CORE_PORT: Not Supported
-        //[OutputCache(Duration = 600, VaryByParam = "none")]
-        public ActionResult FeaturedSub()
-        {
-            using (var repo = new Repository())
-            {
-                var featured = repo.GetFeatured();
-                if (featured != null)
-                {
-                    return PartialView("~/Views/Shared/_Featured.cshtml", featured);
-                }
-                else
-                {
-                    return new EmptyResult();
-                }
-            }
-        }
-
+        
         [HttpGet]
         public ActionResult Rules()
         {

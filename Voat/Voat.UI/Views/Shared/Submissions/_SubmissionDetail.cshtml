@@ -96,10 +96,7 @@
                 {
                     case Voat.Domain.Models.SubmissionType.Link:
 
-                        @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_Buttons.cshtml", Model,
-                                new ViewDataDictionary(ViewData) {
-                                { "ModeratorList", ViewBag.ModeratorList }
-                            })
+                        @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_Buttons.cshtml", Model, ViewData)
                         <div class="expando" style='display: none'>
                             <span class="error">loading...</span>
                         </div>
@@ -142,10 +139,7 @@
                             </form>
                         </div>
                         <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Model.Content</textarea>
-                        @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_Buttons.cshtml", Model,
-                                new ViewDataDictionary(ViewData) {
-                                { "ModeratorList", ViewBag.ModeratorList }
-                            })
+                        @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_Buttons.cshtml", Model, ViewData)
                         break;
                     default:
                         <p>Unknown Type</p>

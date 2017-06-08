@@ -153,19 +153,8 @@
        
     </div>
 
-    @if (Model.IsActualSubverse)
-    {
-        @Html.RenderAction("SidebarForSelectedSubverse", "Subverses", new { selectedSubverse = Model.Context.Name })
-    }
-    else if (Model.Context != null && Model.Context.Type == Voat.Domain.Models.DomainType.Set)
-    {
-        @Html.RenderAction("Sidebar", "Set", new { name = Model.Context.FullName })
-    }
-    else
-    {
-        @Html.Partial("~/Views/Shared/Sidebars/_SidebarFrontpage.cshtml")
-    }
-
+    @await  Component.InvokeAsync("Sidebar", Model.Context) 
+    
 </div>
 
 <style type="text/css">

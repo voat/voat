@@ -26,7 +26,9 @@
 
 <div id="container" class="page-userprofile">
 
-    @Html.Partial("~/Views/Shared/Sidebars/_SidebarUserInfo.cshtml")
+    @await Component.InvokeAsync("Sidebar",
+        new { domainReference = new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.User, ViewBag.UserName)
+        })
 
     <div class="content" role="main">
         <div class="alert-title">Profile overview for @ViewBag.UserName.</div>
