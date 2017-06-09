@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
+using Voat.Common;
 
 namespace Voat.Tests.CommandTests
 {
@@ -41,38 +42,38 @@ namespace Voat.Tests.CommandTests
         private string MOD_NAME = "unit";
         private string CONTENT = Guid.NewGuid().ToString();
         private int SUBMISSION_ID = 0;
-        private Tuple<int, int> CommentIDs;
+        private static Tuple<int, int> CommentIDs;
 
         public override void ClassInitialize()
         {
             
-            TestHelper.SetPrincipal(AUTHOR_NAME);
+            var user = TestHelper.SetPrincipal(AUTHOR_NAME);
 
             //create submission
-            var s = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Content = CONTENT, Title = "My Title Goes Here", Subverse = "unit" });
+            var s = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Content = CONTENT, Title = "My Title Goes Here", Subverse = "unit" }).SetUserContext(user);
             var r1 = s.Execute().Result;
             Assert.IsTrue(r1.Success, r1.Message);
             SUBMISSION_ID = r1.Response.ID;
 
             //create user comment 1
-            var c = new CreateCommentCommand(r1.Response.ID, null, CONTENT + "1");
+            var c = new CreateCommentCommand(r1.Response.ID, null, CONTENT + "1").SetUserContext(user);
             var rc = c.Execute().Result;
             Assert.IsTrue(rc.Success, rc.Message);
 
             //create user comment 2
-            var c2 = new CreateCommentCommand(r1.Response.ID, null, CONTENT + "2");
+            var c2 = new CreateCommentCommand(r1.Response.ID, null, CONTENT + "2").SetUserContext(user);
             var rc2 = c2.Execute().Result;
             Assert.IsTrue(rc2.Success, rc2.Message);
 
             CommentIDs = Tuple.Create(rc.Response.ID, rc2.Response.ID);
 
             //Add comments to parents so segment gets returned.
-            TestHelper.SetPrincipal(MOD_NAME);
-            var d1 = new CreateCommentCommand(r1.Response.ID, CommentIDs.Item1, "Gunna so delete this");
+            user = TestHelper.SetPrincipal(MOD_NAME);
+            var d1 = new CreateCommentCommand(r1.Response.ID, CommentIDs.Item1, "Gunna so delete this").SetUserContext(user);
             var rd2 = d1.Execute().Result;
             Assert.IsTrue(rd2.Success, rd2.Message);
 
-            d1 = new CreateCommentCommand(r1.Response.ID, CommentIDs.Item2, "Gunna so delete this too!");
+            d1 = new CreateCommentCommand(r1.Response.ID, CommentIDs.Item2, "Gunna so delete this too!").SetUserContext(user);
             rd2 = d1.Execute().Result;
             Assert.IsTrue(rd2.Success, rd2.Message);
 
@@ -91,13 +92,13 @@ namespace Voat.Tests.CommandTests
             VerifyComment(modCommentID, CONTENT, false);
 
             //delete comment (mod)
-            TestHelper.SetPrincipal(AUTHOR_NAME);
-            var d = new DeleteCommentCommand(authorCommentID);
+            var user = TestHelper.SetPrincipal(AUTHOR_NAME);
+            var d = new DeleteCommentCommand(authorCommentID).SetUserContext(user);
             var r = d.Execute().Result;
             Assert.IsTrue(r.Success, r.Message);
 
-            TestHelper.SetPrincipal(MOD_NAME);
-            d = new DeleteCommentCommand(modCommentID, "My Reason Here");
+            user = TestHelper.SetPrincipal(MOD_NAME);
+            d = new DeleteCommentCommand(modCommentID, "My Reason Here").SetUserContext(user); ;
             r = d.Execute().Result;
             Assert.IsTrue(r.Success, r.Message);
 

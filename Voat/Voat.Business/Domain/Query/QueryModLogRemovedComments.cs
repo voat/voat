@@ -49,7 +49,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<IEnumerable<Domain.Models.CommentRemovalLog>> GetData()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 return await repo.GetModLogRemovedComments(_subverse, _options);
             }

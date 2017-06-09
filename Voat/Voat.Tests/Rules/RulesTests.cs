@@ -37,8 +37,8 @@ namespace Voat.Tests.Rules
         [TestCategory("Rules")]
         public void DownVoat_Comment_Denied_MinCCPInSubverse()
         {
-            TestHelper.SetPrincipal("User100CCP");
-            var context = new VoatRuleContext();
+            var user = TestHelper.SetPrincipal("User100CCP");
+            var context = new VoatRuleContext(user);
             context.PropertyBag.CommentID = 5;//A minCCP of 5000 is required in this comment sub
             context.PropertyBag.AddressHash = IpHash.CreateHash("127.0.0.1");
             var outcome = UnitTestRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.DownVoteComment, RuleScope.DownVote, RuleScope.Vote);
@@ -51,8 +51,8 @@ namespace Voat.Tests.Rules
         [TestCategory("Rules")]
         public void DownVoat_Submission_Denied_MinCCPInSubverse()
         {
-            TestHelper.SetPrincipal("User100CCP");
-            var context = new VoatRuleContext();
+            var user = TestHelper.SetPrincipal("User100CCP");
+            var context = new VoatRuleContext(user);
             context.PropertyBag.SubmissionID = 3; //A minCCP of 5000 is required in this comment sub
 
             var outcome = UnitTestRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.DownVoteSubmission, RuleScope.DownVote, RuleScope.Vote);
@@ -66,8 +66,8 @@ namespace Voat.Tests.Rules
         {
             //rulesEngine.Context.PropertyBag.UserName = "User50CCP";
             //rulesEngine.Context.PropertyBag.CommentID = 1;
-            TestHelper.SetPrincipal("User50CCP");
-            var context = new VoatRuleContext();
+            var user = TestHelper.SetPrincipal("User50CCP");
+            var context = new VoatRuleContext(user);
             context.PropertyBag.CommentID = 1;//A minCCP of 5000 is required in this comment sub
 
             var outcome = UnitTestRulesEngine.Instance.EvaluateRuleSet(context, RulesEngine.RuleScope.UpVoteComment, true);
@@ -80,8 +80,8 @@ namespace Voat.Tests.Rules
         {
             //rulesEngine.Context.PropertyBag.UserName = "User50CCP";
             //rulesEngine.Context.PropertyBag.SubmissionID = 3;
-            TestHelper.SetPrincipal("User50CCP");
-            var context = new VoatRuleContext();
+            var user = TestHelper.SetPrincipal("User50CCP");
+            var context = new VoatRuleContext(user);
             context.PropertyBag.SubmissionID = 3;//A minCCP of 5000 is required in this comment sub
             var outcome = UnitTestRulesEngine.Instance.EvaluateRuleSet(context, RulesEngine.RuleScope.UpVoteSubmission, true);
             Assert.AreEqual(RuleResult.Allowed, outcome.Result);

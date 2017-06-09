@@ -41,7 +41,7 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse<RemoveModeratorResponse>> CacheExecute()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var response = await repo.RemoveModerator(_subversModeratorRecordID, _allowSelfExecution);
                 return response;

@@ -42,10 +42,10 @@ namespace Voat.Domain.Models
         {
             get
             {
-                if (string.IsNullOrEmpty(_sender) && UserIdentity.IsAuthenticated)
-                {
-                    return UserIdentity.UserName;
-                }
+                //if (string.IsNullOrEmpty(_sender) && UserIdentity.IsAuthenticated)
+                //{
+                //    return UserIdentity.UserName;
+                //}
                 return _sender;
             }
 

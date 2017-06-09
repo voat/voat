@@ -56,7 +56,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<IEnumerable<Filter>> GetData()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 return repo.GetFilters(true);
             }

@@ -37,6 +37,7 @@ using Dapper;
 using Voat.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Voat.Utilities;
+using Voat.Common;
 
 namespace Voat.Data
 {
@@ -56,7 +57,7 @@ namespace Voat.Data
             }
             
             //Check Perms
-            var perms = SetPermission.GetPermissions(set.Map(), UserIdentity.Identity);
+            var perms = SetPermission.GetPermissions(set.Map(), User.Identity);
             if (!perms.EditList)
             {
                 return CommandResponse.FromStatus<bool?>(null, Status.Denied, "User not authorized to modify set");
@@ -110,7 +111,7 @@ namespace Voat.Data
             }
 
             //Check Perms
-            var perms = SetPermission.GetPermissions(set.Map(), UserIdentity.Identity);
+            var perms = SetPermission.GetPermissions(set.Map(), User.Identity);
             if (!perms.Delete)
             {
                 return CommandResponse.FromStatus<bool?>(null, Status.Denied, "User not authorized to delete set");
@@ -269,7 +270,7 @@ namespace Voat.Data
             q.Where = "subSet.\"UserName\" = @UserName";
             q.Parameters.Add("UserName", userName);
 
-            if (!userName.IsEqual(UserIdentity.UserName))
+            if (!userName.IsEqual(UserName))
             {
                 q.Append(x => x.Where, $"subSet.\"IsPublic\" = {SqlFormatter.BooleanLiteral(true)}");
             }
@@ -288,7 +289,7 @@ namespace Voat.Data
 
             set.Name = set.Name.TrimSafe();
             //Evaulate Rules
-            VoatRuleContext context = new VoatRuleContext();
+            var context = new VoatRuleContext(User);
             context.PropertyBag.Set = set;
             var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.CreateSet);
             if (!outcome.IsAllowed)
@@ -299,7 +300,7 @@ namespace Voat.Data
             var existingSet = _db.SubverseSet.FirstOrDefault(x => x.ID == set.ID);
             if (existingSet != null)
             {
-                var perms = SetPermission.GetPermissions(existingSet.Map(), UserIdentity.Identity);
+                var perms = SetPermission.GetPermissions(existingSet.Map(), User.Identity);
                  
                 if (!perms.EditProperties)
                 {
@@ -309,7 +310,7 @@ namespace Voat.Data
                 //HACK: Need to clear this entry out of cache if name changes and check name
                 if (!existingSet.Name.IsEqual(set.Name))
                 {
-                    if (_db.SubverseSet.Any(x => x.Name.Equals(set.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(UserIdentity.UserName, StringComparison.OrdinalIgnoreCase)))
+                    if (_db.SubverseSet.Any(x => x.Name.Equals(set.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(UserName, StringComparison.OrdinalIgnoreCase)))
                     {
                         return CommandResponse.FromStatus<Set>(null, Status.Denied, "A set with this name already exists");
                     }
@@ -339,7 +340,7 @@ namespace Voat.Data
                     d.Select = $"SELECT COUNT(*) FROM {SqlFormatter.Table("SubverseSet", "subSet")}";
                     d.Where = "subSet.\"Type\" = @Type AND subSet.\"UserName\" = @UserName";
                     d.Parameters.Add("Type", (int)SetType.Normal);
-                    d.Parameters.Add("UserName", UserIdentity.UserName);
+                    d.Parameters.Add("UserName", UserName);
 
                     var setCount = _db.Connection.ExecuteScalar<int>(d.ToString(), d.Parameters);
                     if (setCount >= Settings.MaximumOwnedSets)
@@ -352,7 +353,7 @@ namespace Voat.Data
                 //Create new set
                 try
                 {
-                    var setCheck = GetSet(set.Name, UserIdentity.UserName);
+                    var setCheck = GetSet(set.Name, UserName);
                     if (setCheck != null)
                     {
                         return CommandResponse.FromStatus<Set>(null, Status.Denied, "A set with same name and owner already exists");
@@ -363,7 +364,7 @@ namespace Voat.Data
                         Name = set.Name,
                         Title = set.Title,
                         Description = set.Description,
-                        UserName = UserIdentity.UserName,
+                        UserName = UserName,
                         Type = (int)SetType.Normal,
                         IsPublic = set.IsPublic,
                         CreationDate = Repository.CurrentDate,
@@ -373,7 +374,7 @@ namespace Voat.Data
                     _db.SubverseSet.Add(newSet);
                     await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
-                    _db.SubverseSetSubscription.Add(new SubverseSetSubscription() { SubverseSetID = newSet.ID, UserName = UserIdentity.UserName, CreationDate = CurrentDate });
+                    _db.SubverseSetSubscription.Add(new SubverseSetSubscription() { SubverseSetID = newSet.ID, UserName = UserName, CreationDate = CurrentDate });
                     await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                     return CommandResponse.Successful(newSet.Map());

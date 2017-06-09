@@ -44,7 +44,7 @@ namespace Voat.Domain.Query
 
         public override async Task<IEnumerable<DomainReferenceDetails>> ExecuteAsync()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var results = await repo.UserSubscribedSetDetails(UserName, _options);
                 return results;

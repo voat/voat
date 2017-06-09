@@ -77,7 +77,7 @@ namespace Voat.Domain.Query.Statistics
 
         protected override async Task<Statistics<IEnumerable<StatContentItem>>> GetData()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var result = await repo.HighestVotedContentStatistics(this._options);
                 return result;

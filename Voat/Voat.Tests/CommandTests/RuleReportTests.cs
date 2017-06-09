@@ -26,8 +26,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Common;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
@@ -63,14 +65,14 @@ namespace Voat.Tests.CommandTests
         public async Task SubmitSubmissionReport_Basic()
         {
             var userName = "unit";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
             //first report
-            await SubmitAndVerify(userName, ContentType.Submission, 1, 1);
+            await SubmitAndVerify(user, ContentType.Submission, 1, 1);
             //duplicate report
-            await SubmitAndVerify(userName, ContentType.Submission, 1, 1);
+            await SubmitAndVerify(user, ContentType.Submission, 1, 1);
             //alt report, ignore
-            await SubmitAndVerify(userName, ContentType.Submission, 1, 2, 0);
+            await SubmitAndVerify(user, ContentType.Submission, 1, 2, 0);
         }
 
         [TestMethod]
@@ -78,14 +80,14 @@ namespace Voat.Tests.CommandTests
         public async Task SubmitCommentReport_Basic()
         {
             var userName = "unit";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
             //first report
-            await SubmitAndVerify(userName, ContentType.Comment, 1, 1);
+            await SubmitAndVerify(user, ContentType.Comment, 1, 1);
             //duplicate report
-            await SubmitAndVerify(userName, ContentType.Comment, 1, 1);
+            await SubmitAndVerify(user, ContentType.Comment, 1, 1);
             //alt report
-            await SubmitAndVerify(userName, ContentType.Comment, 1, 2, 0);
+            await SubmitAndVerify(user, ContentType.Comment, 1, 2, 0);
         }
 
         [TestMethod]
@@ -93,22 +95,22 @@ namespace Voat.Tests.CommandTests
         public async Task GroupedSubmissionReports()
         {
             string userName = "unit";
-            TestHelper.SetPrincipal(userName);
-            var cmd = new CreateSubmissionCommand(new UserSubmission() { Subverse = "unit", Title = "This is spammy spam", Content = "http://somespamsite.com" });
+            var user = TestHelper.SetPrincipal(userName);
+            var cmd = new CreateSubmissionCommand(new UserSubmission() { Subverse = "unit", Title = "This is spammy spam", Content = "http://somespamsite.com" }).SetUserContext(user);
             var response = await cmd.Execute();
             Assert.IsTrue(response.Success, response.Message);
             var submission = response.Response;
 
             userName = "unit";
-            TestHelper.SetPrincipal(userName);
-            await SubmitAndVerify(userName, ContentType.Submission, submission.ID, 1);
+            user = TestHelper.SetPrincipal(userName);
+            await SubmitAndVerify(user, ContentType.Submission, submission.ID, 1);
             int ruleid = 1;
 
             for (int i = 1; i < 20; i++)
             {
                 userName = $"TestUser{i.ToString().PadLeft(2, '0')}";
-                TestHelper.SetPrincipal(userName);
-                await SubmitAndVerify(userName, ContentType.Submission, submission.ID, ruleid);
+                user = TestHelper.SetPrincipal(userName);
+                await SubmitAndVerify(user, ContentType.Submission, submission.ID, ruleid);
                 ruleid++;
                 if (ruleid > 5)
                     ruleid = 1;
@@ -117,9 +119,9 @@ namespace Voat.Tests.CommandTests
         }
 
 
-        private async Task SubmitAndVerify(string userName, ContentType contentType, int id, int ruleID, int expectedCount = 1)
+        private async Task SubmitAndVerify(IPrincipal user, ContentType contentType, int id, int ruleID, int expectedCount = 1)
         {
-            var cmd = new ReportContentCommand(contentType, id, ruleID);
+            var cmd = new ReportContentCommand(contentType, id, ruleID).SetUserContext(user);
             var r = await cmd.Execute();
             Assert.IsTrue(r.Success, r.Message);
             int count = 0;
@@ -128,11 +130,11 @@ namespace Voat.Tests.CommandTests
             {
                 if (contentType == ContentType.Submission)
                 {
-                    count = db.RuleReport.Where(x => x.CreatedBy == userName && x.RuleSetID == ruleID && x.SubmissionID == id && x.CommentID == null).Count();
+                    count = db.RuleReport.Where(x => x.CreatedBy == user.Identity.Name && x.RuleSetID == ruleID && x.SubmissionID == id && x.CommentID == null).Count();
                 }
                 else
                 {
-                    count = db.RuleReport.Where(x => x.CreatedBy == userName && x.RuleSetID == ruleID && x.CommentID == id).Count();
+                    count = db.RuleReport.Where(x => x.CreatedBy == user.Identity.Name && x.RuleSetID == ruleID && x.CommentID == id).Count();
                 }
             }
             Assert.AreEqual(expectedCount, count);

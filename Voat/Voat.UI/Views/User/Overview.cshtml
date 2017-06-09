@@ -21,23 +21,24 @@
 @using Voat.Data.Models
 
 @{
-    ViewBag.Title = "Profile overview for " + @ViewBag.UserName;
+    var userName = ViewBag.UserName;
+    ViewBag.Title = "Profile overview for " + userName;
 }
 
 <div id="container" class="page-userprofile">
 
     @await Component.InvokeAsync("Sidebar",
-        new { domainReference = new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.User, ViewBag.UserName)
+        new { domainReference = new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.User, userName)
         })
 
     <div class="content" role="main">
-        <div class="alert-title">Profile overview for @ViewBag.UserName.</div>
+        <div class="alert-title">Profile overview for @userName.</div>
         <div class="userstats">
             <div class="userstats-heading-1">Submission statistics</div>
             <div>
                 <div class="userstats-body">
                     @{
-                        var userStatsModel = UserHelper.UserStatsModel(@ViewBag.UserName);
+                        var userStatsModel = UserHelper.UserStatsModel(userName);
 
                         if (userStatsModel.TopSubversesUserContributedTo.Count > 0)
                         {
@@ -113,15 +114,16 @@
                             var score = item.UpCount - item.DownCount;
 
                             <div class="thread comment" data-ups="@item.UpCount" data-downs="@item.DownCount">
-                                <p>
+                                <p>EF CORE ISSUE FIXME - ALSO THIS CODE IS DUPLICATED </p>
+                                @*<p>
                                     <a href="@VoatPathHelper.CommentsPagePath(item.Submission.Subverse, item.SubmissionID.Value)" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
 
                                     submitted by <a href="/user/@item.Submission.UserName">@item.Submission.UserName</a> to <a href="/v/@item.Submission.Subverse" class="userstats-submission-subverse">@item.Submission.Subverse</a>
-                                </p>
+                                </p>*@
 
                                 <div class="entry unvoted">
                                     <p class="tagline">
-                                        <a href="/user/@ViewBag.UserName" class="author may-blank userinfo tooltipstered" data-username="@ViewBag.UserName">@ViewBag.UserName</a>
+                                        <a href="/user/@userName" class="author may-blank userinfo tooltipstered" data-username="@userName">@userName</a>
                                         <span class="score dislikes">@item.DownCount points</span>
                                         <span class="userstats-submission-score">@score points</span>
                                         <span class="score likes">@item.UpCount points</span>
@@ -144,7 +146,8 @@
                                     </div>
                                     <ul class="flat-list buttons">
                                         <li class="first">
-                                            <a href="@VoatPathHelper.CommentsPagePath(item.Submission.Subverse, item.Submission.ID, item.ID)" class="bylink" rel="nofollow">permalink</a>
+                                            <p>EF CORE ISSUE FIXME - ALSO THIS CODE IS DUPLICATED </p>
+                                            @*<a href="@VoatPathHelper.CommentsPagePath(item.Submission.Subverse, item.Submission.ID, item.ID)" class="bylink" rel="nofollow">permalink</a>*@
                                         </li>
                                     </ul>
                                 </div>
@@ -168,13 +171,13 @@
                             var score = item.UpCount - item.DownCount;
 
                             <div class="thread comment" data-ups="@item.UpCount" data-downs="@item.DownCount">
-
-                                <a href="@VoatPathHelper.CommentsPagePath(item.Submission.Subverse, item.SubmissionID.Value)" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
-                                submitted by <a href="/user/@item.Submission.UserName">@item.Submission.UserName</a> to <a href="/v/@item.Submission.Subverse" class="userstats-submission-subverse">@item.Submission.Subverse</a>
+                                <p>EF CORE ISSUE FIXME - ALSO THIS CODE IS DUPLICATED </p>
+                                @*<a href="@VoatPathHelper.CommentsPagePath(item.Submission.Subverse, item.SubmissionID.Value)" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
+                                submitted by <a href="/user/@item.Submission.UserName">@item.Submission.UserName</a> to <a href="/v/@item.Submission.Subverse" class="userstats-submission-subverse">@item.Submission.Subverse</a>*@
 
                                 <div class="entry unvoted">
                                     <p class="tagline">
-                                        <a href="/user/@ViewBag.UserName" class="author may-blank userinfo tooltipstered" data-username="@ViewBag.UserName">@ViewBag.UserName</a>
+                                        <a href="/user/@userName" class="author may-blank userinfo tooltipstered" data-username="@userName">@userName</a>
                                         <span class="score dislikes">@item.DownCount points</span>
                                         <span class="userstats-submission-score">@score points</span>
                                         <span class="score likes">@item.UpCount points</span>
@@ -197,7 +200,8 @@
                                     </div>
                                     <ul class="flat-list buttons">
                                         <li class="first">
-                                            <a href="@VoatPathHelper.CommentsPagePath(item.Submission.Subverse, item.SubmissionID.Value, item.ID)" class="bylink" rel="nofollow">permalink</a>
+                                            <p>EF CORE ISSUE FIXME - ALSO THIS CODE IS DUPLICATED </p>
+                                            @*<a href="@VoatPathHelper.CommentsPagePath(item.Submission.Subverse, item.SubmissionID.Value, item.ID)" class="bylink" rel="nofollow">permalink</a>*@
                                         </li>
                                     </ul>
                                 </div>

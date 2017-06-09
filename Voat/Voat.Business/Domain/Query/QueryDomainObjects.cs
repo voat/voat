@@ -59,7 +59,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<IEnumerable<DomainReferenceDetails>> GetData()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var results = await repo.SearchDomainObjects(_domainType, _options);
                 return results;

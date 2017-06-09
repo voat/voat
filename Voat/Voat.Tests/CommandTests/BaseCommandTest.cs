@@ -26,9 +26,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Common;
 using Voat.Data;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
@@ -56,13 +58,14 @@ namespace Voat.Tests.CommandTests
         }
         protected void VerifyCommentIsProtected(int submissionID, int commentID, string userName = null)
         {
+            IPrincipal user = null;
             if (!String.IsNullOrEmpty(userName))
             {
-                TestHelper.SetPrincipal(userName);
+                user = TestHelper.SetPrincipal(userName);
             }
             
             //verify comment segment hides user name
-            var q = new QueryCommentContext(submissionID, commentID);
+            var q = new QueryCommentContext(submissionID, commentID).SetUserContext(user);
             var r = q.Execute();
             Assert.IsNotNull(r, "Query response is null");
             Assert.IsNotNull(r.Comments, "Comment segment is null");

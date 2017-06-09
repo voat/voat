@@ -67,11 +67,12 @@ namespace Voat.Utilities.Components
             {
                 string userName = null;
 
-                //log user info if possible
-                if (UserIdentity.IsAuthenticated)
-                {
-                    userName = UserIdentity.UserName;
-                }
+                throw new NotImplementedException("Identity Issue");
+                ////log user info if possible
+                //if (User.IsAuthenticated)
+                //{
+                //    userName = UserIdentity.UserName;
+                //}
 
                 //Execute this without blocking
                 Task t = Task.Factory.StartNew(() =>

@@ -60,12 +60,12 @@ namespace Voat.Domain.Query
         public override async Task<IEnumerable<Submission>> ExecuteAsync()
         {
             var data = await base.ExecuteAsync();
-            DomainMaps.HydrateUserData(data);
+            DomainMaps.HydrateUserData(User, data);
             return data;
         }
         protected override async Task<IEnumerable<Domain.Models.Submission>> GetData()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var sticky = await db.GetSticky(_subverse);
                 if (sticky != null)

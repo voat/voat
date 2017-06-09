@@ -41,7 +41,7 @@ namespace Voat.Domain.Command
         {
             if (_client != null)
             {
-                using (var repo = new Repository())
+                using (var repo = new Repository(User))
                 {
                     await Task.Run(() => repo.UpdateApiClientLastAccessDate(_client.ID));
                 }

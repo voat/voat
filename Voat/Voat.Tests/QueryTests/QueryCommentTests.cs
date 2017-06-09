@@ -30,6 +30,7 @@ using Voat.Domain.Command;
 using Voat.Utilities;
 using Voat.Domain.Query;
 using Voat.Domain.Models;
+using Voat.Common;
 
 namespace Voat.Tests.QueryTests
 {
@@ -43,19 +44,19 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Comment")]
         public void EnsureVoteSavedIsPopulated()
         {
-            TestHelper.SetPrincipal("UnitTestUser18");
+            var user = TestHelper.SetPrincipal("UnitTestUser18");
 
-            var q = new QueryComment(1);
+            var q = new QueryComment(1).SetUserContext(user);
             var comment = q.Execute();
             Assert.IsNotNull(comment, "Comment is null 1");
             Assert.AreEqual(0, comment.Vote, "vote value not set for logged in user 1");
 
-            var cmd = new CommentVoteCommand(1, 1, IpHash.CreateHash(Guid.NewGuid().ToString()));
+            var cmd = new CommentVoteCommand(1, 1, IpHash.CreateHash(Guid.NewGuid().ToString())).SetUserContext(user); ;
             var result = cmd.Execute().Result;
             Assert.IsNotNull(result, "Result is null");
             Assert.AreEqual(Status.Success, result.Status);
 
-            q = new QueryComment(1);
+            q = new QueryComment(1).SetUserContext(user); ;
             comment = q.Execute();
             Assert.IsNotNull(comment, "Comment is null 2");
             Assert.AreEqual(1, comment.Vote, "vote value not set for logged in user 2");

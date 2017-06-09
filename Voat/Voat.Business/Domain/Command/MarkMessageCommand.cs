@@ -54,7 +54,7 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse> ProtectedExecute()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 return await repo.MarkMessages(_ownerName, _ownerType, _type, _action, _id);
             }
@@ -85,7 +85,7 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse> ProtectedExecute()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 return await repo.DeleteMessages(_ownerName, _ownerType, _type, _id);
             }

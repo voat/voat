@@ -60,7 +60,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<Voat.Domain.Models.Set> GetData()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var subverseSet = db.GetSet(_name, _ownerName);
                 var set = subverseSet.Map();

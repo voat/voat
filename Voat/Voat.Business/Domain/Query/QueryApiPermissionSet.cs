@@ -54,7 +54,7 @@ namespace Voat.Domain.Query
         {
             if (_id.HasValue && _id.Value > 0)
             {
-                using (var repo = new Repository())
+                using (var repo = new Repository(User))
                 {
                     var dbPolicy = repo.GetApiPermissionPolicy(_id.Value);
                     var policy = JsonConvert.DeserializeObject<ApiPermissionSet>(dbPolicy.Policy);

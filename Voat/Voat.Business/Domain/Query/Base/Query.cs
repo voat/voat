@@ -22,7 +22,9 @@
 
 #endregion LICENSE
 
+using System.Security.Principal;
 using System.Threading.Tasks;
+using Voat.Common;
 
 namespace Voat.Domain.Query
 {
@@ -31,26 +33,8 @@ namespace Voat.Domain.Query
         Task<T> ExecuteAsync();
     }
 
-    public abstract class Query<T> : IQuery<T>
+    public abstract class Query<T> : SecurityContext<IPrincipal>, IQuery<T>
     {
-        private string _userName;
-
-        public Query()
-        {
-            _userName = UserIdentity.UserName;
-        }
-
-        /// <summary>
-        /// Represents the currently authenticated user name or the User who is executing/owns the context
-        /// </summary>
-        public string UserName
-        {
-            get
-            {
-                return _userName;
-            }
-        }
-
         //BLOCK: This needs fixed
         public abstract Task<T> ExecuteAsync();
 

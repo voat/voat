@@ -73,7 +73,7 @@ namespace Voat.Domain.Query
         {
             UserPreference pref = null;
 
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 pref = await db.GetUserPreferences(_userToRetrieve);
             }

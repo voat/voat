@@ -50,11 +50,11 @@ namespace Voat.Domain.Query
 
         protected override async Task<Domain.Models.Comment> GetData()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var result = await db.GetComments(_commentID);
                 var comment = result.FirstOrDefault();
-                DomainMaps.HydrateUserData(comment, true);
+                DomainMaps.HydrateUserData(User, comment, true);
                 return comment;
             }
         }

@@ -46,16 +46,16 @@ namespace Voat.Domain.Models
             Comments = new List<NestedComment>() { comment };
         }
 
-        //for backwards compatibility with EF models
-        public CommentSegment(Data.Models.Comment comment, string subverse)
-        {
-            Comments = new List<NestedComment>() { DomainMaps.MapToNestedComment(comment, subverse) };
-        }
+        ////for backwards compatibility with EF models
+        //public CommentSegment(Data.Models.Comment comment, string subverse)
+        //{
+        //    Comments = new List<NestedComment>() { DomainMaps.MapToNestedComment(comment, subverse) };
+        //}
 
-        public CommentSegment(Comment comment)
-        {
-            Comments = new List<NestedComment>() { DomainMaps.Map(comment) };
-        }
+        //public CommentSegment(Comment comment)
+        //{
+        //    Comments = new List<NestedComment>() { DomainMaps.Map(comment) };
+        //}
 
         public CommentSegment(IList<NestedComment> comments)
         {

@@ -50,10 +50,10 @@ namespace Voat.Domain.Query
 
         protected override async Task<IEnumerable<Domain.Models.Comment>> GetData()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var result = db.GetComments(_subverse, this._options);
-                return Domain.DomainMaps.Map(result);
+                return Domain.DomainMaps.Map(result, User);
             }
         }
     }

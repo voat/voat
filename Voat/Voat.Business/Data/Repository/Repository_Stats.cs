@@ -88,7 +88,7 @@ namespace Voat.Data
                         item.Submission = submissions.FirstOrDefault(x => x.ID == item.ID).Map();
                         break;
                     case ContentType.Comment:
-                        item.Comment = comments.FirstOrDefault(x => x.ID == item.ID).Map();
+                        item.Comment = comments.FirstOrDefault(x => x.ID == item.ID).Map(User);
                         break;
 
                 }

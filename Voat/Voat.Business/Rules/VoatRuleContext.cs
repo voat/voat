@@ -23,6 +23,7 @@
 #endregion LICENSE
 
 using System;
+using System.Security.Principal;
 using Voat.Domain;
 using Voat.Domain.Query;
 using Voat.RulesEngine;
@@ -33,12 +34,20 @@ namespace Voat.Rules
     {
         private Guid _id = Guid.NewGuid();
         private UserData _userData;
+        private IPrincipal _principal;
 
-        public VoatRuleContext()
+        public VoatRuleContext(IPrincipal principal)
         {
-            PropertyBag.UserName = UserIdentity.UserName;
+            _principal = principal;
         }
 
+        public IPrincipal User
+        {
+            get
+            {
+                return _principal;
+            }
+        }
         public UserData UserData
         {
             get
@@ -46,7 +55,7 @@ namespace Voat.Rules
                 if (_userData == null)
                 {
                     //var cmd = new QueryUserData(PropertyBag.UserName);
-                    _userData = new UserData(PropertyBag.UserName);
+                    _userData = new UserData(User.Identity.Name);
                 }
                 return _userData;
             }
@@ -95,8 +104,7 @@ namespace Voat.Rules
 
         public string UserName
         {
-            get { return PropertyBag.UserName; }
-            set { PropertyBag.UserName = value; }
+            get { return User.Identity.Name; }
         }
 
         protected override object GetMissingValue(string name)

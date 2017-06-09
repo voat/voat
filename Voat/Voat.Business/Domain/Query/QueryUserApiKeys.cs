@@ -36,7 +36,7 @@ namespace Voat.Domain.Query
         public override async Task<IEnumerable<Tuple<ApiClient, ApiThrottlePolicy, Domain.Models.ApiPermissionSet>>> ExecuteAsync()
         {
             var output = new List<Tuple<ApiClient, ApiThrottlePolicy, Domain.Models.ApiPermissionSet>>();
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var keys = repo.GetApiKeys(UserName);
                 foreach (var key in keys)

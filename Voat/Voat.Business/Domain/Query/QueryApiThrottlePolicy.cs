@@ -51,7 +51,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<ApiThrottlePolicy> GetData()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 return repo.GetApiThrottlePolicy(_apiThrottlePolicyID);
             }

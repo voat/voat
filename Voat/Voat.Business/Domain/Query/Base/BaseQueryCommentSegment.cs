@@ -59,7 +59,7 @@ namespace Voat.Domain.Query.Base
             {
                 if (String.IsNullOrEmpty(_submitterName))
                 {
-                    using (var repo = new Repository())
+                    using (var repo = new Repository(User))
                     {
                         _submitterName = repo.GetSubmissionOwnerName(_submissionID);
                     }
@@ -122,7 +122,7 @@ namespace Voat.Domain.Query.Base
             //creating this to keep local vars in scope
             Func<usp_CommentTree_Result, NestedComment> mapToNestedCommentFunc = new Func<usp_CommentTree_Result, NestedComment>(commentTree =>
             {
-                return commentTree.Map(SubmitterName, _commentVotes, _userBlocks);
+                return commentTree.Map(User, SubmitterName, _commentVotes, _userBlocks);
             });
 
             List<NestedComment> comments = new List<NestedComment>();

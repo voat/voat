@@ -102,9 +102,10 @@ namespace Voat.Tests.QueryTests
             var subUserName = "HasSubs";
             VoatDataInitializer.CreateUser(subUserName);
 
-            TestHelper.SetPrincipal(subUserName);
-            var cmd = new SubscribeCommand(new DomainReference(DomainType.Subverse, "unit"), Domain.Models.SubscriptionAction.Subscribe);
+            var user = TestHelper.SetPrincipal(subUserName);
+            var cmd = new SubscribeCommand(new DomainReference(DomainType.Subverse, "unit"), Domain.Models.SubscriptionAction.Subscribe).SetUserContext(user);
             var x = await cmd.Execute();
+            VoatAssert.IsValid(x);
 
             userData = new Domain.UserData(subUserName);
 
@@ -120,12 +121,12 @@ namespace Voat.Tests.QueryTests
         public async Task QueryUserComments()
         {
             var userName = "UnitTestUser21";
-            TestHelper.SetPrincipal(userName);
-            var cmd = new CreateCommentCommand(1, null, "My pillow looks like jello");
+            var user = TestHelper.SetPrincipal(userName);
+            var cmd = new CreateCommentCommand(1, null, "My pillow looks like jello").SetUserContext(user);
             var x = await cmd.Execute();
-            Assert.AreEqual(Status.Success, x.Status);
+            VoatAssert.IsValid(x);
 
-            var q = new QueryUserComments(userName, SearchOptions.Default);
+            var q = new QueryUserComments(userName, SearchOptions.Default).SetUserContext(user);
             var r = await q.ExecuteAsync();
             Assert.AreEqual(true, r.Any(w => w.Content == "My pillow looks like jello"));
 
@@ -135,10 +136,10 @@ namespace Voat.Tests.QueryTests
         public async Task QueryUserComments_Anon()
         {
             var userName = "UnitTestUser22";
-            TestHelper.SetPrincipal(userName);
-            var cmd = new CreateCommentCommand(2, null, "You can never know I said this: Bollocks");
+            var user = TestHelper.SetPrincipal(userName);
+            var cmd = new CreateCommentCommand(2, null, "You can never know I said this: Bollocks").SetUserContext(user);
             var x = await cmd.Execute();
-            Assert.AreEqual(Status.Success, x.Status);
+            VoatAssert.IsValid(x);
 
             var q = new QueryUserComments(userName, SearchOptions.Default);
             var r = await q.ExecuteAsync();
@@ -151,12 +152,12 @@ namespace Voat.Tests.QueryTests
         {
             var userName = "UnitTestUser23";
             var content = "@Fuzzy made fun of my if statements. Says my if statements look *off* and that they aren't as good as other peoples if statements. :(";
-            TestHelper.SetPrincipal(userName);
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This broke my heart", Content = content });
+            var user = TestHelper.SetPrincipal(userName);
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This broke my heart", Content = content }).SetUserContext(user);
             var x = await cmd.Execute();
-            Assert.AreEqual(Status.Success, x.Status);
+            VoatAssert.IsValid(x);
 
-            var q = new QueryUserSubmissions(userName, SearchOptions.Default);
+            var q = new QueryUserSubmissions(userName, SearchOptions.Default).SetUserContext(user);
             var r = await q.ExecuteAsync();
             Assert.AreEqual(true, r.Any(w => w.Content == content));
         }
@@ -168,12 +169,12 @@ namespace Voat.Tests.QueryTests
         {
             var userName = "UnitTestUser24";
             var content = "I have emotional issues whenever I see curly braces";
-            TestHelper.SetPrincipal(userName);
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "This is my biggest secret", Content = content });
+            var user = TestHelper.SetPrincipal(userName);
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "This is my biggest secret", Content = content }).SetUserContext(user);
             var x = await cmd.Execute();
-            Assert.AreEqual(Status.Success, x.Status);
+            VoatAssert.IsValid(x);
 
-            var q = new QueryUserSubmissions(userName, SearchOptions.Default);
+            var q = new QueryUserSubmissions(userName, SearchOptions.Default).SetUserContext(user);
             var r = await q.ExecuteAsync();
             Assert.AreEqual(false, r.Any(w => w.Content == content));
         }

@@ -63,7 +63,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<IEnumerable<VoteValue>> GetData()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var result = repo.UserCommentVotesBySubmission(UserName, _submissionID);
                 return (result == null || !result.Any() ? null : result);

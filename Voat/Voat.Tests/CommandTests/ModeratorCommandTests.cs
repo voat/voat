@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Common;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 
@@ -225,54 +226,54 @@ namespace Voat.Tests.CommandTests
             baseUserName = "L2";
             originUserName = $"{baseUserName}-0";
             targetUserName = $"{baseUserName}-1";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            var user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             baseUserName = "L3";
             originUserName = $"{baseUserName}-0";
             targetUserName = $"{baseUserName}-1";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             baseUserName = "L4";
             originUserName = $"{baseUserName}-0";
             targetUserName = $"{baseUserName}-1";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             baseUserName = "L99";
             originUserName = $"{baseUserName}-0";
             targetUserName = $"{baseUserName}-1";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             //Test L1 denials
             originUserName = "L2-0";
             targetUserName = "L1-0";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             originUserName = "L1-1";
             targetUserName = "L1-0";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             originUserName = "L1-0";
             targetUserName = "Creator";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
         }
@@ -292,15 +293,15 @@ namespace Voat.Tests.CommandTests
 
             originUserName = "L2-0";
             targetUserName = "L3-0";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            var user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Success, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             originUserName = "L1-0";
             targetUserName = "L2-0";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Success, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
@@ -323,15 +324,15 @@ namespace Voat.Tests.CommandTests
 
             originUserName = "L1-0";
             targetUserName = "L1-1";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            var user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Success, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             originUserName = "Creator";
             targetUserName = "L1-0";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Success, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
@@ -352,22 +353,22 @@ namespace Voat.Tests.CommandTests
 
             originUserName = "L1-0";
             targetUserName = "Creator";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            var user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             originUserName = "L1-1";
             targetUserName = "Creator";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             originUserName = "L1-1";
             targetUserName = "L1-0";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
@@ -388,43 +389,43 @@ namespace Voat.Tests.CommandTests
 
             originUserName = "Creator";
             targetUserName = "system";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            var user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             originUserName = "L1-0";
             targetUserName = "system";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             originUserName = "L2-0";
             targetUserName = "system";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             originUserName = "L3-0";
             targetUserName = "system";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             originUserName = "L4-0";
             targetUserName = "system";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 
             originUserName = "L99-0";
             targetUserName = "system";
-            TestHelper.SetPrincipal(originUserName);
-            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false);
+            user = TestHelper.SetPrincipal(originUserName);
+            cmd = new RemoveModeratorCommand(mods[targetUserName].ID, false).SetUserContext(user);
             response = await cmd.Execute();
             Assert.AreEqual(Status.Denied, response.Status, $"Status mismatch on {originUserName} to {targetUserName}");
 

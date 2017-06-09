@@ -47,7 +47,7 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse> ProtectedExecute()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var result = await repo.SaveRuleReport(_contentType, _id, _reasonID);
                 return result;

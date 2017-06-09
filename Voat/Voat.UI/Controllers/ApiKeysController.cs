@@ -25,6 +25,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Voat.Common;
 using Voat.Configuration;
 using Voat.Domain.Command;
 using Voat.Domain.Query;

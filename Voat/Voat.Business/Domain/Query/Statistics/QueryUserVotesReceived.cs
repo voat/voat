@@ -77,7 +77,7 @@ namespace Voat.Domain.Query.Statistics
 
         protected override async Task<Statistics<IEnumerable<UserVoteReceivedStats>>> GetData()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var result = await repo.UserVotesReceivedStatistics(this._options);
                 return result;

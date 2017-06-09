@@ -271,18 +271,18 @@ namespace Voat.Tests.Utils
 
 
 
-            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Top, Extensions.AssignIfValidEnumValue(-23223, Domain.Models.CommentSortAlgorithm.Top));
-            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Top, Extensions.AssignIfValidEnumValue(324324, Domain.Models.CommentSortAlgorithm.Top));
-            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.New, Extensions.AssignIfValidEnumValue((int)Domain.Models.CommentSortAlgorithm.New, Domain.Models.CommentSortAlgorithm.Top));
-            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Top, Extensions.AssignIfValidEnumValue(null, Domain.Models.CommentSortAlgorithm.Top));
-            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Intensity, Extensions.AssignIfValidEnumValue((int)Domain.Models.CommentSortAlgorithm.Intensity, Domain.Models.CommentSortAlgorithm.Top));
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Top, Voat.Common.Extensions.AssignIfValidEnumValue(-23223, Domain.Models.CommentSortAlgorithm.Top));
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Top, Voat.Common.Extensions.AssignIfValidEnumValue(324324, Domain.Models.CommentSortAlgorithm.Top));
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.New, Voat.Common.Extensions.AssignIfValidEnumValue((int)Domain.Models.CommentSortAlgorithm.New, Domain.Models.CommentSortAlgorithm.Top));
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Top, Voat.Common.Extensions.AssignIfValidEnumValue(null, Domain.Models.CommentSortAlgorithm.Top));
+            Assert.AreEqual(Domain.Models.CommentSortAlgorithm.Intensity, Voat.Common.Extensions.AssignIfValidEnumValue((int)Domain.Models.CommentSortAlgorithm.Intensity, Domain.Models.CommentSortAlgorithm.Top));
 
-            Assert.IsFalse(Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm?)777));
-            Assert.IsFalse(Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm?)null));
-            Assert.IsTrue(Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm?)2));
+            Assert.IsFalse(Voat.Common.Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm?)777));
+            Assert.IsFalse(Voat.Common.Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm?)null));
+            Assert.IsTrue(Voat.Common.Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm?)2));
 
-            Assert.IsFalse(Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm)777));
-            Assert.IsTrue(Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm)2));
+            Assert.IsFalse(Voat.Common.Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm)777));
+            Assert.IsTrue(Voat.Common.Extensions.IsValidEnumValue((Domain.Models.CommentSortAlgorithm)2));
 
         }
         [TestMethod]

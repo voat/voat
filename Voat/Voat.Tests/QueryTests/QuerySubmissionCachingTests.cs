@@ -28,6 +28,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Common;
 using Voat.Data;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
@@ -235,12 +236,12 @@ namespace Voat.Tests.QueryTests
         {
 
             //Ensure v/unit does not show up in v/all for user BlocksUnit
-            TestHelper.SetPrincipal("BlocksUnit");
+            var user = TestHelper.SetPrincipal("BlocksUnit");
 
-            var cmd = new BlockCommand(Domain.Models.DomainType.Subverse, "unit");
+            var cmd = new BlockCommand(Domain.Models.DomainType.Subverse, "unit").SetUserContext(user);
             var r = await cmd.Execute();
 
-            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), SearchOptions.Default);
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), SearchOptions.Default).SetUserContext(user);
             //q.CachePolicy.Duration = cacheTime; //Cache this request
             var result = q.ExecuteAsync().Result;
 

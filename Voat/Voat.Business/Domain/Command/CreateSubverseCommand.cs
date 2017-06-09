@@ -54,7 +54,7 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse> CacheExecute()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 return await repo.CreateSubverse(_name, _title, _description, _sidebar);
             }

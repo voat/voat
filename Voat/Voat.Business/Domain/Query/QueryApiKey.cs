@@ -54,7 +54,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<ApiClient> GetData()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 return repo.GetApiKey(_apikey);
             }

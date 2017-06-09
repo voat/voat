@@ -43,9 +43,9 @@ namespace Voat.Domain.Command
 
         protected override async Task<Tuple<VoteResponse, VoteResponse>> CacheExecute()
         {
-            using (var db = new Repository())
+            using (var repo = new Repository(User))
             {
-                var outcome = await Task.Run(() => db.VoteComment(CommentID, VoteStatus, AddressHash, RevokeOnRevote)).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                var outcome = await Task.Run(() => repo.VoteComment(CommentID, VoteStatus, AddressHash, RevokeOnRevote)).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                 //Raise event
                 if (outcome.Success)
@@ -78,9 +78,9 @@ namespace Voat.Domain.Command
 
         protected override async Task<Tuple<VoteResponse, VoteResponse>> CacheExecute()
         {
-            using (var gateway = new Repository())
+            using (var repo = new Repository(User))
             {
-                var outcome = await Task.Run(() => gateway.VoteSubmission(SubmissionID, VoteStatus, AddressHash, RevokeOnRevote)).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                var outcome = await Task.Run(() => repo.VoteSubmission(SubmissionID, VoteStatus, AddressHash, RevokeOnRevote)).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                 //Raise event
                 if (outcome.Success)

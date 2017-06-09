@@ -42,6 +42,7 @@ using Voat.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Voat.Common;
 
 namespace Voat.Controllers
 {

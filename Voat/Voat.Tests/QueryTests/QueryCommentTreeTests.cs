@@ -38,7 +38,7 @@ namespace Voat.Tests.QueryTests
     [TestClass]
     public class QueryCommentTreeTests : BaseUnitTest
     {
-        private int _unitSubmissionID;
+        private static int _unitSubmissionID;
         private int _rootCount = 1;
         private int _nestedCount = 4;
         private int _recurseCount = 4;
@@ -63,7 +63,7 @@ namespace Voat.Tests.QueryTests
                 commentID = nestedcomment.ID;
             }
 
-            TestHelper.SetPrincipal("TestUser01");
+            var user = TestHelper.SetPrincipal("TestUser01");
             var q = new QueryCommentContext(_unitSubmissionID, commentID, 0, CommentSortAlgorithm.New);
             var r = q.Execute();
             Assert.IsNotNull(r, "Query returned null");
@@ -101,7 +101,7 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Query"), TestCategory("Query.Comment"), TestCategory("Comment"), TestCategory("Comment.Segment")]
         public async Task Test_CommentTreeLoading()
         {
-            TestHelper.SetPrincipal("TestUser01");
+            var user = TestHelper.SetPrincipal("TestUser01");
             var q = new QueryCommentSegment(_unitSubmissionID, null, null, CommentSortAlgorithm.New);
             var r = q.Execute();
 

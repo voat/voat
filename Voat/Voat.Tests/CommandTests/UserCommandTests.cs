@@ -27,6 +27,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Common;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
@@ -45,19 +46,19 @@ namespace Voat.Tests.CommandTests
         {
             var userName = "TestUser5";
             var bio = Guid.NewGuid().ToString();
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
-            var q = new QueryUserPreferences(userName);
+            var q = new QueryUserPreferences(userName).SetUserContext(user);
             var prefs = await q.ExecuteAsync();
 
             Assert.IsNotNull(prefs, "Pref query returned null");
             Assert.AreNotEqual(prefs.Bio, bio, "Bio returned unexpected data");
 
-            var cmd = new UpdateUserPreferencesCommand(new Domain.Models.UserPreferenceUpdate() { Bio = bio });
+            var cmd = new UpdateUserPreferencesCommand(new Domain.Models.UserPreferenceUpdate() { Bio = bio }).SetUserContext(user);
             var r = await cmd.Execute();
             VoatAssert.IsValid(r);
 
-            q = new QueryUserPreferences(userName);
+            q = new QueryUserPreferences(userName).SetUserContext(user);
             prefs = await q.ExecuteAsync();
 
             Assert.IsNotNull(prefs, "Pref requery returned null");
@@ -71,10 +72,10 @@ namespace Voat.Tests.CommandTests
         {
             var userName = "UnitTestUser20";
             var bio = Guid.NewGuid().ToString();
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
             //save start test data
-            using (var repo = new Voat.Data.Repository())
+            using (var repo = new Voat.Data.Repository(user))
             {
                 var r = await repo.Save(Domain.Models.ContentType.Submission, 1);
                 VoatAssert.IsValid(r);
@@ -84,13 +85,13 @@ namespace Voat.Tests.CommandTests
 
             }
 
-            var q = new QueryUserSaves(Domain.Models.ContentType.Submission);
+            var q = new QueryUserSaves(Domain.Models.ContentType.Submission).SetUserContext(user);
             var d = await q.ExecuteAsync();
             Assert.AreEqual(true, d.Contains(1));
             Assert.AreEqual(1, d.Count);
             Assert.AreEqual(true, CacheHandler.Instance.Exists(CachingKey.UserSavedItems(Domain.Models.ContentType.Submission, userName)));
 
-            q = new QueryUserSaves(Domain.Models.ContentType.Comment);
+            q = new QueryUserSaves(Domain.Models.ContentType.Comment).SetUserContext(user); ;
             d = await q.ExecuteAsync();
             Assert.AreEqual(true, d.Contains(1));
             Assert.AreEqual(1, d.Count);
@@ -98,35 +99,35 @@ namespace Voat.Tests.CommandTests
 
 
             //check helper object
-            Assert.AreEqual(true, UserHelper.IsSaved(Domain.Models.ContentType.Submission, 1));
-            Assert.AreEqual(true, UserHelper.IsSaved(Domain.Models.ContentType.Comment, 1));
+            Assert.AreEqual(true, UserHelper.IsSaved(user, Domain.Models.ContentType.Submission, 1));
+            Assert.AreEqual(true, UserHelper.IsSaved(user, Domain.Models.ContentType.Comment, 1));
 
-            Assert.AreEqual(false, UserHelper.IsSaved(Domain.Models.ContentType.Submission, 2));
-            Assert.AreEqual(false, UserHelper.IsSaved(Domain.Models.ContentType.Comment, 2));
+            Assert.AreEqual(false, UserHelper.IsSaved(user, Domain.Models.ContentType.Submission, 2));
+            Assert.AreEqual(false, UserHelper.IsSaved(user, Domain.Models.ContentType.Comment, 2));
 
 
-            var cmd = new SaveCommand(Domain.Models.ContentType.Submission, 2);
+            var cmd = new SaveCommand(Domain.Models.ContentType.Submission, 2).SetUserContext(user);
             var response = await cmd.Execute();
             VoatAssert.IsValid(response);
 
 
-            cmd = new SaveCommand(Domain.Models.ContentType.Comment, 2);
+            cmd = new SaveCommand(Domain.Models.ContentType.Comment, 2).SetUserContext(user);
             response = await cmd.Execute();
             VoatAssert.IsValid(response);
 
-            Assert.AreEqual(true, UserHelper.IsSaved(Domain.Models.ContentType.Submission, 2));
-            Assert.AreEqual(true, UserHelper.IsSaved(Domain.Models.ContentType.Comment, 2));
+            Assert.AreEqual(true, UserHelper.IsSaved(user, Domain.Models.ContentType.Submission, 2));
+            Assert.AreEqual(true, UserHelper.IsSaved(user, Domain.Models.ContentType.Comment, 2));
 
-            cmd = new SaveCommand(Domain.Models.ContentType.Submission, 1);
+            cmd = new SaveCommand(Domain.Models.ContentType.Submission, 1).SetUserContext(user); ;
             response = await cmd.Execute();
             VoatAssert.IsValid(response);
 
-            cmd = new SaveCommand(Domain.Models.ContentType.Comment, 1);
+            cmd = new SaveCommand(Domain.Models.ContentType.Comment, 1).SetUserContext(user);
             response = await cmd.Execute();
             VoatAssert.IsValid(response);
 
-            Assert.AreEqual(false, UserHelper.IsSaved(Domain.Models.ContentType.Submission, 1));
-            Assert.AreEqual(false, UserHelper.IsSaved(Domain.Models.ContentType.Comment, 1));
+            Assert.AreEqual(false, UserHelper.IsSaved(user, Domain.Models.ContentType.Submission, 1));
+            Assert.AreEqual(false, UserHelper.IsSaved(user, Domain.Models.ContentType.Comment, 1));
 
         }
 
@@ -138,7 +139,7 @@ namespace Voat.Tests.CommandTests
 
             VoatDataInitializer.CreateUser(userName);
 
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
             //username doesnt match
             var cmd = new DeleteAccountCommand(
                 new Domain.Models.DeleteAccountOptions()
@@ -161,7 +162,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsFalse(result.Success, result.Message);
 
             //wrong user
-            TestHelper.SetPrincipal("TestUser01");
+            user = TestHelper.SetPrincipal("TestUser01");
 
             cmd = new DeleteAccountCommand(
                 new Domain.Models.DeleteAccountOptions()
@@ -204,7 +205,7 @@ namespace Voat.Tests.CommandTests
             var userName = "TestDeleteUser01";
 
             VoatDataInitializer.CreateUser(userName);
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
             DeleteAccountCommand cmd;
             CommandResponse result;
 
@@ -228,7 +229,7 @@ namespace Voat.Tests.CommandTests
             var comment = TestHelper.ContentCreation.CreateComment(options.UserName, submission.ID, "This is a test comment");
 
             //Anon it all 
-            cmd = new DeleteAccountCommand(options);
+            cmd = new DeleteAccountCommand(options).SetUserContext(user);
             result = await cmd.Execute();
             VoatAssert.IsValid(result);
             VerifyDelete(options);
@@ -237,7 +238,7 @@ namespace Voat.Tests.CommandTests
             userName = "TestDeleteUser02";
 
             VoatDataInitializer.CreateUser(userName);
-            TestHelper.SetPrincipal(userName);
+            user = TestHelper.SetPrincipal(userName);
 
             using (var db = new VoatDataContext())
             {
@@ -266,7 +267,7 @@ namespace Voat.Tests.CommandTests
             comment = TestHelper.ContentCreation.CreateComment(options.UserName, submission.ID, "This is a test comment");
 
             //Delete
-            cmd = new DeleteAccountCommand(options);
+            cmd = new DeleteAccountCommand(options).SetUserContext(user);
             result = await cmd.Execute();
             VoatAssert.IsValid(result);
 
@@ -277,10 +278,10 @@ namespace Voat.Tests.CommandTests
             userName = "TestDeleteUser03";
 
             VoatDataInitializer.CreateUser(userName);
-            TestHelper.SetPrincipal(userName);
+            user = TestHelper.SetPrincipal(userName);
 
             //Need to ensure delete clears preferences
-            var prefUpdate = new UpdateUserPreferencesCommand(new Domain.Models.UserPreferenceUpdate() { Bio = "My Bio" });
+            var prefUpdate = new UpdateUserPreferencesCommand(new Domain.Models.UserPreferenceUpdate() { Bio = "My Bio" }).SetUserContext(user);
             var p = await prefUpdate.Execute();
             VoatAssert.IsValid(p);
 
@@ -321,7 +322,7 @@ namespace Voat.Tests.CommandTests
             comment = TestHelper.ContentCreation.CreateComment(options.UserName, submission.ID, "This is a test comment");
 
             //Delete
-            cmd = new DeleteAccountCommand(options);
+            cmd = new DeleteAccountCommand(options).SetUserContext(user);
             result = await cmd.Execute();
             VoatAssert.IsValid(result);
             VerifyDelete(options);

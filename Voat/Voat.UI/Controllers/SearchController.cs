@@ -30,6 +30,7 @@ using System.Net;
 using System.Threading.Tasks;
 
 using Voat.Caching;
+using Voat.Common;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;

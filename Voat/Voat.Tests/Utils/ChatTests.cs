@@ -53,7 +53,7 @@ namespace Voat.Tests.Utils
             Assert.IsFalse(room.IsAccessAllowed(null, null));
 
             var userName = "TestUser01";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
             Assert.IsTrue(room.IsAccessAllowed(userName, "SOMETHING"));
             Assert.IsTrue(room.IsAccessAllowed(userName, ""));
 
@@ -64,7 +64,7 @@ namespace Voat.Tests.Utils
             Assert.IsFalse(room.IsAccessAllowed(null, null));
 
             userName = "TestUser01";
-            TestHelper.SetPrincipal(userName);
+            user = TestHelper.SetPrincipal(userName);
             var hash = ChatRoom.GetAccessHash(userName, "hello");
             Assert.IsTrue(room.IsAccessAllowed(userName, hash));
 

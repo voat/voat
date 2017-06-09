@@ -37,6 +37,9 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
 using System.Net;
+using System.Security.Principal;
+using Voat.Domain.Command;
+using Voat.Common;
 
 namespace Voat.Utilities
 {
@@ -219,7 +222,7 @@ namespace Voat.Utilities
             {
                 theme = tc;
             }
-            else if (UserIdentity.IsAuthenticated)
+            else if (context.User.Identity.IsAuthenticated)
             {
 
                 var userData = UserData.GetContextUserData(context);
@@ -313,9 +316,9 @@ namespace Voat.Utilities
                     userStatsModel.TotalSubmissionsUpvoted = submissionUpvotes;
                     userStatsModel.TotalSubmissionsDownvoted = submissionDownvotes;
 
-                    //HACK: EF causes JSON to StackOverflow on the highest/lowest comments because of the nested loading EF does with the include option, therefore null the refs here.
-                    highestRatedComments.ForEach(x => x.Submission.Comments = null);
-                    lowestRatedComments.ForEach(x => x.Submission.Comments = null);
+                    ////HACK: EF causes JSON to StackOverflow on the highest/lowest comments because of the nested loading EF does with the include option, therefore null the refs here.
+                    //highestRatedComments.ForEach(x => x.Submission.Comments = null);
+                    //lowestRatedComments.ForEach(x => x.Submission.Comments = null);
                 }
 
                 return userStatsModel;
@@ -540,16 +543,16 @@ namespace Voat.Utilities
 
             return clientIpAddress;
         }
-        public static bool? IsSaved(Domain.Models.ContentType type, int id)
+        public static bool? IsSaved(IPrincipal user, Domain.Models.ContentType type, int id)
         {
-            var identity = UserIdentity.Principal.Identity;
+            var identity = user.Identity;
             if (identity.IsAuthenticated)
             {
                 string userName = identity.Name;
                 string cacheKey = CachingKey.UserSavedItems(type, userName);
                 if (!CacheHandler.Instance.Exists(cacheKey))
                 {
-                    var q = new QueryUserSaves(type);
+                    var q = new QueryUserSaves(type).SetUserContext(user);
                     var d = q.Execute();
                     return d.Contains(id);
                 }

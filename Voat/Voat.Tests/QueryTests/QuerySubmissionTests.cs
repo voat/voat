@@ -28,6 +28,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Common;
 using Voat.Data;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
@@ -46,9 +47,9 @@ namespace Voat.Tests.QueryTests
         {
             var domain = "LearnToGolfLikeCharlesBarkleyOrYourMoneyBack.com";
 
-            TestHelper.SetPrincipal("UnitTestUser48");
+            var user = TestHelper.SetPrincipal("UnitTestUser48");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Title = "Best Offer Ever!", Url = $"https://www.{domain}/limited-time-offer-{Guid.NewGuid().ToString()}.html", Subverse = "unit" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Title = "Best Offer Ever!", Url = $"https://www.{domain}/limited-time-offer-{Guid.NewGuid().ToString()}.html", Subverse = "unit" }).SetUserContext(user);
             var r = await cmd.Execute();
             Assert.AreEqual(Status.Success, r.Status, r.Message);
 

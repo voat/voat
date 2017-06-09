@@ -48,7 +48,9 @@ namespace Voat.Domain.Command
 
         protected override async Task<Tuple<CommandResponse<bool?>, bool?>> CacheExecute()
         {
-            using (var db = new Repository())
+            DemandAuthentication();
+
+            using (var db = new Repository(User))
             {
                 var response = await db.Block(_domainType, _name, (_toggleSetting ? SubscriptionAction.Toggle : SubscriptionAction.Subscribe)).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 return Tuple.Create(response, response.Response);
@@ -101,10 +103,12 @@ namespace Voat.Domain.Command
 
         protected override async Task<Tuple<CommandResponse<bool?>, bool?>> CacheExecute()
         {
-            using (var db = new Repository())
+            DemandAuthentication();
+
+            using (var db = new Repository(User))
             {
                 //TODO: Convert to async repo method
-                var response = await Task.Run(() => db.Block(_domainType, _name, SubscriptionAction.Unsubscribe)).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                var response = await db.Block(_domainType, _name, SubscriptionAction.Unsubscribe).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 return Tuple.Create(response, response.Response);
             }
         }

@@ -68,10 +68,10 @@ namespace Voat.Tests.Repository
             }
             userName = String.Format(UNIT_TEST_CONSTANTS.UNIT_TEST_USER_TEMPLATE, numeric.ToString().PadLeft(2, '0'));
 
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
             if (createData)
             {
-                using (var db = new Voat.Data.Repository())
+                using (var db = new Voat.Data.Repository(user))
                 {
                     var m = db.PostSubmission(new UserSubmission() { Subverse="unit", Title = "Test Post for Unit Testing", Content = "Test Content" }).Result;
                     Assert.AreEqual(Status.Success, m.Status, String.Format("NewContext PostSubmission for user {0} received non-success message : {1}", userName, m.Message));

@@ -93,9 +93,9 @@ namespace Voat.Domain
             UserData userData = null;
 
             
-            if (UserIdentity.IsAuthenticated)
+            if (context.User.Identity.IsAuthenticated)
             {
-                var identity = UserIdentity.Identity;
+                var identity = context.User.Identity;
                 var key = $"UserData:{identity.Name}";
                 userData = ContextCache.Get<UserData>(context, key);
                 if (userData == null)

@@ -26,6 +26,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Voat.Common;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
@@ -51,9 +52,9 @@ namespace Voat.Tests.CommandTests
         public async Task CreateComment_Anon()
         {
             string userName = "TestUser01";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
-            var cmd = new CreateCommentCommand(2, null, "This is my data");
+            var cmd = new CreateCommentCommand(2, null, "This is my data").SetUserContext(user);
             var c = cmd.Execute().Result;
 
             VoatAssert.IsValid(c);
@@ -62,7 +63,7 @@ namespace Voat.Tests.CommandTests
             Assert.AreNotEqual(cmd.Content, c.Response.FormattedContent);
 
             //verify in db
-            using (var db = new Voat.Data.Repository())
+            using (var db = new Voat.Data.Repository(user))
             {
                 var comment = await db.GetComment(c.Response.ID);
                 Assert.IsNotNull(comment, "Couldn't find comment in db", c.Response.ID);
@@ -88,16 +89,16 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Comment.Post")]
         public async Task CreateComment()
         {
-            TestHelper.SetPrincipal("TestUser02");
+            var user = TestHelper.SetPrincipal("TestUser02");
 
-            var cmd = new CreateCommentCommand(1, null, "This is my data");
+            var cmd = new CreateCommentCommand(1, null, "This is my data").SetUserContext(user);
             var c = await cmd.Execute();
 
             VoatAssert.IsValid(c);
             Assert.AreNotEqual(0, c.Response.ID);
 
             //verify in db
-            using (var db = new Voat.Data.Repository())
+            using (var db = new Voat.Data.Repository(user))
             {
                 var comment = await db.GetComment(c.Response.ID);
                 Assert.IsNotNull(comment, "Couldn't find comment in db", c.Response.ID);
@@ -113,9 +114,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Comment.Post")]
         public void CreateComment_Empty()
         {
-            TestHelper.SetPrincipal("TestUser12");
+            var user = TestHelper.SetPrincipal("TestUser12");
 
-            var cmd = new CreateCommentCommand(1, null, "          ");
+            var cmd = new CreateCommentCommand(1, null, "          ").SetUserContext(user);
             var c = cmd.Execute().Result;
 
             VoatAssert.IsValid(c, Status.Denied);
@@ -128,14 +129,14 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Comment.Post")]
         public void EditComment_Empty()
         {
-            TestHelper.SetPrincipal("TestUser11");
+            var user = TestHelper.SetPrincipal("TestUser11");
 
-            var cmd = new CreateCommentCommand(1, null, "This is a unit test and I like it.");
+            var cmd = new CreateCommentCommand(1, null, "This is a unit test and I like it.").SetUserContext(user);
             var c = cmd.Execute().Result;
 
             VoatAssert.IsValid(c);
 
-            var editCmd = new EditCommentCommand(c.Response.ID, "            ");
+            var editCmd = new EditCommentCommand(c.Response.ID, "            ").SetUserContext(user);
             var editResult = editCmd.Execute().Result;
 
             Assert.IsFalse(editResult.Success, editResult.Message);
@@ -148,15 +149,15 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Comment.Post")]
         public void EditComment_WrongOwner()
         {
-            TestHelper.SetPrincipal("TestUser15");
+            var user = TestHelper.SetPrincipal("TestUser15");
 
-            var cmd = new CreateCommentCommand(1, null, "This is a unit test and I like it.");
+            var cmd = new CreateCommentCommand(1, null, "This is a unit test and I like it.").SetUserContext(user);
             var c = cmd.Execute().Result;
 
             VoatAssert.IsValid(c);
 
-            TestHelper.SetPrincipal("TestUser12");
-            var editCmd = new EditCommentCommand(c.Response.ID, "All your comment are belong to us!");
+            user = TestHelper.SetPrincipal("TestUser12");
+            var editCmd = new EditCommentCommand(c.Response.ID, "All your comment are belong to us!").SetUserContext(user);
             var editResult = editCmd.Execute().Result;
 
             VoatAssert.IsValid(editResult, Status.Denied);
@@ -172,9 +173,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void CreateComment_BannedDomain()
         {
-            TestHelper.SetPrincipal("TestUser02");
+            var user = TestHelper.SetPrincipal("TestUser02");
 
-            var cmd = new CreateCommentCommand(1, null, "[Check out this killer website](http://fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!");
+            var cmd = new CreateCommentCommand(1, null, "[Check out this killer website](http://fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!").SetUserContext(user);
             var c = cmd.Execute().Result;
 
             VoatAssert.IsValid(c, Status.Denied);
@@ -189,9 +190,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void CreateComment_BannedDomain_NoProtocol()
         {
-            TestHelper.SetPrincipal("TestUser02");
+            var user = TestHelper.SetPrincipal("TestUser02");
 
-            var cmd = new CreateCommentCommand(1, null, "[Check out this killer website](//fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!");
+            var cmd = new CreateCommentCommand(1, null, "[Check out this killer website](//fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!").SetUserContext(user);
             var c = cmd.Execute().Result;
 
             VoatAssert.IsValid(c, Status.Denied);
@@ -205,14 +206,14 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Ban"), TestCategory("Ban.Domain")]
         public void EditComment_BannedDomain()
         {
-            TestHelper.SetPrincipal("TestUser02");
+            var user = TestHelper.SetPrincipal("TestUser02");
 
-            var cmd = new CreateCommentCommand(1, null, "This is a unit test and I like it.");
+            var cmd = new CreateCommentCommand(1, null, "This is a unit test and I like it.").SetUserContext(user);
             var c = cmd.Execute().Result;
 
             VoatAssert.IsValid(c);
 
-            var editCmd = new EditCommentCommand(c.Response.ID, "[Check out this killer website](http://fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!");
+            var editCmd = new EditCommentCommand(c.Response.ID, "[Check out this killer website](http://fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!").SetUserContext(user);
             var editResult = editCmd.Execute().Result;
             VoatAssert.IsValid(c, Status.Denied, "Expecting Denied Status");
             Assert.AreEqual("Comment contains banned domains", editResult.Message);
@@ -227,9 +228,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Ban"), TestCategory("Ban.User")]
         public void CreateComment_WithBannedSubUser()
         {
-            TestHelper.SetPrincipal("BannedFromVUnit");
+            var user = TestHelper.SetPrincipal("BannedFromVUnit");
 
-            var cmd = new CreateCommentCommand(1, null, "This is my data with banned user");
+            var cmd = new CreateCommentCommand(1, null, "This is my data with banned user").SetUserContext(user);
             var c = cmd.Execute().Result;
 
             VoatAssert.IsValid(c, Status.Denied, "User should be banned from commenting");
@@ -242,9 +243,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Ban"), TestCategory("Ban.User")]
         public void CreateComment_WithGloballyBannedUser()
         {
-            TestHelper.SetPrincipal("BannedGlobally");
+            var user = TestHelper.SetPrincipal("BannedGlobally");
 
-            var cmd = new CreateCommentCommand(1, null, "This is my data");
+            var cmd = new CreateCommentCommand(1, null, "This is my data").SetUserContext(user);
             var c = cmd.Execute().Result;
 
             VoatAssert.IsValid(c, Status.Denied, "User should be banned from commenting");
@@ -258,15 +259,15 @@ namespace Voat.Tests.CommandTests
         {
             //Assert.Inconclusive("Complete this test");
 
-            TestHelper.SetPrincipal("TestUser01");
-            var cmdcreate = new CreateCommentCommand(1, null, "This is my data too you know");
+            var user = TestHelper.SetPrincipal("TestUser01");
+            var cmdcreate = new CreateCommentCommand(1, null, "This is my data too you know").SetUserContext(user);
             var c = cmdcreate.Execute().Result;
 
             VoatAssert.IsValid(c);
 
             int id = c.Response.ID;
 
-            var cmd = new DeleteCommentCommand(id);
+            var cmd = new DeleteCommentCommand(id).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r);
 
@@ -291,8 +292,8 @@ namespace Voat.Tests.CommandTests
         {
             //Assert.Inconclusive("Complete this test");
             var content = "This is my data too you know 2";
-            TestHelper.SetPrincipal("TestUser01");
-            var cmdcreate = new CreateCommentCommand(1, null, content);
+            var user = TestHelper.SetPrincipal("TestUser01");
+            var cmdcreate = new CreateCommentCommand(1, null, content).SetUserContext(user);
             var c = cmdcreate.Execute().Result;
 
             VoatAssert.IsValid(c);
@@ -300,8 +301,8 @@ namespace Voat.Tests.CommandTests
             int id = c.Response.ID;
 
             //switch to mod of sub
-            TestHelper.SetPrincipal("unit");
-            var cmd = new DeleteCommentCommand(id, "This is spam");
+            user = TestHelper.SetPrincipal("unit");
+            var cmd = new DeleteCommentCommand(id, "This is spam").SetUserContext(user);
             var r = await cmd.Execute();
             VoatAssert.IsValid(r);
 
@@ -324,8 +325,8 @@ namespace Voat.Tests.CommandTests
         public async Task EditComment()
         {
             string content = "This is data [howdy](http://www.howdy.com)";
-            TestHelper.SetPrincipal("unit");
-            var cmd = new EditCommentCommand(1, content);
+            var user = TestHelper.SetPrincipal("unit");
+            var cmd = new EditCommentCommand(1, content).SetUserContext(user);
             var r = await cmd.Execute();
 
             VoatAssert.IsValid(r);
@@ -333,7 +334,7 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(Formatting.FormatMessage(content), r.Response.FormattedContent);
 
             //verify
-            using (var db = new Voat.Data.Repository())
+            using (var db = new Voat.Data.Repository(user))
             {
                 var comment = await db.GetComment(1);
                 Assert.IsNotNull(comment.LastEditDate);
@@ -365,8 +366,8 @@ namespace Voat.Tests.CommandTests
                 db.SaveChanges();
             }
 
-            TestHelper.SetPrincipal("TestUser05");
-            var cmd = new CreateCommentCommand(submission.ID, null, "Are you @FuzzyWords?");
+            var user = TestHelper.SetPrincipal("TestUser05");
+            var cmd = new CreateCommentCommand(submission.ID, null, "Are you @FuzzyWords?").SetUserContext(user);
             var c = cmd.Execute().Result;
 
             Assert.IsFalse(c.Success, "Disabled subs should not allow comments");
@@ -380,9 +381,9 @@ namespace Voat.Tests.CommandTests
         {
 
             var userName = "UnitTestUser18";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
             var body = Guid.NewGuid().ToString();
-            var cmd = new CreateCommentCommand(1, 2, body);
+            var cmd = new CreateCommentCommand(1, 2, body).SetUserContext(user);
             var c = await cmd.Execute();
             Assert.IsNotNull(c, "response null");
             if (!c.Success)
@@ -410,9 +411,9 @@ namespace Voat.Tests.CommandTests
         public async Task CreateComment_TestSubmissionCommentNotification()
         {
             var userName = "UnitTestUser19";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
             var body = Guid.NewGuid().ToString();
-            var cmd = new CreateCommentCommand(1, null, body);
+            var cmd = new CreateCommentCommand(1, null, body).SetUserContext(user);
             var c = await cmd.Execute();
 
             VoatAssert.IsValid(c);

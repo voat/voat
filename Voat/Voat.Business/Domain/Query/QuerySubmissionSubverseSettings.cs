@@ -44,7 +44,7 @@ namespace Voat.Domain.Query
 
         public override async Task<IEnumerable<Models.SubverseSubmissionSetting>> ExecuteAsync()
         {
-            using (var repo = new Data.Repository())
+            using (var repo = new Data.Repository(User))
             {
                 return await repo.SubverseSubmissionSettingsSearch(_subverseNameLike, _exactMatch);
             }

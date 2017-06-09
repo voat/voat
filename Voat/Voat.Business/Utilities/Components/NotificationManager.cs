@@ -23,6 +23,7 @@
 #endregion LICENSE
 
 using System;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
@@ -153,7 +154,7 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendCommentReplyNotification(Data.Models.Submission submission, Data.Models.Comment comment)
+        public static async Task SendCommentReplyNotification(IPrincipal user, Data.Models.Submission submission, Data.Models.Comment comment)
         {
             try
             {
@@ -198,7 +199,7 @@ namespace Voat.Utilities.Components
                                             message.Type = Domain.Models.MessageType.CommentReply;
                                             message.CreationDate = Repository.CurrentDate;
 
-                                            using (var repo = new Repository())
+                                            using (var repo = new Repository(user))
                                             {
                                                 var response = await repo.SendMessage(message);
                                                 if (response.Success)
@@ -220,7 +221,7 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendSubmissionReplyNotification(Data.Models.Submission submission, Data.Models.Comment comment)
+        public static async Task SendSubmissionReplyNotification(IPrincipal user, Data.Models.Submission submission, Data.Models.Comment comment)
         {
             try
             {
@@ -253,7 +254,7 @@ namespace Voat.Utilities.Components
                                 message.Type = Domain.Models.MessageType.SubmissionReply;
                                 message.CreationDate = Repository.CurrentDate;
 
-                                using (var repo = new Repository())
+                                using (var repo = new Repository(user))
                                 {
                                     var response = await repo.SendMessage(message);
                                     if (response.Success)
@@ -272,15 +273,15 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendCommentNotification(Data.Models.Submission submission, Data.Models.Comment comment)
+        public static async Task SendCommentNotification(IPrincipal user, Data.Models.Submission submission, Data.Models.Comment comment)
         {
             if (comment.ParentID != null && comment.Content != null)
             {
-                await SendCommentReplyNotification(submission, comment);
+                await SendCommentReplyNotification(user, submission, comment);
             }
             else
             {
-                await SendSubmissionReplyNotification(submission, comment);
+                await SendSubmissionReplyNotification(user, submission, comment);
             }
         }
     }

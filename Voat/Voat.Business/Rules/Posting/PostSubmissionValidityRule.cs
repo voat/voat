@@ -23,6 +23,7 @@
 #endregion LICENSE
 
 using System;
+using Voat.Common;
 using Voat.Domain.Models;
 using Voat.RulesEngine;
 using Voat.Utilities;
@@ -81,7 +82,7 @@ namespace Voat.Rules.Posting
             {
                 return CreateOutcome(RuleResult.Denied, "A text submission must include a title");
             }
-            if (Formatting.ContainsUnicode(userSubmission.Title))
+            if (userSubmission.Title.ContainsUnicode())
             {
                 return CreateOutcome(RuleResult.Denied, "Submission title can not contain Unicode or unprintable characters");
             }

@@ -52,7 +52,7 @@ namespace Voat.Domain.Command
                 throw new ArgumentException("Api key name must be provided.");
             }
 
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 await Task.Run(() => repo.CreateApiKey(_name, _description, _url, _redirectUrl));
             }
@@ -73,7 +73,7 @@ namespace Voat.Domain.Command
         {
             return await Task.Run(() =>
             {
-                using (var repo = new Repository())
+                using (var repo = new Repository(User))
                 {
                     var apiClient = repo.DeleteApiKey(id);
                     return new Tuple<CommandResponse, ApiClient>(CommandResponse.Successful(), apiClient);
@@ -108,7 +108,7 @@ namespace Voat.Domain.Command
 
         protected override async Task<Tuple<CommandResponse, ApiClient>> CacheExecute()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var apiClient = await repo.EditApiKey(_apiKey, _name, _description, _url, _redirectUrl);
                 return new Tuple<CommandResponse, ApiClient>(CommandResponse.Successful(), apiClient);

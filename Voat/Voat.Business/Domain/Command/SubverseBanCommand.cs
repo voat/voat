@@ -46,7 +46,7 @@ namespace Voat.Domain.Command
 
         protected override async Task<Tuple<CommandResponse<bool?>, bool?>> CacheExecute()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var result = await repo.BanUserFromSubverse(_userToBan, _subverse, _reason, _force);
                 return Tuple.Create(result, result.Response);

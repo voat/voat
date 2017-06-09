@@ -30,6 +30,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Common;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
@@ -51,7 +52,7 @@ namespace Voat.Tests.CommandTests
             var subName = "unit";
 
             VoatDataInitializer.CreateUser(userName);
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
             //Verify No Front / Blocked Sets
             var userBlockQuery = new QueryUserBlocks(userName);
@@ -76,7 +77,7 @@ namespace Voat.Tests.CommandTests
 
             //Sub a user to front
             var domainReference = new DomainReference(DomainType.Subverse, subName);
-            var blockCmd = new BlockCommand(domainReference.Type, domainReference.Name, true);
+            var blockCmd = new BlockCommand(domainReference.Type, domainReference.Name, true).SetUserContext(user);
             var blockResult = await blockCmd.Execute();
 
             //Verify Front is created
@@ -142,7 +143,7 @@ namespace Voat.Tests.CommandTests
             var subName = "unit";
 
             VoatDataInitializer.CreateUser(userName);
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
             //Verify No Front / Blocked Sets
             var userSubQuery = new QueryUserSubscriptions(userName);
@@ -231,10 +232,10 @@ namespace Voat.Tests.CommandTests
         public async Task CreateSet_Test()
         {
             var userName = "TestUser01";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
             var set = new Set() { Name = "HolyHell", Title = "Some Title", Type = SetType.Normal, UserName = userName };
-            var cmd = new UpdateSetCommand(set);
+            var cmd = new UpdateSetCommand(set).SetUserContext(user);
             var result = await cmd.Execute();
             VoatAssert.IsValid(result);
 
@@ -244,14 +245,14 @@ namespace Voat.Tests.CommandTests
 
             //Subscribe another user
             userName = "TestUser02";
-            TestHelper.SetPrincipal(userName);
-            var subCmd = new SubscribeCommand(new DomainReference(DomainType.Set, set.Name, set.UserName), SubscriptionAction.Subscribe);
+            user = TestHelper.SetPrincipal(userName);
+            var subCmd = new SubscribeCommand(new DomainReference(DomainType.Set, set.Name, set.UserName), SubscriptionAction.Subscribe).SetUserContext(user);
             var subResult = await subCmd.Execute();
             VoatAssert.IsValid(result);
             VerifySubscriber(set, userName, 2);
 
             //unsub user
-            subCmd = new SubscribeCommand(new DomainReference(DomainType.Set, set.Name, set.UserName), SubscriptionAction.Unsubscribe);
+            subCmd = new SubscribeCommand(new DomainReference(DomainType.Set, set.Name, set.UserName), SubscriptionAction.Unsubscribe).SetUserContext(user);
             subResult = await subCmd.Execute();
             VoatAssert.IsValid(result);
             VerifySubscriber(set, userName, 1, false);
@@ -288,7 +289,7 @@ namespace Voat.Tests.CommandTests
         public async Task CreateSet_Test_WhiteSpaceName()
         {
             var userName = "TestUser01";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
             var set = new Set() { Name = "Holy Hell", Title = "Some Title", Type = SetType.Normal, UserName = userName };
             var cmd = new UpdateSetCommand(set);
@@ -302,7 +303,7 @@ namespace Voat.Tests.CommandTests
         public async Task CreateSet_Test_ReservedName_SetType()
         {
             var userName = "TestUser01";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
             var set = new Set() { Name = SetType.Front.ToString(), Title = "Some Title", Type = SetType.Normal, UserName = userName };
             var cmd = new UpdateSetCommand(set);
@@ -315,7 +316,7 @@ namespace Voat.Tests.CommandTests
         public async Task CreateSet_Test_ReservedName_SortAlgorithm()
         {
             var userName = "TestUser01";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
             var set = new Set() { Name = SortAlgorithm.Hot.ToString(), Title = "Some Title", Type = SetType.Normal, UserName = userName };
             var cmd = new UpdateSetCommand(set);
@@ -329,7 +330,7 @@ namespace Voat.Tests.CommandTests
         public async Task CreateSet_Test_UnicodeName()
         {
             var userName = "TestUser01";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
             var set = new Set() { Name = "ÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ", Title = "Some Title", Type = SetType.Normal, UserName = userName };
             var cmd = new UpdateSetCommand(set);
@@ -358,18 +359,18 @@ namespace Voat.Tests.CommandTests
                 IsPublic = true,
             };
             //Unathenticated on Public Set
-            TestHelper.SetPrincipal(null);
-            loggedInUserName = (UserIdentity.IsAuthenticated ? UserIdentity.UserName : "<not authenticated>");
-            perms = SetPermission.GetPermissions(s, Thread.CurrentPrincipal.Identity);
+            var user = TestHelper.SetPrincipal(null);
+            loggedInUserName = (user.Identity.IsAuthenticated ? user.Identity.Name : "<not authenticated>");
+            perms = SetPermission.GetPermissions(s, user.Identity);
             Assert.AreEqual(true, perms.View, $"View permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditList, $"Edit List permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditProperties, $"Edit Properties permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.Delete, $"Delete permission mismatch on {s.Name} with account {loggedInUserName}");
 
             //Owner on Non-Normal Set
-            TestHelper.SetPrincipal("Joe");
-            loggedInUserName = (UserIdentity.IsAuthenticated ? UserIdentity.UserName : "<not authenticated>");
-            perms = SetPermission.GetPermissions(s, Thread.CurrentPrincipal.Identity);
+            user = TestHelper.SetPrincipal("Joe");
+            loggedInUserName = (user.Identity.IsAuthenticated ? user.Identity.Name : "<not authenticated>");
+            perms = SetPermission.GetPermissions(s, user.Identity);
             Assert.AreEqual(true, perms.View, $"View permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(true, perms.EditList, $"Edit List permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditProperties, $"Edit Properties permission mismatch on {s.Name} with account {loggedInUserName}");
@@ -383,27 +384,27 @@ namespace Voat.Tests.CommandTests
                 IsPublic = false,
             };
             //Unathenticated on Private Set
-            TestHelper.SetPrincipal(null);
-            loggedInUserName = (UserIdentity.IsAuthenticated ? UserIdentity.UserName : "<not authenticated>");
-            perms = SetPermission.GetPermissions(s, Thread.CurrentPrincipal.Identity);
+            user = TestHelper.SetPrincipal(null);
+            loggedInUserName = (user.Identity.IsAuthenticated ? user.Identity.Name : "<not authenticated>");
+            perms = SetPermission.GetPermissions(s, user.Identity);
             Assert.AreEqual(false, perms.View, $"View permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditList, $"Edit List permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditProperties, $"Edit Properties permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.Delete, $"Delete permission mismatch on {s.Name} with account {loggedInUserName}");
 
             //Owner on Normal Private Set
-            TestHelper.SetPrincipal("Joe");
-            loggedInUserName = (UserIdentity.IsAuthenticated ? UserIdentity.UserName : "<not authenticated>");
-            perms = SetPermission.GetPermissions(s, Thread.CurrentPrincipal.Identity);
+            user = TestHelper.SetPrincipal("Joe");
+            loggedInUserName = (user.Identity.IsAuthenticated ? user.Identity.Name : "<not authenticated>");
+            perms = SetPermission.GetPermissions(s, user.Identity);
             Assert.AreEqual(true, perms.View, $"View permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(true, perms.EditList, $"Edit List permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(true, perms.EditProperties, $"Edit Properties permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(true, perms.Delete, $"Delete permission mismatch on {s.Name} with account {loggedInUserName}");
 
             //Non-owner on Private Set
-            TestHelper.SetPrincipal("Eddy");
-            loggedInUserName = (UserIdentity.IsAuthenticated ? UserIdentity.UserName : "<not authenticated>");
-            perms = SetPermission.GetPermissions(s, Thread.CurrentPrincipal.Identity);
+            user = TestHelper.SetPrincipal("Eddy");
+            loggedInUserName = (user.Identity.IsAuthenticated ? user.Identity.Name : "<not authenticated>");
+            perms = SetPermission.GetPermissions(s, user.Identity);
             Assert.AreEqual(false, perms.View, $"View permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditList, $"Edit List permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditProperties, $"Edit Properties permission mismatch on {s.Name} with account {loggedInUserName}");
@@ -418,17 +419,17 @@ namespace Voat.Tests.CommandTests
             };
             //Unathenticated on Private Set
             TestHelper.SetPrincipal(null);
-            loggedInUserName = (UserIdentity.IsAuthenticated ? UserIdentity.UserName : "<not authenticated>");
-            perms = SetPermission.GetPermissions(s, Thread.CurrentPrincipal.Identity);
+            loggedInUserName = (user.Identity.IsAuthenticated ? user.Identity.Name : "<not authenticated>");
+            perms = SetPermission.GetPermissions(s, user.Identity);
             Assert.AreEqual(true, perms.View, $"View permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditList, $"Edit List permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditProperties, $"Edit Properties permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.Delete, $"Delete permission mismatch on {s.Name} with account {loggedInUserName}");
 
             //Non-Owner on Normal System Public Set
-            TestHelper.SetPrincipal("Joe");
-            loggedInUserName = (UserIdentity.IsAuthenticated ? UserIdentity.UserName : "<not authenticated>");
-            perms = SetPermission.GetPermissions(s, Thread.CurrentPrincipal.Identity);
+            user = TestHelper.SetPrincipal("Joe");
+            loggedInUserName = (user.Identity.IsAuthenticated ? user.Identity.Name : "<not authenticated>");
+            perms = SetPermission.GetPermissions(s, user.Identity);
             Assert.AreEqual(true, perms.View, $"View permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditList, $"Edit List permission mismatch on {s.Name} with account {loggedInUserName}");
             Assert.AreEqual(false, perms.EditProperties, $"Edit Properties permission mismatch on {s.Name} with account {loggedInUserName}");

@@ -75,7 +75,7 @@ namespace Voat.Domain.Query
                     var childSegment = segment;
                     while (parent != null && (currentContext < _context || _context == 0))
                     {
-                        var parentNestedComment = parent.Map(SubmitterName, _commentVotes);
+                        var parentNestedComment = parent.Map(User, SubmitterName, _commentVotes);
                         parentNestedComment.Children = childSegment;
                         childSegment = new CommentSegment(parentNestedComment);
                         childSegment.Sort = _sort;

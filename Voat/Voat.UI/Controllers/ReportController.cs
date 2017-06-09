@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using Voat.Common;
 using Voat.Data;
 using Voat.Domain.Models;
 using Voat.Models.ViewModels;

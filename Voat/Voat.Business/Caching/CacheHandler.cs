@@ -289,11 +289,11 @@ namespace Voat.Caching
         //}
         private object RefetchData(RefetchEntry entry)
         {
-            if (Extensions.IsGenericType(entry.GetType(), typeof(RefetchEntryTask<>)))
+            if (Voat.Common.Extensions.IsGenericType(entry.GetType(), typeof(RefetchEntryTask<>)))
             {
                 return ((dynamic)entry).GetData();
             }
-            else if (Extensions.IsGenericType(entry.GetType(), typeof(RefetchEntryFunc<>)))
+            else if (Voat.Common.Extensions.IsGenericType(entry.GetType(), typeof(RefetchEntryFunc<>)))
             {
                 return ((dynamic)entry).GetData();
             }

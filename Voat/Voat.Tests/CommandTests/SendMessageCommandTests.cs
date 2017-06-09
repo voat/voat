@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Common;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
@@ -36,8 +37,6 @@ namespace Voat.Tests.CommandTests
     [TestClass]
     public class SendMessageCommandTests : BaseUnitTest
     { 
-
-
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Messaging")]
@@ -48,12 +47,10 @@ namespace Voat.Tests.CommandTests
             var id = Guid.NewGuid().ToString();
             var sender = "User100CCP";
 
-            TestHelper.SetPrincipal(sender);
-            var cmd = new SendMessageCommand(new Domain.Models.SendMessage() { Recipient = "Do you like chocolate", Message = id, Subject = "All That Matters" }, false, false);
+            var user = TestHelper.SetPrincipal(sender);
+            var cmd = new SendMessageCommand(new Domain.Models.SendMessage() { Recipient = "Do you like chocolate", Message = id, Subject = "All That Matters" }, false, false).SetUserContext(user);
             var response = await cmd.Execute();
-
-            Assert.AreEqual(Status.Invalid, response.Status, response.Message);
-            Assert.AreEqual(null, response.Response, "Expecting null return payload");
+            VoatAssert.IsValid(response, Status.Invalid);
 
             using (var db = new VoatDataContext())
             {
@@ -74,11 +71,12 @@ namespace Voat.Tests.CommandTests
             var id = Guid.NewGuid().ToString();
             var sender = "User100CCP";
 
-            TestHelper.SetPrincipal(sender);
-            var cmd = new SendMessageCommand(new Domain.Models.SendMessage() { Recipient = "Do you like chocolate", Message = id, Subject = "All That Matters" }, false, true);
+            var user = TestHelper.SetPrincipal(sender);
+            var cmd = new SendMessageCommand(new Domain.Models.SendMessage() { Recipient = "Do you like chocolate", Message = id, Subject = "All That Matters" }, false, true).SetUserContext(user);
             var response = await cmd.Execute();
 
-            Assert.IsFalse(response.Success, "Expecting failure");
+            VoatAssert.IsValid(response, Status.Error);
+
             Assert.AreNotEqual("Comment points too low to send messages. Need at least 10 CCP.", response.Message);
             
             using (var db = new VoatDataContext())
@@ -101,7 +99,7 @@ namespace Voat.Tests.CommandTests
             var sender = "unit";
             var recipient = "anon";
 
-            TestHelper.SetPrincipal(sender);
+            var user = TestHelper.SetPrincipal(sender);
 
             var message = new Domain.Models.SendMessage()
             {
@@ -110,9 +108,10 @@ namespace Voat.Tests.CommandTests
                 Subject = id,
                 Message = id
             };
-            var cmd = new SendMessageCommand(message);
+            var cmd = new SendMessageCommand(message).SetUserContext(user);
             var response = await cmd.Execute();
 
+            VoatAssert.IsValid(response, Status.Ignored);
             Assert.IsNotNull(response, "Response is null");
             Assert.IsFalse(response.Success, "Expecting not success response");
 
@@ -128,7 +127,7 @@ namespace Voat.Tests.CommandTests
             var sender = "User100CCP";
             var recipient = "anon";
 
-            TestHelper.SetPrincipal(sender);
+            var user = TestHelper.SetPrincipal(sender);
 
             var message = new Domain.Models.SendMessage()
             {
@@ -137,11 +136,10 @@ namespace Voat.Tests.CommandTests
                 Subject = id,
                 Message = id
             };
-            var cmd = new SendMessageCommand(message);
+            var cmd = new SendMessageCommand(message).SetUserContext(user);
             var response = await cmd.Execute();
 
-            Assert.IsNotNull(response, "Response is null");
-            Assert.IsTrue(response.Success, response.Message);
+            VoatAssert.IsValid(response);
 
             using (var db = new VoatDataContext())
             {
@@ -185,7 +183,7 @@ namespace Voat.Tests.CommandTests
             var sender = "User100CCP";
             var recipient = "anon";
 
-            TestHelper.SetPrincipal(sender);
+            var user = TestHelper.SetPrincipal(sender);
 
             var message = new Domain.Models.SendMessage()
             {
@@ -194,12 +192,11 @@ namespace Voat.Tests.CommandTests
                 Subject = id,
                 Message = id
             };
-            var cmd = new SendMessageCommand(message);
+            var cmd = new SendMessageCommand(message).SetUserContext(user);
             var response = await cmd.Execute();
-            var firstMessage = response.Response;
+            VoatAssert.IsValid(response);
 
-            Assert.IsNotNull(response, "Response is null");
-            Assert.IsTrue(response.Success, response.Message);
+            var firstMessage = response.Response;
 
             //Ensure first msg is in db
             using (var db = new VoatDataContext())
@@ -232,10 +229,12 @@ namespace Voat.Tests.CommandTests
                           select x).FirstOrDefault();
             }
 
-            TestHelper.SetPrincipal(recipient);
+            user = TestHelper.SetPrincipal(recipient);
 
-            var replyCmd = new SendMessageReplyCommand(firstMessage.ID, $"Reply to {firstMessage.ID.ToString()}");
+            var replyCmd = new SendMessageReplyCommand(firstMessage.ID, $"Reply to {firstMessage.ID.ToString()}").SetUserContext(user);
             var replyResponse = await replyCmd.Execute();
+            VoatAssert.IsValid(replyResponse);
+
             var replyMessage = replyResponse.Response;
 
             Assert.AreEqual(firstMessage.ID, replyMessage.ParentID);
@@ -272,7 +271,7 @@ namespace Voat.Tests.CommandTests
                 db.SaveChanges();
             }
 
-            TestHelper.SetPrincipal(sender);
+            var user = TestHelper.SetPrincipal(sender);
 
             var message = new Domain.Models.SendMessage()
             {
@@ -281,7 +280,7 @@ namespace Voat.Tests.CommandTests
                 Subject = id,
                 Message = id
             };
-            var cmd = new SendMessageCommand(message);
+            var cmd = new SendMessageCommand(message).SetUserContext(user);
             var response = await cmd.Execute();
 
             Assert.IsNotNull(response, "Response is null");
@@ -313,7 +312,7 @@ namespace Voat.Tests.CommandTests
             var sender = "unit";
             var recipient = "User100CCP";
 
-            TestHelper.SetPrincipal(sender);
+            var user = TestHelper.SetPrincipal(sender);
 
             var message = new Domain.Models.SendMessage()
             {
@@ -322,7 +321,7 @@ namespace Voat.Tests.CommandTests
                 Subject = id,
                 Message = id
             };
-            var cmd = new SendMessageCommand(message);
+            var cmd = new SendMessageCommand(message).SetUserContext(user);
             var r = await cmd.Execute();
 
             VoatAssert.IsValid(r);
@@ -348,15 +347,15 @@ namespace Voat.Tests.CommandTests
         {
             //create a comment and ping another user aka comment mention
 
-            TestHelper.SetPrincipal("TestUser14");
-            var c = new CreateCommentCommand(1, null, "This is my comment @TestUser15, do you like it?");
+            var user = TestHelper.SetPrincipal("TestUser14");
+            var c = new CreateCommentCommand(1, null, "This is my comment @TestUser15, do you like it?").SetUserContext(user);
             var r = await c.Execute();
-            Assert.IsTrue(r.Success, r.Message);
+            VoatAssert.IsValid(r);
 
             //read ping message and reply to it using message gateway
             var userName = "TestUser15";
-            TestHelper.SetPrincipal(userName);
-            var mq = new Domain.Query.QueryMessages(MessageTypeFlag.CommentMention, MessageState.Unread);
+            user = TestHelper.SetPrincipal(userName);
+            var mq = new Domain.Query.QueryMessages(MessageTypeFlag.CommentMention, MessageState.Unread).SetUserContext(user);
             var messages = await mq.ExecuteAsync();
             Assert.IsTrue(messages.Any(), "Didn't return any messages");
 
@@ -364,12 +363,10 @@ namespace Voat.Tests.CommandTests
             Assert.IsNotNull(m, "Cant find message");
 
             var content = "I reply to you from messages";
-            var cmd = new SendMessageReplyCommand(m.ID, content);
+            var cmd = new SendMessageReplyCommand(m.ID, content).SetUserContext(user);
             var response = await cmd.Execute();
-
-            Assert.IsNotNull(response, "Response is null");
-            Assert.IsTrue(response.Success, response.Status.ToString());
-
+            VoatAssert.IsValid(response);
+     
             //ensure comment exists in thread as message gateway should submit a comment based on message type and info
             using (var db = new VoatDataContext())
             {
@@ -429,18 +426,20 @@ namespace Voat.Tests.CommandTests
             var id = Guid.NewGuid().ToString();
 
             //Post submission as TestUser1
-            TestHelper.SetPrincipal(user1);
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = sub, Title = "Let's be creative!", Content = "No" });
+            var user = TestHelper.SetPrincipal(user1);
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = sub, Title = "Let's be creative!", Content = "No" }).SetUserContext(user);
             var response = await cmd.Execute();
-            Assert.IsTrue(response.Success, "Expected post submission to return true");
+            VoatAssert.IsValid(response);
+
             var submission = response.Response;
             Assert.IsNotNull(submission, "Expected a non-null submission response");
 
             //Reply to comment as TestUser2
-            TestHelper.SetPrincipal(user2);
-            var commentCmd = new CreateCommentCommand(submission.ID, null, "Important Comment");
+            user = TestHelper.SetPrincipal(user2);
+            var commentCmd = new CreateCommentCommand(submission.ID, null, "Important Comment").SetUserContext(user);
             var responseComment = await commentCmd.Execute();
-            Assert.IsTrue(responseComment.Success, "Expected post comment to return true");
+            VoatAssert.IsValid(responseComment);
+
             var comment = responseComment.Response;
             Assert.IsNotNull(comment, "Expected a non-null comment response");
 
@@ -471,23 +470,20 @@ namespace Voat.Tests.CommandTests
             //var user1 = "UnitTestUser10";
             //var user2 = "UnitTestUser20";
 
-            
-
-
             //Post submission as TestUser1
-            TestHelper.SetPrincipal(user1);
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = sub, Title = "I love you more than butter in my coffee", Content = $"Did you hear that @{user2} or /u/{user2}?" });
+            var user = TestHelper.SetPrincipal(user1);
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = sub, Title = "I love you more than butter in my coffee", Content = $"Did you hear that @{user2} or /u/{user2}?" }).SetUserContext(user);
             var response = await cmd.Execute();
-            Assert.IsTrue(response.Success, "Expected post submission to return true");
+            VoatAssert.IsValid(response);
             var submission = response.Response;
             Assert.IsNotNull(submission, "Expected a non-null submission response");
 
 
             //Reply to comment as TestUser2
-            TestHelper.SetPrincipal(user2);
-            var commentCmd = new CreateCommentCommand(submission.ID, null, $"I bet @{user3} could think of something!");
+            user = TestHelper.SetPrincipal(user2);
+            var commentCmd = new CreateCommentCommand(submission.ID, null, $"I bet @{user3} could think of something!").SetUserContext(user);
             var responseComment = await commentCmd.Execute();
-            Assert.IsTrue(responseComment.Success, "Expected post comment to return true");
+            VoatAssert.IsValid(responseComment);
             var comment = responseComment.Response;
             Assert.IsNotNull(comment, "Expected a non-null comment response");
 

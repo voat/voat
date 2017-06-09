@@ -71,14 +71,14 @@ namespace Voat.Domain.Query
             var submission = await base.ExecuteAsync();
             if (_hydrateUserData)
             {
-                DomainMaps.HydrateUserData(submission);
+                DomainMaps.HydrateUserData(User, submission);
             }
             return submission;
         }
 
         protected override async Task<Domain.Models.Submission> GetData()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var result = db.GetSubmission(this._submissionID);
 

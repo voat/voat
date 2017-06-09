@@ -25,6 +25,7 @@
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
+using Voat.Common;
 using Voat.Utilities;
 
 namespace Voat.Domain.Models
@@ -54,7 +55,7 @@ namespace Voat.Domain.Models
             }
         }
 
-        [JsonIgnore]
+        //[JsonIgnore] CORE_PORT Need this for serialization tests
         public string Subverse { get; set; }
 
         [JsonIgnore]
@@ -111,7 +112,7 @@ namespace Voat.Domain.Models
             set
             {
                 //string whitespace
-                _title = String.IsNullOrEmpty(value) ? null : Utilities.Formatting.StripWhiteSpace(value);
+                _title = String.IsNullOrEmpty(value) ? null : value.StripWhiteSpace();
             }
         }
 

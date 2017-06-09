@@ -29,6 +29,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Voat.Common;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Domain.Command;
@@ -171,10 +172,10 @@ namespace Voat.Controllers
             else
             {
                 //Help formatting issues with unicode.
-                if (Formatting.ContainsUnicode(model.Title))
+                if (model.Title.ContainsUnicode())
                 {
                     ModelState.AddModelError(string.Empty, "Voat has strip searched your title and removed it's unicode. Please verify you approve of what you see.");
-                    model.Title = Formatting.StripUnicode(model.Title);
+                    model.Title = model.Title.StripUnicode();
                 }
                 else
                 {
@@ -347,8 +348,7 @@ namespace Voat.Controllers
 
             if (User.Identity.IsAuthenticated)
             {
-                var context = new VoatRuleContext();
-                context.UserName = User.Identity.Name;
+                var context = new VoatRuleContext(User);
 
                 //run every rule we can for the current user
                 foreach (var rule in VoatRulesEngine.Instance.Rules)

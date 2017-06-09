@@ -26,6 +26,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;
 using System.Threading.Tasks;
+using Voat.Common;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
 using Voat.Tests.Repository;
@@ -45,18 +46,18 @@ namespace Voat.Tests.CommandTests
         public async Task DownvoteComment()
         {
             var userName = "User500CCP";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
             bool voteEventReceived = false;
             EventNotification.Instance.OnVoteReceived += (s, e) => {
               voteEventReceived = e.TargetUserName == "unit" && e.SendingUserName == userName && e.ChangeValue == -1 && e.ReferenceType == Domain.Models.ContentType.Comment && e.ReferenceID == 1;
             };
-            var cmd = new CommentVoteCommand(1, -1, IpHash.CreateHash("127.0.0.1"));
+            var cmd = new CommentVoteCommand(1, -1, IpHash.CreateHash("127.0.0.1")).SetUserContext(user);
 
             var c = cmd.Execute().Result;
             VoatAssert.IsValid(c);
 
             //verify in db
-            using (var db = new Voat.Data.Repository())
+            using (var db = new Voat.Data.Repository(user))
             {
                 var comment = await db.GetComment(1);
                 Assert.IsNotNull(comment, "Couldn't find comment in db");
@@ -73,13 +74,13 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Submission.Vote")]
         public void UpvoteSubmission_DeniesSameIP()
         {
-            TestHelper.SetPrincipal("UnitTestUser45");
-            var cmd = new SubmissionVoteCommand(1, 1, IpHash.CreateHash("1.1.1.1")); 
+            var user = TestHelper.SetPrincipal("UnitTestUser45");
+            var cmd = new SubmissionVoteCommand(1, 1, IpHash.CreateHash("1.1.1.1")).SetUserContext(user); 
             var c = cmd.Execute().Result;
             VoatAssert.IsValid(c);
 
-            TestHelper.SetPrincipal("UnitTestUser46");
-            cmd = new SubmissionVoteCommand(1, 1, IpHash.CreateHash("1.1.1.1"));
+            user = TestHelper.SetPrincipal("UnitTestUser46");
+            cmd = new SubmissionVoteCommand(1, 1, IpHash.CreateHash("1.1.1.1")).SetUserContext(user);
             c = cmd.Execute().Result;
             Assert.IsNotNull(c, "Response is null");
             Assert.IsFalse(c.Success, c.Message);
@@ -94,9 +95,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Submission.Vote")]
         public void DownvoteComment_MinCCP()
         {
-            TestHelper.SetPrincipal("User0CCP");
+            var user = TestHelper.SetPrincipal("User0CCP");
 
-            var cmd = new CommentVoteCommand(5, -1, IpHash.CreateHash("127.0.0.1")); //SubmissionID: 3 is in MinCCP sub
+            var cmd = new CommentVoteCommand(5, -1, IpHash.CreateHash("127.0.0.1")).SetUserContext(user); //SubmissionID: 3 is in MinCCP sub
 
             var c = cmd.Execute().Result;
             Assert.IsFalse(c.Success);
@@ -110,8 +111,8 @@ namespace Voat.Tests.CommandTests
         public void InvalidVoteValue_Comment_Low()
         {
             VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
-                TestHelper.SetPrincipal("unit");
-                var cmd = new CommentVoteCommand(1, -2, IpHash.CreateHash("127.0.0.1"));
+                var user = TestHelper.SetPrincipal("unit");
+                var cmd = new CommentVoteCommand(1, -2, IpHash.CreateHash("127.0.0.1")).SetUserContext(user);
                 var c = cmd.Execute().Result;
             });
            
@@ -123,14 +124,14 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Comment.Vote")]
         public async Task UpvoteComment()
         {
-            TestHelper.SetPrincipal("User50CCP");
-            var cmd = new CommentVoteCommand(1, 1, IpHash.CreateHash("127.0.0.2"));
+            var user = TestHelper.SetPrincipal("User50CCP");
+            var cmd = new CommentVoteCommand(1, 1, IpHash.CreateHash("127.0.0.2")).SetUserContext(user);
 
             var c = cmd.Execute().Result;
             VoatAssert.IsValid(c);
 
             //verify in db
-            using (var db = new Voat.Data.Repository())
+            using (var db = new Voat.Data.Repository(user))
             {
                 var comment = await db.GetComment(1);
                 Assert.IsNotNull(comment, "Couldn't find comment in db");
@@ -153,7 +154,7 @@ namespace Voat.Tests.CommandTests
             var newSubmission = TestHelper.ContentCreation.CreateSubmission(submissionUser, new Domain.Models.UserSubmission() { Title = "This is what I think about you guys", Subverse = "unit" });
 
             var userName = "User500CCP";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
             bool voteEventReceived = false;
 
             EventNotification.Instance.OnVoteReceived += (s, e) => {
@@ -164,13 +165,13 @@ namespace Voat.Tests.CommandTests
                     && e.ReferenceType == Domain.Models.ContentType.Submission 
                     && e.ReferenceID == newSubmission.ID;
             };
-            var cmd = new SubmissionVoteCommand(newSubmission.ID, -1, IpHash.CreateHash("127.0.0.100"));
+            var cmd = new SubmissionVoteCommand(newSubmission.ID, -1, IpHash.CreateHash("127.0.0.100")).SetUserContext(user);
 
             var c = cmd.Execute().Result;
             VoatAssert.IsValid(c);
 
             //verify in db
-            using (var db = new Voat.Data.Repository())
+            using (var db = new Voat.Data.Repository(user))
             {
                 var submissionFromRepo = db.GetSubmission(newSubmission.ID);
                 Assert.IsNotNull(submissionFromRepo, "Couldn't find comment in db");
@@ -180,7 +181,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsTrue(voteEventReceived, "VoteEvent not have the expected values");
 
             //Verify Submission pull has correct vote value recorded in output for current user
-            var q = new QuerySubmission(newSubmission.ID, true);
+            var q = new QuerySubmission(newSubmission.ID, true).SetUserContext(user);
             var submission = q.Execute();
             Assert.IsNotNull(submission);
             Assert.AreEqual(c.RecordedValue, submission.Vote);
@@ -202,7 +203,7 @@ namespace Voat.Tests.CommandTests
             var submissionUser = "UnitTestUser48";
             var newSubmission = TestHelper.ContentCreation.CreateSubmission(submissionUser, new Domain.Models.UserSubmission() { Title = "This is what I think about you guys", Subverse = "unit" });
 
-            TestHelper.SetPrincipal("User50CCP");
+            var user = TestHelper.SetPrincipal("User50CCP");
             bool voteEventReceived = false;
 
             EventNotification.Instance.OnVoteReceived += (s, e) => {
@@ -213,13 +214,13 @@ namespace Voat.Tests.CommandTests
                     && e.ReferenceType == Domain.Models.ContentType.Submission
                     && e.ReferenceID == newSubmission.ID;
             };
-            var cmd = new SubmissionVoteCommand(newSubmission.ID, 1, IpHash.CreateHash("127.0.0.2"));
+            var cmd = new SubmissionVoteCommand(newSubmission.ID, 1, IpHash.CreateHash("127.0.0.2")).SetUserContext(user);
 
             var c = cmd.Execute().Result;
             VoatAssert.IsValid(c);
 
             //verify in db
-            using (var db = new Voat.Data.Repository())
+            using (var db = new Voat.Data.Repository(user))
             {
                 var comment = db.GetSubmission(newSubmission.ID);
                 Assert.IsNotNull(comment, "Couldn't find submission in db");
@@ -229,7 +230,7 @@ namespace Voat.Tests.CommandTests
             Assert.IsTrue(voteEventReceived, "VoteEvent not have the expected values");
 
             //Verify Submission pull has correct vote value recorded in output for current user
-            var q = new QuerySubmission(newSubmission.ID, true);
+            var q = new QuerySubmission(newSubmission.ID, true).SetUserContext(user);
             var submission = q.Execute();
             Assert.IsNotNull(submission);
             Assert.AreEqual(c.RecordedValue, submission.Vote);
@@ -248,9 +249,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command.Submission.Vote")]
         public void DownvoteSubmission_MinCCP()
         {
-            TestHelper.SetPrincipal("User0CCP");
+            var user = TestHelper.SetPrincipal("User0CCP");
 
-            var cmd = new SubmissionVoteCommand(3, -1, IpHash.CreateHash("127.0.0.1")); //SubmissionID: 3 is in MinCCP sub
+            var cmd = new SubmissionVoteCommand(3, -1, IpHash.CreateHash("127.0.0.1")).SetUserContext(user); //SubmissionID: 3 is in MinCCP sub
 
             var c = cmd.Execute().Result;
             Assert.IsFalse(c.Success);
@@ -265,9 +266,9 @@ namespace Voat.Tests.CommandTests
         {
 
             VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
-                TestHelper.SetPrincipal("unit");
+                var user = TestHelper.SetPrincipal("unit");
 
-                var cmd = new SubmissionVoteCommand(1, 2, IpHash.CreateHash("127.0.0.1"));
+                var cmd = new SubmissionVoteCommand(1, 2, IpHash.CreateHash("127.0.0.1")).SetUserContext(user);
 
                 var c = cmd.Execute().Result;
             });
@@ -282,9 +283,9 @@ namespace Voat.Tests.CommandTests
         {
 
             VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
-                TestHelper.SetPrincipal("unit");
+                var user = TestHelper.SetPrincipal("unit");
 
-                var cmd = new CommentVoteCommand(1, -2, IpHash.CreateHash("127.0.0.1"));
+                var cmd = new CommentVoteCommand(1, -2, IpHash.CreateHash("127.0.0.1")).SetUserContext(user);
 
                 var c = cmd.Execute().Result;
             });

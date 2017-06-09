@@ -110,16 +110,16 @@ namespace Voat.Domain.Query
         }
         public override async Task<IEnumerable<Message>> ExecuteAsync()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var result = await repo.GetMessages(_ownerName, _ownerType, _type, _state, _markAsRead, _options);
 
                 //Hydrate user data
                 var submissions = result.Where(x => x.Submission != null).Select(x => x.Submission);
-                DomainMaps.HydrateUserData(submissions);
+                DomainMaps.HydrateUserData(User, submissions);
 
                 var comments = result.Where(x => x.Comment != null).Select(x => x.Comment);
-                DomainMaps.HydrateUserData(comments);
+                DomainMaps.HydrateUserData(User, comments);
 
                 return result;
             }

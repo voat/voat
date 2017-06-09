@@ -25,6 +25,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
+using Voat.Common;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
@@ -40,9 +41,9 @@ namespace Voat.Tests.CommandTests
         public void CreateSubmission()
         {
             var userName = "TestUser02";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
             var s = new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "This is a title", Url = "http://www.yahoo.com" };
-            var cmd = new CreateSubmissionCommand(s);
+            var cmd = new CreateSubmissionCommand(s).SetUserContext(user);
 
             var r = cmd.Execute().Result;
 
@@ -58,9 +59,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void CreateSubmissionTrapJSInUrl()
         {
-            TestHelper.SetPrincipal("TestUser06");
+            var user = TestHelper.SetPrincipal("TestUser06");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "This is a title", Url = "javascript:alert('arst');" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "This is a title", Url = "javascript:alert('arst');" }).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, Status.Denied);
             Assert.AreEqual(r.Message, "The url you are trying to submit is invalid");
@@ -70,9 +71,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void CreateSubmissionTrapJSMarkdown()
         {
-            TestHelper.SetPrincipal("TestUser02");
+            var user = TestHelper.SetPrincipal("TestUser02");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "This is a title", Content = "[Click here... Please. For research.](javascript:alert('arst');)" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "This is a title", Content = "[Click here... Please. For research.](javascript:alert('arst');)" }).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r);
             //Assert.AreEqual(r.Message, "The url you are trying to submit is invalid");
@@ -87,9 +88,9 @@ namespace Voat.Tests.CommandTests
         public void CreateSubmission_NonAnon_InAnonSub()
         {
             string userName = "TestUser04";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "This is a title", Url = "http://www.yahoo.com", IsAnonymized = true });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "This is a title", Url = "http://www.yahoo.com", IsAnonymized = true }).SetUserContext(user);
 
             var r = cmd.Execute().Result;
 
@@ -107,9 +108,9 @@ namespace Voat.Tests.CommandTests
         public void CreateSubmission_Anon_InAnonSub()
         {
             string userName = "TestUser04";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "This is a title", Url = "http://www.yahoo.com/someurl", IsAnonymized = true });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "This is a title", Url = "http://www.yahoo.com/someurl", IsAnonymized = true }).SetUserContext(user);
 
             var r = cmd.Execute().Result;
 
@@ -127,9 +128,9 @@ namespace Voat.Tests.CommandTests
         public async Task CreateSubmission_Anon_InNonAnonSub()
         {
             string userName = "TestUser04";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title", Url = "http://www.yahoo.com", IsAnonymized = true });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title", Url = "http://www.yahoo.com", IsAnonymized = true }).SetUserContext(user).SetUserContext(user);
 
             var r = await cmd.Execute();
             VoatAssert.IsValid(r, Status.Denied);
@@ -140,9 +141,9 @@ namespace Voat.Tests.CommandTests
         public async Task CreateSubmission_NSFW()
         {
             string userName = "TestUser04";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title", Url = "http://www.yahoo.com", IsAdult = true });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title", Url = "http://www.yahoo.com", IsAdult = true }).SetUserContext(user);
 
             var r = await cmd.Execute();
 
@@ -157,9 +158,9 @@ namespace Voat.Tests.CommandTests
         public async Task CreateSubmission_NonNSFW_InNSFWSub()
         {
             string userName = "TestUser14";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "NSFW", Title = "This is a title", Url = "http://www.yahoo.com", IsAdult = false });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "NSFW", Title = "This is a title", Url = "http://www.yahoo.com", IsAdult = false }).SetUserContext(user);
 
             var r = await cmd.Execute();
 
@@ -174,9 +175,9 @@ namespace Voat.Tests.CommandTests
         public async Task CreateSubmission_NSFW_TitleOnly()
         {
             string userName = "TestUser15";
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title [nSfW]", Url = "http://www.yahoo.com/someotherurl/", IsAdult = false });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title [nSfW]", Url = "http://www.yahoo.com/someotherurl/", IsAdult = false }).SetUserContext(user);
 
             var r = await cmd.Execute();
 
@@ -191,9 +192,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public async Task DeleteSubmission_Owner()
         {
-            TestHelper.SetPrincipal("TestUser12");
+            var user = TestHelper.SetPrincipal("TestUser12");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title", Content = "This is content in this test" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title", Content = "This is content in this test" }).SetUserContext(user);
 
             var r = await cmd.Execute();
 
@@ -201,13 +202,13 @@ namespace Voat.Tests.CommandTests
             Assert.IsNotNull(r.Response, "Expecting a non null response");
             Assert.AreNotEqual(0, r.Response.ID);
 
-            var d = new DeleteSubmissionCommand(r.Response.ID);
+            var d = new DeleteSubmissionCommand(r.Response.ID).SetUserContext(user);
             var r2 = await d.Execute();
 
             VoatAssert.IsValid(r2);
 
             //verify
-            using (var db = new Voat.Data.Repository())
+            using (var db = new Voat.Data.Repository(user))
             {
                 var s = db.GetSubmission(r.Response.ID);
                 Assert.AreEqual(true, s.IsDeleted);
@@ -225,23 +226,22 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public async Task DeleteSubmission_Moderator()
         {
-            TestHelper.SetPrincipal("TestUser13");
+            var user = TestHelper.SetPrincipal("TestUser13");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title", Content = "This is content a mod would hate" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "This is a title", Content = "This is content a mod would hate" }).SetUserContext(user);
 
             var r = await cmd.Execute();
             VoatAssert.IsValid(r);
             Assert.IsNotNull(r.Response, "Expecting a non null response");
             Assert.AreNotEqual(0, r.Response.ID);
 
-            TestHelper.SetPrincipal("unit");
-            var d = new DeleteSubmissionCommand(r.Response.ID, "This is content I hate");
+            user = TestHelper.SetPrincipal("unit");
+            var d = new DeleteSubmissionCommand(r.Response.ID, "This is content I hate").SetUserContext(user);
             var r2 = await d.Execute();
-
             VoatAssert.IsValid(r);
 
             //verify
-            using (var db = new Voat.Data.Repository())
+            using (var db = new Voat.Data.Repository(user))
             {
                 var s = db.GetSubmission(r.Response.ID);
                 Assert.AreEqual(true, s.IsDeleted);
@@ -260,15 +260,15 @@ namespace Voat.Tests.CommandTests
 
         public void Edit_Submission_Title_Content()
         {
-            TestHelper.SetPrincipal("anon");
+            var user = TestHelper.SetPrincipal("anon");
 
-            var x = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "xxxxxxxxxxxx", Content = "xxxxxxxxxxxx" });
+            var x = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "anon", Title = "xxxxxxxxxxxx", Content = "xxxxxxxxxxxx" }).SetUserContext(user);
             var s = x.Execute().Result;
 
             Assert.IsNotNull(s, "Response is null");
             Assert.IsTrue(s.Success, s.Message);
 
-            var cmd = new EditSubmissionCommand(s.Response.ID, new Domain.Models.UserSubmission() { Title = "yyyyyyyyyyyy", Content = "yyyyyyyyyyyy" });
+            var cmd = new EditSubmissionCommand(s.Response.ID, new Domain.Models.UserSubmission() { Title = "yyyyyyyyyyyy", Content = "yyyyyyyyyyyy" }).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, message: "Edit Submission failed to return true: " + r.Message);
 
@@ -287,9 +287,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void PreventUrlTitlePosts()
         {
-            TestHelper.SetPrincipal("TestUser02");
+            var user = TestHelper.SetPrincipal("TestUser02");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "http://www.yahoo.com", Url = "http://www.yahoo.com" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "http://www.yahoo.com", Url = "http://www.yahoo.com" }).SetUserContext(user);
 
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, Status.Denied);
@@ -301,9 +301,9 @@ namespace Voat.Tests.CommandTests
         public void PreventUrlTitlePosts_BugTrap()
         {
             //BUGFIX: https://voat.co/v/FGC/1349484
-            TestHelper.SetPrincipal("TestUser02");
+            var user = TestHelper.SetPrincipal("TestUser02");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "http://www.besthealthmarket.org/cianix-male-enhancement/", Content = "Cianix is the best available product in the market. It has long lasting anti-aging effects. It made up of natural products and has no side effects. Therefore it is a highly recommended  product for anti-aging as well as healthy skin. Signs of Healthy Skin We talk a lot about healthy skin and methods of achieving healthy skin. But what healthy skin actually is only a few of us know it. Here are few points that a healthy skin has: Even color:" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "http://www.besthealthmarket.org/cianix-male-enhancement/", Content = "Cianix is the best available product in the market. It has long lasting anti-aging effects. It made up of natural products and has no side effects. Therefore it is a highly recommended  product for anti-aging as well as healthy skin. Signs of Healthy Skin We talk a lot about healthy skin and methods of achieving healthy skin. But what healthy skin actually is only a few of us know it. Here are few points that a healthy skin has: Even color:" }).SetUserContext(user);
 
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, Status.Denied);
@@ -314,9 +314,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void PreventPartialUrlTitlePosts()
         {
-            TestHelper.SetPrincipal("TestUser02");
+            var user = TestHelper.SetPrincipal("TestUser02");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "www.yahoo.com", Url = "http://www.yahoo.com" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "www.yahoo.com", Url = "http://www.yahoo.com" }).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, Status.Denied);
             Assert.AreEqual(r.Message, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
@@ -327,9 +327,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void PreventInvalidUrlTitlePosts()
         {
-            TestHelper.SetPrincipal("TestUser07");
+            var user = TestHelper.SetPrincipal("TestUser07");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "Super rad website", Url = "http//www.yahoo.com" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "Super rad website", Url = "http//www.yahoo.com" }).SetUserContext(user);
 
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, Status.Denied);
@@ -341,9 +341,9 @@ namespace Voat.Tests.CommandTests
 
         public void PreventNoSubversePost()
         {
-            TestHelper.SetPrincipal("TestUser02");
+            var user = TestHelper.SetPrincipal("TestUser02");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "", Title = "Hello Man", Url = "http://www.yahoo.com" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "", Title = "Hello Man", Url = "http://www.yahoo.com" }).SetUserContext(user);
 
             var r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
@@ -361,15 +361,15 @@ namespace Voat.Tests.CommandTests
                 repo.SaveChanges(); 
             }
 
-            TestHelper.SetPrincipal("TestUser02");
+            var user = TestHelper.SetPrincipal("TestUser02");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Url = "http://www.saiddit.com/images/feelsgoodman.jpg" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Url = "http://www.saiddit.com/images/feelsgoodman.jpg" }).SetUserContext(user);
             var r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
             Assert.IsFalse(r.Success, r.Message);
             Assert.AreEqual(r.Message, "Submission contains banned domains");
 
-            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Content = "Check out this cool image I found using dogpile.com: http://saiddit.com/images/feelsgoodman.jpg" });
+            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Content = "Check out this cool image I found using dogpile.com: http://saiddit.com/images/feelsgoodman.jpg" }).SetUserContext(user);
             r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
             Assert.IsFalse(r.Success, r.Message);
@@ -377,7 +377,7 @@ namespace Voat.Tests.CommandTests
 
             cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Test Embedded Banned Domain",
                 Content = "http://yahoo.com/index.html Check out this cool image I found using compuserve.com: http://saiddit.com/images/feelsgoodman.jpg. http://www2.home.geocities.com/index.html"
-            });
+            }).SetUserContext(user);
             r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
             Assert.IsFalse(r.Success, r.Message);
@@ -387,7 +387,7 @@ namespace Voat.Tests.CommandTests
             cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit",
                 Title = "Hello Man - Longer because of Rules",
                 Content = "[https://www.some-fake-domain.com/surl/start](https://www.google.com/url?q=http%3A%2F%2Fww2.saiddit.com%2F%3Flnk%26keyword%3Dsome%2Bkey%2Bword%26charset%3Dutf-8)"
-            });
+            }).SetUserContext(user);
             r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
             Assert.IsFalse(r.Success, r.Message);
@@ -407,15 +407,15 @@ namespace Voat.Tests.CommandTests
                 repo.SaveChanges();
             }
 
-            TestHelper.SetPrincipal("TestUser02");
+            var user = TestHelper.SetPrincipal("TestUser02");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Url = "http://www.one.two.three.com/images/feelsgoodman.jpg" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Url = "http://www.one.two.three.com/images/feelsgoodman.jpg" }).SetUserContext(user);
             var r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
             Assert.IsFalse(r.Success, r.Message);
             Assert.AreEqual(r.Message, "Submission contains banned domains");
 
-            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Content = "Check out this cool image I found using dogpile.com: HTTP://one.TWO.three.com/images/feelsgoodman.jpg" });
+            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Content = "Check out this cool image I found using dogpile.com: HTTP://one.TWO.three.com/images/feelsgoodman.jpg" }).SetUserContext(user);
             r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
             Assert.IsFalse(r.Success, r.Message);
@@ -427,15 +427,15 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public async Task PreventSubmittingSameLinkTwice()
         {
-            TestHelper.SetPrincipal("UnitTestUser30");
+            var user = TestHelper.SetPrincipal("UnitTestUser30");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "My name is Fuzzy and my fixes are way cooler than puttputts", Url = "http://i.deleted.this.by/accident.jpg" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "My name is Fuzzy and my fixes are way cooler than puttputts", Url = "http://i.deleted.this.by/accident.jpg" }).SetUserContext(user);
             var r = await cmd.Execute();
             Assert.IsNotNull(r, "Response was null");
             Assert.IsTrue(r.Success, r.Message);
             var id = r.Response.ID;
 
-            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Url = "http://i.deleted.this.by/accident.jpg" });
+            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Url = "http://i.deleted.this.by/accident.jpg" }).SetUserContext(user);
             r = await cmd.Execute();
             Assert.IsNotNull(r, "Response was null");
             Assert.IsFalse(r.Success, r.Message);
@@ -446,18 +446,18 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public async Task AllowSubmittingDeletedLink()
         {
-            TestHelper.SetPrincipal("UnitTestUser31");
+            var user = TestHelper.SetPrincipal("UnitTestUser31");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "I need to think of better titles but I don't want to get in trouble", Url = "http://i.deleted.this.on/purpose.jpg" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "I need to think of better titles but I don't want to get in trouble", Url = "http://i.deleted.this.on/purpose.jpg" }).SetUserContext(user);
             var r = await cmd.Execute();
             VoatAssert.IsValid(r);
 
             var id = r.Response.ID;
-            var cmd2 = new DeleteSubmissionCommand(id);
+            var cmd2 = new DeleteSubmissionCommand(id).SetUserContext(user);
             var r2 = await cmd2.Execute();
             VoatAssert.IsValid(r);
 
-            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Url = "http://i.deleted.this.on/purpose.jpg" });
+            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Hello Man - Longer because of Rules", Url = "http://i.deleted.this.on/purpose.jpg" }).SetUserContext(user);
             r = await cmd.Execute();
             VoatAssert.IsValid(r);
         }
@@ -466,9 +466,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void PreventShortTitlePosts()
         {
-            TestHelper.SetPrincipal("TestUser02");
+            var user = TestHelper.SetPrincipal("TestUser02");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "What", Url = "http://www.hellogoodbye.com/images/feelsgoodman.jpg" });
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = "unit", Title = "What", Url = "http://www.hellogoodbye.com/images/feelsgoodman.jpg" }).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, Status.Denied);
             Assert.AreEqual(r.Message, "A title may not be less than 5 characters");
@@ -478,9 +478,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Ban"), TestCategory("Ban.User")]
         public void PreventGlobalBannedUsers()
         {
-            TestHelper.SetPrincipal("BannedGlobally");
+            var user = TestHelper.SetPrincipal("BannedGlobally");
             var userSubmission = new Domain.Models.UserSubmission() { Subverse = "unit", Title = Guid.NewGuid().ToString(), Url = "http://www.SendhelpImStuckInUnitTests.com/images/feelsgoodman.jpg" };
-            var cmd = new CreateSubmissionCommand(userSubmission);
+            var cmd = new CreateSubmissionCommand(userSubmission).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, Status.Denied);
             Assert.AreEqual(r.Message, "User is globally banned");
@@ -491,9 +491,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Ban"), TestCategory("Ban.User")]
         public void PreventSubverseBannedUsers()
         {
-            TestHelper.SetPrincipal("BannedFromVUnit");
+            var user = TestHelper.SetPrincipal("BannedFromVUnit");
             var userSubmission = new Domain.Models.UserSubmission() { Subverse = "unit", Title = Guid.NewGuid().ToString(), Url = "http://www.SuperAwesomeDomainName.com/images/feelsgoodman.jpg" };
-            var cmd = new CreateSubmissionCommand(userSubmission);
+            var cmd = new CreateSubmissionCommand(userSubmission).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, Status.Denied);
             Assert.AreEqual(r.Message, $"User is banned from v/{userSubmission.Subverse}");
@@ -503,9 +503,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void PreventUserFromPostingToAuthorizedOnlySubverses()
         {
-            TestHelper.SetPrincipal("TestUser09");
+            var user = TestHelper.SetPrincipal("TestUser09");
             var userSubmission = new Domain.Models.UserSubmission() { Subverse = "AuthorizedOnly", Title = Guid.NewGuid().ToString(), Url = "http://www.digit.com/images/feelsgoodman.jpg" };
-            var cmd = new CreateSubmissionCommand(userSubmission);
+            var cmd = new CreateSubmissionCommand(userSubmission).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, Status.Denied);
             Assert.AreEqual(r.Message, "You are not authorized to submit links or start discussions in this subverse. Please contact subverse moderators for authorization");
@@ -515,9 +515,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void PreventUserFromPostingCompromisedTitle1()
         {
-            TestHelper.SetPrincipal("TestUser01");
+            var user = TestHelper.SetPrincipal("TestUser01");
             var userSubmission = new Domain.Models.UserSubmission() { Subverse = "whatever", Title = "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000", Content = "cookies" };
-            var cmd = new CreateSubmissionCommand(userSubmission);
+            var cmd = new CreateSubmissionCommand(userSubmission).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, Status.Denied);
             Assert.AreEqual(r.Message, "Submission title can not contain Unicode or unprintable characters");
@@ -526,9 +526,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void PreventPostingToDisabledSub()
         {
-            TestHelper.SetPrincipal("TestUser06");
+            var user = TestHelper.SetPrincipal("TestUser06");
             var userSubmission = new Domain.Models.UserSubmission() { Subverse = "Disabled", Title = "I am not paying attention", Content = "Why was this sub disabled?" };
-            var cmd = new CreateSubmissionCommand(userSubmission);
+            var cmd = new CreateSubmissionCommand(userSubmission).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, Status.Denied);
             Assert.AreEqual("Subverse is disabled", r.Message);
@@ -561,9 +561,9 @@ namespace Voat.Tests.CommandTests
 
 
 
-            TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
             var userSubmission = new Domain.Models.UserSubmission() { Subverse = "unit", Title = "Le Censorship!", Content = "Will this work?" };
-            var cmd = new CreateSubmissionCommand(userSubmission);
+            var cmd = new CreateSubmissionCommand(userSubmission).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r);
 

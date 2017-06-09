@@ -23,12 +23,14 @@
 #endregion LICENSE
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
+using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.Tests.Repository;
 using Voat.Utilities;
@@ -38,7 +40,7 @@ namespace Voat.Tests.CommandTests
     [TestClass]
     public class MiscCommandTests : BaseCommandTest
     {
-      
 
+       
     }
 }

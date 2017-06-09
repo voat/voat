@@ -127,7 +127,7 @@ namespace Voat.Domain.Query
             var counts = Context;
             if (counts == null)
             {
-                using (var repo = new Repository())
+                using (var repo = new Repository(User))
                 {
                     counts = await repo.GetMessageCounts(_ownerName, _ownerType, _type, _state).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                     //CORE_PORT: Trying to ditch this query cache

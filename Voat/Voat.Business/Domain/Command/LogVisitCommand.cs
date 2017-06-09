@@ -44,7 +44,7 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse> CacheExecute()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 //TODO: Convert to async repo method
                 var response = await repo.LogVisit(_submissionID, _clientIPAddress);

@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using Voat.Common;
 using Voat.Data.Models;
 using Voat.Domain.Query;
 using Voat.RulesEngine;
@@ -54,7 +55,7 @@ namespace Voat.Rules
 
             if (subMinCCP.HasValue && subMinCCP.Value > 0)
             {
-                var q = new QueryUserContributionPoints(Domain.Models.ContentType.Comment, subverse.Name);
+                var q = new QueryUserContributionPoints(Domain.Models.ContentType.Comment, subverse.Name).SetUserContext(context.User);
                 var score = q.Execute();
 
                 if (score.Sum < subMinCCP.Value)

@@ -48,7 +48,9 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse<bool?>> CacheExecute()
         {
-            using (var repo = new Repository())
+            DemandAuthentication();
+
+            using (var repo = new Repository(User))
             {
                 //TODO: Convert to async repo method
                 var response = await repo.Save(_type, _id, _toggleSetting);

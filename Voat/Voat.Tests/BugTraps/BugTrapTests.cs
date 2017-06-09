@@ -31,6 +31,7 @@ using Voat.Domain.Command;
 using Voat.Models;
 using System.Threading;
 using Voat.Utilities;
+using Voat.Common;
 
 namespace Voat.Tests.BugTraps
 {
@@ -101,20 +102,20 @@ namespace Voat.Tests.BugTraps
             int exCount = 0;
             Func<VoteResponse> vote1 = new Func<VoteResponse>(() =>
             {
-                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
-                System.Threading.Thread.CurrentPrincipal = principle;
+                var principal = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
+                System.Threading.Thread.CurrentPrincipal = principal;
                 Interlocked.Increment(ref exCount);
-                using (var repo = new Voat.Data.Repository())
+                using (var repo = new Voat.Data.Repository(principal))
                 {
                     return repo.VoteSubmission(submissionID, 1, IpHash.CreateHash("127.0.0.1"));
                 }
             });
             Func<VoteResponse> vote2 = new Func<VoteResponse>(() =>
             {
-                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User100CCP", "Bearer"), null);
-                System.Threading.Thread.CurrentPrincipal = principle;
+                var principal = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User100CCP", "Bearer"), null);
+                System.Threading.Thread.CurrentPrincipal = principal;
                 Interlocked.Increment(ref exCount);
-                using (var repo = new Voat.Data.Repository())
+                using (var repo = new Voat.Data.Repository(principal))
                 {
                     return repo.VoteSubmission(submissionID, 1, IpHash.CreateHash("127.0.0.1"));
                 }
@@ -153,17 +154,15 @@ namespace Voat.Tests.BugTraps
             int exCount = 0;
             Func<Task<VoteResponse>> vote1 = new Func<Task<VoteResponse>>(async () =>
             {
-                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
-                System.Threading.Thread.CurrentPrincipal = principle;
-                var cmd = new SubmissionVoteCommand(submissionID, 1, IpHash.CreateHash("127.0.0.1"));
+                var user = TestHelper.SetPrincipal("User500CCP");
+                var cmd = new SubmissionVoteCommand(submissionID, 1, IpHash.CreateHash("127.0.0.1")).SetUserContext(user);
                 Interlocked.Increment(ref exCount);
                 return await cmd.Execute();//.Result;
             });
             Func<Task<VoteResponse>> vote2 = new Func<Task<VoteResponse>>(async () =>
             {
-                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User100CCP", "Bearer"), null);
-                System.Threading.Thread.CurrentPrincipal = principle;
-                var cmd = new SubmissionVoteCommand(submissionID, 1, IpHash.CreateHash("127.0.0.1"));
+                var user = TestHelper.SetPrincipal("User100CCP");
+                var cmd = new SubmissionVoteCommand(submissionID, 1, IpHash.CreateHash("127.0.0.1")).SetUserContext(user); ;
                 Interlocked.Increment(ref exCount);
                 return await cmd.Execute();//.Result;
             });
@@ -197,20 +196,18 @@ namespace Voat.Tests.BugTraps
             int exCount = 0;
             Func<VoteResponse> vote1 = new Func<VoteResponse>(() =>
             {
-                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User500CCP", "Bearer"), null);
-                System.Threading.Thread.CurrentPrincipal = principle;
+                var user = TestHelper.SetPrincipal("User500CCP");
                 Interlocked.Increment(ref exCount);
-                using (var repo = new Voat.Data.Repository())
+                using (var repo = new Voat.Data.Repository(user))
                 {
                     return repo.VoteSubmission(submissionID, 1, IpHash.CreateHash("127.0.0.1"));
                 }
             });
             Func<VoteResponse> vote2 = new Func<VoteResponse>(() =>
             {
-                var principle = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity("User100CCP", "Bearer"), null);
-                System.Threading.Thread.CurrentPrincipal = principle;
+                var user = TestHelper.SetPrincipal("User100CCP");
                 Interlocked.Increment(ref exCount);
-                using (var repo = new Voat.Data.Repository())
+                using (var repo = new Voat.Data.Repository(user))
                 {
                     return repo.VoteSubmission(submissionID, 1, IpHash.CreateHash("127.0.0.1"));
                 }

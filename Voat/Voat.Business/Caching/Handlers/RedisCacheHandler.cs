@@ -28,6 +28,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Voat.Common;
+using Voat.Configuration;
 
 namespace Voat.Caching
 {
@@ -46,7 +48,7 @@ namespace Voat.Caching
         //This ensures that an item eventually gets purged from cache.
         private TimeSpan expirationBuffer = TimeSpan.FromSeconds(30);
 
-        private JsonSerializerSettings settings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All, ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+        private JsonSerializerSettings settings = JsonSettings.DataSerializationSettings;
         public IDatabase GetDatabase(ConnectionType type)
         {
             return connections[type].GetDatabase();

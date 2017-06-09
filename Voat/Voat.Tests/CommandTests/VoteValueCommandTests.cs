@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Common;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Utilities;
@@ -99,8 +100,8 @@ namespace Voat.Tests.CommandTests
             int id = 0;
             string userName = "";
             //Create submission
-            TestHelper.SetPrincipal(userToPost);
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = subverse, Title = "VerifyVoteStatus Test Submission in " + subverse });
+            var user = TestHelper.SetPrincipal(userToPost);
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = subverse, Title = "VerifyVoteStatus Test Submission in " + subverse }).SetUserContext(user);
             var response = cmd.Execute().Result;
 
             VoatAssert.IsValid(response, Status.Success);
@@ -112,8 +113,8 @@ namespace Voat.Tests.CommandTests
             if (contentType == Domain.Models.ContentType.Submission)
             {
                 id = submission.ID;
-                TestHelper.SetPrincipal(userName);
-                var voteSubmissionCommand = new SubmissionVoteCommand(id, voteStatus, Guid.NewGuid().ToString());
+                user = TestHelper.SetPrincipal(userName);
+                var voteSubmissionCommand = new SubmissionVoteCommand(id, voteStatus, Guid.NewGuid().ToString()).SetUserContext(user);
                 var voteSubmissionResponse = await voteSubmissionCommand.Execute();
 
                 VoatAssert.IsValid(voteSubmissionResponse);
@@ -132,14 +133,14 @@ namespace Voat.Tests.CommandTests
             else if (contentType == Domain.Models.ContentType.Comment)
             {
                 //Create comment 
-                var cmdComment = new CreateCommentCommand(submission.ID, null, $"VerifyVoteStatus Test Submission in {subverse} - {Guid.NewGuid().ToString()}");
+                var cmdComment = new CreateCommentCommand(submission.ID, null, $"VerifyVoteStatus Test Submission in {subverse} - {Guid.NewGuid().ToString()}").SetUserContext(user);
                 var responseComment = await cmdComment.Execute();
                 VoatAssert.IsValid(responseComment);
 
                 id = responseComment.Response.ID;
 
-                TestHelper.SetPrincipal(userName);
-                var voteCommentCommand = new CommentVoteCommand(id, voteStatus, Guid.NewGuid().ToString());
+                user = TestHelper.SetPrincipal(userName);
+                var voteCommentCommand = new CommentVoteCommand(id, voteStatus, Guid.NewGuid().ToString()).SetUserContext(user);
                 var voteCommentResponse = await voteCommentCommand.Execute();
                 Assert.IsNotNull(voteCommentResponse, "Expecting non-null submission vote command");
 

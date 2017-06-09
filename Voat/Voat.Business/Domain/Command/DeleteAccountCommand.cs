@@ -46,7 +46,7 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse> CacheExecute()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var data = await db.DeleteAccount(_options);
                 return data;

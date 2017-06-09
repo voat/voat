@@ -25,27 +25,58 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Voat.Common;
 
 namespace Voat.Configuration
 {
     public static class JsonSettings
     {
-        //TODO: Hack. Cache this or pull it from config
-        public static JsonSerializerSettings GetSerializationSettings()
-        {
-            return ConfigureJsonSerializer(new JsonSerializerSettings());
-        }
+        private static JsonSerializerSettings _public = null;
+        private static JsonSerializerSettings _data = null;
 
+        /// <summary>
+        /// Settings to serialize the input and output of standardized Json 
+        /// </summary>
+        /// <returns></returns>
+        public static JsonSerializerSettings PublicSerializationSettings
+        {
+            get
+            {
+                var settings = Voat.Common.Extensions.GetOrLoad(ref _public, () => {
+                    return ConfigureJsonSerializer(new JsonSerializerSettings());
+                });
+                return settings;
+            }
+        }
+        /// <summary>
+        /// Settings to serialize strongly typeed objects to and from Json including type names and field information 
+        /// </summary>
+        /// <returns></returns>
+        public static JsonSerializerSettings DataSerializationSettings
+        {
+            get
+            {
+                var settings = Voat.Common.Extensions.GetOrLoad(ref _data, () => {
+                    return new JsonSerializerSettings()
+                    {
+                        TypeNameHandling = TypeNameHandling.All,
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+
+                    };
+                });
+                return settings;
+            }
+        }
         public static JsonSerializerSettings ConfigureJsonSerializer(JsonSerializerSettings settings)
         {
             //camelCases all api output - no need for attributes
             //defaultJsonSerializer.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/json"));
 
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-            settings.DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat;
-            settings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize;
-            settings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Include;
-            settings.Formatting = Newtonsoft.Json.Formatting.None;
+            settings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+            settings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
+            settings.NullValueHandling = NullValueHandling.Include;
+            settings.Formatting = Formatting.None;
 
             //settings.Converters.Add(new JsonUnprintableCharConverter());
             settings.Converters.Add(new StringEnumConverter());

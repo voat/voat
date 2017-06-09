@@ -62,7 +62,9 @@ namespace Voat.Domain.Query
         }
         protected override async Task<Score> GetData()
         {
-            using (var repo = new Repository())
+            DemandAuthentication();
+
+            using (var repo = new Repository(User))
             {
                 return repo.UserContributionPoints(UserName, _type, _subverse);
             }

@@ -42,7 +42,7 @@ namespace Voat.Domain.Query
 
         public override async Task<string> ExecuteAsync()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var name = await repo.GetRandomSubverse(_nsfw);
                 return name;

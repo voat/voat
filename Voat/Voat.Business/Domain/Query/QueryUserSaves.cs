@@ -57,7 +57,9 @@ namespace Voat.Domain.Query
         }
         protected override async Task<ISet<int>> GetData()
         {
-            using (var repo = new Repository())
+            DemandAuthentication();
+
+            using (var repo = new Repository(User))
             {
                 var val = await repo.GetUserSavedItems(_type, UserName);
                 var set = new HashSet<int>(val);

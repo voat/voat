@@ -24,6 +24,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using Voat.Common;
 
 namespace Voat.Domain.Models
 {

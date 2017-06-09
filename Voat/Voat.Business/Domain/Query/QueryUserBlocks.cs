@@ -59,7 +59,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<IList<BlockedItem>> GetData()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var blockedSubs = await db.GetBlockedSubverses(_userName);
                 var blockedUsers = db.GetBlockedUsers(_userName);

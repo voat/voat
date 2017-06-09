@@ -23,6 +23,7 @@
 #endregion LICENSE
 
 using System.ComponentModel.DataAnnotations;
+using Voat.Common;
 using Voat.Utilities;
 
 namespace Voat.Models.ViewModels
@@ -43,7 +44,7 @@ namespace Voat.Models.ViewModels
                 return _reason;
             }
             set {
-                _reason = Formatting.StripWhiteSpace(value);
+                _reason = value.StripWhiteSpace();
             }
         }
     }

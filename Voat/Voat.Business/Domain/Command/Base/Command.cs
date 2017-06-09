@@ -23,15 +23,15 @@
 #endregion LICENSE
 
 using System;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Voat.Rules;
+using Voat.Common;
 
 namespace Voat.Domain.Command
 {
-    public interface ICommand
-    {
-        string UserName { get; }
-    }
+    
 
     //We are not implementing full Command/Query seperation so this interface will be used
     //to allow commands to execute their own logic and return any necessary data. When full
@@ -95,23 +95,10 @@ namespace Voat.Domain.Command
     }
 
     [Serializable]
-    public abstract class Command : ICommand
+    public abstract class Command : SecurityContext<IPrincipal>
     {
         //So any command can invoke the rules engine
-        protected RulesEngine.RulesEngine<VoatRuleContext> rulesEngine = VoatRulesEngine.Instance;
-
-        private string _userName = null;
-
-        public Command()
-        {
-            _userName = UserIdentity.UserName;
-        }
-
-        public string UserName
-        {
-            get { return _userName; }
-            set { _userName = value; }
-        }
+        //protected RulesEngine.RulesEngine<VoatRuleContext> rulesEngine = VoatRulesEngine.Instance;
 
         protected CommandResponse Map(RulesEngine.RuleOutcome outcome)
         {

@@ -65,7 +65,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<IDictionary<int, usp_CommentTree_Result>> GetData()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 return db.GetCommentTree(this._submissionID, null, null).ToDictionary(x => x.ID);
             }

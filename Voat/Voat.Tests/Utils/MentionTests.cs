@@ -30,6 +30,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Voat.Common;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
@@ -41,7 +42,7 @@ namespace Voat.Tests.Utils
     public class MentionTests : BaseUnitTest
     {
 
-        private Domain.Models.Submission submission;
+        private static Domain.Models.Submission submission;
         //private static Domain.Models.Submission submission;
 
         public override void ClassInitialize()
@@ -59,10 +60,10 @@ namespace Voat.Tests.Utils
             string user1 = "UnitTestUser05";
             string user2 = "UnitTestUser06";
 
-            TestHelper.SetPrincipal(user1);
+            var user = TestHelper.SetPrincipal(user1);
 
             string mentionTwiceContent = $"Hello @{user2}, I am mentioning you twice using two different forms ok. So here: /u/{user2} ha ha";
-            var cmd = new CreateCommentCommand(submission.ID, null, mentionTwiceContent);
+            var cmd = new CreateCommentCommand(submission.ID, null, mentionTwiceContent).SetUserContext(user);
             var result = await cmd.Execute();
             Assert.IsTrue(result.Success, result.Message);
 
@@ -74,9 +75,9 @@ namespace Voat.Tests.Utils
 
 
             //change casing test
-            TestHelper.SetPrincipal(user2);
+            user = TestHelper.SetPrincipal(user2);
             mentionTwiceContent = $"Hello @{user1.ToLower()}, I am mentioning you twice using two different forms ok. So here: /u/{user1.ToUpper()} ha ha";
-            cmd = new CreateCommentCommand(submission.ID, null, mentionTwiceContent);
+            cmd = new CreateCommentCommand(submission.ID, null, mentionTwiceContent).SetUserContext(user);
             result = await cmd.Execute();
             Assert.IsTrue(result.Success, result.Message);
 
@@ -99,13 +100,13 @@ namespace Voat.Tests.Utils
             string user1 = "UnitTestUser09";
             string user2 = "UnitTestUser10";
 
-            TestHelper.SetPrincipal(user1);
+            var user = TestHelper.SetPrincipal(user1);
             string commentContent = $"Some ground breaking inciteful comment here";
             var cmd = new CreateCommentCommand(submission.ID, null, commentContent);
             var result = await cmd.Execute();
             Assert.IsTrue(result.Success, result.Message);
 
-            TestHelper.SetPrincipal(user2);
+            user = TestHelper.SetPrincipal(user2);
             commentContent = $"Hey @{user1} I'm replying to your comment and mentioning you because I'm super annoying. Like you.";
             cmd = new CreateCommentCommand(submission.ID, result.Response.ID, commentContent);
             result = await cmd.Execute();
@@ -127,9 +128,9 @@ namespace Voat.Tests.Utils
             string user1 = "UnitTestUser07";
             string user2 = "UnitTestUser08";
 
-            TestHelper.SetPrincipal(user1);
+            var user = TestHelper.SetPrincipal(user1);
             string mentionTwiceContent = $"PSA: @{user2} is a shill. I saw him getting ready for work and his socks were standard shill issue.";
-            var cmd = new CreateCommentCommand(submission.ID, null, mentionTwiceContent);
+            var cmd = new CreateCommentCommand(submission.ID, null, mentionTwiceContent).SetUserContext(user);
             var result = await cmd.Execute();
             VoatAssert.IsValid(result);
 
@@ -148,7 +149,7 @@ namespace Voat.Tests.Utils
             string user1 = "UnitTestUser11";
             string user2 = "UnitTestUser12";
 
-            TestHelper.SetPrincipal(user1);
+            var user = TestHelper.SetPrincipal(user1);
 
             //Submission
             var anonSubmission = TestHelper.ContentCreation.CreateSubmission(user1, new Domain.Models.UserSubmission() { Title = $"I'm harrassing @{user2}!", Content = GetMethodName(true), Subverse = "anon" });
@@ -171,7 +172,7 @@ namespace Voat.Tests.Utils
 
             //Comment
             string mentionTwiceContent = $"Hello @{user2}, I am mentioning you in an anon thread because I want to make you feel scared";
-            var cmd = new CreateCommentCommand(anonSubmission.ID, null, mentionTwiceContent);
+            var cmd = new CreateCommentCommand(anonSubmission.ID, null, mentionTwiceContent).SetUserContext(user);
             var result = await cmd.Execute();
             VoatAssert.IsValid(result);
 
@@ -200,13 +201,13 @@ namespace Voat.Tests.Utils
 
             VoatDataInitializer.CreateUser(user2);
 
-            TestHelper.SetPrincipal(user2);
-            var prefCmd = new UpdateUserPreferencesCommand(new Domain.Models.UserPreferenceUpdate() { BlockAnonymized = true });
+            var user = TestHelper.SetPrincipal(user2);
+            var prefCmd = new UpdateUserPreferencesCommand(new Domain.Models.UserPreferenceUpdate() { BlockAnonymized = true }).SetUserContext(user);
             var prefResult = await prefCmd.Execute();
             VoatAssert.IsValid(prefResult);
 
             //Submission Mention - NO NO
-            TestHelper.SetPrincipal(user1);
+            user = TestHelper.SetPrincipal(user1);
             var anonSubmission = TestHelper.ContentCreation.CreateSubmission(user1, new Domain.Models.UserSubmission() { Title = $"I'm harrassing @{user2}!", Content = $"Hey everyone isn't /u/{user2} a shill tornado?", Subverse = "anon" });
             Assert.IsNotNull(anonSubmission, "Couldn't create test submission");
             Assert.AreNotEqual(0, anonSubmission.ID, "Doesn't appear we have a valid submission id");
@@ -225,7 +226,7 @@ namespace Voat.Tests.Utils
 
             //Comment Mention - NO NO
             string commentContent = $"Hello @{user2}, I am mentioning you in an anon thread because I want to make you feel scared";
-            var cmd = new CreateCommentCommand(anonSubmission.ID, null, commentContent);
+            var cmd = new CreateCommentCommand(anonSubmission.ID, null, commentContent).SetUserContext(user);
             var result = await cmd.Execute();
             VoatAssert.IsValid(result);
 
@@ -242,16 +243,16 @@ namespace Voat.Tests.Utils
             }
 
             //Comment Reply - YES YES
-            TestHelper.SetPrincipal(user2);
+            user = TestHelper.SetPrincipal(user2);
             commentContent = $"I'm {user2} won't someone reply to me so I can see if reply notifications work?";
-            cmd = new CreateCommentCommand(anonSubmission.ID, null, commentContent);
+            cmd = new CreateCommentCommand(anonSubmission.ID, null, commentContent).SetUserContext(user);
             result = await cmd.Execute();
             VoatAssert.IsValid(result);
 
 
-            TestHelper.SetPrincipal(user1);
+            user = TestHelper.SetPrincipal(user1);
             commentContent = $"I'm following you!";
-            cmd = new CreateCommentCommand(anonSubmission.ID, result.Response.ID, commentContent);
+            cmd = new CreateCommentCommand(anonSubmission.ID, result.Response.ID, commentContent).SetUserContext(user);
             result = await cmd.Execute();
             VoatAssert.IsValid(result);
 
@@ -269,14 +270,14 @@ namespace Voat.Tests.Utils
             }
 
             //Submission Reply - YES YES
-            TestHelper.SetPrincipal(user2);
+            user = TestHelper.SetPrincipal(user2);
             anonSubmission = TestHelper.ContentCreation.CreateSubmission(user2, new Domain.Models.UserSubmission() { Title = $"Is this working?", Content = $"Someeone, anyone, am I alone?", Subverse = "anon" });
             Assert.IsNotNull(anonSubmission, "Couldn't create test submission");
             Assert.AreNotEqual(0, anonSubmission.ID, "Doesn't appear we have a valid submission id");
 
-            TestHelper.SetPrincipal(user1);
+            user = TestHelper.SetPrincipal(user1);
             commentContent = $"I know who you are and I've been following you this entire unit test. I might be in love with you, if stalking is a form of love.";
-            cmd = new CreateCommentCommand(anonSubmission.ID, null, commentContent);
+            cmd = new CreateCommentCommand(anonSubmission.ID, null, commentContent).SetUserContext(user);
             result = await cmd.Execute();
             VoatAssert.IsValid(result);
 

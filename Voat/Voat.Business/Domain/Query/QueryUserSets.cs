@@ -44,7 +44,7 @@ namespace Voat.Domain.Query
         public override async Task<IEnumerable<Set>> ExecuteAsync()
         {
             //TODO: Move to query
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var setList = await repo.GetUserSets(_userName);
                 return setList.Map();

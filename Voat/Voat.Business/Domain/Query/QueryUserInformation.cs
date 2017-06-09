@@ -82,7 +82,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<UserInformation> GetData()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var data = await db.GetUserInformation(_userToRetrieve);
                 if (data != null)

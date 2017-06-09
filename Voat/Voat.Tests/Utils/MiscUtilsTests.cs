@@ -148,10 +148,10 @@ namespace Voat.Tests.Utils
             const string testString = "🆆🅰🆂 🅶🅴🆃🆃🅸🅽🅶 🅲🅰🆄🅶🅷🆃 🅿🅰🆁🆃 🅾🅵 🆈🅾🆄🆁 🅿🅻🅰🅽🅴";
             const string testStringWithoutUnicode = "was getting caught part of your plane";
 
-            bool result = Formatting.ContainsUnicode(testString);
+            bool result = testString.ContainsUnicode();
             Assert.IsTrue(result, "Unicode was not detected.");
 
-            bool resultWithoutUnicode = Formatting.ContainsUnicode(testStringWithoutUnicode);
+            bool resultWithoutUnicode = testStringWithoutUnicode.ContainsUnicode();
             Assert.IsFalse(resultWithoutUnicode, "Unicode was not detected.");
         }
 
@@ -161,7 +161,7 @@ namespace Voat.Tests.Utils
         {
             const string testString = "\u0000\u0001\u0002\u0003\u0004\u0005\u0006\n\n\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇ";
 
-            bool result = Formatting.ContainsUnicode(testString);
+            bool result = testString.ContainsUnicode();
             Assert.IsTrue(result, "Unicode was not detected.");
 
         }
@@ -170,7 +170,7 @@ namespace Voat.Tests.Utils
         public void TestUnicodeDetection3()
         {
             const string testString = "ÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
-            bool result = Formatting.ContainsUnicode(testString);
+            bool result = testString.ContainsUnicode();
             Assert.IsFalse(result, "Unicode was detected.");
         }
         [TestMethod]
@@ -178,7 +178,7 @@ namespace Voat.Tests.Utils
         public void TestTitleStriping1()
         {
             const string testString = "\u0000\u0001\u0002\u0003\u0004\u0005\u0006\n\n\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f";
-            var result = Formatting.StripUnicode(testString);
+            var result = testString.StripUnicode();
             Assert.AreEqual("", result);
         }
         [TestMethod]
@@ -186,7 +186,7 @@ namespace Voat.Tests.Utils
         public void TestTitleStriping2()
         {
             const string testString = "ÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
-            var result = Formatting.StripUnicode(testString);
+            var result = testString.StripUnicode();
             Assert.AreNotEqual("", result);
         }
 
@@ -197,7 +197,7 @@ namespace Voat.Tests.Utils
             const string testString = "NSA holds info over US citizens like loaded gun, but says ‘trust me’ – Snowden";
             const string testStringWithoutUnicode = "NSA holds info over US citizens like loaded gun, but says trust me Snowden";
 
-            string result = Formatting.StripUnicode(testString);
+            string result = testString.StripUnicode();
             Assert.IsTrue(result.Equals(testStringWithoutUnicode));
         }
         [TestMethod]
@@ -205,23 +205,23 @@ namespace Voat.Tests.Utils
         public void TestUnicodeStripping2()
         {
             string testString = "|       |";
-            string result = Formatting.StripWhiteSpace(testString);
+            string result = testString.StripWhiteSpace();
             Assert.AreEqual("| |", result, "Multiple whitespace strip");
 
             testString = "| |";
-            result = Formatting.StripWhiteSpace(testString);
+            result = testString.StripWhiteSpace();
             Assert.AreEqual("| |", result, "Single whitespace strip");
 
             testString = " | |";
-            result = Formatting.StripWhiteSpace(testString);
+            result = testString.StripWhiteSpace();
             Assert.AreEqual("| |", result, "Leading whitespace strip");
 
             testString = "|     |  ";
-            result = Formatting.StripWhiteSpace(testString);
+            result = testString.StripWhiteSpace();
             Assert.AreEqual("| |", result, "Trailing whitespace strip");
 
             testString = null;
-            result = Formatting.StripWhiteSpace(testString);
+            result = testString.StripWhiteSpace();
             Assert.IsNull(result, "Null should return null");
         }
         [TestMethod]
@@ -229,16 +229,16 @@ namespace Voat.Tests.Utils
         public void TestZeroPluralizer()
         {
 
-            string result = Formatting.PluralizeIt(0, "xxx");
+            string result = 0.PluralizeIt("xxx");
             Assert.AreEqual("0 xxxs", result);
 
-            result = Formatting.PluralizeIt(0.0, "xxx");
+            result = 0.0.PluralizeIt("xxx");
             Assert.AreEqual("0 xxxs", result);
 
-            result = Formatting.PluralizeIt(0, "xxx", "none");
+            result = 0.PluralizeIt("xxx", "none");
             Assert.AreEqual("none", result);
 
-            result = Formatting.PluralizeIt(0.0, "xxx", "none");
+            result = 0.0.PluralizeIt("xxx", "none");
             Assert.AreEqual("none", result);
 
         }

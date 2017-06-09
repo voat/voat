@@ -48,13 +48,14 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Comment")]
         public async Task Comment_Down()
         {
-            using (var db = new Voat.Data.Repository())
+            string userName = "User500CCP";
+            var user = TestHelper.SetPrincipal(userName, null); //This user has one comment with 101 likes
+
+            using (var db = new Voat.Data.Repository(user))
             {
                var x = await db.GetComment(context.CommentID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
-                string userName = "User500CCP";
-                TestHelper.SetPrincipal(userName, null); //This user has one comment with 101 likes
 
                 var response = db.VoteComment(context.CommentID, -1, IpHash.CreateHash("127.0.0.1"));
                 Assert.IsTrue(response.Success, response.Message);
@@ -74,10 +75,10 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Comment")]
         public void Comment_Down_NoCCP()
         {
-            using (var db = new Voat.Data.Repository())
-            {
-                TestHelper.SetPrincipal("TestUser03", null); //Random User has no CCP
+            var user = TestHelper.SetPrincipal("TestUser03", null); //Random User has no CCP
 
+            using (var db = new Voat.Data.Repository(user))
+            {
                 var response = db.VoteComment(context.CommentID, -1, IpHash.CreateHash("127.0.0.1"));
 
                 Assert.AreEqual(Status.Denied, response.Status);
@@ -88,13 +89,13 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Comment")]
         public async Task Comment_Reset_Default()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal("User100CCP", null);
+
+            using (var db = new Voat.Data.Repository(user))
             {
                 var x = await db.GetComment(context.CommentID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
-
-                TestHelper.SetPrincipal("User100CCP", null);
 
                 var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
                 
@@ -126,13 +127,13 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Comment")]
         public async Task Comment_Reset_NoRevoke()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal("User100CCP", null);
+
+            using (var db = new Voat.Data.Repository(user))
             {
                 var x = await db.GetComment(context.CommentID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
-
-                TestHelper.SetPrincipal("User100CCP", null);
 
                 var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
 
@@ -155,13 +156,14 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Comment")]
         public async Task Comment_Up()
         {
-            using (var db = new Voat.Data.Repository())
+            string userName = "User50CCP";
+            var user = TestHelper.SetPrincipal(userName, null);
+
+            using (var db = new Voat.Data.Repository(user))
             {
                 var x = await db.GetComment(context.CommentID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
-                string userName = "User50CCP";
-                TestHelper.SetPrincipal(userName, null);
 
                 var response = db.VoteComment(context.CommentID, 1, IpHash.CreateHash("127.0.0.1"));
                 
@@ -203,8 +205,11 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote")]
         public void EnsureInvalidVoteValueThrowsException_Com()
         {
+            string userName = "User500CCP";
+            var user = TestHelper.SetPrincipal(userName, null); //This user has one comment with 101 likes
+
             VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
-                using (var db = new Voat.Data.Repository())
+                using (var db = new Voat.Data.Repository(user))
                 {
                     db.VoteComment(121, -2, IpHash.CreateHash("127.0.0.1"));
                 }
@@ -216,8 +221,11 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote")]
         public void EnsureInvalidVoteValueThrowsException_Sub()
         {
+            string userName = "User500CCP";
+            var user = TestHelper.SetPrincipal(userName, null); //This user has one comment with 101 likes
+
             VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
-                using (var db = new Voat.Data.Repository())
+                using (var db = new Voat.Data.Repository(user))
                 {
                     db.VoteSubmission(1, 21, IpHash.CreateHash("127.0.0.1"));
                 }
@@ -229,20 +237,19 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Submission")]
         public void Submission_Down()
         {
-            using (var db = new Voat.Data.Repository())
+            string userName = "User500CCP";
+            var user = TestHelper.SetPrincipal(userName, null); //This user has one comment with 101 likes
+
+            using (var db = new Voat.Data.Repository(user))
             {
                 var x = db.GetSubmission(context.SubmissionID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
 
-                string userName = "User500CCP";
-                TestHelper.SetPrincipal(userName, null); //This user has one comment with 101 likes
-
                 var response = db.VoteSubmission(context.SubmissionID, -1, IpHash.CreateHash("127.0.0.1"));
 
                 Assert.AreEqual(Status.Success, response.Status, response.Message);
                 Assert.AreEqual(-1, response.RecordedValue, "Recorded value off");
-
 
                 var expectedUpCount = ups;
                 var expectedDownCount = downs + 1;
@@ -261,12 +268,11 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Submission")]
         public void Submission_Down_NoCCP()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal("TestUser03", null); //Random User has no CCP
+
+            using (var db = new Voat.Data.Repository(user))
             {
-                TestHelper.SetPrincipal("TestUser03", null); //Random User has no CCP
-
                 var response = db.VoteSubmission(context.SubmissionID, -1, IpHash.CreateHash("127.0.0.1"));
-
                 Assert.AreEqual(Status.Denied, response.Status);
             }
         }
@@ -275,13 +281,13 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Submission")]
         public void Submission_Reset_Default()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal("User100CCP", null);
+
+            using (var db = new Voat.Data.Repository(user))
             {
                 var x = db.GetSubmission(context.SubmissionID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
-
-                TestHelper.SetPrincipal("User100CCP", null);
 
                 var response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
 
@@ -308,14 +314,14 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Submission")]
         public void Submission_Reset_NoRevoke()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal("User100CCP", null);
+
+            using (var db = new Voat.Data.Repository(user))
             {
                 var x = db.GetSubmission(context.SubmissionID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
-
-                TestHelper.SetPrincipal("User100CCP", null);
-
+                
                 var response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
 
                 Assert.AreEqual(Status.Success, response.Status, "Vote was not successfull");
@@ -341,14 +347,13 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Submission")]
         public void Submission_Up()
         {
-            using (var db = new Voat.Data.Repository())
+            string userName = "User50CCP";
+            var user = TestHelper.SetPrincipal(userName, null);
+            using (var db = new Voat.Data.Repository(user))
             {
                 var x = db.GetSubmission(context.SubmissionID);
                 var ups = x.UpCount;
                 var downs = x.DownCount;
-
-                string userName = "User50CCP";
-                TestHelper.SetPrincipal(userName, null);
 
                 var response = db.VoteSubmission(context.SubmissionID, 1, IpHash.CreateHash("127.0.0.1"));
 

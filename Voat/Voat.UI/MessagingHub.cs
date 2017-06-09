@@ -31,6 +31,7 @@ using Microsoft.AspNet.SignalR.Hubs;
 using System.Collections.Generic;
 using Voat.Utilities;
 using Microsoft.AspNetCore.Authorization;
+using Voat.Common;
 
 namespace Voat
 {
@@ -59,7 +60,7 @@ namespace Voat
             {
 
                 // discard message if it contains unicode
-                if (Formatting.ContainsUnicode(message))
+                if (message.ContainsUnicode())
                 {
                     return;
                 }
@@ -95,7 +96,7 @@ namespace Voat
 
                             var chatMessage = room.CreateMessage(Context.User.Identity.Name, formattedMessage);
 
-                            var context = new Rules.VoatRuleContext();
+                            var context = new Rules.VoatRuleContext(Context.User);
                             context.PropertyBag.ChatMessage = chatMessage;
 
                             var outcome = Rules.VoatRulesEngine.Instance.EvaluateRuleSet(context, RulesEngine.RuleScope.PostChatMessage);

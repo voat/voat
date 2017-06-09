@@ -51,7 +51,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<IEnumerable<Domain.Models.SubverseBan>> GetData()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 return await repo.GetModLogBannedUsers(_subverse, _options);
             }

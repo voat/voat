@@ -33,6 +33,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
+using Voat.Common;
 using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Utilities.Components;

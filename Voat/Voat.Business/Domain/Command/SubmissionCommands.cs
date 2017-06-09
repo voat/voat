@@ -40,9 +40,11 @@ namespace Voat.Domain.Command
             _userSubmission = submission;
         }
 
+        public UserSubmission UserSubmission { get => _userSubmission; set => _userSubmission = value; }
+
         protected override async Task<CommandResponse<Domain.Models.Submission>> ProtectedExecute()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var result = await db.PostSubmission(_userSubmission);
                 return CommandResponse.Map(result, result.Response);
@@ -65,7 +67,7 @@ namespace Voat.Domain.Command
         {
             var result = await Task.Run(() =>
             {
-                using (var db = new Repository())
+                using (var db = new Repository(User))
                 {
                     return db.DeleteSubmission(_submissionID, _reason);
                 }
@@ -95,7 +97,7 @@ namespace Voat.Domain.Command
 
         protected override async Task<Tuple<CommandResponse<Domain.Models.Submission>, Data.Models.Submission>> CacheExecute()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var result = await db.EditSubmission(_submissionID, _submission);
                 if (result.Success)

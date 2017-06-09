@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Common;
 using Voat.Data;
 using Voat.Domain.Models;
 using Voat.Utilities;
@@ -143,12 +144,12 @@ namespace Voat.Domain.Query
         public override async Task<IEnumerable<Submission>> ExecuteAsync()
         {
             var result = await base.ExecuteAsync();
-            DomainMaps.HydrateUserData(result);
+            DomainMaps.HydrateUserData(User, result);
             return result;
         }
         protected override async Task<IEnumerable<Domain.Models.Submission>> GetData()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var result = await db.GetSubmissionsDapper(this._domainReference, this._options).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 return result.Map();

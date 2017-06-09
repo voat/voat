@@ -58,7 +58,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<SubverseInformation> GetData()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var info = db.GetSubverseInfo(_subverse, true).Map();
 

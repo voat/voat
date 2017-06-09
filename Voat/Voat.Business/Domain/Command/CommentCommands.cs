@@ -52,10 +52,10 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse<Domain.Models.Comment>> CacheExecute()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var data = await db.PostComment(this.SubmissionID, this.ParentCommentID, this.Content);
-                var mapped = CommandResponse.Map(data, data.Response.Map());
+                var mapped = CommandResponse.Map(data, data.Response.Map(User));
                 return data;
             }
         }
@@ -104,7 +104,7 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse<Comment>> CacheExecute()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var result = await db.DeleteComment(this.CommentID, this.Reason);
                 return result;
@@ -149,10 +149,10 @@ namespace Voat.Domain.Command
 
         protected override async Task<Tuple<CommandResponse<Domain.Models.Comment>, Comment>> CacheExecute()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var result = await db.EditComment(this.CommentID, this.Content);
-                return Tuple.Create(new CommandResponse<Domain.Models.Comment>(result.Response.Map(null), result.Status, result.Message), result.Response);
+                return Tuple.Create(new CommandResponse<Domain.Models.Comment>(result.Response.Map(User, null), result.Status, result.Message), result.Response);
             }
         }
 

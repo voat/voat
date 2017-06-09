@@ -43,6 +43,7 @@ using Voat.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing;
+using Voat.Common;
 
 namespace Voat.Controllers
 {

@@ -23,6 +23,7 @@
 #endregion LICENSE
 
 using System.Collections.Generic;
+using Voat.Common;
 
 namespace Voat.Configuration
 {

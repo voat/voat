@@ -49,7 +49,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<IEnumerable<Data.Models.SubmissionRemovalLog>> GetData()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 return await repo.GetModLogRemovedSubmissions(_subverse, _options);
             }

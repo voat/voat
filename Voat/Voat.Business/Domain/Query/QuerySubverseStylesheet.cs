@@ -60,7 +60,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<Stylesheet> GetData()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var css = db.GetSubverseStylesheet(_subverse);
                 return new Stylesheet() { Raw = css, Minimized = Minify(css) };

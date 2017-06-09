@@ -45,7 +45,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<IEnumerable<Domain.Models.Submission>> GetData()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 return repo.GetTopViewedSubmissions().Map();
             }

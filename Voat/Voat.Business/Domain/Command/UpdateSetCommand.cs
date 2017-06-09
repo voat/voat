@@ -43,7 +43,7 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse<Domain.Models.Set>> CacheExecute()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var response = await repo.CreateOrUpdateSet(_set);
 

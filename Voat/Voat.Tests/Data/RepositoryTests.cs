@@ -26,6 +26,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Data;
@@ -43,30 +44,26 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Block"), TestCategory("Repository.Block.Subverse")]
         public async Task Block_Subverse()
         {
-            using (var db = new Voat.Data.Repository())
+            string name = "whatever";
+            string userName = "TestUser01";
+
+            var user = TestHelper.SetPrincipal(userName); //Sets Thread.CurrentPrincipal 
+
+            using (var db = new Voat.Data.Repository(user))
             {
-                string name = "whatever";
-                string userName = "TestUser01";
-
-                TestHelper.SetPrincipal(userName); //Sets Thread.CurrentPrincipal 
-
-
-                //This works because we have not awaited yet (executed a Task on a seperate thread) and security info in Thread.CurrentPrincipal is passed 
-                //correctly on first call.
-                Assert.AreEqual(userName, UserIdentity.UserName, "Port Issue: Lost User Context Before");
                 await db.Block(DomainType.Subverse, name);
                 
-                //After call returns, principal information on the thread is lost, thus this second assert will fail when it should pass as it did with full .net 
-                //This seems to only happen when the call returns after await
-                //I have tried various changes: .ConfigureAwait(true|false), Task.Run(...), t.Wait(), etc. and
-                //I can't seem to figure out how to get the security context associated with Thread.CurrentPrincipal to 
-                //sync after an await call or any Task execution for that matter.
-                Assert.AreEqual(userName, UserIdentity.UserName, "Port Issue: Lost User Context After");
+                ////After call returns, principal information on the thread is lost, thus this second assert will fail when it should pass as it did with full .net 
+                ////This seems to only happen when the call returns after await
+                ////I have tried various changes: .ConfigureAwait(true|false), Task.Run(...), t.Wait(), etc. and
+                ////I can't seem to figure out how to get the security context associated with Thread.CurrentPrincipal to 
+                ////sync after an await call or any Task execution for that matter.
+                //Assert.AreEqual(userName, UserIdentity.UserName, "Port Issue: Lost User Context After");
 
-                //We need to figure out if this is a bug, an issue with changes between .net framework and core/standard, or if this is an MSTest issue
+                ////We need to figure out if this is a bug, an issue with changes between .net framework and core/standard, or if this is an MSTest issue
 
-                //We can not make calls to TestHelper.SetPrincipal(userName); repeatedly as this will not guarantee tests pass in API or UI as these areas often
-                //issue multiple commands as part of an action
+                ////We can not make calls to var user = TestHelper.SetPrincipal(userName); repeatedly as this will not guarantee tests pass in API or UI as these areas often
+                ////issue multiple commands as part of an action
 
                 var blocks = await db.GetBlockedSubverses(userName);
                 Assert.IsNotNull(blocks);
@@ -84,8 +81,8 @@ namespace Voat.Tests.Repository
         public async Task Block_Subverse_NoAuthentication()
         {
             await VoatAssert.ThrowsAsync<VoatSecurityException>(() => {
-                TestHelper.SetPrincipal(null);
-                using (var db = new Voat.Data.Repository())
+                var user = TestHelper.SetPrincipal(null);
+                using (var db = new Voat.Data.Repository(user))
                 {
                     return db.Block(DomainType.Subverse, "test");
                 }
@@ -99,10 +96,10 @@ namespace Voat.Tests.Repository
         public async Task Block_Subverse_SubverseDoesNotExist()
         {
             string userName = "TestUser01";
+            var user = TestHelper.SetPrincipal(userName);
             await VoatAssert.ThrowsAsync<VoatNotFoundException>(() => {
-                using (var db = new Voat.Data.Repository())
+                using (var db = new Voat.Data.Repository(user))
                 {
-                    TestHelper.SetPrincipal(userName);
                     return db.Block(DomainType.Subverse, "happyhappyjoyjoy");
                 }
             });
@@ -115,12 +112,13 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Block"), TestCategory("Repository.Block.Subverse")]
         public async Task Block_Subverse_Toggle()
         {
-            using (var db = new Voat.Data.Repository())
+            string userName = "TestUser02";
+
+            var user = TestHelper.SetPrincipal(userName);
+
+            using (var db = new Voat.Data.Repository(user))
             {
                 string name = "whatever";
-                string userName = "TestUser02";
-
-                TestHelper.SetPrincipal(userName);
 
                 await db.Block(DomainType.Subverse, name, SubscriptionAction.Toggle);
 
@@ -141,10 +139,9 @@ namespace Voat.Tests.Repository
         public async Task PostSubmission_InvalidSubveseFails()
         {
             string userName = "TestUser01";
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal(userName);
+            using (var db = new Voat.Data.Repository(user))
             {
-                TestHelper.SetPrincipal(userName);
-
                 var response = await db.PostSubmission(new UserSubmission()
                 {
                     Subverse = "** Invalid Subverse * *",
@@ -161,7 +158,9 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository")]
         public void GetAnonymousComments()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal(null);
+
+            using (var db = new Voat.Data.Repository(user))
             {
                 var comments = db.GetCommentTree(2, null, null);
                 foreach (var c in comments)
@@ -175,7 +174,8 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository")]
         public void GetAnonymousSubmission()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal(null);
+            using (var db = new Voat.Data.Repository(user))
             {
                 var anon_sub = db.GetSubmission(2);
                 Assert.IsTrue(anon_sub.UserName == anon_sub.ID.ToString());
@@ -186,7 +186,8 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository")]
         public async Task GetSubmission()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal(null);
+            using (var db = new Voat.Data.Repository(user))
             {
                 var s = await db.GetSubmissionsDapper(new DomainReference(DomainType.Subverse, "unit"), new SearchOptions()).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 Assert.IsTrue(s.Any());
@@ -198,7 +199,8 @@ namespace Voat.Tests.Repository
         [TestCategory("Anon")]
         public async Task GetSubmissionsFilterAnonymous()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal(null);
+            using (var db = new Voat.Data.Repository(user))
             {
                 var anon_sub = await db.GetSubmissionsDapper(new DomainReference(DomainType.Subverse, "anon"), SearchOptions.Default).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 var first = anon_sub.OrderBy(x => x.CreationDate).First();
@@ -212,7 +214,8 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("User"), TestCategory("User.Preferences")]
         public async Task GetUserPrefernces()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal(null);
+            using (var db = new Voat.Data.Repository(user))
             {
                 var p = await db.GetUserPreferences("unit");
                 Assert.IsTrue(p != null);
@@ -226,7 +229,8 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("User"), TestCategory("User.Preferences")]
         public async Task GetUserPrefernces_UserNotExists()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal(null);
+            using (var db = new Voat.Data.Repository(user))
             {
                 var p = await db.GetUserPreferences("asrtastarstarstarstart343");
                 Assert.AreNotEqual(null, p);
@@ -237,9 +241,9 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository")]
         public async Task PostSubmission()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal("TestUser01");
+            using (var db = new Voat.Data.Repository(user))
             {
-                TestHelper.SetPrincipal("TestUser01");
 
                 var m = await db.PostSubmission(new UserSubmission()
                 {
@@ -259,7 +263,8 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository")]
         public void SubverseRetrieval()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal(null);
+            using (var db = new Voat.Data.Repository(user))
             {
                 var info = db.GetSubverseInfo("unit");
                 Assert.IsTrue(info.Title == "v/unit");
@@ -270,7 +275,8 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository")]
         public async Task SaveComment()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal(null);
+            using (var db = new Voat.Data.Repository(user))
             {
                 var result = await db.Save(ContentType.Comment, 1);
                 Assert.AreEqual(Status.Success, result.Status);
@@ -282,7 +288,8 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository")]
         public async Task SaveComment_Force()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal(null);
+            using (var db = new Voat.Data.Repository(user))
             {
                 var result =  await db.Save(ContentType.Comment, 3, true);
                 Assert.AreEqual(Status.Success, result.Status);
@@ -300,7 +307,8 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository")]
         public async Task SaveComment_ForceUnSave()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal(null);
+            using (var db = new Voat.Data.Repository(user))
             {
                 var result = await db.Save(ContentType.Comment, 4, false);
                 Assert.AreEqual(Status.Success, result.Status);
@@ -317,7 +325,8 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository")]
         public async Task SaveComment_Toggle()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal(null);
+            using (var db = new Voat.Data.Repository(user))
             {
                 var result = await db.Save(ContentType.Comment, 2);
                 Assert.AreEqual(Status.Success, result.Status);
@@ -337,11 +346,10 @@ namespace Voat.Tests.Repository
         public async Task PostSubmission_BannedDomain()
         {
             string userName = "TestUser10";
+            var user = TestHelper.SetPrincipal(userName);
 
-            using (var db = new Voat.Data.Repository())
+            using (var db = new Voat.Data.Repository(user))
             {
-                TestHelper.SetPrincipal(userName);
-
                 var result = await db.PostSubmission(new UserSubmission() { Subverse = "unit", Title = "Can I get a banned domain past super secure code?", Content = "Check out my new post: http://www.fleddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics" });
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Success, "Submitting content with banned domain did not get rejected");
@@ -355,10 +363,9 @@ namespace Voat.Tests.Repository
         public async Task PostComment_BannedDomain()
         {
             string userName = "TestUser10";
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal(userName);
+            using (var db = new Voat.Data.Repository(user))
             {
-                TestHelper.SetPrincipal(userName);
-
                 var result = await db.PostComment(1, null, "Check out my new post: http://www.fleddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics");
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Success, "Submitting content with banned domain did not get rejected");
@@ -370,10 +377,9 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Submission")]
         public async Task PostSubmission_AuthorizedOnly_Allow()
         {
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal("unit");
+            using (var db = new Voat.Data.Repository(user))
             {
-                TestHelper.SetPrincipal("unit");
-
                 var result = await db.PostSubmission(new UserSubmission() { Subverse = "AuthorizedOnly", Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsTrue(result.Success, "Submitting to authorized only subverse was not allowed by admin");
@@ -386,10 +392,10 @@ namespace Voat.Tests.Repository
         public async Task PostSubmission_AuthorizedOnly_Denied()
         {
             string userName = "TestUser11";
-            using (var db = new Voat.Data.Repository())
-            {
-                TestHelper.SetPrincipal(userName);
+            var user = TestHelper.SetPrincipal(userName);
 
+            using (var db = new Voat.Data.Repository(user))
+            {
                 var result = await db.PostSubmission( new UserSubmission() { Subverse= "AuthorizedOnly", Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Success, "Submitting to authorized only subverse was allowed by non admin");
@@ -403,8 +409,8 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Submission")]
         public void Get_SubversesUser_Moderates()
         {
-
-            using (var db = new Voat.Data.Repository())
+            var user = TestHelper.SetPrincipal(null);
+            using (var db = new Voat.Data.Repository(user))
             {
                 var result = db.GetSubversesUserModerates("unit");
                 Assert.IsNotNull(result, "Result was null");

@@ -26,7 +26,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading;
+using Voat.Common;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Models;
@@ -43,15 +45,15 @@ namespace Voat.Domain
             return mapped;
         }
 
-        public static IEnumerable<Domain.Models.Comment> Map(this IEnumerable<Data.Models.Comment> list, string subverse)
+        public static IEnumerable<Domain.Models.Comment> Map(this IEnumerable<Data.Models.Comment> list, IPrincipal user, string subverse)
         {
-            var mapped = list.Select(x => x.Map(subverse)).ToList();
+            var mapped = list.Select(x => x.Map(user, subverse)).ToList();
             return mapped;
         }
 
-        public static IEnumerable<Domain.Models.Comment> Map(this IEnumerable<Domain.Models.Comment> list, bool populateUserState = false)
+        public static IEnumerable<Domain.Models.Comment> Map(this IEnumerable<Domain.Models.Comment> list, IPrincipal user, bool populateUserState = false)
         {
-            var mapped = list.Select(x => { HydrateUserData(x); return x; }).ToList();
+            var mapped = list.Select(x => { HydrateUserData(user, x); return x; }).ToList();
             return mapped;
         }
 
@@ -233,12 +235,12 @@ namespace Voat.Domain
             return null;
         }
 
-        public static Domain.Models.Comment Map(this Data.Models.Comment comment, string subverse, bool populateUserState = false)
+        public static Domain.Models.Comment Map(this Data.Models.Comment comment, IPrincipal user, string subverse, bool populateUserState = false)
         {
             Domain.Models.Comment result = null;
             if (comment != null)
             {
-                result = MapToNestedComment(comment, subverse, populateUserState);
+                result = MapToNestedComment(comment, user, subverse, populateUserState);
             }
             return result;
         }
@@ -327,7 +329,7 @@ namespace Voat.Domain
             return result;
         }
 
-        public static NestedComment Map(this usp_CommentTree_Result treeComment, string submissionOwnerName, IEnumerable<VoteValue> commentVotes = null, IEnumerable<BlockedItem> userBlocks = null)
+        public static NestedComment Map(this usp_CommentTree_Result treeComment, IPrincipal user, string submissionOwnerName, IEnumerable<VoteValue> commentVotes = null, IEnumerable<BlockedItem> userBlocks = null)
         {
             NestedComment result = null;
             if (treeComment != null)
@@ -352,12 +354,12 @@ namespace Voat.Domain
                 result.IsSubmitter = (treeComment.UserName == submissionOwnerName);
 
                 //Set User State and secure comment
-                HydrateUserData(result, false, commentVotes, userBlocks);
+                HydrateUserData(user, result, false, commentVotes, userBlocks);
             }
             return result;
         }
 
-        public static NestedComment MapToNestedComment(this Data.Models.Comment comment, string subverse, bool populateUserState = false)
+        public static NestedComment MapToNestedComment(this Data.Models.Comment comment, IPrincipal user, string subverse, bool populateUserState = false)
         {
             NestedComment result = null;
             if (comment != null)
@@ -390,12 +392,12 @@ namespace Voat.Domain
                 }
 
                 //Set User State and secure comment
-                HydrateUserData(result, populateUserState);
+                HydrateUserData(user, result, populateUserState);
             }
             return result;
         }
 
-        public static NestedComment Map(this Domain.Models.Comment comment, bool populateMissingUserState = false)
+        public static NestedComment Map(this Domain.Models.Comment comment, IPrincipal user, bool populateMissingUserState = false)
         {
             NestedComment result = null;
             if (comment != null)
@@ -418,17 +420,17 @@ namespace Voat.Domain
                 result.Subverse = comment.Subverse;
 
                 //Set User State and secure comment
-                HydrateUserData(result, populateMissingUserState);
+                HydrateUserData(user, result, populateMissingUserState);
             }
             return result;
         }
-        public static void HydrateUserData(IEnumerable<Domain.Models.Submission> submissions)
+        public static void HydrateUserData(IPrincipal user, IEnumerable<Domain.Models.Submission> submissions)
         {
-            if (UserIdentity.IsAuthenticated && (submissions != null && submissions.Any()))
+            if (user.Identity.IsAuthenticated && (submissions != null && submissions.Any()))
             {
                 using (var repo = new Repository())
                 {
-                    var votes = repo.UserVoteStatus(UserIdentity.UserName, ContentType.Submission, submissions.Select(x => x.ID).ToArray());
+                    var votes = repo.UserVoteStatus(user.Identity.Name, ContentType.Submission, submissions.Select(x => x.ID).ToArray());
                     foreach (var s in submissions)
                     {
                         var voteValue = votes.FirstOrDefault(x => x.ID == s.ID);
@@ -438,23 +440,23 @@ namespace Voat.Domain
                 }
             }
         }
-        public static void HydrateUserData(Domain.Models.Submission submission)
+        public static void HydrateUserData(IPrincipal user, Domain.Models.Submission submission)
         {
-            if (UserIdentity.IsAuthenticated && (submission != null))
+            if (user.Identity.IsAuthenticated && (submission != null))
             {
                 using (var repo = new Repository())
                 {
-                    var vote = repo.UserVoteStatus(UserIdentity.UserName, ContentType.Submission, submission.ID);
+                    var vote = repo.UserVoteStatus(user.Identity.Name, ContentType.Submission, submission.ID);
                     submission.Vote = vote;
                     //saves are cached
                 }
             }
         }
-        public static void HydrateUserData(IEnumerable<Domain.Models.Comment> comments)
+        public static void HydrateUserData(IPrincipal user, IEnumerable<Domain.Models.Comment> comments)
         {
-            if (UserIdentity.IsAuthenticated && (comments != null && comments.Any()))
+            if (user.Identity.IsAuthenticated && (comments != null && comments.Any()))
             {
-                string userName = UserIdentity.UserName;
+                string userName = user.Identity.Name;
                 if (!String.IsNullOrEmpty(userName))
                 {
                     using (var repo = new Repository())
@@ -465,7 +467,7 @@ namespace Voat.Domain
 
                         foreach (var comment in comments)
                         {
-                            HydrateUserData(comment, false, votes, blockedUsers);
+                            HydrateUserData(user, comment, false, votes, blockedUsers);
                             //comment.IsOwner = comment.UserName == userName;
                             //var voteValue = votes.FirstOrDefault(x => x.ID == comment.ID);
                             //comment.Vote = (voteValue == null ? 0 : voteValue.Value);
@@ -476,11 +478,11 @@ namespace Voat.Domain
                 }
             }
         }
-        public static void HydrateUserData(Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<VoteValue> commentVotes = null, IEnumerable<BlockedItem> userBlocks = null)
+        public static void HydrateUserData(IPrincipal user, Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<VoteValue> commentVotes = null, IEnumerable<BlockedItem> userBlocks = null)
         {
             if (comment != null)
             {
-                string userName = UserIdentity.UserName;
+                string userName = user.Identity.Name;
                 if (!String.IsNullOrEmpty(userName))
                 {
                     comment.IsOwner = comment.UserName == userName;
@@ -504,7 +506,7 @@ namespace Voat.Domain
                         comment.IsCollapsed = userBlocks.Any(x => comment.UserName.IsEqual(x.Name));
                     }
                     comment.IsSaved = false;
-                    comment.IsSaved = UserHelper.IsSaved(ContentType.Comment, comment.ID);
+                    comment.IsSaved = UserHelper.IsSaved(user, ContentType.Comment, comment.ID);
                 }
                 Protect(comment);
                 ////Swap UserName
@@ -542,7 +544,7 @@ namespace Voat.Domain
                 model.BlockAnonymized = preferences.BlockAnonymized;
                 model.CollapseCommentLimit = preferences.CollapseCommentLimit;
 
-                model.CommentSort = Extensions.AssignIfValidEnumValue(preferences.CommentSort, CommentSortAlgorithm.Top);
+                model.CommentSort = Voat.Common.Extensions.AssignIfValidEnumValue(preferences.CommentSort, CommentSortAlgorithm.Top);
 
                 model.DisableCSS = preferences.DisableCSS;
                 model.DisplayAds = preferences.DisplayAds;

@@ -28,6 +28,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Common;
 using Voat.Data;
 using Voat.Domain.Models;
 
@@ -50,7 +51,7 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse<bool?>> CacheExecute()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 //TODO: Convert to async repo method
                 var response = await repo.SetSubverseListChange(_setRef, _subverse, _action);

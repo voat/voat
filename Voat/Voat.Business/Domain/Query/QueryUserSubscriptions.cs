@@ -63,7 +63,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<IDictionary<DomainType, IEnumerable<string>>> GetData()
         {
-            using (var db = new Repository())
+            using (var db = new Repository(User))
             {
                 var data = db.GetSubscriptions(_userToRetrieve);
                 var dict = new Dictionary<DomainType, IEnumerable<string>>();

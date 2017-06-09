@@ -78,7 +78,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<IEnumerable<SubmissionComment>> GetData()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var data = await repo.GetUserComments(this._userName, this.SearchOptions);
                 return data;
@@ -113,7 +113,7 @@ namespace Voat.Domain.Query
 
         protected override async Task<IEnumerable<Domain.Models.Submission>> GetData()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var data = await repo.GetUserSubmissions(null, this._userName, this.SearchOptions);
                 return data.Map();

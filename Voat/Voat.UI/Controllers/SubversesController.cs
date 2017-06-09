@@ -39,6 +39,7 @@ using Voat.Domain.Query;
 using Voat.Domain.Command;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Voat.Common;
 
 namespace Voat.Controllers
 {

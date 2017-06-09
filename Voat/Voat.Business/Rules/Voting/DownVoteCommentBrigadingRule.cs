@@ -44,7 +44,7 @@ namespace Voat.Rules.Voting
             var q = new QueryComment(context.CommentID.Value);
             var comment = q.Execute();
 
-            using (var repo = new Repository())
+            using (var repo = new Repository(context.User))
             {
                 var count = repo.VoteCount(context.UserName, comment.UserName, Domain.Models.ContentType.Comment, Domain.Models.Vote.Down, _timeSpan);
                 if (count >= _threshold)

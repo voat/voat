@@ -22,6 +22,7 @@
 
 #endregion LICENSE
 
+using System;
 using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Domain.Models;
@@ -46,7 +47,12 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse<Message>> ProtectedExecute()
         {
-            using (var repo = new Repository())
+            if (String.IsNullOrEmpty(_message.Sender) &&  User.Identity.IsAuthenticated)
+            {
+                _message.Sender = User.Identity.Name;
+            }
+
+            using (var repo = new Repository(User))
             {
                 return await repo.SendMessage(_message, _forceSend, _ensureUserExists, _isAnonymized).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             }
@@ -66,7 +72,7 @@ namespace Voat.Domain.Command
 
         protected override async Task<CommandResponse<Message>> ProtectedExecute()
         {
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 return await repo.SendMessageReply(_messageID, _message).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             }
