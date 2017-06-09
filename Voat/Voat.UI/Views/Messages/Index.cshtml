@@ -204,7 +204,7 @@
                                                 </div>
                                                 <div class="panel-message-body">
                                                     @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml",
-                                                    Voat.Domain.DomainMaps.Map(comment, true),
+                                                    Voat.Domain.DomainMaps.Map(comment, User, true),
                                                     new ViewDataDictionary(ViewData) {
                                                         { "parentIsHidden", false },
                                                         { "SortOrder", Voat.Domain.Models.CommentSortAlgorithm.New },

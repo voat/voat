@@ -71,7 +71,7 @@
         </div>
     </div>
     <p class="">
-        <span>@Formatting.PluralizeIt(Model.SubscriberCount, "subscriber"), a @objectDescription created @Age.ToRelative(Model.CreationDate) ago</span>
+        <span>@Model.SubscriberCount.PluralizeIt("subscriber"), a @objectDescription created @Age.ToRelative(Model.CreationDate) ago</span>
         @if (Model.Type == Voat.Domain.Models.DomainType.Set && !String.IsNullOrEmpty(Model.OwnerName))
         {
             <span> by <a href="/user/@Model.OwnerName">@Model.OwnerName</a></span>

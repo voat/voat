@@ -74,19 +74,19 @@
     }
     bool showThumbnail = !String.IsNullOrEmpty(Model.ThumbnailUrl) && ((ViewBag.ShowThumbnail != null && ViewBag.ShowThumbnail == true) || (highlight && ViewBag.ShowThumbnailIfHighlighted != null && ViewBag.ShowThumbnailIfHighlighted == true));
     bool showCommentsLink = Model.Type == Voat.Domain.Models.SubmissionType.Link && (ViewBag.ShowCommentsLink == null || ViewBag.ShowCommentsLink != null && ViewBag.ShowCommentsLink != true);
-    var title = String.Format("Submitted by {0} {1} ago to {2}. {3}, {4}, {5}.", Model.IsAnonymized ? "Anon" : Model.UserName, Age.ToRelative(Model.CreationDate), Model.Subverse, Formatting.PluralizeIt(Model.UpCount, "Up"), Formatting.PluralizeIt(Model.DownCount, "Down"), Formatting.PluralizeIt(Model.CommentCount, "Comment"));
+    var title = String.Format("Submitted by {0} {1} ago to {2}. {3}, {4}, {5}.", Model.IsAnonymized ? "Anon" : Model.UserName, Age.ToRelative(Model.CreationDate), Model.Subverse, Model.UpCount.PluralizeIt("Up"), Model.DownCount.PluralizeIt("Down"), Model.CommentCount.PluralizeIt("Comment"));
 
-}
+            }
 
 <div class="submission id-@Model.ID @classes @submissionClass" data-fullname="@Model.ID" data-ups="@Model.UpCount" data-downs="@Model.DownCount">
     @if (showThumbnail)
-    {
+            {
         <div class="thumb">
             <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
         </div>
     }
     @if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
-    {
+        {
         <a href="@Model.Url" title="@title" onclick="$(this).parent().find('.summary').toggle(); return false;">@Model.Title</a>
     }
     else
@@ -109,7 +109,7 @@
                 @Html.Partial("~/Views/Shared/VotingIcons/_VotingIconsSubmissionFlat.cshtml", Model)
 
                 @if (!String.IsNullOrEmpty(Model.ThumbnailUrl))
-                {
+    {
                     <div class="thumb">
                         <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
                     </div>
@@ -118,10 +118,10 @@
                 <div class="usertext-body may-blank-within">
                     <div class="md">
                         @if (Model.Type == Voat.Domain.Models.SubmissionType.Text)
-                        {
-                            if (!String.IsNullOrEmpty(Model.FormattedContent))
-                            {
-                                @Html.Raw(Model.FormattedContent)
+    {
+        if (!String.IsNullOrEmpty(Model.FormattedContent))
+        {
+            @Html.Raw(Model.FormattedContent)
                             }
                             @*else
                             {
@@ -139,7 +139,7 @@
             </div>
            
             <div class="foot panel-message-body">
-                <a href="@commentsUrl" class="comments may-blank">@Formatting.PluralizeIt(Model.CommentCount, "comment", "discuss")</a>
+                <a href="@commentsUrl" class="comments may-blank">@Model.CommentCount.PluralizeIt("comment", "discuss")</a>
             </div>
     </div>
 </div>

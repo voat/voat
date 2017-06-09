@@ -59,7 +59,7 @@
     </div>
     <p class="">
         <span class="">
-            <span id="subscribercount">@Formatting.PluralizeIt(Model.SubscriberCount.Value, "subscriber"), a community for @Age.ToRelative(Model.CreationDate) added @Age.ToRelative(Model.SubscriptionDate) ago</span>
+            <span id="subscribercount">@Model.SubscriberCount.Value.PluralizeIt("subscriber"), a community for @Age.ToRelative(Model.CreationDate) added @Age.ToRelative(Model.SubscriptionDate) ago</span>
         </span>
     </p>
 </div>

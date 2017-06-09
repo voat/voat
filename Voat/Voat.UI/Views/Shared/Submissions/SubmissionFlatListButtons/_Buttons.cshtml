@@ -22,7 +22,7 @@
 
 <ul class="flat-list buttons">
     <li class="first">
-        <a href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID)" class="comments may-blank">@Formatting.PluralizeIt(Model.CommentCount, "comment")</a>
+        <a href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID)" class="comments may-blank">@Model.CommentCount.PluralizeIt("comment")</a>
     </li>
 
     @if (User.Identity.IsAuthenticated)

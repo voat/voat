@@ -47,7 +47,7 @@
            
 
             <span class="subscribers">
-                <span id="subscriberCount" class="number">@(Formatting.PluralizeIt(Model.SubscriberCount, "subscriber"))</span>
+                <span id="subscriberCount" class="number">@(Model.SubscriberCount.PluralizeIt("subscriber"))</span>
             </span>
             
 

@@ -139,7 +139,7 @@
                                             }
                                             else
                                             {
-                                                string trimmedComment = Formatting.TruncateAtWord(item.Content, 300);
+                                                string trimmedComment = item.Content.TruncateAtWord(300);
                                                 @Html.Raw(@Formatting.FormatMessage(trimmedComment))
                                             }
                                         </div>
@@ -193,7 +193,7 @@
                                             }
                                             else
                                             {
-                                                string trimmedComment = Formatting.TruncateAtWord(item.Content, 300);
+                                                string trimmedComment = item.Content.TruncateAtWord(300);
                                                 @Html.Raw(@Formatting.FormatMessage(trimmedComment))
                                             }
                                         </div>

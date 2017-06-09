@@ -60,7 +60,7 @@
                 </p>
                 <ul class="flat-list buttons">
                     <li class="first">
-                        <a href="@commentsUrl" class="comments empty may-blank">@Formatting.PluralizeIt(Model.CommentCount, "comment")</a>
+                        <a href="@commentsUrl" class="comments empty may-blank">@Model.CommentCount.PluralizeIt("comment")</a>
                     </li>
                 </ul>
                 <div class="expando" style="display: none">

@@ -62,7 +62,7 @@
                             subverse = item.Comment.Subverse;
                             id = item.Comment.ID;
 
-                            @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", Voat.Domain.DomainMaps.Map(item.Comment))
+                            @Html.Partial("~/Views/Shared/Comments/_SubmissionComment.cshtml", Voat.Domain.DomainMaps.Map(item.Comment, User))
                             break;
 
                         default:

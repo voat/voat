@@ -70,16 +70,17 @@
                 <div class="centered">
                     @{
                         Voat.Domain.Models.Submission topSubmission = null;
+                        var subToCheck = "announcements";
 
                         //try to get sticky if subverse
                         if (Model.IsActualSubverse)
                         {
-                            topSubmission = StickyHelper.GetSticky(Model.Context.Name);
+                            subToCheck = Model.Context.Name;
                         }
-                        else if (Model.Context == null || (Model.Context != null && Model.Context.Type != DomainType.Set))
-                        {
-                            topSubmission = StickyHelper.GetSticky("announcements");
-                        }
+
+                        var q = new Voat.Domain.Query.QueryStickies(Model.Context.Name);
+                        var stickies = await q.ExecuteAsync();
+                        topSubmission = stickies.FirstOrDefault();
 
                         if (topSubmission == null)
                         {
