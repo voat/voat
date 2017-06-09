@@ -1,46 +1,9 @@
 # Quick Status Updates
 
-This branch is building on .NET Core 2 Preview. It does not have Voat.UI included in solution file as we want to get Voat.Tests all passing before converting the UI project to .NET Core.
+This branch is fully building on .NET Core 2 Preview and a majority of unit tests and UI are ported and working.
 
-Right now we have the initializing and seeding of the databases working (PostgreSql, SqlServer), which means we can move into making unit tests pass. These are mostly releated to Entity Framework changes including keys and relationship changes.
-
+Right now we are concentrating on getting 100% unit test coverage. 
 
 # Voat Branch for .NET Core Port (With the PostgreSQL Branch Merged)
 
-Currently using .NET Core 2 Preview
-
-
-
-Phase #1
-Get it compiling. 
-
-## Standards on Phase #1
-If there is not a direct path to update code to .NET Core 2 Preview, comment it out using these standards:
-
-For sections of code inside a method:
-
-~~~
-//CORE_PORT: <Reason>
-throw new NotImplementedException("Core Port");
-/*
-  -- what you commented out
-*/
-~~~
-
-
-For entire methods:
-~~~
-//CORE_PORT: <Reason>
-/*  
-  public void SomeMethod(...)
-  ...
-*/
-~~~
-
-For single line issues such as attributes where you can not throw an exception:
-~~~
-//CORE_PORT: <Reason>
-// This is what was commented out 
-~~~
-
-... more to come
+Currently using .NET Core 2 Preview and Visual Studio 2017 Preview
