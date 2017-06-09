@@ -32,8 +32,8 @@ namespace Voat.Data.Models
         public string Title { get; set; }
         public double Rank { get; set; }
         public string Subverse { get; set; }
-        public long UpCount { get; set; }
-        public long DownCount { get; set; }
+        public int UpCount { get; set; }
+        public int DownCount { get; set; }
         public string Thumbnail { get; set; }
         public Nullable<System.DateTime> LastEditDate { get; set; }
         public string FlairLabel { get; set; }

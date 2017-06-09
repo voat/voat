@@ -27,8 +27,8 @@ namespace Voat.Data.Models
         public System.DateTime CreationDate { get; set; }
         public Nullable<System.DateTime> LastEditDate { get; set; }
         public Nullable<int> SubmissionID { get; set; }
-        public long UpCount { get; set; }
-        public long DownCount { get; set; }
+        public int UpCount { get; set; }
+        public int DownCount { get; set; }
         public Nullable<int> ParentID { get; set; }
         public bool IsAnonymized { get; set; }
         public bool IsDistinguished { get; set; }
