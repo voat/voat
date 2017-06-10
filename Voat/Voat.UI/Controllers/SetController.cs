@@ -274,7 +274,7 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<ActionResult> Create()
         {
-            if (VoatSettings.Instance.SetCreationDisabled)
+            if (!VoatSettings.Instance.SetCreationEnabled)
             {
                 return GenericErrorView(new ErrorViewModel() { Title = "Set Creation Disabled", Description = "Sorry, but set creation is currently disabled", FooterMessage = "Someone will be fired for this" });
             }
@@ -286,7 +286,7 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Set set)
         {
-            if (VoatSettings.Instance.SetCreationDisabled)
+            if (!VoatSettings.Instance.SetCreationEnabled)
             {
                 return GenericErrorView(new ErrorViewModel() { Title = "Set Creation Disabled", Description = "Sorry, but set creation is currently disabled", FooterMessage = "Someone will be fired for this" });
             }

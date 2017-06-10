@@ -225,7 +225,7 @@ namespace Voat.Controllers
             var model = new NewMessageViewModel() { Recipient = recipient, Subject = subject };
 
             var userData = UserData;
-            model.RequireCaptcha = userData.Information.CommentPoints.Sum < VoatSettings.Instance.MinimumCommentPointsForCaptchaMessaging && !VoatSettings.Instance.CaptchaDisabled;
+            model.RequireCaptcha = userData.Information.CommentPoints.Sum < VoatSettings.Instance.MinimumCommentPointsForCaptchaMessaging && VoatSettings.Instance.CaptchaEnabled;
 
             if (!string.IsNullOrEmpty(subverse))
             {
@@ -260,7 +260,7 @@ namespace Voat.Controllers
 
             //set this incase invalid submittal 
             var userData = UserData;
-            message.RequireCaptcha = userData.Information.CommentPoints.Sum < VoatSettings.Instance.MinimumCommentPointsForCaptchaMessaging && !VoatSettings.Instance.CaptchaDisabled;
+            message.RequireCaptcha = userData.Information.CommentPoints.Sum < VoatSettings.Instance.MinimumCommentPointsForCaptchaMessaging && VoatSettings.Instance.CaptchaEnabled;
 
             if (!ModelState.IsValid)
             {

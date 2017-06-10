@@ -633,7 +633,7 @@ namespace Voat
                }
             );
 
-            if (!VoatSettings.Instance.SignalRDisabled && !VoatSettings.Instance.ChatDisabled)
+            if (VoatSettings.Instance.SignalrEnabled && VoatSettings.Instance.ChatEnabled)
             {
                 routes.MapRoute(
                     name: "ChatPassword",
@@ -962,7 +962,7 @@ namespace Voat
             #endregion
 
             #region Sets
-            if (!VoatSettings.Instance.SetsDisabled)
+            if (VoatSettings.Instance.SetsEnabled)
             {
                 var setSuffix = "s";
 

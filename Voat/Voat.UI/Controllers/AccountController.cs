@@ -217,7 +217,7 @@ namespace Voat.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            if (VoatSettings.Instance.RegistrationDisabled)
+            if (!VoatSettings.Instance.RegistrationEnabled)
             {
                 return View("RegistrationDisabled");
             }
@@ -233,7 +233,7 @@ namespace Voat.Controllers
         [ValidateCaptcha]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            if (VoatSettings.Instance.RegistrationDisabled)
+            if (!VoatSettings.Instance.RegistrationEnabled)
             {
                 return View("RegistrationDisabled");
             }

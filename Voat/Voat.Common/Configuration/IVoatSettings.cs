@@ -4,9 +4,8 @@
     {
         bool AdsEnabled { get; }
         bool ApiKeyCreationEnabled { get; }
-        bool CacheDisabled { get; }
-        bool CaptchaDisabled { get; }
-        bool ChatDisabled { get; }
+        bool CaptchaEnabled { get; }
+        bool ChatEnabled { get; }
         int DailyCommentPostingQuota { get; }
         int DailyCommentPostingQuotaForNegativeScore { get; }
         int DailyCrossPostingQuota { get; }
@@ -40,12 +39,12 @@
         string RecaptchaPrivateKey { get; }
         string RecaptchaPublicKey { get; }
         bool RedirectToSiteDomain { get; }
-        bool RegistrationDisabled { get; }
+        bool RegistrationEnabled { get; }
         RuntimeStateSetting RuntimeState { get; }
-        bool SearchDisabled { get; }
-        bool SetCreationDisabled { get; }
-        bool SetsDisabled { get; }
-        bool SignalRDisabled { get; }
+        bool SearchEnabled { get; }
+        bool SetCreationEnabled { get; }
+        bool SetsEnabled { get; }
+        bool SignalrEnabled { get; }
         string SiteDescription { get; }
         string SiteDomain { get; }
         string SiteKeywords { get; }

@@ -38,11 +38,9 @@ namespace Voat.Configuration
 
         public bool ApiKeyCreationEnabled { get; set; } = false;
 
-        public bool CacheDisabled { get; set; } = false;
+        public bool CaptchaEnabled { get; set; } = true;
 
-        public bool CaptchaDisabled { get; set; } = false;
-
-        public bool ChatDisabled { get; set; } = true;
+        public bool ChatEnabled { get; set; } = false;
 
         public int DailyCommentPostingQuota { get; set; } = 20;
 
@@ -103,11 +101,11 @@ namespace Voat.Configuration
         /// </summary>
         public bool RedirectToSiteDomain { get; set; } = true;
 
-        public bool RegistrationDisabled { get; set; } = false;
-        public bool SearchDisabled { get; set; } = false;
-        public bool SetsDisabled { get; set; } = false;
-        public bool SetCreationDisabled { get; set; } = false;
-        public bool SignalRDisabled { get; set; } = false;
+        public bool RegistrationEnabled { get; set; } = true;
+        public bool SearchEnabled { get; set; } = true;
+        public bool SetsEnabled { get; set; } = true;
+        public bool SetCreationEnabled { get; set; } = true;
+        public bool SignalrEnabled { get; set; } = false;
 
         public string SiteDescription { get; set; } = "A community platform where you can have your say. No censorship.";
 

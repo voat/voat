@@ -44,7 +44,7 @@ namespace Voat.UI.Utilities
         {
             try
             {
-                if (!VoatSettings.Instance.CaptchaDisabled)
+                if (VoatSettings.Instance.CaptchaEnabled)
                 {
                     var request = filterContext.HttpContext.Request;
                     var captchaValid = ReCaptchaUtility.Validate(request).Result;

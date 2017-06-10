@@ -329,7 +329,7 @@ namespace Voat.Data
             else
             {
                 //Validation - MOVE TO RULES SYSTEM MAYBE
-                if (VoatSettings.Instance.SetCreationDisabled || VoatSettings.Instance.MaximumOwnedSets <= 0)
+                if (!VoatSettings.Instance.SetCreationEnabled || VoatSettings.Instance.MaximumOwnedSets <= 0)
                 {
                     return CommandResponse.FromStatus<Set>(null, Status.Denied, "Set creation is currently disabled");
                 }
