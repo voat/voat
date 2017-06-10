@@ -31,7 +31,7 @@
     var history = ChatHistory.History(Model.Room.ID).ToList();
     history.Add(new ChatMessage() { User = new UserContext(CONSTANTS.SYSTEM_USER_NAME), RoomID = Model.Room.Name, Message = "<p>You have joined the " + Model.Room.Name + " chatroom</p>", CreationDate = DateTime.UtcNow });
 }
-@if (!VoatSettings.Instance.SignalRDisabled && !VoatSettings.Instance.ChatDisabled)
+@if (VoatSettings.Instance.SignalrEnabled && VoatSettings.Instance.ChatEnabled)
 {
     <div tabindex=0 role="banner">
         <div>

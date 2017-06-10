@@ -138,7 +138,7 @@
                         @Html.CheckBoxFor(model => model.IsAnonymized, new { @class = "form-control" })
                     </div>
                 </div>
-                @if (Model.RequireCaptcha && !VoatSettings.Instance.CaptchaDisabled)
+                @if (Model.RequireCaptcha && VoatSettings.Instance.CaptchaEnabled)
                         {
                     <div class="alert alert-info">Are you a human? Please solve the reCAPTCHA challenge below (sorry, this is to prevent spam):</div>
 

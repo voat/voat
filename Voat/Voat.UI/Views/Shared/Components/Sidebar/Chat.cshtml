@@ -19,7 +19,7 @@
 *@
 
 @model Voat.Data.Models.Subverse
-@if (!VoatSettings.Instance.SignalRDisabled)
+@if (VoatSettings.Instance.SignalrEnabled)
 {
     <div class="spacer spacersection">
         <div class="sidecontentbox ">

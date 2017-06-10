@@ -48,7 +48,7 @@
             </a>
         </div>
     </div>
-    @if (!VoatSettings.Instance.SignalRDisabled && !VoatSettings.Instance.ChatDisabled)
+    @if (VoatSettings.Instance.SignalrEnabled && VoatSettings.Instance.ChatEnabled)
     {
         <div class="spacer">
             <div class="sidebox">
@@ -86,7 +86,7 @@
             </a>
         </div>
     </div>
-    @if (!VoatSettings.Instance.SetsDisabled)
+    @if (VoatSettings.Instance.SetsEnabled)
     {
         <div class="spacer">
             <div class="sidebox">

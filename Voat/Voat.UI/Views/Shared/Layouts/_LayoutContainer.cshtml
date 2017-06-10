@@ -138,7 +138,7 @@
         @Scripts.RenderFormat("<script type=\"text/javascript\" src=\"{0}\"></script>", "~/bundles/bootstrap")
     *@
 
-    @if (!VoatSettings.Instance.SignalRDisabled)
+    @if (VoatSettings.Instance.SignalrEnabled)
     {
         @* SignalR library. *@
         <script src="~/lib/legacy/jquery.signalR-2.2.0.js" defer></script>

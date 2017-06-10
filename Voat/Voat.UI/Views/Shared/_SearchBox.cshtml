@@ -21,7 +21,7 @@
 @model Voat.Models.ViewModels.SearchViewModel
 
 @{
-    if (!VoatSettings.Instance.SearchDisabled)
+    if (VoatSettings.Instance.SearchEnabled)
     {
         string selectedSubverse = "";
         if (!String.IsNullOrEmpty(Context.Request.Query["sub"]))
