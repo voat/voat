@@ -43,10 +43,10 @@ namespace Voat.Tests.Utils
             string result = "";
 
 
-            var originalSetting = Settings.UseContentDeliveryNetwork;
+            var originalSetting = VoatSettings.Instance.UseContentDeliveryNetwork;
 
             //CDN
-            Settings.configValues[CONFIGURATION.UseContentDeliveryNetwork] = true;
+            VoatSettings.Instance.UseContentDeliveryNetwork = true;
 
             result = VoatPathHelper.AvatarPath(username, avatarFileName, false, true, true);
             Assert.AreEqual(String.Format("~/avatars/{0}.jpg", username), result, "Condition:1");
@@ -55,23 +55,23 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(String.Format("//cdn.voat.co/avatars/{0}.jpg", username), result, "Condition:2");
 
             result = VoatPathHelper.AvatarPath(username, avatarFileName, true, true, true);
-            Assert.AreEqual($"http{(Settings.ForceHTTPS ? "s" : "")}://cdn.voat.co/avatars/{username}.jpg", result, "Condition:3");
+            Assert.AreEqual($"http{(VoatSettings.Instance.ForceHTTPS ? "s" : "")}://cdn.voat.co/avatars/{username}.jpg", result, "Condition:3");
 
 
             //LOCAL
-            Settings.configValues[CONFIGURATION.UseContentDeliveryNetwork] = false;
+            VoatSettings.Instance.UseContentDeliveryNetwork = false;
 
             result = VoatPathHelper.AvatarPath(username, avatarFileName, false, true, true);
             Assert.AreEqual(String.Format("~/Storage/Avatars/{0}.jpg", username), result, "Condition:1.2");
 
             result = VoatPathHelper.AvatarPath(username, avatarFileName, true, false, true);
-            Assert.AreEqual($"//{Settings.SiteDomain}/Storage/Avatars/{username}.jpg", result, "Condition:2.2");
+            Assert.AreEqual($"//{VoatSettings.Instance.SiteDomain}/Storage/Avatars/{username}.jpg", result, "Condition:2.2");
 
             result = VoatPathHelper.AvatarPath(username, avatarFileName, true, true, true);
-            Assert.AreEqual($"http{(Settings.ForceHTTPS ? "s" : "")}://{Settings.SiteDomain}/Storage/Avatars/{username}.jpg", result, "Condition:3.2");
+            Assert.AreEqual($"http{(VoatSettings.Instance.ForceHTTPS ? "s" : "")}://{VoatSettings.Instance.SiteDomain}/Storage/Avatars/{username}.jpg", result, "Condition:3.2");
 
             //Reset original value
-            Settings.configValues[CONFIGURATION.UseContentDeliveryNetwork] = originalSetting;
+            VoatSettings.Instance.UseContentDeliveryNetwork = originalSetting;
 
         }
 
@@ -89,10 +89,10 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(String.Format("~/Graphics/Badges/{0}", filename), result, "Condition:1");
 
             result = VoatPathHelper.BadgePath(filename, true, true);
-            Assert.AreEqual($"http{(Settings.ForceHTTPS ? "s" : "")}://{Settings.SiteDomain}/Graphics/Badges/{filename}", result, "Condition:2");
+            Assert.AreEqual($"http{(VoatSettings.Instance.ForceHTTPS ? "s" : "")}://{VoatSettings.Instance.SiteDomain}/Graphics/Badges/{filename}", result, "Condition:2");
 
             result = VoatPathHelper.BadgePath(filename, true, false);
-            Assert.AreEqual($"//{Settings.SiteDomain}/Graphics/Badges/{filename}", result, "Condition:3");
+            Assert.AreEqual($"//{VoatSettings.Instance.SiteDomain}/Graphics/Badges/{filename}", result, "Condition:3");
 
             //Assert.Inconclusive();
         }
@@ -106,10 +106,10 @@ namespace Voat.Tests.Utils
 
 
 
-            var originalSetting = Settings.UseContentDeliveryNetwork;
+            var originalSetting = VoatSettings.Instance.UseContentDeliveryNetwork;
 
             //CDN
-            Settings.configValues[CONFIGURATION.UseContentDeliveryNetwork] = true;
+            VoatSettings.Instance.UseContentDeliveryNetwork = true;
 
             result = VoatPathHelper.ThumbnailPath(filename);
             Assert.AreEqual(String.Format("~/thumbs/{0}", filename), result, "Condition:1");
@@ -118,24 +118,24 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(String.Format("//cdn.voat.co/thumbs/{0}", filename), result, "Condition:2");
 
             result = VoatPathHelper.ThumbnailPath(filename, true, true);
-            Assert.AreEqual($"http{(Settings.ForceHTTPS ? "s" : "")}://cdn.voat.co/thumbs/{filename}", result, "Condition:3");
+            Assert.AreEqual($"http{(VoatSettings.Instance.ForceHTTPS ? "s" : "")}://cdn.voat.co/thumbs/{filename}", result, "Condition:3");
 
 
             //LOCAL
-            Settings.configValues[CONFIGURATION.UseContentDeliveryNetwork] = false;
+            VoatSettings.Instance.UseContentDeliveryNetwork = false;
 
             result = VoatPathHelper.ThumbnailPath(filename);
             Assert.AreEqual(String.Format("~/thumbs/{0}", filename), result, "Condition:1");
 
             result = VoatPathHelper.ThumbnailPath(filename, true);
-            Assert.AreEqual($"//{Settings.SiteDomain}/thumbs/{filename}", result, "Condition:2");
+            Assert.AreEqual($"//{VoatSettings.Instance.SiteDomain}/thumbs/{filename}", result, "Condition:2");
 
             result = VoatPathHelper.ThumbnailPath(filename, true, true);
-            Assert.AreEqual($"http{(Settings.ForceHTTPS ? "s" : "")}://{Settings.SiteDomain}/thumbs/{filename}", result, "Condition:3");
+            Assert.AreEqual($"http{(VoatSettings.Instance.ForceHTTPS ? "s" : "")}://{VoatSettings.Instance.SiteDomain}/thumbs/{filename}", result, "Condition:3");
 
 
             //Reset original value
-            Settings.configValues[CONFIGURATION.UseContentDeliveryNetwork] = originalSetting;
+            VoatSettings.Instance.UseContentDeliveryNetwork = originalSetting;
 
             
         }

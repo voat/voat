@@ -44,7 +44,7 @@ namespace Voat.UI.Utilities
         {
             try
             {
-                if (!Settings.CaptchaDisabled)
+                if (!VoatSettings.Instance.CaptchaDisabled)
                 {
                     var request = filterContext.HttpContext.Request;
                     var captchaValid = ReCaptchaUtility.Validate(request).Result;
@@ -198,7 +198,7 @@ namespace Voat.UI.Utilities
     {
         public static async Task<bool> Validate(HttpRequest request)
         {
-            string privateKey = Settings.RecaptchaPrivateKey;
+            string privateKey = VoatSettings.Instance.RecaptchaPrivateKey;
             string encodedResponse = request.Form["g-Recaptcha-Response"];
 
             var client = new HttpClient();

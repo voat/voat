@@ -37,6 +37,11 @@ namespace Voat
         Disabled = 0,
 
         /// <summary>
+        /// Api is disabled.
+        /// </summary>
+        False = Disabled,
+
+        /// <summary>
         /// Api is in a read-only state.
         /// </summary>
         Read = 1,
@@ -54,86 +59,91 @@ namespace Voat
         /// <summary>
         /// Api is fully enabled.
         /// </summary>
-        ReadWrite = Read | Write,
-    }
+        ReadWrite = Enabled,
 
-    public static class RuntimeState
-    {
         /// <summary>
-        /// The key name in the <AppSettings> section
+        /// Api is fully enabled.
         /// </summary>
-        public const string API_CONFIG_KEY_NAME = "runtimeState";
-
-        private static RuntimeStateSetting _setting = RuntimeStateSetting.Enabled;
-
-        static RuntimeState()
-        {
-            Refresh();
-        }
-
-        public static event EventHandler<RuntimeStateSetting> OnStateChanged;
-
-        public static RuntimeStateSetting Current
-        {
-            get
-            {
-                return _setting;
-            }
-        }
-        public static RuntimeStateSetting Parse(string setting)
-        {
-            var value = RuntimeStateSetting.Disabled;
-
-            if (String.IsNullOrEmpty(setting))
-            {
-                value = RuntimeStateSetting.Enabled; //by default keep enabled
-            }
-            else
-            {
-                RuntimeStateSetting configSetting = RuntimeStateSetting.Disabled;
-
-                //Parse enum value
-                if (Enum.TryParse(setting, true, out configSetting))
-                {
-                    value = configSetting;
-                }
-                else
-                {
-                    //Support "true" and "false" values in the web.config and map them to Enabled and Disabled
-                    bool enabled = false;
-                    if (Boolean.TryParse(setting, out enabled))
-                    {
-                        value = (enabled ? RuntimeStateSetting.Enabled : RuntimeStateSetting.Disabled);
-                    }
-                    else
-                    {
-                        value = RuntimeStateSetting.Disabled;
-                    }
-                }
-            }
-
-            return value;
-        }
-        public static void Refresh(string setting)
-        {
-            var _current = _setting;
-            
-            _setting = Parse(setting);
-
-            if (_current != _setting)
-            {
-                if (OnStateChanged != null)
-                {
-                    OnStateChanged(typeof(RuntimeState), _setting);
-                }
-            }
-
-        }
-        public static void Refresh()
-        {
-            throw new NotImplementedException("Core Port");
-            //var setting = System.Configuration.ConfigurationManager.AppSettings[API_CONFIG_KEY_NAME];
-            //Refresh(setting);
-        }
+        True = Enabled
     }
+
+    //public static class RuntimeState
+    //{
+    //    /// <summary>
+    //    /// The key name in the <AppSettings> section
+    //    /// </summary>
+    //    public const string API_CONFIG_KEY_NAME = "runtimeState";
+
+    //    private static RuntimeStateSetting _setting = RuntimeStateSetting.Enabled;
+
+    //    //static RuntimeState()
+    //    //{
+    //    //    Refresh();
+    //    //}
+
+    //    //public static event EventHandler<RuntimeStateSetting> OnStateChanged;
+
+    //    public static RuntimeStateSetting Current
+    //    {
+    //        get
+    //        {
+    //            return _setting;
+    //        }
+    //    }
+    //    public static RuntimeStateSetting Parse(string setting)
+    //    {
+    //        var value = RuntimeStateSetting.Disabled;
+
+    //        if (String.IsNullOrEmpty(setting))
+    //        {
+    //            value = RuntimeStateSetting.Enabled; //by default keep enabled
+    //        }
+    //        else
+    //        {
+    //            RuntimeStateSetting configSetting = RuntimeStateSetting.Disabled;
+
+    //            //Parse enum value
+    //            if (Enum.TryParse(setting, true, out configSetting))
+    //            {
+    //                value = configSetting;
+    //            }
+    //            else
+    //            {
+    //                //Support "true" and "false" values in the web.config and map them to Enabled and Disabled
+    //                bool enabled = false;
+    //                if (Boolean.TryParse(setting, out enabled))
+    //                {
+    //                    value = (enabled ? RuntimeStateSetting.Enabled : RuntimeStateSetting.Disabled);
+    //                }
+    //                else
+    //                {
+    //                    value = RuntimeStateSetting.Disabled;
+    //                }
+    //            }
+    //        }
+
+    //        return value;
+    //    }
+    //    public static void Refresh(string setting)
+    //    {
+    //        var _current = _setting;
+            
+    //        _setting = Parse(setting);
+
+    //        if (_current != _setting)
+    //        {
+    //            if (OnStateChanged != null)
+    //            {
+    //                OnStateChanged(typeof(RuntimeState), _setting);
+    //            }
+    //        }
+
+    //    }
+    //    public static void Refresh()
+    //    {
+    //        throw new NotImplementedException("Core Port");
+    //        //var setting = System.Configuration.ConfigurationManager.AppSettings[API_CONFIG_KEY_NAME];
+    //        //Refresh(setting);
+    //    }
+    //}
 }

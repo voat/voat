@@ -7,13 +7,17 @@ namespace Voat.Http.Middleware
 {
     public static class MiddlewareExtensions
     {
-        public static IApplicationBuilder UseGlobalExceptionLogger(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseVoatGlobalExceptionLogger(this IApplicationBuilder builder)
         {
             return builder.UseMiddleware<GlobalExceptionLoggerMiddleware>();
         }
-        public static IApplicationBuilder UseRequestDurationLogger(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseVoatRequestDurationLogger(this IApplicationBuilder builder)
         {
             return builder.UseMiddleware<RequestDurationLoggerMiddleware>();
+        }
+        public static IApplicationBuilder UseVoatRuntimeState(this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<RuntimeStateMiddleware>();
         }
     }
 }

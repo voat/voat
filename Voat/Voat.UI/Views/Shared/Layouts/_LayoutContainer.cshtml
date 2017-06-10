@@ -35,14 +35,14 @@
     <meta lang="en" />
     <link rel="http://oexchange.org/spec/0.8/rel/related-target" type="application/xrd+xml" href="http://voat.co/oexchange.xrd" />
     <title>@ViewBag.Title</title>
-    <meta name="description" content="@(ViewBag.Description != null ? ViewBag.Description : Settings.SiteSlogan)" />
-    <meta name="keywords" content="@(ViewBag.Keywords != null ? ViewBag.Keywords : Settings.SiteKeywords)" />
+    <meta name="description" content="@(ViewBag.Description != null ? ViewBag.Description : VoatSettings.Instance.SiteSlogan)" />
+    <meta name="keywords" content="@(ViewBag.Keywords != null ? ViewBag.Keywords : VoatSettings.Instance.SiteKeywords)" />
     @Html.Partial("_RobotsMeta")
     <meta property="og:title" content="@ViewBag.Title" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="@Context.Request.Path.ToString()" />
     <meta property="og:image" content="@ViewBag.Image" />
-    <meta property="og:site_name" content="@Settings.SiteName" />
+    <meta property="og:site_name" content="@VoatSettings.Instance.SiteName" />
     <meta property="og:description" content="@ViewBag.Description" />
 
     @*This if else needs to be rewritten to reduce the duplication*@
@@ -96,7 +96,7 @@
     <link rel="icon" type="image/png" href="~/Graphics/Icons/Arrow/favicon-32x32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="~/Graphics/Icons/Arrow/favicon-16x16.png" sizes="16x16" />
     <link rel="icon" type="image/png" href="~/Graphics/Icons/Arrow/favicon-128.png" sizes="128x128" />
-    <meta name="application-name" content="@Settings.SiteName" />
+    <meta name="application-name" content="@VoatSettings.Instance.SiteName" />
     <meta name="msapplication-TileColor" content="#000000" />
     <meta name="msapplication-TileImage" content="~/Graphics/Icons/Arrow/mstile-144x144.png" />
     <meta name="msapplication-square70x70logo" content="~/Graphics/Icons/Arrow/mstile-70x70.png" />
@@ -138,7 +138,7 @@
         @Scripts.RenderFormat("<script type=\"text/javascript\" src=\"{0}\"></script>", "~/bundles/bootstrap")
     *@
 
-    @if (!Settings.SignalRDisabled)
+    @if (!VoatSettings.Instance.SignalRDisabled)
     {
         @* SignalR library. *@
         <script src="~/lib/legacy/jquery.signalR-2.2.0.js" defer></script>

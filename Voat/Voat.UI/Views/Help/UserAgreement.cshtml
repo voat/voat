@@ -20,7 +20,7 @@
 
 @{
     ViewBag.Title = "User agreement";
-    var siteName = Settings.SiteName;
+    var siteName = VoatSettings.Instance.SiteName;
 }
 
 <div id="container">
@@ -107,13 +107,13 @@
 
         <h1>Security</h1>
         <p>
-            Please don't hack us :) We support the responsible reporting of security vulnerabilities. To report a @siteName security issue, please send an email@(Settings.IsVoatBranded ? "to security@voat.co" : "").
+            Please don't hack us :) We support the responsible reporting of security vulnerabilities. To report a @siteName security issue, please send an email@(VoatSettings.Instance.IsVoatBranded ? "to security@voat.co" : "").
         </p>
 
         <h1>Children and @siteName</h1>
         <p>
             @siteName is not directed at people under the age of 13, and @siteName does not knowingly collect any personal information from such people. If you know that a user under the age of 13 is accessing @siteName, please contact us by
-            sending an email@(Settings.IsVoatBranded ? " to hello@voat.co" : "").
+            sending an email@(VoatSettings.Instance.IsVoatBranded ? " to hello@voat.co" : "").
         </p>
 
         <h1>DMCA</h1>
@@ -126,7 +126,7 @@
             Any DMCA request should be sent to this contact information:
 
             Copyright Agent
-            @if (Settings.IsVoatBranded)
+            @if (VoatSettings.Instance.IsVoatBranded)
             {
                 @:copyright@voat.co
             }
@@ -181,7 +181,7 @@
         <p>
             The headings in this agreement are for convenience and do not control any of its provisions.
         </p>
-        @if (Settings.IsVoatBranded)
+        @if (VoatSettings.Instance.IsVoatBranded)
         {
             <h1>Updates</h1>
             <p>

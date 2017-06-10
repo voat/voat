@@ -20,7 +20,7 @@
 
 @{
     ViewBag.Title = "Privacy";
-    var siteName = Settings.SiteName;
+    var siteName = VoatSettings.Instance.SiteName;
 }
 
 <div id="container">
@@ -28,7 +28,7 @@
 
         <h1>Privacy Policy </h1>
         <p>
-            If you require any more information or have any questions about our privacy policy, please feel free to contact us by email@(Voat.Configuration.Settings.IsVoatBranded ? "at privacy at " + Settings.SiteDomain : "").
+            If you require any more information or have any questions about our privacy policy, please feel free to contact us by email@(Voat.Configuration.VoatSettings.Instance.IsVoatBranded ? "at privacy at " + VoatSettings.Instance.SiteDomain : "").
             We consider the privacy of our visitors to be extremely important. This privacy policy document describes in detail the types of personal information is collected and recorded by @siteName and how we use it.
         </p>
         <h1>Log Files </h1>
@@ -67,7 +67,7 @@
         <p>
             By using our website, you hereby consent to our privacy policy and agree to its terms.
         </p>
-        @if (Settings.IsVoatBranded)
+        @if (VoatSettings.Instance.IsVoatBranded)
         {
             <h1>Update</h1>
             <p>

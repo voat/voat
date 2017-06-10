@@ -61,7 +61,7 @@ namespace Voat
             //forces thumbgenerator to initialize
             var p = ThumbGenerator.DestinationPathThumbs;
 
-            if (!Settings.SignalRDisabled)
+            if (!VoatSettings.Instance.SignalRDisabled)
             {
                 Microsoft.AspNet.SignalR.GlobalHost.DependencyResolver.Register(typeof(Microsoft.AspNet.SignalR.Hubs.IJavaScriptMinifier), () => new HubMinifier());
             }
@@ -79,13 +79,13 @@ namespace Voat
 
             ModelMetadataProviders.Current = new CachedDataAnnotationsModelMetadataProvider();
 
-            JsonConvert.DefaultSettings = () => { return JsonSettings.GetSerializationSettings(); };
+            JsonConvert.DefaultSettings = () => { return  JsonSettings.GetSerializationSettings(); };
 
             #region Hook Events
 
             EventHandler<MessageReceivedEventArgs> updateNotificationCount = delegate (object s, MessageReceivedEventArgs e)
             {
-                if (!Settings.SignalRDisabled)
+                if (!VoatSettings.Instance.SignalRDisabled)
                 {
 
                     var userDef = UserDefinition.Parse(e.TargetUserName);
@@ -107,7 +107,7 @@ namespace Voat
 
             EventNotification.Instance.OnVoteReceived += (s, e) =>
             {
-                if (!Settings.SignalRDisabled)
+                if (!VoatSettings.Instance.SignalRDisabled)
                 {
                     var hubContext = GlobalHost.ConnectionManager.GetHubContext<MessagingHub>();
                     switch (e.ReferenceType)
@@ -152,7 +152,7 @@ namespace Voat
 
                 var logEntry = new LogInformation
                 {
-                    Origin = Settings.Origin.ToString(),
+                    Origin = VoatSettings.Instance.Origin.ToString(),
                     Type = LogType.Debug,
                     UserName = null,
                     Message = "ThreadPool Stats",
@@ -243,14 +243,14 @@ namespace Voat
                     }
 
                     // force single site domain
-                    if (Settings.RedirectToSiteDomain && !Settings.SiteDomain.Equals(request.ServerVariables["HTTP_HOST"], StringComparison.OrdinalIgnoreCase))
+                    if (VoatSettings.Instance.RedirectToSiteDomain && !VoatSettings.Instance.SiteDomain.Equals(request.ServerVariables["HTTP_HOST"], StringComparison.OrdinalIgnoreCase))
                     {
-                        Response.RedirectPermanent(String.Format("http{2}://{0}{1}", Settings.SiteDomain, request.RawUrl, (Settings.ForceHTTPS ? "s" : "")), true);
+                        Response.RedirectPermanent(String.Format("http{2}://{0}{1}", VoatSettings.Instance.SiteDomain, request.RawUrl, (VoatSettings.Instance.ForceHTTPS ? "s" : "")), true);
                         return;
                     }
 
                     // force SSL for every request if enabled in Web.config
-                    if (Settings.ForceHTTPS && !request.IsSecureConnection)
+                    if (VoatSettings.Instance.ForceHTTPS && !request.IsSecureConnection)
                     {
                         Response.Redirect(String.Format("https://{0}{1}", request.ServerVariables["HTTP_HOST"], request.RawUrl), true);
                         return;

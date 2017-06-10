@@ -48,7 +48,7 @@
 <div id="container" class="md">
     <h1>Your Api Keys</h1>
     <p>If you need different permissions or throttle policies please contact voat by email at hello@voat.co.</p>
-    @if (Settings.ApiKeyCreationEnabled)
+    @if (VoatSettings.Instance.ApiKeyCreationEnabled)
     {
         <p>
             @Html.ActionLink("Create New", "Create")

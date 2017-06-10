@@ -21,7 +21,7 @@
 @model Voat.Models.ViewModels.SearchViewModel
 
 @{
-    if (!Settings.SearchDisabled)
+    if (!VoatSettings.Instance.SearchDisabled)
     {
         string selectedSubverse = "";
         if (!String.IsNullOrEmpty(Context.Request.Query["sub"]))
@@ -36,13 +36,13 @@
         <div class="spacersection spacer">
     
             <div class="alert-h1">
-                Search @Settings.SiteName
+                Search @VoatSettings.Instance.SiteName
             </div>
 
             @using (Html.BeginForm("SearchResults", "Search", new { }, FormMethod.Get, false, new { @class = "form-horizontal", role = "form" }))
             {
                 <h2>@Html.ValidationSummary(true)</h2>
-                @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search " + Settings.SiteName })
+                @Html.TextBox("q", null, new { @class = "form-control", @placeholder = "Search " + VoatSettings.Instance.SiteName })
                 @Html.ValidationMessage("q")
 
                 if (!String.IsNullOrEmpty(selectedSubverse))

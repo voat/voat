@@ -49,20 +49,20 @@ namespace Voat.App_Start
                 content.Value = message.Body;
 
                 var msg = new SendGrid.Helpers.Mail.Mail(
-                    new SendGrid.Helpers.Mail.Email(Settings.EmailAddress, Settings.SiteName),
+                    new SendGrid.Helpers.Mail.Email(VoatSettings.Instance.EmailAddress, VoatSettings.Instance.SiteName),
                     message.Subject,
                     new SendGrid.Helpers.Mail.Email(message.Destination),
                     content
                     );
 
                 var trackingSettings = new SendGrid.Helpers.Mail.TrackingSettings();
-                trackingSettings.ClickTracking = new SendGrid.Helpers.Mail.ClickTracking();
-                trackingSettings.OpenTracking = new SendGrid.Helpers.Mail.OpenTracking();
-                trackingSettings.ClickTracking.Enable = false;
-                trackingSettings.OpenTracking.Enable = false;
+                trackingVoatSettings.Instance.ClickTracking = new SendGrid.Helpers.Mail.ClickTracking();
+                trackingVoatSettings.Instance.OpenTracking = new SendGrid.Helpers.Mail.OpenTracking();
+                trackingVoatSettings.Instance.ClickTracking.Enable = false;
+                trackingVoatSettings.Instance.OpenTracking.Enable = false;
                 msg.TrackingSettings = trackingSettings;
 
-                dynamic sendGridClient = new SendGridAPIClient(Settings.EmailServiceKey);
+                dynamic sendGridClient = new SendGridAPIClient(VoatSettings.Instance.EmailServiceKey);
 
                 var response = await sendGridClient.client.mail.send.post(requestBody: msg.Get());
 

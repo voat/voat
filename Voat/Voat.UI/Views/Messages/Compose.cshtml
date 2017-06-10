@@ -78,7 +78,7 @@
                             </div>
                         </div>
 
-                        @if (Model.RequireCaptcha && !Settings.CaptchaDisabled)
+                        @if (Model.RequireCaptcha && !VoatSettings.Instance.CaptchaDisabled)
                         {
                             <div class="panel panel-default">
                                 <div class="panel-heading">Are you a human?</div>

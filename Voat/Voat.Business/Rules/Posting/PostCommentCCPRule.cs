@@ -55,7 +55,7 @@ namespace Voat.Rules.Posting
                     var quotaUsed = UserDailyCommentPostingQuotaForNegativeScoreUsed(context);
                     if (quotaUsed)
                     {
-                        return CreateOutcome(RuleResult.Denied, String.Format("You have reached your daily comment quota. Your current quota is {0} comment(s) per 24 hours.", Settings.DailyCommentPostingQuotaForNegativeScore.ToString()));
+                        return CreateOutcome(RuleResult.Denied, String.Format("You have reached your daily comment quota. Your current quota is {0} comment(s) per 24 hours.", VoatSettings.Instance.DailyCommentPostingQuotaForNegativeScore.ToString()));
                     }
                 }
 
@@ -65,7 +65,7 @@ namespace Voat.Rules.Posting
                     var quotaUsed = UserHourlyCommentPostingQuotaUsed(context);
                     if (quotaUsed)
                     {
-                        return CreateOutcome(RuleResult.Denied, String.Format("You have reached your hourly comment quota. Your current quota is {0} comment(s) per hour.", Settings.HourlyCommentPostingQuota.ToString()));
+                        return CreateOutcome(RuleResult.Denied, String.Format("You have reached your hourly comment quota. Your current quota is {0} comment(s) per hour.", VoatSettings.Instance.HourlyCommentPostingQuota.ToString()));
                     }
                 }
 
@@ -75,7 +75,7 @@ namespace Voat.Rules.Posting
                     var quotaUsed = UserDailyCommentPostingQuotaUsed(context);
                     if (quotaUsed)
                     {
-                        return CreateOutcome(RuleResult.Denied, String.Format("You have reached your daily comment quota. Your current quota is {0} comment(s) per 24 hours.", Settings.DailyCommentPostingQuota.ToString()));
+                        return CreateOutcome(RuleResult.Denied, String.Format("You have reached your daily comment quota. Your current quota is {0} comment(s) per 24 hours.", VoatSettings.Instance.DailyCommentPostingQuota.ToString()));
                     }
                 }
 
@@ -85,7 +85,7 @@ namespace Voat.Rules.Posting
                 //    // if user CCP is negative or account less than 6 months old, allow only x comment submissions per 24 hours
                 //    if ((userMembershipTimeSpam.TotalDays < 180 || userCcp <= -50) && UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(context.UserName))
                 //    {
-                //        result = CreateOutcome(RuleResult.Denied, String.Format("You have reached your daily comment quota. Your current quota is {0} comment(s) per 24 hours.", Settings.DailyCommentPostingQuotaForNegativeScore.ToString()));
+                //        result = CreateOutcome(RuleResult.Denied, String.Format("You have reached your daily comment quota. Your current quota is {0} comment(s) per 24 hours.", VoatSettings.Instance.DailyCommentPostingQuotaForNegativeScore.ToString()));
                 //    }
                 //}
             }
@@ -111,7 +111,7 @@ namespace Voat.Rules.Posting
             //    var quotaUsed = UserHelper.UserDailyCommentPostingQuotaForNegativeScoreUsed(User.Identity.Name);
             //    if (quotaUsed)
             //    {
-            //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuotaForNegativeScore.ToString() + " comment(s) per 24 hours.");
+            //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your daily comment quota. Your current quota is " + VoatSettings.Instance.DailyCommentPostingQuotaForNegativeScore.ToString() + " comment(s) per 24 hours.");
             //    }
             //}
 
@@ -121,7 +121,7 @@ namespace Voat.Rules.Posting
             //    var quotaUsed = UserHelper.UserHourlyCommentPostingQuotaUsed(User.Identity.Name);
             //    if (quotaUsed)
             //    {
-            //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your hourly comment quota. Your current quota is " + Settings.HourlyCommentPostingQuota.ToString() + " comment(s) per hour.");
+            //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your hourly comment quota. Your current quota is " + VoatSettings.Instance.HourlyCommentPostingQuota.ToString() + " comment(s) per hour.");
             //    }
             //}
 
@@ -131,7 +131,7 @@ namespace Voat.Rules.Posting
             //    var quotaUsed = UserHelper.UserDailyCommentPostingQuotaUsed(User.Identity.Name);
             //    if (quotaUsed)
             //    {
-            //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your daily comment quota. Your current quota is " + Settings.DailyCommentPostingQuota.ToString() + " comment(s) per 24 hours.");
+            //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "You have reached your daily comment quota. Your current quota is " + VoatSettings.Instance.DailyCommentPostingQuota.ToString() + " comment(s) per 24 hours.");
             //    }
             //}
 

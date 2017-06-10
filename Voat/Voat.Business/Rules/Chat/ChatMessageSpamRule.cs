@@ -43,7 +43,7 @@ namespace Voat.Rules.Chat
         public TimeSpan _timeSpanWindow = TimeSpan.FromSeconds(25);
 
         //Adding Min CCP of 100 to send messages
-        public ChatMessageSpamRule() : base("Chat Spam", "10.0", Settings.MinimumCommentPointsForSendingChatMessages, RuleScope.PostChatMessage)
+        public ChatMessageSpamRule() : base("Chat Spam", "10.0", VoatSettings.Instance.MinimumCommentPointsForSendingChatMessages, RuleScope.PostChatMessage)
         {
             
         }

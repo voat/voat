@@ -56,7 +56,7 @@ namespace Voat
             var domain = WebConfigurationManager.AppSettings["CookieDomain"];
             if (!String.IsNullOrEmpty(domain) && !localRequest)
             {
-                settings.CookieDomain = domain;
+                VoatSettings.Instance.CookieDomain = domain;
             }
 
             app.UseCookieAuthentication(settings);

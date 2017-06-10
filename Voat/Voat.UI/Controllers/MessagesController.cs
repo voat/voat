@@ -43,6 +43,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Voat.Common;
+using Voat.Http;
 
 namespace Voat.Controllers
 {
@@ -224,7 +225,7 @@ namespace Voat.Controllers
             var model = new NewMessageViewModel() { Recipient = recipient, Subject = subject };
 
             var userData = UserData;
-            model.RequireCaptcha = userData.Information.CommentPoints.Sum < Settings.MinimumCommentPointsForCaptchaMessaging && !Settings.CaptchaDisabled;
+            model.RequireCaptcha = userData.Information.CommentPoints.Sum < VoatSettings.Instance.MinimumCommentPointsForCaptchaMessaging && !VoatSettings.Instance.CaptchaDisabled;
 
             if (!string.IsNullOrEmpty(subverse))
             {
@@ -259,7 +260,7 @@ namespace Voat.Controllers
 
             //set this incase invalid submittal 
             var userData = UserData;
-            message.RequireCaptcha = userData.Information.CommentPoints.Sum < Settings.MinimumCommentPointsForCaptchaMessaging && !Settings.CaptchaDisabled;
+            message.RequireCaptcha = userData.Information.CommentPoints.Sum < VoatSettings.Instance.MinimumCommentPointsForCaptchaMessaging && !VoatSettings.Instance.CaptchaDisabled;
 
             if (!ModelState.IsValid)
             {

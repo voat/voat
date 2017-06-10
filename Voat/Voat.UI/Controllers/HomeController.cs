@@ -30,6 +30,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Voat.Common;
+using Voat.Common.Configuration;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Domain.Command;
@@ -112,7 +113,7 @@ namespace Voat.Controllers
             }
 
             var userData = UserData;
-            model.RequireCaptcha = userData.Information.CommentPoints.Sum < Settings.MinimumCommentPointsForCaptchaSubmission && !Settings.CaptchaDisabled;
+            model.RequireCaptcha = userData.Information.CommentPoints.Sum < VoatSettings.Instance.MinimumCommentPointsForCaptchaSubmission && !VoatSettings.Instance.CaptchaDisabled;
 
             return View("Submit", model);
         }
@@ -126,7 +127,7 @@ namespace Voat.Controllers
         {
             //set this incase invalid submittal 
             var userData = UserData;
-            model.RequireCaptcha = userData.Information.CommentPoints.Sum < Settings.MinimumCommentPointsForCaptchaSubmission && !Settings.CaptchaDisabled;
+            model.RequireCaptcha = userData.Information.CommentPoints.Sum < VoatSettings.Instance.MinimumCommentPointsForCaptchaSubmission && !VoatSettings.Instance.CaptchaDisabled;
 
             // abort if model state is invalid
             if (!ModelState.IsValid)
@@ -189,7 +190,7 @@ namespace Voat.Controllers
         // GET: /v2
         //public ActionResult IndexV2(int? page)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        return RedirectToAction("UnAuthorized", "Error");
         //    }

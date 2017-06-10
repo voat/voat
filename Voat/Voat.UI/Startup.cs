@@ -28,7 +28,9 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
+using Voat.Common.Configuration;
 using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Http.Middleware;
@@ -50,7 +52,7 @@ namespace Voat
                 // For more details on using the user secret store see https://go.microsoft.com/fwlink/?LinkID=532709
                 builder.AddUserSecrets<Startup>();
             }
-
+            
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
 
@@ -71,9 +73,18 @@ namespace Voat
 
             var mvcBuilder = services.AddMvc();
 
-            mvcBuilder.AddMvcOptions(o => o.Filters.Add(typeof(GlobalExceptionFilter)));
+            mvcBuilder.AddMvcOptions(o => {
+                o.Filters.Add(typeof(GlobalExceptionFilter));
+                o.Filters.Add(typeof(RuntimeStateFilter));
+                });
 
             services.AddAntiforgery();
+
+            //Working on creating an updatable settings object
+            //services.Configure<VoatSettings>(Configuration.GetSection("voat:settings"));
+            //services.AddScoped(cfg => cfg.GetService<IOptionsSnapshot<VoatSettings>>().Value);
+            //var provider = services.BuildServiceProvider();
+            //var options = provider.GetService<IOptionsSnapshot<VoatSettings>>();
 
             // Add application services.
             //services.AddTransient<IEmailSender, AuthMessageSender>();
@@ -87,7 +98,7 @@ namespace Voat
             loggerFactory.AddDebug();
 
             ////Configure Voat Middleware
-            app.UseGlobalExceptionLogger();
+            app.UseVoatGlobalExceptionLogger();
 
             if (env.IsDevelopment())
             {
@@ -104,9 +115,11 @@ namespace Voat
 
             app.UseIdentity();
 
-            app.UseRequestDurationLogger();
+            app.UseVoatRequestDurationLogger();
 
             //// Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
+
+            app.UseVoatRuntimeState();
 
             app.UseMvc(routes =>
             {

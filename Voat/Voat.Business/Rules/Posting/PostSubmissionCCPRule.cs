@@ -40,10 +40,10 @@ namespace Voat.Rules.Posting
             //if (result != null && (context.UserData.Information.CommentPoints.Sum <= -10 || context.UserData.Information.SubmissionPoints.Sum <= -10)
             //    && UserHelper.UserDailyPostingQuotaForNegativeScoreUsed(context.UserName))
             //{
-            //    result = CreateOutcome(RuleResult.Denied, String.Format("You have reached your daily submission quota. Your current quota is {0} submission(s) per 24 hours", Settings.DailyPostingQuotaForNegativeScore));
+            //    result = CreateOutcome(RuleResult.Denied, String.Format("You have reached your daily submission quota. Your current quota is {0} submission(s) per 24 hours", VoatSettings.Instance.DailyPostingQuotaForNegativeScore));
             //}
 
-            int postThreshold = Settings.DailyPostingQuotaForNegativeScore;
+            int postThreshold = VoatSettings.Instance.DailyPostingQuotaForNegativeScore;
 
             //var isModerator = context.UserData.Information.Moderates.Any(x => x == context.Subverse.Name);
             var userData = context.UserData;

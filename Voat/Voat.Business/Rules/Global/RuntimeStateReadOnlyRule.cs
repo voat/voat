@@ -22,6 +22,7 @@
 
 #endregion LICENSE
 
+using Voat.Configuration;
 using Voat.RulesEngine;
 
 namespace Voat.Rules.Global
@@ -35,7 +36,7 @@ namespace Voat.Rules.Global
 
         protected override RuleOutcome EvaluateRule(VoatRuleContext context)
         {
-            if ((RuntimeState.Current & RuntimeStateSetting.Write) < 0)
+            if ((VoatSettings.Instance.RuntimeState & RuntimeStateSetting.Write) < 0)
             {
                 return CreateOutcome(RuleResult.Denied, "Runtime is in a ReadOnly state");
             }

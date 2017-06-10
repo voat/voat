@@ -23,7 +23,7 @@
 @model Voat.Models.ViewModels.RegisterViewModel
 
 @{
-    var siteName = Settings.SiteName;
+    var siteName = VoatSettings.Instance.SiteName;
     ViewBag.Title = siteName + "er registration";
 }
 
@@ -73,7 +73,7 @@
                     </div>
 
 
-                    if (!Settings.CaptchaDisabled)
+                    if (!VoatSettings.Instance.CaptchaDisabled)
                     {
                         <div class="panel panel-default">
                             <div class="panel-heading">Are you a human?</div>

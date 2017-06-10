@@ -64,28 +64,28 @@ namespace Voat.Rules
                     return base.CreateOutcome(RuleResult.Denied, "Sorry, The subverse you are trying to create already exists, but you can try to claim it by submitting a takeover request to /v/subverserequest");
                 }
                 var subs = repo.GetSubversesUserModerates(context.UserName);
-                if (subs.Count(x => x.Power <= 2) >= Settings.MaximumOwnedSubs)
+                if (subs.Count(x => x.Power <= 2) >= VoatSettings.Instance.MaximumOwnedSubs)
                 {
-                    return base.CreateOutcome(RuleResult.Denied, "Sorry, you can not moderate more than " + Settings.MaximumOwnedSubs + " subverses.");
+                    return base.CreateOutcome(RuleResult.Denied, "Sorry, you can not moderate more than " + VoatSettings.Instance.MaximumOwnedSubs + " subverses.");
                 }
             }
 
             //Age
             var registrationDate = context.UserData.Information.RegistrationDate;
             int accountAgeInDays = Repository.CurrentDate.Subtract(registrationDate).Days;
-            if (accountAgeInDays < Settings.MinimumAccountAgeInDaysForSubverseCreation)
+            if (accountAgeInDays < VoatSettings.Instance.MinimumAccountAgeInDaysForSubverseCreation)
             {
-                return base.CreateOutcome(RuleResult.Denied, $"Sorry, subverse creation requires an account age of {Settings.MinimumAccountAgeInDaysForSubverseCreation} days");
+                return base.CreateOutcome(RuleResult.Denied, $"Sorry, subverse creation requires an account age of {VoatSettings.Instance.MinimumAccountAgeInDaysForSubverseCreation} days");
             }
             //CCP
-            if (context.UserData.Information.CommentPoints.Sum < Settings.MinimumCommentPointsForSubverseCreation)
+            if (context.UserData.Information.CommentPoints.Sum < VoatSettings.Instance.MinimumCommentPointsForSubverseCreation)
             {
-                return base.CreateOutcome(RuleResult.Denied, $"Sorry, subverse creation requires a minimum of {Settings.MinimumCommentPointsForSubverseCreation} comment (CCP) points");
+                return base.CreateOutcome(RuleResult.Denied, $"Sorry, subverse creation requires a minimum of {VoatSettings.Instance.MinimumCommentPointsForSubverseCreation} comment (CCP) points");
             }
             //SCP
-            if (context.UserData.Information.SubmissionPoints.Sum < Settings.MinimumSubmissionPointsForSubverseCreation)
+            if (context.UserData.Information.SubmissionPoints.Sum < VoatSettings.Instance.MinimumSubmissionPointsForSubverseCreation)
             {
-                return base.CreateOutcome(RuleResult.Denied, $"Sorry, subverse creation requires a minimum of {Settings.MinimumSubmissionPointsForSubverseCreation} submission (SCP) points");
+                return base.CreateOutcome(RuleResult.Denied, $"Sorry, subverse creation requires a minimum of {VoatSettings.Instance.MinimumSubmissionPointsForSubverseCreation} submission (SCP) points");
             }
 
             //rules checkd in base class

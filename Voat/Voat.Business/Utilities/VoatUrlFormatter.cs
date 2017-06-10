@@ -41,9 +41,9 @@ namespace Voat.Utilities
             try
             {
                 //set domain if in .config file
-                if (!String.IsNullOrEmpty(Settings.SiteDomain))
+                if (!String.IsNullOrEmpty(VoatSettings.Instance.SiteDomain))
                 {
-                    _domain = Settings.SiteDomain;
+                    _domain = VoatSettings.Instance.SiteDomain;
                 }
             }
             catch

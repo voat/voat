@@ -28,8 +28,8 @@
                 <h3 class="panel-title">Too many kids</h3>
             </div>
             <div class="panel-body centered">
-                <p class="h3">@Settings.SiteName is currently Invite-Only :(</p>
-                @if (Settings.IsVoatBranded)
+                <p class="h3">@VoatSettings.Instance.SiteName is currently Invite-Only :(</p>
+                @if (VoatSettings.Instance.IsVoatBranded)
                 {
                     <p class="h6">New registrations are temporarily disabled, check back in a few hours.</p>
                     <p class="h4">Can't wait? Follow <a href="https://twitter.com/voatco">voatco</a> for updates. Maaaaah. (goat sound)</p>
@@ -39,7 +39,7 @@
                 </p>
             </div>
         </div>
-        @if (Settings.IsVoatBranded)
+        @if (VoatSettings.Instance.IsVoatBranded)
         {
             <div class="panel panel-info">
                 <div class="panel-heading">
@@ -65,7 +65,7 @@
 <div class="footer-container">
     <div class="footer">
         <p class="bottommenu">
-            @Html.Raw(Settings.FooterText)
+            @Html.Raw(VoatSettings.Instance.FooterText)
         </p>
     </div>
 </div>

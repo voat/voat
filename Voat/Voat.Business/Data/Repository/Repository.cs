@@ -1041,7 +1041,7 @@ namespace Voat.Data
                             //sort default by relative rank on default if sorted by rank by default
                             options.Sort = (options.Sort == SortAlgorithm.Rank ? Domain.Models.SortAlgorithm.Relative : options.Sort);
 
-                            if (Settings.IsVoatBranded && options.Sort == SortAlgorithm.Relative)
+                            if (VoatSettings.Instance.IsVoatBranded && options.Sort == SortAlgorithm.Relative)
                             {
                                 //This is a modification Voat uses in the default page
                                 //Postgre Port
@@ -1174,7 +1174,7 @@ namespace Voat.Data
                         ////sort default by relative rank on default if sorted by rank by default
                         //options.Sort = (options.Sort == SortAlgorithm.Rank ? Domain.Models.SortAlgorithm.Relative : options.Sort);
 
-                        if (Settings.IsVoatBranded && options.Sort == SortAlgorithm.Relative)
+                        if (VoatSettings.Instance.IsVoatBranded && options.Sort == SortAlgorithm.Relative)
                         {
                             //This is a modification Voat uses in the default page
                             //Postgre Port
@@ -2893,7 +2893,7 @@ namespace Voat.Data
                 }
                 var userData = new UserData(message.Sender);
                 //add exception for system messages from sender
-                var minCCPToSendMessages = Settings.MinimumCommentPointsForSendingMessages;
+                var minCCPToSendMessages = VoatSettings.Instance.MinimumCommentPointsForSendingMessages;
 
                 if (!forceSend && !CONSTANTS.SYSTEM_USER_NAME.Equals(message.Sender, StringComparison.OrdinalIgnoreCase) && userData.Information.CommentPoints.Sum < minCCPToSendMessages)
                 {
@@ -5458,7 +5458,7 @@ namespace Voat.Data
                                 break;
                             case DeleteOption.Delete:
                                 var d = new DapperUpdate();
-                                d.Update = SqlFormatter.UpdateSetBlock($"\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, \"Title\" = '{deleteText}', \"Url\" = 'https://{Settings.SiteDomain}'", SqlFormatter.Table("Submission"));
+                                d.Update = SqlFormatter.UpdateSetBlock($"\"IsDeleted\" = {SqlFormatter.BooleanLiteral(true)}, \"Title\" = '{deleteText}', \"Url\" = 'https://{VoatSettings.Instance.SiteDomain}'", SqlFormatter.Table("Submission"));
                                 d.Where = $"\"UserName\" = @UserName AND \"Type\" = {(int)SubmissionType.Link}";
                                 d.Parameters = new DynamicParameters(new { UserName = userName });
                                 statements.Add(d);
@@ -5507,7 +5507,7 @@ namespace Voat.Data
                             if (userPrefs.Avatar != null)
                             {
                                 var avatarFilename = userPrefs.Avatar;
-                                if (Settings.UseContentDeliveryNetwork)
+                                if (VoatSettings.Instance.UseContentDeliveryNetwork)
                                 {
                                     // try to delete from CDN
                                     CloudStorageUtility.DeleteBlob(avatarFilename, "avatars");
@@ -5515,10 +5515,10 @@ namespace Voat.Data
                                 else
                                 {
                                     // try to remove from local FS - I think this code is retarded
-                                    string tempAvatarLocation = Settings.DestinationPathAvatars + '\\' + userName + ".jpg";
+                                    string tempAvatarLocation = VoatSettings.Instance.DestinationPathAvatars + '\\' + userName + ".jpg";
 
                                     // the avatar file was not found at expected path, abort
-                                    if (FileSystemUtility.FileExists(tempAvatarLocation, Settings.DestinationPathAvatars))
+                                    if (FileSystemUtility.FileExists(tempAvatarLocation, VoatSettings.Instance.DestinationPathAvatars))
                                     {
                                         File.Delete(tempAvatarLocation);
                                     }
@@ -5598,7 +5598,7 @@ namespace Voat.Data
                         logEntry.Category = "DeleteAccount";
                         logEntry.UserName = User.Identity.Name;
                         logEntry.Message = String.Format("{0} deleted account", User.Identity.Name);
-                        logEntry.Origin = Settings.Origin.ToString();
+                        logEntry.Origin = VoatSettings.Instance.Origin.ToString();
                         logEntry.Data = new
                         {
                             userName = options.UserName,

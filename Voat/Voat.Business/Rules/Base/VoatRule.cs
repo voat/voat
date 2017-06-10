@@ -66,7 +66,7 @@ namespace Voat.Rules
             var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = Settings.DailyPostingQuotaPerSub;
+            int dpqps = VoatSettings.Instance.DailyPostingQuotaPerSub;
 
             using (var db = new VoatDataContext())
             {
@@ -92,7 +92,7 @@ namespace Voat.Rules
             var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = Settings.DailyPostingQuotaForNegativeScore;
+            int dpqps = VoatSettings.Instance.DailyPostingQuotaForNegativeScore;
 
             using (var db = new VoatDataContext())
             {
@@ -117,7 +117,7 @@ namespace Voat.Rules
             var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = Settings.DailyCommentPostingQuotaForNegativeScore;
+            int dpqps = VoatSettings.Instance.DailyCommentPostingQuotaForNegativeScore;
 
             using (var db = new VoatDataContext())
             {
@@ -142,7 +142,7 @@ namespace Voat.Rules
             var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = Settings.DailyCommentPostingQuota;
+            int dpqps = VoatSettings.Instance.DailyCommentPostingQuota;
 
             using (var db = new VoatDataContext())
             {
@@ -167,7 +167,7 @@ namespace Voat.Rules
             var toDate = Repository.CurrentDate;
 
             // read hourly posting quota configuration parameter from web.config
-            int hpqp = Settings.HourlyCommentPostingQuota;
+            int hpqp = VoatSettings.Instance.HourlyCommentPostingQuota;
 
             using (var db = new VoatDataContext())
             {
@@ -192,7 +192,7 @@ namespace Voat.Rules
             var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = Settings.HourlyPostingQuotaPerSub;
+            int dpqps = VoatSettings.Instance.HourlyPostingQuotaPerSub;
 
             using (var db = new VoatDataContext())
             {
@@ -235,7 +235,7 @@ namespace Voat.Rules
             var toDate = Repository.CurrentDate;
 
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = Settings.HourlyGlobalPostingQuota;
+            int dpqps = VoatSettings.Instance.HourlyGlobalPostingQuota;
 
             using (var db = new VoatDataContext())
             {
@@ -276,7 +276,7 @@ namespace Voat.Rules
             var toDate = Repository.CurrentDate;
 
             // read daily global posting quota configuration parameter from web.config
-            int dpqps = Settings.DailyGlobalPostingQuota;
+            int dpqps = VoatSettings.Instance.DailyGlobalPostingQuota;
 
             using (var db = new VoatDataContext())
             {
@@ -295,7 +295,7 @@ namespace Voat.Rules
         protected bool DailyCrossPostingQuotaUsed(VoatRuleContext context, string url)
         {
             // read daily crosspost quota from web.config
-            int dailyCrossPostQuota = Settings.DailyCrossPostingQuota;
+            int dailyCrossPostQuota = VoatSettings.Instance.DailyCrossPostingQuota;
 
             // set starting date to 24 hours ago from now
             var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));

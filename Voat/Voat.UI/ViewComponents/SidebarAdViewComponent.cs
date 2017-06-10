@@ -17,7 +17,7 @@ namespace Voat.UI.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync(DomainReference domainReference)
         {
-            if (Settings.AdsEnabled)
+            if (VoatSettings.Instance.AdsEnabled)
             {
                 // TODO: check if currently logged in user is a donor or subscriber and has opted out of ads, if so, do not display any ads whatsoever
                 var renderAd = true;
@@ -45,12 +45,12 @@ namespace Voat.UI.ViewComponents
 
         private AdViewModel GetAdModel(string subverse, bool useExisting = false)
         {
-            var linkToAdPurchase = String.Format("[Want to advertize on {1}?]({0})", Url.Action("Advertize", "Home"), Settings.SiteName);
+            var linkToAdPurchase = String.Format("[Want to advertize on {1}?]({0})", Url.Action("Advertize", "Home"), VoatSettings.Instance.SiteName);
 
             //Default add
             var adToDisplay = new AdViewModel
             {
-                Name = $"Advertize on {Settings.SiteName}",
+                Name = $"Advertize on {VoatSettings.Instance.SiteName}",
                 DestinationUrl = Url.Action("Advertize", "Home"),
                 Description = linkToAdPurchase,
                 GraphicUrl = Url.Content("~/images/voat-ad-placeholder.png")

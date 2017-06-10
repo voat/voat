@@ -44,7 +44,7 @@ namespace Voat.Tests.Repository
         public void InitializeDatabase(VoatDataContext context, bool seed = true)
         {
             //For Postgre
-            //TestEnvironmentSettings.DataStoreType = Voat.Data.DataStoreType.PostgreSQL;
+            //TestEnvironmentVoatSettings.Instance.DataStoreType = Voat.Data.DataStoreType.PostgreSQL;
             CreateSchema(context);
             if (seed)
             {

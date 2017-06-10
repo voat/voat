@@ -32,6 +32,7 @@ using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
+using Voat.Http;
 using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Utilities;

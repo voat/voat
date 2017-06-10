@@ -36,6 +36,7 @@ using Voat.Data.Models;
 using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
+using Voat.Http;
 using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Utilities;

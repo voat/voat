@@ -106,7 +106,7 @@ namespace Voat.Domain.Query
                 using (var durationLog = new DurationLogger(EventLogger.Instance, 
                     new LogInformation() {
                         Type = LogType.Debug,
-                        Origin = Settings.Origin.ToString(),
+                        Origin = VoatSettings.Instance.Origin.ToString(),
                         Category = "Duration",
                         UserName = UserName,
                         Message = $"{this.GetType().Name} ({FullCacheKey})" },

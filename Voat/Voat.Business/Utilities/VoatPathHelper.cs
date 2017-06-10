@@ -58,10 +58,10 @@ namespace Voat.Utilities
         private static string SiteRoot(HttpContext context, bool provideProtocol, bool supportsContentDelivery, string forceDomain = null)
         {
             //Defaults
-            string domain = Settings.SiteDomain;
-            string protocol = Settings.ForceHTTPS ? "https" : "http";
+            string domain = VoatSettings.Instance.SiteDomain;
+            string protocol = VoatSettings.Instance.ForceHTTPS ? "https" : "http";
 
-            if (supportsContentDelivery && Settings.UseContentDeliveryNetwork)
+            if (supportsContentDelivery && VoatSettings.Instance.UseContentDeliveryNetwork)
             {
                 domain = "cdn.voat.co";
             }
@@ -121,7 +121,7 @@ namespace Voat.Utilities
             {
                 avatarFileName = String.IsNullOrEmpty(avatarFileName) ? $"{username}.jpg" : avatarFileName;
                 //different paths depending on cdn or not
-                avatarUrl = $"{(fullyQualified ? SiteRoot(context, provideProtocol, true) : "~")}/{(Settings.UseContentDeliveryNetwork ? "avatars" : "Storage/Avatars")}/{avatarFileName}";
+                avatarUrl = $"{(fullyQualified ? SiteRoot(context, provideProtocol, true) : "~")}/{(VoatSettings.Instance.UseContentDeliveryNetwork ? "avatars" : "Storage/Avatars")}/{avatarFileName}";
             }
             else
             {

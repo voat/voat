@@ -31,13 +31,13 @@
     var history = ChatHistory.History(Model.Room.ID).ToList();
     history.Add(new ChatMessage() { User = new UserContext(CONSTANTS.SYSTEM_USER_NAME), RoomID = Model.Room.Name, Message = "<p>You have joined the " + Model.Room.Name + " chatroom</p>", CreationDate = DateTime.UtcNow });
 }
-@if (!Settings.SignalRDisabled && !Settings.ChatDisabled)
+@if (!VoatSettings.Instance.SignalRDisabled && !VoatSettings.Instance.ChatDisabled)
 {
     <div tabindex=0 role="banner">
         <div>
             <div>
-                <a title="@Settings.SiteSlogan" href="/">
-                    <img id="header-img" src="@Settings.SiteLogo" alt="@Settings.SiteName" height="31" width="112">
+                <a title="@VoatSettings.Instance.SiteSlogan" href="/">
+                    <img id="header-img" src="@VoatSettings.Instance.SiteLogo" alt="@VoatSettings.Instance.SiteName" height="31" width="112">
                 </a>
             </div>
         </div>
@@ -70,9 +70,9 @@
 
                 @if (User.Identity.IsAuthenticated)
                 {
-                    if (Settings.MinimumCommentPointsForSendingChatMessages > 0)
+                    if (VoatSettings.Instance.MinimumCommentPointsForSendingChatMessages > 0)
                     {
-                        <span>@Settings.MinimumCommentPointsForSendingChatMessages CCP is required to send messages</span>
+                        <span>@VoatSettings.Instance.MinimumCommentPointsForSendingChatMessages CCP is required to send messages</span>
                     }
                     <input id="chatInputBox" onkeydown="if (event.keyCode == 13) sendChatMessage('@Model.Room.ID', '@Context.Request.Query["access"]');" class="form-control" data-val="true" data-val-length="Please write at least 3 characters." data-val-length-max="100" data-val-length-min="3" data-val-required="Please enter a message." name="chatInputBox" placeholder="Say something." value="" type="text">
                     <button type="button" class="btn-whoaverse contribute" onclick="sendChatMessage('@Model.Room.ID', '@Context.Request.Query["access"]');">send</button>

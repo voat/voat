@@ -15,35 +15,6 @@ namespace Voat
         public VoatUIDataContextAccessor(string name = "ReadWrite") : base(name) { }
     }
 
-    public static class Extensions
-    {
-        public static bool IsAjaxRequest(this HttpRequest request)
-        {
-            throw new NotImplementedException("Core port not implemented");
-        }
-
-        public static void Add(this IResponseCookies cookies, HttpCookie cookie)
-        {
-            cookies.Append(cookie.Name, cookie.Value, new CookieOptions() { Expires = cookie.Expires });
-        }
-        public static void SetCookie(this HttpResponse response, HttpCookie cookie)
-        {
-            response.Cookies.Add(cookie);
-        }
-        
-    }
-    public class HttpCookie
-    {
-        public HttpCookie(string name, string value = "")
-        {
-            this.Name = name;
-            this.Value = value;
-        }
-        public string Name { get; set; }
-        public string Value { get; set; }
-        public DateTime Expires { get; set; }
-
-    }
     public class ChildActionOnlyAttribute : Attribute
     {
         public ChildActionOnlyAttribute()

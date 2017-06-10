@@ -87,7 +87,7 @@ namespace Voat.Controllers
                     {
                         //string thumbnailUrl;
 
-                        //if (Settings.UseContentDeliveryNetwork)
+                        //if (VoatSettings.Instance.UseContentDeliveryNetwork)
                         //{
                         //    thumbnailUrl = new Uri("http://cdn." + System.Web.Context.Request.Url.Authority + "/thumbs/" + submission.Thumbnail).ToString();
                         //}

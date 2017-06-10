@@ -84,7 +84,7 @@ namespace Voat.Rules.Posting
                 using (var repo = new Data.Repository())
                 {
                     int crossPostCount = repo.FindUserLinkSubmissionCount(context.UserName, userSubmission.Url, TimeSpan.FromDays(1));
-                    if (crossPostCount >= Settings.DailyCrossPostingQuota)
+                    if (crossPostCount >= VoatSettings.Instance.DailyCrossPostingQuota)
                     {
                         return CreateOutcome(RuleResult.Denied, "You have reached your daily crossposting quota for this Url");
                     }

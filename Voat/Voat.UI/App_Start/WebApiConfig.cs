@@ -50,11 +50,11 @@ namespace Voat
             // set default API response to JSON
             configuration.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/json"));            
 
-            configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Error;
+            configuration.Formatters.JsonFormatter.SerializerVoatSettings.Instance.ReferenceLoopHandling = ReferenceLoopHandling.Error;
 
-            //configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize;
-            //configuration.Formatters.JsonFormatter.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects; 
-            if (Settings.LegacyApiEnabled)
+            //configuration.Formatters.JsonFormatter.SerializerVoatSettings.Instance.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Serialize;
+            //configuration.Formatters.JsonFormatter.SerializerVoatSettings.Instance.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.Objects; 
+            if (VoatSettings.Instance.LegacyApiEnabled)
             {
                 // configure routes
                 configuration.Routes.MapHttpRoute("API list default subverses", "api/defaultsubverses",

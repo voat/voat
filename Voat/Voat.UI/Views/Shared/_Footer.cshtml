@@ -33,7 +33,7 @@
 <div class="footer-container">
     <div class="footer">
         <div>
-            @if (Settings.IsVoatBranded)
+            @if (VoatSettings.Instance.IsVoatBranded)
             {
                 <span class="separator"></span><a href="/advertize">advertise</a>
                 <span class="separator"></span><a href="https://store.voat.co/donations">donate</a>
@@ -49,7 +49,7 @@
             Use of this site constitutes acceptance of our <a href="~/help/useragreement">User Agreement</a> and <a href="~/help/privacy">Privacy Policy</a>.
         </p>
         <p class="bottommenu">
-            @Html.Raw(Settings.FooterText)
+            @Html.Raw(VoatSettings.Instance.FooterText)
         </p>
     </div>
 </div>

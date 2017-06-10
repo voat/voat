@@ -32,7 +32,7 @@
 
     <div class="content" role="main">
 
-        @if (!Settings.SetCreationDisabled && User.Identity.IsAuthenticated && User.Identity.Name.IsEqual(userName))
+        @if (!VoatSettings.Instance.SetCreationDisabled && User.Identity.IsAuthenticated && User.Identity.Name.IsEqual(userName))
         {
             <a href="/user/@User.Identity.Name/sets/create">Create a Set</a>
         }

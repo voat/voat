@@ -31,6 +31,7 @@ using System.Web;
 
 using Voat.Domain.Models;
 using Voat.Domain.Query;
+using Voat.Http;
 using Voat.Models.ViewModels;
 
 namespace Voat.Controllers

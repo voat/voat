@@ -23,6 +23,7 @@
 #endregion LICENSE
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Voat.Caching;
 
 namespace Voat.Tests.Cache
 {
@@ -32,7 +33,7 @@ namespace Voat.Tests.Cache
         [TestMethod]
         public void Can_Read_Config()
         {
-            var section = Voat.Caching.CacheConfigurationSettings.Instance;
+            var section = CacheConfigurationSettings.Instance;
             Assert.IsNotNull(section, "Caching Section is null");
             Assert.AreEqual(3, section.Handlers.Length);
             Assert.IsNotNull(section.Handler, "Enabled handler null");

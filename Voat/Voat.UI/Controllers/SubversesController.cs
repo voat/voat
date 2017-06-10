@@ -40,6 +40,7 @@ using Voat.Domain.Command;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Voat.Common;
+using Voat.Http;
 
 namespace Voat.Controllers
 {

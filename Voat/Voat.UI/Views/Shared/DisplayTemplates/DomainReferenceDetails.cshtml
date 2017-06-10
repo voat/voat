@@ -24,7 +24,7 @@
     string subverseAge = Age.ToRelative(Model.CreationDate);
     var userData = Voat.Domain.UserData.GetContextUserData(Context);
 
-    var userName = Settings.SiteName;
+    var userName = VoatSettings.Instance.SiteName;
     if (!String.IsNullOrEmpty(Model.OwnerName))
     {
         userName = Model.OwnerName;

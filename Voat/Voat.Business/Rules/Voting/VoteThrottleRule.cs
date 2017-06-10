@@ -38,7 +38,7 @@ namespace Voat.Rules.Voting
 
         protected override RuleOutcome EvaluateRule(VoatRuleContext context)
         {
-            int dailyVotingQuota = Settings.DailyVotingQuota;
+            int dailyVotingQuota = VoatSettings.Instance.DailyVotingQuota;
             var userCCP = context.UserData.Information.CommentPoints.Sum;
 
             //if user has 20+ use scaled quota, else use 10

@@ -40,6 +40,18 @@ using Voat.Utilities.Components;
 
 namespace Voat.Utilities
 {
+    //interface for dealing with writing files 
+    public interface IFileManager<K, C>
+    {
+        void Upload(K key, C content);
+
+        string Uri(K key);
+
+        bool Exists(K key);
+
+        void Delete(K key);
+    }
+
     public static class ThumbGenerator
     {
         private static string _destinationPathThumbs = null;
@@ -106,7 +118,7 @@ namespace Voat.Utilities
                 if (FileSystemUtility.FileExists(tempPath, DestinationPathThumbs))
                 {
                     // call upload to storage method if CDN config is enabled
-                    if (Settings.UseContentDeliveryNetwork)
+                    if (VoatSettings.Instance.UseContentDeliveryNetwork)
                     {
                         await CloudStorageUtility.UploadBlobToStorageAsync(tempPath, "thumbs");
                         if (purgeTempFile)
@@ -138,7 +150,7 @@ namespace Voat.Utilities
                     // store avatar locally
                     var originalImage = new KalikoImage(inputImage);
                     originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPathAvatars + '\\' + userName + ".jpg", 90);
-                    if (!Settings.UseContentDeliveryNetwork)
+                    if (!VoatSettings.Instance.UseContentDeliveryNetwork)
                     {
                         return true;
                     }
@@ -151,7 +163,7 @@ namespace Voat.Utilities
                     {
                         return false;
                     }
-                    else if (Settings.UseContentDeliveryNetwork)
+                    else if (VoatSettings.Instance.UseContentDeliveryNetwork)
                     {
                         // upload to CDN
                         await CloudStorageUtility.UploadBlobToStorageAsync(tempAvatarLocation, "avatars");
@@ -176,7 +188,7 @@ namespace Voat.Utilities
             string rndFileName;
 
             // if CDN flag is active, check if file exists on CDN, otherwise check if file exists on local storage
-            if (Settings.UseContentDeliveryNetwork)
+            if (VoatSettings.Instance.UseContentDeliveryNetwork)
             {
                 // make sure blob with same name doesn't exist already
                 do

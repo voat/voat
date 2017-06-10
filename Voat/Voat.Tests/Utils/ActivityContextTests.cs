@@ -43,7 +43,7 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(activity.EndDate, newActivity.EndDate);
 
             Assert.AreEqual(activity.User.Identity.Name, newActivity.User.Identity.Name);
-            //We want to ensure deserialization does not retain these settings.
+            //We want to ensure deserialization does not retain these VoatSettings.Instance.
             Assert.AreEqual(false, newActivity.User.Identity.IsAuthenticated);
             Assert.AreEqual("", newActivity.User.Identity.AuthenticationType);
 
@@ -53,7 +53,7 @@ namespace Voat.Tests.Utils
         [TestCategory("ActivityContext")]
         public void TestActivitySerialization()
         {
-            var settings = JsonSettings.DataSerializationSettings;
+            var settings =  JsonSettings.DataSerializationSettings;
             var user = TestHelper.SetPrincipal("Frank", "admin", "user");
 
             var originalContext = new ActivityContext(user);
@@ -67,7 +67,7 @@ namespace Voat.Tests.Utils
 
             Assert.AreEqual(originalContext.User.Identity.Name, newContext.User.Identity.Name);
             
-            //We want to ensure deserialization does not retain these settings.
+            //We want to ensure deserialization does not retain these VoatSettings.Instance.
             Assert.AreEqual(false, newContext.User.Identity.IsAuthenticated);
             Assert.AreEqual("", newContext.User.Identity.AuthenticationType);
 
@@ -76,7 +76,7 @@ namespace Voat.Tests.Utils
         [TestCategory("ActivityContext")]
         public void TestActivityDispose()
         {
-            var settings = JsonSettings.DataSerializationSettings;
+            var settings =  JsonSettings.DataSerializationSettings;
             var user = TestHelper.SetPrincipal("Frank", "admin", "user");
             ActivityContext refContext = null;
 

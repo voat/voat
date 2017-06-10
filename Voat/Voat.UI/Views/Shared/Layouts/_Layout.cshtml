@@ -43,10 +43,10 @@
 
     string selectedUser = ViewBag.UserName;
 
-    ViewBag.Title = ViewBag.Title ?? Settings.SiteSlogan;
-    ViewBag.Description = ViewBag.Description ?? Settings.SiteDescription;
+    ViewBag.Title = ViewBag.Title ?? VoatSettings.Instance.SiteSlogan;
+    ViewBag.Description = ViewBag.Description ?? VoatSettings.Instance.SiteDescription;
     ViewBag.Url = ViewBag.Url ?? Context.Request.GetUrl().ToString();
-    ViewBag.Image = ViewBag.Image ?? Context.Request.GetUrl().Scheme + "://" + Context.Request.GetUrl().Authority + Settings.SiteLogo;
+    ViewBag.Image = ViewBag.Image ?? Context.Request.GetUrl().Scheme + "://" + Context.Request.GetUrl().Authority + VoatSettings.Instance.SiteLogo;
 }
 
 <div style="display: none" id="share-a-link-overlay">
@@ -62,8 +62,8 @@
     <div id="header-container">
         <div id="header-banner">
 
-            <a title="@Settings.SiteSlogan" href="/" id="header-img-a">
-                <img id="header-img" src="@Settings.SiteLogo" alt="@Settings.SiteName" height="31" width="112">
+            <a title="@VoatSettings.Instance.SiteSlogan" href="/" id="header-img-a">
+                <img id="header-img" src="@VoatSettings.Instance.SiteLogo" alt="@VoatSettings.Instance.SiteName" height="31" width="112">
             </a>
 
             <div id="show-menu-button"></div>
@@ -143,7 +143,7 @@
 @if (User.Identity.IsAuthenticated)
 {
     var userCCP = userData.Information.CommentPoints.Sum;
-    var scaledQuota = userCCP >= 20 ? Math.Max(Settings.DailyVotingQuota, (userCCP / 2)) : 10;
+    var scaledQuota = userCCP >= 20 ? Math.Max(VoatSettings.Instance.DailyVotingQuota, (userCCP / 2)) : 10;
 
     @* Not enough comment contribution points Modal *@
     <div class="modal fade" id="notenoughccp" tabindex="-1" role="dialog" aria-labelledby="notenoughccplabel" aria-hidden="true">
@@ -154,7 +154,7 @@
                     <h4 class="modal-title" id="notenoughccplabel">Hi! It looks like you are new around here</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Welcome to @Settings.SiteName!</p>
+                    <p>Welcome to @VoatSettings.Instance.SiteName!</p>
                     <p>In order to downvote comments or submissions you need to have at least 100 comment contribution points.</p>
                     <p>Every time someone upvotes one of your comments, you gain 1 comment contribution point.</p>
                     <p>You currently have @userCCP comment contribution points.</p>
@@ -176,7 +176,7 @@
                         <h4 class="modal-title" id="notenoughccpupvotelabel">Hi! It looks like you are new around here.</h4>
                     </div>
                     <div class="modal-body">
-                        <p>Welcome to @Settings.SiteName!</p>
+                        <p>Welcome to @VoatSettings.Instance.SiteName!</p>
                         <p>The number of votes you can place is tied to your comment contribution points.</p>
                         <p>You are currently limited to @scaledQuota votes per 24 hours.</p>
                         <p>Every time someone upvotes one of your comments, you gain 1 comment contribution point.</p>

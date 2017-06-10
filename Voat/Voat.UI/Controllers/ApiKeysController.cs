@@ -90,7 +90,7 @@ namespace Voat.Controllers
         [HttpPost]
         public async Task<ActionResult> Create(ApiKeyCreateRequest model)
         {
-            if (!Settings.ApiKeyCreationEnabled)
+            if (!VoatSettings.Instance.ApiKeyCreationEnabled)
             {
                 return RedirectToAction("Index");
             }

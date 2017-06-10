@@ -104,7 +104,7 @@ namespace Voat.Controllers
             ViewBag.SubverseName = subverseObject.Name;
             SetNavigationViewModel(subverseObject.Name);
 
-            return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", viewModel);
+            return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", viewModel);
         }
 
         // POST: Eddit a Subverse
@@ -118,7 +118,7 @@ namespace Voat.Controllers
                 if (!ModelState.IsValid)
                 {
                     SetNavigationViewModel(updatedModel.Name);
-                    return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
+                    return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", updatedModel);
                 }
                 var existingSubverse = _db.Subverse.Find(updatedModel.Name);
 
@@ -136,13 +136,13 @@ namespace Voat.Controllers
                     if (BanningUtility.ContentContainsBannedDomain(existingSubverse.Name, updatedModel.Description))
                     {
                         ModelState.AddModelError(string.Empty, "Sorry, description text contains banned domains.");
-                        return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
+                        return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", updatedModel);
                     }
                     //check sidebar for banned domains
                     if (BanningUtility.ContentContainsBannedDomain(existingSubverse.Name, updatedModel.SideBar))
                     {
                         ModelState.AddModelError(string.Empty, "Sorry, sidebar text contains banned domains.");
-                        return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
+                        return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", updatedModel);
                     }
 
                     // TODO investigate if EntityState is applicable here and use that instead
@@ -161,7 +161,7 @@ namespace Voat.Controllers
                     //    else
                     //    {
                     //        ModelState.AddModelError(string.Empty, "Sorry, custom CSS limit is set to 50000 characters.");
-                    //        return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
+                    //        return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", updatedModel);
                     //    }
                     //}
                     //else
@@ -176,7 +176,7 @@ namespace Voat.Controllers
                     existingSubverse.ExcludeSitewideBans = updatedModel.ExcludeSitewideBans;
 
                     //Only update if time lock has expired
-                    if (existingSubverse.LastUpdateDate == null || (Repository.CurrentDate.Subtract(existingSubverse.LastUpdateDate.Value) > TimeSpan.FromHours(Settings.SubverseUpdateTimeLockInHours)))
+                    if (existingSubverse.LastUpdateDate == null || (Repository.CurrentDate.Subtract(existingSubverse.LastUpdateDate.Value) > TimeSpan.FromHours(VoatSettings.Instance.SubverseUpdateTimeLockInHours)))
                     {
                         existingSubverse.MinCCPForDownvote = updatedModel.MinCCPForDownvote;
                         existingSubverse.IsPrivate = updatedModel.IsPrivate;
@@ -192,7 +192,7 @@ namespace Voat.Controllers
                     //if (existingSubverse.IsAnonymized == true && updatedModel.IsAnonymized == false)
                     //{
                     //    ModelState.AddModelError(string.Empty, "Sorry, this subverse is permanently locked to anonymized mode.");
-                    //    return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
+                    //    return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", updatedModel);
                     //}
 
                     // only subverse owners should be able to convert a sub to anonymized mode
@@ -216,12 +216,12 @@ namespace Voat.Controllers
                     // user was not authorized to commit the changes, drop attempt
                 }
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");
-                return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
+                return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", updatedModel);
             }
             catch (Exception)
             {
                 ModelState.AddModelError(string.Empty, "Something bad happened.");
-                return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
+                return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", updatedModel);
             }
         }
 
@@ -267,7 +267,7 @@ namespace Voat.Controllers
                 if (!ModelState.IsValid)
                 {
                     SetNavigationViewModel(model.Name);
-                    return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
+                    return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml");
                 }
                 var existingSubverse = _db.Subverse.Find(model.Name);
 
@@ -696,7 +696,7 @@ namespace Voat.Controllers
             ViewBag.SelectedSubverse = string.Empty;
             SetNavigationViewModel(subverseObject.Name);
 
-            return View("~/Views/Subverses/Admin/Flair/FlairSettings.cshtml", subverseFlairsettings);
+            return View("~/Views/Subverses/Admin/Flair/FlairVoatSettings.Instance.cshtml", subverseFlairsettings);
         }
 
         // GET: show add link flair view for selected subverse
@@ -812,7 +812,7 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<ActionResult> AcceptModInvitation(int invitationId)
         {
-            int maximumOwnedSubs = Settings.MaximumOwnedSubs;
+            int maximumOwnedSubs = VoatSettings.Instance.MaximumOwnedSubs;
 
             //TODO: These errors are not friendly - please update to redirect or something
             // check if there is an invitation for this user with this id
@@ -979,7 +979,7 @@ namespace Voat.Controllers
                 return sendFailureResult("Sorry, but you can only add moderators that are a lower level than yourself");
             }
 
-            int maximumOwnedSubs = Settings.MaximumOwnedSubs;
+            int maximumOwnedSubs = VoatSettings.Instance.MaximumOwnedSubs;
 
             // check if the user being added is not already a moderator of 10 subverses
             var currentlyModerating = _db.SubverseModerator.Where(a => a.UserName == originalRecipientUserName).ToList();

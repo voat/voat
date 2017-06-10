@@ -311,7 +311,7 @@ namespace Voat.Caching
                 if (refreshLimit == 0 || refreshCount <= refreshLimit)
                 {
                     string msg = String.Format("Refetching cache ({0}) - #{1}", cacheKey, refreshCount);
-                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
+                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.VoatSettings.Instance.Origin.ToString() });
 
                     _meta[cacheKey] = meta;
 
@@ -340,7 +340,7 @@ namespace Voat.Caching
                 else
                 {
                     string msg = String.Format("Expiring cache ({0}) - #{1}", cacheKey, refreshCount);
-                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
+                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.VoatSettings.Instance.Origin.ToString() });
                     //Debug.WriteLine(msg);
                     Remove(cacheKey, true);
                 }
@@ -351,7 +351,7 @@ namespace Voat.Caching
             try
             {
                 string msg = String.Format("Expiring cache ({0})", key.ToString());
-                EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.Settings.Origin.ToString() });
+                EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.VoatSettings.Instance.Origin.ToString() });
                 //Debug.WriteLine(msg);
 
                 if (reason != EvictionReason.None)
@@ -565,7 +565,7 @@ namespace Voat.Caching
                 using (var duration = new DurationLogger(EventLogger.Instance, new LogInformation()
                 {
                     Type = LogType.Debug,
-                    Origin = Configuration.Settings.Origin.ToString(),
+                    Origin = Configuration.VoatSettings.Instance.Origin.ToString(),
                     Category = "Duration",
                     Message = $"Cache Load ({cacheKey})"
                 },
@@ -585,7 +585,7 @@ namespace Voat.Caching
                                 var data = getData();
                                 if (data != null || data == null && !_ignoreNulls)
                                 {
-                                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = $"Inserting Cache ({cacheKey})", Origin = Configuration.Settings.Origin.ToString() });
+                                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = $"Inserting Cache ({cacheKey})", Origin = Configuration.VoatSettings.Instance.Origin.ToString() });
                                     //Debug.WriteLine("Inserting Cache: " + cacheKey);
                                     SetItem(cacheKey, data, cacheTime);
 
@@ -671,7 +671,7 @@ namespace Voat.Caching
                     new LogInformation()
                     {
                         Type = LogType.Debug,
-                        Origin = Configuration.Settings.Origin.ToString(),
+                        Origin = Configuration.VoatSettings.Instance.Origin.ToString(),
                         Category = "Duration",
                         Message = $"Cache Load ({cacheKey})"
                     }, TimeSpan.FromSeconds(1)))
@@ -687,7 +687,7 @@ namespace Voat.Caching
                                 var data = await getData().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                                 if (data != null || data == null && !_ignoreNulls)
                                 {
-                                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = $"Inserting Cache ({cacheKey})", Origin = Configuration.Settings.Origin.ToString() });
+                                    EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = $"Inserting Cache ({cacheKey})", Origin = Configuration.VoatSettings.Instance.Origin.ToString() });
                                     //Debug.WriteLine("Inserting Cache: " + cacheKey);
                                     SetItem(cacheKey, data, cacheTime);
 

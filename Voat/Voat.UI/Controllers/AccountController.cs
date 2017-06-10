@@ -217,7 +217,7 @@ namespace Voat.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            if (Settings.RegistrationDisabled)
+            if (VoatSettings.Instance.RegistrationDisabled)
             {
                 return View("RegistrationDisabled");
             }
@@ -233,7 +233,7 @@ namespace Voat.Controllers
         [ValidateCaptcha]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            if (Settings.RegistrationDisabled)
+            if (VoatSettings.Instance.RegistrationDisabled)
             {
                 return View("RegistrationDisabled");
             }
@@ -263,7 +263,7 @@ namespace Voat.Controllers
 
                 // check the number of accounts already in database with this IP address, if number is higher than max conf, refuse registration request
                 var accountsWithSameIp = UserManager.Users.Count(x => x.LastLoginFromIp == clientIpAddress);
-                if (accountsWithSameIp >= Settings.MaxAllowedAccountsFromSingleIP)
+                if (accountsWithSameIp >= VoatSettings.Instance.MaxAllowedAccountsFromSingleIP)
                 {
                     ModelState.AddModelError(string.Empty, "This device can not be used to create a voat account.");
                     return View(model);

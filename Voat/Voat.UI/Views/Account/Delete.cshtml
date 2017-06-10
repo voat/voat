@@ -96,7 +96,7 @@
                         <p>You have been with us @Voat.Common.Age.ToRelative(userData.Information.RegistrationDate)!</p>
                         @if (userData.Information.CommentPoints.UpCount > 100 && userData.Information.CommentPoints.UpCount > 100)
                         {
-                            <p>Your comments were upped @userData.Information.CommentPoints.UpCount times by fellow @String.Format("{0}ers",Settings.SiteName) and your submissions @userData.Information.SubmissionPoints.UpCount times!</p>
+                            <p>Your comments were upped @userData.Information.CommentPoints.UpCount times by fellow @String.Format("{0}ers",VoatSettings.Instance.SiteName) and your submissions @userData.Information.SubmissionPoints.UpCount times!</p>
                         }
                         <p>You have three choices regarding your content:</p>
                         <ul class="normal">

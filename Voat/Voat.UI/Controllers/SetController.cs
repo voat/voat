@@ -44,6 +44,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing;
 using Voat.Common;
+using Voat.Http;
 
 namespace Voat.Controllers
 {
@@ -273,7 +274,7 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<ActionResult> Create()
         {
-            if (Settings.SetCreationDisabled)
+            if (VoatSettings.Instance.SetCreationDisabled)
             {
                 return GenericErrorView(new ErrorViewModel() { Title = "Set Creation Disabled", Description = "Sorry, but set creation is currently disabled", FooterMessage = "Someone will be fired for this" });
             }
@@ -285,7 +286,7 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Set set)
         {
-            if (Settings.SetCreationDisabled)
+            if (VoatSettings.Instance.SetCreationDisabled)
             {
                 return GenericErrorView(new ErrorViewModel() { Title = "Set Creation Disabled", Description = "Sorry, but set creation is currently disabled", FooterMessage = "Someone will be fired for this" });
             }
@@ -325,7 +326,7 @@ namespace Voat.Controllers
         //// show single set frontpage
         //public ActionResult SingleSet(int setId, int? page)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        return RedirectToAction("UnAuthorized", "Error");
         //    }
@@ -402,7 +403,7 @@ namespace Voat.Controllers
         //// fetch x more items from a set
         //public ActionResult SingleSetPage(int setId, int page)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        return RedirectToAction("UnAuthorized", "Error");
         //    }
@@ -455,7 +456,7 @@ namespace Voat.Controllers
         //[Authorize]
         //public ActionResult EditSet(int setId)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        return RedirectToAction("UnAuthorized", "Error");
         //    }
@@ -492,7 +493,7 @@ namespace Voat.Controllers
         //[VoatValidateAntiForgeryToken]
         //public ActionResult ReorderSet(string setName, int direction)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        return RedirectToAction("UnAuthorized", "Error");
         //    }
@@ -511,7 +512,7 @@ namespace Voat.Controllers
         //// GET: /sets
         //public ActionResult Sets(int? page)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        return RedirectToAction("UnAuthorized", "Error");
         //    }
@@ -542,7 +543,7 @@ namespace Voat.Controllers
         //// GET: /sets/recommended
         //public ActionResult RecommendedSets(int? page)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        return RedirectToAction("UnAuthorized", "Error");
         //    }
@@ -576,7 +577,7 @@ namespace Voat.Controllers
         //[Authorize]
         //public ActionResult CreateSet()
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        return RedirectToAction("UnAuthorized", "Error");
         //    }
@@ -589,12 +590,12 @@ namespace Voat.Controllers
         //[VoatValidateAntiForgeryToken]
         //public async Task<ActionResult> CreateSet([Bind(Include = "Name, Description")] AddSet setTmpModel)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        return RedirectToAction("UnAuthorized", "Error");
         //    }
         //    if (!User.Identity.IsAuthenticated) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    int maximumOwnedSets = Settings.MaximumOwnedSets;
+        //    int maximumOwnedSets = VoatSettings.Instance.MaximumOwnedSets;
 
         //    // TODO
         //    // ###############################################################################################
@@ -647,7 +648,7 @@ namespace Voat.Controllers
         //[Authorize]
         //public ActionResult UserSets(int? page)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        return RedirectToAction("UnAuthorized", "Error");
         //    }
@@ -671,7 +672,7 @@ namespace Voat.Controllers
         //[Authorize]
         //public ActionResult ManageUserSets(int? page)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        return RedirectToAction("UnAuthorized", "Error");
         //    }
@@ -695,7 +696,7 @@ namespace Voat.Controllers
         //[ChildActionOnly]
         //public PartialViewResult PopularSets()
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
         //        return new PartialViewResult();
@@ -711,7 +712,7 @@ namespace Voat.Controllers
         //[VoatValidateAntiForgeryToken]
         //public JsonResult Subscribe(int setId)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
         //        return Json("Sets disabled." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
@@ -728,7 +729,7 @@ namespace Voat.Controllers
         //[VoatValidateAntiForgeryToken]
         //public JsonResult UnSubscribe(int setId)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
         //        return Json("Sets disabled." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
@@ -745,7 +746,7 @@ namespace Voat.Controllers
         //[VoatValidateAntiForgeryToken]
         //public JsonResult AddSubverseToSet(string subverseName, int setId)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
         //        return Json("Sets disabled." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
@@ -799,7 +800,7 @@ namespace Voat.Controllers
         //[VoatValidateAntiForgeryToken]
         //public JsonResult RemoveSubverseFromSet(string subverseName, int setId)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
         //        return Json("Sets disabled." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
@@ -831,7 +832,7 @@ namespace Voat.Controllers
         //[VoatValidateAntiForgeryToken]
         //public JsonResult ChangeSetInfo(int setId, string newSetName)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
         //        return Json("Sets disabled." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
@@ -873,7 +874,7 @@ namespace Voat.Controllers
         //[VoatValidateAntiForgeryToken]
         //public JsonResult DeleteSet(int setId)
         //{
-        //    if (Settings.SetsDisabled)
+        //    if (VoatSettings.Instance.SetsDisabled)
         //    {
         //        Response.StatusCode = (int)HttpStatusCode.BadRequest;
         //        return Json("Sets disabled." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);

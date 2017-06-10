@@ -329,12 +329,12 @@ namespace Voat.Data
             else
             {
                 //Validation - MOVE TO RULES SYSTEM MAYBE
-                if (Settings.SetCreationDisabled || Settings.MaximumOwnedSets <= 0)
+                if (VoatSettings.Instance.SetCreationDisabled || VoatSettings.Instance.MaximumOwnedSets <= 0)
                 {
                     return CommandResponse.FromStatus<Set>(null, Status.Denied, "Set creation is currently disabled");
                 }
 
-                if (Settings.MaximumOwnedSets > 0)
+                if (VoatSettings.Instance.MaximumOwnedSets > 0)
                 {
                     var d = new DapperQuery();
                     d.Select = $"SELECT COUNT(*) FROM {SqlFormatter.Table("SubverseSet", "subSet")}";
@@ -343,9 +343,9 @@ namespace Voat.Data
                     d.Parameters.Add("UserName", UserName);
 
                     var setCount = _db.Connection.ExecuteScalar<int>(d.ToString(), d.Parameters);
-                    if (setCount >= Settings.MaximumOwnedSets)
+                    if (setCount >= VoatSettings.Instance.MaximumOwnedSets)
                     {
-                        return CommandResponse.FromStatus<Set>(null, Status.Denied, $"Sorry, Users are limited to {Settings.MaximumOwnedSets} sets and you currently have {setCount}");
+                        return CommandResponse.FromStatus<Set>(null, Status.Denied, $"Sorry, Users are limited to {VoatSettings.Instance.MaximumOwnedSets} sets and you currently have {setCount}");
                     }
                 }
 

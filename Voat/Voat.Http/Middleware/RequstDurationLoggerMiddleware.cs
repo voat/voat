@@ -23,7 +23,7 @@ namespace Voat.Http.Middleware
                 new LogInformation() {
                     Category = "RequestDuration",
                     UserName = context.User.Identity.Name,
-                    Origin = Settings.Origin.ToString(),
+                    Origin = VoatSettings.Instance.Origin.ToString(),
                     Type = LogType.Information,
                     Message = $"{context.Request.Method} {context.Request.GetUrl().PathAndQuery}",
                     Data = context.ToDebugginInformation()

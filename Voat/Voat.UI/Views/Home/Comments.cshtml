@@ -60,8 +60,8 @@
                 //I don't know if we need this ViewBag setup
                 ViewBag.Title = submission.Title + " | " + submission.Subverse;
                 //ViewBag.Url = ViewBag.Url ?? Context.Request.Url.AbsoluteUri;
-                //ViewBag.Image = ViewBag.Image ?? Context.Request.Url.Scheme + "://" + Context.Request.Url.Authority + Settings.SiteLogo;
-                ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
+                //ViewBag.Image = ViewBag.Image ?? Context.Request.Url.Scheme + "://" + Context.Request.Url.Authority + VoatSettings.Instance.SiteLogo;
+                ViewBag.Description = ViewBag.Description ?? VoatSettings.Instance.SiteSlogan;
                 @Html.Partial("~/Views/Shared/Submissions/_SubmissionDetail.cshtml", submission,
                     new ViewDataDictionary(ViewData) {
                         //{ "ModeratorList", ViewBag.ModeratorList },
@@ -75,7 +75,7 @@
                 //I don't know if we need this ViewBag setup
                 ViewBag.Title = submission.Title + " | " + submission.Subverse;
                 //ViewBag.Url = ViewBag.Url ?? Context.Request.Url.AbsoluteUri;
-                ViewBag.Description = ViewBag.Description ?? Settings.SiteSlogan;
+                ViewBag.Description = ViewBag.Description ?? VoatSettings.Instance.SiteSlogan;
 
                 ////check if submission has a thumb, otherwise point to site logo
                 //if (submission.ThumbnailUrl != null)
@@ -84,7 +84,7 @@
                 //}
                 //else
                 //{
-                //    ViewBag.Image = ViewBag.Image ?? Context.Request.Url.Scheme + "://" + Context.Request.Url.Authority + Settings.SiteLogo;
+                //    ViewBag.Image = ViewBag.Image ?? Context.Request.Url.Scheme + "://" + Context.Request.Url.Authority + VoatSettings.Instance.SiteLogo;
                 //}
 
                 @Html.Partial("~/Views/Shared/Submissions/_SubmissionDetail.cshtml", submission,
