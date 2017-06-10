@@ -73,8 +73,19 @@ namespace Voat.Common.Configuration
                                     }
                                     else
                                     {
-                                        var o = Activator.CreateInstance(type, new object[] { value });
-                                        objectList.Add(o);
+                                        //Check for Parse(string) method and invoke it if found (This covers System.TimeSpan parsing)
+                                        var parseMethod = type.GetMethod("Parse", new[] { typeof(string) });
+                                        if (parseMethod != null)
+                                        {
+
+                                            var parsedObject = parseMethod.Invoke(type, new object[] { value });
+                                            objectList.Add(parsedObject);
+                                        }
+                                        else
+                                        {
+                                            var o = Activator.CreateInstance(type, new object[] { value });
+                                            objectList.Add(o);
+                                        }
                                     }
                                 }
                                 else if (type.IsEnum)
