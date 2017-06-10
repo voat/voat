@@ -41,5 +41,7 @@ namespace Voat.Logging
         Exception Exception { get; set; }
         object Data { get; set; }
         Nullable<Guid> ActivityID { get; set; }
+
+        DateTime CreationDate { get; set; }
     }
 }

@@ -39,7 +39,7 @@ namespace Voat.UI.Runtime
                     Category = "Exception",
                     Message = "GlobalExceptionFilter",
                     UserName = context.HttpContext.User.Identity.Name,
-                    Data = context.HttpContext.ToErrorInformation(),
+                    Data = context.HttpContext.ToDebugginInformation(),
                     Exception = context.Exception }
                 );
         }

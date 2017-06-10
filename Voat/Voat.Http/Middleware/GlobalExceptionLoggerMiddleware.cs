@@ -31,7 +31,7 @@ namespace Voat.Http.Middleware
                        Message = "GlobalExceptionLoggerMiddleware",
                        Category = "Exception",
                        UserName = context.User.Identity.Name,
-                       Data = context.ToErrorInformation(),
+                       Data = context.ToDebugginInformation(),
                        Exception = ex
                    });
             }

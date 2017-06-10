@@ -8,20 +8,24 @@ using Voat.Logging;
 
 namespace Voat.Data
 {
-    public class DatabaseLogger : BaseLogger
+    public class DatabaseLogger : QueuedLogger
     {
-        public DatabaseLogger() { }
-        public DatabaseLogger(LogType logLevel)
+        public DatabaseLogger() : this(1, LogType.All)
+        { }
+        public DatabaseLogger(int flushCount, LogType logLevel) : base(flushCount, logLevel)
         {
-            this.LogLevel = logLevel;
+
         }
 
-        protected override void ProtectedLog(ILogInformation info)
+        protected override void ProcessBatch(IEnumerable<ILogInformation> batch)
         {
             //Logging to EventLog
             using (var repo = new Repository())
             {
-                repo.Log(Map(info));
+                foreach (var logEntry in batch)
+                {
+                    repo.Log(Map(logEntry));
+                }
             }
         }
         private EventLog Map(ILogInformation info)
@@ -38,7 +42,7 @@ namespace Voat.Data
                 e.ActivityID = info.ActivityID?.ToString();
                 e.Exception = Newtonsoft.Json.JsonConvert.SerializeObject(info.Exception, JsonSettings.FriendlySerializationSettings);
                 e.Data = Newtonsoft.Json.JsonConvert.SerializeObject(info.Data, JsonSettings.FriendlySerializationSettings);
-                e.CreationDate = Repository.CurrentDate;
+                e.CreationDate = info.CreationDate;
                 e.UserName = info.UserName;
             }
 

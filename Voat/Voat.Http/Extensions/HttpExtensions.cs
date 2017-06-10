@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Voat.Http
@@ -21,10 +22,12 @@ namespace Voat.Http
             return builder.Uri;
         }
 
-        public static object ToErrorInformation(this HttpContext context)
+        public static object ToDebugginInformation(this HttpContext context)
         {
             return new {
-                url = context.Request.GetUrl().ToString()               
+                url = context.Request.GetUrl().ToString(),
+                method = context.Request.Method,
+                headers = context.Request.Headers.Select(x => new { key = x.Key, value = x.Value.Any() ? x.Value.Aggregate((z1, z2) => z1 + "|" + z2) : "" }).ToList()
             };
         }
     }

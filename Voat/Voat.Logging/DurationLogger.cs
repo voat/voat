@@ -28,6 +28,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Common;
 
 namespace Voat.Logging
 {
@@ -57,7 +58,7 @@ namespace Voat.Logging
             _stopwatch.Stop();
             if (_stopwatch.Elapsed > _minDuration)
             {
-                _logInformation.Data = new { elapsed = _stopwatch.Elapsed, elapsedMilliseconds = _stopwatch.ElapsedMilliseconds, startDate = _startDate };
+                _logInformation.Data = new { elapsed = _stopwatch.Elapsed, elapsedMilliseconds = _stopwatch.ElapsedMilliseconds, startDate = _startDate, data = _logInformation.Data };
                 _logger.Log(_logInformation);
             }
         }

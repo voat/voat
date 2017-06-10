@@ -25,8 +25,8 @@ namespace Voat.Http.Middleware
                     UserName = context.User.Identity.Name,
                     Origin = Settings.Origin.ToString(),
                     Type = LogType.Information,
-                    Message = $"{context.Request.Method}: {context.Request.GetUrl()}"
-
+                    Message = $"{context.Request.Method} {context.Request.GetUrl().PathAndQuery}",
+                    Data = context.ToDebugginInformation()
                 }, 
                 _timeSpan))
             {

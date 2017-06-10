@@ -65,6 +65,8 @@ namespace Voat.Logging
         [JsonProperty(Order = 3, NullValueHandling = NullValueHandling.Ignore)]
         public object Data { get; set; }
 
+        public DateTime CreationDate { get; set; } = DateTime.UtcNow;
+
 
         /// <summary>
         /// Use only for simple debugging
