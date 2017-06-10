@@ -24,15 +24,9 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
-using System.Reflection;
-using System.Web;
 using System.Xml;
-using Voat.Caching;
-using Voat.Data.Models;
-using Voat.Utilities.Components;
+using Voat.Common;
 
 namespace Voat.Configuration
 {
@@ -146,19 +140,6 @@ namespace Voat.Configuration
             }
         }
 
-
-        public static void Configure(IConfigurationRoot config)
-        {
-            CacheConfigurationSettings.Load(config, "voat:cache");
-            RulesEngine.RuleConfigurationSettings.Load(config, "voat:rules");
-            Logging.LoggingConfigurationSettings.Load(config, "voat:logging");
-            Data.DataConfigurationSettings.Load(config, "voat:data");
-
-            //load web.config.live monitor
-            Reload(config.GetSection("voat:settings"));
-            //CORE_PORT: Live Monitoring not ported
-            //LiveConfigurationManager.Start();
-        }
         //Core_Port: Config Load Changes
         public static void Reload(IConfigurationSection section)
         {
@@ -227,8 +208,8 @@ namespace Voat.Configuration
                 SetValueIfPresent<bool>(CONFIGURATION.SearchDisabled, section[CONFIGURATION.SearchDisabled]);
                 SetValueIfPresent<int>(CONFIGURATION.SubverseUpdateTimeLockInHours, section[CONFIGURATION.SubverseUpdateTimeLockInHours]);
 
-                SetValueIfPresent<Data.DataStoreType>(CONFIGURATION.DataStore, section[CONFIGURATION.DataStore]);
-                SetValueIfPresent<Domain.Models.Origin>(CONFIGURATION.Origin, section[CONFIGURATION.Origin]);
+                SetValueIfPresent<DataStoreType>(CONFIGURATION.DataStore, section[CONFIGURATION.DataStore]);
+                SetValueIfPresent<Origin>(CONFIGURATION.Origin, section[CONFIGURATION.Origin]);
 
                 //HACK ATTACK
                 //CORE_PORT: Caused Error Because Config Set Isn't Fully Ported
@@ -245,75 +226,68 @@ namespace Voat.Configuration
         {
             Watcher.EnableRaisingEvents = false;
         }
-        private static void Reload(string fullFilePath)
-        {
-            if (File.Exists(fullFilePath))
-            {
-                try
-                {
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load(fullFilePath);
-                    XmlNodeList nodes = doc.SelectNodes("/configuration/appSettings/add");
+        //private static void Reload(string fullFilePath)
+        //{
+        //    if (File.Exists(fullFilePath))
+        //    {
+        //        try
+        //        {
+        //            XmlDocument doc = new XmlDocument();
+        //            doc.Load(fullFilePath);
+        //            XmlNodeList nodes = doc.SelectNodes("/configuration/appSettings/add");
 
-                    foreach (XmlNode node in nodes)
-                    {
-                        string key = node.Attributes["key"].Value;
-                        //add condition for RuntimeState as it has it's own handler
-                        if (String.Equals(key, CONFIGURATION.RuntimeState, StringComparison.OrdinalIgnoreCase))
-                        {
-                            RuntimeState.Refresh(node.Attributes["value"].Value);
-                        }
-                        else
-                        {
-                            SetValueIfPresent<bool>(node.Attributes["key"].Value, node.Attributes["value"].Value, true);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    EventLogger.Log(ex);
-                }
-            }
-        }
+        //            foreach (XmlNode node in nodes)
+        //            {
+        //                string key = node.Attributes["key"].Value;
+        //                //add condition for RuntimeState as it has it's own handler
+        //                if (String.Equals(key, CONFIGURATION.RuntimeState, StringComparison.OrdinalIgnoreCase))
+        //                {
+        //                    RuntimeState.Refresh(node.Attributes["value"].Value);
+        //                }
+        //                else
+        //                {
+        //                    SetValueIfPresent<bool>(node.Attributes["key"].Value, node.Attributes["value"].Value, true);
+        //                }
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            EventLogger.Log(ex);
+        //        }
+        //    }
+        //}
         private static void SetValueIfPresent<T>(string key, string value, bool updateOnly = false)
         {
             if (!String.IsNullOrEmpty(key) && value != null)
             {
-                try
+                object saveValue = null;
+                if (typeof(T) == typeof(string))
                 {
-                    object saveValue = null;
-                    if (typeof(T) == typeof(string))
-                    {
-                        saveValue = value;
-                    }
-                    else if (typeof(T) == typeof(bool))
-                    {
-                        //seperate logic for bool because we want accuracy for true settings
-                        bool conValue = false;
-                        if (!bool.TryParse(value, out conValue))
-                        {
-                            conValue = false;
-                        }
-                        saveValue = conValue;
-                    }
-                    else if (typeof(T).IsEnum)
-                    {
-                        T conValue = (T)Enum.Parse(typeof(T), value, true);
-                        saveValue = conValue;
-                    }
-                    else
-                    {
-                        T conValue = (T)Convert.ChangeType(value, typeof(T));
-                        saveValue = conValue;
-                    }
-                    if (!updateOnly || (updateOnly && Settings.configValues.ContainsKey(key)))
-                    {
-                        Settings.configValues[key] = saveValue;
-                    }
+                    saveValue = value;
                 }
-                catch (Exception ex)
+                else if (typeof(T) == typeof(bool))
                 {
-                    EventLogger.Log(ex);
+                    //seperate logic for bool because we want accuracy for true settings
+                    bool conValue = false;
+                    if (!bool.TryParse(value, out conValue))
+                    {
+                        conValue = false;
+                    }
+                    saveValue = conValue;
+                }
+                else if (typeof(T).IsEnum)
+                {
+                    T conValue = (T)Enum.Parse(typeof(T), value, true);
+                    saveValue = conValue;
+                }
+                else
+                {
+                    T conValue = (T)Convert.ChangeType(value, typeof(T));
+                    saveValue = conValue;
+                }
+                if (!updateOnly || (updateOnly && Settings.configValues.ContainsKey(key)))
+                {
+                    Settings.configValues[key] = saveValue;
                 }
             }
         }

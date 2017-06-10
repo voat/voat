@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Logging;
@@ -9,6 +10,12 @@ namespace Voat.Data
 {
     public class DatabaseLogger : BaseLogger
     {
+        public DatabaseLogger() { }
+        public DatabaseLogger(LogType logLevel)
+        {
+            this.LogLevel = logLevel;
+        }
+
         protected override void ProtectedLog(ILogInformation info)
         {
             //Logging to EventLog
@@ -29,8 +36,8 @@ namespace Voat.Data
                 e.Type = info.Type.ToString();
                 e.Category = info.Category;
                 e.ActivityID = info.ActivityID?.ToString();
-                e.Exception = Newtonsoft.Json.JsonConvert.SerializeObject(e.Exception);
-                e.Data = Newtonsoft.Json.JsonConvert.SerializeObject(info.Data);
+                e.Exception = Newtonsoft.Json.JsonConvert.SerializeObject(info.Exception, JsonSettings.FriendlySerializationSettings);
+                e.Data = Newtonsoft.Json.JsonConvert.SerializeObject(info.Data, JsonSettings.FriendlySerializationSettings);
                 e.CreationDate = Repository.CurrentDate;
                 e.UserName = info.UserName;
             }

@@ -5,21 +5,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Voat.Http;
+using Voat.Logging;
+using Voat.Utilities.Components;
 
 namespace Voat.UI.Runtime
 {
     public class GlobalExceptionFilter : IExceptionFilter, IDisposable
     {
-        private readonly ILogger _logger;
+        //private readonly ILogger _logger;
 
         public GlobalExceptionFilter(ILoggerFactory logger)
         {
-            if (logger == null)
-            {
-                throw new ArgumentNullException(nameof(logger));
-            }
+        //    if (logger == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(logger));
+        //    }
 
-            this._logger = logger.CreateLogger("Global Exception Filter");
+        //    this._logger = logger.CreateLogger("Global Exception Filter");
         }
 
         public void Dispose()
@@ -29,19 +32,16 @@ namespace Voat.UI.Runtime
 
         public void OnException(ExceptionContext context)
         {
-            //var response = new ErrorResponse()
-            //{
-            //    Message = context.Exception.Message,
-            //    StackTrace = context.Exception.StackTrace
-            //};
-
-            //context.Result = new ObjectResult(response)
-            //{
-            //    StatusCode = 500,
-            //    DeclaredType = typeof(ErrorResponse)
-            //};
-
-            //this._logger.LogError("GlobalExceptionFilter", context.Exception);
+            EventLogger.Instance.Log(
+                new LogInformation() {
+                    ActivityID = null,
+                    Type = LogType.Critical,
+                    Category = "Exception",
+                    Message = "GlobalExceptionFilter",
+                    UserName = context.HttpContext.User.Identity.Name,
+                    Data = context.HttpContext.ToErrorInformation(),
+                    Exception = context.Exception }
+                );
         }
     }
 }

@@ -80,8 +80,8 @@ namespace Voat.Controllers
             //CORE_PORT: Ported correctly?
             //string linkPost = Request.Params["linkpost"];
             //string title = Request.Params["title"];
-            string linkPost = Request.Form["linkpost"].FirstOrDefault();
-            string title = Request.Form["title"].FirstOrDefault();
+            string linkPost = Request.Query["linkpost"];
+            string title = Request.Query["title"];
             string url = Request.Query["url"];
 
             CreateSubmissionViewModel model = new CreateSubmissionViewModel();
@@ -154,7 +154,7 @@ namespace Voat.Controllers
             userSubmission.Content = (model.Type == Domain.Models.SubmissionType.Text ? model.Content : null);
             userSubmission.Url = (model.Type == Domain.Models.SubmissionType.Link ? model.Url : null);
 
-            var q = new CreateSubmissionCommand(userSubmission);
+            var q = new CreateSubmissionCommand(userSubmission).SetUserContext(User);
             var result = await q.Execute();
 
             if (result.Success)

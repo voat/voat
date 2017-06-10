@@ -49,7 +49,9 @@ public class UnitTestSetup
     {
         //Configure App
         var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
-        LiveConfigurationManager.Configure(config); 
+
+        config.ConfigureVoat();
+
        
         if (config["voat:test:preventDatabaseDrop"] != "True")
         {

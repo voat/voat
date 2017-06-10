@@ -43,6 +43,7 @@ using Microsoft.Owin.Security;
 using Voat.Data;
 using Voat.Caching;
 using Microsoft.Extensions.Options;
+using Voat.Common;
 
 namespace Voat.Controllers
 {
@@ -99,6 +100,8 @@ namespace Voat.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
+                model.UserName = model.UserName.TrimSafe();
+                model.Password = model.Password.TrimSafe();
                 var user = await _userManager.FindByNameAsync(model.UserName);
                 if (user != null)
                 {
@@ -311,7 +314,7 @@ namespace Voat.Controllers
                 : message == ManageMessageId.UploadedFileToolarge ? "Uploaded file is too large. Current limit is 300 kb."
                 : message == ManageMessageId.UserNameMismatch ? "UserName entered does not match current account"
                 : "";
-            ViewBag.HasLocalPassword = HasPassword();
+
             ViewBag.ReturnUrl = Url.Action("Manage");
 
             ViewBag.NavigationViewModel = new NavigationViewModel()
@@ -333,50 +336,23 @@ namespace Voat.Controllers
         {
             ViewBag.UserName = User.Identity.Name;
 
-            var hasPassword = HasPassword();
-            ViewBag.HasLocalPassword = hasPassword;
+
             ViewBag.ReturnUrl = Url.Action("Manage");
             var user = await UserManager.FindByNameAsync(User.Identity.Name);
 
-            if (hasPassword)
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
-
-                
-                var result = await UserManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
-                }
-                AddErrors(result);
-            }
-            else
-            {
-                // User does not have a password so remove any validation errors caused by a missing OldPassword field
-                //WTF? Reading this comment just made me error out.
-                throw new NotImplementedException("Core Port: This code should never execute so help us all");
-                var state = ModelState["OldPassword"];
-                if (state != null)
-                {
-                    state.Errors.Clear();
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return View(model);
-                }
-                var result = await UserManager.AddPasswordAsync(user, model.NewPassword);
-                if (result.Succeeded)
-                {
-                    return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });
-                }
-                AddErrors(result);
+                return View(model);
             }
 
+            var result = await UserManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
+            }
+            AddErrors(result);
+           
             // If we got this far, something failed, redisplay form
             return RedirectToAction("Manage", new { Message = ManageMessageId.WrongPassword });
         }
@@ -918,19 +894,6 @@ namespace Voat.Controllers
             {
                 ModelState.AddModelError("", error.Description);
             }
-        }
-
-        private bool HasPassword()
-        {
-            //CORE_PORT: Port
-            throw new NotImplementedException("Core port not implemented");
-
-            //var user = UserManager.FindById(User.Identity.GetUserId());
-            //if (user != null)
-            //{
-            //    return user.PasswordHash != null;
-            //}
-            //return false;
         }
 
         public enum ManageMessageId

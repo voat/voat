@@ -23,7 +23,7 @@
 @{
 
     ViewBag.Title = String.IsNullOrEmpty(ViewBag.Title) ? "Inbox" : ViewBag.Title;
-    var qcounts = new Voat.Domain.Query.QueryMessageCounts(Voat.Domain.Models.MessageTypeFlag.All, Voat.Domain.Models.MessageState.Unread);
+    var qcounts = new Voat.Domain.Query.QueryMessageCounts(User, Voat.Domain.Models.MessageTypeFlag.All, Voat.Domain.Models.MessageState.Unread);
     var counts = qcounts.Execute();
     var context = (Voat.Models.ViewModels.MessageContextViewModel)ViewBag.Context;
     //counts

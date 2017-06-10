@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Domain.Models;
@@ -85,12 +86,12 @@ namespace Voat.Domain.Query
             this._type = type;
         }
 
-        public QueryMessageBase(MessageTypeFlag type, MessageState state, bool markAsRead = true)
-            : this("", IdentityType.User, type, state, markAsRead)
-        {
-            this._ownerName = UserName;
-            this._ownerType = IdentityType.User;
-        }
+        //public QueryMessageBase(MessageTypeFlag type, MessageState state, bool markAsRead = true)
+        //    : this("", IdentityType.User, type, state, markAsRead)
+        //{
+        //    this._ownerName = UserName;
+        //    this._ownerType = IdentityType.User;
+        //}
     }
 
     public class QueryMessages : QueryMessageBase<IEnumerable<Domain.Models.Message>>
@@ -100,12 +101,8 @@ namespace Voat.Domain.Query
         {
         }
 
-        public QueryMessages(MessageTypeFlag type, MessageState state, bool markAsRead = true)
-            : base(type, state, markAsRead)
-        {
-        }
-        public QueryMessages(MessageTypeFlag type, MessageState state)
-           : base(type, state, (type == MessageTypeFlag.CommentMention || type == MessageTypeFlag.CommentReply || type == MessageTypeFlag.SubmissionMention || type == MessageTypeFlag.SubmissionReply))
+        public QueryMessages(IPrincipal user, MessageTypeFlag type, MessageState state, bool markAsRead = true)
+            : base(user.Identity.Name, IdentityType.User, type, state, markAsRead)
         {
         }
         public override async Task<IEnumerable<Message>> ExecuteAsync()

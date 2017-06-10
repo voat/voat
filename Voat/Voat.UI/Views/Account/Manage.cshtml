@@ -25,9 +25,7 @@
 }
 
 <div id="container" class="page-userprofile">
-
-    @Html.Partial("~/Views/Shared/Sidebars/_SidebarUserInfo.cshtml")
-
+    @await  Component.InvokeAsync("Sidebar", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.User, User.Identity.Name))
     <div class="content" role="main">
 
         <div class="row nomargin">

@@ -1,4 +1,4 @@
-#region LICENSE
+﻿#region LICENSE
 
 /*
     
@@ -26,11 +26,4 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyCopyright("Copyright © 2015 Voat, Inc.")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("a0da6d93-b070-485f-8e46-2f3e30982898")]
-
-
-
+[assembly: InternalsVisibleTo("Voat.Tests")]

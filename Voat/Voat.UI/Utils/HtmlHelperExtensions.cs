@@ -27,6 +27,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using System;
 using System.Linq.Expressions;
+using System.Text.Encodings.Web;
 
 namespace Voat.UI.Utilities
 {
@@ -34,21 +35,19 @@ namespace Voat.UI.Utilities
 
         public static HtmlString MarkdownEditorFor<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes) {
 
+            var textareaString = htmlHelper.TextAreaFor(expression, htmlAttributes);
 
-            //CORE_PORT: Issues 
-            throw new NotImplementedException("Issues");
-            //var textareaString = TextAreaExtensions.TextAreaFor(htmlHelper, expression, htmlAttributes);
+            var renderEditor = true;
+            var writer = new System.IO.StringWriter();
+            if (renderEditor)
+            {
+                var editor = htmlHelper.Partial("~/Views/Shared/_MarkdownEditor.cshtml");
+                editor.WriteTo(writer, HtmlEncoder.Default);
+            }
 
-            //var renderEditor = true; 
-
-            //if (renderEditor) {
-            //    var editor = htmlHelper.Partial("_MarkdownEditor");
-            //    return new HtmlString(editor.ToString() + textareaString);
-            //} else {
-            //    return textareaString;
-            //}
-
+            textareaString.WriteTo(writer, HtmlEncoder.Default);
+            return new HtmlString(writer.ToString());
         }
-      
+
     }
 }

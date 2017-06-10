@@ -1,12 +1,9 @@
-﻿using Voat.Common.Configuration;
+﻿using Voat.Common;
+using Voat.Common.Configuration;
 
 namespace Voat.Data
 {
-    public enum DataStoreType
-    {
-        SqlServer,
-        PostgreSql
-    }
+   
     public class DataConfigurationSettings : ConfigurationSettings<DataConfigurationSettings>
     {
        

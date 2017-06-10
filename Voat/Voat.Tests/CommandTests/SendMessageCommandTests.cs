@@ -355,7 +355,7 @@ namespace Voat.Tests.CommandTests
             //read ping message and reply to it using message gateway
             var userName = "TestUser15";
             user = TestHelper.SetPrincipal(userName);
-            var mq = new Domain.Query.QueryMessages(MessageTypeFlag.CommentMention, MessageState.Unread).SetUserContext(user);
+            var mq = new Domain.Query.QueryMessages(user, MessageTypeFlag.CommentMention, MessageState.Unread).SetUserContext(user);
             var messages = await mq.ExecuteAsync();
             Assert.IsTrue(messages.Any(), "Didn't return any messages");
 

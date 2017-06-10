@@ -22,7 +22,7 @@
 
 @{
     ViewBag.Title = "Submit a comment";
-    int messageId = ViewBag.messageId;
+    int submissionID = Model.SubmissionID.Value;
 }
 
 @using (Html.BeginForm("SubmitComment", "Comment"))
@@ -31,7 +31,7 @@
     @Html.ValidationSummary(true)
 
     @* Setup default values *@
-    @Html.Hidden("SubmissionID", messageId)
+    @Html.Hidden("SubmissionID", submissionID)
 
     @Html.MarkdownEditorFor(m => m.Content, new { @class = "commenttextarea", rows = "3" })
 

@@ -79,7 +79,7 @@ namespace Voat.Common.Configuration
                                 }
                                 else if (type.IsEnum)
                                 {
-                                    objectList.Add(Enum.Parse(type, value));
+                                    objectList.Add(Enum.Parse(type, value, true));
                                 }
 
                             }

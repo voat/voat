@@ -35,6 +35,12 @@ namespace Voat.Logging
 
     public abstract class BaseLogger : ILogger
     {
+        public BaseLogger() { }
+        public BaseLogger(LogType logLevel)
+        {
+            this.LogLevel = logLevel;
+        }
+
         protected abstract void ProtectedLog(ILogInformation info);
         public LogType LogLevel { get; set; } = LogType.All;
 

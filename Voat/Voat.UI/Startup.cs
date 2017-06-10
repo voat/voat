@@ -31,6 +31,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using Voat.Configuration;
 using Voat.Data.Models;
+using Voat.Http.Middleware;
 using Voat.UI.Runtime;
 
 namespace Voat
@@ -53,8 +54,8 @@ namespace Voat
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
 
-            //Voat config
-            LiveConfigurationManager.Configure(Configuration);
+            //Configure Voat Runtime 
+            Configuration.ConfigureVoat();
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -84,7 +85,9 @@ namespace Voat
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-            //loggerFactory.AddCHANGETHIS();
+
+            ////Configure Voat Middleware
+            app.UseGlobalExceptionLogger();
 
             if (env.IsDevelopment())
             {
@@ -101,13 +104,13 @@ namespace Voat
 
             app.UseIdentity();
 
+            app.UseRequestDurationLogger();
+
             //// Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
-           
+
             app.UseMvc(routes =>
             {
-
                 RouteConfig.RegisterRoutes(routes);
-
             });
         }
     }

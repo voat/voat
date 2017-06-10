@@ -93,12 +93,12 @@ namespace Voat.Tests.QueryTests
         {
 
             var user = TestHelper.SetPrincipal(userName);
-            var q = new QueryMessages(MessageTypeFlag.All, MessageState.Unread, false).SetUserContext(user);
+            var q = new QueryMessages(user, MessageTypeFlag.All, MessageState.Unread, false).SetUserContext(user);
             var m = await q.ExecuteAsync();
 
             Assert.IsNotNull(m, "Assert 1");
 
-            var qc = new QueryMessageCounts(MessageTypeFlag.All, MessageState.Unread).SetUserContext(user);
+            var qc = new QueryMessageCounts(user, MessageTypeFlag.All, MessageState.Unread).SetUserContext(user);
             var mc = await qc.ExecuteAsync();
 
             Assert.IsNotNull(mc, "Assert 2");

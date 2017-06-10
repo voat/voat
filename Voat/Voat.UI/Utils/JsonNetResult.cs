@@ -36,7 +36,7 @@ namespace Voat.Utils
     {
         public JsonNetResult() : base(null)
         {
-            Settings = JsonSettings.PublicSerializationSettings;
+            Settings = JsonSettings.FriendlySerializationSettings;
         }
 
         public JsonSerializerSettings Settings { get; private set; }

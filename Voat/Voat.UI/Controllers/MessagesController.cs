@@ -62,7 +62,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> Index(int? page = null)
         {
 
-            var unread = new QueryMessageCounts(MessageTypeFlag.All, MessageState.Unread);
+            var unread = new QueryMessageCounts(User, MessageTypeFlag.All, MessageState.Unread).SetUserContext(User);
             var counts = await unread.ExecuteAsync();
 
             if (counts.Total > 0)
@@ -115,7 +115,7 @@ namespace Voat.Controllers
             //ViewBag.PmView = "inbox";
             //ViewBag.Title = "Inbox";
 
-            var q = new QueryMessages(MessageTypeFlag.Private, MessageState.All, false);
+            var q = new QueryMessages(User, MessageTypeFlag.Private, MessageState.All, false).SetUserContext(User);
             q.PageNumber = SetPage(page);
 
             var result = await q.ExecuteAsync();
@@ -133,7 +133,7 @@ namespace Voat.Controllers
             //ViewBag.PmView = "sent";
             //ViewBag.Title = "Sent";
 
-            var q = new QueryMessages(MessageTypeFlag.Sent, MessageState.All, true);
+            var q = new QueryMessages(User, MessageTypeFlag.Sent, MessageState.All, true).SetUserContext(User);
             q.PageNumber = SetPage(page);
             var result = await q.ExecuteAsync();
 
@@ -158,7 +158,7 @@ namespace Voat.Controllers
                 ViewBag.Title = type.ToString() + " Replies";
             }
 
-            var q = new QueryMessages(contentType, MessageState.All, true);
+            var q = new QueryMessages(User, contentType, MessageState.All, true).SetUserContext(User);
             q.PageNumber = SetPage(page);
 
             var result = await q.ExecuteAsync();
@@ -183,7 +183,7 @@ namespace Voat.Controllers
                 ViewBag.Title = type.ToString() + " Mentions";
             }
 
-            var q = new QueryMessages(contentType, MessageState.All, true);
+            var q = new QueryMessages(User, contentType, MessageState.All, true).SetUserContext(User);
             q.PageNumber = SetPage(page);
 
             var result = await q.ExecuteAsync();
@@ -202,7 +202,7 @@ namespace Voat.Controllers
             //ViewBag.selectedView = "notifications";
             //ViewBag.Title = "All Unread Notifications";
             //ViewBag.SelectedSubverse = "";
-            var q = new QueryAllMessageCounts(Domain.Models.MessageTypeFlag.All, Domain.Models.MessageState.Unread);
+            var q = new QueryAllMessageCounts(User, MessageTypeFlag.All, MessageState.Unread).SetUserContext(User);
             var model = await q.ExecuteAsync();
 
             SetMenuNavigationModel("Notifications", MenuType.UserMessages);

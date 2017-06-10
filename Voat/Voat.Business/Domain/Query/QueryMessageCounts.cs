@@ -25,7 +25,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
+using Voat.Caching;
+using Voat.Common;
 using Voat.Data;
 using Voat.Domain.Models;
 using Voat.Utilities;
@@ -37,27 +40,29 @@ namespace Voat.Domain.Query
     public class QueryAllMessageCounts : QueryMessageBase<IEnumerable<MessageCounts>>
     {
 
-        public QueryAllMessageCounts(MessageTypeFlag type, MessageState state)
-            : base(type, state)
+        public QueryAllMessageCounts(IPrincipal user, MessageTypeFlag type, MessageState state)
+            : base(user.Identity.Name, IdentityType.User, type, state)
         {
 
         }
 
         public override async Task<IEnumerable<MessageCounts>> ExecuteAsync()
         {
+            DemandAuthentication();
+
             List<MessageCounts> counts = new List<MessageCounts>();
 
-            var userData = new UserData(this._ownerName);
+            var userData = new UserData(_ownerName);
             List<Task<MessageCounts>> tasks = new List<Task<MessageCounts>>();
 
-            tasks.Add(Task.Factory.StartNew(() => { var q = new QueryMessageCounts(this._ownerName, this._ownerType, this._type, this._state); return q.Execute(); }));
+            tasks.Add(Task.Factory.StartNew(() => { var q = new QueryMessageCounts(_ownerName, _ownerType, this._type, this._state).SetUserContext(User); return q.Execute(); }));
 
             var modList = userData.Information.Moderates;
             foreach (var mod in modList)
             {
                 if (Utilities.ModeratorPermission.HasPermission(mod.Level, ModeratorAction.ReadMail))
                 {
-                    tasks.Add(Task.Factory.StartNew(() => { var q = new QueryMessageCounts(mod.Subverse, IdentityType.Subverse, this._type, this._state); return q.Execute(); }));
+                    tasks.Add(Task.Factory.StartNew(() => { var q = new QueryMessageCounts(mod.Subverse, IdentityType.Subverse, this._type, this._state).SetUserContext(User); return q.Execute(); }));
                 }
             }
 
@@ -80,8 +85,8 @@ namespace Voat.Domain.Query
         {
         }
 
-        public QueryMessageCounts(MessageTypeFlag type, MessageState state)
-            : base(type, state)
+        public QueryMessageCounts(IPrincipal user, MessageTypeFlag type, MessageState state)
+            : base(user.Identity.Name, IdentityType.User, type, state)
         {
         }
 
@@ -90,8 +95,12 @@ namespace Voat.Domain.Query
             get
             {
                 MessageCounts counts = null;
+
                 //CORE_PORT: HttpContext not available 
-                throw new NotImplementedException("Core Port: HttpContext access");
+
+                //convert to this later
+                //counts = ContextCache.Get<MessageCounts>(context, $"MessageCounts:{_ownerName}");
+                //original code
                 /*
                 if (System.Web.HttpContext.Current != null && _ownerType == IdentityType.User)
                 {
@@ -105,7 +114,6 @@ namespace Voat.Domain.Query
             set
             {
                 //CORE_PORT: HttpContext not available 
-                throw new NotImplementedException("Core Port: HttpContext access");
                 /*
                 if (System.Web.HttpContext.Current != null && _ownerType == IdentityType.User)
                 {
@@ -124,7 +132,7 @@ namespace Voat.Domain.Query
 
         public override async Task<MessageCounts> ExecuteAsync()
         {
-            var counts = Context;
+            MessageCounts counts = Context; //Used to check a context cache
             if (counts == null)
             {
                 using (var repo = new Repository(User))

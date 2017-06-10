@@ -304,11 +304,11 @@ namespace Voat.Configuration
             }
         }
 
-        public static Domain.Models.Origin Origin
+        public static Origin Origin
         {
             get
             {
-                return GetValue(CONFIGURATION.Origin, Domain.Models.Origin.Unknown);
+                return GetValue(CONFIGURATION.Origin, Origin.Unknown);
             }
         }
         public static string RecaptchaPrivateKey

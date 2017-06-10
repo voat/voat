@@ -334,7 +334,7 @@ namespace Voat.Caching
                     }
                     catch (Exception ex)
                     {
-                        EventLogger.Log(ex, Domain.Models.Origin.Unknown);
+                        EventLogger.Log(ex, Origin.Unknown);
                     }
                 }
                 else

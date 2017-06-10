@@ -36,20 +36,6 @@ namespace Voat
 {
     public static class UIExtensions
     {
-        public static Uri GetUrl(this HttpRequest request)
-        {
-            var builder = new UriBuilder();
-            builder.Scheme = request.Scheme;
-            builder.Host = request.Host.Host;
-            if (request.Host.Port.HasValue)
-            {
-                builder.Port = request.Host.Port.Value;
-            }
-            builder.Path = request.Path;
-            builder.Query = request.QueryString.ToUriComponent();
-            return builder.Uri;
-        }
-
         public static string GetFirstErrorMessage(this ModelStateDictionary modelState)
         {
             var message = ErrorMessages(modelState).FirstOrDefault();

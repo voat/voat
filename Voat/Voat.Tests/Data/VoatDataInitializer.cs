@@ -28,6 +28,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Voat.Common;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Tests.Data;
@@ -66,7 +67,7 @@ namespace Voat.Tests.Repository
 
                 var builder = new DbConnectionStringBuilder();
                 builder.ConnectionString = originalConnectionString;
-                builder["database"] = DataConfigurationSettings.Instance.StoreType == Voat.Data.DataStoreType.SqlServer ? "master" : "postgres";
+                builder["database"] = DataConfigurationSettings.Instance.StoreType == DataStoreType.SqlServer ? "master" : "postgres";
                 context.Connection.ConnectionString = builder.ConnectionString;
 
                 var cmd = context.Connection.CreateCommand();
@@ -79,7 +80,7 @@ namespace Voat.Tests.Repository
                 try
                 {
                     //Kill connections
-                    cmd.CommandText = DataConfigurationSettings.Instance.StoreType == Voat.Data.DataStoreType.SqlServer ?
+                    cmd.CommandText = DataConfigurationSettings.Instance.StoreType == DataStoreType.SqlServer ?
                                            $"ALTER DATABASE {dbName} SET SINGLE_USER WITH ROLLBACK IMMEDIATE" :
                                            $"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid() AND datname = '{dbName}'";
                     cmd.ExecuteNonQuery();
@@ -90,7 +91,7 @@ namespace Voat.Tests.Repository
                 }
 
 
-                cmd.CommandText = DataConfigurationSettings.Instance.StoreType == Voat.Data.DataStoreType.SqlServer ?
+                cmd.CommandText = DataConfigurationSettings.Instance.StoreType == DataStoreType.SqlServer ?
                                         $"IF EXISTS (SELECT name FROM sys.databases WHERE name = '{dbName}') DROP DATABASE {dbName}" :
                                         $"DROP DATABASE IF EXISTS {dbName}";
                 cmd.ExecuteNonQuery();
@@ -125,8 +126,8 @@ namespace Voat.Tests.Repository
 
                         switch (DataConfigurationSettings.Instance.StoreType)
                         {
-                            case Voat.Data.DataStoreType.PostgreSql:
-                            case Voat.Data.DataStoreType.SqlServer:
+                            case DataStoreType.PostgreSql:
+                            case DataStoreType.SqlServer:
                                 var segments = contents.Split(new string[] { "GO" }, StringSplitOptions.RemoveEmptyEntries);
                                 foreach (var batch in segments)
                                 {

@@ -33,7 +33,7 @@ namespace Voat.Common
     {
         public static string ToRelative(DateTime date)
         {
-            return ToRelative(DateTime.UtcNow);
+            return ToRelative(DateTime.UtcNow.Subtract(date));
         }
 
         public static string ToRelative(TimeSpan span)

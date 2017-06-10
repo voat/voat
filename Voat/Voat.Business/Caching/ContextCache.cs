@@ -35,7 +35,6 @@ namespace Voat.Caching
     //Quick fix for trying to prevent excess task useage
     public static class ContextCache
     {
-        
         public static T Get<T>(HttpContext context, string key)
         {
             if (context != null)

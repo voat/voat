@@ -29,6 +29,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using Voat.Common;
 using Voat.Domain.Models;
 using Voat.Logging;
 using Voat.Utilities.Components;

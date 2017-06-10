@@ -38,7 +38,7 @@ namespace Voat.Configuration
         /// Settings to serialize the input and output of standardized Json 
         /// </summary>
         /// <returns></returns>
-        public static JsonSerializerSettings PublicSerializationSettings
+        public static JsonSerializerSettings FriendlySerializationSettings
         {
             get
             {

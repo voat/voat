@@ -28,6 +28,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Voat.Domain.Models;
 using Voat.Logging;
+using Voat.Common;
 
 namespace Voat.Utilities.Components
 {
@@ -67,7 +68,6 @@ namespace Voat.Utilities.Components
             {
                 string userName = null;
 
-                throw new NotImplementedException("Identity Issue");
                 ////log user info if possible
                 //if (User.IsAuthenticated)
                 //{

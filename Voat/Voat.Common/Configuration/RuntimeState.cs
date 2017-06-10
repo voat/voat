@@ -131,8 +131,9 @@ namespace Voat
         }
         public static void Refresh()
         {
-            var setting = System.Configuration.ConfigurationManager.AppSettings[API_CONFIG_KEY_NAME];
-            Refresh(setting);
+            throw new NotImplementedException("Core Port");
+            //var setting = System.Configuration.ConfigurationManager.AppSettings[API_CONFIG_KEY_NAME];
+            //Refresh(setting);
         }
     }
 }

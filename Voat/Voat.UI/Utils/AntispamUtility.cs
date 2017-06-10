@@ -34,6 +34,7 @@ using Voat.Utilities;
 using Voat.Configuration;
 using Voat.Data;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Http;
 
 namespace Voat.UI.Utilities
 {
@@ -80,7 +81,7 @@ namespace Voat.UI.Utilities
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             //CORE_PORT: Not ported
-            throw new NotImplementedException("This methods not ported");
+            //throw new NotImplementedException("This methods not ported");
             /*
             var loggedInUser = filterContext.HttpContext.User.Identity.Name;
 
@@ -175,7 +176,7 @@ namespace Voat.UI.Utilities
         public static void Reset()
         {
             //CORE_PORT: Not ported
-            throw new NotImplementedException("Core Port: Not ported");
+            //throw new NotImplementedException("Core Port: Not ported");
             /*
             var context = System.Web.HttpContext.Current;
             if (context != null)
@@ -195,12 +196,7 @@ namespace Voat.UI.Utilities
 
     public static class ReCaptchaUtility
     {
-        public static async Task<bool> Validate(object request)
-        {
-            throw new NotImplementedException("Core port not implemented");
-        }
-        /*
-        public static async Task<bool> Validate(HttpRequestMessage request)
+        public static async Task<bool> Validate(HttpRequest request)
         {
             string privateKey = Settings.RecaptchaPrivateKey;
             string encodedResponse = request.Form["g-Recaptcha-Response"];
@@ -212,11 +208,11 @@ namespace Voat.UI.Utilities
                 new KeyValuePair<string, string>("response", encodedResponse), 
             });
             var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content).ConfigureAwait(false);
-            var captchaResponse = await response.Content.ReadAsAsync<ReCaptchaResponse>().ConfigureAwait(false);
+            var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var captchaResponse = JsonConvert.DeserializeObject<ReCaptchaResponse>(responseString);
 
             return captchaResponse.Success;
         }
-        */
         private class ReCaptchaResponse
         {
             [JsonProperty("success")]

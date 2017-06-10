@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Voat.Business\Voat.Business.csproj" />
+    <ProjectReference Include="..\Voat.Http\Voat.Http.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +47,13 @@
     <None Include="wwwroot\css\markdowneditor.css" />
     <None Include="wwwroot\css\Site.css" />
     <None Include="wwwroot\css\tooltipster.css" />
+    <None Include="wwwroot\css\ui-themes\autocomplete\autocomplete.css" />
+    <None Include="wwwroot\css\ui-themes\autocomplete\autocompletebundle.css" />
+    <None Include="wwwroot\css\ui-themes\autocomplete\autocompletebundle.css.bundle" />
+    <None Include="wwwroot\css\ui-themes\autocomplete\autocompletebundle.min.css" />
+    <None Include="wwwroot\css\ui-themes\autocomplete\core.css" />
+    <None Include="wwwroot\css\ui-themes\autocomplete\menu.css" />
+    <None Include="wwwroot\css\ui-themes\autocomplete\theme.css" />
     <None Include="wwwroot\css\Voat-Dark.css" />
     <None Include="wwwroot\css\Voat-Light.css" />
     <None Include="wwwroot\ddos.htm" />

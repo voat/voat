@@ -98,11 +98,11 @@
         @if (!submission.ArchiveDate.HasValue && User.Identity.IsAuthenticated)
         //if user logged in, show add comment form
         {
-            @Html.Partial("_AddComment", new ViewDataDictionary(ViewData) { { "messageId", submission.ID } })
+            @Html.Partial("_AddComment", new Voat.Data.Models.Comment() { SubmissionID = submission.ID })
         }
 
         <div class="horizontal-line"></div>
 
-        @Html.Partial("~/Views/Shared/Comments/_CommentTree.cshtml", Model, ViewData);
+        @Html.Partial("~/Views/Shared/Comments/_CommentTree.cshtml", Model, ViewData)
     </div>
 </div>

@@ -23,18 +23,20 @@
 
 @{ 
     //System.Diagnostics.Debug.Assert(ViewBag.UserName != null, "UserName is required");
+    var userName = (string)ViewBag.UserName;
 }
 
 <div id="container">
-    @Html.Partial("~/Views/Shared/Sidebars/_SidebarUserInfo.cshtml")
+    
+    @await Component.InvokeAsync("Sidebar", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.User, userName))
 
     <div class="content" role="main">
 
-        @if (!Settings.SetCreationDisabled && User.Identity.IsAuthenticated && User.Identity.Name.IsEqual((string)ViewBag.UserName))
+        @if (!Settings.SetCreationDisabled && User.Identity.IsAuthenticated && User.Identity.Name.IsEqual(userName))
         {
             <a href="/user/@User.Identity.Name/sets/create">Create a Set</a>
         }
-        <div class="alert-title">Sets for @ViewBag.UserName</div>
+        <div class="alert-title">Sets for @userName</div>
         
         @if (Model.Any())
         {

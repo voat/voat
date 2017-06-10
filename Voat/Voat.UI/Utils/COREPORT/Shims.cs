@@ -12,7 +12,7 @@ namespace Voat
     //At a later date will will throw errors in this object to force no usage from the UI project 
     public class VoatUIDataContextAccessor : VoatDataContext
     {
-        public VoatUIDataContextAccessor(string name = null) : base(name) { }
+        public VoatUIDataContextAccessor(string name = "ReadWrite") : base(name) { }
     }
 
     public static class Extensions
