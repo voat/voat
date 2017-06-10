@@ -266,24 +266,6 @@ namespace Voat.Controllers
 
         #region Submission Display Methods
 
-        private void RecordSession(string subverse)
-        {
-            //TODO: Relocate this to a command object
-            // register a new session for this subverse
-            try
-            {
-                // register a new session for this subverse
-                string clientIpAddress = UserHelper.UserIpAddress(Request);
-                string ipHash = IpHash.CreateHash(clientIpAddress);
-                SessionHelper.Add(subverse, ipHash);
-
-                ViewBag.OnlineUsers = SessionHelper.ActiveSessionsForSubverse(subverse);
-            }
-            catch (Exception)
-            {
-                ViewBag.OnlineUsers = -1;
-            }
-        }
         private void SetFirstTimeCookie()
         {
             // setup a cookie to find first time visitors and display welcome banner
@@ -324,7 +306,8 @@ namespace Voat.Controllers
             }
 
             SetFirstTimeCookie();
-            RecordSession(subverse);
+            var logVisit = new LogVisitCommand(subverse, null, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
+            await logVisit.Execute();
 
             //Parse query
             var options = new SearchOptions(Request.QueryString.Value);
@@ -474,7 +457,7 @@ namespace Voat.Controllers
 
         //TODO: Move to dedicated query object
         //[Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
-        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByViews24Hours(VoatDataContext _db)
+        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByViews24Hours(VoatUIDataContextAccessor _db)
         {
             if (_db == null)
             {

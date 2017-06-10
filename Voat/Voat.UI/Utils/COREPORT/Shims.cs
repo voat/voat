@@ -10,8 +10,11 @@ namespace Voat
 {
     //All UI based access of EF context should go through this object.
     //At a later date will will throw errors in this object to force no usage from the UI project 
-    public class VoatUIDataContextAccessor : VoatDataContext
+    public class VoatUIDataContextAccessor 
+        : VoatDataContext
     {
+        public VoatUIDataContextAccessor(NotImplementedException exception) : base("fake") { }
+
         public VoatUIDataContextAccessor(string name = "ReadWrite") : base(name) { }
     }
 
@@ -37,6 +40,7 @@ namespace Voat
             throw new NotImplementedException("Core Port Shim. This code needs to be refactored to proper standards");
         }
     }
+
     public class OutputCacheAttribute : Attribute
     {
         public int Duration { get; set; }

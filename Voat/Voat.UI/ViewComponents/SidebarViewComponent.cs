@@ -28,7 +28,9 @@ namespace Voat.UI.ViewComponents
                     }
                     if (subverse != null)
                     {
-                        ViewBag.OnlineUsers = SessionHelper.ActiveSessionsForSubverse(domainReference.Name);
+                        var qa = new QueryActiveSessionCount(domainReference);
+                        ViewBag.OnlineUsers = await qa.ExecuteAsync();
+
                         var view = "Subverse";// contentReference != null && contentReference.Type == ContentType.Submission ? "Submission" : "Subverse";
 
                         result = View(view, subverse);

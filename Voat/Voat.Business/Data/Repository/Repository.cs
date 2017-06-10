@@ -1783,49 +1783,50 @@ namespace Voat.Data
             return "Deleted by author at " + Repository.CurrentDate;
         }
 
-        public async Task<CommandResponse> LogVisit(int submissionID, string clientIpAddress)
+        public async Task<CommandResponse> LogVisit(string subverse, int? submissionID, string clientIpAddress)
         {
-
             if (!String.IsNullOrEmpty(clientIpAddress))
             {
                 try
                 {
-
                     // generate salted hash of client IP address
                     string hash = IpHash.CreateHash(clientIpAddress);
 
-                    // register a new session for this subverse
-                    //New logic
-
-                    var exists = $"SELECT st.* FROM  {SqlFormatter.Table("SessionTracker", "st", null, "NOLOCK")} WHERE st.\"SessionID\" = @SessionID AND st.\"Subverse\" = (SELECT \"Subverse\" FROM {SqlFormatter.Table("Submission", null, null, "NOLOCK")} WHERE \"ID\" = @SubmissionID)";
-
-                    var body = $"INSERT INTO {SqlFormatter.Table("SessionTracker")} (\"SessionID\", \"Subverse\", \"CreationDate\") ";
-                    body += $"SELECT @SessionID, s.\"Subverse\", @Date FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} WHERE \"ID\" = @SubmissionID ";
-                    body += $"AND NOT EXISTS ({exists})";
-
-                    await _db.Connection.ExecuteAsync(body, new { SessionID = hash, SubmissionID = submissionID, Date = CurrentDate }, commandType: System.Data.CommandType.Text).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
-
-
-                    exists = $"SELECT COUNT(*) FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID";
-                    var count = await _db.Connection.ExecuteScalarAsync<int>(exists, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
-
-                    if (count == 0)
+                    if (submissionID.HasValue && submissionID > 0)
                     {
-                        var sql = $"INSERT INTO {SqlFormatter.Table("ViewStatistic")} (\"SubmissionID\", \"ViewerID\") VALUES (@SubmissionID, @SessionID) ";
-                        await _db.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
-                        sql = $"UPDATE {SqlFormatter.Table("Submission")} SET \"Views\" = (\"Views\" + 1) WHERE \"ID\" = @SubmissionID ";
-                        await _db.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                        //Subverse Sessions
+                        var exists = $"SELECT st.* FROM  {SqlFormatter.Table("SessionTracker", "st", null, "NOLOCK")} WHERE st.\"SessionID\" = @SessionID AND st.\"Subverse\" = (SELECT \"Subverse\" FROM {SqlFormatter.Table("Submission", null, null, "NOLOCK")} WHERE \"ID\" = @SubmissionID)";
+
+                        var body = $"INSERT INTO {SqlFormatter.Table("SessionTracker")} (\"SessionID\", \"Subverse\", \"CreationDate\") ";
+                        body += $"SELECT @SessionID, s.\"Subverse\", @Date FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} WHERE \"ID\" = @SubmissionID ";
+                        body += $"AND NOT EXISTS ({exists})";
+
+                        await _db.Connection.ExecuteAsync(body, new { SessionID = hash, SubmissionID = submissionID, Date = CurrentDate }, commandType: System.Data.CommandType.Text).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+
+                        //Submission Viws
+                        exists = $"SELECT COUNT(*) FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID";
+                        var count = await _db.Connection.ExecuteScalarAsync<int>(exists, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+
+                        if (count == 0)
+                        {
+                            var sql = $"INSERT INTO {SqlFormatter.Table("ViewStatistic")} (\"SubmissionID\", \"ViewerID\") VALUES (@SubmissionID, @SessionID) ";
+                            await _db.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                            sql = $"UPDATE {SqlFormatter.Table("Submission")} SET \"Views\" = (\"Views\" + 1) WHERE \"ID\" = @SubmissionID ";
+                            await _db.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                        }
+
                     }
+                    else if (!String.IsNullOrEmpty(subverse))
+                    {
+                        //Subverse Sessions
+                        var exists = $"SELECT st.* FROM  {SqlFormatter.Table("SessionTracker", "st", null, "NOLOCK")} WHERE st.\"SessionID\" = @SessionID AND st.\"Subverse\" = @Subverse)";
 
-                    //sql = $"IF NOT EXISTS (SELECT * FROM {SqlFormatter.Table("ViewStatistic", "vs", null, "NOLOCK")} WHERE vs.\"SubmissionID\" = @SubmissionID AND vs.\"ViewerID\" = @SessionID) ";
-                    //sql += $"BEGIN ";
-                    //sql += $"INSERT {SqlFormatter.Table("ViewStatistic")} (\"SubmissionID\", \"ViewerID\") VALUES (@SubmissionID, @SessionID) ";
-                    //sql += $"UPDATE {SqlFormatter.Table("Submission")} SET \"Views\" = (\"Views\" + 1) WHERE \"ID\" = @SubmissionID ";
-                    //sql += $"END";
+                        var body = $"INSERT INTO {SqlFormatter.Table("SessionTracker")} (\"SessionID\", \"Subverse\", \"CreationDate\") ";
+                        body += $"SELECT @SessionID, @Subverse, @Date";
+                        body += $"AND NOT EXISTS ({exists})";
 
-                    //await _db.Connection.ExecuteAsync(sql, new { SessionID = hash, SubmissionID = submissionID }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
-
-
+                        await _db.Connection.ExecuteAsync(body, new { SessionID = hash, Subverse = subverse, Date = CurrentDate }, commandType: System.Data.CommandType.Text).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -5339,7 +5340,14 @@ namespace Voat.Data
 
             return result;
         }
-
+        public async Task<int> ActiveSessionCount(DomainReference domainReference)
+        {
+            var query = new DapperQuery();
+            query.Select = SqlFormatter.IsNull("COUNT(*)", "0") + " FROM " + SqlFormatter.Table("SessionTracker");
+            query.Where = "\"Subverse\" = @Subverse";
+            var result = await _db.Database.GetDbConnection().ExecuteScalarAsync<int>(query.ToString(), new { Subverse = domainReference.Name });
+            return result;
+        }
 
         #endregion Misc
 

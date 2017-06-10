@@ -18,11 +18,17 @@
             ]
         },
         "logging": {
-            "enabled":  true,
+            "enabled": 
             "configurationFile": "Logging.config",
             "handlers": [
                 {
                     "enabled": true,
+                    "name": "VoatDatabaseLogger",
+                    "type": "Voat.Data.DatabaseLogger, Voat.Business",
+                    "arguments": "[System.Int32](1);[System.TimeSpan](00:00:00);[Voat.Logging.LogType, Voat.Logging](All)"
+                },
+                {
+                    "enabled": false,
                     "name": "Log4Net",
                     "type": "Voat.Logging.Log4NetLogger, Voat.Logging"
                 },

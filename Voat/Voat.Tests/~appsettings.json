@@ -23,9 +23,9 @@
             "handlers": [
                 {
                     "enabled": true,
-                    "name": "DatabaseLogger",
+                    "name": "VoatDatabaseLogger",
                     "type": "Voat.Data.DatabaseLogger, Voat.Business",
-                    "arguments": ""
+                    "arguments": "[System.Int32](1);[System.TimeSpan](00:00:00);[Voat.Logging.LogType, Voat.Logging](All)"
                 },
                 {
                     "enabled": false,

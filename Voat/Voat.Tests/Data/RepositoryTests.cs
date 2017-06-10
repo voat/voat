@@ -554,7 +554,9 @@ namespace Voat.Tests.Repository
         {
             using (var repo = new Voat.Data.Repository())
             {
-                await repo.LogVisit(1, "127.0.0.1");    
+                await repo.LogVisit(null, 1, "127.0.0.1");
+                await repo.LogVisit("whatever", null, "127.0.0.2");
+                await repo.LogVisit("anon", 2, "127.0.0.3");
             }
         }
     }

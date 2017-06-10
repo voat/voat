@@ -146,7 +146,7 @@ namespace Voat.Controllers
 
             #endregion
 
-            var cmd = new LogVisitCommand(submissionID.Value, UserHelper.UserIpAddress(this.Request));
+            var cmd = new LogVisitCommand(null, submissionID.Value, UserHelper.UserIpAddress(this.Request));
             cmd.Execute();
 
             CommentSegment model = null;

@@ -8,49 +8,6 @@ using System.Threading;
 
 namespace Voat.Common
 {
-    
-    public class MemoryBatchOperation<T> : BatchOperation<T>
-    {
-        private List<T> _batch = new List<T>();
-        private ReaderWriterLockSlim _readerWriterLockSlim = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-
-        public MemoryBatchOperation(int flushCount, TimeSpan flushTimeSpan, Action<IEnumerable<T>> batchAction) : base(flushCount, flushTimeSpan, batchAction)
-        {
-
-        }
-        public override int Count => _batch.Count;
-
-        protected override void ProtectedAdd(T item)
-        {
-            _readerWriterLockSlim.EnterReadLock();
-            try
-            {
-                _batch.Add(item);
-            }
-            finally
-            {
-                _readerWriterLockSlim.ExitReadLock();
-            }
-        }
-        protected override IEnumerable<T> BatchPending()
-        {
-            List<T> batchToProcess = null;
-            _readerWriterLockSlim.EnterWriteLock();
-            try
-            {
-                //copy current batch
-                batchToProcess = _batch;
-                //create new batch
-                _batch = new List<T>();
-            }
-            finally
-            {
-                _readerWriterLockSlim.ExitWriteLock();
-            }
-            return batchToProcess;
-        }
-    }
-
     [DebuggerDisplay("Current = {_batch.Count} (Flush = {_flushCount}, Span = {_flushSpan})", Name = "{key}")]
     public abstract class BatchOperation<T> : IDisposable
     {
@@ -61,15 +18,15 @@ namespace Voat.Common
         private Timer _timer = null;
 
 
-        public BatchOperation(int flushCount, TimeSpan flushTimeSpan, Action<IEnumerable<T>> batchAction)
+        public BatchOperation(int flushCount, TimeSpan flushSpan, Action<IEnumerable<T>> batchAction)
         {
             this._flushCount = flushCount.EnsureRange(1, Int32.MaxValue);
-            this._flushSpan = flushTimeSpan;
+            this._flushSpan = flushSpan.EnsureRange(TimeSpan.Zero, TimeSpan.MaxValue);
             _batchAction = batchAction;
             if (_flushSpan > TimeSpan.Zero)
             {
                 var duration = _flushSpan.Add(TimeSpan.FromMilliseconds(250));
-                _timer = new System.Threading.Timer(new System.Threading.TimerCallback(OnTimer), this, duration, duration);
+                _timer = new Timer(new System.Threading.TimerCallback(OnTimer), this, duration, duration);
             }
         }
 

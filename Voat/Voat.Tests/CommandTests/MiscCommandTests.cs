@@ -41,6 +41,13 @@ namespace Voat.Tests.CommandTests
     public class MiscCommandTests : BaseCommandTest
     {
 
-       
+        [TestMethod]
+        public async Task TestActiveSessionCount()
+        {
+            var d = new DomainReference(DomainType.Subverse, "whatever");
+            var qa = new QueryActiveSessionCount(d);
+            var result = await qa.ExecuteAsync();
+            Assert.IsTrue(result >= 0, "Expecting a positive number");
+        }
     }
 }

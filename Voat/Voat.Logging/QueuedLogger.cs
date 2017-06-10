@@ -8,15 +8,15 @@ namespace Voat.Logging
     public abstract class QueuedLogger : BaseLogger
     {
         private int _threshold = 5;
-        private MemoryBatchOperation<ILogInformation> _batchProcessor = null;
+        private BatchOperation<ILogInformation> _batchProcessor = null;
 
-        public QueuedLogger() : this(5, LogType.All)
+        public QueuedLogger() : this(1, TimeSpan.Zero, LogType.All)
         {
 
         }
-        public QueuedLogger(int threshold, LogType logLevel) : base(logLevel)
+        public QueuedLogger(int flushCount, TimeSpan flushSpan, LogType logLevel) : base(logLevel)
         {
-            _batchProcessor = new MemoryBatchOperation<ILogInformation>(threshold, TimeSpan.FromSeconds(30), ProcessBatch);
+            _batchProcessor = new MemoryBatchOperation<ILogInformation>(flushCount, flushSpan, ProcessBatch);
 
         }
         protected abstract void ProcessBatch(IEnumerable<ILogInformation> batch);

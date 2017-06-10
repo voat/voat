@@ -33,11 +33,13 @@ namespace Voat.Domain.Command
 {
     public class LogVisitCommand : CacheCommand<CommandResponse>, IExcutableCommand<CommandResponse>
     {
-        protected int _submissionID;
+        protected string _subverse;
+        protected int? _submissionID;
         protected string _clientIPAddress;
 
-        public LogVisitCommand(int submissionID, string clientIPAddress)
+        public LogVisitCommand(string subverse, int? submissionID, string clientIPAddress)
         {
+            _subverse = subverse;
             _submissionID = submissionID;
             _clientIPAddress = clientIPAddress;
         }
@@ -47,7 +49,7 @@ namespace Voat.Domain.Command
             using (var repo = new Repository(User))
             {
                 //TODO: Convert to async repo method
-                var response = await repo.LogVisit(_submissionID, _clientIPAddress);
+                var response = await repo.LogVisit(_subverse, _submissionID, _clientIPAddress);
                 return response;
             }
         }

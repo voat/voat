@@ -10,9 +10,9 @@ namespace Voat.Data
 {
     public class DatabaseLogger : QueuedLogger
     {
-        public DatabaseLogger() : this(1, LogType.All)
+        public DatabaseLogger() : this(1, TimeSpan.Zero, LogType.All)
         { }
-        public DatabaseLogger(int flushCount, LogType logLevel) : base(flushCount, logLevel)
+        public DatabaseLogger(int flushCount, TimeSpan flushSpan, LogType logLevel) : base(flushCount, flushSpan, logLevel)
         {
 
         }

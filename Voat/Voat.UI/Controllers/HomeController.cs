@@ -46,7 +46,7 @@ namespace Voat.Controllers
     public class HomeController : BaseController
     {
         //IAmAGate: Move queries to read-only mirror
-        private readonly Data.Models.VoatDataContext _db = new Data.Models.VoatDataContext(CONSTANTS.CONNECTION_READONLY);
+        private readonly VoatUIDataContextAccessor _db = new VoatUIDataContextAccessor(CONSTANTS.CONNECTION_READONLY);
 
         // GET: submitlink
         [Authorize]

@@ -62,7 +62,10 @@ namespace Voat.Caching
         {
             return String.Format("Submission:{0}", submissionID);
         }
-
+        public static string ActiveSessionCount(DomainReference domainReference)
+        {
+            return String.Format("ActiveSessionCount:{0}:{1}", domainReference.Type, domainReference.Name);
+        }
         public static string Comment(int commentID)
         {
             return String.Format("Comment:{0}", commentID);

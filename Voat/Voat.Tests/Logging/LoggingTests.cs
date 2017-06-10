@@ -41,11 +41,11 @@ namespace Voat.Tests.Logging
     public class LoggingTests : BaseUnitTest
     {
         private static ILogger log = null;
-        private const string loggerName = "DatabaseLogger";
+        private const string loggerName = "VoatDatabaseLogger";
 
         public override void ClassInitialize()
         {
-            var logEntry = LoggingConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Name == loggerName);
+            var logEntry = LoggingConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Enabled);
             if (logEntry.Enabled)
             {
                 log = logEntry.Construct<ILogger>();
@@ -147,6 +147,7 @@ namespace Voat.Tests.Logging
                 {
                     var activityID = Guid.NewGuid();
                     log.Log(ex, (Guid?)activityID);
+                    System.Threading.Thread.Sleep(1000);// batched logger writes on seperate thread, need to wait a bit
                     using (var db = new VoatDataContext())
                     {
                         var entry = db.EventLog.FirstOrDefault(x => x.ActivityID.ToUpper() == activityID.ToString().ToUpper());
@@ -170,6 +171,7 @@ namespace Voat.Tests.Logging
                 {
                     System.Threading.Thread.Sleep(1000);
                 }
+                System.Threading.Thread.Sleep(1000);// batched logger writes on seperate thread, need to wait a bit
                 using (var db = new VoatDataContext())
                 {
                     var entry = db.EventLog.FirstOrDefault(x => x.ActivityID.ToUpper() == activityID.ToString().ToUpper());
