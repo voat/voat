@@ -75,7 +75,7 @@ namespace Voat.Utilities.Components
                 //}
 
                 //Execute this without blocking
-                Task t = Task.Factory.StartNew(() =>
+                Task t = Task.Factory.StartNew(async () =>
                 {
                     try
                     {
@@ -88,7 +88,7 @@ namespace Voat.Utilities.Components
                                 {
                                     sDetails = Newtonsoft.Json.JsonConvert.SerializeObject(exception.Data);
                                 }
-                                var result = repo.Log(new Data.Models.EventLog
+                                var result = await repo.Log(new Data.Models.EventLog
                                 {
                                     ParentID = parentID,
                                     UserName = userName,

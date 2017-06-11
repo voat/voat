@@ -6,6 +6,19 @@ namespace Voat.Common
 {
     public static class Extensions
     {
+
+        //public static string Standarize(this string value)
+        //{
+        //    if (!String.IsNullOrEmpty(value))
+        //    {
+        //        return value.Normalize().ToUpper();
+        //    }
+        //    return value;
+        //}
+        public static string ToDateTimeStamp(this DateTime dateTime)
+        {
+            return dateTime.ToString("yyyy-MM-dd-HH-mm-ss.ffff");
+        }
         public static T GetOrLoad<T>(ref T value, Func<T> loading, Action<T> afterLoaded = null)
         {
             if (EqualityComparer<T>.Default.Equals(value, default(T)))

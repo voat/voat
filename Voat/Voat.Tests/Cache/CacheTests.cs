@@ -593,6 +593,64 @@ namespace Voat.Tests.Cache
 
         #endregion Set Operations
 
+        #region List Operations 
+
+        [TestMethod]
+        [TestCategory("Cache"), TestCategory("Cache.Handler")]
+        public void List_Add()
+        {
+            string cacheKey = "Test_ListAdd";
+            handler.Remove(cacheKey);
+            if (handler.CacheEnabled)
+            {
+                handler.ListAdd(cacheKey.ToUpper(), (long)10);
+                Assert.AreEqual(1, handler.ListLength(cacheKey));
+                var value = handler.ListRetrieve<long>(cacheKey, 0);
+                Assert.AreEqual(10, value);
+
+                handler.ListAdd(cacheKey.ToLower(), (long)11);
+                Assert.AreEqual(2, handler.ListLength(cacheKey));
+                value = handler.ListRetrieve<long>(cacheKey, 1);
+                Assert.AreEqual(11, value);
+
+            }
+        }
+        [TestMethod]
+        [TestCategory("Cache"), TestCategory("Cache.Handler")]
+        public void List_RetrieveAll()
+        {
+            var items = new string[] { "one", "two", "three", "four", "five", "six" }.ToList();
+
+            string cacheKey = "List_RetrieveAll";
+            handler.Remove(cacheKey);
+            if (handler.CacheEnabled)
+            {
+                items.ForEach(x => {
+                    handler.ListAdd(cacheKey, x);
+                });
+
+                var itemsFromCache = handler.ListRetrieveAll<string>(cacheKey);
+
+                Assert.AreEqual(items.Count, itemsFromCache.Count());
+
+                items.ForEach(x =>
+                    Assert.IsTrue(itemsFromCache.Contains(x), "Can't find " + x)
+                );
+            }
+        }
+        [TestMethod]
+        [TestCategory("Cache"), TestCategory("Cache.Handler")]
+        public void List_NotPresent()
+        {
+            string cacheKey = "List_NotPresent";
+            Assert.AreEqual(0, handler.ListLength(cacheKey));
+            Assert.AreEqual(default(object), handler.ListRetrieve<object>(cacheKey, 10));
+            Assert.AreEqual(Enumerable.Empty<object>(), handler.ListRetrieveAll<object>(cacheKey));
+        }
+
+        #endregion
+
+
         private List<Item> GetNewItems(int count)
         {
             List<Item> items = new List<Item>();

@@ -23,6 +23,8 @@
 #endregion LICENSE
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Voat.Caching
 {
@@ -70,6 +72,22 @@ namespace Voat.Caching
         protected override bool ItemExists<K>(string cacheKey, K key, CacheType type)
         {
             return false;
+        }
+        public override K ListRetrieve<K>(string cacheKey, int index)
+        {
+            return default(K);
+        }
+        public override int ListLength(string cacheKey)
+        {
+            return 0;
+        }
+        public override IEnumerable<T> ListRetrieveAll<T>(string cacheKey)
+        {
+            return Enumerable.Empty<T>();
+        }
+        public override void ListAdd<K>(string cacheKey, K key)
+        {
+                
         }
         protected override void ProtectedPurge()
         {

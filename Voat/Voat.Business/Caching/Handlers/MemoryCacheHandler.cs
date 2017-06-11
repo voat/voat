@@ -26,6 +26,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using Voat.Common;
 
 namespace Voat.Caching
@@ -43,11 +44,15 @@ namespace Voat.Caching
 
         protected override object GetItem(string cacheKey)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
             return _cache[cacheKey];
         }
 
         protected override void SetItem(string cacheKey, object item, TimeSpan? cacheTime = null)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
             if (ItemExists(cacheKey))
             {
                 var value = GetItem(cacheKey);
@@ -68,16 +73,22 @@ namespace Voat.Caching
 
         protected override void DeleteItem(string cacheKey)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
             object x;
             _cache.TryRemove(cacheKey, out x);
         }
 
         protected override bool ItemExists(string cacheKey)
         {
-           return _cache.ContainsKey(cacheKey);
+            cacheKey = StandardizeCacheKey(cacheKey);
+
+            return _cache.ContainsKey(cacheKey);
         }
         protected override V GetItem<K,V>(string cacheKey, K key, CacheType type)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
             if (ItemExists(cacheKey))
             {
                 var value = _cache[cacheKey];
@@ -94,6 +105,8 @@ namespace Voat.Caching
         }
         protected override void SetItem<K,V>(string cacheKey, K key, V item, CacheType type)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
             if (ItemExists(cacheKey))
             {
                 var value = _cache[cacheKey];
@@ -114,6 +127,8 @@ namespace Voat.Caching
         }
         protected override void DeleteItem<T>(string cacheKey, T key, CacheType type)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
             if (ItemExists(cacheKey))
             {
                 var value = _cache[cacheKey];
@@ -125,6 +140,9 @@ namespace Voat.Caching
                     case CacheType.Set:
                         value.Convert<ISet<T>, object>().Remove(key);
                         break;
+                    case CacheType.List:
+                        value.Convert<IList<T>, object>().Remove(key);
+                        break;
                     default:
                         throw new ArgumentException(String.Format("Operation on type {0} not supported", type));
                         break;
@@ -134,6 +152,8 @@ namespace Voat.Caching
         }
         protected override bool ItemExists<T>(string cacheKey, T key, CacheType type)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
             var found = false;
             if (ItemExists(cacheKey))
             {
@@ -150,7 +170,56 @@ namespace Voat.Caching
             }
             return found;
         }
+        public override void ListAdd<T>(string cacheKey, T item)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
 
+            IList<T> list = null;
+            if (_cache.ContainsKey(cacheKey))
+            {
+                list = _cache[cacheKey].Convert<IList<T>>();
+            }
+            else
+            {
+                list = new List<T>();
+                _cache[cacheKey] = list; 
+            }
+            list.Add(item);
+        }
+        public override T ListRetrieve<T>(string cacheKey, int index)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
+            var result = default(T);
+            if (_cache.ContainsKey(cacheKey))
+            {
+                result = _cache[cacheKey].Convert<IList<T>>()[index];
+            }
+            return result;
+        }
+        public override int ListLength(string cacheKey)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
+            var result = 0;
+            if (_cache.ContainsKey(cacheKey))
+            {
+                result = _cache[cacheKey].Convert<IList>().Count;
+            }
+            return result;
+        }
+        public override IEnumerable<T> ListRetrieveAll<T>(string cacheKey)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
+            IEnumerable<T> result = Enumerable.Empty<T>();
+            
+            if (_cache.ContainsKey(cacheKey))
+            {
+                result = _cache[cacheKey].Convert<IList<T>>();
+            }
+            return result;
+        }
         protected override void ProtectedPurge()
         {
             _cache = new ConcurrentDictionary<string, object>();

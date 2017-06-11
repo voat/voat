@@ -23,6 +23,7 @@
 #endregion LICENSE
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Voat.Caching
@@ -186,5 +187,17 @@ namespace Voat.Caching
         bool SetExists<T>(string cacheKey, T key);
 
         #endregion SetBased
+
+        #region ListBased
+
+        void ListAdd<T>(string cacheKey, T key);
+
+        
+        T ListRetrieve<T>(string cacheKey, int index);
+
+        IEnumerable<T> ListRetrieveAll<T>(string cacheKey);
+
+        int ListLength(string cacheKey);
+        #endregion
     }
 }

@@ -76,6 +76,8 @@ namespace Voat.Caching
 
         protected override object GetItem(string cacheKey)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
             if (GetDatabase(ConnectionType.Exists).KeyExists(cacheKey))
             {
                 RedisType type = GetDatabase(ConnectionType.Read).KeyType(cacheKey);
@@ -103,15 +105,21 @@ namespace Voat.Caching
 
         protected override void DeleteItem(string cacheKey)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
             GetDatabase(ConnectionType.Write).KeyDelete(cacheKey);
         }
 
         protected override bool ItemExists(string cacheKey)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
             return GetDatabase(ConnectionType.Exists).KeyExists(cacheKey);
         }
         protected override V GetItem<K, V>(string cacheKey, K key, CacheType type)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
             V returnVal = default(V);
             switch (type)
             {
@@ -127,6 +135,8 @@ namespace Voat.Caching
 
         protected override void SetItem<K,V>(string cacheKey, K key, V item, CacheType type)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
             if (GetDatabase(ConnectionType.Exists).KeyExists(cacheKey))
             {
                 switch (type)
@@ -137,12 +147,17 @@ namespace Voat.Caching
                     case CacheType.Set:
                         GetDatabase(ConnectionType.Write).SetAdd(cacheKey, Serialize(key));
                         break;
+                    case CacheType.List:
+                        GetDatabase(ConnectionType.Write).ListRightPush(cacheKey, Serialize(key));
+                        break;
                 }
             }
         }
 
         protected override void SetItem(string cacheKey, object item, TimeSpan? cacheTime = null)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
             //determine if dictionary
             if (item is IDictionary)
             {
@@ -197,6 +212,7 @@ namespace Voat.Caching
         }
         protected override void DeleteItem<T>(string cacheKey, T key, CacheType type)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
             switch (type)
             {
                 case CacheType.Dictionary:
@@ -205,11 +221,15 @@ namespace Voat.Caching
                 case CacheType.Set:
                     GetDatabase(ConnectionType.Write).SetRemove(cacheKey, Serialize(key));
                     break;
+                case CacheType.List:
+                    GetDatabase(ConnectionType.Write).ListRemove(cacheKey, Serialize(key));
+                    break;
             }
         }
 
         protected override bool ItemExists<T>(string cacheKey, T key, CacheType type)
         {
+            cacheKey = StandardizeCacheKey(cacheKey);
             var found = false;
             switch (type)
             {
@@ -223,8 +243,43 @@ namespace Voat.Caching
             return found;
         }
 
+        public override void ListAdd<K>(string cacheKey, K item)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+            GetDatabase(ConnectionType.Exists).ListRightPush(cacheKey, Serialize(item)); 
+        }
+
+        public override K ListRetrieve<K>(string cacheKey, int index)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+            long longIndex = index;
+            var value = GetDatabase(ConnectionType.Exists).ListGetByIndex(cacheKey, longIndex);
+            if (value.HasValue)
+            {
+                return (K)Deserialize(value);
+            }
+            return default(K);
+        }
+        public override int ListLength(string cacheKey)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+            return (int)GetDatabase(ConnectionType.Exists).ListLength(cacheKey);
+        }
+        public override IEnumerable<T> ListRetrieveAll<T>(string cacheKey)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+            var range = GetDatabase(ConnectionType.Exists).ListRange(cacheKey, 0);
+            if (range != null && range.Any())
+            {
+                return range.Select(x => (T)Deserialize(x));
+            }
+            return Enumerable.Empty<T>();
+        }
+
+
         protected override void ProtectedPurge()
         {
+            
             var conn = connections[ConnectionType.Write];
             var endpoint = conn.GetEndPoints().First();
             var server = conn.GetServer(endpoint);

@@ -58,7 +58,8 @@ namespace Voat.Caching
     {
         Object = 0,
         Dictionary = 1,
-        Set = 2
+        Set = 2,
+        List = 3
     }
 
     #region Prototyping
@@ -918,6 +919,18 @@ namespace Voat.Caching
             return ItemExists(cacheKey, key, CacheType.Set);
         }
 
+
+        #endregion
+
+        #region List
+
+        public abstract void ListAdd<T>(string cacheKey, T item);
+
+        public abstract T ListRetrieve<T>(string cacheKey, int index);
+
+        public abstract int ListLength(string cacheKey);
+
+        public abstract IEnumerable<T> ListRetrieveAll<T>(string cacheKey);
 
         #endregion
 

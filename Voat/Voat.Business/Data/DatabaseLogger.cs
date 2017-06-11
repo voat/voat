@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Voat.Configuration;
 using Voat.Data;
@@ -22,11 +23,16 @@ namespace Voat.Data
             //Logging to EventLog
             using (var repo = new Repository())
             {
-                foreach (var logEntry in batch)
-                {
-                    repo.Log(Map(logEntry));
-                }
+                repo.Log(Map(batch));
+                //foreach (var logEntry in batch)
+                //{
+                //    repo.Log(Map(logEntry));
+                //}
             }
+        }
+        private IEnumerable<EventLog> Map(IEnumerable<ILogInformation> info)
+        {
+            return info.Select(x => Map(x));
         }
         private EventLog Map(ILogInformation info)
         {

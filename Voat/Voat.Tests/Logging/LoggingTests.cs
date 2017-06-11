@@ -72,9 +72,11 @@ namespace Voat.Tests.Logging
 
                 log.Log(info);
 
+                System.Threading.Thread.Sleep(500);
+
                 using (var db = new VoatDataContext())
                 {
-                    var entry = db.EventLog.FirstOrDefault(x => x.ActivityID == info.ActivityID.ToString());
+                    var entry = db.EventLog.FirstOrDefault(x => x.ActivityID.ToUpper() == info.ActivityID.ToString().ToUpper());
                     Assert.IsNotNull(entry, "Crickie! Where is the log data at!?");
                     Assert.AreEqual(info.Type.ToString(), entry.Type);
                     Assert.AreEqual(info.Origin, entry.Origin);

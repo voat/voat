@@ -5265,15 +5265,23 @@ namespace Voat.Data
             }
         }
 
-        //TODO: Make async
-        public Models.EventLog Log(EventLog log)
+        public async Task Log(IEnumerable<EventLog> log)
+        {
+            if (log != null && log.Any())
+            {
+                await _db.EventLog.AddRangeAsync(log);
+                await _db.SaveChangesAsync();
+            }
+        }
+
+        public async Task<EventLog> Log(EventLog log)
         {
             if (log == null)
             {
                 return null;
             }
             var newLog = _db.EventLog.Add(log);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
             return newLog.Entity;
         }
 
