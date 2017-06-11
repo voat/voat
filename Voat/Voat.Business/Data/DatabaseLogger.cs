@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
@@ -21,14 +22,15 @@ namespace Voat.Data
         protected override void ProcessBatch(IEnumerable<ILogInformation> batch)
         {
             //Logging to EventLog
-            using (var repo = new Repository())
-            {
-                repo.Log(Map(batch));
-                //foreach (var logEntry in batch)
-                //{
-                //    repo.Log(Map(logEntry));
-                //}
-            }
+            var t = Task.Run(async () => {
+                using (var repo = new Repository()){
+                    await repo.Log(Map(batch));
+                }
+            });
+            //foreach (var logEntry in batch)
+            //{
+            //    repo.Log(Map(logEntry));
+            //}
         }
         private IEnumerable<EventLog> Map(IEnumerable<ILogInformation> info)
         {
