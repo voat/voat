@@ -1819,11 +1819,11 @@ namespace Voat.Data
                     else if (!String.IsNullOrEmpty(subverse))
                     {
                         //Subverse Sessions
-                        var exists = $"SELECT st.* FROM  {SqlFormatter.Table("SessionTracker", "st", null, "NOLOCK")} WHERE st.\"SessionID\" = @SessionID AND st.\"Subverse\" = @Subverse)";
+                        var exists = $"SELECT st.* FROM  {SqlFormatter.Table("SessionTracker", "st", null, "NOLOCK")} WHERE st.\"SessionID\" = @SessionID AND st.\"Subverse\" = @Subverse";
 
                         var body = $"INSERT INTO {SqlFormatter.Table("SessionTracker")} (\"SessionID\", \"Subverse\", \"CreationDate\") ";
-                        body += $"SELECT @SessionID, @Subverse, @Date";
-                        body += $"AND NOT EXISTS ({exists})";
+                        body += $"SELECT @SessionID, @Subverse, @Date ";
+                        body += $"WHERE NOT EXISTS ({exists})";
 
                         await _db.Connection.ExecuteAsync(body, new { SessionID = hash, Subverse = subverse, Date = CurrentDate }, commandType: System.Data.CommandType.Text).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                     }
