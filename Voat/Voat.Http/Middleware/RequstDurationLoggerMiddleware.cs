@@ -19,16 +19,8 @@ namespace Voat.Http.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            using (var duration = new DurationLogger(EventLogger.Instance,
-                new LogInformation() {
-                    Category = "RequestDuration",
-                    UserName = context.User.Identity.Name,
-                    Origin = VoatSettings.Instance.Origin.ToString(),
-                    Type = LogType.Information,
-                    Message = $"{context.Request.Method} {context.Request.GetUrl().PathAndQuery}",
-                    Data = context.ToDebugginInformation()
-                }, 
-                _timeSpan))
+            var logInfo = context.GetLogInformation("RequestDuration");
+            using (var duration = new DurationLogger(EventLogger.Instance, logInfo, _timeSpan))
             {
                 await _next.Invoke(context);
             }

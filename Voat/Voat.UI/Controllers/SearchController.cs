@@ -50,7 +50,7 @@ namespace Voat.Controllers
         {
             if (!VoatSettings.Instance.SearchEnabled)
             {
-                return base.GenericErrorView(new Models.ViewModels.ErrorViewModel() { Title = "Search Disabled", Description = "Sorry, search is currently disabled. :(", FooterMessage = "Tune in for The People vs. Search court case" });
+                return base.GenericErrorView(new Models.ViewModels.ErrorViewModel() { Title = "Search Disabled", Description = "Sorry, search is currently disabled. :(", Footer = "Tune in for The People vs. Search court case" });
             }
             //sanitize
             q = q.TrimSafe();

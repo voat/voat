@@ -39,7 +39,7 @@ namespace Voat.Tests.QueryTests
     [TestClass]
     public class QueryCommentTreeAnonTests : BaseCommandTest
     {
-        private int _submissionID;
+        private static int _submissionID;
         private int _rootCount = 1;
         private int _nestedCount = 4;
         private int _recurseCount = 4;

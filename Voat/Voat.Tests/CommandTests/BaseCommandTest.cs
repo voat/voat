@@ -50,6 +50,10 @@ namespace Voat.Tests.CommandTests
                     VerifyCommentSegmentIsAnonProtected(c.Children);
                 }
             }
+            else
+            {
+                Assert.Fail("segment is null or has no comments");
+            }
         }
         private void EnsureAnonIsProtected(Domain.Models.Comment comment)
         {

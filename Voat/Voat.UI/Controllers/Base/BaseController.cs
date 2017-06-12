@@ -45,13 +45,6 @@ namespace Voat.Controllers
                 return UserData.GetContextUserData(HttpContext);
             }
         }
-        
-        //CORE_PORT: No override found
-        //protected override void OnException(ExceptionContext filterContext)
-        //{
-        //    //EventLogger.Log(filterContext.Exception);
-        //    base.OnException(filterContext);
-        //}
 
         #region JSON Responses
         //These are beginning port to api structures
@@ -90,49 +83,32 @@ namespace Voat.Controllers
         #region Error View Accessors
         protected ViewResult NotFoundErrorView()
         {
-            return View("~/Views/Error/404.cshtml");
+            return ErrorController.ErrorView("notfound");
         }
         protected ViewResult GenericErrorView(ErrorViewModel model = null)
         {
-            if (model == null)
-            {
-                model = new ErrorViewModel();
-            }
-            return View("~/Views/Error/Generic.cshtml", model);
+            return ErrorController.ErrorView("generic", model);
         }
         protected ViewResult UnAuthorizedErrorView()
         {
-            return View("~/Views/Error/UnAuthorized.cshtml");
+            return ErrorController.ErrorView("unathorized");
         }
-        //protected ViewResult HeavyLoadErrorView()
-        //{
-        //    return View("~/Views/Error/DbNotResponding.cshtml");
-        //}
         protected ViewResult SubverseDisabledErrorView()
         {
-            return View("~/Views/Error/SubverseDisabled.cshtml");
+            return ErrorController.ErrorView("disabled");
         }
-        protected ViewResult SubverseNotFoundErrorView()
+        protected ActionResult SubverseNotFoundErrorView()
         {
-            return View("~/Views/Error/Subversenotfound.cshtml");
+            return ErrorController.ErrorView("subversenotfound");
         }
 
+        #endregion
 
         protected string ViewPath(DomainReference domainReference)
         {
-            //var isList = !Request.IsCookiePresent("view", "list", this.Response);
-            //return (isList ? VIEW_PATH.SUBMISSION_LIST_RETRO : VIEW_PATH.SUBMISSION_LIST);
-
-
             var isRetro = Request.IsCookiePresent("view", "retro", this.Response, TimeSpan.FromDays(7));
             return (isRetro ? VIEW_PATH.SUBMISSION_LIST_RETRO : VIEW_PATH.SUBMISSION_LIST);
         }
 
-
-        #endregion
-        public ActionResult HttpNotFound()
-        {
-            throw new NotImplementedException("Core Port: Not implemented");
-        }
     }
 }

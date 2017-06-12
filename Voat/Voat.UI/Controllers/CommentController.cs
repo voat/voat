@@ -34,6 +34,7 @@ using System.Net;
 using System.Threading.Tasks;
 
 using Voat.Caching;
+using Voat.Common;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
@@ -318,7 +319,7 @@ namespace Voat.Controllers
             }
             else
             {
-                var cmd = new CreateCommentCommand(commentModel.SubmissionID.Value, commentModel.ParentID, commentModel.Content);
+                var cmd = new CreateCommentCommand(commentModel.SubmissionID.Value, commentModel.ParentID, commentModel.Content).SetUserContext(User);
                 var result = await cmd.Execute();
 
                 if (result.Success)
@@ -359,7 +360,7 @@ namespace Voat.Controllers
         {
             if (ModelState.IsValid)
             {
-                var cmd = new EditCommentCommand(commentModel.ID, commentModel.Content);
+                var cmd = new EditCommentCommand(commentModel.ID, commentModel.Content).SetUserContext(User);
                 var result = await cmd.Execute();
 
                 if (result.Success)
@@ -385,7 +386,7 @@ namespace Voat.Controllers
         {
             if (ModelState.IsValid)
             {
-                var cmd = new DeleteCommentCommand(commentId, "This feature is not yet implemented");
+                var cmd = new DeleteCommentCommand(commentId, "This feature is not yet implemented").SetUserContext(User);
                 var result = await cmd.Execute();
 
                 if (result.Success)
@@ -499,7 +500,7 @@ namespace Voat.Controllers
                 return View(model);
             }
 
-            var cmd = new DeleteCommentCommand(model.ID, model.Reason);
+            var cmd = new DeleteCommentCommand(model.ID, model.Reason).SetUserContext(User);
             var r = await cmd.Execute();
             if (r.Success)
             {

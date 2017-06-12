@@ -490,7 +490,7 @@ namespace Voat.Controllers
 
             if (subverseBan == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("NotFound", "Error");
             }
 
             ViewBag.SelectedSubverse = string.Empty;
@@ -766,7 +766,8 @@ namespace Voat.Controllers
 
             if (subverseFlairSetting == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("NotFound", "Error");
+
             }
 
             ViewBag.SubverseName = subverseFlairSetting.Subverse;
@@ -1060,7 +1061,7 @@ namespace Voat.Controllers
 
             if (subModerator == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("NotFound","Error");
             }
 
             if (!ModeratorPermission.HasPermission(User.Identity.Name, subModerator.Subverse, Domain.Models.ModeratorAction.RemoveMods))

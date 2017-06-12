@@ -59,7 +59,7 @@ namespace Voat.Tests.QueryTests
 
             user = TestHelper.SetPrincipal("TestUser01");
             msg = "1.1";
-            var cmdReply = new SendMessageReplyCommand(message.ID, msg).SetUserContext(user);
+            var cmdReply = new SendMessageReplyCommand(message.ID, msg).SetUserContext(user).SetUserContext(user);
             var responseReply = cmdReply.Execute().Result;
             VoatAssert.IsValid(responseReply);
 
@@ -69,7 +69,7 @@ namespace Voat.Tests.QueryTests
 
             user = TestHelper.SetPrincipal(userName);
             msg = "1.1.1";
-            cmdReply = new SendMessageReplyCommand(message.ID, msg).SetUserContext(user);
+            cmdReply = new SendMessageReplyCommand(message.ID, msg).SetUserContext(user).SetUserContext(user);
             responseReply = cmdReply.Execute().Result;
             VoatAssert.IsValid(responseReply);
 
@@ -78,7 +78,7 @@ namespace Voat.Tests.QueryTests
 
             user = TestHelper.SetPrincipal("TestUser01");
             msg = "1.1.1.1";
-            cmdReply = new SendMessageReplyCommand(message.ID, msg).SetUserContext(user);
+            cmdReply = new SendMessageReplyCommand(message.ID, msg).SetUserContext(user).SetUserContext(user);
             responseReply = cmdReply.Execute().Result;
             VoatAssert.IsValid(responseReply);
 

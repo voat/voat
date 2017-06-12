@@ -29,6 +29,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Common;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
@@ -184,7 +185,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> EditSubmission(EditSubmission model)
         {
 
-            var cmd = new EditSubmissionCommand(model.SubmissionId, new Domain.Models.UserSubmission() { Content = model.SubmissionContent });
+            var cmd = new EditSubmissionCommand(model.SubmissionId, new Domain.Models.UserSubmission() { Content = model.SubmissionContent }).SetUserContext(User);
             var response = await cmd.Execute();
 
             if (response.Success)
@@ -207,7 +208,7 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteSubmission(int submissionId)
         {
-            var cmd = new DeleteSubmissionCommand(submissionId, "This feature is not yet implemented");
+            var cmd = new DeleteSubmissionCommand(submissionId, "This feature is not yet implemented").SetUserContext(User);
             var result = await cmd.Execute();
             if (result.Success)
             {
@@ -300,7 +301,7 @@ namespace Voat.Controllers
                 return View(model);
             }
 
-            var cmd = new DeleteSubmissionCommand(model.ID, model.Reason);
+            var cmd = new DeleteSubmissionCommand(model.ID, model.Reason).SetUserContext(User);
             var r = await cmd.Execute();
             if (r.Success)
             {

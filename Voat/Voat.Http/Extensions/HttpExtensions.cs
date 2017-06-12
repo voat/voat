@@ -7,11 +7,29 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using Voat.Configuration;
+using Voat.Logging;
 
 namespace Voat.Http
 {
     public static class HttpExtensions
     {
+
+        public static ILogInformation GetLogInformation(this HttpContext context, string category, Exception exception = null)
+        {
+            var logInfo = new LogInformation()
+            {
+                ActivityID = null,
+                Origin = VoatSettings.Instance.Origin.ToString(),
+                Type = LogType.Critical,
+                Message = $"{context.Request.Method} {context.Request.GetUrl().PathAndQuery}",
+                Category = category,
+                UserName = context.User.Identity.Name,
+                Data = context.ToDebugginInformation(),
+                Exception = exception
+            };
+
+            return logInfo;
+        }
         public static Uri GetUrl(this HttpRequest request)
         {
             var builder = new UriBuilder();

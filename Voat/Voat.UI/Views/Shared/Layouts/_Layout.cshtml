@@ -122,8 +122,8 @@
                         @{
                             var viewData = new ViewDataDictionary(ViewData);
                             viewData["ReturnUrl"] = Context.Request.GetUrl().PathAndQuery;
-                            Html.Partial("~/Views/Account/_LoginModal.cshtml", new LoginViewModel(), viewData);
                         }
+                        @Html.Partial("~/Views/Account/_LoginModal.cshtml", new LoginViewModel(), viewData)
                        
                     </div>
                 </div>

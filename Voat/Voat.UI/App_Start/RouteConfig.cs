@@ -1121,9 +1121,16 @@ namespace Voat
 
             //catch The Others 
             routes.MapRoute(
+                name: "Error",
+                template: "Error/{*type}",
+                defaults: new { controller = "Error", action = "Type" }
+            );
+
+            //catch The Others 
+            routes.MapRoute(
                 name: "Others",
                 template: "r/{name}/{*url}",
-                defaults: new { controller = "Error", action = "Others" }
+                defaults: new { controller = "Error", action = "Type", type = "others" }
             );
             
             //CORE_PORT: I think we need this

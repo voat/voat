@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Voat.Configuration;
 using Voat.Http;
 using Voat.Logging;
 using Voat.Utilities.Components;
@@ -32,16 +33,8 @@ namespace Voat.UI.Runtime
 
         public void OnException(ExceptionContext context)
         {
-            EventLogger.Instance.Log(
-                new LogInformation() {
-                    ActivityID = null,
-                    Type = LogType.Critical,
-                    Category = "Exception",
-                    Message = "GlobalExceptionFilter",
-                    UserName = context.HttpContext.User.Identity.Name,
-                    Data = context.HttpContext.ToDebugginInformation(),
-                    Exception = context.Exception }
-                );
+            var logInfo = context.HttpContext.GetLogInformation("GlobalExceptionFilter", context.Exception);
+            EventLogger.Instance.Log(logInfo);
         }
     }
 }

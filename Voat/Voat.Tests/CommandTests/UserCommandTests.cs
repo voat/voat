@@ -39,7 +39,6 @@ namespace Voat.Tests.CommandTests
     [TestClass]
     public class UserCommandTests : BaseUnitTest
     {
-
         [TestMethod]
         [TestCategory("User"), TestCategory("Command"), TestCategory("Query")]
         public async Task UpdateUserPreferences()
@@ -63,7 +62,6 @@ namespace Voat.Tests.CommandTests
 
             Assert.IsNotNull(prefs, "Pref requery returned null");
             Assert.AreEqual(prefs.Bio, bio, "Bio not updated");
-
         }
 
         [TestMethod]
@@ -82,7 +80,6 @@ namespace Voat.Tests.CommandTests
 
                 r = await repo.Save(Domain.Models.ContentType.Comment, 1);
                 VoatAssert.IsValid(r);
-
             }
 
             var q = new QueryUserSaves(Domain.Models.ContentType.Submission).SetUserContext(user);
@@ -97,7 +94,6 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(1, d.Count);
             Assert.AreEqual(true, CacheHandler.Instance.Exists(CachingKey.UserSavedItems(Domain.Models.ContentType.Comment, userName)));
 
-
             //check helper object
             Assert.AreEqual(true, UserHelper.IsSaved(user, Domain.Models.ContentType.Submission, 1));
             Assert.AreEqual(true, UserHelper.IsSaved(user, Domain.Models.ContentType.Comment, 1));
@@ -105,11 +101,9 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(false, UserHelper.IsSaved(user, Domain.Models.ContentType.Submission, 2));
             Assert.AreEqual(false, UserHelper.IsSaved(user, Domain.Models.ContentType.Comment, 2));
 
-
             var cmd = new SaveCommand(Domain.Models.ContentType.Submission, 2).SetUserContext(user);
             var response = await cmd.Execute();
             VoatAssert.IsValid(response);
-
 
             cmd = new SaveCommand(Domain.Models.ContentType.Comment, 2).SetUserContext(user);
             response = await cmd.Execute();
@@ -128,7 +122,6 @@ namespace Voat.Tests.CommandTests
 
             Assert.AreEqual(false, UserHelper.IsSaved(user, Domain.Models.ContentType.Submission, 1));
             Assert.AreEqual(false, UserHelper.IsSaved(user, Domain.Models.ContentType.Comment, 1));
-
         }
 
         [TestMethod]

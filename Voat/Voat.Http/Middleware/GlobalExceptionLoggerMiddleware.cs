@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Threading.Tasks;
+using Voat.Configuration;
 using Voat.Logging;
 using Voat.Utilities.Components;
 
@@ -23,17 +24,9 @@ namespace Voat.Http.Middleware
             }
             catch (Exception ex)
             {
-                EventLogger.Instance.Log(
-                   new LogInformation()
-                   {
-                       ActivityID = null,
-                       Type = LogType.Critical,
-                       Message = "GlobalExceptionLoggerMiddleware",
-                       Category = "Exception",
-                       UserName = context.User.Identity.Name,
-                       Data = context.ToDebugginInformation(),
-                       Exception = ex
-                   });
+                var logInfo = context.GetLogInformation("GlobalExceptionLoggerMiddleware", ex);
+                EventLogger.Instance.Log(logInfo);
+                throw;
             }
         }
     }

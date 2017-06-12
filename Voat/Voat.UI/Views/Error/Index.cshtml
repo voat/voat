@@ -18,25 +18,32 @@
 
 *@
 
+@model Voat.Models.ViewModels.ErrorViewModel
+
 @{
-    ViewBag.Title = "Mesosad!";
+    ViewBag.Title = Model.Title;
+    //this might be bad
+    if (!Model.UseLayout)
+    {
+        Layout = "~/Views/Shared/Layouts/_LayoutContainer.cshtml";
+    }
 }
 
 <div class="content error-page" role="main">
     <div class="container">
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title">Mesosad!</h3>
+                <h3 class="panel-title">@Model.Title</h3>
             </div>
             <div class="panel-body centered">
-                <h1>The subverse you were trying to create already exists. Sorry about that. Try another name?</h1>
+                @Html.Raw(Model.Description)
             </div>
         </div>
         <p class="text-center">
-            <img src="~/Graphics/voat-goat.png" class="img-responsive center-block" alt="Mesosad!" />
+            <a href="/"><img src="~/images/voat-goat.png" class="img-responsive center-block" alt="Whoopsie Daisy!" /></a>
         </p>
         <p class="panel-footer centered">
-            Care to go back and try another name?
+            @Html.Raw(@Model.Footer)
         </p>
     </div>
 </div>
