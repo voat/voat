@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Voat.Common;
 
 namespace Voat.Logging
 {
     public abstract class QueuedLogger : BaseLogger
     {
-        private int _threshold = 5;
         private BatchOperation<ILogInformation> _batchProcessor = null;
 
         public QueuedLogger() : this(1, TimeSpan.Zero, LogType.All)
@@ -19,7 +19,7 @@ namespace Voat.Logging
             _batchProcessor = new MemoryBatchOperation<ILogInformation>(flushCount, flushSpan, ProcessBatch);
 
         }
-        protected abstract void ProcessBatch(IEnumerable<ILogInformation> batch);
+        protected abstract Task ProcessBatch(IEnumerable<ILogInformation> batch);
 
         protected override void ProtectedLog(ILogInformation info)
         {

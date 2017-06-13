@@ -25,13 +25,18 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Voat.Common;
+using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
+using Voat.Rules;
 using Voat.Tests.Repository;
 using Voat.Utilities;
 
@@ -49,5 +54,123 @@ namespace Voat.Tests.CommandTests
             var result = await qa.ExecuteAsync();
             Assert.IsTrue(result >= 0, "Expecting a positive number");
         }
+        [TestMethod]
+        public async Task Test_LogActivityCommand_Serialization()
+        {
+            var user = TestHelper.SetPrincipal("unit");
+            var cmd = new LogVisitCommand("_all", 799, "111.111.111.111").SetUserContext(user);
+            var deserialized = EnsureCommandIsSerialziable(cmd);
+
+            //Won't pass
+            Assert.AreEqual(cmd.Subverse, deserialized.Subverse);
+            Assert.AreEqual(cmd.SubmissionID, deserialized.SubmissionID);
+            Assert.AreEqual(cmd.ClientIPAddress, deserialized.ClientIPAddress);
+        }
+
+        [TestMethod]
+        public async Task Test_CreateApiKeyCommand_Serialization()
+        {
+            var user = TestHelper.SetPrincipal("unit");
+            var cmd = new CreateApiKeyCommand("name", "description", "http://somedomain.com", "http://somedomain.com/app").SetUserContext(user);
+            EnsureCommandIsSerialziable(cmd);
+
+        }
+
+        [TestMethod]
+        public async Task Test_AllCommands_Serialization()
+        {
+
+            var user = TestHelper.SetPrincipal("TestUser01");
+            //all
+            var commandRegexPattern = "[A-Za-z0-9]Command";
+            //commandRegexPattern = "MarkMessagesCommand";
+
+            List<string> errors = new List<string>();
+            List<string> passed = new List<string>();
+            var assembly = System.Reflection.Assembly.GetAssembly(typeof(VoatRuleContext));
+            var types = assembly.GetTypes();
+            foreach (var type in types)
+            {
+                if (Regex.IsMatch(type.Name, commandRegexPattern))
+                {
+                    if (!type.IsAbstract)
+                    {
+                        Command instance = null;
+                        try
+                        {
+                            instance = (Command)Construct(type);
+                        }
+                        catch (Exception ex)
+                        {
+                            errors.Add($"FAIL: {type.Name} could not be constructed ({ex.Message})");
+                        }
+
+                        if (instance != null)
+                        {
+                            try
+                            {
+                                instance.SetUserContext(user);
+                                EnsureCommandIsSerialziable((Command)instance);
+                                passed.Add($"PASS: {type.Name} passed serialization");
+                            }
+                            catch (Exception ex)
+                            {
+                                errors.Add($"FAIL: {type.Name} was not serialized correctly ({ex.Message})");
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (errors.Count > 0)
+            {
+                Assert.Fail(String.Join(System.Environment.NewLine, errors) + System.Environment.NewLine + String.Join(System.Environment.NewLine, passed));
+            }
+
+        }
+
+        private object Construct(Type type)
+        {
+            var constructors = type.GetConstructors();
+            var defaultConstructor = constructors.FirstOrDefault(x => x.GetParameters().Length == 0);
+            object instance = null;
+            if (defaultConstructor != null)
+            {
+                instance = Activator.CreateInstance(type);
+            }
+            else
+            {
+                var constructor = constructors.OrderBy(x => x.GetParameters().Length).FirstOrDefault();
+                var parameters = constructor.GetParameters();
+                object[] arguments = new object[parameters.Length];
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    var parameter = parameters[i];
+                    var pValue = GetDefault(parameter.ParameterType);
+                    arguments[i] = pValue;
+                }
+                instance = Activator.CreateInstance(type, arguments);
+            }
+            return instance;
+        }
+
+        public object GetDefault(Type type)
+        {
+            if (type == typeof(String))
+            {
+                return Guid.NewGuid().ToString().ToUpper().Replace("-", "");
+            }
+            if (type == typeof(Int32))
+            {
+                return (new Random()).Next(1, 2);
+            }
+
+            return GetType().GetMethod("GetDefaultGeneric").MakeGenericMethod(type).Invoke(this, null);
+        }
+        public T GetDefaultGeneric<T>()
+        {
+            return default(T);
+        }
+
     }
 }

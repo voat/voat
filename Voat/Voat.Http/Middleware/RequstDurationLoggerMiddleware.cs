@@ -19,7 +19,7 @@ namespace Voat.Http.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            var logInfo = context.GetLogInformation("RequestDuration");
+            var logInfo = context.GetLogInformation("RequestDuration", LogType.Information);
             using (var duration = new DurationLogger(EventLogger.Instance, logInfo, _timeSpan))
             {
                 await _next.Invoke(context);

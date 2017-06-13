@@ -19,18 +19,12 @@ namespace Voat.Data
 
         }
 
-        protected override void ProcessBatch(IEnumerable<ILogInformation> batch)
+        protected override async Task ProcessBatch(IEnumerable<ILogInformation> batch)
         {
             //Logging to EventLog
-            var t = Task.Run(async () => {
-                using (var repo = new Repository()){
-                    await repo.Log(Map(batch));
-                }
-            });
-            //foreach (var logEntry in batch)
-            //{
-            //    repo.Log(Map(logEntry));
-            //}
+            using (var repo = new Repository()){
+                await repo.Log(Map(batch));
+            }
         }
         private IEnumerable<EventLog> Map(IEnumerable<ILogInformation> info)
         {

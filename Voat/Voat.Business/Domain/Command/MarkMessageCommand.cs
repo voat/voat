@@ -22,6 +22,7 @@
 
 #endregion LICENSE
 
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Domain.Models;
@@ -36,6 +37,7 @@ namespace Voat.Domain.Command
         protected string _ownerName;
         protected IdentityType _ownerType;
 
+        [JsonConstructor()]
         public MarkMessagesCommand(string ownerName, IdentityType ownerType, MessageTypeFlag type, MessageState action, int? id = null)
         {
             this._ownerName = ownerName;
@@ -68,6 +70,7 @@ namespace Voat.Domain.Command
         protected string _ownerName;
         protected IdentityType _ownerType;
 
+        [JsonConstructor()]
         public DeleteMessagesCommand(string ownerName, IdentityType ownerType, MessageTypeFlag type, int? id = null)
         {
             this._ownerName = ownerName;

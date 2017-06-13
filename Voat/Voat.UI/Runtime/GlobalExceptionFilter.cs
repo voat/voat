@@ -33,7 +33,7 @@ namespace Voat.UI.Runtime
 
         public void OnException(ExceptionContext context)
         {
-            var logInfo = context.HttpContext.GetLogInformation("GlobalExceptionFilter", context.Exception);
+            var logInfo = context.HttpContext.GetLogInformation("GlobalExceptionFilter", LogType.Exception, context.Exception);
             EventLogger.Instance.Log(logInfo);
         }
     }

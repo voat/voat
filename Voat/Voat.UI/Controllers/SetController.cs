@@ -62,14 +62,14 @@ namespace Voat.Controllers
 
             if (set == null)
             {
-                return GenericErrorView(new ErrorViewModel() { Title = "Can't find this set", Description = "Maybe it's gone?", Footer = "Probably yeah" });
+                return ErrorView(new ErrorViewModel() { Title = "Can't find this set", Description = "Maybe it's gone?", Footer = "Probably yeah" });
             }
 
             var perms = SetPermission.GetPermissions(set, User.Identity);
 
             if (!perms.View)
             {
-                return GenericErrorView(new ErrorViewModel() { Title = "Set is Private", Description = "This set doesn't allow viewing. It is private.", Footer = "Sometimes sets are shy around others." });
+                return ErrorView(new ErrorViewModel() { Title = "Set is Private", Description = "This set doesn't allow viewing. It is private.", Footer = "Sometimes sets are shy around others." });
             }
 
 
@@ -152,7 +152,7 @@ namespace Voat.Controllers
                             BasePath = VoatPathHelper.BasePath(domainReference),
                             Sort = null
                         };
-                        return GenericErrorView(new ErrorViewModel() { Title = "No Subscriptions!", Description = "You don't have any subscriptions so we have to show you this instead", Footer = "Subscribe to a subverse you silly goat" });
+                        return ErrorView(new ErrorViewModel() { Title = "No Subscriptions!", Description = "You don't have any subscriptions so we have to show you this instead", Footer = "Subscribe to a subverse you silly goat" });
                     }
                     else if (name.IsEqual(SetType.Blocked.ToString()))
                     {
@@ -164,11 +164,11 @@ namespace Voat.Controllers
                             BasePath = VoatPathHelper.BasePath(domainReference),
                             Sort = null
                         };
-                        return GenericErrorView(new ErrorViewModel() { Title = "No Blocked Subs!", Description = "You don't have any blocked subs. Golf clap.", Footer = "Block some subs and this page will magically change!" });
+                        return ErrorView(new ErrorViewModel() { Title = "No Blocked Subs!", Description = "You don't have any blocked subs. Golf clap.", Footer = "Block some subs and this page will magically change!" });
                     }
                     else
                     {
-                        return GenericErrorView(new ErrorViewModel() { Title = "Can't find this set", Description = "Maybe it's gone?", Footer = "Probably yeah" });
+                        return ErrorView(new ErrorViewModel() { Title = "Can't find this set", Description = "Maybe it's gone?", Footer = "Probably yeah" });
                     }
                 }
 
@@ -176,7 +176,7 @@ namespace Voat.Controllers
 
                 if (!perms.View)
                 {
-                    return GenericErrorView(new ErrorViewModel() { Title = "Set is Private", Description = "This set doesn't allow the viewing of its properties", Footer = "It's ok, I can't see it either" });
+                    return ErrorView(new ErrorViewModel() { Title = "Set is Private", Description = "This set doesn't allow the viewing of its properties", Footer = "It's ok, I can't see it either" });
                 }
 
                 var options = new SearchOptions(Request.QueryString.Value);
@@ -276,7 +276,7 @@ namespace Voat.Controllers
         {
             if (!VoatSettings.Instance.SetCreationEnabled)
             {
-                return GenericErrorView(new ErrorViewModel() { Title = "Set Creation Disabled", Description = "Sorry, but set creation is currently disabled", Footer = "Someone will be fired for this" });
+                return ErrorView(new ErrorViewModel() { Title = "Set Creation Disabled", Description = "Sorry, but set creation is currently disabled", Footer = "Someone will be fired for this" });
             }
 
             return View(new Set());
@@ -288,7 +288,7 @@ namespace Voat.Controllers
         {
             if (!VoatSettings.Instance.SetCreationEnabled)
             {
-                return GenericErrorView(new ErrorViewModel() { Title = "Set Creation Disabled", Description = "Sorry, but set creation is currently disabled", Footer = "Someone will be fired for this" });
+                return ErrorView(new ErrorViewModel() { Title = "Set Creation Disabled", Description = "Sorry, but set creation is currently disabled", Footer = "Someone will be fired for this" });
             }
 
             if (ModelState.IsValid)

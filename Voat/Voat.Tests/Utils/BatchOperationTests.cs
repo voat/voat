@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Common;
 
@@ -30,8 +31,9 @@ namespace Voat.Tests.Utils
                 batchItems.Add(new BatchItem());
             }
             var c = new CacheBatchOperation<BatchItem>("CacheBatchTests", cacheHandler, 2000, TimeSpan.Zero, 
-                new Action<IEnumerable<BatchItem>>(x => {
+                new Func<IEnumerable<BatchItem>, Task>(x => {
                     processed = true;
+                    return Task.CompletedTask;
                 }));
             c.ClearPrevious = false;
 

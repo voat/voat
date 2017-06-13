@@ -8,17 +8,18 @@ using System.Threading;
 
 namespace Voat.Common
 {
-    [DebuggerDisplay("Current = {_batch.Count} (Flush = {_flushCount}, Span = {_flushSpan})", Name = "{key}")]
+    [DebuggerDisplay("Current = {_lastCount} (Flush = {FlushCount}, Span = {FlushSpan})", Name = "{key}")]
     public abstract class BatchOperation<T> : IDisposable
     {
         private int _flushCount = 1;
+        private int _lastCount = 0;
         private TimeSpan _flushSpan = TimeSpan.Zero;
         private DateTime _lastActionDate = DateTime.UtcNow;
-        private Action<IEnumerable<T>> _batchAction;
+        private Func<IEnumerable<T>,Task> _batchAction;
         private Timer _timer = null;
 
 
-        public BatchOperation(int flushCount, TimeSpan flushSpan, Action<IEnumerable<T>> batchAction)
+        public BatchOperation(int flushCount, TimeSpan flushSpan, Func<IEnumerable<T>, Task> batchAction)
         {
             this._flushCount = flushCount.EnsureRange(1, Int32.MaxValue);
             this._flushSpan = flushSpan.EnsureRange(TimeSpan.Zero, TimeSpan.MaxValue);
@@ -46,19 +47,26 @@ namespace Voat.Common
             if (IsFlushable || (force && Count > 0))
             {
                 var batchToProcess = BatchPending();
-                Task.Run(() => _batchAction(batchToProcess));
+                Task.Run(async () => await _batchAction(batchToProcess));
                 _lastActionDate = DateTime.UtcNow;
             }
         }
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public bool IsFlushable
         {
             get
             {
-                return Count > 0
-                    && (Count >= _flushCount
+                _lastCount = Count;
+                return _lastCount > 0
+                    && (_lastCount >= _flushCount
                     || (_flushSpan <= DateTime.UtcNow.Subtract(_lastActionDate) && _flushSpan > TimeSpan.Zero));
             }
         }
+
+        public int FlushCount { get => _flushCount; set => _flushCount = value; }
+        public TimeSpan FlushSpan { get => _flushSpan; set => _flushSpan = value; }
+
         private void OnTimer(object state)
         {
             FlushIfReady();

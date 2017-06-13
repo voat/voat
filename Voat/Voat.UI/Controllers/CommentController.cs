@@ -96,7 +96,7 @@ namespace Voat.Controllers
 
             if (submissionID == null)
             {
-                return GenericErrorView(new ErrorViewModel() { Description = "Can not find what was requested because input is not valid" });
+                return ErrorView(new ErrorViewModel() { Description = "Can not find what was requested because input is not valid" });
             }
 
             var q = new QuerySubmission(submissionID.Value, true);
@@ -201,7 +201,7 @@ namespace Voat.Controllers
 
             if (submissionID <= 0)
             {
-                return GenericErrorView(new ErrorViewModel() { Description = "Can not find what was requested because input is not valid" });
+                return ErrorView(new ErrorViewModel() { Description = "Can not find what was requested because input is not valid" });
             }
 
             var q = new QuerySubmission(submissionID, false);
@@ -250,7 +250,7 @@ namespace Voat.Controllers
 
             if (submissionID <= 0)
             {
-                return GenericErrorView(new ErrorViewModel() { Description = "Can not find what was requested because input is not valid" });
+                return ErrorView(new ErrorViewModel() { Description = "Can not find what was requested because input is not valid" });
             }
 
             var submission = DataCache.Submission.Retrieve(submissionID);

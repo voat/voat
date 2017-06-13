@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Voat.Common
 {
@@ -10,7 +11,7 @@ namespace Voat.Common
         private List<T> _batch = new List<T>();
         private ReaderWriterLockSlim _readerWriterLockSlim = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
-        public MemoryBatchOperation(int flushCount, TimeSpan flushSpan, Action<IEnumerable<T>> batchAction) : base(flushCount, flushSpan, batchAction)
+        public MemoryBatchOperation(int flushCount, TimeSpan flushSpan, Func<IEnumerable<T>, Task> batchAction) : base(flushCount, flushSpan, batchAction)
         {
 
         }

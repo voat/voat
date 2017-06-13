@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Security;
 using System.Security.Claims;
@@ -45,6 +46,7 @@ namespace Voat.Common
                 _context = value;
             }
         }
+        [JsonIgnore()]
         public string UserName
         {
             get

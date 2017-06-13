@@ -14,13 +14,13 @@ namespace Voat.Http
     public static class HttpExtensions
     {
 
-        public static ILogInformation GetLogInformation(this HttpContext context, string category, Exception exception = null)
+        public static ILogInformation GetLogInformation(this HttpContext context, string category, LogType logLevel, Exception exception = null)
         {
             var logInfo = new LogInformation()
             {
                 ActivityID = null,
                 Origin = VoatSettings.Instance.Origin.ToString(),
-                Type = LogType.Critical,
+                Type = logLevel,
                 Message = $"{context.Request.Method} {context.Request.GetUrl().PathAndQuery}",
                 Category = category,
                 UserName = context.User.Identity.Name,

@@ -247,7 +247,7 @@ namespace Voat
             // v/subverseName/comments/123456/new
             routes.MapRoute(
                 name: "SubverseCommentsWithSort_Short",
-                template: "v/{subverseName}/{submissionID}/{sort}",
+                template: "v/{subverseName}/{submissionID}/{sort?}",
                 constraints: new
                 {
                     sort = commentSortContraint,
