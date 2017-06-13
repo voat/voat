@@ -288,7 +288,7 @@ namespace Voat.Controllers
                 Subject = message.Subject,
                 Sender = message.Sender
             };
-            var cmd = new SendMessageCommand(sendMessage, false, true);
+            var cmd = new SendMessageCommand(sendMessage, false, true).SetUserContext(User);
             var response = await cmd.Execute();
 
             
@@ -343,7 +343,7 @@ namespace Voat.Controllers
                 return RedirectToAction("Sent", "Messages");
             }
 
-            var cmd = new SendMessageReplyCommand(message.ID, message.Body);
+            var cmd = new SendMessageReplyCommand(message.ID, message.Body).SetUserContext(User);
             var response = await cmd.Execute();
 
             if (response.Success)
@@ -384,7 +384,7 @@ namespace Voat.Controllers
                 ownerName = subverse.TrimSafe();
                 ownerType = IdentityType.Subverse;
             }
-            var cmd = new MarkMessagesCommand(ownerName, ownerType, type, markAction, id);
+            var cmd = new MarkMessagesCommand(ownerName, ownerType, type, markAction, id).SetUserContext(User);
             var response = await cmd.Execute();
 
             if (response.Success)
@@ -410,7 +410,7 @@ namespace Voat.Controllers
                 ownerType = IdentityType.Subverse;
             }
 
-            var cmd = new DeleteMessagesCommand(ownerName, ownerType, type, id);
+            var cmd = new DeleteMessagesCommand(ownerName, ownerType, type, id).SetUserContext(User);
             var response = await cmd.Execute();
 
             if (response.Success)
@@ -446,7 +446,7 @@ namespace Voat.Controllers
             //ViewBag.PmView = "mod";
             //ViewBag.Title = string.Format("v/{0} {1}", sub.Name, (type == MessageTypeFlag.Sent ? "Sent" : "Inbox"));
 
-            var q = new QueryMessages(sub.Name, IdentityType.Subverse, type, MessageState.All, false);
+            var q = new QueryMessages(sub.Name, IdentityType.Subverse, type, MessageState.All, false).SetUserContext(User);
             q.PageNumber = SetPage(page);
             var result = await q.ExecuteAsync();
 

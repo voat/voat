@@ -583,7 +583,7 @@ namespace Voat
             // editsubmission
             routes.MapRoute(
                   "editsubmission",
-                  "editsubmission/{id?}",
+                  "editsubmission",
                   new { controller = "Submissions", action = "EditSubmission" }
              );
 

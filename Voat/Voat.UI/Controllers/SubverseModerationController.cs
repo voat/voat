@@ -450,7 +450,7 @@ namespace Voat.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var cmd = new SubverseBanCommand(subverseBan.UserName, subverseBan.Subverse, subverseBan.Reason, true);
+            var cmd = new SubverseBanCommand(subverseBan.UserName, subverseBan.Subverse, subverseBan.Reason, true).SetUserContext(User);
             var result = await cmd.Execute();
 
             if (result.Success)
@@ -515,7 +515,7 @@ namespace Voat.Controllers
             }
             else
             {
-                var cmd = new SubverseBanCommand(banToBeRemoved.UserName, banToBeRemoved.Subverse, null, false);
+                var cmd = new SubverseBanCommand(banToBeRemoved.UserName, banToBeRemoved.Subverse, null, false).SetUserContext(User);
                 var response = await cmd.Execute();
                 if (response.Success)
                 {
@@ -874,7 +874,7 @@ namespace Voat.Controllers
                 Recipient = userInvitation.CreatedBy,
                 Message = $"User {User.Identity.Name} has accepted your invitation to moderate subverse v/{userInvitation.Subverse}."
             };
-            var cmd = new SendMessageCommand(message);
+            var cmd = new SendMessageCommand(message).SetUserContext(User);
             await cmd.Execute();
 
             //clear mod cache
@@ -1033,7 +1033,7 @@ namespace Voat.Controllers
                         Recipient = originalRecipientUserName,
                         Subject = $"v/{subverseAdmin.Subverse} moderator invitation",
                         Message = invitationBody.ToString()
-                    }, true);
+                    }, true).SetUserContext(User);
                     await cmd.Execute();
 
                     return RedirectToAction("SubverseModerators");
@@ -1083,7 +1083,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> RemoveModerator(int id)
         {
 
-            var cmd = new RemoveModeratorCommand(id, true);
+            var cmd = new RemoveModeratorCommand(id, true).SetUserContext(User);
             var response = await cmd.Execute();
 
             if (response.Success)

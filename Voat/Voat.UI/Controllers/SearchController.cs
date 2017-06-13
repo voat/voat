@@ -91,7 +91,7 @@ namespace Voat.Controllers
             options.Phrase = q;
             options.Sort = Domain.Models.SortAlgorithm.Top;
 
-            var query = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), options, new CachePolicy(TimeSpan.FromMinutes(60)));
+            var query = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse), options, new CachePolicy(TimeSpan.FromMinutes(60))).SetUserContext(User);
             var results = await query.ExecuteAsync().ConfigureAwait(false);
             var paginatedResults = new PaginatedList<Domain.Models.Submission>(results, 0, pageSize, 24); //HACK: To turn off paging 
 

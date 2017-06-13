@@ -39,7 +39,7 @@ namespace Voat.Controllers
         // GET: ApiKey
         public async Task<ActionResult> Index()
         {
-            var cmd = new QueryUserApiKeys();
+            var cmd = new QueryUserApiKeys().SetUserContext(User);
             var keys = await cmd.ExecuteAsync();
             return View(keys);
         }
@@ -49,7 +49,7 @@ namespace Voat.Controllers
         {
             if (ModelState.IsValid)
             {
-                var cmd = new EditApiKeyCommand(request.ID, request.Name, request.Description, request.AboutUrl, request.RedirectUrl);
+                var cmd = new EditApiKeyCommand(request.ID, request.Name, request.Description, request.AboutUrl, request.RedirectUrl).SetUserContext(User);
                 var response = await cmd.Execute();
             }
             return RedirectToAction("Index");
@@ -57,7 +57,7 @@ namespace Voat.Controllers
 
         public async Task<ActionResult> Edit(string id)
         {
-            var q = new QueryAPIKey(id);
+            var q = new QueryAPIKey(id).SetUserContext(User);
             var r = await q.ExecuteAsync().ConfigureAwait(false);
 
             if (r != null && r.IsActive && User.Identity.Name.IsEqual(r.UserName))
@@ -77,7 +77,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> Delete(int id)
         {
             //delete key
-            var cmd = new DeleteApiKeyCommand(id);
+            var cmd = new DeleteApiKeyCommand(id).SetUserContext(User);
             var result = await cmd.Execute();
             return RedirectToAction("Index");
         }
@@ -96,7 +96,7 @@ namespace Voat.Controllers
             }
             else if (ModelState.IsValid)
             {
-                var cmd = new CreateApiKeyCommand(model.Name, model.Description, model.AboutUrl, model.RedirectUrl);
+                var cmd = new CreateApiKeyCommand(model.Name, model.Description, model.AboutUrl, model.RedirectUrl).SetUserContext(User);
                 await cmd.Execute();
                 return RedirectToAction("Index");
             }

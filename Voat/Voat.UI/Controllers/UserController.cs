@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using System.Web;
 
 using System.Web.Routing;
+using Voat.Common;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain;
@@ -223,7 +224,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> Block(Domain.Models.DomainType blockType, string name)
         {
             //Used by voat.js
-            var cmd = new BlockCommand(blockType, name, true);
+            var cmd = new BlockCommand(blockType, name, true).SetUserContext(User);
             var result = await cmd.Execute();
 
             if (Request.IsAjaxRequest())
@@ -240,7 +241,7 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> BlockUser(string name)
         {
-            var cmd = new BlockCommand(Domain.Models.DomainType.User, name, false);
+            var cmd = new BlockCommand(Domain.Models.DomainType.User, name, false).SetUserContext(User);
             var result = await cmd.Execute();
 
             if (Request.IsAjaxRequest())
@@ -403,7 +404,7 @@ namespace Voat.Controllers
         {
             var domainReference = Domain.Models.DomainReference.Parse(name, domainType);
 
-            var cmd = new SubscribeCommand(domainReference, subscribeAction);
+            var cmd = new SubscribeCommand(domainReference, subscribeAction).SetUserContext(User);
             var result = await cmd.Execute();
             return JsonResult(result); 
 
@@ -415,7 +416,7 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Save(Domain.Models.ContentType contentType, int id)
         {
-            var cmd = new SaveCommand(contentType, id);
+            var cmd = new SaveCommand(contentType, id).SetUserContext(User);
             var response = await cmd.Execute();
             if (response.Success)
             {
@@ -435,11 +436,11 @@ namespace Voat.Controllers
             VoteResponse result = null; 
             switch (contentType) {
                 case Domain.Models.ContentType.Submission:
-                    var cmdV = new SubmissionVoteCommand(id, voteStatus, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
+                    var cmdV = new SubmissionVoteCommand(id, voteStatus, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request))).SetUserContext(User);
                     result = await cmdV.Execute();
                     break;
                 case Domain.Models.ContentType.Comment:
-                    var cmdC = new CommentVoteCommand(id, voteStatus, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
+                    var cmdC = new CommentVoteCommand(id, voteStatus, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request))).SetUserContext(User);
                     result = await cmdC.Execute();
                     break;
             }

@@ -182,7 +182,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> EditSubmission(EditSubmission model)
+        public async Task<ActionResult> EditSubmission([FromBody] EditSubmission model)
         {
 
             var cmd = new EditSubmissionCommand(model.SubmissionId, new Domain.Models.UserSubmission() { Content = model.SubmissionContent }).SetUserContext(User);

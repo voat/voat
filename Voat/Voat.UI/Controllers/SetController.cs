@@ -93,7 +93,7 @@ namespace Voat.Controllers
                 options.Span = SortSpan.Day;
             }
 
-            var q = new QuerySubmissions(domainReference, options);
+            var q = new QuerySubmissions(domainReference, options).SetUserContext(User);
             var result = await q.ExecuteAsync();
             
             var model = new SubmissionListViewModel();
@@ -115,7 +115,8 @@ namespace Voat.Controllers
         }
         public async Task<ActionResult> Sidebar(string name)
         {
-            using (var repo = new Repository())
+            //TODO: Implement Command/Query - Remove direct Repository access
+            using (var repo = new Repository(User))
             {
                 var domainReference = DomainReference.Parse(name, DomainType.Set);
                 var set = repo.GetSet(domainReference.Name, domainReference.OwnerName);
@@ -134,8 +135,8 @@ namespace Voat.Controllers
 
         public async Task<ActionResult> Details(string name)
         {
-
-            using (var repo = new Repository())
+            //TODO: Implement Command/Query - Remove direct Repository access
+            using (var repo = new Repository(User))
             {
                 var domainReference = DomainReference.Parse(name, DomainType.Set);
                 var set = repo.GetSet(domainReference.Name, domainReference.OwnerName);
@@ -207,7 +208,7 @@ namespace Voat.Controllers
         {
             var domainReference = DomainReference.Parse(name, DomainType.Set);
             //Only user sets can be changed, thus userName never needs to be checked here.
-            var cmd = new SetSubverseCommand(domainReference, subverse, subscribeAction);
+            var cmd = new SetSubverseCommand(domainReference, subverse, subscribeAction).SetUserContext(User);
             var result = await cmd.Execute();
             return JsonResult(result);
         }
@@ -233,8 +234,8 @@ namespace Voat.Controllers
 
             if (ModelState.IsValid)
             {
-                //TODO: Transfer to Command
-                using (var repo = new Repository())
+                //TODO: Implement Command/Query - Remove direct Repository access
+                using (var repo = new Repository(User))
                 {
                     var domainReference = DomainReference.Parse(name, DomainType.Set);
                     var result = await repo.DeleteSet(domainReference);
@@ -264,7 +265,7 @@ namespace Voat.Controllers
         {
             if (ModelState.IsValid)
             {
-                var cmd = new UpdateSetCommand(set);
+                var cmd = new UpdateSetCommand(set).SetUserContext(User);
                 var result = await cmd.Execute();
                 return JsonResult(result);
             }
@@ -293,8 +294,8 @@ namespace Voat.Controllers
 
             if (ModelState.IsValid)
             {
-                //TODO: Transfer to Command
-                using (var repo = new Repository())
+                //TODO: Implement Command/Query - Remove direct Repository access
+                using (var repo = new Repository(User))
                 {
                     var result = await repo.CreateOrUpdateSet(set);
 

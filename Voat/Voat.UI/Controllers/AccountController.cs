@@ -392,7 +392,7 @@ namespace Voat.Controllers
         {
             if (ModelState.IsValid)
             {
-                var cmd = new Domain.Command.DeleteAccountCommand(model);
+                var cmd = new Domain.Command.DeleteAccountCommand(model).SetUserContext(User);
                 var response = await cmd.Execute();
                 if (response.Success)
                 {
@@ -530,7 +530,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> GetUserPreferences()
         {
 
-            var q = new QueryUserPreferences();
+            var q = new QueryUserPreferences().SetUserContext(User);
             var model = await q.ExecuteAsync();
             return PartialView("_UserPreferences", model);
 
@@ -574,7 +574,7 @@ namespace Voat.Controllers
                 return View("Manage", model);
             }
 
-            var cmd = new UpdateUserPreferencesCommand(model);
+            var cmd = new UpdateUserPreferencesCommand(model).SetUserContext(User);
             var result = await cmd.Execute();
 
 
@@ -640,7 +640,7 @@ namespace Voat.Controllers
             var newPreferences = new Domain.Models.UserPreferenceUpdate();
             newPreferences.NightMode = !preferences.NightMode;
 
-            var cmd = new UpdateUserPreferencesCommand(newPreferences);
+            var cmd = new UpdateUserPreferencesCommand(newPreferences).SetUserContext(User);
             var result = await cmd.Execute();
 
             string newTheme = newPreferences.NightMode.Value ? "dark" : "light";
