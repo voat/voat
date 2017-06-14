@@ -25,9 +25,6 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Builder;
 using System;
-using System.Diagnostics;
-
-using System.Web.Routing;
 using Voat.Configuration;
 using Voat.Domain.Models;
 using Voat.Utilities;

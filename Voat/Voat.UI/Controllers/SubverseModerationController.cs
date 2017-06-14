@@ -39,6 +39,7 @@ using Voat.Domain.Command;
 using Voat.Models.ViewModels;
 using Voat.UI.Utilities;
 using Voat.Utilities;
+using Voat.Utilities.Components;
 
 namespace Voat.Controllers
 {
@@ -104,7 +105,7 @@ namespace Voat.Controllers
             ViewBag.SubverseName = subverseObject.Name;
             SetNavigationViewModel(subverseObject.Name);
 
-            return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", viewModel);
+            return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", viewModel);
         }
 
         // POST: Eddit a Subverse
@@ -118,9 +119,9 @@ namespace Voat.Controllers
                 if (!ModelState.IsValid)
                 {
                     SetNavigationViewModel(updatedModel.Name);
-                    return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", updatedModel);
+                    return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
                 }
-                var existingSubverse = _db.Subverse.Find(updatedModel.Name);
+                var existingSubverse = _db.Subverse.FirstOrDefault(x => x.Name.ToUpper() == updatedModel.Name.ToUpper());
 
                 // check if subverse exists before attempting to edit it
                 if (existingSubverse != null)
@@ -136,13 +137,13 @@ namespace Voat.Controllers
                     if (BanningUtility.ContentContainsBannedDomain(existingSubverse.Name, updatedModel.Description))
                     {
                         ModelState.AddModelError(string.Empty, "Sorry, description text contains banned domains.");
-                        return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", updatedModel);
+                        return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
                     }
                     //check sidebar for banned domains
                     if (BanningUtility.ContentContainsBannedDomain(existingSubverse.Name, updatedModel.SideBar))
                     {
                         ModelState.AddModelError(string.Empty, "Sorry, sidebar text contains banned domains.");
-                        return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", updatedModel);
+                        return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
                     }
 
                     // TODO investigate if EntityState is applicable here and use that instead
@@ -161,7 +162,7 @@ namespace Voat.Controllers
                     //    else
                     //    {
                     //        ModelState.AddModelError(string.Empty, "Sorry, custom CSS limit is set to 50000 characters.");
-                    //        return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", updatedModel);
+                    //        return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
                     //    }
                     //}
                     //else
@@ -192,7 +193,7 @@ namespace Voat.Controllers
                     //if (existingSubverse.IsAnonymized == true && updatedModel.IsAnonymized == false)
                     //{
                     //    ModelState.AddModelError(string.Empty, "Sorry, this subverse is permanently locked to anonymized mode.");
-                    //    return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", updatedModel);
+                    //    return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
                     //}
 
                     // only subverse owners should be able to convert a sub to anonymized mode
@@ -216,12 +217,13 @@ namespace Voat.Controllers
                     // user was not authorized to commit the changes, drop attempt
                 }
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");
-                return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", updatedModel);
+                return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                EventLogger.Instance.Log(ex);
                 ModelState.AddModelError(string.Empty, "Something bad happened.");
-                return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml", updatedModel);
+                return View("~/Views/Subverses/Admin/SubverseSettings.cshtml", updatedModel);
             }
         }
 
@@ -267,9 +269,9 @@ namespace Voat.Controllers
                 if (!ModelState.IsValid)
                 {
                     SetNavigationViewModel(model.Name);
-                    return View("~/Views/Subverses/Admin/SubverseVoatSettings.Instance.cshtml");
+                    return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
                 }
-                var existingSubverse = _db.Subverse.Find(model.Name);
+                var existingSubverse = _db.Subverse.FirstOrDefault(x => x.Name.ToUpper() == model.Name.ToUpper());
 
                 // check if subverse exists before attempting to edit it
                 if (existingSubverse != null)
@@ -312,8 +314,9 @@ namespace Voat.Controllers
                 ModelState.AddModelError(string.Empty, "Sorry, The subverse you are trying to edit does not exist.");
                 return View("~/Views/Subverses/Admin/SubverseStylesheetEditor.cshtml", model);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                EventLogger.Instance.Log(ex);
                 ModelState.AddModelError(string.Empty, "Something bad happened.");
                 return View("~/Views/Subverses/Admin/SubverseStylesheetEditor.cshtml", model);
             }
@@ -696,7 +699,7 @@ namespace Voat.Controllers
             ViewBag.SelectedSubverse = string.Empty;
             SetNavigationViewModel(subverseObject.Name);
 
-            return View("~/Views/Subverses/Admin/Flair/FlairVoatSettings.Instance.cshtml", subverseFlairsettings);
+            return View("~/Views/Subverses/Admin/Flair/FlairSettings.cshtml", subverseFlairsettings);
         }
 
         // GET: show add link flair view for selected subverse
