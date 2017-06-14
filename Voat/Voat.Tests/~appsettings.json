@@ -117,7 +117,7 @@
             "runtimeState": "Enabled",
             "signalrEnabled": false,
             "setsEnabled": true,
-            "registrationEnabled": false,
+            "registrationEnabled": true,
             "useContentDeliveryNetwork": false,
             "destinationPathThumbs": "~/Storage/Thumbs",
             "destinationPathAvatars ": "~/Storage/Avatars",
