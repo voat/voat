@@ -26,6 +26,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;
 using System.Configuration;
+using System.Linq;
+using Voat.Common;
 using Voat.Configuration;
 using Voat.Utilities;
 
@@ -61,14 +63,16 @@ namespace Voat.Tests.Utils
             //LOCAL
             VoatSettings.Instance.UseContentDeliveryNetwork = false;
 
+            var localPath = String.Join('/', VoatSettings.Instance.DestinationPathAvatars.ToRelativePathParts());
+
             result = VoatPathHelper.AvatarPath(username, avatarFileName, false, true, true);
-            Assert.AreEqual(String.Format("~/Storage/Avatars/{0}.jpg", username), result, "Condition:1.2");
+            Assert.AreEqual($"~/{localPath}/{username}.jpg", result, "Condition:1.2");
 
             result = VoatPathHelper.AvatarPath(username, avatarFileName, true, false, true);
-            Assert.AreEqual($"//{VoatSettings.Instance.SiteDomain}/Storage/Avatars/{username}.jpg", result, "Condition:2.2");
+            Assert.AreEqual($"//{VoatSettings.Instance.SiteDomain}/{localPath}/{username}.jpg", result, "Condition:2.2");
 
             result = VoatPathHelper.AvatarPath(username, avatarFileName, true, true, true);
-            Assert.AreEqual($"http{(VoatSettings.Instance.ForceHTTPS ? "s" : "")}://{VoatSettings.Instance.SiteDomain}/Storage/Avatars/{username}.jpg", result, "Condition:3.2");
+            Assert.AreEqual($"http{(VoatSettings.Instance.ForceHTTPS ? "s" : "")}://{VoatSettings.Instance.SiteDomain}/{localPath}/{username}.jpg", result, "Condition:3.2");
 
             //Reset original value
             VoatSettings.Instance.UseContentDeliveryNetwork = originalSetting;
@@ -124,14 +128,16 @@ namespace Voat.Tests.Utils
             //LOCAL
             VoatSettings.Instance.UseContentDeliveryNetwork = false;
 
+            var localPath = String.Join('/', VoatSettings.Instance.DestinationPathThumbs.ToRelativePathParts());
+
             result = VoatPathHelper.ThumbnailPath(filename);
-            Assert.AreEqual(String.Format("~/thumbs/{0}", filename), result, "Condition:1");
+            Assert.AreEqual($"~/{localPath}/{filename}", result, "Condition:1");
 
             result = VoatPathHelper.ThumbnailPath(filename, true);
-            Assert.AreEqual($"//{VoatSettings.Instance.SiteDomain}/thumbs/{filename}", result, "Condition:2");
+            Assert.AreEqual($"//{VoatSettings.Instance.SiteDomain}/{localPath}/{filename}", result, "Condition:2");
 
             result = VoatPathHelper.ThumbnailPath(filename, true, true);
-            Assert.AreEqual($"http{(VoatSettings.Instance.ForceHTTPS ? "s" : "")}://{VoatSettings.Instance.SiteDomain}/thumbs/{filename}", result, "Condition:3");
+            Assert.AreEqual($"http{(VoatSettings.Instance.ForceHTTPS ? "s" : "")}://{VoatSettings.Instance.SiteDomain}/{localPath}/{filename}", result, "Condition:3");
 
 
             //Reset original value

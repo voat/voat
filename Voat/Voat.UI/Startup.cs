@@ -30,6 +30,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using Voat.Common.Components;
 using Voat.Common.Configuration;
 using Voat.Configuration;
 using Voat.Data.Models;
@@ -127,6 +128,9 @@ namespace Voat
             {
                 RouteConfig.RegisterRoutes(routes);
             });
+
+            FilePather.Instance = new FilePather(env.WebRootPath);
+
         }
     }
 }

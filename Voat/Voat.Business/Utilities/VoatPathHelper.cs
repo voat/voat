@@ -57,17 +57,18 @@ namespace Voat.Utilities
 
         private static string SiteRoot(HttpContext context, bool provideProtocol, bool supportsContentDelivery, string forceDomain = null)
         {
+            var settings = VoatSettings.Instance;
             //Defaults
-            string domain = VoatSettings.Instance.SiteDomain;
-            string protocol = VoatSettings.Instance.ForceHTTPS ? "https" : "http";
+            string domain = settings.SiteDomain;
+            string protocol = settings.ForceHTTPS ? "https" : "http"; //default protocol 
 
-            if (supportsContentDelivery && VoatSettings.Instance.UseContentDeliveryNetwork)
+            if (supportsContentDelivery && settings.UseContentDeliveryNetwork)
             {
-                domain = "cdn.voat.co";
+                domain = settings.ContentDeliveryDomain;
             }
             try
             {
-                if (context != null && context.Request != null)
+                if (provideProtocol && context != null && context.Request != null)
                 {
                     //domain = System.Web.HttpContext.Current.Request.Url.Authority;
                     protocol = context.Request.Scheme;
@@ -88,8 +89,8 @@ namespace Voat.Utilities
             {
                 return thumbnailFile;
             }
-
-            return String.Format("{0}/thumbs/{1}", (fullyQualified ? SiteRoot(context, provideProtocol, true) : "~"), thumbnailFile);
+            return $"{(fullyQualified ? SiteRoot(context, provideProtocol, true) : "~")}/{(VoatSettings.Instance.UseContentDeliveryNetwork ? "thumbs" : "Storage/Thumbs")}/{thumbnailFile}";
+            //return String.Format("{0}/thumbs/{1}", (fullyQualified ? SiteRoot(context, provideProtocol, true) : "~"), thumbnailFile);
         }
 
         public static string BadgePath(HttpContext context, string badgeFile, bool fullyQualified = false, bool provideProtocol = false)

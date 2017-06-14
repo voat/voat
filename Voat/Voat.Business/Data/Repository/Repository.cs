@@ -50,6 +50,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Voat.Common;
+using Voat.Common.Components;
 
 namespace Voat.Data
 {
@@ -1579,7 +1580,8 @@ namespace Voat.Data
                 newSubmission.Title = userSubmission.Title;
                 newSubmission.Url = userSubmission.Url;
 
-                if (subverseObject.IsThumbnailEnabled)
+                //TODO: This code needs to execute outside of the repository on it's own thread... Move this Future People!
+                if (VoatSettings.Instance.ThumbnailsEnabled && subverseObject.IsThumbnailEnabled)
                 {
                     // try to generate and assign a thumbnail to submission model
                     newSubmission.Thumbnail = await ThumbGenerator.GenerateThumbFromWebpageUrl(userSubmission.Url).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
@@ -5531,12 +5533,12 @@ namespace Voat.Data
                                 else
                                 {
                                     // try to remove from local FS - I think this code is retarded
-                                    string tempAvatarLocation = VoatSettings.Instance.DestinationPathAvatars + '\\' + userName + ".jpg";
+                                    string avatarPath = FilePather.Instance.LocalPath(VoatSettings.Instance.DestinationPathAvatars, userName + ".jpg");
 
                                     // the avatar file was not found at expected path, abort
-                                    if (FileSystemUtility.FileExists(tempAvatarLocation, VoatSettings.Instance.DestinationPathAvatars))
+                                    if (File.Exists(avatarPath))
                                     {
-                                        File.Delete(tempAvatarLocation);
+                                        File.Delete(avatarPath);
                                     }
                                 }
                             }
