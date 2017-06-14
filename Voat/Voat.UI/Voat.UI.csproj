@@ -45,7 +45,7 @@
     <None Include="wwwroot\css\bootstrap.css" />
     <None Include="wwwroot\css\bootstrap.css.map" />
     <None Include="wwwroot\css\markdowneditor.css" />
-    <None Include="wwwroot\css\Site.css" />
+    <None Include="wwwroot\css\site.css" />
     <None Include="wwwroot\css\tooltipster.css" />
     <None Include="wwwroot\css\ui-themes\autocomplete\autocomplete.css" />
     <None Include="wwwroot\css\ui-themes\autocomplete\autocompletebundle.css" />
@@ -54,8 +54,8 @@
     <None Include="wwwroot\css\ui-themes\autocomplete\core.css" />
     <None Include="wwwroot\css\ui-themes\autocomplete\menu.css" />
     <None Include="wwwroot\css\ui-themes\autocomplete\theme.css" />
-    <None Include="wwwroot\css\Voat-Dark.css" />
-    <None Include="wwwroot\css\Voat-Light.css" />
+    <None Include="wwwroot\css\voat-dark.css" />
+    <None Include="wwwroot\css\voat-light.css" />
     <None Include="wwwroot\ddos.htm" />
     <None Include="wwwroot\ddos.min.htm" />
     <None Include="wwwroot\favicon.ico" />

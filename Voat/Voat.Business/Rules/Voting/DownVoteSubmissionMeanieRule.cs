@@ -35,7 +35,8 @@ namespace Voat.Rules.Voting
 
         protected override RuleOutcome EvaluateRule(VoatRuleContext context)
         {
-            if (context.UserData.Information.SubmissionVoting.Sum < 0)
+            var sum = context.UserData.Information.SubmissionVoting.Sum;
+            if (sum < 0)
             {
                 return CreateOutcome(RuleResult.Denied, "Cannot downvote more than you upvote");
             }

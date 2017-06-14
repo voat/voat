@@ -17,20 +17,20 @@
         "outputFileName": "wwwroot/css/min/voat.dark.min.css",
         "inputFiles": [
             "wwwroot/css/bootstrap.css",
-            "wwwroot/css/Site.css",
+            "wwwroot/css/site.css",
             "wwwroot/css/tooltipster.css",
-            "wwwroot/css/Voat-Dark.css",
-            "wwwroot/css/markdownEditor.css"
+            "wwwroot/css/voat-dark.css",
+            "wwwroot/css/markdowneditor.css"
         ]
     },
     {
         "outputFileName": "wwwroot/css/min/voat.light.min.css",
         "inputFiles": [
             "wwwroot/css/bootstrap.css",
-            "wwwroot/css/Site.css",
+            "wwwroot/css/site.css",
             "wwwroot/css/tooltipster.css",
-            "wwwroot/css/Voat-Light.css",
-            "wwwroot/css/markdownEditor.css"
+            "wwwroot/css/voat-light.css",
+            "wwwroot/css/markdowneditor.css"
         ]
     },
     {

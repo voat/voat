@@ -62,18 +62,18 @@ namespace Voat
             #region style bundles
             bundles.Add(new StyleBundle("~/Content/light").Include(
                       "~/Content/bootstrap.css",
-                      "~/Content/Site.css",
+                      "~/Content/site.css",
                       "~/Content/tooltipster.css",
-                      "~/Content/Voat-Light.css",
-                      "~/Content/markdownEditor.css"
+                      "~/Content/voat-light.css",
+                      "~/Content/markdowneditor.css"
                       ));
 
             bundles.Add(new StyleBundle("~/Content/dark").Include(
                       "~/Content/bootstrap.css",
-                      "~/Content/Site.css",
+                      "~/Content/site.css",
                       "~/Content/tooltipster.css",
-                      "~/Content/Voat-Dark.css",
-                      "~/Content/markdownEditor.css"
+                      "~/Content/voat-dark.css",
+                      "~/Content/markdowneditor.css"
                       ));
             #endregion
         }
