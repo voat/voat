@@ -96,10 +96,10 @@ namespace Voat.Controllers
 
             if (submissionID == null)
             {
-                return GenericErrorView(new ErrorViewModel() { Description = "Can not find what was requested because input is not valid" });
+                return ErrorView(new ErrorViewModel() { Description = "Can not find what was requested because input is not valid" });
             }
 
-            var q = new QuerySubmission(submissionID.Value, true);
+            var q = new QuerySubmission(submissionID.Value, true).SetUserContext(User);
 
             var submission = await q.ExecuteAsync().ConfigureAwait(false);
 
@@ -147,7 +147,7 @@ namespace Voat.Controllers
 
             #endregion
 
-            var cmd = new LogVisitCommand(null, submissionID.Value, UserHelper.UserIpAddress(this.Request));
+            var cmd = new LogVisitCommand(null, submissionID.Value, UserHelper.UserIpAddress(this.Request)).SetUserContext(User);
             cmd.Execute();
 
             CommentSegment model = null;
@@ -161,7 +161,7 @@ namespace Voat.Controllers
                 model = await GetCommentSegment(submission.ID, null, 0, sortingMode);
             }
 
-            var q2 = new QuerySubverseModerators(subverseName);
+            var q2 = new QuerySubverseModerators(subverseName).SetUserContext(User);
             ViewBag.ModeratorList = await q2.ExecuteAsync();
 
 
@@ -181,13 +181,13 @@ namespace Voat.Controllers
 
         private async Task<CommentSegment> GetCommentSegment(int submissionID, int? parentID, int startingIndex, CommentSortAlgorithm sort)
         {
-            var q = new QueryCommentSegment(submissionID, parentID, startingIndex, sort);
+            var q = new QueryCommentSegment(submissionID, parentID, startingIndex, sort).SetUserContext(User);
             var results = await q.ExecuteAsync();
             return results;
         }
         private async Task<CommentSegment> GetCommentContext(int submissionID, int commentID, int? contextCount, CommentSortAlgorithm sort)
         {
-            var q = new QueryCommentContext(submissionID, commentID, contextCount, sort);
+            var q = new QueryCommentContext(submissionID, commentID, contextCount, sort).SetUserContext(User);
             var results = await q.ExecuteAsync();
             return results;
         }
@@ -201,7 +201,7 @@ namespace Voat.Controllers
 
             if (submissionID <= 0)
             {
-                return GenericErrorView(new ErrorViewModel() { Description = "Can not find what was requested because input is not valid" });
+                return ErrorView(new ErrorViewModel() { Description = "Can not find what was requested because input is not valid" });
             }
 
             var q = new QuerySubmission(submissionID, false);
@@ -250,7 +250,7 @@ namespace Voat.Controllers
 
             if (submissionID <= 0)
             {
-                return GenericErrorView(new ErrorViewModel() { Description = "Can not find what was requested because input is not valid" });
+                return ErrorView(new ErrorViewModel() { Description = "Can not find what was requested because input is not valid" });
             }
 
             var submission = DataCache.Submission.Retrieve(submissionID);
@@ -356,7 +356,7 @@ namespace Voat.Controllers
         [Authorize]
         [VoatValidateAntiForgeryToken]
         [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public async Task<ActionResult> EditComment([Bind("ID, Content")] Data.Models.Comment commentModel)
+        public async Task<ActionResult> EditComment([FromBody()] Data.Models.Comment commentModel)
         {
             if (ModelState.IsValid)
             {

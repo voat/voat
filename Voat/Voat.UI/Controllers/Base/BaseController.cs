@@ -80,14 +80,16 @@ namespace Voat.Controllers
             }
         }
         #endregion
+
         #region Error View Accessors
+       
+        protected ViewResult ErrorView(ErrorViewModel model = null)
+        {
+            return ErrorController.ErrorView("generic", model);
+        }
         protected ViewResult NotFoundErrorView()
         {
             return ErrorController.ErrorView("notfound");
-        }
-        protected ViewResult GenericErrorView(ErrorViewModel model = null)
-        {
-            return ErrorController.ErrorView("generic", model);
         }
         protected ViewResult UnAuthorizedErrorView()
         {
@@ -109,6 +111,5 @@ namespace Voat.Controllers
             var isRetro = Request.IsCookiePresent("view", "retro", this.Response, TimeSpan.FromDays(7));
             return (isRetro ? VIEW_PATH.SUBMISSION_LIST_RETRO : VIEW_PATH.SUBMISSION_LIST);
         }
-
     }
 }

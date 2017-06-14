@@ -30,9 +30,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using Voat.Common.Components;
 using Voat.Common.Configuration;
 using Voat.Configuration;
 using Voat.Data.Models;
+using Voat.Http.Filters;
 using Voat.Http.Middleware;
 using Voat.UI.Runtime;
 
@@ -76,9 +78,12 @@ namespace Voat
             mvcBuilder.AddMvcOptions(o => {
                 o.Filters.Add(typeof(GlobalExceptionFilter));
                 o.Filters.Add(typeof(RuntimeStateFilter));
-                });
+                o.Filters.Add(typeof(RouteLoggerFilter));
+            });
 
-            services.AddAntiforgery();
+            services.AddAntiforgery(options => {
+                options.HeaderName = "__RequestVerificationToken";
+            });
 
             //Working on creating an updatable settings object
             //services.Configure<VoatSettings>(Configuration.GetSection("voat:settings"));
@@ -123,6 +128,9 @@ namespace Voat
             {
                 RouteConfig.RegisterRoutes(routes);
             });
+
+            FilePather.Instance = new FilePather(env.WebRootPath);
+
         }
     }
 }

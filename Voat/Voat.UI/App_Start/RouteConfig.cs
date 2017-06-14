@@ -25,9 +25,6 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Builder;
 using System;
-using System.Diagnostics;
-
-using System.Web.Routing;
 using Voat.Configuration;
 using Voat.Domain.Models;
 using Voat.Utilities;
@@ -247,7 +244,7 @@ namespace Voat
             // v/subverseName/comments/123456/new
             routes.MapRoute(
                 name: "SubverseCommentsWithSort_Short",
-                template: "v/{subverseName}/{submissionID}/{sort}",
+                template: "v/{subverseName}/{submissionID}/{sort?}",
                 constraints: new
                 {
                     sort = commentSortContraint,
@@ -583,7 +580,7 @@ namespace Voat
             // editsubmission
             routes.MapRoute(
                   "editsubmission",
-                  "editsubmission/{id?}",
+                  "editsubmission",
                   new { controller = "Submissions", action = "EditSubmission" }
              );
 

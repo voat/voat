@@ -18,7 +18,7 @@
             ]
         },
         "logging": {
-            "enabled":  true,
+            "enabled": true,
             "configurationFile": "Logging.config",
             "handlers": [
                 {
@@ -40,7 +40,7 @@
             ]
         },
         "cache": {
-            "enabled" :  true,
+            "enabled": true,
             "handlers": [
                 {
                     "enabled": true,
@@ -82,11 +82,12 @@
             "siteSlogan": "Voat - have your say",
             "siteDescription": "a community platform where you can have your say. No censorship.",
             "siteKeywords": "voat, voat.co, vote, submit, comment",
-            "footerText": "&amp;copy; 2016 Voat, Inc. All rights reserved. Voat and the Voat Mascot are trademarks of Voat, Inc.",
-            "siteLogo": "/Graphics/voat-logo.png",
+            "footerText": "&amp;copy; 2017 Voat, Inc. All rights reserved. Voat and the Voat Mascot are trademarks of Voat, Inc.",
+            "siteLogo": "/images/voat-logo.png",
             "cookieDomain": ".voat.co",
             "siteDomain": "voat.co",
-            "captchaDisabled": "false",
+            "contentDeliveryDomain": "cdn.voat.co",
+            "captchaEnabled": false,
             "recaptchaPublicKey": "<enter here>",
             "recaptchaPrivateKey": "<enter here>",
             "forceHTTPS": false,
@@ -114,19 +115,18 @@
 
             //Runtime Settings
             "runtimeState": "Enabled",
-            "signalrDisabled": false,
-            "setsDisabled": true,
-            "cacheDisabled": false,
-            "registrationDisabled": false,
+            "signalrEnabled": false,
+            "setsEnabled": true,
+            "registrationEnabled": false,
             "useContentDeliveryNetwork": false,
             "destinationPathThumbs": "~/Storage/Thumbs",
             "destinationPathAvatars ": "~/Storage/Avatars",
             "adsEnabled": true,
             "apiKeyCreationEnabled": true,
             "redirectToSiteDomain": false,
-            "setCreationDisabled": false,
-            "legacyApiEnabled": false,
-
+            "setCreationEnabled": false,
+            "origin": "Test",
+            "thumbnailsEnabled": false,
             //Voat Settings
             "StorageConnectionString": "<enter here>",
             "emailServiceKey": "<enter here>"

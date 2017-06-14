@@ -29,6 +29,11 @@ namespace Voat.Common
         /// <summary>
         /// From client-side JS
         /// </summary>
-        AJAX = 3
+        AJAX = 3,
+
+        /// <summary>
+        /// From unit tests
+        /// </summary>
+        Test = 3
     }
 }

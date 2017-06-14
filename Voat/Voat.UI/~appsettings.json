@@ -5,7 +5,10 @@
             "connections": [
                 {
                     "name": "voatUsers",
+                    //PostgreSql Connection String
                     "value": "Server={server};port=5432;Database={database};User ID={userid};Password={password};Persist Security Info=True;Keepalive=1;"
+                    //SqlServer Connection String
+                    //"value": "data source={server};initial catalog={database};User ID={userid};Password={password};Trusted_Connection=False;persist security info=True;Encrypt=True;TrustServerCertificate=True;"
                 },
                 {
                     "name": "ReadWrite",
@@ -18,7 +21,7 @@
             ]
         },
         "logging": {
-            "enabled": 
+            "enabled": true,
             "configurationFile": "Logging.config",
             "handlers": [
                 {
@@ -28,6 +31,7 @@
                     "arguments": "[System.Int32](1);[System.TimeSpan](00:00:00);[Voat.Logging.LogType, Voat.Logging](All)"
                 },
                 {
+                    //Core_Port: Log4Net not supported yet in .net core
                     "enabled": false,
                     "name": "Log4Net",
                     "type": "Voat.Logging.Log4NetLogger, Voat.Logging"
@@ -82,10 +86,11 @@
             "siteSlogan": "Voat - have your say",
             "siteDescription": "a community platform where you can have your say. No censorship.",
             "siteKeywords": "voat, voat.co, vote, submit, comment",
-            "footerText": "&amp;copy; 2016 Voat, Inc. All rights reserved. Voat and the Voat Mascot are trademarks of Voat, Inc.",
+            "footerText": "&amp;copy; 2017 Voat, Inc. All rights reserved. Voat and the Voat Mascot are trademarks of Voat, Inc.",
             "siteLogo": "/images/voat-logo.png",
             "cookieDomain": ".voat.co",
             "siteDomain": "voat.co",
+            "contentDeliveryDomain": "cdn.voat.co",
             "captchaEnabled": false,
             "recaptchaPublicKey": "<enter here>",
             "recaptchaPrivateKey": "<enter here>",
@@ -124,7 +129,8 @@
             "apiKeyCreationEnabled": true,
             "redirectToSiteDomain": false,
             "setCreationEnabled": false,
-
+            "origin": "UI",
+            "thumbnailsEnabled": false,
             //Voat Settings
             "StorageConnectionString": "<enter here>",
             "emailServiceKey": "<enter here>"

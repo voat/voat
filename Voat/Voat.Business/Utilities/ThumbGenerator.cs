@@ -22,20 +22,15 @@
 
 #endregion LICENSE
 
-using Kaliko.ImageLibrary;
-using Kaliko.ImageLibrary.Scaling;
 using OpenGraph_Net;
 using System;
-
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 using Voat.Common;
+using Voat.Common.Components;
 using Voat.Configuration;
-using Voat.Data.Models;
 using Voat.Utilities.Components;
 
 namespace Voat.Utilities
@@ -101,91 +96,87 @@ namespace Voat.Utilities
         {
             //TODO: Return NULL if file lenght is zero as thumbnail did not generate to local disk
             var randomFileName = GenerateRandomFilename();
-            var tempPath = Path.Combine(DestinationPathThumbs, $"{randomFileName}.jpg");
+            var tempPath = FilePather.Instance.LocalPath(VoatSettings.Instance.DestinationPathThumbs, $"{randomFileName}.jpg");
 
             var request = WebRequest.Create(imageUrl);
             request.Timeout = timeoutInMilliseconds; //Putts: extended this from 300 mills
             using (var response = request.GetResponse())
             {
-                    //CORE_PORT: KalikoImage not available 
-                    throw new NotImplementedException("Core Port: KalikoImage access");
-                    /*
-                    var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
-                    originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(tempPath, 90);
-                    */
-                }
-
-                if (FileSystemUtility.FileExists(tempPath, DestinationPathThumbs))
-                {
-                    // call upload to storage method if CDN config is enabled
-                    if (VoatSettings.Instance.UseContentDeliveryNetwork)
-                    {
-                        await CloudStorageUtility.UploadBlobToStorageAsync(tempPath, "thumbs");
-                        if (purgeTempFile)
-                        {
-                            // delete local file after uploading to CDN
-                            File.Delete(tempPath);
-                        }
-                    }
-                    return Path.GetFileName(tempPath);
-                }
-                else
-                {
-                    return null;
-                }
-
+                //var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
+                //originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(tempPath, 90);
             }
+
+            if (File.Exists(tempPath))
+            {
+                // call upload to storage method if CDN config is enabled
+                if (VoatSettings.Instance.UseContentDeliveryNetwork)
+                {
+                    await CloudStorageUtility.UploadBlobToStorageAsync(tempPath, "thumbs");
+                    if (purgeTempFile)
+                    {
+                        // delete local file after uploading to CDN
+                        File.Delete(tempPath);
+                    }
+                }
+                return Path.GetFileName(tempPath);
+            }
+            else
+            {
+                return null;
+            }
+
+        }
 
             //CORE_PORT: Image handling has changed in core, commenting out method until we know what we are doing
-            public static async Task<bool> GenerateAvatar(object inputImage, string userName, string mimetype, bool purgeTempFile = true)
+        public static async Task<bool> GenerateAvatar(object inputImage, string userName, string mimetype, bool purgeTempFile = true)
+        {
+            throw new NotImplementedException("Core Port CacheHandler.ExpireItem");
+        }
+        /*
+        // store uploaded avatar
+        public static async Task<bool> GenerateAvatar(Image inputImage, string userName, string mimetype, bool purgeTempFile = true)
+        {
+            try
             {
-                throw new NotImplementedException("Core Port CacheHandler.ExpireItem");
-            }
-            /*
-            // store uploaded avatar
-            public static async Task<bool> GenerateAvatar(Image inputImage, string userName, string mimetype, bool purgeTempFile = true)
-            {
-                try
+                // store avatar locally
+                var originalImage = new KalikoImage(inputImage);
+                originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPathAvatars + '\\' + userName + ".jpg", 90);
+                if (!VoatSettings.Instance.UseContentDeliveryNetwork)
                 {
-                    // store avatar locally
-                    var originalImage = new KalikoImage(inputImage);
-                    originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPathAvatars + '\\' + userName + ".jpg", 90);
-                    if (!VoatSettings.Instance.UseContentDeliveryNetwork)
-                    {
-                        return true;
-                    }
-
-                    // call upload to storage since CDN is enabled in config
-                    string tempAvatarLocation = DestinationPathAvatars + '\\' + userName + ".jpg";
-
-                    // the avatar file was not found at expected path, abort
-                    if (!FileSystemUtility.FileExists(tempAvatarLocation, DestinationPathAvatars))
-                    {
-                        return false;
-                    }
-                    else if (VoatSettings.Instance.UseContentDeliveryNetwork)
-                    {
-                        // upload to CDN
-                        await CloudStorageUtility.UploadBlobToStorageAsync(tempAvatarLocation, "avatars");
-                        if (purgeTempFile)
-                        {
-                            // delete local file after uploading to CDN
-                            File.Delete(tempAvatarLocation);
-                        }
-                    }
                     return true;
                 }
-                catch (Exception ex)
+
+                // call upload to storage since CDN is enabled in config
+                string tempAvatarLocation = DestinationPathAvatars + '\\' + userName + ".jpg";
+
+                // the avatar file was not found at expected path, abort
+                if (!FileSystemUtility.FileExists(tempAvatarLocation, DestinationPathAvatars))
                 {
-                    EventLogger.Log(ex);
                     return false;
                 }
+                else if (VoatSettings.Instance.UseContentDeliveryNetwork)
+                {
+                    // upload to CDN
+                    await CloudStorageUtility.UploadBlobToStorageAsync(tempAvatarLocation, "avatars");
+                    if (purgeTempFile)
+                    {
+                        // delete local file after uploading to CDN
+                        File.Delete(tempAvatarLocation);
+                    }
+                }
+                return true;
             }
-            */
-                // Generate a random filename for a thumbnail and make sure that the file does not exist.
-                private static string GenerateRandomFilename()
+            catch (Exception ex)
+            {
+                EventLogger.Log(ex);
+                return false;
+            }
+        }
+        */
+            // Generate a random filename for a thumbnail and make sure that the file does not exist.
+        private static string GenerateRandomFilename()
         {
-            string rndFileName;
+            string fileName;
 
             // if CDN flag is active, check if file exists on CDN, otherwise check if file exists on local storage
             if (VoatSettings.Instance.UseContentDeliveryNetwork)
@@ -193,20 +184,20 @@ namespace Voat.Utilities
                 // make sure blob with same name doesn't exist already
                 do
                 {
-                    rndFileName = Guid.NewGuid().ToString();
-                } while (CloudStorageUtility.BlobExists(rndFileName, "thumbs"));
+                    fileName = Guid.NewGuid().ToString();
+                } while (CloudStorageUtility.BlobExists(fileName, "thumbs"));
 
-                rndFileName = Guid.NewGuid().ToString();
+                fileName = Guid.NewGuid().ToString();
             }
             else
             {
                 do
                 {
-                    rndFileName = Guid.NewGuid().ToString();
-                } while (FileSystemUtility.FileExists(rndFileName, DestinationPathThumbs));
+                    fileName = Guid.NewGuid().ToString();
+                } while (File.Exists(FilePather.Instance.LocalPath(VoatSettings.Instance.DestinationPathThumbs, fileName)));
             }
 
-            return rndFileName;
+            return fileName;
         }
 
         

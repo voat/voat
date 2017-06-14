@@ -35,7 +35,8 @@ namespace Voat.Domain.Command
         Denied = 2,
         Ignored = 4,
         Invalid = 8,
-        Error = 16
+        Error = 16,
+        Queued = 32
     }
 
     //We are not moving to a full CQRS implementation at this time, so for now some commands need to return
@@ -65,7 +66,7 @@ namespace Voat.Domain.Command
 
         public bool Success
         {
-            get { return this.Status == Status.Success; }
+            get { return this.Status == Status.Success || this.Status == Status.Queued; }
         }
 
         #region Static Helpers

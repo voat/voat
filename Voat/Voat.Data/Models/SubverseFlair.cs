@@ -19,6 +19,5 @@ namespace Voat.Data.Models
         public string Label { get; set; }
         public string CssClass { get; set; }
     
-        public virtual Subverse Subverse1 { get; set; }
     }
 }

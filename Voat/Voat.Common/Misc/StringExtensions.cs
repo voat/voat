@@ -8,6 +8,23 @@ namespace Voat.Common
 {
     public static class StringExtensions
     {
+        public static IEnumerable<string> ToRelativePathParts(this string[] relativePaths)
+        {
+            List<string> parts = new List<string>();
+            relativePaths.ToList().ForEach(x =>
+            {
+                parts.AddRange(x.ToRelativePathParts());
+            });
+            return parts.AsEnumerable();
+        }
+
+        public static IEnumerable<string> ToRelativePathParts(this string relativePath)
+        {
+            relativePath = relativePath.TrimStart('~');
+            var parts = relativePath.Split(new string[] { "/", "\\" }, StringSplitOptions.RemoveEmptyEntries);
+            return parts.AsEnumerable();
+        }
+
         // credits to http://stackoverflow.com/questions/1613896/truncate-string-on-whole-words-in-net-c-sharp
         public static string TruncateAtWord(this string input, int length)
         {

@@ -69,7 +69,7 @@ namespace Voat.Controllers
                 title = $"/v/{subverseTmpModel.Name}"; //backwards compatibility, previous code always uses this
             }
 
-            var cmd = new CreateSubverseCommand(subverseTmpModel.Name, title, subverseTmpModel.Description, subverseTmpModel.Sidebar);
+            var cmd = new CreateSubverseCommand(subverseTmpModel.Name, title, subverseTmpModel.Description, subverseTmpModel.Sidebar).SetUserContext(User);
             var respones = await cmd.Execute();
             if (respones.Success)
             {
@@ -232,7 +232,7 @@ namespace Voat.Controllers
 
             //Voat.Utilities.UserHelper.UnSubscribeFromSubverse(loggedInUser, subverseName);
             //return Json("Unsubscribe request was successful." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
-            var cmd = new SubscribeCommand(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverseName), Domain.Models.SubscriptionAction.Unsubscribe);
+            var cmd = new SubscribeCommand(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverseName), Domain.Models.SubscriptionAction.Unsubscribe).SetUserContext(User);
             var r = await cmd.Execute();
             if (r.Success)
             {
@@ -250,7 +250,7 @@ namespace Voat.Controllers
         public async Task<JsonResult> BlockSubverse(string subverseName)
         {
             var loggedInUser = User.Identity.Name;
-            var cmd = new BlockCommand(Domain.Models.DomainType.Subverse, subverseName);
+            var cmd = new BlockCommand(Domain.Models.DomainType.Subverse, subverseName).SetUserContext(User);
             var response = await cmd.Execute();
 
             if (response.Success)
@@ -306,7 +306,7 @@ namespace Voat.Controllers
             }
 
             SetFirstTimeCookie();
-            var logVisit = new LogVisitCommand(subverse, null, IpHash.CreateHash(UserHelper.UserIpAddress(Request)));
+            var logVisit = new LogVisitCommand(subverse, null, IpHash.CreateHash(UserHelper.UserIpAddress(Request))).SetUserContext(User);
             await logVisit.Execute();
 
             //Parse query

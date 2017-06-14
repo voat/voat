@@ -62,14 +62,14 @@ namespace Voat.Controllers
 
             if (set == null)
             {
-                return GenericErrorView(new ErrorViewModel() { Title = "Can't find this set", Description = "Maybe it's gone?", Footer = "Probably yeah" });
+                return ErrorView(new ErrorViewModel() { Title = "Can't find this set", Description = "Maybe it's gone?", Footer = "Probably yeah" });
             }
 
             var perms = SetPermission.GetPermissions(set, User.Identity);
 
             if (!perms.View)
             {
-                return GenericErrorView(new ErrorViewModel() { Title = "Set is Private", Description = "This set doesn't allow viewing. It is private.", Footer = "Sometimes sets are shy around others." });
+                return ErrorView(new ErrorViewModel() { Title = "Set is Private", Description = "This set doesn't allow viewing. It is private.", Footer = "Sometimes sets are shy around others." });
             }
 
 
@@ -93,7 +93,7 @@ namespace Voat.Controllers
                 options.Span = SortSpan.Day;
             }
 
-            var q = new QuerySubmissions(domainReference, options);
+            var q = new QuerySubmissions(domainReference, options).SetUserContext(User);
             var result = await q.ExecuteAsync();
             
             var model = new SubmissionListViewModel();
@@ -115,7 +115,8 @@ namespace Voat.Controllers
         }
         public async Task<ActionResult> Sidebar(string name)
         {
-            using (var repo = new Repository())
+            //TODO: Implement Command/Query - Remove direct Repository access
+            using (var repo = new Repository(User))
             {
                 var domainReference = DomainReference.Parse(name, DomainType.Set);
                 var set = repo.GetSet(domainReference.Name, domainReference.OwnerName);
@@ -134,8 +135,8 @@ namespace Voat.Controllers
 
         public async Task<ActionResult> Details(string name)
         {
-
-            using (var repo = new Repository())
+            //TODO: Implement Command/Query - Remove direct Repository access
+            using (var repo = new Repository(User))
             {
                 var domainReference = DomainReference.Parse(name, DomainType.Set);
                 var set = repo.GetSet(domainReference.Name, domainReference.OwnerName);
@@ -152,7 +153,7 @@ namespace Voat.Controllers
                             BasePath = VoatPathHelper.BasePath(domainReference),
                             Sort = null
                         };
-                        return GenericErrorView(new ErrorViewModel() { Title = "No Subscriptions!", Description = "You don't have any subscriptions so we have to show you this instead", Footer = "Subscribe to a subverse you silly goat" });
+                        return ErrorView(new ErrorViewModel() { Title = "No Subscriptions!", Description = "You don't have any subscriptions so we have to show you this instead", Footer = "Subscribe to a subverse you silly goat" });
                     }
                     else if (name.IsEqual(SetType.Blocked.ToString()))
                     {
@@ -164,11 +165,11 @@ namespace Voat.Controllers
                             BasePath = VoatPathHelper.BasePath(domainReference),
                             Sort = null
                         };
-                        return GenericErrorView(new ErrorViewModel() { Title = "No Blocked Subs!", Description = "You don't have any blocked subs. Golf clap.", Footer = "Block some subs and this page will magically change!" });
+                        return ErrorView(new ErrorViewModel() { Title = "No Blocked Subs!", Description = "You don't have any blocked subs. Golf clap.", Footer = "Block some subs and this page will magically change!" });
                     }
                     else
                     {
-                        return GenericErrorView(new ErrorViewModel() { Title = "Can't find this set", Description = "Maybe it's gone?", Footer = "Probably yeah" });
+                        return ErrorView(new ErrorViewModel() { Title = "Can't find this set", Description = "Maybe it's gone?", Footer = "Probably yeah" });
                     }
                 }
 
@@ -176,7 +177,7 @@ namespace Voat.Controllers
 
                 if (!perms.View)
                 {
-                    return GenericErrorView(new ErrorViewModel() { Title = "Set is Private", Description = "This set doesn't allow the viewing of its properties", Footer = "It's ok, I can't see it either" });
+                    return ErrorView(new ErrorViewModel() { Title = "Set is Private", Description = "This set doesn't allow the viewing of its properties", Footer = "It's ok, I can't see it either" });
                 }
 
                 var options = new SearchOptions(Request.QueryString.Value);
@@ -207,7 +208,7 @@ namespace Voat.Controllers
         {
             var domainReference = DomainReference.Parse(name, DomainType.Set);
             //Only user sets can be changed, thus userName never needs to be checked here.
-            var cmd = new SetSubverseCommand(domainReference, subverse, subscribeAction);
+            var cmd = new SetSubverseCommand(domainReference, subverse, subscribeAction).SetUserContext(User);
             var result = await cmd.Execute();
             return JsonResult(result);
         }
@@ -233,8 +234,8 @@ namespace Voat.Controllers
 
             if (ModelState.IsValid)
             {
-                //TODO: Transfer to Command
-                using (var repo = new Repository())
+                //TODO: Implement Command/Query - Remove direct Repository access
+                using (var repo = new Repository(User))
                 {
                     var domainReference = DomainReference.Parse(name, DomainType.Set);
                     var result = await repo.DeleteSet(domainReference);
@@ -264,7 +265,7 @@ namespace Voat.Controllers
         {
             if (ModelState.IsValid)
             {
-                var cmd = new UpdateSetCommand(set);
+                var cmd = new UpdateSetCommand(set).SetUserContext(User);
                 var result = await cmd.Execute();
                 return JsonResult(result);
             }
@@ -276,7 +277,7 @@ namespace Voat.Controllers
         {
             if (!VoatSettings.Instance.SetCreationEnabled)
             {
-                return GenericErrorView(new ErrorViewModel() { Title = "Set Creation Disabled", Description = "Sorry, but set creation is currently disabled", Footer = "Someone will be fired for this" });
+                return ErrorView(new ErrorViewModel() { Title = "Set Creation Disabled", Description = "Sorry, but set creation is currently disabled", Footer = "Someone will be fired for this" });
             }
 
             return View(new Set());
@@ -288,13 +289,13 @@ namespace Voat.Controllers
         {
             if (!VoatSettings.Instance.SetCreationEnabled)
             {
-                return GenericErrorView(new ErrorViewModel() { Title = "Set Creation Disabled", Description = "Sorry, but set creation is currently disabled", Footer = "Someone will be fired for this" });
+                return ErrorView(new ErrorViewModel() { Title = "Set Creation Disabled", Description = "Sorry, but set creation is currently disabled", Footer = "Someone will be fired for this" });
             }
 
             if (ModelState.IsValid)
             {
-                //TODO: Transfer to Command
-                using (var repo = new Repository())
+                //TODO: Implement Command/Query - Remove direct Repository access
+                using (var repo = new Repository(User))
                 {
                     var result = await repo.CreateOrUpdateSet(set);
 

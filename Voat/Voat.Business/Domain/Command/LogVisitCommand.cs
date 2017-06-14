@@ -22,6 +22,7 @@
 
 #endregion LICENSE
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,8 @@ using Voat.Data;
 
 namespace Voat.Domain.Command
 {
-    public class LogVisitCommand : CacheCommand<CommandResponse>, IExcutableCommand<CommandResponse>
+    
+    public class LogVisitCommand : QueuedCommand<CommandResponse>, IExcutableCommand<CommandResponse>
     {
         protected string _subverse;
         protected int? _submissionID;
@@ -43,6 +45,9 @@ namespace Voat.Domain.Command
             _submissionID = submissionID;
             _clientIPAddress = clientIPAddress;
         }
+        public string Subverse { get => _subverse; }
+        public int? SubmissionID { get => _submissionID; }
+        public string ClientIPAddress { get => _clientIPAddress; }
 
         protected override async Task<CommandResponse> CacheExecute()
         {

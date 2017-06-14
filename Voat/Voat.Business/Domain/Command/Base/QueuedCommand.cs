@@ -22,6 +22,7 @@
 
 #endregion LICENSE
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,53 +30,30 @@ using System.Text;
 using System.Threading.Tasks;
 using Voat.Common;
 
-namespace Voat.Domain.Command.Base
+namespace Voat.Domain.Command
 {
-
-
-
-
-
     /// <summary>
     /// This command base will queue commands to a certain threshold then execute them in a batch
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    //[JsonObject(MemberSerialization=MemberSerialization.Fields)]
     public abstract class QueuedCommand<T> : CacheCommand<T>, IExcutableCommand<T> where T : CommandResponse, new()
     {
-        private static List<QueuedCommand<T>> _commands = new List<QueuedCommand<T>>();
+        private static CacheBatchOperation<QueuedCommand<T>> _commands = new CacheBatchOperation<QueuedCommand<T>>("Command", Voat.Caching.CacheHandler.Instance, 10, TimeSpan.FromMinutes(5), ProcessBatch);
 
-
-        protected abstract FlushDetector Flusher { get; }   
-
-        public void Append()
+        protected static async Task ProcessBatch(IEnumerable<QueuedCommand<T>> batch)
+        {
+            foreach (var cmd in batch)
+            {
+                await cmd.CacheExecute();
+            }
+        }
+        public override Task<T> Execute()
         {
             _commands.Add(this);
-            Flusher.Increment();
-
-            if (Flusher.IsFlushable)
-            {
-                Flush();
-            }
-            
+            return Task.FromResult((T)CommandResponse.FromStatus(Status.Queued));
         }
-
-        protected virtual void Flush()
-        {
-            var commands = _commands;
-            _commands = new List<QueuedCommand<T>>();
-
-            foreach (var command in commands)
-            {
-                command.CacheExecute();
-            }
-            Flusher.Reset();
-        }
-
-
-        protected override Task<T> CacheExecute()
-        {
-            return this.Execute();
-        }
+       
 
         protected override void UpdateCache(T result)
         {

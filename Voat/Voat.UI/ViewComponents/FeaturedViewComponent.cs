@@ -11,7 +11,7 @@ namespace Voat.UI.ViewComponents
     {
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            //TODO: Move to a query that is cached
+            //TODO: Implement Command/Query - Remove direct Repository access
             using (var repo = new Repository())
             {
                 var featured = await repo.GetFeatured();

@@ -23,6 +23,7 @@
 #endregion LICENSE
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Common;
+using Voat.Configuration;
 using Voat.Data;
+using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
 
@@ -101,6 +104,19 @@ namespace Voat.Tests.CommandTests
             }
 
 
+        }
+        public T EnsureCommandIsSerialziable<T>(T command) where T : Command
+        {
+            var json = JsonConvert.SerializeObject(command, JsonSettings.DataSerializationSettings);
+            var deserializedCmd = (T)JsonConvert.DeserializeObject(json, JsonSettings.DataSerializationSettings);
+
+            Assert.AreEqual(command.Context.User.Identity.Name, deserializedCmd.Context.User.Identity.Name);
+            Assert.AreEqual(command.User.Identity.Name, deserializedCmd.User.Identity.Name);
+
+            var json2 = JsonConvert.SerializeObject(deserializedCmd, JsonSettings.DataSerializationSettings);
+            Assert.AreEqual(json, json2);
+
+            return deserializedCmd;
         }
     }
 }

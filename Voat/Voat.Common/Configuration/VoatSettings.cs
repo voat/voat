@@ -110,6 +110,7 @@ namespace Voat.Configuration
         public string SiteDescription { get; set; } = "A community platform where you can have your say. No censorship.";
 
         public string SiteDomain { get; set; } = "voat.co";
+        public string ContentDeliveryDomain { get; set; } = "cdn.voat.co";
 
         public string SiteKeywords { get; set; } = "voat, voat.co, vote, submit, comment";
 
@@ -122,6 +123,8 @@ namespace Voat.Configuration
 
         public bool UseContentDeliveryNetwork { get; set; } = false;
         public RuntimeStateSetting RuntimeState { get; set; } = RuntimeStateSetting.Enabled;
+
+        public bool ThumbnailsEnabled { get; set; } = true;
 
         #endregion AppSettings Accessors
 

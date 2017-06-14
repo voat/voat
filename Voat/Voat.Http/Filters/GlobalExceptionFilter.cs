@@ -10,30 +10,22 @@ using Voat.Http;
 using Voat.Logging;
 using Voat.Utilities.Components;
 
-namespace Voat.UI.Runtime
+namespace Voat.Http.Filters
 {
     public class GlobalExceptionFilter : IExceptionFilter, IDisposable
     {
-        //private readonly ILogger _logger;
 
         public GlobalExceptionFilter(ILoggerFactory logger)
         {
-        //    if (logger == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(logger));
-        //    }
-
-        //    this._logger = logger.CreateLogger("Global Exception Filter");
         }
 
         public void Dispose()
         {
-            //
         }
 
         public void OnException(ExceptionContext context)
         {
-            var logInfo = context.HttpContext.GetLogInformation("GlobalExceptionFilter", context.Exception);
+            var logInfo = context.HttpContext.GetLogInformation("GlobalExceptionFilter", LogType.Exception, context.Exception);
             EventLogger.Instance.Log(logInfo);
         }
     }

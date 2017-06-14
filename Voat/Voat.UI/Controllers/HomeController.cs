@@ -166,7 +166,9 @@ namespace Voat.Controllers
                     new
                     {
                         submissionID = result.Response.ID,
-                        subverseName = result.Response.Subverse
+                        subverseName = result.Response.Subverse,
+                        sort = (string)null
+
                     }
                     );
             }

@@ -25,8 +25,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using Voat.Caching;
+using Voat.Common.Components;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
@@ -49,10 +51,11 @@ public class UnitTestSetup
     {
         //Configure App
         var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
-
         config.ConfigureVoat();
 
-       
+        FilePather.Instance = new FilePather(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+
+
         if (config["voat:test:preventDatabaseDrop"] != "True")
         {
             //Force db to drop & seed

@@ -57,8 +57,8 @@ namespace Voat.Controllers
                     return UnAuthorizedErrorView();
                 }
             }
-
-            using (var repo = new Repository())
+            //TODO: Implement Command/Query - Remove direct Repository access
+            using (var repo = new Repository(User))
             {
                 var data = await repo.GetRuleReports(subverse, type, days * 24, status, ruleid);
                 ViewBag.Days = days;
@@ -85,8 +85,8 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<ActionResult> Mark(string subverse, ContentType type, int id)
         {
-            //TODO: Move into Query
-            using (var repo = new Repository())
+            //TODO: Implement Command/Query - Remove direct Repository access
+            using (var repo = new Repository(User))
             {
                 var result = await repo.MarkReportsAsReviewed(subverse, type, id);
                 return JsonResult(result);
@@ -97,7 +97,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> UserReportDialog(string subverse, ContentType type, int id)
         {
             //TODO: Move into Query
-            using (var repo = new Repository())
+            using (var repo = new Repository(User))
             {
                 var data = await repo.GetRuleSets(subverse, type);
                 return PartialView(new Models.ViewModels.ReportContentModel() { Subverse = subverse, ContentType = type, ID = id, Rules = data });
@@ -111,7 +111,8 @@ namespace Voat.Controllers
         {
             if (ModelState.IsValid)
             {
-                using (var repo = new Repository())
+                //TODO: Implement Command/Query - Remove direct Repository access
+                using (var repo = new Repository(User))
                 {
                     var result = await repo.SaveRuleReport(model.ContentType, model.ID, model.RuleSetID.Value);
                     return JsonResult(result);

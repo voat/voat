@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Voat.Caching;
 
 namespace Voat.Common
@@ -12,10 +15,10 @@ namespace Voat.Common
         private ICacheHandler _cacheHandler = null;
         private bool _clearPrevious = true;
 
-        public CacheBatchOperation(string keySpace, ICacheHandler cacheHandler, int flushCount, TimeSpan flushSpan, Action<IEnumerable<T>> batchAction) : base(flushCount, flushSpan, batchAction)
+        public CacheBatchOperation(string keySpace, ICacheHandler cacheHandler, int flushCount, TimeSpan flushSpan, Func<IEnumerable<T>, Task> batchAction) : base(flushCount, flushSpan, batchAction)
         {
             _cacheHandler = cacheHandler;
-            _keyPrefix = $"{keySpace}:{typeof(T).Name}";
+            _keyPrefix = $"{keySpace}";
             SetNewKey();
         }
 
@@ -31,6 +34,7 @@ namespace Voat.Common
             return existingKey;
         }
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public override int Count => _cacheHandler.ListLength(_currentKey);
 
         public bool ClearPrevious { get => _clearPrevious; set => _clearPrevious = value; }
@@ -38,7 +42,7 @@ namespace Voat.Common
         protected override IEnumerable<T> BatchPending()
         {
             var keyToProcess = SetNewKey();
-            var list = _cacheHandler.ListRetrieveAll<T>(keyToProcess);
+            var list = _cacheHandler.ListRetrieveAll<T>(keyToProcess).ToList(); //materialize
             if (ClearPrevious)
             {
                 _cacheHandler.Remove(keyToProcess);
