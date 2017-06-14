@@ -147,8 +147,8 @@ namespace Voat.Utilities
 
             return spoofs;
         }
-
-        public static bool CanUserNameBeRegistered(VoatUserManager userManager, string userName, IEnumerable<Func<string, IEnumerable<string>>> spoofSubstitutionFuncList = null)
+        //TODO: IMPORTANT This needs to be ported correctly
+        public static bool CanUserNameBeRegistered(UserManager<VoatIdentityUser> userManager, string userName, IEnumerable<Func<string, IEnumerable<string>>> spoofSubstitutionFuncList = null)
         {
             
             List<string> spoofsToCheck = new List<string>();
@@ -168,7 +168,7 @@ namespace Voat.Utilities
             }
 
             //TODO: Need to migrate to dapper and repo
-            var accountExists = spoofsToCheck.Any(x => userManager.FindByName(x) != null);
+            var accountExists = spoofsToCheck.Any(x => userManager.FindByNameAsync(x).Result != null);
             if (accountExists)
             {
                 return false;

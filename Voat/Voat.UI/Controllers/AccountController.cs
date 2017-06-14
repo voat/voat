@@ -72,9 +72,11 @@ namespace Voat.Controllers
             //_emailSender = emailSender;
             //_smsSender = smsSender;
             //_logger = loggerFactory.CreateLogger<AccountController>();
+
+            UserManager = _userManager;
         }
        
-        public VoatUserManager UserManager { get; private set; }
+        public UserManager<VoatIdentityUser> UserManager { get; private set; }
 
         // GET: /Account/Login
         [AllowAnonymous]
@@ -719,7 +721,7 @@ namespace Voat.Controllers
         [HttpPost]
         [AllowAnonymous]
         [PreventSpam(DelayRequest = 5, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
-        public JsonResult CheckUsernameAvailability()
+        public async Task<JsonResult> CheckUsernameAvailability()
         {
             //CORE_PORT: Ported correctly?
             //var userNameToCheck = Request.Params["userName"];
@@ -732,7 +734,7 @@ namespace Voat.Controllers
             }
 
             // check username availability
-            var userNameAvailable = UserManager.FindByName(userNameToCheck);
+            var userNameAvailable = await UserManager.FindByNameAsync(userNameToCheck);
 
             if (userNameAvailable == null)
             {
