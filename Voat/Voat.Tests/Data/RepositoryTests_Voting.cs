@@ -28,6 +28,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Voat.Domain.Command;
+using Voat.Tests.Infrastructure;
 using Voat.Utilities;
 
 namespace Voat.Tests.Repository
@@ -35,12 +36,12 @@ namespace Voat.Tests.Repository
     [TestClass]
     public class RepositoryTests_Voting : BaseUnitTest
     {
-        public ContentContext context = null;
+        public TestHelper.ContentContext context = null;
 
         [TestInitialize]
         public override void TestInitialize()
         {
-            context = ContentContext.NewContext(true);
+            context = TestHelper.ContentContext.Create(true);
         }
 
 
@@ -48,7 +49,7 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Comment")]
         public async Task Comment_Down()
         {
-            string userName = "User500CCP";
+            string userName = USERNAMES.User500CCP;
             var user = TestHelper.SetPrincipal(userName, null); //This user has one comment with 101 likes
 
             using (var db = new Voat.Data.Repository(user))
@@ -89,7 +90,7 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Comment")]
         public async Task Comment_Reset_Default()
         {
-            var user = TestHelper.SetPrincipal("User100CCP", null);
+            var user = TestHelper.SetPrincipal(USERNAMES.User100CCP, null);
 
             using (var db = new Voat.Data.Repository(user))
             {
@@ -127,7 +128,7 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Comment")]
         public async Task Comment_Reset_NoRevoke()
         {
-            var user = TestHelper.SetPrincipal("User100CCP", null);
+            var user = TestHelper.SetPrincipal(USERNAMES.User100CCP, null);
 
             using (var db = new Voat.Data.Repository(user))
             {
@@ -156,7 +157,7 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Comment")]
         public async Task Comment_Up()
         {
-            string userName = "User50CCP";
+            string userName = USERNAMES.User50CCP;
             var user = TestHelper.SetPrincipal(userName, null);
 
             using (var db = new Voat.Data.Repository(user))
@@ -205,7 +206,7 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote")]
         public void EnsureInvalidVoteValueThrowsException_Com()
         {
-            string userName = "User500CCP";
+            string userName = USERNAMES.User500CCP;
             var user = TestHelper.SetPrincipal(userName, null); //This user has one comment with 101 likes
 
             VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
@@ -221,7 +222,7 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote")]
         public void EnsureInvalidVoteValueThrowsException_Sub()
         {
-            string userName = "User500CCP";
+            string userName = USERNAMES.User500CCP;
             var user = TestHelper.SetPrincipal(userName, null); //This user has one comment with 101 likes
 
             VoatAssert.Throws<ArgumentOutOfRangeException>(() => {
@@ -237,7 +238,7 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Submission")]
         public void Submission_Down()
         {
-            string userName = "User500CCP";
+            string userName = USERNAMES.User500CCP;
             var user = TestHelper.SetPrincipal(userName, null); //This user has one comment with 101 likes
 
             using (var db = new Voat.Data.Repository(user))
@@ -281,7 +282,7 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Submission")]
         public void Submission_Reset_Default()
         {
-            var user = TestHelper.SetPrincipal("User100CCP", null);
+            var user = TestHelper.SetPrincipal(USERNAMES.User100CCP, null);
 
             using (var db = new Voat.Data.Repository(user))
             {
@@ -314,7 +315,7 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Submission")]
         public void Submission_Reset_NoRevoke()
         {
-            var user = TestHelper.SetPrincipal("User100CCP", null);
+            var user = TestHelper.SetPrincipal(USERNAMES.User100CCP, null);
 
             using (var db = new Voat.Data.Repository(user))
             {
@@ -347,7 +348,7 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Vote"), TestCategory("Repository.Vote.Submission")]
         public void Submission_Up()
         {
-            string userName = "User50CCP";
+            string userName = USERNAMES.User50CCP;
             var user = TestHelper.SetPrincipal(userName, null);
             using (var db = new Voat.Data.Repository(user))
             {

@@ -33,6 +33,7 @@ using System.Linq;
 using Voat.Caching;
 using Voat.Common.Configuration;
 using Voat.Configuration;
+using Voat.Tests.Infrastructure;
 
 namespace Voat.Tests.Cache
 {

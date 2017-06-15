@@ -33,6 +33,7 @@ using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
+using Voat.Tests.Infrastructure;
 using Voat.Utilities;
 
 namespace Voat.Tests.Repository
@@ -189,7 +190,7 @@ namespace Voat.Tests.Repository
             var user = TestHelper.SetPrincipal(null);
             using (var db = new Voat.Data.Repository(user))
             {
-                var s = await db.GetSubmissionsDapper(new DomainReference(DomainType.Subverse, "unit"), new SearchOptions()).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                var s = await db.GetSubmissionsDapper(new DomainReference(DomainType.Subverse, SUBVERSES.Unit), new SearchOptions()).ConfigureAwait(Utilities.CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 Assert.IsTrue(s.Any());
             }
         }
@@ -202,7 +203,7 @@ namespace Voat.Tests.Repository
             var user = TestHelper.SetPrincipal(null);
             using (var db = new Voat.Data.Repository(user))
             {
-                var anon_sub = await db.GetSubmissionsDapper(new DomainReference(DomainType.Subverse, "anon"), SearchOptions.Default).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                var anon_sub = await db.GetSubmissionsDapper(new DomainReference(DomainType.Subverse, SUBVERSES.Anon), SearchOptions.Default).ConfigureAwait(Utilities.CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                 var first = anon_sub.OrderBy(x => x.CreationDate).First();
                 Assert.IsNotNull(first, "no anon submissions found");
                 Assert.AreEqual("First Anon Post", first.Title);
@@ -217,9 +218,9 @@ namespace Voat.Tests.Repository
             var user = TestHelper.SetPrincipal(null);
             using (var db = new Voat.Data.Repository(user))
             {
-                var p = await db.GetUserPreferences("unit");
+                var p = await db.GetUserPreferences(USERNAMES.Unit);
                 Assert.IsTrue(p != null);
-                Assert.IsTrue(p.UserName == "unit");
+                Assert.IsTrue(p.UserName == USERNAMES.Unit);
                 Assert.IsTrue(p.Bio == "User unit's short bio");
                 Assert.IsTrue(!p.DisableCSS);
             }
@@ -247,7 +248,7 @@ namespace Voat.Tests.Repository
 
                 var m = await db.PostSubmission(new UserSubmission()
                 {
-                    Subverse = "unit",
+                    Subverse = SUBVERSES.Unit,
                     Url = "http://www.LearnToGolfLikeJordanSpiethOrYourMoneyBack.com",
                     Content = "Learn to putt first. It's the most important part of golf.",
                     Title = "Golf is really three games in one: Putting, Full Swing, and Partial Swing"
@@ -266,7 +267,7 @@ namespace Voat.Tests.Repository
             var user = TestHelper.SetPrincipal(null);
             using (var db = new Voat.Data.Repository(user))
             {
-                var info = db.GetSubverseInfo("unit");
+                var info = db.GetSubverseInfo(SUBVERSES.Unit);
                 Assert.IsTrue(info.Title == "v/unit");
             }
         }
@@ -350,7 +351,7 @@ namespace Voat.Tests.Repository
 
             using (var db = new Voat.Data.Repository(user))
             {
-                var result = await db.PostSubmission(new UserSubmission() { Subverse = "unit", Title = "Can I get a banned domain past super secure code?", Content = "Check out my new post: http://www.fleddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics" });
+                var result = await db.PostSubmission(new UserSubmission() { Subverse = SUBVERSES.Unit, Title = "Can I get a banned domain past super secure code?", Content = "Check out my new post: http://www.fleddit.com/r/something/hen9s87r9/How-I-Made-a-million-virtual-cat-pics" });
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Success, "Submitting content with banned domain did not get rejected");
                 Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");
@@ -377,10 +378,10 @@ namespace Voat.Tests.Repository
         [TestCategory("Repository"), TestCategory("Repository.Submission")]
         public async Task PostSubmission_AuthorizedOnly_Allow()
         {
-            var user = TestHelper.SetPrincipal("unit");
+            var user = TestHelper.SetPrincipal(USERNAMES.Unit);
             using (var db = new Voat.Data.Repository(user))
             {
-                var result = await db.PostSubmission(new UserSubmission() { Subverse = "AuthorizedOnly", Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
+                var result = await db.PostSubmission(new UserSubmission() { Subverse = SUBVERSES.AuthorizedOnly, Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsTrue(result.Success, "Submitting to authorized only subverse was not allowed by admin");
                 Assert.AreEqual(Status.Success, result.Status, "Expecting a success status");
@@ -396,7 +397,7 @@ namespace Voat.Tests.Repository
 
             using (var db = new Voat.Data.Repository(user))
             {
-                var result = await db.PostSubmission( new UserSubmission() { Subverse= "AuthorizedOnly", Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
+                var result = await db.PostSubmission( new UserSubmission() { Subverse = SUBVERSES.AuthorizedOnly, Title = "Ha ha, you can't stop me", Content = "Cookies for you my friend" });
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Success, "Submitting to authorized only subverse was allowed by non admin");
                 Assert.AreEqual(Status.Denied, result.Status, "Expecting a denied status");
@@ -412,7 +413,7 @@ namespace Voat.Tests.Repository
             var user = TestHelper.SetPrincipal(null);
             using (var db = new Voat.Data.Repository(user))
             {
-                var result = db.GetSubversesUserModerates("unit");
+                var result = db.GetSubversesUserModerates(USERNAMES.Unit);
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsTrue(result.Any(x => x.Subverse == "AuthorizedOnly"), "Result expected to see subverse AuthorizedOnly for user unit");
             }
@@ -555,8 +556,8 @@ namespace Voat.Tests.Repository
             using (var repo = new Voat.Data.Repository())
             {
                 await repo.LogVisit(null, 1, "127.0.0.1");
-                await repo.LogVisit("whatever", null, "127.0.0.2");
-                await repo.LogVisit("anon", 2, "127.0.0.3");
+                await repo.LogVisit(SUBVERSES.Whatever, null, "127.0.0.2");
+                await repo.LogVisit(SUBVERSES.Anon, 2, "127.0.0.3");
             }
         }
     }

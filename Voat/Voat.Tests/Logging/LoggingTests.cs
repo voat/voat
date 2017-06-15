@@ -31,6 +31,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Voat.Data.Models;
 using Voat.Logging;
+using Voat.Tests.Infrastructure;
 
 namespace Voat.Tests.Logging
 {

@@ -121,6 +121,7 @@
             "runtimeState": "Enabled",
             "signalrEnabled": false,
             "setsEnabled": true,
+            "setCreationEnabled": true,
             "registrationEnabled": true,
             "useContentDeliveryNetwork": false,
             "destinationPathThumbs": "~/Storage/Thumbs",
@@ -128,7 +129,6 @@
             "adsEnabled": true,
             "apiKeyCreationEnabled": true,
             "redirectToSiteDomain": false,
-            "setCreationEnabled": false,
             "origin": "UI",
             "thumbnailsEnabled": false,
             //Voat Settings

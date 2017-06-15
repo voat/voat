@@ -35,6 +35,8 @@ using Voat.Data.Models;
 using Voat.Logging;
 using Voat.Rules;
 using Voat.RulesEngine;
+using Voat.Tests;
+using Voat.Tests.Infrastructure;
 using Voat.Tests.Repository;
 
 
@@ -75,7 +77,7 @@ public class UnitTestSetup
                     }
                 }
 
-                var init = new VoatDataInitializer();
+                var init = new TestDataInitializer();
                 init.InitializeDatabase(db); //This attempts to create and seed unit test db
             }
         }

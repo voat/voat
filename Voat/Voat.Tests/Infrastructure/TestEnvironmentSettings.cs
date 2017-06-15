@@ -22,22 +22,14 @@
 
 #endregion LICENSE
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Voat.Caching;
-using Voat.Tests.Infrastructure;
+using System.IO;
+using Voat.Data;
 
-namespace Voat.Tests.Cache
+namespace Voat.Tests.Infrastructure
 {
-    [TestClass]
-    public class CacheConfigurationTests : BaseUnitTest
+    public class TestEnvironmentSettings
     {
-        [TestMethod]
-        public void Can_Read_Config()
-        {
-            var section = CacheConfigurationSettings.Instance;
-            Assert.IsNotNull(section, "Caching Section is null");
-            Assert.AreEqual(3, section.Handlers.Length);
-            Assert.IsNotNull(section.Handler, "Enabled handler null");
-        }
+        public static string SqlScriptRelativePath { get; set; } =
+            Path.Combine("..", "..", "..", "..", "SqlScripts", DataConfigurationSettings.Instance.StoreType.ToString() );
     }
 }

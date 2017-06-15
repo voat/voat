@@ -33,23 +33,33 @@ using System.Linq;
 using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Domain.Models;
+using Voat.Tests.Infrastructure;
 
 namespace Voat.Tests.Cache
 {
     public abstract class CacheTests : BaseUnitTest
     {
         public ICacheHandler handler = null;
+        public string cacheTypeName = null;
 
         public CacheTests(ICacheHandler handler)
         {
             this.handler = handler;
         }
-
+        public void VerifyValidHandler()
+        {
+            if (handler == null)
+            {
+                Assert.Inconclusive($"Handler type: {cacheTypeName} is not instantiated");
+            }
+        }
         [TestMethod]
         [TestCategory("Cache")]
         [TestCategory("Cache.Handler")]
         public void CustomObject_Add()
         {
+            VerifyValidHandler();
+
             string key = DateTime.UtcNow.ToOADate().ToString();
 
             handler.Register<Item>(key, () => new Item() { ID = 1, Name = "Bill" }, TimeSpan.FromSeconds(30));
@@ -72,6 +82,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler")]
         public void Int_Add()
         {
+            VerifyValidHandler();
+
             string key = DateTime.UtcNow.ToOADate().ToString();
 
             handler.Register<long>(key, () => 1, TimeSpan.FromSeconds(30));
@@ -90,6 +102,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler")]
         public void Purge_Cache()
         {
+            VerifyValidHandler();
+
             handler.Purge();
         }
 
@@ -99,6 +113,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.Dictionary")]
         public void Dictionary_Add()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Dictionary_Add";
             handler.Remove(cacheKey);
 
@@ -127,6 +143,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.Dictionary")]
         public void Dictionary_RemoveExisting()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Dictionary_RemoveExisting";
             handler.Remove(cacheKey);
 
@@ -150,6 +168,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.Dictionary")]
         public void Dictionary_RemoveNonExisting()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Dictionary_RemoveNonExisting";
             handler.Remove(cacheKey);
 
@@ -169,6 +189,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.Dictionary")]
         public void Dictionary_ReplaceExisting()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Dictionary_ReplaceExisting";
             handler.Remove(cacheKey);
 
@@ -202,6 +224,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.Dictionary")]
         public void Dictionary_ReplaceWithoutPrevious_1()
         {
+            VerifyValidHandler();
+
             //we used to add this to cache if it didn't exist, now we don't
             string cacheKey = "Dictionary_Add";
             handler.Remove(cacheKey);
@@ -229,6 +253,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.Dictionary")]
         public void Dictionary_ReplaceWithoutPrevious_2()
         {
+            VerifyValidHandler();
+
             //we used to add this to cache if it didn't exist, now we don't
             string cacheKey = "Dictionary_Replace_Callback";
             handler.Remove(cacheKey);
@@ -253,6 +279,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.Dictionary")]
         public void Dictionary_TypedDictionary_EnumKey_AddItem()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Dictionary_TypedDictionary_EnumKey_AddItem";
             handler.Remove(cacheKey);
 
@@ -290,6 +318,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.Dictionary")]
         public void Dictionary_TypedDictionary_IntKey_AddItem()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Dictionary_TypedDictionary_IntKey_AddItem";
             handler.Remove(cacheKey);
 
@@ -322,6 +352,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.Dictionary")]
         public void Dictionary_TypedDictionary_IntKey_Read()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Dictionary_TypedDictionary_IntKey_Read";
             handler.Remove(cacheKey);
 
@@ -346,6 +378,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.Dictionary")]
         public void Dictionary_TypedDictionary_StringKey_AddItem()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Dictionary_TypedDictionary_StringKey_AddItem";
             handler.Remove(cacheKey);
 
@@ -378,6 +412,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.Dictionary")]
         public void Dictionary_TypedDictionary_StringKey_Read()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Dictionary_TypedDictionary_StringKey_Read";
             handler.Remove(cacheKey);
 
@@ -400,6 +436,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler")]
         public void ReplaceIfExistsTests()
         {
+            VerifyValidHandler();
+
             string cacheKey = "ReplaceIfExistsTests";
             handler.Remove(cacheKey);
 
@@ -441,6 +479,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.List")]
         public void Set_AddToExisting()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Set_AddToExisting";
             handler.Remove(cacheKey);
 
@@ -464,6 +504,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.List")]
         public void Set_Add_Ints()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Set_Add_Ints";
             handler.Remove(cacheKey);
 
@@ -488,6 +530,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.List")]
         public void Set_Add_Object()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Set_Add";
             handler.Remove(cacheKey);
 
@@ -511,6 +555,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.List")]
         public void Set_Remove()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Set_Remove";
             handler.Remove(cacheKey);
 
@@ -545,6 +591,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.Refresh")]
         public async Task Hot_Cache_Refresh()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Hot_Cache_Refresh";
             handler.Remove(cacheKey);
 
@@ -599,6 +647,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache"), TestCategory("Cache.Handler")]
         public void List_Add()
         {
+            VerifyValidHandler();
+
             string cacheKey = "Test_ListAdd";
             handler.Remove(cacheKey);
             if (handler.CacheEnabled)
@@ -619,6 +669,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache"), TestCategory("Cache.Handler")]
         public void List_RetrieveAll()
         {
+            VerifyValidHandler();
+
             var items = new string[] { "one", "two", "three", "four", "five", "six" }.ToList();
 
             string cacheKey = "List_RetrieveAll";
@@ -642,6 +694,8 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache"), TestCategory("Cache.Handler")]
         public void List_NotPresent()
         {
+            VerifyValidHandler();
+
             string cacheKey = "List_NotPresent";
             Assert.AreEqual(0, handler.ListLength(cacheKey));
             Assert.AreEqual(default(object), handler.ListRetrieve<object>(cacheKey, 10));
@@ -678,6 +732,7 @@ namespace Voat.Tests.Cache
     {
         public MemoryCacheTests() : base(new MemoryCacheHandler())
         {
+            base.cacheTypeName = "Memory";
             Debug.WriteLine("Starting MemoryCacheTests");
         }
     }
@@ -688,11 +743,18 @@ namespace Voat.Tests.Cache
         //Stop following me fuzzy
         public RedisCacheTests() : base(null)
         {
+            base.cacheTypeName = "Redis";
             Debug.WriteLine("Starting RedisCacheTests");
-
-            //Use connection info from CacheHandlerSection
-            var handler = CacheConfigurationSettings.Instance.Handlers.First(x => x.Type.ToLower().Contains("redis")).Construct<ICacheHandler>();
-            base.handler = handler;
+            try
+            {
+                //Use connection info from CacheHandlerSection
+                var handler = CacheConfigurationSettings.Instance.Handlers.First(x => x.Type.ToLower().Contains("redis")).Construct<ICacheHandler>();
+                base.handler = handler;
+            }
+            catch (Exception ex)
+            {
+                base.handler = null;
+            }
 
         }
     }
@@ -701,6 +763,7 @@ namespace Voat.Tests.Cache
     {
         public NullCacheTests() : base(new NullCacheHandler())
         {
+            base.cacheTypeName = "Null";
             Debug.WriteLine("Starting NullCacheTests");
         }
     }

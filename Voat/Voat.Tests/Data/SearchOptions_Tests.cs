@@ -23,12 +23,11 @@
 #endregion LICENSE
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using System;
 using System.Collections.Generic;
-
 using Voat.Data;
 using Voat.Domain.Models;
+using Voat.Tests.Infrastructure;
 
 namespace Voat.Tests.Data
 {
