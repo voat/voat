@@ -99,7 +99,7 @@ CREATE TABLE [dbo].[AspNetUsers](
 	[PhoneNumber] [nvarchar](20) NULL,
 	[PhoneNumberConfirmed] [bit] NOT NULL,
 	[TwoFactorEnabled] [bit] NOT NULL,
-	[LockoutEnd] [datetime] NULL,
+	[LockoutEnd] [DATETIMEOFFSET] NULL,
 	[LockoutEnabled] [bit] NOT NULL,
 	[AccessFailedCount] [int] NULL,
 	[RegistrationDateTime] [datetime] NOT NULL,

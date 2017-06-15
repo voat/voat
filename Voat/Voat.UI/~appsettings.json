@@ -50,7 +50,7 @@
                     "enabled": true,
                     "name": "Redis",
                     "type": "Voat.Caching.RedisCacheHandler, Voat.Business",
-                    "arguments": "[System.String](127.0.1:6379,defaultDatabase=7,allowAdmin=true)"
+                    "arguments": "[System.String](127.0.1:6379,defaultDatabase=7,allowAdmin=true,syncTimeout=4000)"
                 },
                 {
                     "enabled": false,

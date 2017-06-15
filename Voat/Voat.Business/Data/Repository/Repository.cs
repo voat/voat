@@ -5591,7 +5591,7 @@ namespace Voat.Data
                             var endLockOutDate = CurrentDate.AddDays(3 * 30);
 
                             userAccount.Email = options.RecoveryEmailAddress;
-                            userAccount.LockoutEnd = endLockOutDate;
+                            userAccount.LockoutEnd = new DateTimeOffset(endLockOutDate);
                             userAccount.LockoutEnabled = true;
 
                         }

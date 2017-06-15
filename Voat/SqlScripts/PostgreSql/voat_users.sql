@@ -46,7 +46,7 @@ CREATE TABLE "dbo"."AspNetUsers"(
 	"PhoneNumber" varchar(20),
 	"PhoneNumberConfirmed" boolean NOT NULL,
 	"TwoFactorEnabled" boolean NOT NULL,
-	"LockoutEnd" timestamp,
+	"LockoutEnd" timestamp with time zone,
 	"LockoutEnabled" boolean NOT NULL,
 	"AccessFailedCount" int,
 	"RegistrationDateTime" timestamp NOT NULL,
