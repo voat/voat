@@ -234,6 +234,7 @@ BEGIN
 END;
 $$ LANGUAGE 'plpgsql';
 
+
 CREATE OR REPLACE FUNCTION "dbo"."usp_Reports_UserVoteReceivedStats"
 (
 	"BeginDate" TIMESTAMP,
@@ -246,15 +247,15 @@ RETURNS TABLE
 	"VoteType" INT,
 	"UserName" VARCHAR(50),
 	"AvgVotes" FLOAT,
-	"TotalVotes" NUMERIC,
-	"TotalCount" BIGINT
+	"TotalVotes" INT,
+	"TotalCount" INT
 )
 AS $$
 BEGIN
 	RETURN QUERY (
 		--- SUBMISSION AVG ---
 		-- Top 
-		(SELECT 1 AS "ContentType", 1 AS "VoteType", x."UserName", SUM(x."UpCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", SUM(x."UpCount") AS "TotalVotes", COUNT(x."ID") AS "TotalCount"  FROM "dbo"."Submission" x
+		(SELECT 1 AS "ContentType", 1 AS "VoteType", x."UserName", SUM(x."UpCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", CAST(SUM(x."UpCount") AS INT) AS "TotalVotes", CAST(COUNT(x."ID") AS INT) AS "TotalCount"  FROM "dbo"."Submission" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND x."IsAnonymized" = False
@@ -265,7 +266,7 @@ BEGIN
 		--Bottom
 		UNION ALL
 		
-		(SELECT 1 AS "ContentType", -1 AS "VoteType", x."UserName", SUM(x."DownCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", SUM(x."DownCount") AS "TotalVotes", COUNT(x."ID") AS "TotalCount"  FROM "dbo"."Submission" x
+		(SELECT 1 AS "ContentType", -1 AS "VoteType", x."UserName", SUM(x."DownCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", CAST(SUM(x."DownCount") AS INT) AS "TotalVotes", CAST(COUNT(x."ID") AS INT) AS "TotalCount"  FROM "dbo"."Submission" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND x."IsAnonymized" = False
@@ -277,7 +278,7 @@ BEGIN
 		--- COMMENTS ---
 
 		-- Top 
-		(SELECT 2 AS "ContentType", 1 AS "VoteType", x."UserName", SUM(x."UpCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", SUM(x."UpCount") AS "TotalVotes", COUNT(x."ID") AS "TotalCount"  FROM "dbo"."Comment" x
+		(SELECT 2 AS "ContentType", 1 AS "VoteType", x."UserName", SUM(x."UpCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", CAST(SUM(x."UpCount") AS INT) AS "TotalVotes", CAST(COUNT(x."ID") AS INT) AS "TotalCount"  FROM "dbo"."Comment" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND x."IsAnonymized" = False
@@ -287,7 +288,7 @@ BEGIN
 
 		UNION ALL
 		
-		(SELECT 2 AS "ContentType", -1 AS "VoteType", x."UserName", SUM(x."DownCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", SUM(x."DownCount") AS "TotalVotes", COUNT(x."ID") AS "TotalCount"  FROM "dbo"."Comment" x
+		(SELECT 2 AS "ContentType", -1 AS "VoteType", x."UserName", SUM(x."DownCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", CAST(SUM(x."DownCount") AS INT) AS "TotalVotes", CAST(COUNT(x."ID") AS INT) AS "TotalCount"  FROM "dbo"."Comment" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND x."IsAnonymized" = False
@@ -297,5 +298,7 @@ BEGIN
 	);
 END;
 $$ LANGUAGE 'plpgsql';
+
+
 
 
