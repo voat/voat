@@ -216,7 +216,7 @@ namespace Voat.Tests.CommandTests
 
             var editCmd = new EditCommentCommand(c.Response.ID, "[Check out this killer website](http://fleddit.com/f/3hen3k/Look_at_this_cat_just_Looook_awww)!").SetUserContext(user);
             var editResult = editCmd.Execute().Result;
-            VoatAssert.IsValid(c, Status.Denied, "Expecting Denied Status");
+            VoatAssert.IsValid(editResult, Status.Denied, "Expecting Denied Status");
             Assert.AreEqual("Comment contains banned domains", editResult.Message);
         }
 
