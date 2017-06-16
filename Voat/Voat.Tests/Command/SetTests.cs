@@ -89,7 +89,7 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(1, userBlockResults.Count(), "First day on the job, you know what I learned? How to spot a murderer.");
             Assert.IsTrue(userBlockResults.Any(x => x.Type == DomainType.Subverse && x.Name == subName) , "It was Keyser Soze, Agent Kujan. I mean the Devil himself. How do you shoot the Devil in the back? What if you miss?");
         
-            userSetQuery = new QueryUserSets(userName);
+            userSetQuery = new QueryUserSets(userName).SetUserContext(user);
             userSetResults = await userSetQuery.ExecuteAsync();
 
             Assert.IsNotNull(userSetResults, "What the cops never figured out, and what I know now, was that these men would never break, never lie down, never bend over for anybody");
@@ -116,8 +116,9 @@ namespace Voat.Tests.CommandTests
             }
 
             //Unsubscribe
-            blockCmd = new BlockCommand(domainReference.Type, domainReference.Name, true);
+            blockCmd = new BlockCommand(domainReference.Type, domainReference.Name, true).SetUserContext(user);
             blockResult = await blockCmd.Execute();
+            VoatAssert.IsValid(blockResult);
 
             //Ensure Subverse Subscriber Count Updated
             using (var db = new VoatDataContext())
@@ -169,9 +170,9 @@ namespace Voat.Tests.CommandTests
 
             //Sub a user to front
             var domainReference = new DomainReference(DomainType.Subverse, subName);
-            var subCmd = new SubscribeCommand(domainReference, SubscriptionAction.Toggle);
+            var subCmd = new SubscribeCommand(domainReference, SubscriptionAction.Toggle).SetUserContext(user);
             var subResult = await subCmd.Execute();
-
+            VoatAssert.IsValid(subResult);
 
             //Verify Front is created
             userSubQuery = new QueryUserSubscriptions(userName, CachePolicy.None);
@@ -181,7 +182,7 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(1, userSubResults[DomainType.Set].Count(), "First day on the job, you know what I learned? How to spot a murderer.");
             Assert.IsTrue(userSubResults[DomainType.Set].First() == new DomainReference(DomainType.Set, "Front", userName).FullName, "It was Keyser Soze, Agent Kujan. I mean the Devil himself. How do you shoot the Devil in the back? What if you miss?");
 
-            userSetQuery = new QueryUserSets(userName);
+            userSetQuery = new QueryUserSets(userName).SetUserContext(user);
             userSetResults = await userSetQuery.ExecuteAsync();
 
             Assert.IsNotNull(userSetResults, "What the cops never figured out, and what I know now, was that these men would never break, never lie down, never bend over for anybody");
@@ -208,8 +209,9 @@ namespace Voat.Tests.CommandTests
             }
 
             //Unsubscribe
-            subCmd = new SubscribeCommand(domainReference, SubscriptionAction.Toggle);
+            subCmd = new SubscribeCommand(domainReference, SubscriptionAction.Toggle).SetUserContext(user);
             subResult = await subCmd.Execute();
+            VoatAssert.IsValid(subResult);
 
             //Ensure Subverse Subscriber Count Updated
             using (var db = new VoatDataContext())

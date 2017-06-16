@@ -376,12 +376,7 @@ namespace Voat.Tests.CommandTests
                         //Verify recovery info
                         Assert.AreEqual(userAccount.Email, options.RecoveryEmailAddress);
                         Assert.IsNotNull(userAccount.LockoutEnd, "Lockout should be enabled");
-                        //CORE_PORT: Not available
-                        throw new NotImplementedException("Core Port not implemented");
-                        /*
-                        Assert.IsNotNull(userAccount.LockoutEndDateUtc, "Lockout should not be null");
-                        Assert.IsTrue(userAccount.LockoutEndDateUtc.Value.Subtract(DateTime.UtcNow) >= TimeSpan.FromDays(89), "Lockout be set to roughly 90 days");
-                        */
+                        Assert.IsTrue(userAccount.LockoutEnd.Value.Subtract(DateTime.UtcNow) >= TimeSpan.FromDays(89), "Lockout be set to roughly 90 days");
                        
                     }
                     else

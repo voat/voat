@@ -239,7 +239,7 @@ namespace Voat.Tests.CommandTests
             user = TestHelper.SetPrincipal(USERNAMES.Unit);
             var d = new DeleteSubmissionCommand(r.Response.ID, "This is content I hate").SetUserContext(user);
             var r2 = await d.Execute();
-            VoatAssert.IsValid(r);
+            VoatAssert.IsValid(r2);
 
             //verify
             using (var db = new Voat.Data.Repository(user))

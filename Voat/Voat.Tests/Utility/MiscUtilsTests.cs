@@ -82,13 +82,18 @@ namespace Voat.Tests.Utils
             List<string> acceptable = new List<string>() {
                 "://ichef.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test
                 "://ichef-1.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test part 2
+                "://ichef-1.bbci.co.uk/news/1024/media/images/82142000/jpg/_82142761_026611869-1.jpg", //'merica test part 3
+                "://ichef.bbci.co.uk/news/1024/media/images/82142000/jpg/_82142761_026611869-1.jpg", //'merica test part 4
                 "://news.bbcimg.co.uk/media/images/80755000/jpg/_80755021_163765270.jpg" //Yuro test
             };
             var expected = graph.Image.ToString();
 
-            var passed = acceptable.Any(x => expected.EndsWith(x, StringComparison.OrdinalIgnoreCase));
+            var passed = acceptable.Any(x => {
+                var result = expected.EndsWith(x, StringComparison.OrdinalIgnoreCase);
+                return result;
+            });
 
-            Assert.IsTrue(passed, "OpenGraph was unable to find an acceptable image path");
+            Assert.IsTrue(passed, $"OpenGraph was unable to find an acceptable image path. Found: \"{expected}\"");
         }
 
         [TestMethod]

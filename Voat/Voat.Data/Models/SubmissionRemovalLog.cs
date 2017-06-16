@@ -12,6 +12,7 @@ namespace Voat.Data.Models
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     public partial class SubmissionRemovalLog
     {
@@ -19,7 +20,8 @@ namespace Voat.Data.Models
         public string Moderator { get; set; }
         public System.DateTime CreationDate { get; set; }
         public string Reason { get; set; }
-    
-        public virtual Submission Submission { get; set; }
+
+        [NotMapped] //CORE_PORT: This seems to have EF CORE generate a SubmissionID1 column on inserts. See unit test: DeleteSubmission_Moderator 
+        public Submission Submission { get; set; }
     }
 }

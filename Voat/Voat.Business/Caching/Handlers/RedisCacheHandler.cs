@@ -88,7 +88,7 @@ namespace Voat.Caching
                 }
                 else if (type == RedisType.Set || type == RedisType.SortedSet)
                 {
-                    throw new InvalidOperationException("Set based values do not support GetItem");
+                    throw new InvalidOperationException($"Set based values do not support GetItem. CacheKey: {cacheKey}");
                 }
                 else
                 {
