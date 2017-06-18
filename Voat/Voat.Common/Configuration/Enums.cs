@@ -36,4 +36,10 @@ namespace Voat.Common
         /// </summary>
         Test = 3
     }
+    public enum Normalization
+    {
+        None = 0,
+        Lower = 1,
+        Upper = 2
+    }
 }

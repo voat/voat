@@ -33,6 +33,7 @@ using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
+using Voat.IO;
 using Voat.Utilities;
 
 namespace Voat.Domain
@@ -179,7 +180,8 @@ namespace Voat.Domain
                 result.FormattedContent = (submission.Type == 1 && String.IsNullOrEmpty(submission.FormattedContent) ? Formatting.FormatMessage(submission.Content, true) : submission.FormattedContent);
 
                 result.LastEditDate = submission.LastEditDate;
-                result.ThumbnailUrl = VoatPathHelper.ThumbnailPath(submission.Thumbnail, true, true);
+                result.ThumbnailUrl = FileManager.Instance.Uri(new FileKey(submission.Thumbnail, FileType.Thumbnail));
+                //result.ThumbnailUrl = VoatPathHelper.ThumbnailPath(submission.Thumbnail, true, true);
                 result.CommentCount = CommentCounter.CommentCount(submission.ID);
                 result.CreationDate = submission.CreationDate;
                 result.UpCount = (int)submission.UpCount;

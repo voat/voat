@@ -41,12 +41,12 @@ namespace Voat.Tests.QueryTests
     public class QueryMessageTests : BaseUnitTest
     {
         private string userName = USERNAMES.User50CCP;
-        private string subName = SUBVERSES.Unit;
 
         private static List<Domain.Models.Message> messages = new List<Domain.Models.Message>();
 
         public override void ClassInitialize()
         {
+            var user2 = "TestUser01";
             //create user inbox
             Message message = null;
 
@@ -59,28 +59,47 @@ namespace Voat.Tests.QueryTests
             message = response.Response;
             messages.Add(message);
 
-            user = TestHelper.SetPrincipal("TestUser01");
+            user = TestHelper.SetPrincipal(user2);
+            //Find message
+            var query = new QueryMessages(user, MessageTypeFlag.Private, MessageState.Unread, false).SetUserContext(user);
+            var inbox = query.Execute();
+            VoatAssert.IsValid(inbox);
+            message = inbox.FirstOrDefault(x => x.Sender == USERNAMES.User50CCP && x.Content == msg);
+            Assert.IsNotNull(message, "Can not find message in recipient inbox 1");
+
             msg = "1.1";
-            var cmdReply = new SendMessageReplyCommand(message.ID, msg).SetUserContext(user).SetUserContext(user);
+            var cmdReply = new SendMessageReplyCommand(message.ID, msg).SetUserContext(user);
             var responseReply = cmdReply.Execute().Result;
             VoatAssert.IsValid(responseReply);
-
-            message = responseReply.Response;
             messages.Add(message);
 
 
             user = TestHelper.SetPrincipal(userName);
+            //Find message
+            query = new QueryMessages(user, MessageTypeFlag.Private, MessageState.Unread, false).SetUserContext(user);
+            inbox = query.Execute();
+            VoatAssert.IsValid(inbox);
+            message = inbox.FirstOrDefault(x => x.Sender == user2 && x.Content == msg);
+            Assert.IsNotNull(message, "Can not find message in recipient inbox 2");
+
             msg = "1.1.1";
-            cmdReply = new SendMessageReplyCommand(message.ID, msg).SetUserContext(user).SetUserContext(user);
+            cmdReply = new SendMessageReplyCommand(message.ID, msg).SetUserContext(user);
             responseReply = cmdReply.Execute().Result;
             VoatAssert.IsValid(responseReply);
 
             message = responseReply.Response;
             messages.Add(message);
 
-            user = TestHelper.SetPrincipal("TestUser01");
+            user = TestHelper.SetPrincipal(user2);
+            //Find message
+            query = new QueryMessages(user, MessageTypeFlag.Private, MessageState.Unread, false).SetUserContext(user);
+            inbox = query.Execute();
+            VoatAssert.IsValid(inbox);
+            message = inbox.FirstOrDefault(x => x.Sender == USERNAMES.User50CCP && x.Content == msg);
+            Assert.IsNotNull(message, "Can not find message in recipient inbox 3");
+
             msg = "1.1.1.1";
-            cmdReply = new SendMessageReplyCommand(message.ID, msg).SetUserContext(user).SetUserContext(user);
+            cmdReply = new SendMessageReplyCommand(message.ID, msg).SetUserContext(user);
             responseReply = cmdReply.Execute().Result;
             VoatAssert.IsValid(responseReply);
 

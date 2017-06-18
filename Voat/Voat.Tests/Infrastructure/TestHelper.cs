@@ -107,8 +107,7 @@ namespace Voat.Tests.Infrastructure
                 var cmd = new CreateCommentCommand(submissionID, parentCommentID, content).SetUserContext(user);
                 var c = cmd.Execute().Result;
 
-                Assert.IsTrue(c.Success);
-                Assert.IsNotNull(c.Response);
+                VoatAssert.IsValid(c);
                 Assert.AreNotEqual(0, c.Response.ID);
 
                 return c.Response;

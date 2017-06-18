@@ -166,7 +166,7 @@ namespace Voat.Utilities.Components
         public override string MatchFound(Match match, string matchSource, object context)
         {
             string replace = String.Format("{0}{1}", match.Groups["prefix"].Value, match.Groups["user"].Value);
-            return String.Format("[{0}]({1})", replace, VoatUrlFormatter.UserProfile(match.Groups["user"].Value));
+            return String.Format("[{0}]({1})", replace, VoatUrlFormatter.UserProfile(match.Groups["user"].Value, new Common.PathOptions(true, true)));
         }
     }
 
@@ -180,7 +180,7 @@ namespace Voat.Utilities.Components
 
             ProcessLogic = delegate (Match m, string matchSource, object state)
             {
-                return String.Format("[{0}]({1})", m.Value, VoatUrlFormatter.Subverse(m.Groups["name"].Value + (m.Groups["fullPath"].Success ? m.Groups["fullPath"].Value : "")));
+                return String.Format("[{0}]({1})", m.Value, VoatUrlFormatter.Subverse(m.Groups["name"].Value + (m.Groups["fullPath"].Success ? m.Groups["fullPath"].Value : ""), new Common.PathOptions(true, true)));
             };
         }
 

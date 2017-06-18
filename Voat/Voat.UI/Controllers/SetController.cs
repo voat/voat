@@ -150,7 +150,7 @@ namespace Voat.Controllers
                             Description = "Discover Search",
                             Name = "No Idea",
                             MenuType = Models.ViewModels.MenuType.Discovery,
-                            BasePath = VoatPathHelper.BasePath(domainReference),
+                            BasePath = VoatUrlFormatter.BasePath(domainReference),
                             Sort = null
                         };
                         return ErrorView(new ErrorViewModel() { Title = "No Subscriptions!", Description = "You don't have any subscriptions so we have to show you this instead", Footer = "Subscribe to a subverse you silly goat" });
@@ -162,7 +162,7 @@ namespace Voat.Controllers
                             Description = "Discover Search",
                             Name = "No Idea",
                             MenuType = Models.ViewModels.MenuType.Discovery,
-                            BasePath = VoatPathHelper.BasePath(domainReference),
+                            BasePath = VoatUrlFormatter.BasePath(domainReference),
                             Sort = null
                         };
                         return ErrorView(new ErrorViewModel() { Title = "No Blocked Subs!", Description = "You don't have any blocked subs. Golf clap.", Footer = "Block some subs and this page will magically change!" });
@@ -194,7 +194,7 @@ namespace Voat.Controllers
                 ViewBag.NavigationViewModel = new NavigationViewModel() {
                     Name = domainReference.FullName,
                     Description = set.Description,
-                    BasePath = VoatPathHelper.BasePath(domainReference),
+                    BasePath = VoatUrlFormatter.BasePath(domainReference),
                     MenuType = (set.Type == (int)SetType.Front || set.Type == (int)SetType.Blocked ?  MenuType.Discovery : MenuType.Set)
                 };
                 return View("Details", model);

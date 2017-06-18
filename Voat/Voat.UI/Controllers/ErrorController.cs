@@ -98,7 +98,7 @@ namespace Voat.Controllers
                         errorModel.Footer = "Pushing F5 repeatedly will not help";
                         break;
                     case "throw":
-                        throw new InvalidProgramException();
+                        throw new InvalidOperationException("I was told to do this");
                         break;
                 }
             }

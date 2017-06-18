@@ -220,6 +220,19 @@ namespace Voat.Caching
             }
             return result;
         }
+
+        public override int SetLength(string cacheKey)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+
+            var result = 0;
+            if (_cache.ContainsKey(cacheKey))
+            {
+                result = _cache[cacheKey].Convert<ICollection>().Count;
+            }
+            return result;
+        }
+
         protected override void ProtectedPurge()
         {
             _cache = new ConcurrentDictionary<string, object>();

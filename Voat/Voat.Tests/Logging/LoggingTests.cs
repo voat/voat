@@ -73,7 +73,7 @@ namespace Voat.Tests.Logging
 
                 log.Log(info);
 
-                System.Threading.Thread.Sleep(500);
+                System.Threading.Thread.Sleep(1000);
 
                 using (var db = new VoatDataContext())
                 {

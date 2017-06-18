@@ -28,10 +28,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
 using Voat.Common.Components;
-using Voat.Common.Configuration;
 using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Http.Filters;
@@ -129,8 +126,8 @@ namespace Voat
                 RouteConfig.RegisterRoutes(routes);
             });
 
+            //Construct Statics
             FilePather.Instance = new FilePather(env.WebRootPath);
-
         }
     }
 }

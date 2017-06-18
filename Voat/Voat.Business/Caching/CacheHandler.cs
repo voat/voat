@@ -918,7 +918,7 @@ namespace Voat.Caching
             cacheKey = StandardizeCacheKey(cacheKey);
             return ItemExists(cacheKey, key, CacheType.Set);
         }
-
+        public abstract int SetLength(string cacheKey);
 
         #endregion
 

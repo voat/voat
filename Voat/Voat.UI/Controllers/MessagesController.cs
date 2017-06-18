@@ -105,7 +105,7 @@ namespace Voat.Controllers
                 Description = (String.IsNullOrEmpty(subverse) ? "Messages" : String.Format("v/{0} Smail", subverse)),
                 Name = name,
                 MenuType = menuType,
-                BasePath = (String.IsNullOrEmpty(subverse) ? suffix : String.Format("{0}/about{1}", VoatPathHelper.BasePath(new DomainReference(DomainType.Subverse, subverse)), suffix)),
+                BasePath = (String.IsNullOrEmpty(subverse) ? suffix : String.Format("{0}/about{1}", VoatUrlFormatter.BasePath(new DomainReference(DomainType.Subverse, subverse)), suffix)),
                 Sort = null
             };
         }

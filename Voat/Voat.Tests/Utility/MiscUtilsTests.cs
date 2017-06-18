@@ -28,6 +28,8 @@ using OpenGraph_Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Voat.Business.Utilities;
 using Voat.Common;
 using Voat.Tests.Infrastructure;
 using Voat.Utilities;
@@ -70,41 +72,35 @@ namespace Voat.Tests.Utils
 
         //[Ignore] //This fails often, ignoring.
         [TestMethod]
-        [TestCategory("Utility")]
-        [TestCategory("Utility.WebRequest")]
-        public void TestGetOpenGraphImageFromUri()
+        [TestCategory("Utility"), TestCategory("Utility.WebRequest"), TestCategory("ExternalHttp"), TestCategory("HttpResource")]
+        public async Task TestGetOpenGraphImageFromUri()
         {
-            //HACK: This test is most likely Geo Sensitive, thus it fails on a U.S. network.
-            //This test needs to be performed on static server based resource instead.
+
             Uri testUri = new Uri("http://www.bbc.com/news/technology-32194196");
-            var graph = OpenGraph.ParseUrl(testUri);
+            using (var httpResource = new HttpResource(testUri))
+            {
+                await httpResource.Execute();
 
-            List<string> acceptable = new List<string>() {
-                "://ichef.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test
-                "://ichef-1.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test part 2
-                "://ichef-1.bbci.co.uk/news/1024/media/images/82142000/jpg/_82142761_026611869-1.jpg", //'merica test part 3
-                "://ichef.bbci.co.uk/news/1024/media/images/82142000/jpg/_82142761_026611869-1.jpg", //'merica test part 4
-                "://news.bbcimg.co.uk/media/images/80755000/jpg/_80755021_163765270.jpg" //Yuro test
-            };
-            var expected = graph.Image.ToString();
+                List<string> acceptable = new List<string>() {
+                    "://ichef.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test
+                    "://ichef-1.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test part 2
+                    "://ichef-1.bbci.co.uk/news/1024/media/images/82142000/jpg/_82142761_026611869-1.jpg", //'merica test part 3
+                    "://ichef.bbci.co.uk/news/1024/media/images/82142000/jpg/_82142761_026611869-1.jpg", //'merica test part 4
+                    "://news.bbcimg.co.uk/media/images/80755000/jpg/_80755021_163765270.jpg" //Yuro test
+                };
 
-            var passed = acceptable.Any(x => {
-                var result = expected.EndsWith(x, StringComparison.OrdinalIgnoreCase);
-                return result;
-            });
+                Assert.IsNotNull(httpResource.Image, "Expeced a valid Image Uri");
+                var expected = httpResource.Image.ToString();
 
-            Assert.IsTrue(passed, $"OpenGraph was unable to find an acceptable image path. Found: \"{expected}\"");
-        }
+                var passed = acceptable.Any(x => {
+                    var result = expected.EndsWith(x, StringComparison.OrdinalIgnoreCase);
+                    return result;
+                });
 
-        [TestMethod]
-        [TestCategory("Utility")]
-        [TestCategory("Utility.WebRequest")]
-        public void TestGetTitleFromUri()
-        {
-            const string testUri = "http://www.google.com";
-            string result = UrlUtility.GetTitleFromUri(testUri);
+                Assert.IsTrue(passed, $"HttpResource was unable to find an acceptable image path. Found: \"{expected}\"");
+            }
+           
 
-            Assert.AreEqual("Google", result, "Unable to extract title from given Uri.");
         }
 
         [TestMethod]

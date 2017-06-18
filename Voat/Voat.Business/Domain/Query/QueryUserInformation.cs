@@ -30,6 +30,7 @@ using Voat.Utilities;
 using System.Linq;
 using Voat.Common;
 using System.Threading.Tasks;
+using Voat.IO;
 
 namespace Voat.Domain.Query
 {
@@ -89,7 +90,8 @@ namespace Voat.Domain.Query
                 {
                     if (data.Badges != null)
                     {
-                        data.Badges.ToList().ForEach(x => x.Graphic = VoatPathHelper.BadgePath(null, x.Graphic, true, true));
+                        data.Badges.ToList().ForEach(x => x.Graphic = FileManager.Instance.Uri(new FileKey(x.Graphic, FileType.Badge)));
+                        //data.Badges.ToList().ForEach(x => x.Graphic = VoatPathHelper.BadgePath(null, x.Graphic, true, true));
                     }
                     var moderates = db.GetSubversesUserModerates(_userToRetrieve);
                     if (moderates != null)

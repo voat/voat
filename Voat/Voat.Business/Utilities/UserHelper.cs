@@ -548,18 +548,22 @@ namespace Voat.Utilities
             var identity = user.Identity;
             if (identity.IsAuthenticated)
             {
-                string userName = identity.Name;
-                string cacheKey = CachingKey.UserSavedItems(type, userName);
-                if (!CacheHandler.Instance.Exists(cacheKey))
-                {
-                    var q = new QueryUserSaves(type).SetUserContext(user);
-                    var d = q.Execute();
-                    return d.Contains(id);
-                }
-                else
-                {
-                    return CacheHandler.Instance.SetExists(cacheKey, id);
-                }
+                var q = new QueryUserSaves(type).SetUserContext(user);
+                var d = q.Execute();
+                return d.Contains(id);
+
+                //string userName = identity.Name;
+                //string cacheKey = CachingKey.UserSavedItems(type, userName);
+                //if (!CacheHandler.Instance.Exists(cacheKey))
+                //{
+                //    var q = new QueryUserSaves(type).SetUserContext(user);
+                //    var d = q.Execute();
+                //    return d.Contains(id);
+                //}
+                //else
+                //{
+                //    return CacheHandler.Instance.SetExists(cacheKey, id);
+                //}
             }
             return null;
         }

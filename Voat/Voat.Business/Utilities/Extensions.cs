@@ -57,7 +57,7 @@ namespace Voat
                         path = String.Format("/v/{0}/{1}", domainReference.Name, sort == null ? "" : sort.Value.ToString().ToLower());
                         break;
                     case Domain.Models.DomainType.Set:
-                        path = String.Format("{0}/{1}", Utilities.VoatPathHelper.BasePath(domainReference), sort == null ? "" : sort.Value.ToString().ToLower());
+                        path = String.Format("{0}/{1}", Utilities.VoatUrlFormatter.BasePath(domainReference), sort == null ? "" : sort.Value.ToString().ToLower());
                         break;
                     case Domain.Models.DomainType.User:
                         path = String.Format("/u/{0}", domainReference.Name);

@@ -186,6 +186,7 @@ namespace Voat.Caching
 
         bool SetExists<T>(string cacheKey, T key);
 
+        int SetLength(string cacheKey);
         #endregion SetBased
 
         #region ListBased

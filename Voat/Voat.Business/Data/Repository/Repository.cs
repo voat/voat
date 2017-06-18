@@ -51,6 +51,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Voat.Common;
 using Voat.Common.Components;
+using Voat.IO;
 
 namespace Voat.Data
 {
@@ -1738,7 +1739,7 @@ namespace Voat.Data
                     };
 
                     _db.SubmissionRemovalLog.Add(removalLog);
-                    var contentPath = VoatPathHelper.CommentsPagePath(submission.Subverse, submission.ID);
+                    var contentPath = VoatUrlFormatter.CommentsPagePath(submission.Subverse, submission.ID);
 
                     // notify submission author that his submission has been deleted by a moderator
                     var message = new Domain.Models.SendMessage()
@@ -2127,7 +2128,7 @@ namespace Voat.Data
                             ex.Data["CommentID"] = commentID;
                             throw ex;
                         }
-                        var contentPath = VoatPathHelper.CommentsPagePath(submission.Subverse, comment.SubmissionID.Value, comment.ID);
+                        var contentPath = VoatUrlFormatter.CommentsPagePath(submission.Subverse, comment.SubmissionID.Value, comment.ID);
 
                         // notify comment author that his comment has been deleted by a moderator
                         var message = new Domain.Models.SendMessage()
@@ -2707,7 +2708,7 @@ namespace Voat.Data
 
                         Domain.Models.Comment comment;
                         //assume every comment type has a submission ID contained in it
-                        var cmd = new CreateCommentCommand(m.SubmissionID.Value, m.CommentID, messageContent);
+                        var cmd = new CreateCommentCommand(m.SubmissionID.Value, m.CommentID, messageContent).SetUserContext(User);
                         var response = await cmd.Execute();
 
                         if (response.Success)
@@ -3594,7 +3595,9 @@ namespace Voat.Data
             //var userPreferences = await GetUserPreferences(userName);
 
             userInfo.Bio = String.IsNullOrWhiteSpace(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio;
-            userInfo.ProfilePicture = VoatPathHelper.AvatarPath(userName, userPreferences.Avatar, true, true, !String.IsNullOrEmpty(userPreferences.Avatar));
+            
+            userInfo.ProfilePicture = FileManager.Instance.Uri(new FileKey() { ID = userPreferences.Avatar, FileType = FileType.Avatar }, new PathOptions() { FullyQualified = true, ProvideProtocol = true });
+            //userInfo.ProfilePicture = VoatPathHelper.AvatarPath(userName, userPreferences.Avatar, true, true, !String.IsNullOrEmpty(userPreferences.Avatar));
 
             //Task.WaitAll(tasks);
             await Task.WhenAll(tasks).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
@@ -5524,23 +5527,26 @@ namespace Voat.Data
                             // delete avatar
                             if (userPrefs.Avatar != null)
                             {
-                                var avatarFilename = userPrefs.Avatar;
-                                if (VoatSettings.Instance.UseContentDeliveryNetwork)
-                                {
-                                    // try to delete from CDN
-                                    CloudStorageUtility.DeleteBlob(avatarFilename, "avatars");
-                                }
-                                else
-                                {
-                                    // try to remove from local FS - I think this code is retarded
-                                    string avatarPath = FilePather.Instance.LocalPath(VoatSettings.Instance.DestinationPathAvatars, userName + ".jpg");
+                                FileManager.Instance.Delete(new FileKey(userPrefs.Avatar, FileType.Avatar));
+                                //CORE_PORT: Original Code
+                                //var avatarFilename = userPrefs.Avatar;
 
-                                    // the avatar file was not found at expected path, abort
-                                    if (File.Exists(avatarPath))
-                                    {
-                                        File.Delete(avatarPath);
-                                    }
-                                }
+                                //if (VoatSettings.Instance.UseContentDeliveryNetwork)
+                                //{
+                                //    // try to delete from CDN
+                                //    CloudStorageUtility.DeleteBlob(avatarFilename, "avatars");
+                                //}
+                                //else
+                                //{
+                                //    // try to remove from local FS - I think this code is retarded
+                                //    string avatarPath = FilePather.Instance.LocalPath(VoatSettings.Instance.DestinationPathAvatars, userName + ".jpg");
+
+                                //    // the avatar file was not found at expected path, abort
+                                //    if (File.Exists(avatarPath))
+                                //    {
+                                //        File.Delete(avatarPath);
+                                //    }
+                                //}
                             }
 
 

@@ -43,31 +43,31 @@ namespace Voat.Tests.Utils
         [TestCategory("Utility"), TestCategory("Extentions")]
         public void TestRelativePathingTests()
         {
-            var parts = "somefile.txt".ToRelativePathParts().ToList();
+            var parts = "somefile.txt".ToPathParts().ToList();
             Assert.AreEqual(1, parts.Count);
             Assert.AreEqual("somefile.txt", parts[0]);
 
-            parts = "~/somefile.txt".ToRelativePathParts().ToList();
+            parts = "~/somefile.txt".ToPathParts().ToList();
             Assert.AreEqual(1, parts.Count);
             Assert.AreEqual("somefile.txt", parts[0]);
 
-            parts = "~/folder/somefile.txt".ToRelativePathParts().ToList();
+            parts = "~/folder/somefile.txt".ToPathParts().ToList();
             Assert.AreEqual(2, parts.Count);
             Assert.AreEqual("folder", parts[0]);
             Assert.AreEqual("somefile.txt", parts[1]);
 
-            parts = "\\folder\\somefile.txt".ToRelativePathParts().ToList();
+            parts = "\\folder\\somefile.txt".ToPathParts().ToList();
             Assert.AreEqual(2, parts.Count);
             Assert.AreEqual("folder", parts[0]);
             Assert.AreEqual("somefile.txt", parts[1]);
 
-            parts = "..\\folder\\somefile.txt".ToRelativePathParts().ToList();
+            parts = "..\\folder\\somefile.txt".ToPathParts().ToList();
             Assert.AreEqual(3, parts.Count);
             Assert.AreEqual("..", parts[0]);
             Assert.AreEqual("folder", parts[1]);
             Assert.AreEqual("somefile.txt", parts[2]);
 
-            parts = new string[] { "~/one/two", "..\\folder\\somefile.txt" }.ToRelativePathParts().ToList();
+            parts = new string[] { "~/one/two", "..\\folder\\somefile.txt" }.ToPathParts().ToList();
             Assert.AreEqual(5, parts.Count);
             Assert.AreEqual("one", parts[0]);
             Assert.AreEqual("two", parts[1]);

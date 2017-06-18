@@ -242,7 +242,11 @@ namespace Voat.Caching
             }
             return found;
         }
-
+        public override int SetLength(string cacheKey)
+        {
+            cacheKey = StandardizeCacheKey(cacheKey);
+            return (int)GetDatabase(ConnectionType.Read).SetLength(cacheKey);
+        }
         public override void ListAdd<K>(string cacheKey, K item)
         {
             cacheKey = StandardizeCacheKey(cacheKey);

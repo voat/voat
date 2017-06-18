@@ -30,6 +30,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Configuration;
 
 namespace Voat.Tests.Infrastructure
 {
@@ -108,6 +109,19 @@ namespace Voat.Tests.Infrastructure
                 callerName,
                 String.IsNullOrEmpty(additionalData) ? "" : String.Format("-{0}", additionalData));
 
+        }
+
+        protected string ExpectedProtocol
+        {
+            get => VoatSettings.Instance.ForceHTTPS ? "https" : "http";
+        }
+        public string SiteRoot
+        {
+            get
+            {
+
+                return $"{ExpectedProtocol}://{VoatSettings.Instance.SiteDomain}";
+            }
         }
     }
 }

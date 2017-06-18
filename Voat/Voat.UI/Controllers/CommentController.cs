@@ -171,7 +171,7 @@ namespace Voat.Controllers
                 Description = "Subverse",
                 Name = subverseName,
                 MenuType = MenuType.Subverse,
-                BasePath = VoatPathHelper.BasePath(new DomainReference(DomainType.Subverse, subverseName)),
+                BasePath = VoatUrlFormatter.BasePath(new DomainReference(DomainType.Subverse, subverseName)),
                 Sort = null
             };
 

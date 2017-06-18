@@ -59,6 +59,7 @@ namespace Voat.Configuration
         public string DestinationPathAvatars { get; set; } = "~/Storage/Avatars";
 
         public string DestinationPathThumbs { get; set; } = "~/Storage/Thumbs";
+
         public string EmailAddress { get; set; } = "noreply@voat.co";
 
         public string EmailServiceKey { get; set; } = "";

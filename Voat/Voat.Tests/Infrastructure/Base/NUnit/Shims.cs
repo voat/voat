@@ -24,6 +24,8 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Voat.Domain.Command;
 
@@ -113,6 +115,22 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
         {
             Assert.ThrowsException<T>(action);
         }
+        /// <summary>
+        /// Verifies Query returns
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="response"></param>
+        /// <param name="allowEmpty"></param>
+        public static void IsValid<T>(IEnumerable<T> response, bool allowEmpty = false)
+        {
+            Assert.IsNotNull("Query response is null");
+            if (!allowEmpty && response.Count() <= 0)
+            {
+                Assert.Fail("Query response is expected to contain elements");
+            }
+        }
+
+
         public static void IsValid<T>(CommandResponse<T> response, Status status = Status.Success, string message = null)
         {
             IsValid((CommandResponse)response, status, message);

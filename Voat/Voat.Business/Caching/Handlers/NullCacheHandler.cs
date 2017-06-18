@@ -92,5 +92,9 @@ namespace Voat.Caching
         protected override void ProtectedPurge()
         {
         }
+        public override int SetLength(string cacheKey)
+        {
+            return 0;
+        }
     }
 }

@@ -128,7 +128,14 @@ namespace Voat.Common
         {
             return String.Equals(string1, string2, StringComparison.OrdinalIgnoreCase);
         }
-
+        public static bool IsTrimSafeNullOrEmpty(this string text)
+        {
+            if (!String.IsNullOrEmpty(text.TrimSafe()))
+            {
+                return true;
+            }
+            return false;
+        }
         public static string TrimSafe(this string text)
         {
             if (!String.IsNullOrEmpty(text))

@@ -31,22 +31,13 @@ using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Common.Components;
 using Voat.Configuration;
+using Voat.IO;
 using Voat.Utilities.Components;
 
 namespace Voat.Utilities
 {
     //interface for dealing with writing files 
-    public interface IFileManager<K, C>
-    {
-        void Upload(K key, C content);
-
-        string Uri(K key);
-
-        bool Exists(K key);
-
-        void Delete(K key);
-    }
-
+   
     public static class ThumbGenerator
     {
         private static string _destinationPathThumbs = null;
@@ -94,6 +85,7 @@ namespace Voat.Utilities
         // generate a thumbnail while removing transparency and preserving aspect ratio
         public static async Task<string> GenerateThumbFromImageUrl(string imageUrl, int timeoutInMilliseconds = 3000, bool purgeTempFile = true)
         {
+            throw new ApplicationException("Direct web requests are not permitted any longer");
             //TODO: Return NULL if file lenght is zero as thumbnail did not generate to local disk
             var randomFileName = GenerateRandomFilename();
             var tempPath = FilePather.Instance.LocalPath(VoatSettings.Instance.DestinationPathThumbs, $"{randomFileName}.jpg");
@@ -111,12 +103,14 @@ namespace Voat.Utilities
                 // call upload to storage method if CDN config is enabled
                 if (VoatSettings.Instance.UseContentDeliveryNetwork)
                 {
-                    await CloudStorageUtility.UploadBlobToStorageAsync(tempPath, "thumbs");
-                    if (purgeTempFile)
-                    {
-                        // delete local file after uploading to CDN
-                        File.Delete(tempPath);
-                    }
+                    await FileManager.Instance.Upload(new FileKey(tempPath, FileType.Thumbnail), new Uri(tempPath));
+                    //CORE_PORT: Original code
+                    //await CloudStorageUtility.UploadBlobToStorageAsync(tempPath, "thumbs");
+                    //if (purgeTempFile)
+                    //{
+                    //    // delete local file after uploading to CDN
+                    //    File.Delete(tempPath);
+                    //}
                 }
                 return Path.GetFileName(tempPath);
             }
@@ -127,7 +121,7 @@ namespace Voat.Utilities
 
         }
 
-            //CORE_PORT: Image handling has changed in core, commenting out method until we know what we are doing
+        //CORE_PORT: Image handling has changed in core, commenting out method until we know what we are doing
         public static async Task<bool> GenerateAvatar(object inputImage, string userName, string mimetype, bool purgeTempFile = true)
         {
             throw new NotImplementedException("Core Port CacheHandler.ExpireItem");
@@ -173,29 +167,15 @@ namespace Voat.Utilities
             }
         }
         */
-            // Generate a random filename for a thumbnail and make sure that the file does not exist.
+        // Generate a random filename for a thumbnail and make sure that the file does not exist.
         private static string GenerateRandomFilename()
         {
-            string fileName;
+            string fileName = null;
 
-            // if CDN flag is active, check if file exists on CDN, otherwise check if file exists on local storage
-            if (VoatSettings.Instance.UseContentDeliveryNetwork)
+            do
             {
-                // make sure blob with same name doesn't exist already
-                do
-                {
-                    fileName = Guid.NewGuid().ToString();
-                } while (CloudStorageUtility.BlobExists(fileName, "thumbs"));
-
                 fileName = Guid.NewGuid().ToString();
-            }
-            else
-            {
-                do
-                {
-                    fileName = Guid.NewGuid().ToString();
-                } while (File.Exists(FilePather.Instance.LocalPath(VoatSettings.Instance.DestinationPathThumbs, fileName)));
-            }
+            } while (FileManager.Instance.Exists(new FileKey(fileName, FileType.Thumbnail)));
 
             return fileName;
         }
@@ -203,6 +183,8 @@ namespace Voat.Utilities
         
         public static async Task<string> GenerateThumbFromWebpageUrl(string websiteUrl, bool purgeTempFile = true)
         {
+            throw new ApplicationException("Direct web requests are not permitted any longer");
+
             var extension = Path.GetExtension(websiteUrl);
             var imageExtensions = new string[] { ".jpg", ".png", ".gif", ".jpeg" };
 

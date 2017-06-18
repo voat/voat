@@ -28,12 +28,16 @@ using System.Diagnostics;
 using Voat.Utilities;
 using Voat.Utilities.Components;
 using Voat.Tests.Infrastructure;
+using Voat.Configuration;
 
 namespace Voat.Tests.Utils
 {
     [TestClass]
     public class ContentProcessorTests : BaseUnitTest
     {
+
+      
+
         [TestMethod]
         [TestCategory("Content Processor")]
         [TestCategory("Formatting")]
@@ -42,7 +46,7 @@ namespace Voat.Tests.Utils
             string content = "[](http://somesite.com/someimage.png)";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == content);
+            Assert.AreEqual(content, processed);
         }
 
         [TestMethod]
@@ -53,7 +57,7 @@ namespace Voat.Tests.Utils
             string content = "@user ~~~ @user ~~~ @user ~~~ @user ~~~";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "[@user](https://voat.co/user/user) ~~~ @user ~~~ [@user](https://voat.co/user/user) ~~~ @user ~~~");
+            Assert.AreEqual($"[@user]({ExpectedProtocol}://voat.co/user/user) ~~~ @user ~~~ [@user]({ExpectedProtocol}://voat.co/user/user) ~~~ @user ~~~", processed);
         }
 
         [TestMethod]
@@ -64,7 +68,7 @@ namespace Voat.Tests.Utils
             string content = "@user ~~~ @user ~~~ @user ~~~ @user ~~~ @user ~~~";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "[@user](https://voat.co/user/user) ~~~ @user ~~~ [@user](https://voat.co/user/user) ~~~ @user ~~~ [@user](https://voat.co/user/user) ~~~");
+            Assert.AreEqual($"[@user]({ExpectedProtocol}://voat.co/user/user) ~~~ @user ~~~ [@user]({ExpectedProtocol}://voat.co/user/user) ~~~ @user ~~~ [@user]({ExpectedProtocol}://voat.co/user/user) ~~~", processed);
         }
 
         [TestMethod]
@@ -75,7 +79,7 @@ namespace Voat.Tests.Utils
             string content = "@user ~~~ @user";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "[@user](https://voat.co/user/user) ~~~ [@user](https://voat.co/user/user)");
+            Assert.AreEqual($"[@user]({SiteRoot}/user/user) ~~~ [@user]({SiteRoot}/user/user)", processed);
         }
 
         [TestMethod]
@@ -86,7 +90,7 @@ namespace Voat.Tests.Utils
             string content = "~~~ @user ~~~ @user";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "~~~ @user ~~~ [@user](https://voat.co/user/user)");
+            Assert.AreEqual($"~~~ @user ~~~ [@user]({SiteRoot}/user/user)", processed);
         }
 
         [TestMethod]
@@ -100,7 +104,7 @@ namespace Voat.Tests.Utils
                             ~~~";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == content);
+            Assert.AreEqual(content, processed);
         }
 
         [TestMethod]
@@ -111,7 +115,7 @@ namespace Voat.Tests.Utils
             string content = "http://voat.co ~~~ http://voat.co ~~~";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == "[http://voat.co](http://voat.co) ~~~ http://voat.co ~~~");
+            Assert.AreEqual("[http://voat.co](http://voat.co) ~~~ http://voat.co ~~~", processed);
         }
 
         [TestMethod]
@@ -122,7 +126,7 @@ namespace Voat.Tests.Utils
             string content = "@userName";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.IsTrue(processed == String.Format("[{0}]({1})", content, "https://voat.co/user/userName"));
+            Assert.AreEqual($"[{content}]({SiteRoot}/user/userName)", processed);
         }
 
         [TestMethod]
@@ -133,7 +137,7 @@ namespace Voat.Tests.Utils
             string content = "/v/VoatIs";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.AreEqual(String.Format("[{0}]({1})", content, "https://voat.co" + content), processed);
+            Assert.AreEqual($"[{content}]({SiteRoot}{content})", processed);
         }
 
         [TestMethod]
@@ -155,7 +159,7 @@ namespace Voat.Tests.Utils
             string content = "/v/somesub/comments/3333#submissionTop";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.AreEqual(String.Format("[{0}](https://voat.co{1})", content, content), processed);
+            Assert.AreEqual($"[{content}]({SiteRoot}{content})", processed);
         }
 
         [TestMethod]
@@ -166,7 +170,7 @@ namespace Voat.Tests.Utils
             string content = "/v/VoatIs/new";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.AreEqual(String.Format("[{0}]({1})", content, "https://voat.co" + content), processed);
+            Assert.AreEqual($"[{content}]({SiteRoot}{content})", processed);
         }
 
         [TestMethod]
@@ -177,7 +181,7 @@ namespace Voat.Tests.Utils
             string content = "/v/VoatIs/top";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.AreEqual(String.Format("[{0}]({1})", content, "https://voat.co" + content), processed);
+            Assert.AreEqual($"[{content}]({SiteRoot}{content})", processed);
         }
 
         [TestMethod]
@@ -188,7 +192,7 @@ namespace Voat.Tests.Utils
             string content = "/v/VoatIs/NotValid";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.AreEqual(String.Format("[{0}]({1})/NotValid", "/v/VoatIs", "https://voat.co/v/VoatIs"), processed);
+            Assert.AreEqual($"[/v/VoatIs]({SiteRoot}/v/VoatIs)/NotValid", processed);
         }
 
         [TestMethod]
@@ -204,7 +208,7 @@ namespace Voat.Tests.Utils
             string content = "I have enabled this: v/api and r/golf matching [link](http://voat.co)";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.AreEqual("I have enabled this: [v/api](https://voat.co/v/api) and [r/golf](https://np.reddit.com/r/golf) matching [link](http://voat.co)", processed);
+            Assert.AreEqual($"I have enabled this: [v/api]({SiteRoot}/v/api) and [r/golf](https://np.reddit.com/r/golf) matching [link](http://voat.co)", processed);
         }
 
         [TestMethod]
@@ -215,12 +219,12 @@ namespace Voat.Tests.Utils
             string content = "-@User";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.AreEqual("[@User](https://voat.co/user/User)", processed);
+            Assert.AreEqual($"[@User]({SiteRoot}/user/User)", processed);
 
             content = "-/u/User";
 
             processed = ContentProcessor.Instance.Process(content, ProcessingStage.Outbound, null);
-            Assert.AreEqual("[/u/User](https://voat.co/user/User)", processed);
+            Assert.AreEqual($"[/u/User]({SiteRoot}/user/User)", processed);
         }
 
         [TestMethod]
@@ -231,7 +235,7 @@ namespace Voat.Tests.Utils
             string content = "-@user";
 
             string processed = ContentProcessor.Instance.Process(content, ProcessingStage.InboundPostSave, null);
-            //Assert.IsTrue(processed == "[@user](https://voat.co/user/user)");
+            //Assert.AreEqual("[@user](https://voat.co/user/user)");
 
             content = "@user";
             processed = ContentProcessor.Instance.Process(content, ProcessingStage.InboundPostSave, null);
@@ -290,12 +294,12 @@ namespace Voat.Tests.Utils
             //Assert.IsTrue(content == processed);
 
             //now we do
-            Assert.AreEqual(String.Format("[{0}](https://voat.co/v/VoatIs)", content), processed);
+            Assert.AreEqual($"[{content}]({ExpectedProtocol}://voat.co/v/VoatIs)", processed);
         }
     }
 
     [TestClass]
-    public class MarkdownFormattingTests
+    public class MarkdownFormattingTests : BaseUnitTest
     {
         [TestMethod]
         [TestCategory("Utility")]
@@ -452,12 +456,12 @@ namespace Voat.Tests.Utils
             //Bug Found Here: https://voat.co/v/AskVoat/1352378/6588193
             //And yes, typo left on purpose because Mick needs spell check for user names.
             string input = "<sub>@Akto, we'll need to have the above poster [hugged] (keep that to yourself, Dear Leader)</sub>";
-            string expected = "<p><sub><a href=\"https://voat.co/user/Akto\">@Akto</a>, we'll need to have the above poster [hugged] (keep that to yourself, Dear Leader)</sub></p>";
+            string expected = $"<p><sub><a href=\"{SiteRoot}/user/Akto\">@Akto</a>, we'll need to have the above poster [hugged] (keep that to yourself, Dear Leader)</sub></p>";
 
             string actual = Formatting.FormatMessage(input);
 
             Assert.AreEqual(expected, actual);
         }
-
+       
     }
 }

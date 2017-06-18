@@ -33,7 +33,7 @@ namespace Voat.Common.Components
         {
             List<string> paths = new List<string>();
             paths.Add(root);
-            paths.AddRange(relativePaths.ToRelativePathParts());
+            paths.AddRange(relativePaths.ToPathParts());
             return paths;
         }
 

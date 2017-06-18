@@ -23,6 +23,7 @@
 #endregion LICENSE
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,29 +34,29 @@ using Voat.Domain.Models;
 
 namespace Voat.Domain.Query
 {
-  
-    public class QueryUserSaves : CachedQuery<ISet<int>>
+    public class QueryUserSaves : Query<ISet<int>>
     {
         private ContentType _type;
 
-        public QueryUserSaves(ContentType type) : base(new CachePolicy(CachingTimeSpan.UserData))
+        public QueryUserSaves(ContentType type) : base()
         {
             _type = type;
         }
 
-        public override string CacheKey
+        public override async Task<ISet<int>> ExecuteAsync()
         {
-            get { throw new NotImplementedException(); }
+            DemandAuthentication();
+
+            var handler = CacheHandler.Instance;
+            var cacheKey = CachingKey.UserSavedItems(_type, User.Identity.Name);
+            if (!handler.Exists(cacheKey))
+            {
+                handler.Replace(cacheKey, await GetData(), TimeSpan.FromMinutes(30));
+            }
+            return new CacheSetAccessor<int>(cacheKey);
         }
 
-        protected override string FullCacheKey
-        {
-            get
-            {
-                return CachingKey.UserSavedItems(_type, UserName);
-            }
-        }
-        protected override async Task<ISet<int>> GetData()
+        protected async Task<ISet<int>> GetData()
         {
             DemandAuthentication();
 

@@ -34,6 +34,7 @@ using Voat.Domain.Query;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Voat.Business.Utilities;
 
 namespace Voat.Controllers
 {
@@ -107,27 +108,34 @@ namespace Voat.Controllers
 
         // GET: title from Uri
         [Authorize]
-        public JsonResult TitleFromUri()
+        public async Task<JsonResult> TitleFromUri()
         {
-            //CORE_PORT: Ported correctly?
-            //var uri = Request.Params["uri"];
             var uri = Request.Form["uri"].FirstOrDefault();
 
-            string title = UrlUtility.GetTitleFromUri(uri);
-
-            if (title != null)
+            //Old Code:
+            //string title = UrlUtility.GetTitleFromUri(uri);
+            using (var httpResource = new HttpResource(uri))
             {
-                title = title.StripUnicode();
-                var resultList = new List<string>
+                await httpResource.Execute();
+
+                string title = httpResource.Title;
+
+                if (title != null)
+                {
+                    title = title.StripUnicode();
+                    var resultList = new List<string>
                 {
                     title
                 };
 
-                return Json(resultList /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
-            }
+                    return Json(resultList /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
+                }
 
-            Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            return Json("Bad request." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("Bad request." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
+
+
+            }
         }
 
         // GET: subverse names containing search term (used for autocomplete on new submission views)

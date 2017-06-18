@@ -69,7 +69,9 @@ namespace Voat.Tests.CommandTests
         [TestCategory("User"), TestCategory("Command"), TestCategory("Query")]
         public async Task UserSaves()
         {
-            var userName = "UnitTestUser20";
+            var userName = "UserSaves";
+            TestDataInitializer.CreateUser("UserSaves");
+
             var bio = Guid.NewGuid().ToString();
             var user = TestHelper.SetPrincipal(userName);
 

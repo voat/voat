@@ -82,12 +82,16 @@ namespace Voat.Utilities
         }
 
         // return remote page title from URI
+        [Obsolete("Use HttpResource", true)]
         public static string GetTitleFromUri(string @remoteUri)
         {
             try
             {
+                throw new ApplicationException("Direct web requests are not permitted any longer");
+
                 // try using Open Graph to get target page title
                 var graph = OpenGraph.ParseUrl(@remoteUri, "Voat.co OpenGraph Parser");
+                
                 if (!string.IsNullOrEmpty(graph.Title))
                 {
                     var tmpStringWriter = new StringWriter();
@@ -98,7 +102,7 @@ namespace Voat.Utilities
                 // Open Graph parsing failed, try getting HTML TITLE tag instead
                 HtmlWeb htmlWeb = new HtmlWeb();
                 HtmlDocument htmlDocument = htmlWeb.Load(@remoteUri);
-
+                
                 if (htmlDocument != null)
                 {
                     var titleNode = htmlDocument.DocumentNode.Descendants("title").SingleOrDefault();
@@ -114,29 +118,6 @@ namespace Voat.Utilities
             {
                 return null;
             }
-        }
-
-        // return youtube video id from url
-        public static string GetVideoIdFromUrl(string completeUri)
-        {
-            Regex youtubeRegexPattern = new Regex(@"youtu(?:\.be|be\.com)/(?:.*v(?:/|=)|(?:.*/)?)([a-zA-Z0-9-_]+)", RegexOptions.IgnoreCase);
-            Regex vimeoRegexPattern = new Regex(@"vimeo\.com/(?:.*#|.*/)?([0-9]+)", RegexOptions.IgnoreCase);
-
-            Match youtubeRegexMatch = youtubeRegexPattern.Match(completeUri);
-            Match vimeoRegexMatch = vimeoRegexPattern.Match(completeUri);
-
-            if (youtubeRegexMatch.Success)
-            {
-                return youtubeRegexMatch.Groups[1].Value;
-            }
-
-            if (vimeoRegexMatch.Success)
-            {
-                return vimeoRegexMatch.Groups[1].Value;
-            }
-
-            // match not found
-            return "Error: regex video ID match failed.";
         }
     }
 }

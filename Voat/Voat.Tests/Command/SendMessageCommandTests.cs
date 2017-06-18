@@ -199,7 +199,7 @@ namespace Voat.Tests.CommandTests
             VoatAssert.IsValid(response);
 
             var firstMessage = response.Response;
-
+            var idToRespondTo = 0;
             //Ensure first msg is in db
             using (var db = new VoatDataContext())
             {
@@ -215,7 +215,7 @@ namespace Voat.Tests.CommandTests
                                 && x.Type == (int)Domain.Models.MessageType.Sent
                                 //&& x.Direction == (int)Domain.Models.MessageDirection.OutBound
                               select x).FirstOrDefault();
-                Assert.IsNotNull(record, "Can not find outbound in database");
+                Assert.IsNotNull(record, "Can not find sent in database");
 
                 record = (from x in db.Message
                           where
@@ -229,17 +229,20 @@ namespace Voat.Tests.CommandTests
                             && x.Type == (int)Domain.Models.MessageType.Private
                             //&& x.Direction == (int)Domain.Models.MessageDirection.InBound
                           select x).FirstOrDefault();
+                Assert.IsNotNull(record, "Can not find message in database");
+
+                idToRespondTo = record.ID;
             }
 
+            //reply
             user = TestHelper.SetPrincipal(recipient);
-
-            var replyCmd = new SendMessageReplyCommand(firstMessage.ID, $"Reply to {firstMessage.ID.ToString()}").SetUserContext(user);
+            var replyCmd = new SendMessageReplyCommand(idToRespondTo, $"Reply to {idToRespondTo.ToString()}").SetUserContext(user);
             var replyResponse = await replyCmd.Execute();
             VoatAssert.IsValid(replyResponse);
 
             var replyMessage = replyResponse.Response;
 
-            Assert.AreEqual(firstMessage.ID, replyMessage.ParentID);
+            Assert.AreEqual(idToRespondTo, replyMessage.ParentID);
 
         }
 

@@ -12,6 +12,7 @@ namespace Voat.Configuration
             Logging.LoggingConfigurationSettings.Load(config, "voat:logging");
             Data.DataConfigurationSettings.Load(config, "voat:data");
             VoatSettings.Load(config, "voat:settings");
+            IO.FileManagerConfigurationSettings.Load(config, "voat:fileManager");
 
             //load web.config.live monitor
             //LiveConfigurationManager.Reload(config.GetSection("voat:settings"));

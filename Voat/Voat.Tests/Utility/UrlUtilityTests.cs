@@ -26,27 +26,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Voat.Utilities;
 using Voat.Tests.Infrastructure;
+using Voat.Business.Utilities;
+using System.Threading.Tasks;
+using System.Net;
 
 namespace Voat.Tests.Utils
 {
     [TestClass]
     public class UrlUtilityTests : BaseUnitTest
     {
-        [TestMethod]
-        [TestCategory("Utility")]
-        public void GetYoutubeIdFromUrl()
-        {
-            var expected = "Gjk5udJY_gM";
-
-            var youtubeUrl = "https://www.youtube.com/watch?v=Gjk5udJY_gM";
-            var output = UrlUtility.GetVideoIdFromUrl(youtubeUrl);
-            Assert.AreEqual(expected, output);
-
-            var miniUrl = "https://youtu.be/Gjk5udJY_gM?t=11s";
-            output = UrlUtility.GetVideoIdFromUrl(miniUrl);
-            Assert.AreEqual(expected, output);
-        }
-
         [TestMethod]
         [TestCategory("Utility")]
         public void TrapInjectableJavascript()
@@ -68,15 +56,19 @@ namespace Voat.Tests.Utils
 
         }
 
-
-
         [TestMethod]
-        [TestCategory("Utility")]
-        public void TestEscapedQuotesInTitle()
+        [TestCategory("Utility"), TestCategory("Utility.WebRequest"), TestCategory("ExternalHttp"), TestCategory("HttpResource")]
+        public async Task TestEscapedQuotesInTitle()
         {
             Uri testUri = new Uri("https://lwn.net/Articles/653411/");
 
-            string result = UrlUtility.GetTitleFromUri(testUri.ToString());
+            string result = null;
+            using (var httpResource = new HttpResource(testUri.ToString()))
+            {
+                await httpResource.Execute();
+                result = httpResource.Title;
+            }
+
             Assert.AreEqual("\"Big data\" features coming in PostgreSQL 9.5 [LWN.net]", result, "HTML in title not properly decoded");
         }
 
@@ -91,11 +83,16 @@ namespace Voat.Tests.Utils
         }
 
         [TestMethod]
-        [TestCategory("Utility")]
-        public void TestGetTitleFromUri()
+        [TestCategory("Utility"), TestCategory("Utility.WebRequest"), TestCategory("ExternalHttp"), TestCategory("HttpResource")]
+        public async Task TestGetTitleFromUri()
         {
             const string testUri = "http://www.google.com";
-            string result = UrlUtility.GetTitleFromUri(testUri);
+            string result = null;
+            using (var httpResource = new HttpResource(testUri))
+            {
+                await httpResource.Execute();
+                result = httpResource.Title;
+            }
 
             Assert.AreEqual("Google", result, "Unable to extract title from given Uri.");
         }
@@ -124,6 +121,7 @@ namespace Voat.Tests.Utils
             result = UrlUtility.IsUriValid(testUri.ToString());
             Assert.AreEqual(false, result, "The input URI was invalid 3");
         }
+
         [TestCategory("Utility")]
         [TestMethod]
         public void TestIsUriValid3()
@@ -140,13 +138,37 @@ namespace Voat.Tests.Utils
             Assert.AreEqual(false, result, "The input URI was invalid 3");
         }
         [TestMethod]
-        [TestCategory("Utility")]
-        public void TestTagInTitle()
+        [TestCategory("Utility"), TestCategory("Utility.WebRequest"), TestCategory("ExternalHttp"), TestCategory("HttpResource")]
+        public async Task TestTagInTitle()
         {
             Uri testUri = new Uri("http://stackoverflow.com/questions/1348683/will-the-b-and-i-tags-ever-become-deprecated");
+            string result = null;
+            using (var httpResource = new HttpResource(testUri.ToString()))
+            {
+                await httpResource.Execute(true);
+                result = httpResource.Title;
+                Assert.AreEqual(true, httpResource.Redirected);
+                Assert.AreEqual("Will the <b> and <i> tags ever become deprecated?", result, "HTML in title not properly decoded");
+            }
+        }
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("Utility.WebRequest"), TestCategory("ExternalHttp"), TestCategory("HttpResource")]
+        public async Task TestRedirect()
+        {
+            Uri testUri = new Uri("http://stackoverflow.com/questions/1348683/will-the-b-and-i-tags-ever-become-deprecated");
+            using (var httpResource = new HttpResource(testUri.ToString()))
+            {
+                await httpResource.Execute();
+                Assert.AreEqual(false, httpResource.Redirected);
+                Assert.AreEqual(HttpStatusCode.MovedPermanently, httpResource.Response.StatusCode);
+            }
 
-            string result = UrlUtility.GetTitleFromUri(testUri.ToString());
-            Assert.AreEqual("Will the <b> and <i> tags ever become deprecated?", result, "HTML in title not properly decoded");
+            using (var httpResource = new HttpResource(testUri.ToString()))
+            {
+                await httpResource.Execute(true);
+                Assert.AreEqual(true, httpResource.Redirected);
+                Assert.AreEqual(HttpStatusCode.OK, httpResource.Response.StatusCode);
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -8,20 +9,34 @@ namespace Voat.Common
 {
     public static class StringExtensions
     {
-        public static IEnumerable<string> ToRelativePathParts(this string[] relativePaths)
+        //public static IEnumerable<string> ToRelativePathParts(this string[] relativePaths, string additionalPart)
+        //{
+        //    string[] part = null;
+        //    if (!String.IsNullOrEmpty(additionalPart))
+        //    {
+        //        part = new string[] { additionalPart };
+        //    }
+        //    return ToRelativePathParts(relativePaths, part);
+        //}
+        public static IEnumerable<string> ToPathParts(this IEnumerable<string> relativePaths, IEnumerable<string> additionalParts = null)
         {
             List<string> parts = new List<string>();
             relativePaths.ToList().ForEach(x =>
             {
-                parts.AddRange(x.ToRelativePathParts());
+                parts.AddRange(x.ToPathParts());
             });
+            if (additionalParts != null && additionalParts.Count() > 0)
+            {
+                parts.AddRange(additionalParts);
+            }
             return parts.AsEnumerable();
         }
 
-        public static IEnumerable<string> ToRelativePathParts(this string relativePath)
+        public static IEnumerable<string> ToPathParts(this string relativePath)
         {
             relativePath = relativePath.TrimStart('~');
-            var parts = relativePath.Split(new string[] { "/", "\\" }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = relativePath.Split(new string[] { "/", "\\" }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable();
+            parts = parts.Select(x => x.TrimSafe()).Where(x => !String.IsNullOrEmpty(x)).ToList();
             return parts.AsEnumerable();
         }
 
