@@ -24,7 +24,7 @@
 @{
 
     string postAge = Age.ToRelative(Model.CreationDate);
-    string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
+    string commentsUrl = VoatUrlFormatter.CommentsPagePath(Model.Subverse, Model.ID);
     int submissionScore = (int)(Model.UpCount - Model.DownCount);
 
     //type 1 = message

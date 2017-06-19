@@ -9,7 +9,7 @@ namespace Voat.Common.Configuration
     {
         public static T Instance { get; set; }
 
-        public static void Load(IConfigurationRoot config, string section)
+        public static void Load(IConfigurationRoot config, string section, bool reloading = false)
         {
             T i = default(T);
 
@@ -19,7 +19,7 @@ namespace Voat.Common.Configuration
                 i = s.Get<T>();
             }
 
-            Instance = i ?? throw new ArgumentException("Can not load configuration");
+            Instance = i ?? throw new ArgumentException($"Can not load configuration: {section}");
         }
 
         public bool Enabled { get; set; } = true;

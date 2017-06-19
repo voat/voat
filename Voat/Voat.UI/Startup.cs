@@ -54,7 +54,7 @@ namespace Voat
             
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
-
+            
             //Configure Voat Runtime 
             Configuration.ConfigureVoat();
         }

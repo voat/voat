@@ -40,12 +40,12 @@
 
     string routeActiveSubverse = (string)ViewContext.RouteData.Values["subverse"];
 
-    string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
+    string commentsUrl = VoatUrlFormatter.CommentsPagePath(Model.Subverse, Model.ID);
 
     //var x = this.Request.RequestContext.RouteData.Values["sort"];
     //if (x != null && x.ToString() == "active")
     //{
-    //    commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID, Voat.Domain.Models.CommentSortAlgorithm.New);
+    //    commentsUrl = VoatUrlFormatter.CommentsPagePath(Model.Subverse, Model.ID, Voat.Domain.Models.CommentSortAlgorithm.New);
     //}
 
     DateTime submissionDate = Model.CreationDate;

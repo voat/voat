@@ -29,7 +29,7 @@
     {
         userName = Model.OwnerName;
     }
-    var basePath = VoatPathHelper.BasePath(Model);
+    var basePath = VoatUrlFormatter.BasePath(Model);
     var objectDescription = Model.Type.ToString();
 
     Voat.Domain.Models.SetPermission perms = new Voat.Domain.Models.SetPermission(); //everything should be off

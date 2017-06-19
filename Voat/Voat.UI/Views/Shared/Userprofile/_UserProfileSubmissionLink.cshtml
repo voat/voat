@@ -34,7 +34,7 @@
     }
 
     string postAge = Age.ToRelative(Model.CreationDate);
-    string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
+    string commentsUrl = VoatUrlFormatter.CommentsPagePath(Model.Subverse, Model.ID);
 
     bool ratedAdult = false;
     

@@ -66,7 +66,7 @@
 
                     @Html.Partial("~/Views/Shared/Submissions/_Flair.cshtml", Model)
 
-                    <a class="title may-blank " href="@(String.IsNullOrEmpty(Model.Url) ? VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID) : Model.Url)" tabindex="1" title="@Model.Title" target="@ahrefTarget">@Model.Title</a>&#32;<span class="domain">(<a href="@submissionDomainHref">@submissionDomain</a>)</span>
+                    <a class="title may-blank " href="@(String.IsNullOrEmpty(Model.Url) ? VoatUrlFormatter.CommentsPagePath(Model.Subverse, Model.ID) : Model.Url)" tabindex="1" title="@Model.Title" target="@ahrefTarget">@Model.Title</a>&#32;<span class="domain">(<a href="@submissionDomainHref">@submissionDomain</a>)</span>
                 </p>
 
                 <p class="tagline">

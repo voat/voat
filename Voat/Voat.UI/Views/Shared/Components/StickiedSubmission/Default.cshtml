@@ -21,7 +21,7 @@
 @model Voat.Domain.Models.Submission
 
     @{
-        string commentsUrl = VoatPathHelper.CommentsPagePath(Model.Subverse, Model.ID);
+        string commentsUrl = VoatUrlFormatter.CommentsPagePath(Model.Subverse, Model.ID);
 
         DateTime submissionDate = Model.CreationDate;
         string postAge = Age.ToRelative(submissionDate);

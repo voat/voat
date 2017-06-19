@@ -44,7 +44,7 @@
             ]
         },
         "cache": {
-            "enabled" :  true,
+            "enabled": true,
             "handlers": [
                 {
                     "enabled": true,
@@ -77,6 +77,20 @@
                 {
                     "enabled": false,
                     "type": "Voat.Tests.Rules.TestPassRule, Voat.Tests"
+                }
+            ]
+        },
+        "fileManager": {
+            "handlers": [
+                {
+                    "enabled": true,
+                    "type": "Voat.IO.LocalNetworkFileManager, Voat.Business",
+                    "arguments": ""
+                },
+                {
+                    "enabled": false,
+                    "type": "Voat.IO.ContentDeliveryNetworkFileManager, Voat.Business",
+                    "arguments": "[System.String]()"
                 }
             ]
         },

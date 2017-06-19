@@ -27,7 +27,7 @@
     @if (!Model.IsDeleted)
     {
         <li class="first">
-            <a href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value, Model.ID)" class="bylink" rel="nofollow">permalink</a>
+            <a href="@VoatUrlFormatter.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value, Model.ID)" class="bylink" rel="nofollow">permalink</a>
         </li>
     }
 
@@ -35,13 +35,13 @@
     @if (ViewBag.ShowContextLink != null && ViewBag.ShowContextLink == true)
     {
         <li>
-            <a href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value, Model.ID)?context=10" rel="nofollow">context</a>
+            <a href="@VoatUrlFormatter.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value, Model.ID)?context=10" rel="nofollow">context</a>
         </li>
     }
     else if (Model.ParentID != null)
     {
         <li>
-            <a onclick="goToParent(event, @Model.ParentID)" href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value)/@Model.ParentID" rel="nofollow">parent</a>
+            <a onclick="goToParent(event, @Model.ParentID)" href="@VoatUrlFormatter.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value)/@Model.ParentID" rel="nofollow">parent</a>
         </li>
     }
 

@@ -56,7 +56,7 @@
                     {
                         foreach (var domainReference in Model.TopBar)
                         {
-                            <li><a href="@VoatPathHelper.BasePath(domainReference)">@domainReference.FullName</a></li>
+                            <li><a href="@VoatUrlFormatter.BasePath(domainReference)">@domainReference.FullName</a></li>
                         }
                     }
                 </ul>

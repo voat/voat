@@ -37,7 +37,7 @@
             @*@Html.Partial("Sidebars/_SidebarModToolbox")*@
 
             <h1 class="hover whoaversename">
-                <a href="@VoatPathHelper.BasePath(domainReference)" class="hover">@Model.Name</a>
+                <a href="@VoatUrlFormatter.BasePath(domainReference)" class="hover">@Model.Name</a>
             </h1>
 
           
@@ -53,7 +53,7 @@
 
             <div class="spacer">
                 <p>
-                    <a class="btn-whoaverse" href='@(VoatPathHelper.BasePath(domainReference) + "/about/details")'>Details</a>
+                    <a class="btn-whoaverse" href='@(VoatUrlFormatter.BasePath(domainReference) + "/about/details")'>Details</a>
                 </p>
             </div>
 

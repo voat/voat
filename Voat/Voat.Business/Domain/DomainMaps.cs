@@ -181,7 +181,7 @@ namespace Voat.Domain
 
                 result.LastEditDate = submission.LastEditDate;
                 result.ThumbnailUrl = FileManager.Instance.Uri(new FileKey(submission.Thumbnail, FileType.Thumbnail));
-                //result.ThumbnailUrl = VoatPathHelper.ThumbnailPath(submission.Thumbnail, true, true);
+                //result.ThumbnailUrl = VoatUrlFormatter.ThumbnailPath(submission.Thumbnail, true, true);
                 result.CommentCount = CommentCounter.CommentCount(submission.ID);
                 result.CreationDate = submission.CreationDate;
                 result.UpCount = (int)submission.UpCount;

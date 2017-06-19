@@ -121,13 +121,13 @@ namespace Voat.Tests.Utils
 
             //var localPath = String.Join('/', VoatSettings.Instance.DestinationPathAvatars.ToPathParts());
 
-            //result = VoatPathHelper.AvatarPath(username, avatarFileName, false, true, true);
+            //result = VoatUrlFormatter.AvatarPath(username, avatarFileName, false, true, true);
             //Assert.AreEqual($"~/{localPath}/{username}.jpg", result, "Condition:1.2");
 
-            //result = VoatPathHelper.AvatarPath(username, avatarFileName, true, false, true);
+            //result = VoatUrlFormatter.AvatarPath(username, avatarFileName, true, false, true);
             //Assert.AreEqual($"//{VoatSettings.Instance.SiteDomain}/{localPath}/{username}.jpg", result, "Condition:2.2");
 
-            //result = VoatPathHelper.AvatarPath(username, avatarFileName, true, true, true);
+            //result = VoatUrlFormatter.AvatarPath(username, avatarFileName, true, true, true);
             //Assert.AreEqual($"http{(VoatSettings.Instance.ForceHTTPS ? "s" : "")}://{VoatSettings.Instance.SiteDomain}/{localPath}/{username}.jpg", result, "Condition:3.2");
 
             ////Reset original value
@@ -144,13 +144,13 @@ namespace Voat.Tests.Utils
             ////CDN
             //VoatSettings.Instance.UseContentDeliveryNetwork = true;
 
-            //result = VoatPathHelper.AvatarPath(username, avatarFileName, false, true, true);
+            //result = VoatUrlFormatter.AvatarPath(username, avatarFileName, false, true, true);
             //Assert.AreEqual(String.Format("~/avatars/{0}.jpg", username), result, "Condition:1");
 
-            //result = VoatPathHelper.AvatarPath(username, avatarFileName, true, false, true);
+            //result = VoatUrlFormatter.AvatarPath(username, avatarFileName, true, false, true);
             //Assert.AreEqual(String.Format("//cdn.voat.co/avatars/{0}.jpg", username), result, "Condition:2");
 
-            //result = VoatPathHelper.AvatarPath(username, avatarFileName, true, true, true);
+            //result = VoatUrlFormatter.AvatarPath(username, avatarFileName, true, true, true);
             //Assert.AreEqual($"http{(VoatSettings.Instance.ForceHTTPS ? "s" : "")}://cdn.voat.co/avatars/{username}.jpg", result, "Condition:3");
 
 
@@ -222,13 +222,13 @@ namespace Voat.Tests.Utils
 
             //var localPath = String.Join('/', VoatSettings.Instance.DestinationPathAvatars.ToPathParts());
 
-            //result = VoatPathHelper.AvatarPath(username, avatarFileName, false, true, true);
+            //result = VoatUrlFormatter.AvatarPath(username, avatarFileName, false, true, true);
             //Assert.AreEqual($"~/{localPath}/{username}.jpg", result, "Condition:1.2");
 
-            //result = VoatPathHelper.AvatarPath(username, avatarFileName, true, false, true);
+            //result = VoatUrlFormatter.AvatarPath(username, avatarFileName, true, false, true);
             //Assert.AreEqual($"//{VoatSettings.Instance.SiteDomain}/{localPath}/{username}.jpg", result, "Condition:2.2");
 
-            //result = VoatPathHelper.AvatarPath(username, avatarFileName, true, true, true);
+            //result = VoatUrlFormatter.AvatarPath(username, avatarFileName, true, true, true);
             //Assert.AreEqual($"http{(VoatSettings.Instance.ForceHTTPS ? "s" : "")}://{VoatSettings.Instance.SiteDomain}/{localPath}/{username}.jpg", result, "Condition:3.2");
 
             ////Reset original value
@@ -245,13 +245,13 @@ namespace Voat.Tests.Utils
             ////CDN
             //VoatSettings.Instance.UseContentDeliveryNetwork = true;
 
-            //result = VoatPathHelper.AvatarPath(username, avatarFileName, false, true, true);
+            //result = VoatUrlFormatter.AvatarPath(username, avatarFileName, false, true, true);
             //Assert.AreEqual(String.Format("~/avatars/{0}.jpg", username), result, "Condition:1");
 
-            //result = VoatPathHelper.AvatarPath(username, avatarFileName, true, false, true);
+            //result = VoatUrlFormatter.AvatarPath(username, avatarFileName, true, false, true);
             //Assert.AreEqual(String.Format("//cdn.voat.co/avatars/{0}.jpg", username), result, "Condition:2");
 
-            //result = VoatPathHelper.AvatarPath(username, avatarFileName, true, true, true);
+            //result = VoatUrlFormatter.AvatarPath(username, avatarFileName, true, true, true);
             //Assert.AreEqual($"http{(VoatSettings.Instance.ForceHTTPS ? "s" : "")}://cdn.voat.co/avatars/{username}.jpg", result, "Condition:3");
 
 

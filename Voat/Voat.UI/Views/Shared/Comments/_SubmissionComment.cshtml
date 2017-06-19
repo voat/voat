@@ -113,19 +113,19 @@
                     {
                         //sub | mod
                         <span class="userattrs">
-                            [<a class="submitter" title="submitter" href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value)">S</a>,
-                            <a class="moderator" title="moderator" href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value)">M</a>]
+                            [<a class="submitter" title="submitter" href="@VoatUrlFormatter.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value)">S</a>,
+                            <a class="moderator" title="moderator" href="@VoatUrlFormatter.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value)">M</a>]
                         </span>
                     }
                     else if (Model.IsSubmitter)
                     {
                         //sub
-                        <span class="userattrs">[<a class="submitter" title="submitter" href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value)">S</a>]</span>
+                        <span class="userattrs">[<a class="submitter" title="submitter" href="@VoatUrlFormatter.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value)">S</a>]</span>
                     }
                     else if (Model.IsDistinguished)
                     {
                         //mod
-                        <span class="userattrs">[<a class="moderator" title="moderator" href="@VoatPathHelper.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value)">M</a>]</span>
+                        <span class="userattrs">[<a class="moderator" title="moderator" href="@VoatUrlFormatter.CommentsPagePath(Model.Subverse, Model.SubmissionID.Value)">M</a>]</span>
                     }
                     else
                     {

@@ -32,7 +32,7 @@
         <div class="submission link stickied" style="padding-bottom: 15px;">
             <p class="titlerow">
                 <span class="featuredsub">featured @type</span>
-                <a class="h4 title may-blank" href="@VoatPathHelper.BasePath(Model)" tabindex="1" title="@Model.Description">@Model.Name: @Model.Title</a>
+                <a class="h4 title may-blank" href="@VoatUrlFormatter.BasePath(Model)" tabindex="1" title="@Model.Description">@Model.Name: @Model.Title</a>
                 @*<a class="h4" href="/v/science">science: /v/science</a>*@
             </p>
             @if (!String.IsNullOrWhiteSpace(Model.Description))

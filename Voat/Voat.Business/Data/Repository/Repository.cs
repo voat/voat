@@ -3597,7 +3597,7 @@ namespace Voat.Data
             userInfo.Bio = String.IsNullOrWhiteSpace(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio;
             
             userInfo.ProfilePicture = FileManager.Instance.Uri(new FileKey() { ID = userPreferences.Avatar, FileType = FileType.Avatar }, new PathOptions() { FullyQualified = true, ProvideProtocol = true });
-            //userInfo.ProfilePicture = VoatPathHelper.AvatarPath(userName, userPreferences.Avatar, true, true, !String.IsNullOrEmpty(userPreferences.Avatar));
+            //userInfo.ProfilePicture = VoatUrlFormatter.AvatarPath(userName, userPreferences.Avatar, true, true, !String.IsNullOrEmpty(userPreferences.Avatar));
 
             //Task.WaitAll(tasks);
             await Task.WhenAll(tasks).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
