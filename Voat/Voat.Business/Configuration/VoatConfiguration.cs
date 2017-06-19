@@ -7,17 +7,25 @@ namespace Voat.Configuration
     {
         public static void ConfigureVoat(this IConfigurationRoot config)
         {
-            Caching.CacheConfigurationSettings.Load(config, "voat:cache");
-            RulesEngine.RuleConfigurationSettings.Load(config, "voat:rules");
-            Logging.LoggingConfigurationSettings.Load(config, "voat:logging");
-            Data.DataConfigurationSettings.Load(config, "voat:data");
-            VoatSettings.Load(config, "voat:settings");
-            IO.FileManagerConfigurationSettings.Load(config, "voat:fileManager");
+            ConfigureVoat(config, false);
+        }
+        private static void ConfigureVoat(IConfigurationRoot config, bool reloading)
+        {
 
-            //load web.config.live monitor
-            //LiveConfigurationManager.Reload(config.GetSection("voat:settings"));
-            //CORE_PORT: Live Monitoring not ported
-            //LiveConfigurationManager.Start();
+            Caching.CacheConfigurationSettings.Load(config, "voat:cache", reloading);
+            RulesEngine.RuleConfigurationSettings.Load(config, "voat:rules", reloading);
+            Logging.LoggingConfigurationSettings.Load(config, "voat:logging", reloading);
+            Data.DataConfigurationSettings.Load(config, "voat:data", reloading);
+            VoatSettings.Load(config, "voat:settings", reloading);
+            IO.FileManagerConfigurationSettings.Load(config, "voat:fileManager", reloading);
+
+            //Register Change Callback - I LOVE .NET CORE BTW
+            //Update: This seems to fire twice which is a bit weird, I sure hope future people will figure this out.
+            var reloadToken = config.GetReloadToken();
+            reloadToken.RegisterChangeCallback(x =>
+            {
+                ConfigureVoat((IConfigurationRoot)x, true);
+            }, config);
         }
     }
 }
