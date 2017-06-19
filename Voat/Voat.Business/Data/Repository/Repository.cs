@@ -2836,7 +2836,7 @@ namespace Voat.Data
 
                     var mappedDataMessages = messages.Map();
                     db.Message.AddRange(mappedDataMessages);
-                    var addedMessages = db.Message;
+                    var returnMessage = mappedDataMessages.First();
 
                     await db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
@@ -2849,7 +2849,7 @@ namespace Voat.Data
                         null,
                         message.Content));
 
-                    return CommandResponse.Successful(addedMessages.First().Map());
+                    return CommandResponse.Successful(returnMessage.Map());
                 }
                 catch (Exception ex)
                 {

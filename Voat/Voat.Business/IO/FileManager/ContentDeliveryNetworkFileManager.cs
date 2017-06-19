@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Configuration;
@@ -52,12 +50,16 @@ namespace Voat.IO
             return result;
             
         }
-        public override async Task Upload(FileKey key, Uri contentPath, Func<Stream, Task<Stream>> preProcessor = null)
+        public override async Task Upload(FileKey key, Uri contentPath, HttpResourceOptions options = null, Func<Stream, Task<Stream>> preProcessor = null)
         {
             throw new NotImplementedException();
             //await base.Upload(key, contentPath);
         }
-        
+        public override Task Upload(FileKey key, Stream stream)
+        {
+            throw new NotImplementedException();
+            return base.Upload(key, stream);
+        }
         protected override string ContentPath(FileType type)
         {
             var path = "";

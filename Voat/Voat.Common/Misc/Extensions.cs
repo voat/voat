@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Voat.Common
@@ -144,7 +145,30 @@ namespace Voat.Common
             }
             return text;
         }
+        public static string TrimSafe(this string text, params string[] trimStrings)
+        {
+            if (!String.IsNullOrEmpty(text))
+            {
+                var trimmed = text.StripWhiteSpace();
+                if (trimStrings != null && trimStrings.Length > 0)
+                {
+                    trimmed = trimStrings.Aggregate(trimmed, (result, trimString) => {
+                        if (result.StartsWith(trimString))
+                        {
+                            result = result.Substring(trimString.Length, result.Length - trimString.Length);
+                        }
+                        if (result.EndsWith(trimString))
+                        {
+                            result = result.Substring(0, result.Length - trimString.Length);
+                        }
+                        return result;
+                    });
+                }
+                return trimmed;
 
+            }
+            return text;
+        }
         public static string SubstringMax(this string text, int count)
         {
             if (!String.IsNullOrEmpty(text))

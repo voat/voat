@@ -28,7 +28,7 @@ namespace Voat.Data
         }
         private IEnumerable<EventLog> Map(IEnumerable<ILogInformation> info)
         {
-            return info.Select(x => Map(x));
+            return info.Select(x => Map(x)).ToList();
         }
         private EventLog Map(ILogInformation info)
         {

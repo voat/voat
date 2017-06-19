@@ -34,7 +34,6 @@ using Voat.Domain.Query;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Voat.Business.Utilities;
 
 namespace Voat.Controllers
 {

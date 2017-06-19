@@ -29,6 +29,8 @@ using Voat.Utilities;
 using System.IO;
 using System.Net;
 using Voat.Tests.Infrastructure;
+using Voat.IO;
+using System.Net.Http;
 
 namespace Voat.Tests.Utils
 {
@@ -39,10 +41,12 @@ namespace Voat.Tests.Utils
         [TestCategory("Utility"), TestCategory("Thumbnail")]
         public async Task GenerateThumbFromWebsiteUrl()
         {
-            var result = await ThumbGenerator.GenerateThumbFromWebpageUrl("http://www.yahoo.com", false);
-            string path = Path.Combine(ThumbGenerator.DestinationPathThumbs, result);
-            Assert.IsTrue(File.Exists(path), "Thumb did not get generated from site html");
-            File.Delete(path);
+            var result = await ThumbGenerator.GenerateThumbFromWebpageUrl("https://www.yahoo.com", false);
+
+            var key = new FileKey(result, FileType.Thumbnail);
+            Assert.AreEqual(true, FileManager.Instance.Exists(key), "Thumb did not get generated from image url");
+            FileManager.Instance.Delete(key);
+            Assert.AreEqual(false, FileManager.Instance.Exists(key), "Thumb did not delete");
         }
 
         [TestMethod]
@@ -58,7 +62,7 @@ namespace Voat.Tests.Utils
         //[ExpectedException(typeof(WebException))]
         public async Task GenerateThumbFromImageUrl_Failure()
         {
-            await VoatAssert.ThrowsAsync<WebException>(() => {
+            await VoatAssert.ThrowsAsync<TaskCanceledException>(() => {
                 return ThumbGenerator.GenerateThumbFromImageUrl("https://idontexistimprettysuremaybeIlladdrandom3243242.co/graphics/voat-goat.png", 5000, false);
             });
 
@@ -71,9 +75,10 @@ namespace Voat.Tests.Utils
         public async Task GenerateThumbFromImageUrl()
         {
             var result = await ThumbGenerator.GenerateThumbFromImageUrl("https://voat.co/graphics/voat-goat.png", 5000, false);
-            string path = Path.Combine(ThumbGenerator.DestinationPathThumbs, result);
-            Assert.IsTrue(File.Exists(path), "Thumb did not get generated from image url");
-            File.Delete(path);
+            var key = new FileKey(result, FileType.Thumbnail);
+            Assert.AreEqual(true, FileManager.Instance.Exists(key), "Thumb did not get generated from image url");
+            FileManager.Instance.Delete(key);
+            Assert.AreEqual(false, FileManager.Instance.Exists(key), "Thumb did not delete");
         }
     }
 }

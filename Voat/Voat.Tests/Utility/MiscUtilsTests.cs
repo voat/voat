@@ -23,13 +23,10 @@
 #endregion LICENSE
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using OpenGraph_Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Voat.Business.Utilities;
 using Voat.Common;
 using Voat.Tests.Infrastructure;
 using Voat.Utilities;
@@ -77,7 +74,7 @@ namespace Voat.Tests.Utils
         {
 
             Uri testUri = new Uri("http://www.bbc.com/news/technology-32194196");
-            using (var httpResource = new HttpResource(testUri))
+            using (var httpResource = new HttpResource(testUri, new HttpResourceOptions() { Timeout = TimeSpan.FromSeconds(30) }))
             {
                 await httpResource.Execute();
 

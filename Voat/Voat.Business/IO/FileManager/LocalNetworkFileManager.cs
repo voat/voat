@@ -1,13 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
 using System.IO;
-using System.Net.Http;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Voat.Business.Utilities;
 using Voat.Common;
 using Voat.Common.Components;
 using Voat.Configuration;
@@ -57,13 +51,13 @@ namespace Voat.IO
             return File.Exists(FilePather.Instance.LocalPath(ContentPath(key.FileType), key.ID));
         }
 
-        public override async Task Upload(FileKey key, Uri contentPath, Func<Stream, Task<Stream>> preProcessor = null)
+        public override async Task Upload(FileKey key, Uri contentPath, HttpResourceOptions options = null, Func < Stream, Task<Stream>> preProcessor = null)
         {
             if (Regex.IsMatch(contentPath.Scheme, "http(s)?", RegexOptions.IgnoreCase))
             {
                 EnsureLocalDirectoryExists(key.FileType);
 
-                using (var httpResource = new HttpResource(contentPath.ToString()))
+                using (var httpResource = new HttpResource(contentPath.ToString(), options))
                 {
                     await httpResource.Execute();
 
@@ -77,24 +71,8 @@ namespace Voat.IO
                     {
                         processedStream = await preProcessor(httpResource.Stream);
                     }
-                    using (var destinationStream = new FileStream(FilePather.Instance.LocalPath(ContentPath(key.FileType), key.ID), FileMode.Create, FileAccess.Write, FileShare.None, 1048576, true))
-                    {
-                        await processedStream.CopyToAsync(destinationStream);
-                    }
+                    await Upload(key, processedStream);
                 }
-            //}
-            //    using (var httpClient = new HttpClient())
-            //    using (var sourceStream = await httpClient.GetStreamAsync(contentPath.ToString())) {
-            //        var processedStream = sourceStream;
-            //        if (preProcessor != null)
-            //        {
-            //            processedStream = await preProcessor(sourceStream);
-            //        }
-            //        using (var destinationStream = new FileStream(FilePather.Instance.LocalPath(ContentPath(key.FileType), key.ID), FileMode.Create, FileAccess.Write, FileShare.None, 1048576, true))
-            //        {
-            //            await processedStream.CopyToAsync(destinationStream);
-            //        }
-            //    }
         }
             else if (Regex.IsMatch(contentPath.Scheme, "file", RegexOptions.IgnoreCase) || File.Exists(contentPath.ToString()))
             {
@@ -107,10 +85,7 @@ namespace Voat.IO
                     {
                         processedStream = await preProcessor(sourceStream);
                     }
-                    using (var destinationStream = new FileStream(FilePather.Instance.LocalPath(ContentPath(key.FileType), key.ID), FileMode.Create, FileAccess.Write, FileShare.None, 1048576, true))
-                    {
-                        await processedStream.CopyToAsync(destinationStream);
-                    }
+                    await Upload(key, processedStream);
             }
         }
             else
@@ -127,6 +102,14 @@ namespace Voat.IO
             }
 
             return VoatUrlFormatter.BuildUrlPath(null, options, (new string[] { ContentPath(key.FileType), key.ID }).ToPathParts());
+        }
+
+        public override async Task Upload(FileKey key, Stream stream)
+        {
+            using (var destinationStream = new FileStream(FilePather.Instance.LocalPath(ContentPath(key.FileType), key.ID), FileMode.Create, FileAccess.Write, FileShare.None, 1048576, true))
+            {
+                await stream.CopyToAsync(destinationStream);
+            }
         }
     }
 }

@@ -1,12 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Voat.Business.Utilities;
 using Voat.Tests.Infrastructure;
+using Voat.Utilities;
 
 namespace Voat.Tests.Utility
 {

@@ -38,6 +38,19 @@ namespace Voat.Tests.Utils
     public class ExtensionTests : BaseUnitTest
     {
 
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("Extentions")]
+        public void TestTrimSafe()
+        {
+            Assert.AreEqual(null, ((string)null).TrimSafe());
+            Assert.AreEqual("", "".TrimSafe());
+            Assert.AreEqual("", " ".TrimSafe());
+            Assert.AreEqual(".", " . ".TrimSafe());
+
+            Assert.AreEqual("jpg", ".jpg".TrimSafe("."));
+            Assert.AreEqual("jpg", ".jpg.".TrimSafe("."));
+
+        }
 
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Extentions")]

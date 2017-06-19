@@ -8,7 +8,7 @@
                     //PostgreSql Connection String
                     "value": "Server={server};port=5432;Database={database};User ID={userid};Password={password};Persist Security Info=True;Keepalive=1;"
                     //SqlServer Connection String
-                    //"value": "data source={server};initial catalog={database};User ID={userid};Password={password};Trusted_Connection=False;persist security info=True;Encrypt=True;TrustServerCertificate=True;"
+                    //"value": "data source={server};initial catalog={database};User ID={userid};Password={password};Trusted_Connection=False;persist security info=True;Encrypt=True;TrustServerCertificate=True;Max Pool Size=2048;Pooling=true;"
                 },
                 {
                     "name": "ReadWrite",

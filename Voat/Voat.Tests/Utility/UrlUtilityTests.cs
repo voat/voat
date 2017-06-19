@@ -26,7 +26,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Voat.Utilities;
 using Voat.Tests.Infrastructure;
-using Voat.Business.Utilities;
 using System.Threading.Tasks;
 using System.Net;
 
@@ -143,9 +142,9 @@ namespace Voat.Tests.Utils
         {
             Uri testUri = new Uri("http://stackoverflow.com/questions/1348683/will-the-b-and-i-tags-ever-become-deprecated");
             string result = null;
-            using (var httpResource = new HttpResource(testUri.ToString()))
+            using (var httpResource = new HttpResource(testUri.ToString(), new HttpResourceOptions() { AllowAutoRedirect = true }))
             {
-                await httpResource.Execute(true);
+                await httpResource.Execute();
                 result = httpResource.Title;
                 Assert.AreEqual(true, httpResource.Redirected);
                 Assert.AreEqual("Will the <b> and <i> tags ever become deprecated?", result, "HTML in title not properly decoded");
@@ -163,9 +162,9 @@ namespace Voat.Tests.Utils
                 Assert.AreEqual(HttpStatusCode.MovedPermanently, httpResource.Response.StatusCode);
             }
 
-            using (var httpResource = new HttpResource(testUri.ToString()))
+            using (var httpResource = new HttpResource(testUri.ToString(), new HttpResourceOptions() { AllowAutoRedirect = true }))
             {
-                await httpResource.Execute(true);
+                await httpResource.Execute();
                 Assert.AreEqual(true, httpResource.Redirected);
                 Assert.AreEqual(HttpStatusCode.OK, httpResource.Response.StatusCode);
             }

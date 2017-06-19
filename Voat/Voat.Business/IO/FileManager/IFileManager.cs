@@ -1,21 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Voat.Common;
-using Voat.Common.Components;
-using Voat.Configuration;
+using Voat.Utilities;
 
 namespace Voat.IO
 {
     public interface IFileManager<K>
     {
-        Task Upload(K key, Uri contentPath, Func<Stream, Task<Stream>> preProcessor = null);
+        //Dear Future People: This will likely be removed
+        Task Upload(K key, Uri contentPath, HttpResourceOptions options = null, Func<Stream, Task<Stream>> preProcessor = null);
+
+        Task Upload(K key, Stream stream);
 
         string Uri(K key, PathOptions options = null);
 

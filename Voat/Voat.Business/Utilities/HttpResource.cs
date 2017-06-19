@@ -10,40 +10,54 @@ using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Configuration;
 
-namespace Voat.Business.Utilities
+namespace Voat.Utilities
 {
+    public class HttpResourceOptions
+    {
+        public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(5);
+        public bool AllowAutoRedirect { get; set; } = false;
+
+    }
+
     public class HttpResource : IDisposable
     {
         private Uri _uri = null;
         private Uri _redirectedUri = null;
         private HttpResponseMessage _response;
         private MemoryStream _stream;
-        private TimeSpan _timeout = TimeSpan.FromSeconds(30);
         private string _title = null;
         private string _contentString = null;
         private Uri _image = null;
+        private HttpResourceOptions _options = new HttpResourceOptions();
 
         public HttpResponseMessage Response { get => _response; }
         public Stream Stream { get => _stream;  }
-        public TimeSpan Timeout { get => _timeout; set => _timeout = value; }
+        
         public Uri Uri { get => _uri; }
         public Uri RedirectedUri { get => _redirectedUri; }
         public bool Redirected { get => _uri != _redirectedUri; }
+        public HttpResourceOptions Options { get => _options; set => _options = value; }
 
-        public HttpResource(Uri uri)
+        public HttpResource(Uri uri, HttpResourceOptions options = null)
         {
             _uri = uri;
+            if (options != null)
+            {
+                _options = options;
+            }
         }
-        public HttpResource(string uri) : this(new Uri(uri))
+        public HttpResource(string uri, HttpResourceOptions options = null) : this(new Uri(uri), options)
         {
         }
-        public async Task Execute(bool allowAutoRedirect = false, HttpCompletionOption options = HttpCompletionOption.ResponseContentRead)
+        public async Task Execute(HttpCompletionOption options = HttpCompletionOption.ResponseContentRead)
         {
-            var handler = new HttpClientHandler() { AllowAutoRedirect = allowAutoRedirect };
+            var handler = new HttpClientHandler() {
+                AllowAutoRedirect = _options.AllowAutoRedirect
+            };
 
             using (var httpClient = new HttpClient(handler))
             {
-                httpClient.Timeout = _timeout;
+                httpClient.Timeout = _options.Timeout;
                 httpClient.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue($"Voat-OpenGraph-Parser", "2"));
 
                 _response = await httpClient.GetAsync(Uri, options);
@@ -56,6 +70,13 @@ namespace Voat.Business.Utilities
                     await _response.Content.CopyToAsync(_stream);
                     _stream.Seek(0, SeekOrigin.Begin);
                 }
+            }
+        }
+        public bool IsImage
+        {
+            get
+            {
+                return Uri == Image;
             }
         }
         public Uri Image
@@ -135,6 +156,8 @@ namespace Voat.Business.Utilities
                 return _contentString;
             }
         }
+
+
         public void Dispose()
         {
             _response?.Dispose();

@@ -1,16 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Http;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Voat.Business.Utilities;
 using Voat.Common;
-using Voat.Common.Components;
-using Voat.Configuration;
 using Voat.Utilities;
 
 namespace Voat.IO
@@ -41,7 +33,10 @@ namespace Voat.IO
 
         public abstract void Delete(FileKey key);
         public abstract bool Exists(FileKey key);
-        public abstract Task Upload(FileKey key, Uri contentPath, Func<Stream, Task<Stream>> preProcessor = null);
+        public abstract Task Upload(FileKey key, Uri contentPath, HttpResourceOptions options = null, Func<Stream, Task<Stream>> preProcessor = null);
+
+        public abstract Task Upload(FileKey key, Stream stream);
+
         public abstract string Uri(FileKey key, PathOptions options = null);
 
     }

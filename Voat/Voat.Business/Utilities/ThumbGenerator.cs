@@ -22,22 +22,15 @@
 
 #endregion LICENSE
 
-using OpenGraph_Net;
 using System;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Voat.Common;
-using Voat.Common.Components;
-using Voat.Configuration;
 using Voat.IO;
-using Voat.Utilities.Components;
 
 namespace Voat.Utilities
 {
     //interface for dealing with writing files 
-   
+
     public static class ThumbGenerator
     {
         private static string _destinationPathThumbs = null;
@@ -50,7 +43,7 @@ namespace Voat.Utilities
         static ThumbGenerator()
         {
             //CORE_PORT: HttpContext not available 
-            throw new NotImplementedException("Core Port: HttpContext access");
+            //throw new NotImplementedException("Core Port: HttpContext access");
             /*
             //For UI/API
             if (HttpContext.Current != null)
@@ -85,39 +78,51 @@ namespace Voat.Utilities
         // generate a thumbnail while removing transparency and preserving aspect ratio
         public static async Task<string> GenerateThumbFromImageUrl(string imageUrl, int timeoutInMilliseconds = 3000, bool purgeTempFile = true)
         {
-            throw new ApplicationException("Direct web requests are not permitted any longer");
-            //TODO: Return NULL if file lenght is zero as thumbnail did not generate to local disk
-            var randomFileName = GenerateRandomFilename();
-            var tempPath = FilePather.Instance.LocalPath(VoatSettings.Instance.DestinationPathThumbs, $"{randomFileName}.jpg");
+            var key = new FileKey();
+            key.FileType = FileType.Thumbnail;
+            key.ID = GenerateRandomFilename("jpg");
 
-            var request = WebRequest.Create(imageUrl);
-            request.Timeout = timeoutInMilliseconds; //Putts: extended this from 300 mills
-            using (var response = request.GetResponse())
+            await FileManager.Instance.Upload(key, new Uri(imageUrl), new HttpResourceOptions() { Timeout = TimeSpan.FromMilliseconds(timeoutInMilliseconds) }, async (x) => 
             {
-                //var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
-                //originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(tempPath, 90);
-            }
+                return await Task.FromResult(x);
+            });
 
-            if (File.Exists(tempPath))
-            {
-                // call upload to storage method if CDN config is enabled
-                if (VoatSettings.Instance.UseContentDeliveryNetwork)
-                {
-                    await FileManager.Instance.Upload(new FileKey(tempPath, FileType.Thumbnail), new Uri(tempPath));
-                    //CORE_PORT: Original code
-                    //await CloudStorageUtility.UploadBlobToStorageAsync(tempPath, "thumbs");
-                    //if (purgeTempFile)
-                    //{
-                    //    // delete local file after uploading to CDN
-                    //    File.Delete(tempPath);
-                    //}
-                }
-                return Path.GetFileName(tempPath);
-            }
-            else
-            {
-                return null;
-            }
+            return key.ID;
+
+
+            //throw new ApplicationException("Direct web requests are not permitted any longer");
+            ////TODO: Return NULL if file lenght is zero as thumbnail did not generate to local disk
+            //var randomFileName = GenerateRandomFilename();
+            //var tempPath = FilePather.Instance.LocalPath(VoatSettings.Instance.DestinationPathThumbs, $"{randomFileName}.jpg");
+
+            //var request = WebRequest.Create(imageUrl);
+            //request.Timeout = timeoutInMilliseconds; //Putts: extended this from 300 mills
+            //using (var response = request.GetResponse())
+            //{
+            //    //var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
+            //    //originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(tempPath, 90);
+            //}
+
+            //if (File.Exists(tempPath))
+            //{
+            //    // call upload to storage method if CDN config is enabled
+            //    if (VoatSettings.Instance.UseContentDeliveryNetwork)
+            //    {
+            //        await FileManager.Instance.Upload(new FileKey(tempPath, FileType.Thumbnail), new Uri(tempPath));
+            //        //CORE_PORT: Original code
+            //        //await CloudStorageUtility.UploadBlobToStorageAsync(tempPath, "thumbs");
+            //        //if (purgeTempFile)
+            //        //{
+            //        //    // delete local file after uploading to CDN
+            //        //    File.Delete(tempPath);
+            //        //}
+            //    }
+            //    return Path.GetFileName(tempPath);
+            //}
+            //else
+            //{
+            //    return null;
+            //}
 
         }
 
@@ -168,13 +173,17 @@ namespace Voat.Utilities
         }
         */
         // Generate a random filename for a thumbnail and make sure that the file does not exist.
-        private static string GenerateRandomFilename()
+        private static string GenerateRandomFilename(string extention)
         {
             string fileName = null;
-
+            if (String.IsNullOrEmpty(extention))
+            {
+                throw new ArgumentException("A file extention must be provided", nameof(extention));
+            }
+            extention = extention.TrimSafe(".");
             do
             {
-                fileName = Guid.NewGuid().ToString();
+                fileName = $"{Guid.NewGuid().ToString()}.{extention.ToLower()}";
             } while (FileManager.Instance.Exists(new FileKey(fileName, FileType.Thumbnail)));
 
             return fileName;
@@ -183,38 +192,61 @@ namespace Voat.Utilities
         
         public static async Task<string> GenerateThumbFromWebpageUrl(string websiteUrl, bool purgeTempFile = true)
         {
-            throw new ApplicationException("Direct web requests are not permitted any longer");
 
-            var extension = Path.GetExtension(websiteUrl);
-            var imageExtensions = new string[] { ".jpg", ".png", ".gif", ".jpeg" };
-
-            var thumbFileName = (string)null;
-
-            try
+            using (var httpResource = new HttpResource(websiteUrl))
             {
-                if (imageExtensions.Any(x => x.IsEqual(extension)))
-                {
-                    // generate a thumbnail if submission is a direct link to image or video
-                    thumbFileName = await GenerateThumbFromImageUrl(websiteUrl, purgeTempFile: purgeTempFile);
-                }
-                if (String.IsNullOrEmpty(thumbFileName))
-                {
-                    var graphUri = new Uri(websiteUrl);
-                    var graph = OpenGraph.ParseUrl(graphUri, userAgent: "Voat.co OpenGraph Parser");
+                await httpResource.Execute();
 
-                    // open graph failed to find og:image element, abort thumbnail generation
-                    if (graph.Image != null)
-                    {
-                        thumbFileName = await GenerateThumbFromImageUrl(graph.Image.ToString(), purgeTempFile: purgeTempFile);
-                    }
+                if (httpResource.IsImage)
+                {
+                    var key = new FileKey();
+                    key.FileType = FileType.Thumbnail;
+                    key.ID = GenerateRandomFilename("jpg");
+
+                    await FileManager.Instance.Upload(key, httpResource.Stream);
+
+                    return key.ID;
                 }
+                else if (httpResource.Image != null)
+                {
+                    return await GenerateThumbFromImageUrl(httpResource.Image.ToString(), 5000, true);
+                }
+                return null;
             }
-            catch (Exception ex)
-            {
-                // thumnail generation failed, skip adding thumbnail
-                EventLogger.Log(ex);
-            }
-            return thumbFileName;
+
+
+            //throw new ApplicationException("Direct web requests are not permitted any longer");
+
+            //var extension = Path.GetExtension(websiteUrl);
+            //var imageExtensions = new string[] { ".jpg", ".png", ".gif", ".jpeg" };
+
+            //var thumbFileName = (string)null;
+
+            //try
+            //{
+            //    if (imageExtensions.Any(x => x.IsEqual(extension)))
+            //    {
+            //        // generate a thumbnail if submission is a direct link to image or video
+            //        thumbFileName = await GenerateThumbFromImageUrl(websiteUrl, purgeTempFile: purgeTempFile);
+            //    }
+            //    if (String.IsNullOrEmpty(thumbFileName))
+            //    {
+            //        var graphUri = new Uri(websiteUrl);
+            //        var graph = OpenGraph.ParseUrl(graphUri, userAgent: "Voat.co OpenGraph Parser");
+
+            //        // open graph failed to find og:image element, abort thumbnail generation
+            //        if (graph.Image != null)
+            //        {
+            //            thumbFileName = await GenerateThumbFromImageUrl(graph.Image.ToString(), purgeTempFile: purgeTempFile);
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    // thumnail generation failed, skip adding thumbnail
+            //    EventLogger.Log(ex);
+            //}
+            //return thumbFileName;
         }
     }
 }
