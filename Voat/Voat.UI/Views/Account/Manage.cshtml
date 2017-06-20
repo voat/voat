@@ -22,6 +22,7 @@
 
 @{
     ViewBag.Title = "Manage Account";
+    var userData = new Voat.Domain.UserData(User.Identity.Name);
 }
 
 <div id="container" class="page-userprofile">
@@ -38,17 +39,21 @@
                 }
 
                 <section id="userPreferences">
-                    @{ Html.RenderAction("GetUserPreferencesAbout"); }
+                   @Html.Partial("_UserPreferencesAbout", new UserAboutViewModel()
+                   {
+                       Bio = userData.Information.Bio,
+                       Avatar = userData.Information.ProfilePicture
+                   })
                 </section>
                 <div class="alert-title">User preferences</div>
 
                 <section id="userPreferences">
-                    @Html.RenderAction("GetUserPreferences")
+                    @Html.Partial("_UserPreferences", userData.Preferences)
                 </section>
 
                 <div class="alert-title">Account e-mail</div>
                 <section id="userEmail">
-                    @Html.RenderAction("GetUserAccountEmail")
+                    @Html.Partial("_ChangeAccountEmail", new UserEmailViewModel() { EmailAddress = "todo@lazyputts.com" })
                 </section>
 
                 <div class="alert-title">Change your password</div>

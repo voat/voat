@@ -412,38 +412,38 @@ namespace Voat.Controllers
             return View(model);
         } 
 
-        [Authorize]
-        public async Task<ActionResult> GetUserPreferencesAbout()
-        {
-            var userPreferences = UserData.Preferences;
-            var tmpModel = new UserAboutViewModel()
-            {
-                Bio = String.IsNullOrEmpty(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio,
-                Avatar = userPreferences.Avatar
-            };
-            return PartialView("_UserPreferencesAbout", tmpModel);
+        //[Authorize]
+        //public async Task<ActionResult> GetUserPreferencesAbout()
+        //{
+        //    var userPreferences = UserData.Preferences;
+        //    var tmpModel = new UserAboutViewModel()
+        //    {
+        //        Bio = String.IsNullOrEmpty(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio,
+        //        Avatar = userPreferences.Avatar
+        //    };
+        //    return PartialView("_UserPreferencesAbout", tmpModel);
 
-            //return PartialView("_UserPreferencesAbout", tmpModel);
-            //try
-            //{
-            //    using (var db = new VoatUIDataContextAccessor())
-            //    {
-            //        var userPreferences = GetUserPreference(db);
+        //    //return PartialView("_UserPreferencesAbout", tmpModel);
+        //    //try
+        //    //{
+        //    //    using (var db = new VoatUIDataContextAccessor())
+        //    //    {
+        //    //        var userPreferences = GetUserPreference(db);
 
-            //        var tmpModel = new UserAboutViewModel()
-            //        {
-            //            Bio = String.IsNullOrEmpty(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio,
-            //            Avatar = userPreferences.Avatar
-            //        };
+        //    //        var tmpModel = new UserAboutViewModel()
+        //    //        {
+        //    //            Bio = String.IsNullOrEmpty(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio,
+        //    //            Avatar = userPreferences.Avatar
+        //    //        };
 
-            //        return PartialView("_UserPreferencesAbout", tmpModel);
-            //    }
-            //}
-            //catch (Exception)
-            //{
-            //    return new EmptyResult();
-            //}
-        }
+        //    //        return PartialView("_UserPreferencesAbout", tmpModel);
+        //    //    }
+        //    //}
+        //    //catch (Exception)
+        //    //{
+        //    //    return new EmptyResult();
+        //    //}
+        //}
 
         // POST: /Account/UserPreferences
         [Authorize]
@@ -529,40 +529,40 @@ namespace Voat.Controllers
             return RedirectToAction("Manage");
         }
 
-        // GET: /Account/UserPreferences
-        [ChildActionOnly]
-        public async Task<ActionResult> GetUserPreferences()
-        {
+        //// GET: /Account/UserPreferences
+        //[ChildActionOnly]
+        //public async Task<ActionResult> GetUserPreferences()
+        //{
 
-            var q = new QueryUserPreferences().SetUserContext(User);
-            var model = await q.ExecuteAsync();
-            return PartialView("_UserPreferences", model);
+        //    var q = new QueryUserPreferences().SetUserContext(User);
+        //    var model = await q.ExecuteAsync();
+        //    return PartialView("_UserPreferences", model);
 
-            //try
-            //{
-            //    using (var db = new VoatUIDataContextAccessor())
-            //    {
-            //        var userPreferences = GetUserPreference(db);
+        //    //try
+        //    //{
+        //    //    using (var db = new VoatUIDataContextAccessor())
+        //    //    {
+        //    //        var userPreferences = GetUserPreference(db);
 
-            //        // load existing preferences and return to view engine
-            //        var tmpModel = new UserPreferencesViewModel
-            //        {
-            //            Disable_custom_css = userPreferences.DisableCSS,
-            //            Night_mode = userPreferences.NightMode,
-            //            OpenLinksInNewTab = userPreferences.OpenInNewWindow,
-            //            Enable_adult_content = userPreferences.EnableAdultContent,
-            //            Public_subscriptions = userPreferences.DisplaySubscriptions,
-            //            Topmenu_from_subscriptions = userPreferences.UseSubscriptionsMenu
-            //        };
+        //    //        // load existing preferences and return to view engine
+        //    //        var tmpModel = new UserPreferencesViewModel
+        //    //        {
+        //    //            Disable_custom_css = userPreferences.DisableCSS,
+        //    //            Night_mode = userPreferences.NightMode,
+        //    //            OpenLinksInNewTab = userPreferences.OpenInNewWindow,
+        //    //            Enable_adult_content = userPreferences.EnableAdultContent,
+        //    //            Public_subscriptions = userPreferences.DisplaySubscriptions,
+        //    //            Topmenu_from_subscriptions = userPreferences.UseSubscriptionsMenu
+        //    //        };
 
-            //        return PartialView("_UserPreferences", tmpModel);
-            //    }
-            //}
-            //catch (Exception)
-            //{
-            //    return new EmptyResult();
-            //}
-        }
+        //    //        return PartialView("_UserPreferences", tmpModel);
+        //    //    }
+        //    //}
+        //    //catch (Exception)
+        //    //{
+        //    //    return new EmptyResult();
+        //    //}
+        //}
 
         // POST: /Account/UserPreferences
         [Authorize]

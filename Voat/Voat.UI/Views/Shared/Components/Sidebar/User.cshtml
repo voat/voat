@@ -38,7 +38,7 @@
     <div class="side">
         <div class="titlebox footer rounded">
             <div class="thumbnail may-blank user-avatar">
-                <img src="@userData.Information.ProfilePicture" alt="" class="user-avatar">
+                <img src="@userData.Information.ProfilePicture.ToRelativePath()" alt="" class="user-avatar">
             </div>
             &ldquo;
             <span class="user-quote">
@@ -108,7 +108,7 @@
                 </div>
             </div>
         </div>
-        @Html.Partial("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", userData.Information.Moderates);
+        @Html.Partial("~/Views/Shared/Userprofile/_SidebarSubsUserModerates.cshtml", userData.Information.Moderates)
 
         @if (userData.Preferences.DisplaySubscriptions)
         {

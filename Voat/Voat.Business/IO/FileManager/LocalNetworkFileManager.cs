@@ -63,6 +63,8 @@ namespace Voat.IO
 
         public override async Task Upload(FileKey key, Stream stream)
         {
+            EnsureLocalDirectoryExists(key.FileType);
+
             using (var destinationStream = new FileStream(FilePather.Instance.LocalPath(ContentPath(key.FileType), key.ID), FileMode.Create, FileAccess.Write, FileShare.None, 1048576, true))
             {
                 await stream.CopyToAsync(destinationStream);

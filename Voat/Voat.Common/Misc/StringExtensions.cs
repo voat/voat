@@ -9,6 +9,16 @@ namespace Voat.Common
 {
     public static class StringExtensions
     {
+
+        public static string ToRelativePath(this string url)
+        {
+            if (!url.IsTrimSafeNullOrEmpty())
+            {
+                var uri = new Uri(url);
+                return uri.AbsolutePath;
+            }
+            return url;
+        }
         public static string ReverseSplit(this string content, string seperator = ".")
         {
             if (!String.IsNullOrEmpty(content))

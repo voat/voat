@@ -343,29 +343,6 @@ namespace Voat.Controllers
                 .Take(20)
                 .OrderBy(s => s.Power)
                 .ToList();
-
-            ViewBag.SubverseModel = subverseObject;
-            ViewBag.SubverseName = subverse;
-            ViewBag.SelectedSubverse = string.Empty;
-            SetNavigationViewModel(subverseObject.Name);
-
-            return View("~/Views/Subverses/Admin/SubverseModerators.cshtml", subverseModerators);
-        }
-
-        // GET: subverse moderator invitations for selected subverse
-        [Authorize]
-        public ActionResult ModeratorInvitations(string subverse)
-        {
-            // get model for selected subverse
-            var subverseObject = DataCache.Subverse.Retrieve(subverse);
-            if (subverseObject == null)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.InviteMods))
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
             var moderatorInvitations = _db.ModeratorInvitation
                 .Where(mi => mi.Subverse == subverse)
                 .Take(20)
@@ -374,9 +351,12 @@ namespace Voat.Controllers
 
             ViewBag.SubverseModel = subverseObject;
             ViewBag.SubverseName = subverse;
+            ViewBag.SelectedSubverse = string.Empty;
             SetNavigationViewModel(subverseObject.Name);
 
-            return PartialView("~/Views/Subverses/Admin/_ModeratorInvitations.cshtml", moderatorInvitations);
+            var model = new SubverseModeratorsViewModel() { Moderators = subverseModerators, Invitations = moderatorInvitations };
+
+            return View("~/Views/Subverses/Admin/SubverseModerators.cshtml", model);
         }
 
         // GET: banned users for selected subverse

@@ -3595,9 +3595,16 @@ namespace Voat.Data
             //var userPreferences = await GetUserPreferences(userName);
 
             userInfo.Bio = String.IsNullOrWhiteSpace(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio;
-            
-            userInfo.ProfilePicture = FileManager.Instance.Uri(new FileKey() { ID = userPreferences.Avatar, FileType = FileType.Avatar }, new PathOptions() { FullyQualified = true, ProvideProtocol = true });
-            //userInfo.ProfilePicture = VoatUrlFormatter.AvatarPath(userName, userPreferences.Avatar, true, true, !String.IsNullOrEmpty(userPreferences.Avatar));
+
+            if (userPreferences.Avatar.IsTrimSafeNullOrEmpty())
+            {
+                userInfo.ProfilePicture = VoatUrlFormatter.BuildUrlPath(null, new PathOptions(true, true), "images/thumb-placeholder.png");
+            }
+            else
+            {
+                userInfo.ProfilePicture = FileManager.Instance.Uri(new FileKey() { ID = userPreferences.Avatar, FileType = FileType.Avatar }, new PathOptions() { FullyQualified = true, ProvideProtocol = true });
+                //userInfo.ProfilePicture = VoatUrlFormatter.AvatarPath(userName, userPreferences.Avatar, true, true, !String.IsNullOrEmpty(userPreferences.Avatar));
+            }
 
             //Task.WaitAll(tasks);
             await Task.WhenAll(tasks).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);

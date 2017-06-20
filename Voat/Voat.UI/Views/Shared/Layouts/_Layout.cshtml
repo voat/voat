@@ -57,7 +57,7 @@
 
 <div id="header" tabindex=0 role="banner">
 
-    @Html.RenderAction("Menu", "Dashboard")
+    @await Component.InvokeAsync("Dashboard");
 
     <div id="header-container">
         <div id="header-banner">

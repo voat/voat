@@ -131,11 +131,7 @@ namespace Voat.Common
         }
         public static bool IsTrimSafeNullOrEmpty(this string text)
         {
-            if (!String.IsNullOrEmpty(text.TrimSafe()))
-            {
-                return true;
-            }
-            return false;
+            return String.IsNullOrEmpty(text.TrimSafe());
         }
         public static string TrimSafe(this string text)
         {
