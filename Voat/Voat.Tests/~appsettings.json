@@ -76,6 +76,20 @@
                 }
             ]
         },
+        "fileManager": {
+            "handlers": [
+                {
+                    "enabled": true,
+                    "type": "Voat.IO.LocalNetworkFileManager, Voat.Business",
+                    "arguments": ""
+                },
+                {
+                    "enabled": false,
+                    "type": "Voat.IO.ContentDeliveryNetworkFileManager, Voat.Business",
+                    "arguments": "[System.String]()"
+                }
+            ]
+        },
         "settings": {
             //Site Settings
             "siteName": "Voat",
