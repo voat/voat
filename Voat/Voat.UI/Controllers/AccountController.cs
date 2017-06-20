@@ -44,6 +44,8 @@ using Voat.Data;
 using Voat.Caching;
 using Microsoft.Extensions.Options;
 using Voat.Common;
+using Voat.Http.Filters;
+using Voat.Http;
 
 namespace Voat.Controllers
 {
@@ -261,7 +263,7 @@ namespace Voat.Controllers
             try
             {
                 // get user IP address
-                string clientIpAddress = UserHelper.UserIpAddress(Request);
+                string clientIpAddress = Request.RemoteAddress();
 
                 // check the number of accounts already in database with this IP address, if number is higher than max conf, refuse registration request
                 var accountsWithSameIp = UserManager.Users.Count(x => x.LastLoginFromIp == clientIpAddress);
@@ -388,7 +390,7 @@ namespace Voat.Controllers
         // POST: /Account/DeleteAccount
         [Authorize]
         [HttpPost]
-        //[PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        //[PreventSpam(300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(Domain.Models.DeleteAccountOptions model)
         {
@@ -446,7 +448,7 @@ namespace Voat.Controllers
         // POST: /Account/UserPreferences
         [Authorize]
         [HttpPost]
-        [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(15, "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferencesAbout([Bind("Bio, Avatarfile")] UserAboutViewModel model)
         {
@@ -565,7 +567,7 @@ namespace Voat.Controllers
         // POST: /Account/UserPreferences
         [Authorize]
         [HttpPost]
-        [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(15,"Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferences(Domain.Models.UserPreferenceUpdate model)
         {
@@ -689,7 +691,7 @@ namespace Voat.Controllers
         // POST: /Account/UserAccountEmail
         [Authorize]
         [HttpPost]
-        [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(15, "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserAccountEmail([Bind("EmailAddress")] UserEmailViewModel model)
         {
@@ -720,7 +722,7 @@ namespace Voat.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [PreventSpam(DelayRequest = 5, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(5, "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<JsonResult> CheckUsernameAvailability()
         {
             //CORE_PORT: Ported correctly?

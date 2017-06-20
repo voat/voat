@@ -19,7 +19,7 @@ namespace Voat.Utilities
 
     }
 
-    public class HttpResource : IDisposable
+    public sealed class HttpResource : IDisposable
     {
         private Uri _uri = null;
         private Uri _redirectedUri = null;
@@ -49,7 +49,12 @@ namespace Voat.Utilities
         public HttpResource(string uri, HttpResourceOptions options = null) : this(new Uri(uri), options)
         {
         }
-        public async Task Execute(HttpCompletionOption options = HttpCompletionOption.ResponseContentRead)
+        /// <summary>
+        /// This method makes the remote Http request, cowboy style.
+        /// </summary>
+        /// <param name="options">Options to use with remote request</param>
+        /// <returns></returns>
+        public async Task GiddyUp(HttpCompletionOption options = HttpCompletionOption.ResponseContentRead)
         {
             var handler = new HttpClientHandler() {
                 AllowAutoRedirect = _options.AllowAutoRedirect

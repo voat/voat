@@ -330,6 +330,38 @@ namespace Voat.Tests.Infrastructure
                 IsAdminDisabled = false,
             }).Entity;
 
+            var arst = context.Subverse.Add(new Subverse()
+            {
+                Name = "arst",
+                Title = "v/arst",
+                Description = "Colemak short hand sub arst",
+                SideBar = "For those who are properly fingering: arst",
+                //Type = "link",
+                IsAdult = false,
+                IsAnonymized = null, //allows users to submit anon/non-anon content
+                IsAuthorizedOnly = false,
+                IsPrivate = false,
+                CreationDate = DateTime.UtcNow.AddDays(-7),
+                IsAdminDisabled = false,
+                CreatedBy = "SurelyPutts"
+            }).Entity;
+
+            var asdf = context.Subverse.Add(new Subverse()
+            {
+                Name = "asdf",
+                Title = "v/asdf",
+                Description = "Qwerty short hand sub asdf",
+                SideBar = "For those who are improperly fingering: asdf",
+                //Type = "link",
+                IsAdult = false,
+                IsAnonymized = null, //allows users to submit anon/non-anon content
+                IsAuthorizedOnly = false,
+                IsPrivate = false,
+                CreationDate = DateTime.UtcNow.AddDays(-7),
+                IsAdminDisabled = false,
+                CreatedBy = "NotPutts"
+            }).Entity;
+
             context.SaveChanges();
 
             context.SubverseModerator.Add(new SubverseModerator() { Subverse = SUBVERSES.AuthorizedOnly, CreatedBy = USERNAMES.Unit, CreationDate = DateTime.UtcNow, Power = 1, UserName = USERNAMES.Unit });

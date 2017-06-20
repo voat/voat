@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Data;
 using Voat.Domain.Models;
+using Voat.Http.Filters;
 using Voat.Models.ViewModels;
 using Voat.UI.Utilities;
 using Voat.Utilities;
@@ -106,7 +107,7 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
-        [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(30, "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> ReportContent(ReportContentModel model)
         {
             if (ModelState.IsValid)
@@ -120,7 +121,7 @@ namespace Voat.Controllers
             }
             else
             {
-                PreventSpamAttribute.Reset();
+                PreventSpamAttribute.Reset(HttpContext);
                 return JsonError(ModelState.GetFirstErrorMessage());
             }
         }
@@ -136,7 +137,7 @@ namespace Voat.Controllers
         ////[HttpPost]
         ////[Authorize]
         ////[VoatValidateAntiForgeryToken]
-        ////[PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        ////[PreventSpam(30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
         ////public async Task<ActionResult> ReportContent(ContentType type, int id)
         ////{
         ////    ActionResult result = null;

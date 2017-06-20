@@ -64,7 +64,7 @@ namespace Voat.Tests.Utils
             string result = null;
             using (var httpResource = new HttpResource(testUri.ToString()))
             {
-                await httpResource.Execute();
+                await httpResource.GiddyUp();
                 result = httpResource.Title;
             }
 
@@ -89,7 +89,7 @@ namespace Voat.Tests.Utils
             string result = null;
             using (var httpResource = new HttpResource(testUri))
             {
-                await httpResource.Execute();
+                await httpResource.GiddyUp();
                 result = httpResource.Title;
             }
 
@@ -144,7 +144,7 @@ namespace Voat.Tests.Utils
             string result = null;
             using (var httpResource = new HttpResource(testUri.ToString(), new HttpResourceOptions() { AllowAutoRedirect = true }))
             {
-                await httpResource.Execute();
+                await httpResource.GiddyUp();
                 result = httpResource.Title;
                 Assert.AreEqual(true, httpResource.Redirected);
                 Assert.AreEqual("Will the <b> and <i> tags ever become deprecated?", result, "HTML in title not properly decoded");
@@ -157,14 +157,14 @@ namespace Voat.Tests.Utils
             Uri testUri = new Uri("http://stackoverflow.com/questions/1348683/will-the-b-and-i-tags-ever-become-deprecated");
             using (var httpResource = new HttpResource(testUri.ToString()))
             {
-                await httpResource.Execute();
+                await httpResource.GiddyUp();
                 Assert.AreEqual(false, httpResource.Redirected);
                 Assert.AreEqual(HttpStatusCode.MovedPermanently, httpResource.Response.StatusCode);
             }
 
             using (var httpResource = new HttpResource(testUri.ToString(), new HttpResourceOptions() { AllowAutoRedirect = true }))
             {
-                await httpResource.Execute();
+                await httpResource.GiddyUp();
                 Assert.AreEqual(true, httpResource.Redirected);
                 Assert.AreEqual(HttpStatusCode.OK, httpResource.Response.StatusCode);
             }

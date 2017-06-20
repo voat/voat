@@ -115,7 +115,7 @@ namespace Voat.Controllers
             //string title = UrlUtility.GetTitleFromUri(uri);
             using (var httpResource = new HttpResource(uri))
             {
-                await httpResource.Execute();
+                await httpResource.GiddyUp();
 
                 string title = httpResource.Title;
 

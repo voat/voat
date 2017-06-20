@@ -76,7 +76,7 @@ namespace Voat.Tests.Utils
             Uri testUri = new Uri("http://www.bbc.com/news/technology-32194196");
             using (var httpResource = new HttpResource(testUri, new HttpResourceOptions() { Timeout = TimeSpan.FromSeconds(30) }))
             {
-                await httpResource.Execute();
+                await httpResource.GiddyUp();
 
                 List<string> acceptable = new List<string>() {
                     "://ichef.bbci.co.uk/news/1024/media/images/80755000/jpg/_80755021_163765270.jpg", //'merica test

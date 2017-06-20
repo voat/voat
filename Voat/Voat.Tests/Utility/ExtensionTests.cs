@@ -37,7 +37,17 @@ namespace Voat.Tests.Utils
     [TestClass]
     public class ExtensionTests : BaseUnitTest
     {
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("Extentions")]
+        public void TestReverseSplit()
+        {
+            Assert.AreEqual("co.voat", "voat.co".ReverseSplit("."));
+            Assert.AreEqual("co.voat.api", "api.voat.co".ReverseSplit("."));
+            Assert.AreEqual("jason", "jason".ReverseSplit("."));
+            Assert.AreEqual("", "".ReverseSplit("."));
+            Assert.AreEqual(null, ((string)null).ReverseSplit("."));
 
+        }
         [TestMethod]
         [TestCategory("Utility"), TestCategory("Extentions")]
         public void TestTrimSafe()

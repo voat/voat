@@ -33,7 +33,6 @@ namespace Voat.IO
 
         public abstract void Delete(FileKey key);
         public abstract bool Exists(FileKey key);
-        public abstract Task Upload(FileKey key, Uri contentPath, HttpResourceOptions options = null, Func<Stream, Task<Stream>> preProcessor = null);
 
         public abstract Task Upload(FileKey key, Stream stream);
 

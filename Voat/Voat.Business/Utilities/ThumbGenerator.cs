@@ -33,98 +33,57 @@ namespace Voat.Utilities
 
     public static class ThumbGenerator
     {
-        private static string _destinationPathThumbs = null;
-        private static string _destinationPathAvatars = null;
+        
+        //// generate a thumbnail while removing transparency and preserving aspect ratio
+        //public static async Task<string> GenerateThumbFromImageUrl(string imageUrl, int timeoutInMilliseconds = 3000, bool purgeTempFile = true)
+        //{
+        //    var key = new FileKey();
+        //    key.FileType = FileType.Thumbnail;
+        //    key.ID = GenerateRandomFilename("jpg");
 
-        public static string DestinationPathThumbs { get { return _destinationPathThumbs; } }
+        //    await FileManager.Instance.Upload(key, new Uri(imageUrl), new HttpResourceOptions() { Timeout = TimeSpan.FromMilliseconds(timeoutInMilliseconds) }, async (x) => 
+        //    {
+        //        return await Task.FromResult(x);
+        //    });
 
-        public static string DestinationPathAvatars { get { return _destinationPathAvatars; } }
-
-        static ThumbGenerator()
-        {
-            //CORE_PORT: HttpContext not available 
-            //throw new NotImplementedException("Core Port: HttpContext access");
-            /*
-            //For UI/API
-            if (HttpContext.Current != null)
-            {
-                _destinationPathThumbs = HttpContext.Current.Server.MapPath("~/Storage/Thumbs");
-                _destinationPathAvatars = HttpContext.Current.Server.MapPath("~/Storage/Avatars");
-            }
-
-            //For Unit Testing
-            else
-            {
-                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                _destinationPathThumbs = Path.Combine(baseDir, @"Storage\Thumbs");
-                _destinationPathAvatars = Path.Combine(baseDir, @"Storage\Avatars");
-                if (!Directory.Exists(_destinationPathThumbs))
-                {
-                    Directory.CreateDirectory(_destinationPathThumbs);
-                }
-                if (!Directory.Exists(_destinationPathAvatars))
-                {
-                    Directory.CreateDirectory(_destinationPathAvatars);
-                }
-            }
-            */
-        }
-
-        // setup default thumb resolution
-        private const int MaxHeight = 70;
-
-        private const int MaxWidth = 70;
-
-        // generate a thumbnail while removing transparency and preserving aspect ratio
-        public static async Task<string> GenerateThumbFromImageUrl(string imageUrl, int timeoutInMilliseconds = 3000, bool purgeTempFile = true)
-        {
-            var key = new FileKey();
-            key.FileType = FileType.Thumbnail;
-            key.ID = GenerateRandomFilename("jpg");
-
-            await FileManager.Instance.Upload(key, new Uri(imageUrl), new HttpResourceOptions() { Timeout = TimeSpan.FromMilliseconds(timeoutInMilliseconds) }, async (x) => 
-            {
-                return await Task.FromResult(x);
-            });
-
-            return key.ID;
+        //    return key.ID;
 
 
-            //throw new ApplicationException("Direct web requests are not permitted any longer");
-            ////TODO: Return NULL if file lenght is zero as thumbnail did not generate to local disk
-            //var randomFileName = GenerateRandomFilename();
-            //var tempPath = FilePather.Instance.LocalPath(VoatSettings.Instance.DestinationPathThumbs, $"{randomFileName}.jpg");
+        //    //throw new ApplicationException("Direct web requests are not permitted any longer");
+        //    ////TODO: Return NULL if file lenght is zero as thumbnail did not generate to local disk
+        //    //var randomFileName = GenerateRandomFilename();
+        //    //var tempPath = FilePather.Instance.LocalPath(VoatSettings.Instance.DestinationPathThumbs, $"{randomFileName}.jpg");
 
-            //var request = WebRequest.Create(imageUrl);
-            //request.Timeout = timeoutInMilliseconds; //Putts: extended this from 300 mills
-            //using (var response = request.GetResponse())
-            //{
-            //    //var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
-            //    //originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(tempPath, 90);
-            //}
+        //    //var request = WebRequest.Create(imageUrl);
+        //    //request.Timeout = timeoutInMilliseconds; //Putts: extended this from 300 mills
+        //    //using (var response = request.GetResponse())
+        //    //{
+        //    //    //var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
+        //    //    //originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(tempPath, 90);
+        //    //}
 
-            //if (File.Exists(tempPath))
-            //{
-            //    // call upload to storage method if CDN config is enabled
-            //    if (VoatSettings.Instance.UseContentDeliveryNetwork)
-            //    {
-            //        await FileManager.Instance.Upload(new FileKey(tempPath, FileType.Thumbnail), new Uri(tempPath));
-            //        //CORE_PORT: Original code
-            //        //await CloudStorageUtility.UploadBlobToStorageAsync(tempPath, "thumbs");
-            //        //if (purgeTempFile)
-            //        //{
-            //        //    // delete local file after uploading to CDN
-            //        //    File.Delete(tempPath);
-            //        //}
-            //    }
-            //    return Path.GetFileName(tempPath);
-            //}
-            //else
-            //{
-            //    return null;
-            //}
+        //    //if (File.Exists(tempPath))
+        //    //{
+        //    //    // call upload to storage method if CDN config is enabled
+        //    //    if (VoatSettings.Instance.UseContentDeliveryNetwork)
+        //    //    {
+        //    //        await FileManager.Instance.Upload(new FileKey(tempPath, FileType.Thumbnail), new Uri(tempPath));
+        //    //        //CORE_PORT: Original code
+        //    //        //await CloudStorageUtility.UploadBlobToStorageAsync(tempPath, "thumbs");
+        //    //        //if (purgeTempFile)
+        //    //        //{
+        //    //        //    // delete local file after uploading to CDN
+        //    //        //    File.Delete(tempPath);
+        //    //        //}
+        //    //    }
+        //    //    return Path.GetFileName(tempPath);
+        //    //}
+        //    //else
+        //    //{
+        //    //    return null;
+        //    //}
 
-        }
+        //}
 
         //CORE_PORT: Image handling has changed in core, commenting out method until we know what we are doing
         public static async Task<bool> GenerateAvatar(object inputImage, string userName, string mimetype, bool purgeTempFile = true)
@@ -189,13 +148,16 @@ namespace Voat.Utilities
             return fileName;
         }
 
-        
-        public static async Task<string> GenerateThumbFromWebpageUrl(string websiteUrl, bool purgeTempFile = true)
+        public static async Task<string> GenerateThumbnail(string url, bool purgeTempFile = true)
         {
-
-            using (var httpResource = new HttpResource(websiteUrl))
+            return await GenerateThumbnail(new Uri(url), purgeTempFile);
+        }
+        public static async Task<string> GenerateThumbnail(Uri url, bool purgeTempFile = true)
+        {
+            //Ok this all needs to be centralized, we should only make 1 request to a remote resource
+            using (var httpResource = new HttpResource(url))
             {
-                await httpResource.Execute();
+                await httpResource.GiddyUp();
 
                 if (httpResource.IsImage)
                 {
@@ -209,7 +171,8 @@ namespace Voat.Utilities
                 }
                 else if (httpResource.Image != null)
                 {
-                    return await GenerateThumbFromImageUrl(httpResource.Image.ToString(), 5000, true);
+                    //just do it. again.
+                    return await GenerateThumbnail(httpResource.Image);
                 }
                 return null;
             }

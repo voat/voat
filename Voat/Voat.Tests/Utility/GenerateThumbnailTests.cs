@@ -41,7 +41,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Utility"), TestCategory("Thumbnail")]
         public async Task GenerateThumbFromWebsiteUrl()
         {
-            var result = await ThumbGenerator.GenerateThumbFromWebpageUrl("https://www.yahoo.com", false);
+            var result = await ThumbGenerator.GenerateThumbnail("https://www.yahoo.com", false);
 
             var key = new FileKey(result, FileType.Thumbnail);
             Assert.AreEqual(true, FileManager.Instance.Exists(key), "Thumb did not get generated from image url");
@@ -53,7 +53,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Utility"), TestCategory("Thumbnail")]
         public async Task GenerateThumbFromWebsiteUrl_Failure()
         {
-            var result = await ThumbGenerator.GenerateThumbFromWebpageUrl("http://www.idontexistimprettysuremaybeIlladdrandom3243242.com", false);
+            var result = await ThumbGenerator.GenerateThumbnail("http://www.idontexistimprettysuremaybeIlladdrandom3243242.com", false);
             Assert.AreEqual(null, result, "Expecting no thumb");
         }
 
@@ -63,7 +63,7 @@ namespace Voat.Tests.Utils
         public async Task GenerateThumbFromImageUrl_Failure()
         {
             await VoatAssert.ThrowsAsync<TaskCanceledException>(() => {
-                return ThumbGenerator.GenerateThumbFromImageUrl("https://idontexistimprettysuremaybeIlladdrandom3243242.co/graphics/voat-goat.png", 5000, false);
+                return ThumbGenerator.GenerateThumbnail("https://idontexistimprettysuremaybeIlladdrandom3243242.co/graphics/voat-goat.png", false);
             });
 
             //var result = await ThumbGenerator.GenerateThumbFromImageUrl("https://idontexistimprettysuremaybeIlladdrandom3243242.co/graphics/voat-goat.png", 5000, false);
@@ -74,7 +74,7 @@ namespace Voat.Tests.Utils
         [TestCategory("Utility"), TestCategory("Thumbnail")]
         public async Task GenerateThumbFromImageUrl()
         {
-            var result = await ThumbGenerator.GenerateThumbFromImageUrl("https://voat.co/graphics/voat-goat.png", 5000, false);
+            var result = await ThumbGenerator.GenerateThumbnail("https://voat.co/graphics/voat-goat.png", false);
             var key = new FileKey(result, FileType.Thumbnail);
             Assert.AreEqual(true, FileManager.Instance.Exists(key), "Thumb did not get generated from image url");
             FileManager.Instance.Delete(key);

@@ -9,6 +9,14 @@ namespace Voat.Common
 {
     public static class StringExtensions
     {
+        public static string ReverseSplit(this string content, string seperator = ".")
+        {
+            if (!String.IsNullOrEmpty(content))
+            {
+                return String.Join(seperator, content.Split(new string[] { seperator }, StringSplitOptions.RemoveEmptyEntries).Reverse());
+            }
+            return content;
+        }
         //public static IEnumerable<string> ToRelativePathParts(this string[] relativePaths, string additionalPart)
         //{
         //    string[] part = null;
@@ -18,6 +26,7 @@ namespace Voat.Common
         //    }
         //    return ToRelativePathParts(relativePaths, part);
         //}
+
         public static IEnumerable<string> ToPathParts(this IEnumerable<string> relativePaths, IEnumerable<string> additionalParts = null)
         {
             List<string> parts = new List<string>();

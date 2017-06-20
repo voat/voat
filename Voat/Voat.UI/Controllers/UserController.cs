@@ -436,11 +436,11 @@ namespace Voat.Controllers
             VoteResponse result = null; 
             switch (contentType) {
                 case Domain.Models.ContentType.Submission:
-                    var cmdV = new SubmissionVoteCommand(id, voteStatus, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request))).SetUserContext(User);
+                    var cmdV = new SubmissionVoteCommand(id, voteStatus, IpHash.CreateHash(Request.RemoteAddress())).SetUserContext(User);
                     result = await cmdV.Execute();
                     break;
                 case Domain.Models.ContentType.Comment:
-                    var cmdC = new CommentVoteCommand(id, voteStatus, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request))).SetUserContext(User);
+                    var cmdC = new CommentVoteCommand(id, voteStatus, IpHash.CreateHash(Request.RemoteAddress())).SetUserContext(User);
                     result = await cmdC.Execute();
                     break;
             }

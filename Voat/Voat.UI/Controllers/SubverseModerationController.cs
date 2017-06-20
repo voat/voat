@@ -36,6 +36,7 @@ using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
+using Voat.Http.Filters;
 using Voat.Models.ViewModels;
 using Voat.UI.Utilities;
 using Voat.Utilities;
@@ -110,7 +111,7 @@ namespace Voat.Controllers
 
         // POST: Eddit a Subverse
         [HttpPost]
-        [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
+        [PreventSpam(30, "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Update(SubverseSettingsViewModel updatedModel)
         {
@@ -260,7 +261,7 @@ namespace Voat.Controllers
         [HttpPost]
         //CORE_PORT: Not supported
         //[ValidateInput(false)]
-        [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
+        [PreventSpam(30, "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SubverseStylesheetEditor(SubverseStylesheetViewModel model)
         {

@@ -13,15 +13,15 @@ namespace Voat.Tests.Utility
         [TestMethod]
         public async Task Test()
         {
-            var x = new HttpResource("http://www.microsoft.com/en/us/default.aspx?redir=true");
-            await x.Execute();
+            var httpRehorse = new HttpResource("http://www.microsoft.com/en/us/default.aspx?redir=true");
+            await httpRehorse.GiddyUp();
 
             //var w = x.Response.Headers.AcceptRanges.First();
-            var s = new StreamReader(x.Stream);
+            var s = new StreamReader(httpRehorse.Stream);
             var contents = s.ReadToEnd();
 
             var ss = new MemoryStream();
-            await x.Response.Content.CopyToAsync(ss);
+            await httpRehorse.Response.Content.CopyToAsync(ss);
 
         }
 

@@ -8,8 +8,8 @@ namespace Voat.IO
 {
     public interface IFileManager<K>
     {
-        //Dear Future People: This will likely be removed
-        Task Upload(K key, Uri contentPath, HttpResourceOptions options = null, Func<Stream, Task<Stream>> preProcessor = null);
+        //Dear Future People: This will likely be removed - Oh snap, look what just happened!
+        //Task Upload(K key, Uri contentPath, HttpResourceOptions options = null, Func<Stream, Task<Stream>> preProcessor = null);
 
         Task Upload(K key, Stream stream);
 

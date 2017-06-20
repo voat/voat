@@ -192,7 +192,12 @@ namespace Voat.Tests.Utils
 
             Assert.IsFalse(fm.Exists(key));
 
-            await fm.Upload(key, new Uri("https://voat.co/Graphics/voat-goat.png"));
+            using (var httpRehorse = new HttpResource("https://voat.co/Graphics/voat-goat.png"))
+            {
+                await httpRehorse.GiddyUp();
+
+                await fm.Upload(key, httpRehorse.Stream);
+            }
 
             Assert.IsTrue(fm.Exists(key));
 
@@ -294,8 +299,13 @@ namespace Voat.Tests.Utils
 
             Assert.IsFalse(fm.Exists(key));
 
-            await fm.Upload(key, new Uri("https://voat.co/Graphics/voat-goat.png"));
+            using (var httpRehorse = new HttpResource("https://voat.co/Graphics/voat-goat.png"))
+            {
+                await httpRehorse.GiddyUp();
 
+                await fm.Upload(key, httpRehorse.Stream);
+            }
+            
             Assert.IsTrue(fm.Exists(key));
 
             var url = fm.Uri(key, new PathOptions() { FullyQualified = false, ProvideProtocol = false });
@@ -310,7 +320,7 @@ namespace Voat.Tests.Utils
         public void ContentDelivery_ExceptionPaths()
         {
             var fm = new ContentDeliveryNetworkFileManager("");
-
+            
             var key = new FileKey() { ID = null, FileType = FileType.Avatar };
             VerifyPath(fm, key, "");
 

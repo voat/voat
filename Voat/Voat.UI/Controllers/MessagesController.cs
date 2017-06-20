@@ -44,6 +44,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Voat.Common;
 using Voat.Http;
+using Voat.Http.Filters;
 
 namespace Voat.Controllers
 {
@@ -250,7 +251,7 @@ namespace Voat.Controllers
 
         // POST: Compose
         [HttpPost]
-        [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(30, "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Compose(NewMessageViewModel message)
         {
@@ -321,13 +322,13 @@ namespace Voat.Controllers
         }
         // POST: Compose
         [HttpPost]
-        [PreventSpam(DelayRequest = 30, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(30, "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Reply(MessageReplyViewModel message)
         {
             if (!ModelState.IsValid)
             {
-                PreventSpamAttribute.Reset();
+                PreventSpamAttribute.Reset(HttpContext);
                 if (Request.IsAjaxRequest())
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ModelState.GetFirstErrorMessage());

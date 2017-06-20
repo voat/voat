@@ -43,6 +43,7 @@ using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.Http;
+using Voat.Http.Filters;
 using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.UI.Utilities;
@@ -147,7 +148,7 @@ namespace Voat.Controllers
 
             #endregion
 
-            var cmd = new LogVisitCommand(null, submissionID.Value, UserHelper.UserIpAddress(this.Request)).SetUserContext(User);
+            var cmd = new LogVisitCommand(null, submissionID.Value, Request.RemoteAddress()).SetUserContext(User);
             cmd.Execute();
 
             CommentSegment model = null;
@@ -297,7 +298,7 @@ namespace Voat.Controllers
         // POST: submitcomment, adds a new root comment
         [HttpPost]
         [Authorize]
-        [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(15, "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SubmitComment([Bind("ID, Content, SubmissionID, ParentID")] Data.Models.Comment commentModel)
         {
@@ -355,7 +356,7 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
-        [PreventSpam(DelayRequest = 15, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(15, "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> EditComment([FromBody()] Data.Models.Comment commentModel)
         {
             if (ModelState.IsValid)
@@ -369,7 +370,7 @@ namespace Voat.Controllers
                 }
                 else
                 {
-                    PreventSpamAttribute.Reset();
+                    PreventSpamAttribute.Reset(HttpContext);
                     return JsonError(result.Message);
                 }
             }

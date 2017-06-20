@@ -51,49 +51,6 @@ namespace Voat.IO
             return File.Exists(FilePather.Instance.LocalPath(ContentPath(key.FileType), key.ID));
         }
 
-        public override async Task Upload(FileKey key, Uri contentPath, HttpResourceOptions options = null, Func < Stream, Task<Stream>> preProcessor = null)
-        {
-            if (Regex.IsMatch(contentPath.Scheme, "http(s)?", RegexOptions.IgnoreCase))
-            {
-                EnsureLocalDirectoryExists(key.FileType);
-
-                using (var httpResource = new HttpResource(contentPath.ToString(), options))
-                {
-                    await httpResource.Execute();
-
-                    if (!httpResource.Response.IsSuccessStatusCode)
-                    {
-                        throw new Exception("Mega major issues");
-                    }
-
-                    var processedStream = httpResource.Stream;
-                    if (preProcessor != null)
-                    {
-                        processedStream = await preProcessor(httpResource.Stream);
-                    }
-                    await Upload(key, processedStream);
-                }
-        }
-            else if (Regex.IsMatch(contentPath.Scheme, "file", RegexOptions.IgnoreCase) || File.Exists(contentPath.ToString()))
-            {
-                EnsureLocalDirectoryExists(key.FileType);
-
-                using (var sourceStream = (Stream)File.OpenRead(contentPath.ToString()))
-                {
-                    var processedStream = sourceStream;
-                    if (preProcessor != null)
-                    {
-                        processedStream = await preProcessor(sourceStream);
-                    }
-                    await Upload(key, processedStream);
-            }
-        }
-            else
-            {
-                throw new ArgumentException("Can not determine resource location", nameof(contentPath));
-            }
-        }
-
         public override string Uri(FileKey key, PathOptions options = null)
         {
             if (key == null || String.IsNullOrEmpty(key.ID))

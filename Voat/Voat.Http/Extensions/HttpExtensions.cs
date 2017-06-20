@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using Voat.Common;
 using Voat.Configuration;
 using Voat.Logging;
 
@@ -99,7 +101,7 @@ namespace Voat.Http
         {
             response.Cookies.Add(cookie);
         }
-
+        //This is very hacky, will need to fix later.
         public static bool HandleRuntimeState(this HttpContext context)
         {
             var result = false;
@@ -189,6 +191,32 @@ namespace Voat.Http
 
         }
 
+        public static string RemoteAddress(this HttpRequest request, string headerKeys = "CF-Connecting-IP, X-Original-For")
+        {
+            var keys = headerKeys.Split(',', ';').Select(x => x.TrimSafe());
+            string clientIpAddress = String.Empty;
 
+            foreach (var key in keys)
+            {
+                if (request.Headers.ContainsKey(key))
+                {
+                    clientIpAddress = request.Headers[key];
+                    if (!String.IsNullOrEmpty(clientIpAddress))
+                    {
+                        break;
+                    }
+                }
+            }
+            return clientIpAddress;
+        }
+        public static string Signature(this HttpRequest request)
+        {
+            //Port from PreventSpam Attribute
+            var originationInfo = request.RemoteAddress(); 
+            originationInfo += request.Headers["User-Agent"].ToString();
+            var targetInfo = request.GetUrl();
+            var hashValue = string.Join("", MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(originationInfo + targetInfo)).Select(s => s.ToString("x2")));
+            return hashValue;
+        }
     }
 }

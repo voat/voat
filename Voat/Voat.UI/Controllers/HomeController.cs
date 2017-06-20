@@ -35,6 +35,7 @@ using Voat.Configuration;
 using Voat.Data;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
+using Voat.Http.Filters;
 using Voat.Models.ViewModels;
 using Voat.Rules;
 using Voat.RulesEngine;
@@ -122,7 +123,7 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
-        [PreventSpam(DelayRequest = 60, ErrorMessage = "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
+        [PreventSpam(60, "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
         public async Task<ActionResult> Submit(CreateSubmissionViewModel model)
         {
             //set this incase invalid submittal 
@@ -184,7 +185,7 @@ namespace Voat.Controllers
                 {
                     ModelState.AddModelError(string.Empty, result.Message);
                 }
-                PreventSpamAttribute.Reset();
+                PreventSpamAttribute.Reset(HttpContext);
                 return View("Submit", model);
             }
         }

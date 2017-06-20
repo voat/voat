@@ -50,11 +50,6 @@ namespace Voat.IO
             return result;
             
         }
-        public override async Task Upload(FileKey key, Uri contentPath, HttpResourceOptions options = null, Func<Stream, Task<Stream>> preProcessor = null)
-        {
-            throw new NotImplementedException();
-            //await base.Upload(key, contentPath);
-        }
         public override Task Upload(FileKey key, Stream stream)
         {
             throw new NotImplementedException();

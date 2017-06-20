@@ -41,6 +41,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Voat.Common;
 using Voat.Http;
+using Voat.Http.Filters;
 
 namespace Voat.Controllers
 {
@@ -53,13 +54,13 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
-        [PreventSpam(DelayRequest = 300, ErrorMessage = "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(300, "Sorry, you are doing that too fast. Please try again later.")]
         public async Task<ActionResult> CreateSubverse([Bind("Name, Title, Description, Type, Sidebar, CreationDate, Owner")] AddSubverse subverseTmpModel)
         {
             // abort if model state is invalid
             if (!ModelState.IsValid)
             {
-                PreventSpamAttribute.Reset();
+                PreventSpamAttribute.Reset(HttpContext);
                 return View(subverseTmpModel);
             }
 
@@ -306,7 +307,7 @@ namespace Voat.Controllers
             }
 
             SetFirstTimeCookie();
-            var logVisit = new LogVisitCommand(subverse, null, IpHash.CreateHash(UserHelper.UserIpAddress(Request))).SetUserContext(User);
+            var logVisit = new LogVisitCommand(subverse, null, IpHash.CreateHash(Request.RemoteAddress())).SetUserContext(User);
             await logVisit.Execute();
 
             //Parse query
