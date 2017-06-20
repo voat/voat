@@ -456,50 +456,7 @@ namespace Voat.Controllers
             }
         }
 
-        //TODO: Move to dedicated query object
-        //[Obsolete("Arg Matie, you shipwrecked upon t'is Dead Code", true)]
-        private IQueryable<Submission> SfwSubmissionsFromAllSubversesByViews24Hours(VoatUIDataContextAccessor _db)
-        {
-            if (_db == null)
-            {
-                _db = this._db;
-            }
-            var startDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
-
-            IQueryable<Submission> sfwSubmissionsFromAllSubversesByViews24Hours =
-                (from message in _db.Submission
-                 join subverse in _db.Subverse on message.Subverse equals subverse.Name
-                 where message.ArchiveDate == null && !message.IsDeleted && subverse.IsPrivate != true && subverse.IsAdminPrivate != true && subverse.IsAdult == false && message.CreationDate >= startDate && message.CreationDate <= Repository.CurrentDate
-                 where !(from bu in _db.BannedUser select bu.UserName).Contains(message.UserName)
-                 where !subverse.IsAdminDisabled.Value
-                 //where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(User.Identity.Name)
-                 select message).OrderByDescending(s => s.Views).Take(5).AsQueryable();
-                 //select message).OrderByDescending(s => s.Views).DistinctBy(m => m.Subverse).Take(5).AsQueryable().AsNoTracking();
-
-            return sfwSubmissionsFromAllSubversesByViews24Hours;
-        }
-
         #endregion
-
-
-
-        [ChildActionOnly]
-        [OutputCache(Duration = 600, VaryByParam = "none")]
-        public ActionResult TopViewedSubmissions24Hours()
-        {
-            //var submissions =
-            var cacheData = CacheHandler.Instance.Register("legacy:TopViewedSubmissions24Hours", new Func<object>(() =>
-            {
-                using (var db = new VoatUIDataContextAccessor(CONSTANTS.CONNECTION_READONLY))
-                {
-                    db.EnableCacheableOutput();
-
-                    return SfwSubmissionsFromAllSubversesByViews24Hours(db).ToList();
-                }
-            }), TimeSpan.FromMinutes(60), 5);
-
-            return PartialView("_MostViewedSubmissions", cacheData);
-        }
 
         #region random subverse
         [Obsolete("Original Random Sub Query", true)]

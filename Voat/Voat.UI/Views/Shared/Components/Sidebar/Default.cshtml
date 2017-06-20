@@ -102,7 +102,7 @@
         </div>
         <div>
             @{
-                Html.RenderAction("TopViewedSubmissions24Hours", "Subverses");
+                @await Component.InvokeAsync("TopViewedSubmissions", null)
             }
         </div>
     </div>
