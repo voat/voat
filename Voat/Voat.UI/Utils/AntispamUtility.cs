@@ -30,6 +30,7 @@ using Newtonsoft.Json;
 using Voat.Configuration;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Http;
+using Voat.Utilities;
 
 namespace Voat.UI.Utilities
 {
@@ -65,17 +66,20 @@ namespace Voat.UI.Utilities
             string privateKey = VoatSettings.Instance.RecaptchaPrivateKey;
             string encodedResponse = request.Form["g-Recaptcha-Response"];
 
-            var client = new HttpClient();
-            var content = new FormUrlEncodedContent(new[]
+            using (var httpResource = new HttpResource("https://www.google.com/recaptcha/api/siteverify"))
             {
-                new KeyValuePair<string, string>("secret", privateKey), 
-                new KeyValuePair<string, string>("response", encodedResponse), 
-            });
-            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content).ConfigureAwait(false);
-            var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var captchaResponse = JsonConvert.DeserializeObject<ReCaptchaResponse>(responseString);
+                var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("secret", privateKey),
+                    new KeyValuePair<string, string>("response", encodedResponse),
+                });
+                await httpResource.GiddyUp(HttpMethod.Post, content);
 
-            return captchaResponse.Success;
+                var responseString = await httpResource.Response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var captchaResponse = JsonConvert.DeserializeObject<ReCaptchaResponse>(responseString);
+
+                return captchaResponse.Success;
+            }
         }
         private class ReCaptchaResponse
         {

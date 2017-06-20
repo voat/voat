@@ -54,7 +54,7 @@ namespace Voat.Utilities
         /// </summary>
         /// <param name="options">Options to use with remote request</param>
         /// <returns></returns>
-        public async Task GiddyUp(HttpCompletionOption options = HttpCompletionOption.ResponseContentRead)
+        public async Task GiddyUp(HttpMethod method = null, HttpContent content = null, HttpCompletionOption options = HttpCompletionOption.ResponseContentRead)
         {
             var handler = new HttpClientHandler() {
                 AllowAutoRedirect = _options.AllowAutoRedirect
@@ -65,7 +65,20 @@ namespace Voat.Utilities
                 httpClient.Timeout = _options.Timeout;
                 httpClient.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue($"Voat-OpenGraph-Parser", "2"));
 
-                _response = await httpClient.GetAsync(Uri, options);
+                switch (method?.Method.ToLower())
+                {
+                    case "get":
+                    case null:
+                        _response = await httpClient.GetAsync(Uri, options);
+                        break;
+                    case "post":
+                        _response = await httpClient.PostAsync(Uri, content);
+                        break;
+                    default:
+                        throw new NotImplementedException($"{method?.Method} is currently not implemented");
+                        break;
+                }
+                
                 _redirectedUri = _response.RequestMessage.RequestUri;
 
                 if (options == HttpCompletionOption.ResponseContentRead)
