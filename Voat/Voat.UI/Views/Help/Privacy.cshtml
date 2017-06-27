@@ -1,0 +1,79 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@{
+    ViewBag.Title = "Privacy";
+    var siteName = VoatSettings.Instance.SiteName;
+}
+
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
+
+        <h1>Privacy Policy </h1>
+        <p>
+            If you require any more information or have any questions about our privacy policy, please feel free to contact us by email@(Voat.Configuration.VoatSettings.Instance.IsVoatBranded ? "at privacy at " + VoatSettings.Instance.SiteDomain : "").
+            We consider the privacy of our visitors to be extremely important. This privacy policy document describes in detail the types of personal information is collected and recorded by @siteName and how we use it.
+        </p>
+        <h1>Log Files </h1>
+        <p>
+            Like many other Web sites, @siteName makes use of log files. These files merely logs visitors to the site - usually a standard procedure for hosting companies and a part of hosting services's analytics.
+            The information inside the log files includes internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date/time stamp, referring/exit pages, and possibly the number of clicks.
+            This information is used to analyze trends, administer the site and track user's movement around the site.
+            IP addresses, and other such information are not linked to any information that is personally identifiable.
+        </p>
+        <h1>Cookies and Web Beacons </h1>
+        <p>
+            @siteName uses cookies to store information about visitors' preferences, to record user-specific information on which pages the site visitor accesses or visits,
+            and to personalize or customize our web page content based upon visitors' browser type or other information that the visitor sends via their browser.
+        </p>
+        <h1>Third Party Privacy Policies</h1>
+        <p>
+            @siteName uses Google Recaptcha in order to minimize spam. For more information about how Google handles recorded data, please consult the <a href="http://www.google.com/policies/privacy/partners/">Google Privacy Policy</a>.
+            You should consult the respective privacy policies of these third-party servers for more detailed information on their practices as well as for instructions
+            about how to opt-out of certain practices. @siteName's privacy policy does not apply to, and we cannot control the activities of, such other advertisers or
+            web sites. if you wish to disable cookies, you may do so through your individual browser options. more detailed information about cookie management with specific
+            web browsers can be found at the browsers' respective websites.&nbsp;
+        </p>
+        <h1>Children's Information</h1>
+        <p>
+            We believe it is important to provide added protection for children online. We encourage parents and guardians to spend time online with their children to observe,
+            participate in and/or monitor and guide their online activity. @siteName does not knowingly collect any personally identifiable information from children
+            under the age of 13. If a parent or guardian believes that @siteName has in its database the personally-identifiable information of a child under the age of 13,
+            please contact us immediately (using the contact in the first paragraph) and we will use our best efforts to promptly remove such information from our records.
+        </p>
+        <h1>Online Privacy Policy</h1>
+        <p>
+            Only This privacy policy applies only to our online activities and is valid for visitors to our website and regarding information shared and/or collected there.
+            This policy does not apply to any information collected offline or via channels other than this website.
+        </p>
+        <h1>Consent</h1>
+        <p>
+            By using our website, you hereby consent to our privacy policy and agree to its terms.
+        </p>
+        @if (VoatSettings.Instance.IsVoatBranded)
+        {
+            <h1>Update</h1>
+            <p>
+                This Privacy Policy was last updated on: May 16th, 2015. Should we update, amend or make any changes to our privacy policy, those changes
+                will be posted here.
+            </p>
+        }
+    </div>
+</div>

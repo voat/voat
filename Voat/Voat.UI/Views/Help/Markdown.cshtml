@@ -1,0 +1,219 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@{
+    ViewBag.Title = VoatSettings.Instance.SiteName + " Markdown cheat sheet";
+}
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
+        <p class="heading-2">@VoatSettings.Instance.SiteName Markdown cheat sheet</p>
+        <p>
+            We support <a href="http://daringfireball.net/projects/markdown/">Markdown</a> syntax in comments and self posts.
+        <p>
+            Here are some examples of syntax that you can use to make your messages and comments look better.
+        </p>
+        <hr />
+        <div class="row nomargin">
+            <div class="well">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr class="info">
+                            <th>You type</th>
+                            <th>You see</th>
+                        </tr>
+                    </thead>
+                    <tbody class="md">
+                        <tr>
+                            <td>**bold**</td>
+                            <td><b>bold</b></td>
+                        </tr>
+                        <tr>
+                            <td>*italics*</td>
+                            <td><i>italics</i></td>
+                        </tr>
+                        <tr>
+                            <td>[A website](http://example.com)</td>
+                            <td><a href="http://example.com">A website</a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                > Quoting is awesome.<br />
+                                > Yes, quoting is awesome.<br />
+                            </td>
+                            <td>
+                                <blockquote class="small">
+                                    <p>
+                                        Quoting is awesome.
+                                    </p>
+                                    <p>
+                                        Yes, quoting is awesome.
+                                    </p>
+                                </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                ~~~<br />
+                                Code block<br />
+                                ~~~
+                            </td>
+                            <td>
+                                <pre><code>Code block</code></pre>
+                            </td>
+                        </tr>
+						<tr>
+							<td>
+								* Anna<br />
+								* Bob<br />
+								* Charlie
+							</td>
+							<td>
+								<ul style="list-style-type: disc;">
+									<li>Anna</li>
+									<li>Bob</li>
+									<li>Charlie</li>
+								</ul>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								1. Make a comment<br />
+								2. Use Markdown<br />
+								3. ???<br />
+								4. Profit
+							</td>
+							<td>
+								<ol style="list-style-type: decimal;">
+									<li>Make a comment</li>
+									<li>Use Markdown</li>
+									<li>???</li>
+									<li>Profit</li>
+								</ol>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								Paragraph 1<br />
+								<br />
+								----------<br />
+								<br />
+								Paragraph 2
+							</td>
+							<td>
+								<p>Paragraph 1</p>
+								<hr>
+								<p>Paragraph 2</p>
+							</td>
+						</tr>
+                        <tr>
+                            <td>
+                                Fruit    |Color<br />
+                                ---------|----------<br />
+                                Apples   |Red<br />
+                                Pears	 |Green<br />
+                                Bananas  |Yellow<br />
+                            </td>
+                            <td>
+                                <table class="table-condensed table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Fruit</th>
+                                            <th>Color</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Apples</td>
+                                            <td>Red</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Pears</td>
+                                            <td>Green</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Bananas</td>
+                                            <td>Yellow</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+							</td>
+                        </tr>
+						<tr>
+							<td>
+								[](#s "Spoiler text goes here")
+							</td>
+							<td>
+								<a href="#s" title="Spoiler text goes here" target="_blank"></a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								#Heading Level 1
+							</td>
+							<td>
+								<h1>Heading Level 1</h1>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								##Heading Level 2
+							</td>
+							<td>
+								<h2>Heading Level 2</h2>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								###Heading Level 3
+							</td>
+							<td>
+								<h3>Heading Level 3</h3>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								####Heading Level 4
+							</td>
+							<td>
+								<h4>Heading Level 4</h4>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								#####Heading Level 5
+							</td>
+							<td>
+								<h5>Heading Level 5</h5>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								######Heading Level 6
+							</td>
+							<td>
+								<h6>Heading Level 6</h6>
+							</td>
+						</tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
