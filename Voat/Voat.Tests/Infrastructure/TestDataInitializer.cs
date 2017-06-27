@@ -40,14 +40,10 @@ using Voat.Utilities;
 namespace Voat.Tests.Infrastructure
 {
     public class TestDataInitializer 
-        //CORE_PORT: Can't find this interface, but I don't think we need it.
-        //: IDatabaseInitializer<voatEntities>
     {
 
         public void InitializeDatabase(VoatDataContext context, bool seed = true)
         {
-            //For Postgre
-            //TestEnvironmentVoatSettings.Instance.DataStoreType = Voat.Data.DataStoreType.PostgreSQL;
             CreateSchema(context);
             if (seed)
             {
@@ -57,10 +53,6 @@ namespace Voat.Tests.Infrastructure
 
         protected void CreateSchema(VoatDataContext context)
         {
-            //THIS METHOD MIGHT VERY WELL NEED A DIFFERENT IMPLEMENTATION FOR DIFFERENT STORES
-
-            //This is all a hack to get PG working with unit tests the fastest way possible.
-
             //Parse and run sql scripts
             var dbName = context.Connection.Database;
             var originalConnectionString = context.Connection.ConnectionString;

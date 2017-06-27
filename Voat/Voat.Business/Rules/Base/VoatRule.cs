@@ -68,7 +68,7 @@ namespace Voat.Rules
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = VoatSettings.Instance.DailyPostingQuotaPerSub;
 
-            using (var db = new VoatDataContext())
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 // check how many submission user made today
                 var userSubmissionsToTargetSub = db.Submission.Count(
@@ -94,7 +94,8 @@ namespace Voat.Rules
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = VoatSettings.Instance.DailyPostingQuotaForNegativeScore;
 
-            using (var db = new VoatDataContext())
+            //REPO_ACCESS: Move logic to Repository 
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 // check how many submission user made today
                 var userSubmissionsInPast24Hours = db.Submission.Count(
@@ -119,7 +120,8 @@ namespace Voat.Rules
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = VoatSettings.Instance.DailyCommentPostingQuotaForNegativeScore;
 
-            using (var db = new VoatDataContext())
+            //REPO_ACCESS: Move logic to Repository 
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 // check how many submission user made today
                 var userCommentSubmissionsInPast24Hours = db.Comment.Count(
@@ -144,7 +146,8 @@ namespace Voat.Rules
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = VoatSettings.Instance.DailyCommentPostingQuota;
 
-            using (var db = new VoatDataContext())
+            //REPO_ACCESS: Move logic to Repository 
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 // check how many submission user made today
                 var userCommentSubmissionsInPast24Hours = db.Comment.Count(
@@ -169,7 +172,8 @@ namespace Voat.Rules
             // read hourly posting quota configuration parameter from web.config
             int hpqp = VoatSettings.Instance.HourlyCommentPostingQuota;
 
-            using (var db = new VoatDataContext())
+            //REPO_ACCESS: Move logic to Repository 
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 // check how many comments user made in the last 59 minutes
                 var userCommentSubmissionsInPastHour = db.Comment.Count(
@@ -194,7 +198,8 @@ namespace Voat.Rules
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = VoatSettings.Instance.HourlyPostingQuotaPerSub;
 
-            using (var db = new VoatDataContext())
+            //REPO_ACCESS: Move logic to Repository 
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 // check how many submission user made in the last hour
                 var userSubmissionsToTargetSub = db.Submission.Count(
@@ -237,7 +242,8 @@ namespace Voat.Rules
             // read daily posting quota per sub configuration parameter from web.config
             int dpqps = VoatSettings.Instance.HourlyGlobalPostingQuota;
 
-            using (var db = new VoatDataContext())
+            //REPO_ACCESS: Move logic to Repository 
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 // check how many submission user made in the last hour
                 var totalUserSubmissionsForTimeSpam = db.Submission.Count(m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase) && m.CreationDate >= fromDate && m.CreationDate <= toDate);
@@ -278,7 +284,8 @@ namespace Voat.Rules
             // read daily global posting quota configuration parameter from web.config
             int dpqps = VoatSettings.Instance.DailyGlobalPostingQuota;
 
-            using (var db = new VoatDataContext())
+            //REPO_ACCESS: Move logic to Repository 
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 // check how many submission user made today
                 var userSubmissionsToTargetSub = db.Submission.Count(m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase) && m.CreationDate >= fromDate && m.CreationDate <= toDate);
@@ -301,7 +308,8 @@ namespace Voat.Rules
             var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
             var toDate = Repository.CurrentDate;
 
-            using (var db = new VoatDataContext())
+            //REPO_ACCESS: Move logic to Repository 
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 var numberOfTimesSubmitted = db.Submission
                     .Where(m => m.Content.Equals(url, StringComparison.OrdinalIgnoreCase)

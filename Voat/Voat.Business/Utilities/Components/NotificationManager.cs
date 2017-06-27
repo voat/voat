@@ -158,7 +158,7 @@ namespace Voat.Utilities.Components
         {
             try
             {
-                using (var _db = new VoatDataContext())
+                using (var _db = new VoatOutOfRepositoryDataContextAccessor())
                 {
                     Random _rnd = new Random();
 

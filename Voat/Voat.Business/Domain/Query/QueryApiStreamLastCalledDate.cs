@@ -62,7 +62,7 @@ namespace Voat.Domain.Query
         {
             var lastCallDate = await base.ExecuteAsync();
 
-            CacheHandler.Instance.Replace<DateTime>(FullCacheKey, Repository.CurrentDate, CachingPolicy.Duration);
+            Caching.CacheHandler.Instance.Replace<DateTime>(FullCacheKey, Repository.CurrentDate, base.CachingPolicy.Duration);
 
             return lastCallDate;
         }

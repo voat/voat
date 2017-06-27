@@ -34,12 +34,13 @@ using Voat.Domain.Query;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Voat.Data.Models;
 
 namespace Voat.Controllers
 {
     public class AjaxGatewayController : BaseController
     {
-        private readonly VoatUIDataContextAccessor _db = new VoatUIDataContextAccessor();
+        private readonly VoatOutOfRepositoryDataContextAccessor _db = new VoatOutOfRepositoryDataContextAccessor();
         
         //// GET: MessageContent
         //public async Task<ActionResult> MessageContent(int? messageId)

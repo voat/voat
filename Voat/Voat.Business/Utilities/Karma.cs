@@ -59,7 +59,7 @@ namespace Voat.Utilities
             }
 
             int count = 0;
-            using (var db = new VoatDataContext())
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = "SELECT ISNULL(SUM(UpCount - DownCount), 0) FROM Submission WITH (NOLOCK) WHERE UserName = @UserName";
@@ -92,7 +92,7 @@ namespace Voat.Utilities
             }
 
             int count = 0;
-            using (VoatDataContext db = new VoatDataContext())
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = "SELECT ISNULL(SUM(UpCount - DownCount), 0) FROM Submission WITH (NOLOCK) WHERE UserName = @UserName AND Subverse = @Subverse";
@@ -133,7 +133,7 @@ namespace Voat.Utilities
             }
 
             int count = 0;
-            using (VoatDataContext db = new VoatDataContext())
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = "SELECT ISNULL(SUM(UpCount - DownCount), 0) FROM Comment WITH (NOLOCK) WHERE UserName = @UserName";
@@ -169,7 +169,7 @@ namespace Voat.Utilities
             }
 
             int count = 0;
-            using (VoatDataContext db = new VoatDataContext())
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = @"SELECT ISNULL(SUM(c.UpCount - c.DownCount), 0) FROM Comment c WITH (NOLOCK)
@@ -212,7 +212,7 @@ namespace Voat.Utilities
             }
 
             int count = 0;
-            using (var db = new VoatDataContext())
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = @"SELECT

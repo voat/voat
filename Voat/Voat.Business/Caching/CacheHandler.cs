@@ -465,8 +465,7 @@ namespace Voat.Caching
         {
             get
             {
-                //throw new NotImplementedException("Core Port: Need to construct this");
-                //CORE_PORT: This is also not safe
+                //CORE_PORT: This is currently just roughed in to ensure it works, needs expirationscanfrequency value from config
                 if (_memoryCache == null)
                 {
                     lock (this)

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
+using Voat.Data.Models;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.Utilities;
@@ -15,15 +16,11 @@ namespace Voat.UI.ViewComponents
     {
         public async Task<IViewComponentResult> InvokeAsync(DomainReference domainReference)
         {
-            //var submissions =
             var cacheData = CacheHandler.Instance.Register("legacy:TopViewedSubmissions24Hours", new Func<object>(() =>
             {
-                using (var db = new VoatUIDataContextAccessor(CONSTANTS.CONNECTION_READONLY))
+                using (var db = new VoatOutOfRepositoryDataContextAccessor(CONSTANTS.CONNECTION_READONLY))
                 {
-                    db.EnableCacheableOutput();
-
                     var startDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
-
                     IQueryable<Data.Models.Submission> submissions =
                         (from message in db.Submission
                          join subverse in db.Subverse on message.Subverse equals subverse.Name

@@ -62,7 +62,7 @@ namespace Voat.Domain.Query
 
             using (var repo = new Repository(User))
             {
-                var val = await repo.GetUserSavedItems(_type, UserName);
+                var val = await repo.GetUserSavedItems(_type, User.Identity.Name);
                 var set = new HashSet<int>(val);
                 //we want to ensure this is cached and if a user has no saves 
                 //the redis cache will not store anything so we create a dummy entry here

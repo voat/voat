@@ -47,7 +47,7 @@ namespace Voat.Controllers
     [Authorize]
     public class SubverseModerationController : BaseController
     {
-        private readonly VoatUIDataContextAccessor _db = new VoatUIDataContextAccessor(CONSTANTS.CONNECTION_LIVE);
+        private readonly VoatOutOfRepositoryDataContextAccessor _db = new VoatOutOfRepositoryDataContextAccessor(CONSTANTS.CONNECTION_LIVE);
 
         private void SetNavigationViewModel(string subverseName)
         {

@@ -8,17 +8,7 @@ using Voat.Data.Models;
 
 namespace Voat
 {
-    //All UI based access of EF context should go through this object.
-    //At a later date will will throw errors in this object to force no usage from the UI project 
-    //TODO: Implement Command/Query - Remove direct DataContext access from UI project
-    public class VoatUIDataContextAccessor 
-        : VoatDataContext
-    {
-        public VoatUIDataContextAccessor(NotImplementedException exception) : base("fake") { }
-
-        public VoatUIDataContextAccessor(string name = "ReadWrite") : base(name) { }
-    }
-
+    
     public class ChildActionOnlyAttribute : Attribute
     {
         public ChildActionOnlyAttribute()

@@ -36,9 +36,6 @@ namespace Voat
     {
         public static void RegisterRoutes(IRouteBuilder routes)
         {
-            ////CORE_PORT: Routes not ported
-            //throw new NotImplementedException("Routes not ported");
-          
             //routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             //routes.LowercaseUrls = true;
 

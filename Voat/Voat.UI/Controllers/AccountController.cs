@@ -118,9 +118,7 @@ namespace Voat.Controllers
                         var cookie = HttpContext.Request.Cookies["theme"];
                         if (cookie != null && !String.IsNullOrEmpty(cookie))
                         {
-                            //CORE_PORT: 
                             Response.Cookies.Append("theme", "", new Microsoft.AspNetCore.Http.CookieOptions() { Expires = DateTime.Now.AddDays(-1) });
-                            //HttpContext.Response.Cookies["theme"].Expires = DateTime.Now.AddDays(-1);
                         }
 
                         return RedirectToLocal(returnUrl);
@@ -611,7 +609,7 @@ namespace Voat.Controllers
             return RedirectToAction("Manage");
         }
 
-        private UserPreference GetUserPreference(VoatUIDataContextAccessor context)
+        private UserPreference GetUserPreference(VoatOutOfRepositoryDataContextAccessor context)
         {
             var userPreferences = context.UserPreference.Find(User.Identity.Name);
 

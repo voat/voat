@@ -241,10 +241,8 @@ namespace Voat.Utilities
             {
                 var userStatsModel = new UserStatsModel();
 
-                using (var db = new VoatDataContext())
+                using (var db = new VoatOutOfRepositoryDataContextAccessor())
                 {
-                    db.EnableCacheableOutput();
-
                     // 5 subverses user submitted to most
                     var subverses = db.Submission.Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
                              .GroupBy(a => new { a.UserName, a.Subverse })
@@ -331,7 +329,7 @@ namespace Voat.Utilities
         // check if a given user is globally banned
         public static bool IsUserGloballyBanned(string userName)
         {
-            using (var db = new VoatDataContext())
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 var bannedUser = db.BannedUser.FirstOrDefault(n => n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
                 return bannedUser != null;
@@ -341,7 +339,7 @@ namespace Voat.Utilities
         // check if a given user is banned from a subverse
         public static bool IsUserBannedFromSubverse(string userName, string subverseName)
         {
-            using (var db = new VoatDataContext())
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 var bannedUser = db.SubverseBan.FirstOrDefault(n => n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
                 return bannedUser != null;
@@ -438,7 +436,7 @@ namespace Voat.Utilities
         // check if a given user has downvoted more comments than upvoted
         public static bool IsUserCommentVotingMeanie(string userName)
         {
-            using (var db = new VoatDataContext())
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 // get voting habits
                 var commentUpvotes = db.CommentVoteTracker.Count(a => a.UserName == userName && a.VoteStatus == 1);
@@ -451,7 +449,7 @@ namespace Voat.Utilities
         // check if a given user has downvoted more submissions than upvoted
         public static bool IsUserSubmissionVotingMeanie(string userName)
         {
-            using (var db = new VoatDataContext())
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 // get voting habits
                 var submissionUpvotes = db.CommentVoteTracker.Count(a => a.UserName == userName && a.VoteStatus == 1);
@@ -466,8 +464,8 @@ namespace Voat.Utilities
             // set starting date to 59 minutes ago from now
             var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, 0, -59, 0, 0));
             var toDate = Repository.CurrentDate;
-
-            using (var db = new VoatDataContext())
+            //REPO_ACCESS: Move logic to Repository 
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 var previousComment = db.Comment.FirstOrDefault(m => m.Content.Equals(commentContent, StringComparison.OrdinalIgnoreCase)
                     && m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
@@ -477,26 +475,6 @@ namespace Voat.Utilities
             }
         }
 
-        //CORE_PORT: Don't know what request obj to use so commenting out temp
-        /*
-        // get user IP address from httprequestbase
-        public static string UserIpAddress(HttpRequestBase request)
-        {
-            const string HTTP_CONTEXT_KEY = "CF-Connecting-IP"; // USE REMOTE_ADDR
-
-            string clientIpAddress = String.Empty;
-            if (request.Headers[HTTP_CONTEXT_KEY] != null)
-            {
-                clientIpAddress = request.Headers[HTTP_CONTEXT_KEY];
-            }
-            else if (request.UserHostAddress.Length != 0)
-            {
-                clientIpAddress = request.UserHostAddress;
-            }
-            return clientIpAddress;
-        }
-        */
-        
         //this is for the API
         public static string UserIpAddress(HttpRequestMessage request)
         {

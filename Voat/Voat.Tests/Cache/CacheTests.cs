@@ -37,21 +37,13 @@ using Voat.Tests.Infrastructure;
 
 namespace Voat.Tests.Cache
 {
-    public abstract class CacheTests : BaseUnitTest
-    {
-        public ICacheHandler handler = null;
-        public string cacheTypeName = null;
+   
 
-        public CacheTests(ICacheHandler handler)
+    public abstract class CacheTests : CacheUnitTest
+    {
+        public CacheTests(ICacheHandler handler, string name) : base(handler, name)
         {
-            this.handler = handler;
-        }
-        public void VerifyValidHandler()
-        {
-            if (handler == null)
-            {
-                Assert.Inconclusive($"Handler type: {cacheTypeName} is not instantiated");
-            }
+            
         }
         [TestMethod]
         [TestCategory("Cache")]
@@ -591,7 +583,7 @@ namespace Voat.Tests.Cache
         [TestCategory("Cache.Handler.Refresh")]
         public async Task Hot_Cache_Refresh()
         {
-            VerifyValidHandler();
+            await VerifyValidHandlerAsync();
 
             string cacheKey = "Hot_Cache_Refresh";
             handler.Remove(cacheKey);
@@ -730,9 +722,8 @@ namespace Voat.Tests.Cache
     [TestClass]
     public class MemoryCacheTests : CacheTests
     {
-        public MemoryCacheTests() : base(new MemoryCacheHandler())
+        public MemoryCacheTests() : base(new MemoryCacheHandler(), "MemoryCacheHandler")
         {
-            base.cacheTypeName = "Memory";
             Debug.WriteLine("Starting MemoryCacheTests");
         }
     }
@@ -741,14 +732,13 @@ namespace Voat.Tests.Cache
     public class RedisCacheTests : CacheTests
     {
         //Stop following me fuzzy
-        public RedisCacheTests() : base(null)
+        public RedisCacheTests() : base(null, "RedisCacheHandler")
         {
-            base.cacheTypeName = "Redis";
             Debug.WriteLine("Starting RedisCacheTests");
             try
             {
                 //Use connection info from CacheHandlerSection
-                var handler = CacheConfigurationSettings.Instance.Handlers.First(x => x.Type.ToLower().Contains("redis")).Construct<ICacheHandler>();
+                var handler = CacheConfigurationSettings.Instance.Handlers.First(x => x.Type.ToLower().Contains("redis") && x.Enabled).Construct<ICacheHandler>();
                 base.handler = handler;
             }
             catch (Exception ex)
@@ -761,9 +751,8 @@ namespace Voat.Tests.Cache
     [TestClass]
     public class NullCacheTests : CacheTests
     {
-        public NullCacheTests() : base(new NullCacheHandler())
+        public NullCacheTests() : base(new NullCacheHandler(), "NullCacheHandler")
         {
-            base.cacheTypeName = "Null";
             Debug.WriteLine("Starting NullCacheTests");
         }
     }

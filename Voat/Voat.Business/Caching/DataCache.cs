@@ -72,10 +72,8 @@ namespace Voat.Caching
                     string cacheKey = DataCache.Keys.Submission(submissionID.Value);
                     Voat.Data.Models.Submission submission = CacheHandler.Instance.Register<Voat.Data.Models.Submission>(cacheKey, new Func<Voat.Data.Models.Submission>(() =>
                     {
-                        using (var db = new VoatDataContext())
+                        using (var db = new VoatOutOfRepositoryDataContextAccessor())
                         {
-                            //CORE_PORT: Property not available 
-                            //db.Configuration.ProxyCreationEnabled = false;
                             return db.Submission.Where(x => x.ID == submissionID).FirstOrDefault();
                         }
                     }), TimeSpan.FromMinutes(30), -1);

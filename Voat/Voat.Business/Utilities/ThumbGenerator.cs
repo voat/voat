@@ -33,58 +33,6 @@ namespace Voat.Utilities
 
     public static class ThumbGenerator
     {
-        
-        //// generate a thumbnail while removing transparency and preserving aspect ratio
-        //public static async Task<string> GenerateThumbFromImageUrl(string imageUrl, int timeoutInMilliseconds = 3000, bool purgeTempFile = true)
-        //{
-        //    var key = new FileKey();
-        //    key.FileType = FileType.Thumbnail;
-        //    key.ID = GenerateRandomFilename("jpg");
-
-        //    await FileManager.Instance.Upload(key, new Uri(imageUrl), new HttpResourceOptions() { Timeout = TimeSpan.FromMilliseconds(timeoutInMilliseconds) }, async (x) => 
-        //    {
-        //        return await Task.FromResult(x);
-        //    });
-
-        //    return key.ID;
-
-
-        //    //throw new ApplicationException("Direct web requests are not permitted any longer");
-        //    ////TODO: Return NULL if file lenght is zero as thumbnail did not generate to local disk
-        //    //var randomFileName = GenerateRandomFilename();
-        //    //var tempPath = FilePather.Instance.LocalPath(VoatSettings.Instance.DestinationPathThumbs, $"{randomFileName}.jpg");
-
-        //    //var request = WebRequest.Create(imageUrl);
-        //    //request.Timeout = timeoutInMilliseconds; //Putts: extended this from 300 mills
-        //    //using (var response = request.GetResponse())
-        //    //{
-        //    //    //var originalImage = new KalikoImage(response.GetResponseStream()) { BackgroundColor = Color.Black };
-        //    //    //originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(tempPath, 90);
-        //    //}
-
-        //    //if (File.Exists(tempPath))
-        //    //{
-        //    //    // call upload to storage method if CDN config is enabled
-        //    //    if (VoatSettings.Instance.UseContentDeliveryNetwork)
-        //    //    {
-        //    //        await FileManager.Instance.Upload(new FileKey(tempPath, FileType.Thumbnail), new Uri(tempPath));
-        //    //        //CORE_PORT: Original code
-        //    //        //await CloudStorageUtility.UploadBlobToStorageAsync(tempPath, "thumbs");
-        //    //        //if (purgeTempFile)
-        //    //        //{
-        //    //        //    // delete local file after uploading to CDN
-        //    //        //    File.Delete(tempPath);
-        //    //        //}
-        //    //    }
-        //    //    return Path.GetFileName(tempPath);
-        //    //}
-        //    //else
-        //    //{
-        //    //    return null;
-        //    //}
-
-        //}
-
         //CORE_PORT: Image handling has changed in core, commenting out method until we know what we are doing
         public static async Task<bool> GenerateAvatar(object inputImage, string userName, string mimetype, bool purgeTempFile = true)
         {
@@ -176,40 +124,6 @@ namespace Voat.Utilities
                 }
                 return null;
             }
-
-
-            //throw new ApplicationException("Direct web requests are not permitted any longer");
-
-            //var extension = Path.GetExtension(websiteUrl);
-            //var imageExtensions = new string[] { ".jpg", ".png", ".gif", ".jpeg" };
-
-            //var thumbFileName = (string)null;
-
-            //try
-            //{
-            //    if (imageExtensions.Any(x => x.IsEqual(extension)))
-            //    {
-            //        // generate a thumbnail if submission is a direct link to image or video
-            //        thumbFileName = await GenerateThumbFromImageUrl(websiteUrl, purgeTempFile: purgeTempFile);
-            //    }
-            //    if (String.IsNullOrEmpty(thumbFileName))
-            //    {
-            //        var graphUri = new Uri(websiteUrl);
-            //        var graph = OpenGraph.ParseUrl(graphUri, userAgent: "Voat.co OpenGraph Parser");
-
-            //        // open graph failed to find og:image element, abort thumbnail generation
-            //        if (graph.Image != null)
-            //        {
-            //            thumbFileName = await GenerateThumbFromImageUrl(graph.Image.ToString(), purgeTempFile: purgeTempFile);
-            //        }
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    // thumnail generation failed, skip adding thumbnail
-            //    EventLogger.Log(ex);
-            //}
-            //return thumbFileName;
         }
     }
 }

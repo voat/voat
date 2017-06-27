@@ -37,6 +37,7 @@ namespace Voat.Domain.Query
     {
         private bool _cacheHit = false;
         protected CachePolicy _cachePolicy = CachePolicy.None;
+        private ICacheHandler _cacheHandler = null;
 
         public CachedQuery(CachePolicy policy)
         {
@@ -96,6 +97,15 @@ namespace Voat.Domain.Query
                 return full;
             }
         }
+        /// <summary>
+        /// A plug for unit testing, this should never be set directly by calling code unless it is a special snowflake
+        /// </summary>
+        public ICacheHandler CacheHandler
+        {
+            get => _cacheHandler == null ? Caching.CacheHandler.Instance : _cacheHandler;
+            internal set => _cacheHandler = value;
+        }
+
         public override async Task<T> ExecuteAsync()
         {
             T result = default(T);
@@ -131,7 +141,7 @@ namespace Voat.Domain.Query
                     //}
 
                     //Async 
-                    result = await CacheHandler.Instance.Register<T>(FullCacheKey.ToLower(), new Func<Task<T>>(GetFreshData), CachingPolicy.Duration, CachingPolicy.RefetchLimit);
+                    result = await CacheHandler.Register<T>(FullCacheKey.ToLower(), new Func<Task<T>>(GetFreshData), CachingPolicy.Duration, CachingPolicy.RefetchLimit);
                 }
             }
             else

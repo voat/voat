@@ -334,12 +334,6 @@ namespace Voat.Controllers
                         ViewBag.rootComment = comment.ParentID == null; //why?
                         return PartialView("~/Views/Shared/Comments/_SubmissionComment.cshtml", comment);
                     }
-                    //CORE_PORT: Don't think we use this anyways
-                    //else if (Request.UrlReferrer != null)
-                    //{
-                    //    var url = Request.UrlReferrer.AbsolutePath;
-                    //    return Redirect(url);
-                    //}
                     else
                     {
                         return new EmptyResult();
@@ -418,7 +412,7 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<JsonResult> DistinguishComment(int commentId)
         {
-            using (var _db = new VoatUIDataContextAccessor())
+            using (var _db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 var commentToDistinguish = _db.Comment.Find(commentId);
 

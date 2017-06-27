@@ -20,8 +20,6 @@ namespace Voat.Data.Models
         public virtual DbSet<ApiThrottlePolicy> ApiThrottlePolicy { get; set; }
         public virtual DbSet<ApiCorsPolicy> ApiCorsPolicy { get; set; }
         public virtual DbSet<ApiPermissionPolicy> ApiPermissionPolicy { get; set; }
-
-
         public virtual DbSet<Badge> Badge { get; set; }
         public virtual DbSet<BannedDomain> BannedDomain { get; set; }
         public virtual DbSet<BannedUser> BannedUser { get; set; }
@@ -44,7 +42,6 @@ namespace Voat.Data.Models
         public virtual DbSet<UserBadge> UserBadge { get; set; }
         public virtual DbSet<UserPreference> UserPreference { get; set; }
         public virtual DbSet<ViewStatistic> ViewStatistic { get; set; }
-
         public virtual DbSet<EventLog> EventLog { get; set; }
         public virtual DbSet<UserBlockedUser> UserBlockedUser { get; set; }
         public virtual DbSet<Ad> Ad { get; set; }

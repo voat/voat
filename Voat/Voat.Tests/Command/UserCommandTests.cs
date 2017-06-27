@@ -70,7 +70,9 @@ namespace Voat.Tests.CommandTests
         public async Task UserSaves()
         {
             var userName = "UserSaves";
-            TestDataInitializer.CreateUser("UserSaves");
+            //var userName = "UserSaves" + Guid.NewGuid().ToString().Substring(0, 5);
+
+            TestDataInitializer.CreateUser(userName);
 
             var bio = Guid.NewGuid().ToString();
             var user = TestHelper.SetPrincipal(userName);
@@ -81,20 +83,29 @@ namespace Voat.Tests.CommandTests
                 var r = await repo.Save(Domain.Models.ContentType.Submission, 1);
                 VoatAssert.IsValid(r);
 
+                var submissionSaves = await repo.GetUserSavedItems(Domain.Models.ContentType.Submission, user.Identity.Name);
+                Assert.AreEqual(1, submissionSaves.Count());
+                Assert.IsTrue(submissionSaves.Any(x => x == 1), "Submission not saved");
+
                 r = await repo.Save(Domain.Models.ContentType.Comment, 1);
                 VoatAssert.IsValid(r);
+
+                var commentSaves = await repo.GetUserSavedItems(Domain.Models.ContentType.Comment, user.Identity.Name);
+                Assert.AreEqual(1, commentSaves.Count());
+                Assert.IsTrue(commentSaves.Any(x => x == 1), "Comment not saved");
+
             }
 
             var q = new QueryUserSaves(Domain.Models.ContentType.Submission).SetUserContext(user);
             var d = await q.ExecuteAsync();
-            Assert.AreEqual(true, d.Contains(1));
             Assert.AreEqual(1, d.Count);
+            Assert.AreEqual(true, d.Contains(1));
             Assert.AreEqual(true, CacheHandler.Instance.Exists(CachingKey.UserSavedItems(Domain.Models.ContentType.Submission, userName)));
 
-            q = new QueryUserSaves(Domain.Models.ContentType.Comment).SetUserContext(user); ;
+            q = new QueryUserSaves(Domain.Models.ContentType.Comment).SetUserContext(user);
             d = await q.ExecuteAsync();
-            Assert.AreEqual(true, d.Contains(1));
             Assert.AreEqual(1, d.Count);
+            Assert.AreEqual(true, d.Contains(1));
             Assert.AreEqual(true, CacheHandler.Instance.Exists(CachingKey.UserSavedItems(Domain.Models.ContentType.Comment, userName)));
 
             //check helper object

@@ -444,13 +444,20 @@ namespace Voat.Domain
         }
         public static void HydrateUserData(IPrincipal user, Domain.Models.Submission submission)
         {
-            if (user.Identity.IsAuthenticated && (submission != null))
+            if (submission != null)
             {
-                using (var repo = new Repository())
+                if (user.Identity.IsAuthenticated)
                 {
-                    var vote = repo.UserVoteStatus(user.Identity.Name, ContentType.Submission, submission.ID);
-                    submission.Vote = vote;
-                    //saves are cached
+                    using (var repo = new Repository())
+                    {
+                        var vote = repo.UserVoteStatus(user.Identity.Name, ContentType.Submission, submission.ID);
+                        submission.Vote = vote;
+                        //saves are cached
+                    }
+                }
+                else
+                {
+                    submission.Vote = null;
                 }
             }
         }

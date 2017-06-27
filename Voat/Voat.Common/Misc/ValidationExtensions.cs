@@ -13,8 +13,15 @@ namespace Voat.Common
                 var nameOfItem = name == null ? "variable" : name;
                 throw new ArgumentNullException($"{nameOfItem} can not be null");
             }
-        } 
+        }
 
-
+        public static void EnsureNotNullOrEmpty(this string variable, string name = null)
+        {
+            if (String.IsNullOrEmpty(variable))
+            {
+                var nameOfItem = name == null ? "variable" : name;
+                throw new ArgumentOutOfRangeException($"{nameOfItem} can not be null or empty");
+            }
+        }
     }
 }

@@ -36,7 +36,7 @@ namespace Voat.Utilities
         // returns true if saved, false otherwise
         public static bool? CheckIfSaved(string userToCheck, int messageId)
         {
-            using (VoatDataContext db = new VoatDataContext())
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = "SELECT COUNT(*) FROM SubmissionSaveTracker WITH (NOLOCK) WHERE UserName = @UserName AND SubmissionID = @SubmissionID";
@@ -74,7 +74,7 @@ namespace Voat.Utilities
         {
             var result = CheckIfSaved(userWhichSaved, submissionId);
 
-            using (var db = new VoatDataContext())
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 if (result == true)
                 {
@@ -99,7 +99,7 @@ namespace Voat.Utilities
         // a user has saved this submission earlier and wishes to unsave it, delete the record
         private static void UnSaveSubmission(string userWhichSaved, int submissionID)
         {
-            using (var db = new VoatDataContext())
+            using (var db = new VoatOutOfRepositoryDataContextAccessor())
             {
                 var saveTracker = db.SubmissionSaveTracker.FirstOrDefault(b => b.SubmissionID == submissionID && b.UserName == userWhichSaved);
 

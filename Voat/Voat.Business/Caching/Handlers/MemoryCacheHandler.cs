@@ -228,7 +228,9 @@ namespace Voat.Caching
             var result = 0;
             if (_cache.ContainsKey(cacheKey))
             {
-                result = _cache[cacheKey].Convert<ICollection>().Count;
+                //Warning: This is a hack. Be warned.
+                dynamic item = _cache[cacheKey];
+                result = item.Count;
             }
             return result;
         }

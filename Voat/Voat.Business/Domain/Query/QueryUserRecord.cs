@@ -73,11 +73,6 @@ namespace Voat.Domain.Query
         {
             using (var db = new IdentityDataContext())
             {
-                //CORE_PORT: No worky, will most likely not need anyways but flagging
-                /*
-                db.Configuration.ProxyCreationEnabled = false;
-                db.Configuration.LazyLoadingEnabled = false;
-                */
                 using (var context = VoatUserManager.Create())
                 {
                     var user = await context.FindByNameAsync(_userToRetrieve);

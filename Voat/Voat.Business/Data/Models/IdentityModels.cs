@@ -55,11 +55,6 @@ namespace Voat.Data.Models
 
     public class IdentityDataContext : IdentityDbContext<VoatIdentityUser>
     {
-        public IdentityDataContext() 
-            //CORE_PORT: Needs porting
-            //: base("voatUsers")
-        {
-        }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.HasDefaultSchema("dbo");

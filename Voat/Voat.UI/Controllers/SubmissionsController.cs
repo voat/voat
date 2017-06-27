@@ -43,7 +43,7 @@ namespace Voat.Controllers
 {
     public class SubmissionsController : BaseController
     {
-        private readonly VoatUIDataContextAccessor _db = new VoatUIDataContextAccessor();
+        private readonly VoatOutOfRepositoryDataContextAccessor _db = new VoatOutOfRepositoryDataContextAccessor();
 
         // POST: apply a link flair to given submission
         [Authorize]

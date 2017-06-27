@@ -7,6 +7,17 @@ using System.Linq;
 
 namespace Voat.Data.Models
 {
+    //All UI based access of EF context should go through this object.
+    //At a later date will will throw errors in this object to force no usage from the UI project 
+    //TODO: Implement Command/Query - Remove direct DataContext access from UI project
+    [Obsolete("Move any logic to Repository")]
+    public class VoatOutOfRepositoryDataContextAccessor : VoatDataContext
+    {
+        public VoatOutOfRepositoryDataContextAccessor(NotImplementedException exception) : base("fake") { }
+
+        public VoatOutOfRepositoryDataContextAccessor(string name = "ReadWrite") : base(name) { }
+    }
+    //should ONLY be access in Repository class
     public class VoatDataContext : VoatEntityContext
     {
         private string _connectionName;
@@ -25,7 +36,7 @@ namespace Voat.Data.Models
             this.Configure(optionsBuilder, _connectionName);
             base.OnConfiguring(optionsBuilder);
         }
-        //CORE_PORT: Added this to ensure Dapper and direct connections can still execute
+        //Added this to ensure Dapper and direct connections can still execute
         public System.Data.Common.DbConnection Connection
         {
             get
@@ -33,14 +44,5 @@ namespace Voat.Data.Models
                 return this.Database.GetDbConnection();
             }
         }
-        public void EnableCacheableOutput()
-        {
-            //CORE_PORT: not supported
-            /*
-                this.Configuration.LazyLoadingEnabled = false;
-                this.Configuration.ProxyCreationEnabled = false;
-            */
-        }
-
     }
 }

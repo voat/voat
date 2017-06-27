@@ -15,8 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="wwwroot\storage\avatars\Placeholder.txt" />
-    <Content Include="wwwroot\storage\thumbs\Placeholder.txt" />
+    <Content Remove="~appsettings.Development.json" />
+    <Content Remove="~appsettings.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -183,8 +183,9 @@
     <None Include="wwwroot\storage\avatars\Placeholder.txt" />
     <None Include="wwwroot\storage\thumbs\Placeholder.txt" />
     <None Include="wwwroot\voat-btc-qr.png" />
+    <None Include="~appsettings.Development.json" />
     <None Include="~appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

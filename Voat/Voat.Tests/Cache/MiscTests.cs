@@ -68,10 +68,20 @@ namespace Voat.Tests.Cache
         [TestMethod]
         public void TestDictionary()
         {
-            var args = ArgumentParser.Parse(CacheConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis")).Arguments);
+            IDatabase db = null;
+            ConnectionMultiplexer conn = null;
+            try
+            {
+                var args = ArgumentParser.Parse(CacheConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis")).Arguments);
 
-            var conn = StackExchange.Redis.ConnectionMultiplexer.Connect(args[0].ToString());
-            var db = conn.GetDatabase(0);
+                conn = StackExchange.Redis.ConnectionMultiplexer.Connect(args[0].ToString());
+                db = conn.GetDatabase(0);
+
+            }
+            catch (Exception ex)
+            {
+                Assert.Inconclusive("Unable to create Redis Connection");
+            }
 
             db.KeyDelete("Test");
             db.KeyDelete("Test2");

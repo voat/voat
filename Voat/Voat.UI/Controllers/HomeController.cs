@@ -33,6 +33,7 @@ using Voat.Common;
 using Voat.Common.Configuration;
 using Voat.Configuration;
 using Voat.Data;
+using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
 using Voat.Http.Filters;
@@ -47,7 +48,7 @@ namespace Voat.Controllers
     public class HomeController : BaseController
     {
         //IAmAGate: Move queries to read-only mirror
-        private readonly VoatUIDataContextAccessor _db = new VoatUIDataContextAccessor(CONSTANTS.CONNECTION_READONLY);
+        private readonly VoatOutOfRepositoryDataContextAccessor _db = new VoatOutOfRepositoryDataContextAccessor(CONSTANTS.CONNECTION_READONLY);
 
         // GET: submitlink
         [Authorize]

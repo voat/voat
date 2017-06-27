@@ -127,7 +127,7 @@ namespace Voat.Caching
         }
         public static string UserSavedItems(ContentType type, string userName)
         {
-            userName.EnsureNotNull(nameof(userName));
+            userName.EnsureNotNullOrEmpty(nameof(userName));
             return String.Format("User:Saved:{0}:{1}", type, userName);
         }
         public static string UserSubmissionVotes(string userName)

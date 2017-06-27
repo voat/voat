@@ -74,7 +74,7 @@ namespace Voat.Domain.Query
             if (Repository.CurrentDate.Subtract(data.GenerationDate) > _refreshTime)
             {
                 Task.Run(async () => {
-                    CacheHandler.Instance.Replace(FullCacheKey, await GetData(), QueryUserInformation._totalCacheTime);
+                    Caching.CacheHandler.Instance.Replace(FullCacheKey, await GetData(), QueryUserInformation._totalCacheTime);
                 });
             }
             return data;

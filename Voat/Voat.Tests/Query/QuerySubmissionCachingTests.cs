@@ -40,40 +40,55 @@ namespace Voat.Tests.QueryTests
     [TestClass]
     public class BaseQueryMemoryCache : QuerySubmissionCachingTests
     {
-        public BaseQueryMemoryCache()
+        public BaseQueryMemoryCache() : base(new MemoryCacheHandler(), "MemoryCacheHandler")
         {
-            CacheHandler.Instance = new MemoryCacheHandler();
+           
         }
     }
 
     [TestClass]
     public class BaseQueryNullCache : QuerySubmissionCachingTests
     {
-        public BaseQueryNullCache()
+        public BaseQueryNullCache() : base(new NullCacheHandler(), "NullCacheHandler")
         {
-            CacheHandler.Instance = new NullCacheHandler();
         }
     }
 
-    [TestClass]
+   [TestClass]
     public class BaseQueryRedisCache : QuerySubmissionCachingTests
     {
-        public BaseQueryRedisCache()
+        public BaseQueryRedisCache() : base(null, "RedisCacheHandler")
         {
-            var handler = CacheConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis")).Construct<ICacheHandler>();
-            CacheHandler.Instance = handler;
+            try
+            {
+                handler = CacheConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Type.ToLower().Contains("redis") && x.Enabled).Construct<ICacheHandler>();
+            }
+            catch (Exception ex)
+            {
+            }
         }
     }
 
     //[TestClass]
-    public abstract class QuerySubmissionCachingTests : BaseUnitTest
+    public abstract class QuerySubmissionCachingTests : CacheUnitTest
     {
+        
+        public override void TestInitialize()
+        {
+            //AssertCacheInitialized();
+        }
+        public QuerySubmissionCachingTests(ICacheHandler handler, string name) : base(handler, name)
+        { }
+
         [TestMethod]
         [TestCategory("Query")]
         [TestCategory("Comment")]
         public void Query_Comment_Anon()
         {
+            VerifyValidHandler();
+
             var q = new QueryComment(3, null);
+            q.CacheHandler = handler;
             var result = q.ExecuteAsync().Result;
             Assert.IsNotNull(result);
             Assert.AreEqual(result.ID.ToString(), result.UserName);
@@ -119,12 +134,16 @@ namespace Voat.Tests.QueryTests
         [TestCategory("User.Preferences")]
         public async Task Query_UserPreferences_Default()
         {
+            VerifyValidHandler();
+
             var q = new QueryUserPreferences();
+            q.CacheHandler = handler;
             var result = await q.ExecuteAsync();
             Assert.IsNotNull(result);
             Assert.AreEqual("en", result.Language);
 
             q = new QueryUserPreferences();
+            q.CacheHandler = handler;
             result = await q.ExecuteAsync();
             Assert.IsNotNull(result, this.GetType().Name);
             Assert.AreEqual("en", result.Language, this.GetType().Name);
@@ -149,10 +168,13 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Cache")]
         public async Task Query_v_All_Guest_Cached()
         {
+            VerifyValidHandler();
+
             var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), SearchOptions.Default, new CachePolicy(TimeSpan.FromSeconds(30)));
+            q.CacheHandler = handler;
 
             //DELETE Cached entry because other test could insert it
-            CacheHandler.Instance.Remove(q.CacheKey);
+            handler.Remove(q.CacheKey);
 
             //q.CachePolicy.Duration = TimeSpan.FromSeconds(30); //Cache this request
             var result = await q.ExecuteAsync();
@@ -161,8 +183,9 @@ namespace Voat.Tests.QueryTests
             Assert.IsTrue(result.Any());
 
             q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), SearchOptions.Default, new CachePolicy(TimeSpan.FromMinutes(10)));
+            q.CacheHandler = handler;
             result = await q.ExecuteAsync();
-            Assert.AreEqual(CacheHandler.Instance.CacheEnabled, q.CacheHit, this.GetType().Name); //ensure second query hits cache
+            Assert.AreEqual(handler.CacheEnabled, q.CacheHit, this.GetType().Name); //ensure second query hits cache
             Assert.IsNotNull(result, this.GetType().Name);
             Assert.IsTrue(result.Any(), this.GetType().Name);
         }
@@ -176,12 +199,15 @@ namespace Voat.Tests.QueryTests
         //[NUnit.Framework.RequiresThread] 
         public async Task Query_v_All_Guest_Cached_Expired_Correctly()
         {
+            VerifyValidHandler();
+
             TimeSpan cacheTime = TimeSpan.FromSeconds(2);
 
             var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
+            q.CacheHandler = handler;
 
             //Clear Cache - NUnit port 
-            CacheHandler.Instance.Remove(q.CacheKey);
+            handler.Remove(q.CacheKey);
 
             //q.CachePolicy.Duration = cacheTime; //Cache this request
             var result = await q.ExecuteAsync();
@@ -206,6 +232,7 @@ namespace Voat.Tests.QueryTests
             await Task.Delay(TimeSpan.FromSeconds(waitTime));
 
             q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), new SearchOptions() { Count = 17 }, new CachePolicy(cacheTime));
+            q.CacheHandler = handler;
             result = await q.ExecuteAsync();
             //ensure we had to retreive new data
             Assert.AreEqual(false, q.CacheHit, this.GetType().Name);
@@ -218,9 +245,12 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Subverse")]
         public void QuerySubverseInformation_verify_moderators_works()
         {
+            VerifyValidHandler();
+
             TimeSpan cacheTime = TimeSpan.FromSeconds(5);
 
             var q = new QuerySubverseInformation("AuthorizedOnly");
+            q.CacheHandler = handler;
             //q.CachePolicy.Duration = cacheTime; //Cache this request
             var result = q.ExecuteAsync().Result;
 
@@ -235,6 +265,7 @@ namespace Voat.Tests.QueryTests
         [TestCategory("Submission")]
         public async Task QuerySubmissions_Verify_BlockedSubverses()
         {
+            VerifyValidHandler();
 
             //Ensure v/unit does not show up in v/all for user BlocksUnit
             var user = TestHelper.SetPrincipal("BlocksUnit");
@@ -243,8 +274,9 @@ namespace Voat.Tests.QueryTests
             var r = await cmd.Execute();
 
             var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "_all"), SearchOptions.Default).SetUserContext(user);
+            q.CacheHandler = handler;
             //q.CachePolicy.Duration = cacheTime; //Cache this request
-            var result = q.ExecuteAsync().Result;
+            var result = await q.ExecuteAsync();
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Any(), "Found no results");

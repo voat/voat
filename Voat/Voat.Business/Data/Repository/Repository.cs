@@ -73,10 +73,6 @@ namespace Voat.Data
         public Repository(IPrincipal principal, VoatDataContext dataContext) : base(principal)
         {
             _db = dataContext;
-            //Prevent EF from creating dynamic proxies, those mother fathers. This killed
-            //us during The Fattening, so we throw now -> (╯°□°)╯︵ ┻━┻
-            //CORE_PORT: Prop not available
-            //_db.Configuration.ProxyCreationEnabled = false;
         }
         public void Dispose()
         {
@@ -661,7 +657,6 @@ namespace Voat.Data
         {
             using (var db = new VoatDataContext())
             {
-                db.EnableCacheableOutput();
                 var query = (from x in db.Subverse
                              where x.Name == subverse
                              select x);
@@ -778,7 +773,7 @@ namespace Voat.Data
 
         public int GetCommentCount(int submissionID)
         {
-            using (VoatDataContext db = new VoatDataContext())
+            using (var db = new VoatDataContext())
             {
                 var cmd = db.Connection.CreateCommand();
                 cmd.CommandText = $"SELECT COUNT(*) FROM {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} WHERE c.\"SubmissionID\" = @SubmissionID AND c.\"IsDeleted\" != {SqlFormatter.BooleanLiteral(true)}";
@@ -4276,101 +4271,6 @@ namespace Voat.Data
 
         #endregion User Related Functions
 
-        #region ModLog
-
-        public async Task<IEnumerable<Domain.Models.SubverseBan>> GetModLogBannedUsers(string subverse, SearchOptions options)
-        {
-            using (var db = new VoatDataContext(CONSTANTS.CONNECTION_READONLY))
-            {
-                var data = (from b in db.SubverseBan
-                            where b.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
-                            select new Domain.Models.SubverseBan
-                            {
-                                CreatedBy = b.CreatedBy,
-                                CreationDate = b.CreationDate,
-                                Reason = b.Reason,
-                                Subverse = b.Subverse,
-                                ID = b.ID,
-                                UserName = b.UserName
-                            });
-                data = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
-                var results = await data.ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
-                return results;
-            }
-        }
-        public async Task<IEnumerable<Data.Models.SubmissionRemovalLog>> GetModLogRemovedSubmissions(string subverse, SearchOptions options)
-        {
-            using (var db = new VoatDataContext(CONSTANTS.CONNECTION_READONLY))
-            {
-                db.EnableCacheableOutput();
-
-                var data = (from b in db.SubmissionRemovalLog
-                            join s in db.Submission on b.SubmissionID equals s.ID
-                            where s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
-                            select b).Include(x => x.Submission);
-
-                var data2 = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
-                var results = await data2.ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
-                return results;
-            }
-        }
-        public async Task<IEnumerable<Domain.Models.CommentRemovalLog>> GetModLogRemovedComments(string subverse, SearchOptions options)
-        {
-            using (var db = new VoatDataContext(CONSTANTS.CONNECTION_READONLY))
-            {
-                db.EnableCacheableOutput();
-
-                var data = (from b in db.CommentRemovalLog
-                            join c in db.Comment on b.CommentID equals c.ID
-                            join s in db.Submission on c.SubmissionID equals s.ID
-                            where s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
-                            select b).Include(x => x.Comment).Include(x => x.Comment.Submission);
-
-                var data_ordered = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
-                var results = await data_ordered.ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
-
-                //TODO: Move to DomainMaps
-                var mapToDomain = new Func<Data.Models.CommentRemovalLog, Domain.Models.CommentRemovalLog>(d =>
-                {
-                    var m = new Domain.Models.CommentRemovalLog();
-                    m.CreatedBy = d.Moderator;
-                    m.Reason = d.Reason;
-                    m.CreationDate = d.CreationDate;
-
-                    m.Comment = new SubmissionComment();
-                    m.Comment.ID = d.Comment.ID;
-                    m.Comment.UpCount = (int)d.Comment.UpCount;
-                    m.Comment.DownCount = (int)d.Comment.DownCount;
-                    m.Comment.Content = d.Comment.Content;
-                    m.Comment.FormattedContent = d.Comment.FormattedContent;
-                    m.Comment.IsDeleted = d.Comment.IsDeleted;
-                    m.Comment.CreationDate = d.Comment.CreationDate;
-
-                    m.Comment.IsAnonymized = d.Comment.IsAnonymized;
-                    m.Comment.UserName = m.Comment.IsAnonymized ? d.Comment.ID.ToString() : d.Comment.UserName;
-                    m.Comment.LastEditDate = d.Comment.LastEditDate;
-                    m.Comment.ParentID = d.Comment.ParentID;
-                    m.Comment.Subverse = d.Comment.Submission.Subverse;
-                    m.Comment.SubmissionID = d.Comment.SubmissionID;
-
-                    m.Comment.Submission.Title = d.Comment.Submission.Title;
-                    m.Comment.Submission.IsAnonymized = d.Comment.Submission.IsAnonymized;
-                    m.Comment.Submission.UserName = m.Comment.Submission.IsAnonymized ? d.Comment.Submission.ID.ToString() : d.Comment.Submission.UserName;
-                    m.Comment.Submission.IsDeleted = d.Comment.Submission.IsDeleted;
-
-                    return m;
-                });
-
-                var mapped = results.Select(mapToDomain).ToList();
-
-                return mapped;
-            }
-        }
-
-
-
-        #endregion
-
         #region Moderator Functions
 
         public async Task<CommandResponse<RemoveModeratorResponse>> RemoveModerator(int subverseModeratorRecordID, bool allowSelfRemovals)
@@ -5535,25 +5435,6 @@ namespace Voat.Data
                             if (userPrefs.Avatar != null)
                             {
                                 FileManager.Instance.Delete(new FileKey(userPrefs.Avatar, FileType.Avatar));
-                                //CORE_PORT: Original Code
-                                //var avatarFilename = userPrefs.Avatar;
-
-                                //if (VoatSettings.Instance.UseContentDeliveryNetwork)
-                                //{
-                                //    // try to delete from CDN
-                                //    CloudStorageUtility.DeleteBlob(avatarFilename, "avatars");
-                                //}
-                                //else
-                                //{
-                                //    // try to remove from local FS - I think this code is retarded
-                                //    string avatarPath = FilePather.Instance.LocalPath(VoatSettings.Instance.DestinationPathAvatars, userName + ".jpg");
-
-                                //    // the avatar file was not found at expected path, abort
-                                //    if (File.Exists(avatarPath))
-                                //    {
-                                //        File.Delete(avatarPath);
-                                //    }
-                                //}
                             }
 
 

@@ -58,7 +58,7 @@ namespace Voat.UI.ViewComponents
 
             try
             {
-                using (var db = new VoatUIDataContextAccessor())
+                using (var db = new VoatOutOfRepositoryDataContextAccessor())
                 {
                     var ad = (from x in db.Ad
                               where
@@ -83,7 +83,7 @@ namespace Voat.UI.ViewComponents
                         {
                             var ads = CacheHandler.Instance.Register(CachingKey.AdCache(), new Func<IList<Ad>>(() =>
                             {
-                                using (var dbcontext = new VoatUIDataContextAccessor())
+                                using (var dbcontext = new VoatOutOfRepositoryDataContextAccessor())
                                 {
                                     var adCache = (from x in dbcontext.Ad
                                                    where

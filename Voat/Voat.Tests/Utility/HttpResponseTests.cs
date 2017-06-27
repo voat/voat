@@ -11,7 +11,7 @@ namespace Voat.Tests.Utility
     {
 
         [TestMethod]
-        public async Task Test()
+        public async Task HttpResource_Get_NoRedirect()
         {
             var httpRehorse = new HttpResource("http://www.microsoft.com/en/us/default.aspx?redir=true");
             await httpRehorse.GiddyUp();

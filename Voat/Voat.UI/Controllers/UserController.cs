@@ -54,7 +54,7 @@ namespace Voat.Controllers
         }
 
         private const int PAGE_SIZE = 20;
-        private VoatUIDataContextAccessor _db = new VoatUIDataContextAccessor();
+        private VoatOutOfRepositoryDataContextAccessor _db = new VoatOutOfRepositoryDataContextAccessor();
 
         public ActionResult Overview(string userName)
         {
