@@ -27,19 +27,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Voat.Models.ViewModels;
 using System.Net;
-using Voat.App_Start;
 using Voat.UI.Utilities;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Voat.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Voat.Configuration;
 using Voat.Utilities;
-using Microsoft.AspNetCore.Authentication;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
-using Microsoft.Owin.Security;
 using Voat.Data;
 using Voat.Caching;
 using Microsoft.Extensions.Options;
@@ -57,12 +53,12 @@ namespace Voat.Controllers
         //private readonly IEmailSender _emailSender;
         //private readonly ISmsSender _smsSender;
         //private readonly ILogger _logger;
-        private readonly string _externalCookieScheme;
+        //private readonly string _externalCookieScheme;
 
         public AccountController(
             UserManager<VoatIdentityUser> userManager,
-            SignInManager<VoatIdentityUser> signInManager,
-            IOptions<IdentityCookieOptions> identityCookieOptions
+            SignInManager<VoatIdentityUser> signInManager
+            //IOptions<IdentityCookieOptions> identityCookieOptions
             //IEmailSender emailSender,
             //ISmsSender smsSender,
             //ILoggerFactory loggerFactory
@@ -70,7 +66,7 @@ namespace Voat.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
+            //_externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
             //_emailSender = emailSender;
             //_smsSender = smsSender;
             //_logger = loggerFactory.CreateLogger<AccountController>();

@@ -29,15 +29,12 @@ using Voat.Utilities;
 using Voat.UI.Utilities;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
-using Voat.Domain;
 using Voat.Domain.Query;
 
 using Voat.Models.ViewModels;
 using System.Net;
 using System.Linq;
-using System.Collections.Generic;
 using System;
-using System.Web.Routing;
 using Voat.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -48,7 +45,7 @@ using Voat.Http.Filters;
 
 namespace Voat.Controllers
 {
-   
+
     [Authorize]
     public class MessagesController : BaseController
     {

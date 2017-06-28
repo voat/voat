@@ -28,13 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-
-using System.Web.Routing;
 using Voat.Common;
 using Voat.Data;
 using Voat.Data.Models;
-using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
 using Voat.Http;

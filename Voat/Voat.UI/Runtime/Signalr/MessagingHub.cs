@@ -23,18 +23,16 @@
 #endregion LICENSE
 
 using System;
-using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNet.SignalR;
-using Microsoft.AspNet.SignalR.Hubs;
 
 using System.Collections.Generic;
 using Voat.Utilities;
-using Microsoft.AspNetCore.Authorization;
 using Voat.Common;
 
 namespace Voat
 {
+    //CORE_PORT: Signalr rewritten for core, this is old code
+    /*
     [HubName("messagingHub")]
     public class MessagingHub : Hub
     {
@@ -147,4 +145,5 @@ namespace Voat
             await Groups.Remove(Context.ConnectionId, id);
         }
     }
+    */
 }

@@ -2,10 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <Version>2.0.0</Version>
+    <Authors>Voat, Inc.</Authors>
+    <Company>Voat, Inc.</Company>
+    <Description>Voat Http Collection</Description>
+    <Copyright>Voat, Inc.</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0-preview1-final" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0-preview2-final" />
   </ItemGroup>
 
   <ItemGroup>

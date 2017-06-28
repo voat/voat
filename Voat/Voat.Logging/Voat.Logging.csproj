@@ -1,11 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <Company>Voat</Company>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Company>Voat, Inc.</Company>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
     <AssemblyTitle>Voat.Logging</AssemblyTitle>
     <AssemblyProduct>Voat.Logging</AssemblyProduct>
+    <Version>2.0.0</Version>
+    <Authors>Voat, Inc.</Authors>
+    <Description>Voat Logging Framework</Description>
+    <Copyright>Voat, Inc.</Copyright>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.8" />

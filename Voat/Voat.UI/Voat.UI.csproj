@@ -12,6 +12,11 @@
     <ApplicationIcon />
     <OutputTypeEx>exe</OutputTypeEx>
     <StartupObject />
+    <Version>2.0.0</Version>
+    <Description>Voat Website UI (ASP.NET Core)</Description>
+    <Company>Voat, Inc.</Company>
+    <Authors>Voat, Inc.</Authors>
+    <Copyright>Voat, Inc.</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,11 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.2.2" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0-preview1-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.0.0-preview1-final" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0-preview1-final" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0-preview1-final" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.0.0-preview2-final" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0-preview2-final" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0-preview2-final" />
   </ItemGroup>
 
   <ItemGroup>

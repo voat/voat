@@ -30,7 +30,7 @@ namespace Voat
     public class VoatUserManager : UserManager<VoatIdentityUser>
     {
         private VoatUserManager(
-            UserStore<VoatIdentityUser> store, 
+            UserStore<VoatIdentityUser, IdentityRole<string>, IdentityDataContext, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityUserToken<string>, IdentityRoleClaim<string>> store, 
             IOptions<IdentityOptions> optionsAccessor, 
             IPasswordHasher<VoatIdentityUser> passwordHasher, 
             IEnumerable<IUserValidator<VoatIdentityUser>> userValidators, 
@@ -52,7 +52,7 @@ namespace Voat
             var ioptions = Microsoft.Extensions.Options.Options.Create(options);
 
             var mgr = new VoatUserManager(
-                new UserStore<VoatIdentityUser>(new IdentityDataContext()),
+                new UserStore<VoatIdentityUser, IdentityRole<string>, IdentityDataContext, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityUserToken<string>, IdentityRoleClaim<string>>(new IdentityDataContext(), new IdentityErrorDescriber()),
                 ioptions,
                 new PasswordHasher<VoatIdentityUser>(),
                 new[] { new UserValidator<VoatIdentityUser>() },

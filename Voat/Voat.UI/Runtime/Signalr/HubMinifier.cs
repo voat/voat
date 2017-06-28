@@ -27,6 +27,8 @@ using System;
 
 namespace Voat.UI.Utilities
 {
+    //CORE_PORT: Signalr rewritten for core, this is old code
+    /*
     public class HubMinifier : Microsoft.AspNet.SignalR.Hubs.IJavaScriptMinifier
     {
         public string Minify(string source)
@@ -45,4 +47,5 @@ namespace Voat.UI.Utilities
             //return mind;
         }
     }
+    */
 }

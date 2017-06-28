@@ -1,33 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <Company>Voat</Company>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Company>Voat, Inc.</Company>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
     <AssemblyTitle>Voat.Business</AssemblyTitle>
     <AssemblyProduct>Voat.Business</AssemblyProduct>
+    <Version>2.0.0</Version>
+    <Authors>Voat, Inc.</Authors>
+    <Description>Voat Business Library</Description>
+    <Copyright>Voat, Inc.</Copyright>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.2" />
     <PackageReference Include="dotnet-test-nunit" Version="3.4.0-beta-3" />
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.0.0-preview1-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.0.0-preview1-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.0.0-preview1-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0-preview1-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor" Version="2.0.0-preview1-final" />
-    <PackageReference Include="Microsoft.Data.Edm" Version="5.8.2" />
-    <PackageReference Include="Microsoft.Data.OData" Version="5.8.2" />
-    <PackageReference Include="Microsoft.Data.Services.Client" Version="5.8.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.0-preview1-final" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0-preview1-final" />
-    <PackageReference Include="Microsoft.Web.Infrastructure" Version="1.0.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.0.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.0.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.0.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor" Version="2.0.0-preview2-final" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.0-preview2-final" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0-preview2-final" />
     <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="OpenGraph-Net" Version="1.3.4" />
     <PackageReference Include="StackExchange.Redis" Version="1.2.4" />
     <PackageReference Include="StackExchange.Redis.DataTypes" Version="1.0.0.1" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0-preview1-25305-02" />
-    <PackageReference Include="System.Spatial" Version="5.8.2" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0-preview2-25405-01" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\External\Source\toptensoftware\MarkdownDeep\MarkdownDeep.csproj" />
