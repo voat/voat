@@ -34,7 +34,7 @@ namespace Voat.Common
         /// <summary>
         /// From unit tests
         /// </summary>
-        Test = 3
+        Test = 4
     }
     public enum Normalization
     {

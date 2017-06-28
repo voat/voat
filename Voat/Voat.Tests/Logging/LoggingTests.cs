@@ -35,9 +35,6 @@ using Voat.Tests.Infrastructure;
 
 namespace Voat.Tests.Logging
 {
-    //To enable these tests change the enabled property in the App.config to true for Log4NetLogger:
-    //<logger enabled="true" name="Log4Net" type="Voat.Logging.Log4NetLogger, Voat.Logging" />
-
     [TestClass]
     public class LoggingTests : BaseUnitTest
     {
@@ -51,6 +48,48 @@ namespace Voat.Tests.Logging
             {
                 log = logEntry.Construct<ILogger>();
             }
+        }
+        [TestMethod]
+        [TestCategory("Logging")]
+        public void TestLogLevels()
+        {
+
+            var dummyLogger = new DummyLogger(LogType.All);
+
+            dummyLogger.LogLevel = LogType.All;
+            Assert.AreEqual(true, dummyLogger.IsEnabledFor(LogType.All));
+            Assert.AreEqual(true, dummyLogger.IsEnabledFor(LogType.Audit));
+            Assert.AreEqual(true, dummyLogger.IsEnabledFor(LogType.Critical));
+            Assert.AreEqual(true, dummyLogger.IsEnabledFor(LogType.Debug));
+            Assert.AreEqual(true, dummyLogger.IsEnabledFor(LogType.Exception));
+            Assert.AreEqual(true, dummyLogger.IsEnabledFor(LogType.Information));
+            Assert.AreEqual(true, dummyLogger.IsEnabledFor(LogType.Trace));
+            Assert.AreEqual(true, dummyLogger.IsEnabledFor(LogType.Warning));
+            Assert.AreEqual(false, dummyLogger.IsEnabledFor(LogType.Off));
+
+            dummyLogger.LogLevel = LogType.Off;
+            Assert.AreEqual(false, dummyLogger.IsEnabledFor(LogType.All));
+            Assert.AreEqual(false, dummyLogger.IsEnabledFor(LogType.Audit));
+            Assert.AreEqual(false, dummyLogger.IsEnabledFor(LogType.Critical));
+            Assert.AreEqual(false, dummyLogger.IsEnabledFor(LogType.Debug));
+            Assert.AreEqual(false, dummyLogger.IsEnabledFor(LogType.Exception));
+            Assert.AreEqual(false, dummyLogger.IsEnabledFor(LogType.Information));
+            Assert.AreEqual(false, dummyLogger.IsEnabledFor(LogType.Trace));
+            Assert.AreEqual(false, dummyLogger.IsEnabledFor(LogType.Warning));
+            Assert.AreEqual(false, dummyLogger.IsEnabledFor(LogType.Off));
+
+            dummyLogger.LogLevel = LogType.Information;
+            Assert.AreEqual(true, dummyLogger.IsEnabledFor(LogType.All));
+            Assert.AreEqual(true, dummyLogger.IsEnabledFor(LogType.Audit));
+            Assert.AreEqual(true, dummyLogger.IsEnabledFor(LogType.Critical));
+            Assert.AreEqual(false, dummyLogger.IsEnabledFor(LogType.Debug));
+            Assert.AreEqual(true, dummyLogger.IsEnabledFor(LogType.Exception));
+            Assert.AreEqual(true, dummyLogger.IsEnabledFor(LogType.Information));
+            Assert.AreEqual(false, dummyLogger.IsEnabledFor(LogType.Trace));
+            Assert.AreEqual(true, dummyLogger.IsEnabledFor(LogType.Warning));
+            Assert.AreEqual(false, dummyLogger.IsEnabledFor(LogType.Off));
+
+
         }
 
         [TestMethod]
@@ -83,7 +122,7 @@ namespace Voat.Tests.Logging
                     Assert.AreEqual(info.Origin, entry.Origin);
                     Assert.AreEqual(info.Category, entry.Category);
                     Assert.AreEqual(info.Message, entry.Message);
-                    Assert.AreEqual(JsonConvert.SerializeObject(new { url = "http://www.com" }), entry.Data);
+                    Assert.AreEqual(JsonConvert.SerializeObject(info.Data), entry.Data);
                     Assert.AreEqual(info.ActivityID.ToString().ToUpper(), entry.ActivityID.ToUpper());
                 }
 
@@ -209,6 +248,14 @@ namespace Voat.Tests.Logging
                     var entry = db.EventLog.FirstOrDefault(x => x.ActivityID == activityID.ToString().ToUpper());
                     Assert.IsNull(entry, "Should not have log entry with specified minimum");
                 }
+            }
+        }
+        public class DummyLogger : BaseLogger
+        {
+            public DummyLogger(LogType logType) : base(logType) { }
+            protected override void ProtectedLog(ILogInformation info)
+            {
+                throw new NotImplementedException();
             }
         }
     }

@@ -25,12 +25,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Voat.Common.Components;
 using Voat.Configuration;
+using Voat.Data;
 using Voat.Data.Models;
 using Voat.Http.Filters;
 using Voat.Http.Middleware;
@@ -83,12 +83,6 @@ namespace Voat
                 options.HeaderName = "__RequestVerificationToken";
             });
 
-            //Working on creating an updatable settings object
-            //services.Configure<VoatSettings>(Configuration.GetSection("voat:settings"));
-            //services.AddScoped(cfg => cfg.GetService<IOptionsSnapshot<VoatSettings>>().Value);
-            //var provider = services.BuildServiceProvider();
-            //var options = provider.GetService<IOptionsSnapshot<VoatSettings>>();
-
             // Add application services.
             //services.AddTransient<IEmailSender, AuthMessageSender>();
             //services.AddTransient<ISmsSender, AuthMessageSender>();
@@ -99,6 +93,7 @@ namespace Voat
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+            loggerFactory.AddProvider(new VoatLoggerProvider());
 
             ////Configure Voat Middleware
             app.UseVoatGlobalExceptionLogger();

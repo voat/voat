@@ -29,13 +29,14 @@ namespace Voat.Logging
 {
     public enum LogType
     {
-        All = 0,
+        Off = 0,
         Trace = 1,
         Debug = 2,
         Information = 3,
         Audit = 4,
         Warning = 5,
         Exception = 6,
-        Critical = 7
+        Critical = 7,
+        All = 100
     }
 }

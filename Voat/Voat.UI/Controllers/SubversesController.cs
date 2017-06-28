@@ -42,6 +42,7 @@ using Microsoft.AspNetCore.Mvc;
 using Voat.Common;
 using Voat.Http;
 using Voat.Http.Filters;
+using Microsoft.Extensions.Logging;
 
 namespace Voat.Controllers
 {
@@ -49,6 +50,12 @@ namespace Voat.Controllers
     {
         //IAmAGate: Move queries to read-only mirror
         private readonly VoatOutOfRepositoryDataContextAccessor _db = new VoatOutOfRepositoryDataContextAccessor(CONSTANTS.CONNECTION_LIVE);
+        private ILogger _logger;
+
+        public SubversesController(ILogger<SubversesController> logger)
+        {
+            _logger = logger;
+        }
 
         // POST: Create a new Subverse
         [HttpPost]

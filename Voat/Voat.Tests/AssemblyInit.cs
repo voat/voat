@@ -52,7 +52,9 @@ public class UnitTestSetup
     public static void SetUp(TestContext context)
     {
         //Configure App
-        var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
+        var config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .Build();
         config.ConfigureVoat();
 
         FilePather.Instance = new FilePather(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
