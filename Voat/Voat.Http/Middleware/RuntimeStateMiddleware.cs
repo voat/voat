@@ -1,30 +1,20 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
-using Voat.Configuration;
 
-namespace Voat.Http
+namespace Voat.Http.Middleware
 {
-    public class RuntimeStateMiddleware
+    public class RuntimeStateMiddleware : BaseMiddleware
     {
-        private readonly RequestDelegate _next;
-
-        public RuntimeStateMiddleware(RequestDelegate next)
+        public RuntimeStateMiddleware(RequestDelegate next) : base(next)
         {
-            _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public override async Task Invoke(HttpContext context)
         {
             var redirected = context.HandleRuntimeState();
             if (!redirected)
             {
-                await _next.Invoke(context);
+                await base.Invoke(context);
             }
         }
     }

@@ -82,7 +82,7 @@ namespace Voat
             services.AddAntiforgery(options => {
                 options.HeaderName = "__RequestVerificationToken";
             });
-
+            
             // Add application services.
             //services.AddTransient<IEmailSender, AuthMessageSender>();
             //services.AddTransient<ISmsSender, AuthMessageSender>();

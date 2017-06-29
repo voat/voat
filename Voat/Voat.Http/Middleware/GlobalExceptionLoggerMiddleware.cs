@@ -7,20 +7,16 @@ using Voat.Utilities.Components;
 
 namespace Voat.Http.Middleware
 {
-    public class GlobalExceptionLoggerMiddleware
+    public class GlobalExceptionLoggerMiddleware : BaseMiddleware
     {
-        private readonly RequestDelegate _next;
 
-        public GlobalExceptionLoggerMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
+        public GlobalExceptionLoggerMiddleware(RequestDelegate next) : base(next) {}
 
-        public async Task Invoke(HttpContext context)
+        public override async Task Invoke(HttpContext context)
         {
             try
             {
-                await _next.Invoke(context);
+                await base.Invoke(context);
             }
             catch (Exception ex)
             {
