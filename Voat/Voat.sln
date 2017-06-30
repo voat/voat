@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Common", "Voat.Common\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Http", "Voat.Http\Voat.Http.csproj", "{3461FAD3-0EA0-4298-8A97-D0BD3922D2E4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenGraph-Net", "External\Source\ghorsey\OpenGraph-Net\OpenGraph-Net.csproj", "{A82ACE11-5840-453A-B1DA-226593F1F71C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -140,12 +142,25 @@ Global
 		{3461FAD3-0EA0-4298-8A97-D0BD3922D2E4}.Release|x64.Build.0 = Release|Any CPU
 		{3461FAD3-0EA0-4298-8A97-D0BD3922D2E4}.Release|x86.ActiveCfg = Release|Any CPU
 		{3461FAD3-0EA0-4298-8A97-D0BD3922D2E4}.Release|x86.Build.0 = Release|Any CPU
+		{A82ACE11-5840-453A-B1DA-226593F1F71C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A82ACE11-5840-453A-B1DA-226593F1F71C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A82ACE11-5840-453A-B1DA-226593F1F71C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A82ACE11-5840-453A-B1DA-226593F1F71C}.Debug|x64.Build.0 = Debug|Any CPU
+		{A82ACE11-5840-453A-B1DA-226593F1F71C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A82ACE11-5840-453A-B1DA-226593F1F71C}.Debug|x86.Build.0 = Debug|Any CPU
+		{A82ACE11-5840-453A-B1DA-226593F1F71C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A82ACE11-5840-453A-B1DA-226593F1F71C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A82ACE11-5840-453A-B1DA-226593F1F71C}.Release|x64.ActiveCfg = Release|Any CPU
+		{A82ACE11-5840-453A-B1DA-226593F1F71C}.Release|x64.Build.0 = Release|Any CPU
+		{A82ACE11-5840-453A-B1DA-226593F1F71C}.Release|x86.ActiveCfg = Release|Any CPU
+		{A82ACE11-5840-453A-B1DA-226593F1F71C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B19B5BA0-E739-4381-92B6-FF69337CB91A} = {20573A4F-428F-4563-99B0-D57F06C7ADE9}
+		{A82ACE11-5840-453A-B1DA-226593F1F71C} = {20573A4F-428F-4563-99B0-D57F06C7ADE9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B0396834-E27C-4112-A9D9-216B68714D53}
