@@ -23,12 +23,8 @@
 #endregion LICENSE
 
 using System.Web;
-using OpenGraph_Net;
 using System;
-using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
-using HtmlAgilityPack;
 
 namespace Voat.Utilities
 {
@@ -79,45 +75,6 @@ namespace Voat.Utilities
                 }
             }
             return result;
-        }
-
-        // return remote page title from URI
-        [Obsolete("Use HttpResource", true)]
-        public static string GetTitleFromUri(string @remoteUri)
-        {
-            try
-            {
-                throw new ApplicationException("Direct web requests are not permitted any longer");
-
-                // try using Open Graph to get target page title
-                var graph = OpenGraph.ParseUrl(@remoteUri, "Voat.co OpenGraph Parser");
-                
-                if (!string.IsNullOrEmpty(graph.Title))
-                {
-                    var tmpStringWriter = new StringWriter();
-                    HttpUtility.HtmlDecode(graph.Title, tmpStringWriter);
-                    return tmpStringWriter.ToString();
-                }
-
-                // Open Graph parsing failed, try getting HTML TITLE tag instead
-                HtmlWeb htmlWeb = new HtmlWeb();
-                HtmlDocument htmlDocument = htmlWeb.Load(@remoteUri);
-                
-                if (htmlDocument != null)
-                {
-                    var titleNode = htmlDocument.DocumentNode.Descendants("title").SingleOrDefault();
-                    if (titleNode != null)
-                    {
-                        return HttpUtility.HtmlDecode(titleNode.InnerText);
-                    }
-                }
-
-                return null;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
         }
     }
 }
