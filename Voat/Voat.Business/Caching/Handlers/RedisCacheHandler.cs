@@ -54,7 +54,7 @@ namespace Voat.Caching
             return connections[type].GetDatabase();
         }
 
-        public RedisCacheHandler(string connectionString)
+        public RedisCacheHandler(string connectionString, bool refetchEnabled = true) : base(refetchEnabled)
         {
             _connectionString = connectionString;
             connections.Add(ConnectionType.Read, ConnectionMultiplexer.Connect(connectionString));

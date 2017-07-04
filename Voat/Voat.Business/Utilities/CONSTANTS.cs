@@ -30,6 +30,7 @@ namespace Voat.Utilities
     {
         
         public const string SYSTEM_USER_NAME = "Voat";
+        public const string CONNECTION_USERS = "voatUsers";
         public const string CONNECTION_LIVE = "ReadWrite";
         public const string CONNECTION_READONLY = "ReadOnly";
         public const int DEFAULT_GUEST_PAGE_CACHE_MINUTES = 3;

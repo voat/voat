@@ -1,11 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <!-- Voat Changed/Added here -->
+	<AssemblyVersion>1.3.4.0</AssemblyVersion>
+    <AssemblyFileVersion>1.3.4.0</AssemblyFileVersion>
+	<TargetFramework>netcoreapp2.0</TargetFramework>
+  
     <Copyright>Copyright © 2016</Copyright>
     <AssemblyTitle>OpenGraph.Net</AssemblyTitle>
     <VersionPrefix>1.3.4</VersionPrefix>
     <Authors>ghorsey</Authors>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>OpenGraph-Net</AssemblyName>
@@ -30,6 +34,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.5.0-beta92" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.5.0" />
   </ItemGroup>
 </Project>

@@ -10,6 +10,23 @@ namespace Voat.Common
     public static class StringExtensions
     {
 
+        public static string ToNormalized(this string value, Normalization normalization)
+        {
+            if (!String.IsNullOrEmpty(value))
+            {
+                switch (normalization)
+                {
+                    case Normalization.Lower:
+                        return value.ToLower();
+                        break;
+                    case Normalization.Upper:
+                        return value.ToUpper();
+                        break;
+                }
+            }
+            return value;
+        }
+
         public static string ToRelativePath(this string url)
         {
             if (!url.IsTrimSafeNullOrEmpty())

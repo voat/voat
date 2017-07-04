@@ -27,7 +27,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Voat.Business.Utilities;
 using Voat.Common;
+using Voat.Common.Configuration;
 using Voat.Tests.Infrastructure;
 using Voat.Utilities;
 
@@ -274,7 +276,122 @@ namespace Voat.Tests.Utils
 
 
         }
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("ArgumentParser")]
+        public void ArgumentParser_Tests()
+        {
+
+            var toArgString = new Func<string, Tuple<string, string>[], string>((delim, items) => {
+                return items.Aggregate("", (agg, current) => {
+                    return agg + (String.IsNullOrEmpty(agg) ? "" : delim) + $"[{current.Item1}]({current.Item2})";
+                });
+            });
+
+            var arguments = new Tuple<string, string>[] {
+                Tuple.Create("System.String", "SomeValue"),
+                Tuple.Create("System.Int32", "4")
+            };
+            var argString = toArgString(";", arguments);
+            Assert.AreEqual("[System.String](SomeValue);[System.Int32](4)", argString);
+            var parsed = ArgumentParser.Parse(argString);
+            Assert.AreEqual("SomeValue", parsed[0]);
+            Assert.AreEqual(4, parsed[1]);
+
+            argString = toArgString("", arguments);
+            Assert.AreEqual("[System.String](SomeValue)[System.Int32](4)", argString);
+            parsed = ArgumentParser.Parse(argString);
+            Assert.AreEqual("SomeValue", parsed[0]);
+            Assert.AreEqual(4, parsed[1]);
 
 
+            //inline ;
+            arguments = new Tuple<string, string>[] {
+                Tuple.Create("System.String", "1:One;2:Two;3:Three;"),
+                Tuple.Create("System.Int32", "4")
+            };
+            argString = toArgString(";", arguments);
+            Assert.AreEqual("[System.String](1:One;2:Two;3:Three;);[System.Int32](4)", argString);
+            parsed = ArgumentParser.Parse(argString);
+            Assert.AreEqual("1:One;2:Two;3:Three;", parsed[0]);
+            Assert.AreEqual(4, parsed[1]);
+
+            //inline )
+            arguments = new Tuple<string, string>[] {
+                Tuple.Create("System.String", "1)One;2)Two;3)Three;"),
+                Tuple.Create("System.Int32", "4")
+            };
+            argString = toArgString(";", arguments);
+            Assert.AreEqual("[System.String](1)One;2)Two;3)Three;);[System.Int32](4)", argString);
+            parsed = ArgumentParser.Parse(argString);
+            Assert.AreEqual("1)One;2)Two;3)Three;", parsed[0]);
+            Assert.AreEqual(4, parsed[1]);
+
+        }
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("SpooferProofer")]
+        public void SpooferProofer_Tests()
+        {
+
+            var charSwaps = new Dictionary<string, string>() {
+                { "i", "l"},
+                { "o", "0"}
+            };
+            var identifier = "LeeroyJenkins";
+            var expectingToFind = "";
+
+            var testSpoofList = new Action<Normalization>(normalization => {
+
+                var spoofList = SpooferProofer.CharacterSwapList(identifier, charSwaps, true, normalization);
+
+                if (normalization == Normalization.None)
+                {
+                    Assert.AreEqual(4, spoofList.Count());
+                }
+                else
+                {
+                    Assert.AreEqual(8, spoofList.Count());
+                }
+
+                expectingToFind = identifier.ToNormalized(normalization);
+                Assert.AreEqual(expectingToFind, spoofList.FirstOrDefault(x => x == expectingToFind));
+
+                expectingToFind = "Leer0yJenklns".ToNormalized(normalization);
+                Assert.AreEqual(expectingToFind, spoofList.FirstOrDefault(x => x == expectingToFind));
+
+                expectingToFind = "LeeroyJenklns".ToNormalized(normalization);
+                Assert.AreEqual(expectingToFind, spoofList.FirstOrDefault(x => x == expectingToFind));
+
+                expectingToFind = "Leer0yJenkins".ToNormalized(normalization);
+                Assert.AreEqual(expectingToFind, spoofList.FirstOrDefault(x => x == expectingToFind));
+
+            });
+
+            testSpoofList(Normalization.None);
+            testSpoofList(Normalization.Lower);
+            testSpoofList(Normalization.Upper);
+
+            ////Lowered tests same inputs but all outputs should be lower cased
+            //spoofs = SpooferProofer.CharacterSwapList(identifier, charSwaps, true, Normalization.Lower);
+
+            //expectingToFind = identifier.ToLower();
+            //Assert.AreEqual(expectingToFind, spoofs.FirstOrDefault(x => x == expectingToFind));
+
+            //expectingToFind = "Leer0yJenklns".ToLower();
+            //Assert.AreEqual(expectingToFind, spoofs.FirstOrDefault(x => x == expectingToFind));
+
+            //expectingToFind = "LeeroyJenklns".ToLower();
+            //Assert.AreEqual(expectingToFind, spoofs.FirstOrDefault(x => x == expectingToFind));
+
+            //expectingToFind = "Leer0yJenkins".ToLower();
+            //Assert.AreEqual(expectingToFind, spoofs.FirstOrDefault(x => x == expectingToFind));
+
+            //Test not reversed swaps 
+            identifier = "Leer0yJenklns";
+            var spoofs = SpooferProofer.CharacterSwapList(identifier, charSwaps, false);
+            Assert.AreEqual(1, spoofs.Count());
+
+            expectingToFind = identifier;
+            Assert.AreEqual(expectingToFind, spoofs.FirstOrDefault(x => x == expectingToFind));
+        }
     }
 }

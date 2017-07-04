@@ -54,18 +54,19 @@ namespace Voat.Tests.Infrastructure
         protected void CreateSchema(VoatDataContext context)
         {
             //Parse and run sql scripts
-            var dbName = context.Connection.Database;
-            var originalConnectionString = context.Connection.ConnectionString;
-            
+            var connection = context.Connection;
+            var dbName = connection.Database;
+            var originalConnectionString = connection.ConnectionString;
+        
             try
             {
 
                 var builder = new DbConnectionStringBuilder();
                 builder.ConnectionString = originalConnectionString;
                 builder["database"] = DataConfigurationSettings.Instance.StoreType == DataStoreType.SqlServer ? "master" : "postgres";
-                context.Connection.ConnectionString = builder.ConnectionString;
+                connection.ConnectionString = builder.ConnectionString;
 
-                var cmd = context.Connection.CreateCommand();
+                var cmd = connection.CreateCommand();
                 cmd.CommandType = System.Data.CommandType.Text;
                 if (cmd.Connection.State != System.Data.ConnectionState.Open)
                 {
@@ -94,7 +95,7 @@ namespace Voat.Tests.Infrastructure
                 cmd.CommandText = $"CREATE DATABASE {dbName}";
                 cmd.ExecuteNonQuery();
 
-                context.Connection.ChangeDatabase(dbName);
+                connection.ChangeDatabase(dbName);
 
                 //Run Scripts in repo folder
                 var sqlFolderPathPublicRepo = TestEnvironmentSettings.SqlScriptRelativePath;
@@ -139,11 +140,11 @@ namespace Voat.Tests.Infrastructure
             finally
             {
                 //revert connection 
-                if (context.Connection.State != System.Data.ConnectionState.Closed)
+                if (connection.State != System.Data.ConnectionState.Closed)
                 {
-                    context.Connection.Close();
+                    connection.Close();
                 }
-                context.Connection.ConnectionString = originalConnectionString;
+                connection.ConnectionString = originalConnectionString;
             }
         }
 

@@ -237,6 +237,5 @@ namespace Voat.Data
             }
             return result;
         }
-
     }
 }

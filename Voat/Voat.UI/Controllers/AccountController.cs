@@ -241,7 +241,8 @@ namespace Voat.Controllers
                 return View(model);
             }
 
-            if (!UserHelper.CanUserNameBeRegistered(UserManager, model.UserName, UserHelper.DefaultSpoofList()))
+            var canBeRegistered = !await UserHelper.CanUserNameBeRegistered((VoatUserManager)UserManager, model.UserName);
+            if (!canBeRegistered)
             {
                 ModelState.AddModelError(string.Empty, "The username entered is too similar to an existing username. You must modify it in order to register an account.");
                 return View(model);

@@ -104,19 +104,21 @@ namespace Voat.Caching
         private bool _ignoreNulls = true;
         private static ICacheHandler _instance = null;
         private static object _lockInstance = new object();
-        //private LockStore _lockStore = new LockStore(true);
         private SemaphoreSlimLockStore _semaphoreSlimLockStore = new SemaphoreSlimLockStore(true);
         private TimeSpan _refreshOffset = TimeSpan.FromSeconds(5);
         private bool _requiresExpirationRemoval = false;
         private bool _cacheEnabled = true;
-        //BLOCK: Should be set to true, testing for blocking
         private bool _refetchEnabled = true;
         private IMemoryCache _memoryCache;
-
 
         //holds meta data about the cache item such as the Func, expiration, recacheLimit, and current recaches
         //private ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>> _meta = new ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>>();
         private ConcurrentDictionary<string, RefetchEntry> _meta = new ConcurrentDictionary<string, RefetchEntry>();
+
+        public CacheHandler(bool refetchEnabled = true)
+        {
+            _refetchEnabled = true;
+        }
 
         protected void Initialize()
         {
@@ -318,18 +320,9 @@ namespace Voat.Caching
 
                     //Set Tracker Object
                     AddEvictionTracker(cacheKey, new object(), meta.CacheTime.Subtract(_refreshOffset), new PostEvictionDelegate(RefetchItem));
-                    //AddEvictionTracker(cacheKey, new object(), Repository.CurrentDate.Add(meta.CacheTime), new PostEvictionDelegate(RefetchItem));
-
-                    //args.UpdatedCacheItem = new CacheItem(cacheKey, new object());
-                    //args.UpdatedCacheItemPolicy = new CacheItemPolicy()
-                    //{
-                    //    AbsoluteExpiration = Repository.CurrentDate.Add(meta.CacheTime),
-                    //    UpdateCallback = new CacheEntryUpdateCallback(RefetchItem)
-                    //};
 
                     try
                     {
-                        //throw new NotImplementedException("This needs implementing");
                         var data = RefetchData(meta);
                         SetItem(cacheKey, data, meta.CacheTime);
                     }
@@ -533,7 +526,7 @@ namespace Voat.Caching
         /// <param name="key">Unique Cache Keys</param>
         /// <param name="getData">Function that returns data to be placed in cache</param>
         /// <param name="cacheTime">The timespan in which to update or remove item from cache</param>
-        /// <param name="refetchLimit">Value indicating refresh behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
+        /// <param name="refetchLimit">Value indicating refetch behavior. -1: Do not refresh, 0: Unlimited refresh (use with caution), x > 0: Number of times to refresh cached data</param>
         /// <returns></returns>
         public T Register<T>(string cacheKey, Func<T> getData, TimeSpan cacheTime, int refetchLimit = -1)
         {
@@ -595,19 +588,6 @@ namespace Voat.Caching
                                         _meta[cacheKey] = new RefetchEntryFunc<T>(getData) { CacheTime = cacheTime, CurrentCount = 0, MaxCount = refetchLimit };
 
                                         AddEvictionTracker(cacheKey, new object(), cacheTime.Subtract(_refreshOffset), new PostEvictionDelegate(RefetchItem));
-                                        //AddEvictionTracker(cacheKey, new object(), Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)), new PostEvictionDelegate(RefetchItem));
-
-                                        //var cache = SystemMemoryCache;
-                                        //var policy = new MemoryCacheEntryOptions()
-                                        //{
-                                        //    AbsoluteExpiration = Repository.CurrentDate.Add(cacheTime.Subtract(_refreshOffset)),
-                                        //};
-                                        //var callback = new PostEvictionCallbackRegistration();
-                                        //callback.EvictionCallback = new PostEvictionDelegate(RefetchItem);
-                                        //callback.State = cacheKey;
-                                        //policy.PostEvictionCallbacks.Add(callback);
-
-                                        //cache.Set(cacheKey, new object(), policy);
 
                                     }
                                     else if (RequiresExpirationRemoval)

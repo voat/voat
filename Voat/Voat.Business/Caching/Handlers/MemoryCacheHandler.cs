@@ -36,7 +36,7 @@ namespace Voat.Caching
         //data kept in dictionary to serve as hot cache
         private ConcurrentDictionary<string, object> _cache = new ConcurrentDictionary<string, object>();
 
-        public MemoryCacheHandler()
+        public MemoryCacheHandler(bool refetchEnabled = true) : base(refetchEnabled)
         {
             RequiresExpirationRemoval = true;
             base.Initialize();

@@ -30,6 +30,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using Voat.Utilities;
 
 namespace Voat.Data.Models
 {
@@ -62,7 +63,7 @@ namespace Voat.Data.Models
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            this.Configure(optionsBuilder, "voatUsers");
+            this.Configure(optionsBuilder, CONSTANTS.CONNECTION_USERS);
             base.OnConfiguring(optionsBuilder);
         }
     }

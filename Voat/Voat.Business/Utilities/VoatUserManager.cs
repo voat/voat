@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Dapper;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,7 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Data;
 using Voat.Data.Models;
+using Voat.Utilities;
 
 namespace Voat
 {
@@ -101,6 +104,23 @@ namespace Voat
                 }
             }
             return null;
+        }
+
+        public async Task<bool> UserNameExistsAsync(IEnumerable<string> userNames)
+        {
+            //Use Dapper
+            using (var context = new VoatDataContext(CONSTANTS.CONNECTION_USERS))
+            {
+                var q = new DapperQuery();
+                q.Select = $"\"UserName\" FROM {SqlFormatter.Table("AspNetUsers")}";
+                q.Where = $"lower(\"UserName\") {SqlFormatter.In("@UserNameList")}";
+                q.Parameters.Add("UserNameList", userNames.Select(x => x.ToLower()).ToList());
+
+                var matches = await context.Connection.QueryAsync<string>(q.ToString(), q.Parameters);
+                var result = matches.Any();
+
+                return result;
+            }
         }
     }
 }

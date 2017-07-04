@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Voat.Data.Models;
 using System.Linq;
+using Voat.Common;
+using Voat.Utilities;
 
 namespace Voat.Data.Models
 {
@@ -15,14 +17,14 @@ namespace Voat.Data.Models
     {
         public VoatOutOfRepositoryDataContextAccessor(NotImplementedException exception) : base("fake") { }
 
-        public VoatOutOfRepositoryDataContextAccessor(string name = "ReadWrite") : base(name) { }
+        public VoatOutOfRepositoryDataContextAccessor(string name = CONSTANTS.CONNECTION_LIVE) : base(name) { }
     }
     //should ONLY be access in Repository class
     public class VoatDataContext : VoatEntityContext
     {
         private string _connectionName;
 
-        public VoatDataContext() : this("ReadWrite")
+        public VoatDataContext() : this(CONSTANTS.CONNECTION_LIVE)
         {
         
         }
@@ -41,6 +43,25 @@ namespace Voat.Data.Models
         {
             get
             {
+                //System.Data.Common.DbConnection conn = null;
+                //var connString = DataConfigurationSettings.Instance.Connections.FirstOrDefault(x => x.Name.IsEqual("ReadWrite"));
+                //if (connString == null)
+                //{
+                //    throw new ArgumentException($"Can not find connection with name 'ReadWrite'", "connectionName");
+                //}
+                ////HACK FOR PG Not being updated for Core 2 Preview 2
+                //switch (DataConfigurationSettings.Instance.StoreType)
+                //{
+                //    case DataStoreType.SqlServer:
+                //        conn = new System.Data.SqlClient.SqlConnection(connString.Value);
+                //        break;
+                //    case DataStoreType.PostgreSql:
+                //        conn = new Npgsql.NpgsqlConnection(connString.Value);
+                //        break;
+                //}
+
+                //return conn;
+
                 return this.Database.GetDbConnection();
             }
         }

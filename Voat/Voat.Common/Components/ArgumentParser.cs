@@ -31,7 +31,7 @@ namespace Voat.Common.Configuration
     public static class ArgumentParser
     {
         /// <summary>
-        /// Simple formatter for parsing argument lists in the form of [Type](Value),[Type](Value).
+        /// Simple formatter for parsing argument lists in the form of [Type](Value);[Type](Value).
         /// </summary>
         /// <param name="argumentValue">The string to be converted to object[]</param>
         public static object[] Parse(string argumentValue)
@@ -41,11 +41,38 @@ namespace Voat.Common.Configuration
             if (!String.IsNullOrEmpty(argumentValue))
             {
                 string regEx = @"\[(?<type>[\w\.\s,\]\[`]+)\]\((?<value>[^(]*)\)";
-                string[] args = argumentValue.Split(';');
-                foreach (string arg in args)
+                List<string> argumentPairs = new List<string>();
+
+                //manually split arg list if propery delimited
+                var delim = ");[";
+                int lastIndex = 0;
+                int index = argumentValue.IndexOf(delim);
+                if (index >= 0)
                 {
-                    var m = Regex.Match(arg, regEx);
-                    if (m.Success)
+                    while (index >= 0)
+                    {
+                        var argumentPair = argumentValue.Substring(lastIndex, index - lastIndex + 1);
+                        argumentPairs.Add(argumentPair);
+                        lastIndex = index + delim.Length - 1;
+                        index = argumentValue.IndexOf(delim, index + delim.Length);
+                    }
+                    //add tailing
+                    if (lastIndex > 0)
+                    {
+                        var argumentPair = argumentValue.Substring(lastIndex, argumentValue.Length - lastIndex);
+                        argumentPairs.Add(argumentPair);
+                    }
+                }
+                else
+                {
+                    argumentPairs.Add(argumentValue);
+                }
+
+                //parse
+                foreach (string arg in argumentPairs)
+                {
+                    var matches = Regex.Matches(arg, regEx);
+                    foreach (Match m in matches)
                     {
                         string typeString = m.Groups["type"].Value;
                         string value = m.Groups["value"].Value;
@@ -115,10 +142,10 @@ namespace Voat.Common.Configuration
                             throw new ArgumentException($"Type {typeString} not found");
                         }
                     }
-                    else
-                    {
-                        throw new ArgumentException(String.Format("Can not parse: {0}", arg), argumentValue);
-                    }
+                    //else
+                    //{
+                    //    throw new ArgumentException(String.Format("Can not parse: {0}", arg), argumentValue);
+                    //}
                 }
             }
             return objectList.ToArray();

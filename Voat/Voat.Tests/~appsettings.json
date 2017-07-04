@@ -46,13 +46,13 @@
                     "enabled": true,
                     "name": "Redis",
                     "type": "Voat.Caching.RedisCacheHandler, Voat.Business",
-                    "arguments": "[System.String](127.0.1:6379,defaultDatabase=7,allowAdmin=true,syncTimeout=4000)"
+                    "arguments": "[System.String](127.0.1:6379,defaultDatabase=7,allowAdmin=true,syncTimeout=4000);[System.Boolean](true)"
                 },
                 {
                     "enabled": false,
                     "name": "Memory",
                     "type": "Voat.Caching.MemoryCacheHandler, Voat.Business",
-                    "arguments": ""
+                    "arguments": "[System.Boolean](true)"
                 },
                 {
                     "enabled": false,

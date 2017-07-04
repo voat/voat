@@ -30,6 +30,7 @@ using Voat.Data.Models;
 using Voat.Tests.Repository;
 using Voat.Utilities;
 using Voat.Tests.Infrastructure;
+using Voat.Business.Utilities;
 
 namespace Voat.Tests.Utils
 {
@@ -96,15 +97,18 @@ namespace Voat.Tests.Utils
                 Assert.AreEqual(true, createResult.Succeeded);
 
 
-                var response = UserHelper.CanUserNameBeRegistered(userManager, originalUserName, null);
+                var response = await UserHelper.CanUserNameBeRegistered(userManager, originalUserName, null);
                 Assert.AreEqual(false, response);
 
-                response = UserHelper.CanUserNameBeRegistered(userManager, "iheartfuzzylol", null); //test casing
+                response = await UserHelper.CanUserNameBeRegistered(userManager, "iheartfuzzylol", null); //test casing
                 Assert.AreEqual(false, response);
 
-                response = UserHelper.CanUserNameBeRegistered(userManager, "lheartfuzzylol", null); //test default reg
+                response = await UserHelper.CanUserNameBeRegistered(userManager, "lheartfuzzylol2", null); 
                 Assert.AreEqual(true, response);
 
+                //Xbox Test
+                response = await UserHelper.CanUserNameBeRegistered(userManager, $"xX{originalUserName}Xx", null);
+                Assert.AreEqual(true, response);
 
                 Dictionary<string, string> charSwaps = new Dictionary<string, string>();
                 charSwaps.Add("i", "l");
@@ -112,22 +116,19 @@ namespace Voat.Tests.Utils
                 charSwaps.Add("h", "hahaha"); //just to make sure offset swapping does not break
                 charSwaps.Add("heart", "like"); //just to make sure offset swapping does not break
 
-                var spoofs = UserHelper.DefaultSpoofList(charSwaps);
-                
-
-                response = UserHelper.CanUserNameBeRegistered(userManager, originalUserName, spoofs); 
+                response = await UserHelper.CanUserNameBeRegistered(userManager, originalUserName, null); 
                 Assert.AreEqual(false, response);
                                                                             
-                response = UserHelper.CanUserNameBeRegistered(userManager, "iheartfuzzyIoI", spoofs); 
+                response = await UserHelper.CanUserNameBeRegistered(userManager, "iheartfuzzyIoI", charSwaps); 
                 Assert.AreEqual(false, response);
 
-                response = UserHelper.CanUserNameBeRegistered(userManager, "lheartfuzzyLOL", spoofs); 
+                response = await UserHelper.CanUserNameBeRegistered(userManager, "lheartfuzzyLOL", charSwaps); 
                 Assert.AreEqual(false, response);
 
-                response = UserHelper.CanUserNameBeRegistered(userManager, "lheartFuzzyIOi", spoofs);
+                response = await UserHelper.CanUserNameBeRegistered(userManager, "lheartFuzzyIOi", charSwaps);
                 Assert.AreEqual(false, response);
 
-                response = UserHelper.CanUserNameBeRegistered(userManager, "lheartFuzzyl0i", spoofs);
+                response = await UserHelper.CanUserNameBeRegistered(userManager, "lheartFuzzyl0i", charSwaps);
                 Assert.AreEqual(false, response);
 
             }
