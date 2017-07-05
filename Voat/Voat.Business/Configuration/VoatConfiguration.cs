@@ -116,11 +116,11 @@ namespace Voat.Configuration
 
             //Register Change Callback - I LOVE .NET CORE BTW
             //Update: This seems to fire twice which is a bit weird, I sure hope future people will figure this out.
-            var reloadToken = config.GetReloadToken();
-            reloadToken.RegisterChangeCallback(x =>
-            {
-                ConfigureVoat((IConfigurationRoot)x, true);
-            }, config);
+            //var reloadToken = config.GetReloadToken();
+            //reloadToken.RegisterChangeCallback(x =>
+            //{
+            //    ConfigureVoat((IConfigurationRoot)x, true);
+            //}, config);
         }
     }
 }

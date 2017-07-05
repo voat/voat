@@ -7,9 +7,8 @@ using Voat.Configuration;
 
 namespace Voat.Configuration
 {
-    public class VoatSettings : ConfigurationSettings<VoatSettings>, IVoatSettings
+    public class VoatSettings : UpdatableConfigurationSettings<VoatSettings>, IVoatSettings
     {
-
         private T GetValue<T>(string key, T defaultIfMissing)
         {
             //if (configValues.ContainsKey(key))

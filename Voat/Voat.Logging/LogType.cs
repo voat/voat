@@ -30,6 +30,7 @@ namespace Voat.Logging
     public enum LogType
     {
         Off = 0,
+        None = Off,
         Trace = 1,
         Debug = 2,
         Information = 3,

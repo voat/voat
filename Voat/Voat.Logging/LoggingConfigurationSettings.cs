@@ -33,7 +33,7 @@ using Voat.Common.Configuration;
 
 namespace Voat.Logging
 {
-    public class LoggingConfigurationSettings : ConfigurationSettings<LoggingConfigurationSettings>
+    public class LoggingConfigurationSettings : UpdatableConfigurationSettings<LoggingConfigurationSettings>
     {
         private HandlerInfo[] _handlers = null;
 

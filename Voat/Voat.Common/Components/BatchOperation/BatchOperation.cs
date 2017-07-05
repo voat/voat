@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Voat.Common
 {
-    [DebuggerDisplay("Current = {_lastCount} (Flush = {FlushCount}, Span = {FlushSpan})", Name = "{key}")]
+    [DebuggerDisplay("Current = {_lastCount} (Flush = {FlushCount}, Span = {FlushSpan})")]
     public abstract class BatchOperation<T> : IDisposable
     {
         private int _flushCount = 1;

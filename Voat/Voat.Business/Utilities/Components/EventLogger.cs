@@ -47,11 +47,27 @@ namespace Voat.Utilities.Components
             {
                 if (_logger == null)
                 {
-                    _logger = LoggingConfigurationSettings.Instance.GetDefault();
+                    var configInstance = LoggingConfigurationSettings.Instance;
+
+                    configInstance.OnUpdate += (sender, args) => {
+
+                        var currentLogger = _logger;
+                        //Create new logger based on config
+                        _logger = LoggingConfigurationSettings.Instance.GetDefault();
+
+                        //Dispose current logger
+                        var disposable = currentLogger as IDisposable;
+                        if (disposable != null)
+                        {
+                            disposable.Dispose();
+                        }
+                    };
+                    _logger = configInstance.GetDefault();
                 }
                 return _logger;
             }
         }
+        
 
         /// <summary>
         /// Log an exception to the database
