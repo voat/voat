@@ -3451,6 +3451,58 @@ namespace Voat.Data
 
         #region User Related Functions
 
+        public bool SimilarCommentSubmittedRecently(string userName, string commentContent, TimeSpan timeSpan)
+        {
+            // TODO: use Levenshtein distance algo or similar for better results
+
+            var fromDate = Repository.CurrentDate.Subtract(timeSpan.Duration());
+            var toDate = Repository.CurrentDate;
+
+            var previousComment =
+                _db.Comment.FirstOrDefault(m => m.Content.Equals(commentContent, StringComparison.OrdinalIgnoreCase)
+                && m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                && m.CreationDate >= fromDate && m.CreationDate <= toDate);
+
+            return previousComment != null;
+        }
+
+
+        public Ban UserBan(string userName, string subverse = null, bool checkGlobalBans = true)
+        {
+            if (!String.IsNullOrEmpty(userName))
+            {
+                if (String.IsNullOrEmpty(subverse) || checkGlobalBans)
+                {
+                    var q = new DapperQuery();
+                    q.Select = $"* FROM {SqlFormatter.Table("BannedUser")}";
+                    q.Where = "lower(\"UserName\") = @UserName";
+                    q.Parameters.Add("UserName", userName.ToLower());
+
+                    var globalban = _db.Connection.QueryFirstOrDefault<Ban>(q.ToString(), q.Parameters);
+                    if (globalban != null)
+                    {
+                        return globalban;
+                    }
+                }
+                else if (!String.IsNullOrEmpty(subverse))
+                {
+
+                    var q = new DapperQuery();
+                    q.Select = $"* FROM {SqlFormatter.Table("SubverseBan")}";
+                    q.Where = "lower(\"UserName\") = @UserName AND lower(\"Subverse\") = @Subverse";
+                    q.Parameters.Add("UserName", userName.ToLower());
+                    q.Parameters.Add("Subverse", subverse.ToLower());
+
+                    var subverseban = _db.Connection.QueryFirstOrDefault<Ban>(q.ToString(), q.Parameters);
+                    if (subverseban != null)
+                    {
+                        return subverseban;
+                    }
+                }
+            }
+            return null;
+        }
+
         public IEnumerable<VoteValue> UserCommentVotesBySubmission(string userName, int submissionID)
         {
             IEnumerable<VoteValue> result = null;

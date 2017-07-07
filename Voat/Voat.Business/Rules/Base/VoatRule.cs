@@ -61,22 +61,15 @@ namespace Voat.Rules
         // check if a given user has used his daily posting quota for a given subverse
         protected bool UserDailyPostingQuotaForSubUsed(VoatRuleContext context, string subverse)
         {
-            // set starting date to 24 hours ago from now
-            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = Repository.CurrentDate;
-
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = VoatSettings.Instance.DailyPostingQuotaPerSub;
+            int limit = VoatSettings.Instance.DailyPostingQuotaPerSub;
 
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
+            using (var repo = new Repository())
             {
                 // check how many submission user made today
-                var userSubmissionsToTargetSub = db.Submission.Count(
-                    m => m.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
-                        && m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase)
-                        && m.CreationDate >= fromDate && m.CreationDate <= toDate);
+                var userSubmissionsToTargetSub = repo.UserSubmissionCount(context.UserName, TimeSpan.FromHours(24), null, subverse);
 
-                if (dpqps <= userSubmissionsToTargetSub)
+                if (limit <= userSubmissionsToTargetSub)
                 {
                     return true;
                 }
@@ -87,22 +80,14 @@ namespace Voat.Rules
         // check if a given user has used his daily posting quota
         protected bool UserDailyPostingQuotaForNegativeScoreUsed(VoatRuleContext context)
         {
-            // set starting date to 24 hours ago from now
-            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = Repository.CurrentDate;
+            int limit = VoatSettings.Instance.DailyPostingQuotaForNegativeScore;
 
-            // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = VoatSettings.Instance.DailyPostingQuotaForNegativeScore;
-
-            //REPO_ACCESS: Move logic to Repository 
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
+            using (var repo = new Repository())
             {
                 // check how many submission user made today
-                var userSubmissionsInPast24Hours = db.Submission.Count(
-                    m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase)
-                        && m.CreationDate >= fromDate && m.CreationDate <= toDate);
-
-                if (dpqps <= userSubmissionsInPast24Hours)
+                var userSubmissionsToTargetSub = repo.UserSubmissionCount(context.UserName, TimeSpan.FromHours(24));
+                
+                if (limit <= userSubmissionsToTargetSub)
                 {
                     return true;
                 }
@@ -113,22 +98,15 @@ namespace Voat.Rules
         // check if a given user has used his daily comment posting quota
         protected bool UserDailyCommentPostingQuotaForNegativeScoreUsed(VoatRuleContext context)
         {
-            // set starting date to 24 hours ago from now
-            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = Repository.CurrentDate;
-
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = VoatSettings.Instance.DailyCommentPostingQuotaForNegativeScore;
+            int limit = VoatSettings.Instance.DailyCommentPostingQuotaForNegativeScore;
 
-            //REPO_ACCESS: Move logic to Repository 
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
+            using (var repo = new Repository())
             {
                 // check how many submission user made today
-                var userCommentSubmissionsInPast24Hours = db.Comment.Count(
-                    m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase)
-                        && m.CreationDate >= fromDate && m.CreationDate <= toDate);
-
-                if (dpqps <= userCommentSubmissionsInPast24Hours)
+                var userCommentSubmissionsInPast24Hours = repo.UserCommentCount(context.UserName, TimeSpan.FromHours(24)); 
+                    
+                if (limit <= userCommentSubmissionsInPast24Hours)
                 {
                     return true;
                 }
@@ -139,22 +117,15 @@ namespace Voat.Rules
         // check if a given user has used his daily comment posting quota
         protected bool UserDailyCommentPostingQuotaUsed(VoatRuleContext context)
         {
-            // set starting date to 24 hours ago from now
-            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = Repository.CurrentDate;
-
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = VoatSettings.Instance.DailyCommentPostingQuota;
+            int limit = VoatSettings.Instance.DailyCommentPostingQuota;
 
-            //REPO_ACCESS: Move logic to Repository 
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
+            using (var repo = new Repository())
             {
                 // check how many submission user made today
-                var userCommentSubmissionsInPast24Hours = db.Comment.Count(
-                    m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase)
-                        && m.CreationDate >= fromDate && m.CreationDate <= toDate);
-
-                if (dpqps <= userCommentSubmissionsInPast24Hours)
+                var userCommentSubmissionsInPast24Hours = repo.UserCommentCount(context.UserName, TimeSpan.FromHours(24)); 
+                    
+                if (limit <= userCommentSubmissionsInPast24Hours)
                 {
                     return true;
                 }
@@ -165,22 +136,15 @@ namespace Voat.Rules
         // check if a given user has used his hourly comment posting quota
         protected bool UserHourlyCommentPostingQuotaUsed(VoatRuleContext context)
         {
-            // set starting date to 59 minutes ago from now
-            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, 0, -59, 0, 0));
-            var toDate = Repository.CurrentDate;
-
             // read hourly posting quota configuration parameter from web.config
-            int hpqp = VoatSettings.Instance.HourlyCommentPostingQuota;
+            int limit = VoatSettings.Instance.HourlyCommentPostingQuota;
 
-            //REPO_ACCESS: Move logic to Repository 
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
+            using (var repo = new Repository())
             {
                 // check how many comments user made in the last 59 minutes
-                var userCommentSubmissionsInPastHour = db.Comment.Count(
-                    m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase)
-                        && m.CreationDate >= fromDate && m.CreationDate <= toDate);
-
-                if (hpqp <= userCommentSubmissionsInPastHour)
+                var userCommentSubmissionsInPastHour = repo.UserCommentCount(context.UserName, TimeSpan.FromHours(1));
+                    
+                if (limit <= userCommentSubmissionsInPastHour)
                 {
                     return true;
                 }
@@ -191,23 +155,15 @@ namespace Voat.Rules
         // check if a given user has used his hourly posting quota for a given subverse
         protected bool UserHourlyPostingQuotaForSubUsed(VoatRuleContext context, string subverse)
         {
-            // set starting date to 1 hours ago from now
-            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -1, 0, 0, 0));
-            var toDate = Repository.CurrentDate;
-
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = VoatSettings.Instance.HourlyPostingQuotaPerSub;
+            int limit = VoatSettings.Instance.HourlyPostingQuotaPerSub;
 
-            //REPO_ACCESS: Move logic to Repository 
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
+            using (var repo = new Repository())
             {
                 // check how many submission user made in the last hour
-                var userSubmissionsToTargetSub = db.Submission.Count(
-                    m => m.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
-                        && m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase)
-                        && m.CreationDate >= fromDate && m.CreationDate <= toDate);
+                var userSubmissionsToTargetSub = repo.UserSubmissionCount(context.UserName, TimeSpan.FromHours(24), null, subverse);
 
-                if (dpqps <= userSubmissionsToTargetSub)
+                if (limit <= userSubmissionsToTargetSub)
                 {
                     return true;
                 }
@@ -235,20 +191,15 @@ namespace Voat.Rules
                 }
             }
 
-            // set starting date to 1 hours ago from now
-            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -1, 0, 0, 0));
-            var toDate = Repository.CurrentDate;
-
             // read daily posting quota per sub configuration parameter from web.config
-            int dpqps = VoatSettings.Instance.HourlyGlobalPostingQuota;
+            int limit = VoatSettings.Instance.HourlyGlobalPostingQuota;
 
-            //REPO_ACCESS: Move logic to Repository 
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
+            using (var repo = new Repository())
             {
                 // check how many submission user made in the last hour
-                var totalUserSubmissionsForTimeSpam = db.Submission.Count(m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase) && m.CreationDate >= fromDate && m.CreationDate <= toDate);
+                var totalUserSubmissionsForTimeSpam = repo.UserSubmissionCount(context.UserName, TimeSpan.FromHours(1)); 
 
-                if (dpqps <= totalUserSubmissionsForTimeSpam)
+                if (limit <= totalUserSubmissionsForTimeSpam)
                 {
                     return true;
                 }
@@ -259,7 +210,6 @@ namespace Voat.Rules
         // check if a given user has used his global daily posting quota
         protected bool UserDailyGlobalPostingQuotaUsed(VoatRuleContext context)
         {
-
             //DRY: Repeat Block #1
             // only execute this check if user account is less than a month old and user SCP is less than 50 and user is not posting to a sub they own/moderate
             DateTime userRegistrationDateTime = context.UserData.Information.RegistrationDate;
@@ -277,20 +227,15 @@ namespace Voat.Rules
                 }
             }
 
-            // set starting date to 24 hours ago from now
-            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = Repository.CurrentDate;
-
             // read daily global posting quota configuration parameter from web.config
-            int dpqps = VoatSettings.Instance.DailyGlobalPostingQuota;
+            int limit = VoatSettings.Instance.DailyGlobalPostingQuota;
 
-            //REPO_ACCESS: Move logic to Repository 
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
+            using (var repo = new Repository())
             {
                 // check how many submission user made today
-                var userSubmissionsToTargetSub = db.Submission.Count(m => m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase) && m.CreationDate >= fromDate && m.CreationDate <= toDate);
+                var userSubmissionsToTargetSub = repo.UserSubmissionCount(context.UserName, TimeSpan.FromHours(24));
 
-                if (dpqps <= userSubmissionsToTargetSub)
+                if (limit <= userSubmissionsToTargetSub)
                 {
                     return true;
                 }
@@ -304,21 +249,11 @@ namespace Voat.Rules
             // read daily crosspost quota from web.config
             int dailyCrossPostQuota = VoatSettings.Instance.DailyCrossPostingQuota;
 
-            // set starting date to 24 hours ago from now
-            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, -24, 0, 0, 0));
-            var toDate = Repository.CurrentDate;
-
-            //REPO_ACCESS: Move logic to Repository 
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
+            using (var repo = new Repository())
             {
-                var numberOfTimesSubmitted = db.Submission
-                    .Where(m => m.Content.Equals(url, StringComparison.OrdinalIgnoreCase)
-                    && m.UserName.Equals(context.UserName, StringComparison.OrdinalIgnoreCase)
-                    && m.CreationDate >= fromDate && m.CreationDate <= toDate);
+                var numberOfTimesSubmitted = repo.FindUserLinkSubmissionCount(context.UserName, url, TimeSpan.FromHours(24));
 
-                int nrtimessubmitted = numberOfTimesSubmitted.Count();
-
-                if (dailyCrossPostQuota <= nrtimessubmitted)
+                if (dailyCrossPostQuota <= numberOfTimesSubmitted)
                 {
                     return true;
                 }

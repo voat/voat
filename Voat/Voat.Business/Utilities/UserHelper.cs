@@ -226,20 +226,20 @@ namespace Voat.Utilities
         // check if a given user is globally banned
         public static bool IsUserGloballyBanned(string userName)
         {
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
+            using (var repo = new Repository())
             {
-                var bannedUser = db.BannedUser.FirstOrDefault(n => n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
-                return bannedUser != null;
+                var ban = repo.UserBan(userName, null, true);
+                return ban != null;
             }
         }
 
         // check if a given user is banned from a subverse
         public static bool IsUserBannedFromSubverse(string userName, string subverseName)
         {
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
+            using (var repo = new Repository())
             {
-                var bannedUser = db.SubverseBan.FirstOrDefault(n => n.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && n.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase));
-                return bannedUser != null;
+                var ban = repo.UserBan(userName, subverseName, false); //backwards compat did not check global bans
+                return ban != null;
             }
         }
        
@@ -299,77 +299,6 @@ namespace Voat.Utilities
 
             //    db.SaveChanges();
             //}
-        }
-
-        // unsubscribe from a set
-        public static void UnSubscribeFromSet(string userName, int setId)
-        {
-            throw new NotImplementedException("Sets have not been implemented on new command/query structure");
-            //// do nothing if user is not subscribed to given set
-            //if (!IsUserSetSubscriber(userName, setId))
-            //{
-            //    return;
-            //}
-
-            //using (var db = new voatEntities())
-            //{
-            //    var subscription = db.UserSetSubscriptions.FirstOrDefault(b => b.UserName == userName && b.UserSetID == setId);
-
-            //    // remove subscription record
-            //    db.UserSetSubscriptions.Remove(subscription);
-
-            //    // record new unsubscription in sets table subscribers field
-            //    var tmpUserset = db.UserSets.Find(setId);
-
-            //    if (tmpUserset != null)
-            //    {
-            //        tmpUserset.SubscriberCount--;
-            //    }
-
-            //    db.SaveChanges();
-            //}
-        }
-
-        // check if a given user has downvoted more comments than upvoted
-        public static bool IsUserCommentVotingMeanie(string userName)
-        {
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
-            {
-                // get voting habits
-                var commentUpvotes = db.CommentVoteTracker.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                var commentDownvotes = db.CommentVoteTracker.Count(a => a.UserName == userName && a.VoteStatus == -1);
-
-                return commentDownvotes > commentUpvotes;
-            }
-        }
-
-        // check if a given user has downvoted more submissions than upvoted
-        public static bool IsUserSubmissionVotingMeanie(string userName)
-        {
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
-            {
-                // get voting habits
-                var submissionUpvotes = db.CommentVoteTracker.Count(a => a.UserName == userName && a.VoteStatus == 1);
-                var submissionDownvotes = db.CommentVoteTracker.Count(a => a.UserName == userName && a.VoteStatus == -1);
-
-                return submissionDownvotes > submissionUpvotes;
-            }
-        }
-       
-        public static bool SimilarCommentSubmittedRecently(string userName, string commentContent)
-        {
-            // set starting date to 59 minutes ago from now
-            var fromDate = Repository.CurrentDate.Add(new TimeSpan(0, 0, -59, 0, 0));
-            var toDate = Repository.CurrentDate;
-            //REPO_ACCESS: Move logic to Repository 
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
-            {
-                var previousComment = db.Comment.FirstOrDefault(m => m.Content.Equals(commentContent, StringComparison.OrdinalIgnoreCase)
-                    && m.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
-                    && m.CreationDate >= fromDate && m.CreationDate <= toDate);
-
-                return previousComment != null;
-            }
         }
 
         //this is for the API

@@ -150,7 +150,7 @@ namespace Voat.Data
         }
         private async Task<CommandResponse<bool?>> SetSubverseListChange(SubverseSet set, Subverse subverse, SubscriptionAction action)
         {
-            using (var db = new VoatOutOfRepositoryDataContextAccessor())
+            using (var db = new VoatDataContext())
             {
                 CommandResponse<bool?> response = new CommandResponse<bool?>(true, Status.Success, "");
                 var actionTaken = SubscriptionAction.Toggle;

@@ -72,9 +72,9 @@ namespace Voat.Caching
                     string cacheKey = DataCache.Keys.Submission(submissionID.Value);
                     Voat.Data.Models.Submission submission = CacheHandler.Instance.Register<Voat.Data.Models.Submission>(cacheKey, new Func<Voat.Data.Models.Submission>(() =>
                     {
-                        using (var db = new VoatOutOfRepositoryDataContextAccessor())
+                        using (var repo = new Repository())
                         {
-                            return db.Submission.Where(x => x.ID == submissionID).FirstOrDefault();
+                            return repo.GetSubmission(submissionID.Value);
                         }
                     }), TimeSpan.FromMinutes(30), -1);
                     return submission;

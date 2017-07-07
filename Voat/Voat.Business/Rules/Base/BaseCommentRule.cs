@@ -23,6 +23,7 @@
 #endregion LICENSE
 
 using System;
+using Voat.Data;
 using Voat.RulesEngine;
 using Voat.Utilities;
 
@@ -44,13 +45,15 @@ namespace Voat.Rules
             }
 
             // check for copypasta
-            // TODO: use Levenshtein distance algo or similar for better results
-            var copyPasta = UserHelper.SimilarCommentSubmittedRecently(context.UserName, content);
-            if (copyPasta)
+            using (var repo = new Repository())
             {
-                return base.CreateOutcome(RuleResult.Denied, "You have recently submitted a similar comment. Please try to not use copy/paste so often.");
+                var copyPasta = repo.SimilarCommentSubmittedRecently(context.UserName, content, TimeSpan.FromHours(24));
+                if (copyPasta)
+                {
+                    return base.CreateOutcome(RuleResult.Denied, "You have recently submitted a similar comment. Please try to not use copy/paste so often.");
+                }
             }
-
+             
             return Allowed;
         }
     }
