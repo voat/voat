@@ -3,14 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Voat.Data.Models
 {
-    //Stub out for ReadOnly db connections
     public partial class VoatEntityContext : DbContext
     {
 
-
         public class UnintentionalCodeFirstException : Exception { }
        
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("dbo");
