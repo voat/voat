@@ -44,7 +44,9 @@ namespace Voat.UI.ViewComponents
                     result = View("User", domainReference);
                     break;
                 case DomainType.Set:
-                    result = View("Set", domainReference);
+                    var qSet = new QuerySet(domainReference.Name, domainReference.OwnerName);
+                    var set = await qSet.ExecuteAsync();
+                    result = View("Set", set);
                     break;
             }
 

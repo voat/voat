@@ -196,7 +196,7 @@ namespace Voat.Data
             int count = 50;
 
             var q = new DapperQuery();
-            q.Select = $"s.\"ID\", s.\"Name\", s.\"Title\", s.\"Description\", s.\"CreationDate\", s.\"SubscriberCount\", sl.\"CreationDate\" AS \"SubscriptionDate\" FROM {SqlFormatter.Table("SubverseSetList", "sl")} INNER JOIN {SqlFormatter.Table("Subverse", "s")} ON (sl.\"SubverseID\" = s.\"ID\")";
+            q.Select = $"s.\"ID\", s.\"Name\", s.\"Title\", s.\"Description\", s.\"CreationDate\", {SqlFormatter.As(SqlFormatter.IsNull("s.\"SubscriberCount\"", "0"), "\"SubscriberCount\"")}, sl.\"CreationDate\" AS \"SubscriptionDate\" FROM {SqlFormatter.Table("SubverseSetList", "sl")} INNER JOIN {SqlFormatter.Table("Subverse", "s")} ON (sl.\"SubverseID\" = s.\"ID\")";
             q.Where = "sl.\"SubverseSetID\" = @ID";
             q.Parameters = new DynamicParameters(new { ID = setID });
 
@@ -236,10 +236,11 @@ namespace Voat.Data
         }
         public SubverseSet GetSet(string name, string userName, SetType? type = null, bool createIfMissing = false)
         {
+            var normalization = Normalization.Lower;
 
             var q = new DapperQuery();
             q.Select = $"SELECT * FROM {SqlFormatter.Table("SubverseSet", "subSet")}";
-            q.Where = "subSet.\"Name\" = @Name";
+            q.Where = SqlFormatter.ToNormalized("subSet.\"Name\"", normalization) + " = @Name";
 
             if (type.HasValue)
             {
@@ -248,14 +249,19 @@ namespace Voat.Data
 
             if (!String.IsNullOrEmpty(userName))
             {
-                q.Append(x => x.Where, "subSet.\"UserName\" = @UserName");
+                q.Append(x => x.Where, SqlFormatter.ToNormalized("subSet.\"UserName\"", normalization)  + " = @UserName");
             }
             else
             {
                 q.Append(x => x.Where, "subSet.\"UserName\" IS NULL");
             }
 
-            q.Parameters = new DynamicParameters(new { Name = name, UserName = userName, Type = (int?)type });
+            q.Parameters = new DynamicParameters(new {
+                Name = name.ToNormalized(normalization),
+                UserName = userName.ToNormalized(normalization),
+                Type = (int?)type
+            });
+
             using (var db = new VoatDataContext())
             {
                 var set = db.Connection.QueryFirstOrDefault<SubverseSet>(q.ToString(), q.Parameters);

@@ -9,7 +9,42 @@ namespace Voat.Common
 {
     public static class StringExtensions
     {
+        public static bool IsTrimSafeNullOrEmpty(this string text)
+        {
+            return String.IsNullOrEmpty(text.TrimSafe());
+        }
+        public static string TrimSafe(this string text)
+        {
+            if (!String.IsNullOrEmpty(text))
+            {
+                return text.StripWhiteSpace();
+            }
+            return text;
+        }
+        public static string TrimSafe(this string text, params string[] trimStrings)
+        {
+            if (!String.IsNullOrEmpty(text))
+            {
+                var trimmed = text.StripWhiteSpace();
+                if (trimStrings != null && trimStrings.Length > 0)
+                {
+                    trimmed = trimStrings.Aggregate(trimmed, (result, trimString) => {
+                        if (result.StartsWith(trimString))
+                        {
+                            result = result.Substring(trimString.Length, result.Length - trimString.Length);
+                        }
+                        if (result.EndsWith(trimString))
+                        {
+                            result = result.Substring(0, result.Length - trimString.Length);
+                        }
+                        return result;
+                    });
+                }
+                return trimmed;
 
+            }
+            return text;
+        }
         public static string ToNormalized(this string value, Normalization normalization)
         {
             if (!String.IsNullOrEmpty(value))
@@ -36,6 +71,12 @@ namespace Voat.Common
             }
             return url;
         }
+        /// <summary>
+        /// Reverses a string based on seperator. preview.voat.co becomes co.voat.preview
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="seperator"></param>
+        /// <returns></returns>
         public static string ReverseSplit(this string content, string seperator = ".")
         {
             if (!String.IsNullOrEmpty(content))
@@ -44,16 +85,6 @@ namespace Voat.Common
             }
             return content;
         }
-        //public static IEnumerable<string> ToRelativePathParts(this string[] relativePaths, string additionalPart)
-        //{
-        //    string[] part = null;
-        //    if (!String.IsNullOrEmpty(additionalPart))
-        //    {
-        //        part = new string[] { additionalPart };
-        //    }
-        //    return ToRelativePathParts(relativePaths, part);
-        //}
-
         public static IEnumerable<string> ToPathParts(this IEnumerable<string> relativePaths, IEnumerable<string> additionalParts = null)
         {
             List<string> parts = new List<string>();

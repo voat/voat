@@ -49,7 +49,7 @@ namespace Voat.Utilities
     {
 
         
-        //TODO: IMPORTANT This needs to be ported correctly
+        //TODO: IMPORTANT This needs to be ported correctly, not using VoatUserManager param any longer
         public static async Task<bool> CanUserNameBeRegistered(VoatUserManager userManager, string userName, IDictionary<string, string> charSwaps = null)
         {
 
@@ -72,7 +72,7 @@ namespace Voat.Utilities
             //TODO: Need to migrate to dapper and repo
             //var accountExists = spoofsToCheck.Any(x => userManager.FindByNameAsync(x).Result != null);
             var spoofsToCheck = SpooferProofer.CharacterSwapList(userName, charSwaps, true, Normalization.Lower);
-            var accountExists = await userManager.UserNameExistsAsync(spoofsToCheck);
+            var accountExists = await VoatUserManager.UserNameExistsAsync(spoofsToCheck);
             return !accountExists;
 
         }

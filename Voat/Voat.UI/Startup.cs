@@ -67,7 +67,13 @@ namespace Voat
         {
             services.AddDbContext<IdentityDataContext>();
 
-            services.AddIdentity<VoatIdentityUser, IdentityRole>()
+            services.AddIdentity<VoatIdentityUser, IdentityRole>(x => {
+                //TODO: This needs to be an abstraction 
+                x.Password.RequireDigit = false;
+                x.Password.RequireNonAlphanumeric = false;
+                x.Password.RequireUppercase = false;
+                x.Password.RequireLowercase = false;
+            })
                 .AddEntityFrameworkStores<IdentityDataContext>()
                 .AddDefaultTokenProviders();
 

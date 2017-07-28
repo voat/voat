@@ -24,6 +24,7 @@
 
 using System;
 using Voat.Common;
+using Voat.Configuration;
 using Voat.Domain.Models;
 using Voat.RulesEngine;
 using Voat.Utilities;
@@ -82,11 +83,11 @@ namespace Voat.Rules.Posting
             {
                 return CreateOutcome(RuleResult.Denied, "A text submission must include a title");
             }
-            if (userSubmission.Title.ContainsUnicode())
+            if (!VoatSettings.Instance.AllowUnicodeInTitles && userSubmission.Title.ContainsUnicode())
             {
                 return CreateOutcome(RuleResult.Denied, "Submission title can not contain Unicode or unprintable characters");
             }
-            int minTitleLength = 5;
+            int minTitleLength = VoatSettings.Instance.MinumumTitleLength;
             if (userSubmission.Title.Length < minTitleLength)
             {
                 return CreateOutcome(RuleResult.Denied, $"A title may not be less than {minTitleLength} characters");

@@ -39,10 +39,13 @@ namespace Voat.Rules.Voting
         protected override RuleOutcome EvaluateRule(VoatRuleContext context)
         {
             int dailyVotingQuota = VoatSettings.Instance.DailyVotingQuota;
+            int dailyVotingQuotaScaledMinimum = VoatSettings.Instance.DailyVotingQuotaScaledMinimum;
+
             var userCCP = context.UserData.Information.CommentPoints.Sum;
 
+            //TODO: Configure this scale in configuration file instead of hardcoding
             //if user has 20+ use scaled quota, else use 10
-            var scaledDailyVotingQuota = (userCCP >= 20 ? Math.Max(dailyVotingQuota, userCCP / 2) : 10);
+            var scaledDailyVotingQuota = (userCCP >= 20 ? Math.Max(dailyVotingQuota, userCCP / 2) : dailyVotingQuotaScaledMinimum);
             var totalVotesUsedInPast24Hours = context.UserData.TotalVotesUsedIn24Hours;
 
             //see if they have a current vote on this item and only evaluate if they don't

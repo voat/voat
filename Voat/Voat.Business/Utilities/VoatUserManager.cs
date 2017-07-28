@@ -105,8 +105,8 @@ namespace Voat
             }
             return null;
         }
-
-        public async Task<bool> UserNameExistsAsync(IEnumerable<string> userNames)
+        //TODO: This needs to be moved to the repo
+        public static async Task<bool> UserNameExistsAsync(IEnumerable<string> userNames)
         {
             //Use Dapper
             using (var context = new VoatDataContext(CONSTANTS.CONNECTION_USERS))

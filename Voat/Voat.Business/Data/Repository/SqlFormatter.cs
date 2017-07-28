@@ -237,5 +237,40 @@ namespace Voat.Data
             }
             return result;
         }
+        public static string ToNormalized(string value, Normalization normalization, string alias = null)
+        {
+            var result = value;
+
+            switch (normalization)
+            {
+                case Normalization.Lower:
+                    switch (DataConfigurationSettings.Instance.StoreType)
+                    {
+                        case DataStoreType.PostgreSql:
+                        case DataStoreType.SqlServer:
+                            result = $"lower({value})";
+                            break;
+                    }
+                    break;
+                case Normalization.Upper:
+                    switch (DataConfigurationSettings.Instance.StoreType)
+                    {
+                        case DataStoreType.PostgreSql:
+                        case DataStoreType.SqlServer:
+                            result = $"upper({value})";
+                            break;
+                    }
+                    break;
+            }
+            if (!String.IsNullOrEmpty(alias))
+            {
+                result = As(result, alias);
+            }
+            return result;
+        }
+        public static string As(string value, string alias)
+        {
+            return $"{value} AS {alias}";
+        }
     }
 }

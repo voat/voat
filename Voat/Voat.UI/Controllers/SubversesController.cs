@@ -413,7 +413,7 @@ namespace Voat.Controllers
                 //what to query
                 var domainReference = new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, subverse);
 
-                var q = new QuerySubmissions(domainReference, options);
+                var q = new QuerySubmissions(domainReference, options).SetUserContext(User);
                 var results = await q.ExecuteAsync().ConfigureAwait(false);
 
                 viewProperties.Context = domainReference;

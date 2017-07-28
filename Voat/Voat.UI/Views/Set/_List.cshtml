@@ -27,11 +27,13 @@
     {
         while (enumerator.MoveNext())
         {
+            var current = enumerator.Current;
             <div class="row">
-                <div class="col-md-6">@Html.Partial("_SubverseSubscriptionDetail", enumerator.Current, new ViewDataDictionary(ViewData) { { "SetViewModel", Model } })</div>
+                <div class="col-md-6">@Html.Partial("_SubverseSubscriptionDetail", current, new ViewDataDictionary(ViewData) { { "SetViewModel", Model } })</div>
                 @if (enumerator.MoveNext())
                 {
-                    <div class="col-md-6">@Html.Partial("_SubverseSubscriptionDetail", enumerator.Current, new ViewDataDictionary(ViewData) { { "SetViewModel", Model } })</div>
+                    current = enumerator.Current;
+                    <div class="col-md-6">@Html.Partial("_SubverseSubscriptionDetail", current, new ViewDataDictionary(ViewData) { { "SetViewModel", Model } })</div>
                 }
             </div>
         }

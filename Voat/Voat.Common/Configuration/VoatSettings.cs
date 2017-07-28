@@ -55,6 +55,9 @@ namespace Voat.Configuration
 
         public int DailyVotingQuota { get; set; } = 100;
 
+        public int DailyVotingQuotaScaledMinimum { get; set; } = 10;
+        //dailyVotingQuotaScaledMinimum
+
         public string DestinationPathAvatars { get; set; } = "~/Storage/Avatars";
 
         public string DestinationPathThumbs { get; set; } = "~/Storage/Thumbs";
@@ -125,6 +128,9 @@ namespace Voat.Configuration
         public RuntimeStateSetting RuntimeState { get; set; } = RuntimeStateSetting.Enabled;
 
         public bool ThumbnailsEnabled { get; set; } = true;
+
+        public bool AllowUnicodeInTitles { get; set; } = false;
+        public int MinumumTitleLength { get; set; } = 10;
 
         #endregion AppSettings Accessors
 
