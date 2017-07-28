@@ -43,7 +43,7 @@
 
 <div id="container">
 
-    @await Component.InvokeAsync("Sidebar", new { domainReference = Model.Context })
+    @await Component.InvokeAsync("Sidebar", Model.Context)
 
     <div class="content" role="main">
 
@@ -71,8 +71,8 @@
             else if (Model.Context == null || (Model.Context != null && Model.Context.Type != DomainType.Set))
             {
                 @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
-                await Component.InvokeAsync("Featured");
-                await Component.InvokeAsync("StickiedSubmission", null);
+                @await Component.InvokeAsync("Featured");
+                @await Component.InvokeAsync("StickiedSubmission", null);
             }
 
             @if (Model.Submissions.Count <= 0)
