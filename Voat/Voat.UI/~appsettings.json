@@ -103,14 +103,32 @@
             "footerText": "&amp;copy; 2017 Voat, Inc. All rights reserved. Voat and the Voat Mascot are trademarks of Voat, Inc.",
             "siteLogo": "/images/voat-logo.png",
             "cookieDomain": ".voat.co",
-            "siteDomain": "voat.co",
+            "siteDomain": "", //Use blank to have the runtime automatically set
             "contentDeliveryDomain": "cdn.voat.co",
             "captchaEnabled": false,
             "recaptchaPublicKey": "<enter here>",
             "recaptchaPrivateKey": "<enter here>",
             "forceHTTPS": false,
+            "reservedSubverseNames": [
+                "all",
+                "any",
+                "default",
+                "announcements",
+                "voat",
+                "front",
+                "random"
+            ],
+            "reservedUserNames": [
+                "voat",
+                "voatbot",
+                "system",
+                "youcanclaimthissub",
+                "puttitout",
+                "atko",
+                "derpyguy"
+            ],
 
-            //Thresholds
+            //Rule Thresholds
             "minimumAccountAgeInDaysForSubverseCreation": 30,
             "minimumSubmissionPointsForSubverseCreation": 10,
             "minimumCommentPointsForSubverseCreation": 10,
@@ -131,6 +149,9 @@
             "hourlyCommentPostingQuota": 10,
             "maxAllowedAccountsFromSingleIP": 100,
             "maximumSetSubverseCount": 25,
+            "minumumTitleLength": 5,
+            "maximumTitleLength": 200,
+            "allowUnicodeInTitles": true,
 
             //Runtime Settings
             "runtimeState": "Enabled",
@@ -139,13 +160,29 @@
             "setCreationEnabled": true,
             "registrationEnabled": true,
             "useContentDeliveryNetwork": false,
-            "destinationPathThumbs": "~/storage/thumbs",
-            "destinationPathAvatars": "~/storage/avatars",
             "adsEnabled": true,
             "apiKeyCreationEnabled": true,
             "redirectToSiteDomain": false,
             "origin": "UI",
-            "thumbnailsEnabled": false,
+
+            //Image Settings
+            "thumbnailsEnabled": true,
+            "thumbnailSize": {
+                "height": 68,
+                "width": 68
+            },
+            "avatarSize": {
+                "height": 68,
+                "width": 68
+            },
+            "destinationPathThumbs": "~/storage/thumbs",
+            "destinationPathAvatars": "~/storage/avatars",
+
+            //Voat API
+            "apiEndPoint": "https://api.voat.co",
+            "apiPublicKey": "",
+            "apiPrivateKey": "",
+
             //Voat Settings
             "StorageConnectionString": "<enter here>",
             "emailServiceKey": "<enter here>"

@@ -27,17 +27,11 @@ namespace Voat.Http.Filters
         {
             if (context != null)
             {
-                if (context.Items.ContainsKey(PreventSpamFilter.CONTEXT_CACHE_KEY))
+                var cache = (IMemoryCache)context.RequestServices.GetService(typeof(IMemoryCache));
+                if (cache != null)
                 {
-                    var cache = (IMemoryCache)context.RequestServices.GetService(typeof(IMemoryCache));
-                    if (cache != null)
-                    {
-                        var hashValue = context.Items[PreventSpamFilter.CONTEXT_CACHE_KEY].ToString();
-                        if (!String.IsNullOrWhiteSpace(hashValue))
-                        {
-                            cache.Remove(hashValue);
-                        }
-                    }
+                    var key = context.Request.Signature();
+                    cache.Remove(key);
                 }
             }
         }
@@ -112,14 +106,14 @@ namespace Voat.Http.Filters
 
                 // Store our HttpContext (for easier reference and code brevity)
                 var request = context.HttpContext.Request;
-                var hashValue = request.Signature();
+                var key = request.Signature();
 
                 // TODO:
                 // Override spam filter if user is authorized poster to target subverse
                 // trustedUser = true;
 
                 // Checks if the hashed value is contained in the Cache (indicating a repeat request)
-                if (_cache.Get(hashValue) != null && loggedInUser != "system" && trustedUser != true)
+                if (_cache.Get(key) != null && loggedInUser != "system" && trustedUser != true)
                 {
                     // Adds the Error Message to the Model and Redirect
                     ((Controller)context.Controller).ViewData.ModelState.AddModelError(string.Empty, _options.ErrorMessage);
@@ -128,8 +122,8 @@ namespace Voat.Http.Filters
                 {
                     // Adds an empty object to the cache using the hashValue to a key (This sets the expiration that will determine
                     // if the Request is valid or not
-                    _cache.Set(hashValue, "", TimeSpan.FromSeconds(_options.Secconds));
-                    context.HttpContext.Items[CONTEXT_CACHE_KEY] = hashValue;
+                    _cache.Set(key, "", TimeSpan.FromSeconds(_options.Secconds));
+                    //context.HttpContext.Items[CONTEXT_CACHE_KEY] = hashValue;
                 }
             }
             

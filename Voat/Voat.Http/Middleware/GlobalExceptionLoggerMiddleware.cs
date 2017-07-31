@@ -20,8 +20,13 @@ namespace Voat.Http.Middleware
             }
             catch (Exception ex)
             {
-                var logInfo = context.GetLogInformation("GlobalExceptionLoggerMiddleware", LogType.Exception, ex);
-                EventLogger.Instance.Log(logInfo);
+                var logger = EventLogger.Instance;
+                var logLevel = LogType.Exception;
+                if (logger.IsEnabledFor(logLevel))
+                {
+                    var logInfo = context.GetLogInformation("GlobalExceptionLoggerMiddleware", logLevel, ex);
+                    logger.Log(logInfo);
+                }
                 throw;
             }
         }

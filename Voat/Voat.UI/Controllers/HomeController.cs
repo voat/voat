@@ -134,6 +134,7 @@ namespace Voat.Controllers
             // abort if model state is invalid
             if (!ModelState.IsValid)
             {
+                PreventSpamAttribute.Reset(this.HttpContext);
                 return View(model);
             }
 

@@ -899,7 +899,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> AddModerator([Bind("ID,Subverse,Username,Power")] SubverseModerator subverseAdmin)
+        public async Task<ActionResult> AddModerator([Bind("ID,Subverse,UserName,Power")] SubverseModerator subverseAdmin)
         {
             if (!ModelState.IsValid)
             {
@@ -996,17 +996,17 @@ namespace Voat.Controllers
 
                     _db.ModeratorInvitation.Add(modInv);
                     _db.SaveChanges();
-
                     int invitationId = modInv.ID;
                     var invitationBody = new StringBuilder();
+
+                    string acceptInviteUrl = VoatUrlFormatter.BuildUrlPath(this.HttpContext, new PathOptions(true, true), "/acceptmodinvitation/" + invitationId);
+
                     invitationBody.Append("Hello,");
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append($"@{User.Identity.Name} invited you to moderate v/" + subverseAdmin.Subverse + ".");
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append(Environment.NewLine);
-                    //CORE_PORT: Not ported
-                    throw new NotImplementedException("Core port");
-                    //invitationBody.Append("Please visit the following link if you want to accept this invitation: " + "https://" + Request.ServerVariables["HTTP_HOST"] + "/acceptmodinvitation/" + invitationId);
+                    invitationBody.Append($"Please visit the following link if you want to accept this invitation: {acceptInviteUrl}");
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append(Environment.NewLine);
                     invitationBody.Append("Thank you.");

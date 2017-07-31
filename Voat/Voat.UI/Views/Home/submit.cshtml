@@ -82,7 +82,7 @@
                 <div class="form-group">
                     @Html.LabelFor(x => x.Subverse, "Subverse:", new { @class = "control-label col-md-2" })
                     <div class="col-md-4">
-                        @Html.TextBoxFor(model => model.Subverse, new { @class = "form-control", value = Model.Subverse, id = "Subverse", @placeholder = "Start typing to get suggestions" })
+                        @Html.TextBoxFor(model => model.Subverse, new { @class = "form-control", value = Model.Subverse, id = "Subverse", @placeholder = "Start typing to get suggestions", data_autocomplete_subverse = 1 })
                         @Html.ValidationMessageFor(model => model.Subverse)
                     </div>
                 </div>

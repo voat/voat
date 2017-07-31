@@ -55,8 +55,9 @@ $(document).ready(function () {
         //$(this).find('ul').css('display', 'none');
     }
     var postingSubverse = '';
-    $('#Subverse').blur(function () {
-        var sub = $('#Subverse').val();
+    var subverseAutoCompleteSelector = 'input[data-autocomplete-subverse=1]'
+    $(subverseAutoCompleteSelector).blur(function () {
+        var sub = $(subverseAutoCompleteSelector).val();
         if (sub.length > 0 && postingSubverse != sub) {
             postingSubverse = sub;
             var url = '/ajaxhelpers/autocompletesubversename?exact=true&term=' + sub;
@@ -105,11 +106,11 @@ $(document).ready(function () {
         }
 
     });
-    $('#Subverse').autocomplete({
+    $(subverseAutoCompleteSelector).autocomplete({
         source: '/ajaxhelpers/autocompletesubversename',
         minLength: 2,
         select: function (event, ui) {
-            $('#Subverse').val(ui.item.name);
+            $(subverseAutoCompleteSelector).val(ui.item.name);
             return false;
         },
         focus: function () {
@@ -1233,7 +1234,7 @@ function setSubverseAddCallBack(sender, arguments) {
         message = "Oops: " + response.error.message;
     }
     $(sender).parents(".updateSection").find(".updateResult").html(message);
-    $('#subName').val('');
+    $(subverseAutoCompleteSelector).val('');
 }
 function setSubverseListToggleCallBack(s, arguments) {
 
@@ -1371,278 +1372,10 @@ function toggleButtonVisualState(target, enabled, trueText, falseText) {
         target.removeClass("btn-unsub");
     }
 }
-//// subscribe to subverse
-//function subscribe(obj, subverseName) {
-//    //This is the famous undefined subscription bug - DO NOT ERASE - THIS IS VOAT FAMOUS - ATTN DAN.F. I found it first!
-//    //$(obj).attr("onclick", "unsubscribe(this)");
-//    $(obj).attr("onclick", "unsubscribe(this, '" + subverseName + "')");
-
-//    $(obj).html("unsubscribe");
-//    $(obj).toggleClass("btn-sub btn-unsub");
-
-//    // call the subverse subscribe API
-//    $.ajax({
-//        type: "POST",
-//        url: "/subscribe/" + subverseName,
-//        success: function () {
-//            var numberOfSubscribers = +($('#subscriberCount').html());
-//            numberOfSubscribers++;
-//            $('#subscriberCount').html(numberOfSubscribers);
-//        },
-//        error: function () {
-//            alert('Something went wrong while sending a subscription request.');
-//        }
-//    });
-//}
-////function setSubscribeToggle(obje, setID, subverseName)
-////{
-
-////}
-//// unsubscribe from subverse
-//function unsubscribe(obj, subverseName) {
-//    //This is the famous undefined subscription bug - DO NOT ERASE - THIS IS VOAT FAMOUS - ATTN DAN.F. I found it first!
-//    //$(obj).attr("onclick", "subscribe(this)");
-//    $(obj).attr("onclick", "subscribe(this, '" + subverseName + "')");
-//    $(obj).html("subscribe");
-//    $(obj).toggleClass("btn-sub btn-unsub");
-
-//    // call the subverse unsubscribe API
-//    $.ajax({
-//        type: "POST",
-//        url: "/unsubscribe/" + subverseName,
-//        success: function () {
-//            var numberOfSubscribers = +($('#subscriberCount').html());
-//            numberOfSubscribers--;
-//            $('#subscriberCount').html(numberOfSubscribers);
-//        },
-//        error: function () {
-//            alert('Something went wrong while sending unsubscription request.');
-//        }
-//    });
-//}
-// *************************** SET **************************************
-
-//// subscribe to set
-//function subscribeToSet(obj, setId) {
-//    $(obj).attr("onclick", "unsubscribe(this)");
-//    $(obj).html("unsubscribe");
-
-//    // call the set subscribe API
-//    $.ajax({
-//        type: "POST",
-//        url: "/subscribetoset/" + setId,
-//        success: function () {
-//            var numberOfSubscribers = +($('#subscribercount').html());
-//            numberOfSubscribers++;
-//            $('#subscribercount').html(numberOfSubscribers);
-//        },
-//        error: function () {
-//            alert('Something went wrong while sending a set subscription request.');
-//        }
-//    });
-//}
-
-//// unsubscribe from set
-//function unsubscribeFromSet(obj, setId) {
-//    $(obj).attr("onclick", "subscribe(this)");
-//    $(obj).html("subscribe");
-
-//    // call the unsubscribe API
-//    $.ajax({
-//        type: "POST",
-//        url: "/unsubscribefromset/" + setId,
-//        success: function () {
-//            var numberOfSubscribers = +($('#subscriberCount').html());
-//            numberOfSubscribers--;
-//            $('#subscriberCount').html(numberOfSubscribers);
-//        },
-//        error: function () {
-//            alert('Something went wrong while sending unsubscription request.');
-//        }
-//    });
-//}
-
-//// remove a subverse from a set
-//function removeSubFromSet(obj, setId, subverseName) {
-//    $(obj).html("Hold on...");
-
-//    // call remove subverse from set API
-//    $.ajax({
-//        type: "POST",
-//        url: "/sets/removesubverse/" + setId + "/" + subverseName,
-//        success: function () {
-//            // remove the remove button along with sub info
-//            $("#subverse-" + subverseName).remove();
-//        },
-//        error: function () {
-//            $(obj).html("Something went wrong.");
-//        }
-//    });
-//}
-
-//// add a subverse to a set
-//function addSubToSet(obj, setId) {
-//    $(obj).html("Hold on...");
-//    var subverseName = $("#Subverse").val();
-
-//    if (!subverseName) {
-//        $(obj).html("Add this subverse to set");
-//        $("#status").html("please enter a subverse name to add");
-//        $("#status").show();
-//        return;
-//    }
-
-//    // call add subverse to set API
-//    $.ajax({
-//        type: "POST",
-//        url: "/sets/addsubverse/" + setId + "/" + subverseName,
-//        success: function () {
-//            var subverseInfo = $.get(
-//                "/ajaxhelpers/setsubverseinfo/" + setId + "/" + subverseName,
-//                null,
-//                function (data) {
-//                    $("#subverselisting").append(data);
-//                    $("#status").hide();
-//                    $(obj).html("Add this subverse to set");
-//                }
-//             );
-//        },
-//        error: function () {
-//            $("#status").html("Subverse probably does not exist.");
-//            $("#status").show();
-//            $(obj).html("Add this subverse to set");
-//        }
-//    });
-//}
-
-//// a function to fetch 1 page for a set and append to the bottom of the given set
-//var loadMoreSetRequest;
-//function loadMoreSetItems(obj, setId) {
-//    if (loadMoreSetRequest) { return; }
-//    $(obj).html("Sit tight...");
-
-//    // try to see if this request is a subsequent request
-//    var currentPage = $("#set-" + setId + "-page").html();
-//    if (currentPage == null) {
-//        currentPage = 1;
-//    } else {
-//        currentPage++;
-//    }
-
-//    loadMoreSetRequest = $.ajax({
-//        url: "/set/" + setId + "/" + currentPage + "/",
-//        success: function (data) {
-//            $("#set-" + setId + "-page").remove();
-//            $("#set-" + setId + "-container").append(data);
-//            $(obj).html("load more &#9660;");
-//        },
-//        error: function () {
-//            {
-//                $(obj).html("That's it. There was nothing else to show.");
-//            }
-//        },
-//        complete: function () {
-//            loadMoreSetRequest = null;
-//        }
-//    });
-//}
-
-//// a function to change set title name
-//function changeSetName() {
-//    $('#setName').removeAttr("onclick");
-//    $('#setName').hide();
-
-//    // show textbox
-//    $('#newSetName').show();
-//    $('#newSetNameEditBox').focus();
-
-//    $('#newSetNameEditBox').on('keypress', function (e) {
-//        if (e.keyCode === 13) {
-//            $('#setName').html($('#newSetNameEditBox').val());
-
-//            $('#setName').bind('click', changeSetName);
-//            $('#newSetName').hide();
-//            $('#setName').show();
-//        }
-//    });
-//}
-
-//function cancelSetTitleChange() {
-//    $('#setName').bind('click', changeSetName);
-//    $('#newSetName').hide();
-//    $('#setName').show();
-//}
-
-//function saveSetTitle(obj, setId) {
-//    $(obj).html('Please wait...');
-
-//    $.ajax({
-//        type: "POST",
-//        url: "/sets/modify/" + setId + "/" + $('#newSetNameEditBox').val(),
-//        success: function () {
-//            $('#setName').html($('#newSetNameEditBox').val());
-//            $('#setName').bind('click', changeSetName);
-//            $('#newSetName').hide();
-//            $('#setName').show();
-
-//            $(obj).html('Save');
-//        },
-//        error: function () {
-//            $(obj).html('Max 20 characters');
-//        }
-//    });
-//}
-
-//// a function to ask the user to confirm permanent set deletion request
-//function deleteSet(obj, setId) {
-//    $(obj).html("Are you sure?");
-
-//    $(obj).bind({
-//        click: function () {
-//            deleteSetExecute(obj, setId);
-//        }
-//    });
-
-//    return false;
-//}
-
-//// a function to permanently delete a given set
-//function deleteSetExecute(obj, setId) {
-//    $(obj).html('Please wait...');
-
-//    $.ajax({
-//        type: "POST",
-//        url: "/sets/delete/" + setId,
-//        success: function () {
-//            // remove the set from view
-//            $("#set-" + setId).remove();
-//        },
-//        error: function () {
-//            $(obj).html('Nope.');
-//        }
-//    });
-//}
-
-
-
-
 
 // a function to load content of a self post and append it to calling object
 function loadSelfText(obj, messageId) {
-    // load content only if collapsed, don't cache as author may edit the submission
-    //var isExpanded = false;
-    //if ($(obj).hasClass('collapsed')) {
-    //    //fetch message content and append under class md
-    //    var messageContent = $.get(
-    //        "/ajaxhelpers/messagecontent/" + messageId,
-    //        null,
-    //        function (data) {
-    //            $(obj).parent().find(".expando").find(".md").html(data);
-    //            window.setTimeout(function () { UI.Notifications.raise('DOM', $(obj).parent().find(".expando")); });
-    //        }
-    //     );
-    //}
-
+    
     $(obj).toggleClass("collapsed");
     $(obj).toggleClass("expanded");
 

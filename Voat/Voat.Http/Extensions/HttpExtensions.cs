@@ -218,5 +218,24 @@ namespace Voat.Http
             var hashValue = string.Join("", MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(originationInfo + targetInfo)).Select(s => s.ToString("x2")));
             return hashValue;
         }
+
+        public static string SiteDomain(this HttpRequest request, string siteDomain, bool preferRequestDomain = false)
+        {
+            var url = request.GetUrl();
+            var host = url.Host;
+            var port = "";
+
+            if (url.Port != 80 && url.Port != 443)
+            {
+                port = ":" + url.Port.ToString();
+            }
+
+            if (!(String.IsNullOrEmpty(siteDomain) || !String.IsNullOrEmpty(siteDomain) && preferRequestDomain))
+            {
+                host = siteDomain;
+            }
+
+            return $"{host}{port}";
+        }
     }
 }

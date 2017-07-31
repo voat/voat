@@ -110,11 +110,11 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<JsonResult> TitleFromUri()
         {
-            var uri = Request.Form["uri"].FirstOrDefault();
+            var uri = Request.Query["uri"].FirstOrDefault();
 
             //Old Code:
             //string title = UrlUtility.GetTitleFromUri(uri);
-            using (var httpResource = new HttpResource(uri))
+            using (var httpResource = new HttpResource(uri, new HttpResourceOptions() { AllowAutoRedirect = true }))
             {
                 await httpResource.GiddyUp();
 

@@ -23,8 +23,11 @@
 #endregion LICENSE
 
 using System;
+using System.Drawing;
+using System.IO;
 using System.Threading.Tasks;
 using Voat.Common;
+using Voat.Configuration;
 using Voat.IO;
 
 namespace Voat.Utilities
@@ -33,54 +36,25 @@ namespace Voat.Utilities
 
     public static class ThumbGenerator
     {
-        //CORE_PORT: Image handling has changed in core, commenting out method until we know what we are doing
-        public static async Task<bool> GenerateAvatar(object inputImage, string userName, string mimetype, bool purgeTempFile = true)
+        public static async Task<string> GenerateAvatar(Stream imageStream, string fileName, string mimetype, bool purgeTempFile = true)
         {
-            throw new NotImplementedException("Core Port CacheHandler.ExpireItem");
-        }
-        /*
-        // store uploaded avatar
-        public static async Task<bool> GenerateAvatar(Image inputImage, string userName, string mimetype, bool purgeTempFile = true)
-        {
-            try
+            var fileManager = FileManager.Instance;
+            if (fileManager.IsUploadPermitted(fileName, FileType.Avatar, mimetype, imageStream.Length))
             {
-                // store avatar locally
-                var originalImage = new KalikoImage(inputImage);
-                originalImage.Scale(new PadScaling(MaxWidth, MaxHeight)).SaveJpg(DestinationPathAvatars + '\\' + userName + ".jpg", 90);
-                if (!VoatSettings.Instance.UseContentDeliveryNetwork)
-                {
-                    return true;
-                }
 
-                // call upload to storage since CDN is enabled in config
-                string tempAvatarLocation = DestinationPathAvatars + '\\' + userName + ".jpg";
+                var key = new FileKey();
+                key.FileType = FileType.Avatar;
+                key.ID = GenerateRandomFilename(Path.GetExtension(fileName), FileType.Avatar);
 
-                // the avatar file was not found at expected path, abort
-                if (!FileSystemUtility.FileExists(tempAvatarLocation, DestinationPathAvatars))
-                {
-                    return false;
-                }
-                else if (VoatSettings.Instance.UseContentDeliveryNetwork)
-                {
-                    // upload to CDN
-                    await CloudStorageUtility.UploadBlobToStorageAsync(tempAvatarLocation, "avatars");
-                    if (purgeTempFile)
-                    {
-                        // delete local file after uploading to CDN
-                        File.Delete(tempAvatarLocation);
-                    }
-                }
-                return true;
+                await GenerateImageThumbnail(fileManager, key, imageStream, VoatSettings.Instance.AvatarSize);
+
+                return key.ID;
             }
-            catch (Exception ex)
-            {
-                EventLogger.Log(ex);
-                return false;
-            }
+
+            return null;
         }
-        */
         // Generate a random filename for a thumbnail and make sure that the file does not exist.
-        private static string GenerateRandomFilename(string extention)
+        private static string GenerateRandomFilename(string extention, FileType fileType)
         {
             string fileName = null;
             if (String.IsNullOrEmpty(extention))
@@ -91,11 +65,17 @@ namespace Voat.Utilities
             do
             {
                 fileName = $"{Guid.NewGuid().ToString()}.{extention.ToLower()}";
-            } while (FileManager.Instance.Exists(new FileKey(fileName, FileType.Thumbnail)));
+            } while (FileManager.Instance.Exists(new FileKey(fileName, fileType)));
 
             return fileName;
         }
-
+        private static async Task GenerateImageThumbnail(FileManager fileManager, FileKey key, Stream stream, Size size)
+        {
+            using (var resizedStream = ImageHandler.Resize(stream, size))
+            {
+                await fileManager.Upload(key, resizedStream);
+            }
+        }
         public static async Task<string> GenerateThumbnail(string url, bool purgeTempFile = true)
         {
             return await GenerateThumbnail(new Uri(url), purgeTempFile);
@@ -103,19 +83,24 @@ namespace Voat.Utilities
         public static async Task<string> GenerateThumbnail(Uri url, bool purgeTempFile = true)
         {
             //Ok this all needs to be centralized, we should only make 1 request to a remote resource
-            using (var httpResource = new HttpResource(url))
+            using (var httpResource = new HttpResource(url, new HttpResourceOptions() { AllowAutoRedirect = true }))
             {
                 await httpResource.GiddyUp();
 
                 if (httpResource.IsImage)
                 {
-                    var key = new FileKey();
-                    key.FileType = FileType.Thumbnail;
-                    key.ID = GenerateRandomFilename("jpg");
+                    var fileManager = FileManager.Instance;
+                    if (fileManager.IsUploadPermitted(url.ToString(), FileType.Thumbnail, null, httpResource.Stream.Length))
+                    {
+                        var key = new FileKey();
+                        key.FileType = FileType.Thumbnail;
+                        key.ID = GenerateRandomFilename(Path.GetExtension(url.ToString()), FileType.Thumbnail);
+                        var stream = httpResource.Stream;
 
-                    await FileManager.Instance.Upload(key, httpResource.Stream);
+                        await GenerateImageThumbnail(fileManager, key, stream, VoatSettings.Instance.ThumbnailSize);
 
-                    return key.ID;
+                        return key.ID;
+                    }
                 }
                 else if (httpResource.Image != null)
                 {

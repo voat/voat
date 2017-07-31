@@ -34,7 +34,7 @@
 
 <div>
     <ul class="tabmenu submenu">
-        <li class='@(url.EndsWith(String.Format("/{0}/top", type)) || url.EndsWith("/" + type) || url.EndsWith("discover") ? "selected" : "disabled")'><a href="/discover/@type/top">Popular</a></li>
+        <li class='@(url.EndsWith(String.Format("/{0}/top", type)) || url.EndsWith("/" + type) && !url.Contains("user/subscribed/") || url.EndsWith("discover") ? "selected" : "disabled")'><a href="/discover/@type/top">Popular</a></li>
         <li class='@(url.EndsWith(String.Format("/{0}/active", type)) ? "selected" : "disabled")'><a href="/discover/@type/active">Active</a></li>
         <li class='@(url.EndsWith(String.Format("/{0}/new", type)) ? "selected" : "disabled")'><a href="/discover/@type/new">New</a></li>
         <li class='@(url.Contains("s/front/") || url.Contains("user/subscribed/") ? "selected" : "disabled")'><a href="/user/subscribed/@type">Subscribed</a></li>

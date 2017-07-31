@@ -56,7 +56,10 @@ namespace Voat.Rules
             {
                 return base.CreateOutcome(RuleResult.Denied, "Subverse name does not conform to naming requirements");
             }
-
+            if (VoatSettings.Instance.ReservedSubverseNames.Contains(name.ToLower()))
+            {
+                return base.CreateOutcome(RuleResult.Denied, "Subverse name is reserved and can not be used");
+            }
             using (var repo = new Repository())
             {
                 if (repo.SubverseExists(name))

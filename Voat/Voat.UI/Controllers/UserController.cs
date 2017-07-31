@@ -369,7 +369,7 @@ namespace Voat.Controllers
 
                     var options = new SearchOptions(Request.QueryString.Value);
 
-                    var q = new QueryUserSubscribedSets(options);
+                    var q = new QueryUserSubscribedSets(options).SetUserContext(User);
                    
                     var results = await q.ExecuteAsync();
 

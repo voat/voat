@@ -20,6 +20,12 @@ namespace Voat.Http.Middleware
 
         public virtual async Task Invoke(HttpContext context)
         {
+            if (String.IsNullOrEmpty(Voat.Configuration.VoatSettings.Instance.SiteDomain))
+            {
+                var siteDomain = context.Request.SiteDomain(Voat.Configuration.VoatSettings.Instance.SiteDomain);
+                Voat.Configuration.VoatSettings.Instance.SiteDomain = siteDomain;
+            }
+
             await Next.Invoke(context);
         }
 

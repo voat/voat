@@ -36,7 +36,7 @@ using Voat.Utilities.Components;
 
 namespace Voat.Domain.Command
 {
-
+    [Obsolete("No", true)]
     public class LogRequestCommand : Command<CommandResponse>
     {
         private Origin _origin;

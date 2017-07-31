@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -151,6 +152,13 @@ namespace Voat.Common
                 }
             }
             return scrubbed;
+        }
+
+        public static bool IsImageExtension(this string fileName)
+        {
+            var imageExtensions = new string[] { ".jpg", ".png", ".gif", ".jpeg" };
+            var file = Path.GetExtension(fileName);
+            return imageExtensions.Any(x => x.IsEqual(file));
         }
     }
 }

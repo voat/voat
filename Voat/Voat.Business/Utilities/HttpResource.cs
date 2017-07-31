@@ -104,9 +104,7 @@ namespace Voat.Utilities
                 if (_image == null)
                 {
                     //Check if this url is an image extension
-                    var imageExtensions = new string[] { ".jpg", ".png", ".gif", ".jpeg" };
-                    var file = Path.GetExtension(Uri.ToString());
-                    if (imageExtensions.Any(x => x.IsEqual(file)))
+                    if (Uri.ToString().IsImageExtension())
                     {
                         _image = _uri;
                         return _image;

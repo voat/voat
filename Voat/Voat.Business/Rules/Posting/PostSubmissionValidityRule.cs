@@ -88,9 +88,11 @@ namespace Voat.Rules.Posting
                 return CreateOutcome(RuleResult.Denied, "Submission title can not contain Unicode or unprintable characters");
             }
             int minTitleLength = VoatSettings.Instance.MinumumTitleLength;
-            if (userSubmission.Title.Length < minTitleLength)
+            int maxTitleLength = VoatSettings.Instance.MaximumTitleLength;
+
+            if (userSubmission.Title.Length < minTitleLength || userSubmission.Title.Length > maxTitleLength)
             {
-                return CreateOutcome(RuleResult.Denied, $"A title may not be less than {minTitleLength} characters");
+                return CreateOutcome(RuleResult.Denied, $"A title must be between {minTitleLength} and {maxTitleLength} characters");
             }
             // make sure the title isn't a url
             if (UrlUtility.IsUriValid(userSubmission.Title))

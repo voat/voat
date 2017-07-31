@@ -25,8 +25,13 @@ namespace Voat.Http.Filters
 
         public void OnException(ExceptionContext context)
         {
-            var logInfo = context.HttpContext.GetLogInformation("GlobalExceptionFilter", LogType.Exception, context.Exception);
-            EventLogger.Instance.Log(logInfo);
+            var logger = EventLogger.Instance;
+            var logLevel = LogType.Exception;
+            if (logger.IsEnabledFor(logLevel))
+            {
+                var logInfo = context.HttpContext.GetLogInformation("GlobalExceptionFilter", logLevel, context.Exception);
+                logger.Log(logInfo);
+            }
         }
     }
 }

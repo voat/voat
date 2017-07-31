@@ -67,7 +67,6 @@ namespace Voat.Controllers
             // abort if model state is invalid
             if (!ModelState.IsValid)
             {
-                PreventSpamAttribute.Reset(HttpContext);
                 return View(subverseTmpModel);
             }
 
@@ -85,6 +84,7 @@ namespace Voat.Controllers
             }
             else
             {
+                PreventSpamAttribute.Reset(HttpContext);
                 ModelState.AddModelError(string.Empty, respones.Message);
                 return View(subverseTmpModel);
             }

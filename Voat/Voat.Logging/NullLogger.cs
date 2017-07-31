@@ -30,6 +30,10 @@ namespace Voat.Logging
 
     public class NullLogger : BaseLogger
     {
+        public NullLogger() : base(LogType.Off)
+        {
+        }
+
         protected override void ProtectedLog(ILogInformation info)
         {
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 using Voat.Common;
 using Voat.Common.Configuration;
@@ -95,6 +96,9 @@ namespace Voat.Configuration
         public int MinimumCommentPointsForCaptchaSubmission { get; set; } = 25;
         public int MinimumCommentPointsForSendingChatMessages { get; set; } = 100;
 
+        public int MinimumCommentPointsForDownvoting { get; set; } = 100;
+        public int MinimumCommentPointsForUpvoting { get; set; } = 20;
+
         public Origin Origin { get; set; } = Origin.Unknown;
         public string RecaptchaPrivateKey { get; set; } = "";
 
@@ -112,7 +116,8 @@ namespace Voat.Configuration
 
         public string SiteDescription { get; set; } = "A community platform where you can have your say. No censorship.";
 
-        public string SiteDomain { get; set; } = "voat.co";
+        public string SiteDomain { get; set; } = "";
+
         public string ContentDeliveryDomain { get; set; } = "cdn.voat.co";
 
         public string SiteKeywords { get; set; } = "voat, voat.co, vote, submit, comment";
@@ -131,6 +136,18 @@ namespace Voat.Configuration
 
         public bool AllowUnicodeInTitles { get; set; } = false;
         public int MinumumTitleLength { get; set; } = 10;
+        public int MaximumTitleLength { get; set; } = 200;
+        
+        public string ApiEndPoint { get; set; } = "";
+        public string ApiPublickKey { get; set; } = "";
+        public string ApiPrivateKey { get; set; } = "";
+
+        public string[] ReservedSubverseNames { get; set; } = new string[] { };
+        public string[] ReservedUserNames { get; set; } = new string[] { };
+
+        public Size ThumbnailSize { get; set; } = new Size(100, 100);
+        public Size AvatarSize { get; set; } = new Size(100, 100);
+
 
         #endregion AppSettings Accessors
 

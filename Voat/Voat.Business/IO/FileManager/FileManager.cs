@@ -28,6 +28,32 @@ namespace Voat.IO
                 _fileManager = value;
             }
         }
+        public virtual bool IsMimeTypePermitted(FileType fileType, string mimeType)
+        {
+            return true;
+        }
+        public virtual bool IsUploadPermitted(string fileName, FileType fileType, string mimeType = null, long? length = null)
+        {
+            var result = false;
+            switch (fileType)
+            {
+                case FileType.Avatar:
+                case FileType.Thumbnail:
+                case FileType.Badge:
+
+                    result = (
+                        fileName.IsImageExtension()
+                        && (String.IsNullOrEmpty(mimeType) || IsMimeTypePermitted(fileType, mimeType))
+                        && (length == null || length < 100000000)
+                        );
+
+
+                    break;
+
+            }
+            return result;
+        }
+
 
         protected abstract string Domain { get; }
 

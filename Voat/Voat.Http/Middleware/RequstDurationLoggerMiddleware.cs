@@ -15,11 +15,14 @@ namespace Voat.Http.Middleware
 
         public override async Task Invoke(HttpContext context)
         {
-            var logInfo = context.GetLogInformation("RequestDuration", LogType.Information);
-            using (var duration = new DurationLogger(EventLogger.Instance, logInfo, _timeSpan))
+            var logger = EventLogger.Instance;
+            var logLevel = LogType.Information;
+            var logInfo = context.GetLogInformation("RequestDuration", logLevel);
+            using (var duration = new DurationLogger(logger, logInfo, _timeSpan))
             {
                 await base.Invoke(context);
             }
+
         }
     }
 }

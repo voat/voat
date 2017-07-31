@@ -3712,6 +3712,7 @@ namespace Voat.Data
                 result = new Data.Models.UserPreference();
                 Repository.SetDefaultUserPreferences(result);
                 result.UserName = userName;
+                _db.UserPreference.Add(result);
             }
 
             return result;

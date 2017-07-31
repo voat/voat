@@ -42,7 +42,7 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Name, new { @class = "col-md-4 control-label" })
         <div class="col-md-5">
-            @Html.TextBoxFor(model => model.Name, new { Value = Model.Name, @class = "form-control"})
+            <input asp-for="Name" value="@Model.Name" class="form-control" />
             @if (Model.ID > 0)
             {
                 <p>Changing the name of a set will break all existing links</p>

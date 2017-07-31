@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Voat.Logging;
 using Voat.Utilities.Components;
@@ -22,7 +23,10 @@ namespace Voat.Http.Filters
             {
                 var logInfo = context.HttpContext.GetLogInformation("RouteLoggerFilter", logLevel);
                 var data = logInfo.Data;
-                logInfo.Data = new { routeValues = context.RouteData.Values, data = data };
+                logInfo.Data = new {
+                    routeValues = "TODO", // context.RouteData.Values, commenting out to test DefaultHttpContext.get_Cookies problem
+                    data = data
+                };
                 logger.Log(logInfo);
             }
         }

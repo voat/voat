@@ -32,7 +32,7 @@ namespace Voat.Models.ViewModels
     public class CreateSubmissionViewModel
     {
         [Required(ErrorMessage = "Post title is required. Please fill this field.")]
-        [StringLength(200, ErrorMessage = "The title must be at least 10 and no more than 200 characters long.", MinimumLength = 10)]
+        //[StringLength(200, ErrorMessage = "The title must be at least 10 and no more than 200 characters long.", MinimumLength = 10)]
         public string Title { get; set; }
 
         [Required(ErrorMessage = "You must enter a subverse to send the post to. Examples: programming, videos, pics, funny...")]

@@ -206,3 +206,5 @@ Voat/Voat.UI/logs/
 Voat/Voat.Tests/[Aa]pp.config
 appsettings.json
 appsettings.Development.json
+Voat/Voat.UI/wwwroot/storage/avatars/
+Voat/Voat.UI/wwwroot/storage/thumbs/

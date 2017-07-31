@@ -240,7 +240,11 @@ namespace Voat.Controllers
             {
                 return View(model);
             }
-
+            if (VoatSettings.Instance.ReservedUserNames.Contains(model.UserName.ToLower()))
+            {
+                ModelState.AddModelError(string.Empty, "The username entered is a reserved name.");
+                return View(model);
+            }
             var canBeRegistered = await UserHelper.CanUserNameBeRegistered(null, model.UserName);
             if (!canBeRegistered)
             {
@@ -448,8 +452,53 @@ namespace Voat.Controllers
         public async Task<ActionResult> UserPreferencesAbout([Bind("Bio, Avatarfile")] UserAboutViewModel model)
         {
             ViewBag.UserName = User.Identity.Name;
-            //CORE_PORT: Not ported
-            throw new NotImplementedException("Core port not ported");
+
+            string avatarKey = null;
+
+            //ThumbGenerator.GenerateThumbnail
+            if (model.Avatarfile != null)
+            {
+                try
+                {
+                    var stream = model.Avatarfile.OpenReadStream();
+                    avatarKey = await ThumbGenerator.GenerateAvatar(stream, model.Avatarfile.FileName, model.Avatarfile.ContentType);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Uploaded file is not recognized as a valid image.");
+                    return RedirectToAction("Manage", new { Message = ManageMessageId.InvalidFileFormat });
+                }
+            }
+
+            var bio = model.Bio.TrimSafe();
+            
+            //This is a hack
+            var context = new VoatOutOfRepositoryDataContextAccessor();
+            using (var repo = new Repository(User, context))
+            {
+                var p = await repo.GetUserPreferences(User.Identity.Name);
+                if (bio != p.Bio)
+                {
+                    if (String.IsNullOrEmpty(bio))
+                    {
+                        p.Bio = "I tried to delete my bio but they gave me this instead";
+                    }
+                    else if (bio == STRINGS.DEFAULT_BIO)
+                    {
+                        p.Bio = null;
+                    }
+                    else
+                    {
+                        p.Bio = bio;
+                    }
+                }
+                if (!String.IsNullOrEmpty(avatarKey))
+                {
+                    p.Avatar = avatarKey;   
+                }
+                await context.SaveChangesAsync();
+            }
+
             /*
             using (var db = new VoatUIDataContextAccessor())
             {
