@@ -10,6 +10,7 @@
     <Authors>Voat, Inc.</Authors>
     <Description>Voat Business Library</Description>
     <Copyright>Voat, Inc.</Copyright>
+    <RootNamespace>Voat</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.2" />

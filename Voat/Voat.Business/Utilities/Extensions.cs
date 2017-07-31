@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Voat.Common;
 using Voat.Domain.Models;
 
 namespace Voat
@@ -80,6 +81,115 @@ namespace Voat
   
         }
 
-       
+        /// <summary>
+        /// Returns a range based on the span provided. Does not standardize range, simply subtracts offset.
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <param name="sortSpan"></param>
+        /// <returns></returns>
+        //This code needs to be refactored to use Voat.Common.DateRange 
+        public static Tuple<DateTime, DateTime> ToRelativeRange(this DateTime dateTime, SortSpan sortSpan, SortDirection sortDirection = SortDirection.Reverse)
+        {
+            DateTime start = dateTime;
+            DateTime end = dateTime;
+            var directionMultiplier = sortDirection == SortDirection.Reverse ? -1 : 1;
+            switch (sortSpan)
+            {
+                case SortSpan.Hour:
+                    end = start.ToEndOfHour();
+                    start = end.AddHours(1 * directionMultiplier);
+                    break;
+
+                case SortSpan.Day:
+                    end = start.ToEndOfHour();
+                    start = end.AddHours(24 * directionMultiplier);
+                    break;
+
+                case SortSpan.Week:
+                    end = start.ToEndOfDay();
+                    start = end.AddDays(7 * directionMultiplier);
+                    break;
+
+                case SortSpan.Month:
+                    end = start.ToEndOfDay();
+                    start = end.AddDays(30 * directionMultiplier);
+                    break;
+
+                case SortSpan.Quarter:
+                    end = start.ToEndOfDay();
+                    start = end.AddDays(90 * directionMultiplier);
+                    break;
+
+                case SortSpan.Year:
+                    end = start.ToEndOfDay();
+                    start = end.AddDays(365 * directionMultiplier);
+                    break;
+
+                default:
+                case SortSpan.All:
+
+                    //Date Range shouldn't be processed for this span
+                    break;
+            }
+
+            return new Tuple<DateTime, DateTime>(start, end);
+        }
+
+        /// <summary>
+        /// The purpose of this function is to standardize inputs so that we can cache ranged queries. Currently ranges
+        /// use the current date which contains diffrent minute, second, and ms with each call. This function converts to common
+        /// start and end ranges (beginning and ending of days, hours, etc.)
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <param name="sortSpan"></param>
+        /// <returns></returns>
+
+        //This code needs to be refactored to use Voat.Common.DateRange 
+        public static Tuple<DateTime, DateTime> ToRange(this DateTime dateTime, SortSpan sortSpan)
+        {
+            DateTime start = dateTime;
+            DateTime end = dateTime;
+            switch (sortSpan)
+            {
+                case SortSpan.Hour:
+                    start = start.ToStartOfHour();
+                    end = start.Add(TimeSpan.FromHours(-1));
+                    break;
+
+                case SortSpan.Day:
+                    start = start.ToStartOfDay();
+                    end = start.ToEndOfDay();
+                    break;
+
+                case SortSpan.Week:
+                    start = start.ToStartOfWeek();
+                    end = start.ToEndOfWeek();
+                    break;
+
+                case SortSpan.Month:
+                    start = start.ToStartOfMonth();
+                    end = start.ToEndOfMonth();
+                    break;
+
+                case SortSpan.Quarter:
+                    var range = start.ToQuarterRange();
+                    start = range.Item1;
+                    end = range.Item2;
+                    break;
+
+                case SortSpan.Year:
+                    start = start.ToStartOfYear();
+                    end = start.ToEndOfYear();
+                    break;
+
+                default:
+                case SortSpan.All:
+
+                    //Date Range shouldn't be processed for this span
+                    break;
+            }
+
+            return new Tuple<DateTime, DateTime>(start, end);
+        }
     }
 }

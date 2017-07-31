@@ -27,7 +27,7 @@ using System;
 using System.Globalization;
 using Voat.Utilities;
 using Voat.Tests.Infrastructure;
-
+using Voat.Common;
 
 namespace Voat.Tests.Utils
 {
