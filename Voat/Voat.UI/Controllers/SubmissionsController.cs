@@ -206,9 +206,9 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteSubmission(int submissionId)
+        public async Task<ActionResult> DeleteSubmission(int id)
         {
-            var cmd = new DeleteSubmissionCommand(submissionId, "This feature is not yet implemented").SetUserContext(User);
+            var cmd = new DeleteSubmissionCommand(id, "This feature is not yet implemented").SetUserContext(User);
             var result = await cmd.Execute();
             if (result.Success)
             {

@@ -217,8 +217,8 @@ namespace Voat.Controllers
             //CORE_PORT: Ported correctly?
             //var recipient = Request.Params["recipient"];
             //var subject = Request.Params["subject"];
-            var recipient = Request.Form["recipient"].FirstOrDefault();
-            var subject = Request.Form["subject"].FirstOrDefault();
+            var recipient = Request.Query["recipient"].FirstOrDefault();
+            var subject = Request.Query["subject"].FirstOrDefault();
             var subverse = (string)RouteData.Values["subverse"];
             var model = new NewMessageViewModel() { Recipient = recipient, Subject = subject };
 

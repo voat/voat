@@ -156,7 +156,7 @@
                 }
             </p>
 
-            <form class="usertext" onsubmit="return editcommentsubmit(@Model.ID)" id="commenteditform-@Model.ID" action="#">
+            <form class="usertext" onsubmit="return editCommentSubmit(@Model.ID)" id="commenteditform-@Model.ID" action="#">
                 @Html.AntiForgeryToken()
                 <input id="CommentId" name="CommentId" value="@Model.ID" type="hidden">
                 @if (!Model.IsDeleted)

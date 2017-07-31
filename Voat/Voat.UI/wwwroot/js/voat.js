@@ -952,7 +952,7 @@ function toggleComment(commentID) {
     return (false);
 }
 //obsolete, will be removed soon. use toggleComment instead
-function showcomment(commentid) {
+function showComment(commentid) {
     //show actual comment
     $("#" + commentid).closest('.noncollapsed').toggle(1);
     //hide show hidden children button
@@ -965,7 +965,7 @@ function showcomment(commentid) {
     return (false);
 }
 //obsolete, will be removed soon. use toggleComment instead
-function hidecomment(commentid) {
+function hideComment(commentid) {
     //hide actual comment
     $("#" + commentid).closest('.noncollapsed').toggle(1);
     //show show hidden children button
@@ -979,7 +979,7 @@ function hidecomment(commentid) {
 }
 
 // submit edited comment and replace the old one with formatted response received by server
-function editcommentsubmit(commentid) {
+function editCommentSubmit(commentid) {
     var commentcontent = $("#" + commentid).find('.form-control').val();
     var commentobject = { "ID": commentid, "Content": commentcontent };
 
@@ -1013,7 +1013,7 @@ function editcommentsubmit(commentid) {
 }
 
 // delete comment
-function deletecomment(commentid) {
+function deleteComment(commentid) {
     //hide comment menu buttons
     $("#" + commentid).find('.flat-list').html('');
 
@@ -1035,19 +1035,16 @@ function deletecomment(commentid) {
     removeEditForm(commentid);
 
     //execute POST call to remove comment from database
-    deletecommentsubmit(commentid);
+    deleteCommentSubmit(commentid);
 }
 
 // submit comment deletion request
-function deletecommentsubmit(commentid) {
-    var commentobject = { "commentid": commentid };
+function deleteCommentSubmit(commentId) {
+    var commentobject = { "id": commentId };
 
     $.ajax({
         type: "POST",
-        contentType: 'application/json; charset=utf-8',
-        data: JSON.stringify(commentobject),
-        url: "/deletecomment",
-        datatype: "json"
+        url: "/deletecomment/" + commentId.toString()
     });
 
     removeEditForm(commentid);
@@ -1055,18 +1052,14 @@ function deletecommentsubmit(commentid) {
 }
 
 // submit submission deletion request
-function deletesubmission(senderButton, submissionid) {
+function deleteSubmission(senderButton, submissionid) {
+
     var $form = $(senderButton).parents('form');
     $form.find("#deletestatusmesssage").html("please wait...");
 
-    var submissionobject = { "submissionid": submissionid };
-
     $.ajax({
         type: "POST",
-        contentType: 'application/json; charset=utf-8',
-        data: JSON.stringify(submissionobject),
-        url: "/deletesubmission",
-        datatype: "json",
+        url: "/deletesubmission/" + submissionid.toString(),
         success: function () {
             // reload body content with background page refresh
             window.location = $(location).attr('href');

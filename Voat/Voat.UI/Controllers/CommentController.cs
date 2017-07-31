@@ -377,11 +377,11 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteComment(int commentId)
+        public async Task<ActionResult> DeleteComment(int id)
         {
             if (ModelState.IsValid)
             {
-                var cmd = new DeleteCommentCommand(commentId, "This feature is not yet implemented").SetUserContext(User);
+                var cmd = new DeleteCommentCommand(id, "This feature is not yet implemented").SetUserContext(User);
                 var result = await cmd.Execute();
 
                 if (result.Success)

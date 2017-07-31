@@ -106,7 +106,8 @@ namespace Voat.Tests.Infrastructure
                 var scriptFiles = new string[] {
                     Path.Combine(scriptFolder, "voat.sql"),
                     Path.Combine(scriptFolder, "voat_users.sql"),
-                    Path.Combine(scriptFolder, "procedures.sql")
+                    Path.Combine(scriptFolder, "procedures.sql"),
+                    Path.Combine(scriptFolder, "data.sql")
                 };
 
                 foreach (var scriptFile in scriptFiles)

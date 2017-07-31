@@ -63,11 +63,11 @@
             <div class="collapsed" style="display: none">
                 @if (!Model.IsAnonymized)
                 {
-                    <a href="#" class="expand" onclick=" return showcomment(this) ">[+]</a><a href="~/user/@Model.UserName" class="author gray submitter may-blank">@Model.UserName</a>
+                    <a href="#" class="expand" onclick=" return showComment(this) ">[+]</a><a href="~/user/@Model.UserName" class="author gray submitter may-blank">@Model.UserName</a>
                 }
                 else
                 {
-                    <a href="#" class="expand" onclick=" return showcomment(this) ">[+]</a><a href="~/user/@Model.ID" class="author gray submitter may-blank">@Model.ID</a>
+                    <a href="#" class="expand" onclick=" return showComment(this) ">[+]</a><a href="~/user/@Model.ID" class="author gray submitter may-blank">@Model.ID</a>
                 }
 
                 @if (Model.Submission.UserName == Model.UserName)
@@ -82,11 +82,11 @@
                 <p class="tagline">
                     @if (!Model.IsAnonymized)
                     {
-                        <a href="#" class="expand" onclick=" return hidecomment(this) ">[–]</a><a href="~/user/@Model.UserName" class="author submitter may-blank">@Model.UserName</a>
+                        <a href="#" class="expand" onclick=" return hideComment(this) ">[–]</a><a href="~/user/@Model.UserName" class="author submitter may-blank">@Model.UserName</a>
                     }
                     else
                     {
-                        <a href="#" class="expand" onclick=" return hidecomment(this) ">[–]</a><a href="#" class="author submitter may-blank">@Model.ID</a>
+                        <a href="#" class="expand" onclick=" return hideComment(this) ">[–]</a><a href="#" class="author submitter may-blank">@Model.ID</a>
                     }
 
                     @if (Model.Submission.UserName == Model.UserName)
