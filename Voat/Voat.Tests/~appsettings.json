@@ -105,6 +105,19 @@
             "recaptchaPublicKey": "<enter here>",
             "recaptchaPrivateKey": "<enter here>",
             "forceHTTPS": false,
+            "reservedSubverseNames": [
+                "all",
+                "any",
+                "default",
+                "announcements",
+                "voat"
+            ],
+            "reservedUserNames": [
+                "voat",
+                "system",
+                "youcanclaimthissub",
+                "voatbot"
+            ],
 
             //Thresholds
             "minimumAccountAgeInDaysForSubverseCreation": 30,
@@ -126,21 +139,35 @@
             "hourlyCommentPostingQuota": 10,
             "maxAllowedAccountsFromSingleIP": 100,
             "maximumSetSubverseCount": 25,
+            "minumumTitleLength": 5,
+            "maximumTitleLength": 200,
+            "allowUnicodeInTitles": true,
 
             //Runtime Settings
-            "runtimeState": "Enabled",
+            "runtimeState": "enabled",
             "signalrEnabled": false,
             "setsEnabled": true,
             "setCreationEnabled": true,
             "registrationEnabled": true,
             "useContentDeliveryNetwork": false,
-            "destinationPathThumbs": "~/storage/thumbs",
-            "destinationPathAvatars": "~/storage/avatars",
             "adsEnabled": true,
             "apiKeyCreationEnabled": true,
             "redirectToSiteDomain": false,
-            "origin": "Test",
-            "thumbnailsEnabled": false,
+            "origin": "UI",
+
+            //Image Settings
+            "thumbnailsEnabled": true,
+            "thumbnailSize": {
+                "height": 68,
+                "width": 68
+            },
+            "avatarSize": {
+                "height": 68,
+                "width": 68
+            },
+            "destinationPathThumbs": "~/storage/thumbs",
+            "destinationPathAvatars": "~/storage/avatars",
+
             //Voat Settings
             "StorageConnectionString": "<enter here>",
             "emailServiceKey": "<enter here>"

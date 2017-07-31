@@ -80,35 +80,39 @@ namespace Voat.Utilities
         {
             return await GenerateThumbnail(new Uri(url), purgeTempFile);
         }
-        public static async Task<string> GenerateThumbnail(Uri url, bool purgeTempFile = true)
+        public static async Task<string> GenerateThumbnail(Uri uri, bool purgeTempFile = true)
         {
-            //Ok this all needs to be centralized, we should only make 1 request to a remote resource
-            using (var httpResource = new HttpResource(url, new HttpResourceOptions() { AllowAutoRedirect = true }))
+            var url = uri.ToString();
+            if (!String.IsNullOrEmpty(url) && UrlUtility.IsUriValid(url))
             {
-                await httpResource.GiddyUp();
-
-                if (httpResource.IsImage)
+                //Ok this all needs to be centralized, we should only make 1 request to a remote resource
+                using (var httpResource = new HttpResource(url, new HttpResourceOptions() { AllowAutoRedirect = true }))
                 {
-                    var fileManager = FileManager.Instance;
-                    if (fileManager.IsUploadPermitted(url.ToString(), FileType.Thumbnail, null, httpResource.Stream.Length))
+                    await httpResource.GiddyUp();
+
+                    if (httpResource.IsImage)
                     {
-                        var key = new FileKey();
-                        key.FileType = FileType.Thumbnail;
-                        key.ID = GenerateRandomFilename(Path.GetExtension(url.ToString()), FileType.Thumbnail);
-                        var stream = httpResource.Stream;
+                        var fileManager = FileManager.Instance;
+                        if (fileManager.IsUploadPermitted(url.ToString(), FileType.Thumbnail, null, httpResource.Stream.Length))
+                        {
+                            var key = new FileKey();
+                            key.FileType = FileType.Thumbnail;
+                            key.ID = GenerateRandomFilename(Path.GetExtension(url.ToString()), FileType.Thumbnail);
+                            var stream = httpResource.Stream;
 
-                        await GenerateImageThumbnail(fileManager, key, stream, VoatSettings.Instance.ThumbnailSize);
+                            await GenerateImageThumbnail(fileManager, key, stream, VoatSettings.Instance.ThumbnailSize);
 
-                        return key.ID;
+                            return key.ID;
+                        }
+                    }
+                    else if (httpResource.Image != null)
+                    {
+                        //just do it. again.
+                        return await GenerateThumbnail(httpResource.Image);
                     }
                 }
-                else if (httpResource.Image != null)
-                {
-                    //just do it. again.
-                    return await GenerateThumbnail(httpResource.Image);
-                }
-                return null;
             }
+            return null;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Voat.Common
         {
             if (!String.IsNullOrEmpty(text))
             {
-                return text.StripWhiteSpace();
+                return text.TrimWhiteSpace();
             }
             return text;
         }
@@ -136,7 +136,16 @@ namespace Voat.Common
             }
             return scrubbed;
         }
-
+        public static string TrimWhiteSpace(this string stringToClean)
+        {
+            var scrubbed = stringToClean;
+            if (!String.IsNullOrEmpty(scrubbed))
+            {
+                scrubbed = Regex.Replace(scrubbed, @"^\s{1,}", "").Trim();
+                scrubbed = Regex.Replace(scrubbed, @"\s{1,}$", "").Trim();
+            }
+            return scrubbed;
+        }
         // string unicode characters from a string
         public static string StripUnicode(this string stringToClean, bool includeUnprintableChars = true, bool includeWhitespace = true)
         {

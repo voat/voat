@@ -154,9 +154,10 @@ namespace Voat.Controllers
             userSubmission.IsAdult = model.IsAdult;
             userSubmission.IsAnonymized = model.IsAnonymized;
             userSubmission.Subverse = model.Subverse;
-            userSubmission.Title = model.Title;
-            userSubmission.Content = (model.Type == Domain.Models.SubmissionType.Text ? model.Content : null);
-            userSubmission.Url = (model.Type == Domain.Models.SubmissionType.Link ? model.Url : null);
+
+            userSubmission.Title = model.Title.StripWhiteSpace();
+            userSubmission.Content = (model.Type == Domain.Models.SubmissionType.Text ? model.Content.TrimSafe() : null);
+            userSubmission.Url = (model.Type == Domain.Models.SubmissionType.Link ? model.Url.TrimSafe() : null);
 
             var q = new CreateSubmissionCommand(userSubmission).SetUserContext(User);
             var result = await q.Execute();

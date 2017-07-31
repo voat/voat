@@ -25,6 +25,7 @@
 using System.Web;
 using System;
 using System.Text.RegularExpressions;
+using Voat.Common;
 
 namespace Voat.Utilities
 {
@@ -67,7 +68,7 @@ namespace Voat.Utilities
             {
                 if (evaluateRegex)
                 {
-                    result = Regex.IsMatch(completeUri, CONSTANTS.HTTP_LINK_REGEX, RegexOptions.IgnoreCase);
+                    result = Regex.IsMatch(completeUri, String.Concat("^", CONSTANTS.HTTP_LINK_REGEX, "$"), RegexOptions.IgnoreCase);
                 }
                 else
                 {

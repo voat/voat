@@ -111,31 +111,33 @@ namespace Voat.Controllers
         public async Task<JsonResult> TitleFromUri()
         {
             var uri = Request.Query["uri"].FirstOrDefault();
+            uri = uri.TrimSafe();
 
-            //Old Code:
-            //string title = UrlUtility.GetTitleFromUri(uri);
-            using (var httpResource = new HttpResource(uri, new HttpResourceOptions() { AllowAutoRedirect = true }))
+            if (!string.IsNullOrEmpty(uri) && UrlUtility.IsUriValid(uri))
             {
-                await httpResource.GiddyUp();
-
-                string title = httpResource.Title;
-
-                if (title != null)
+                //Old Code:
+                //string title = UrlUtility.GetTitleFromUri(uri);
+                using (var httpResource = new HttpResource(uri, new HttpResourceOptions() { AllowAutoRedirect = true }))
                 {
-                    title = title.StripUnicode();
-                    var resultList = new List<string>
-                {
-                    title
-                };
+                    await httpResource.GiddyUp();
 
-                    return Json(resultList /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
+                    string title = httpResource.Title;
+
+                    if (title != null)
+                    {
+                        title = title.StripUnicode();
+                        var resultList = new List<string>
+                        {
+                            title
+                        };
+
+                        return Json(resultList /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
+                    }
                 }
-
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json("Bad request." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
-
-
             }
+
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json("Bad request." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         }
 
         // GET: subverse names containing search term (used for autocomplete on new submission views)
