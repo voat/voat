@@ -311,7 +311,8 @@ namespace Voat.Domain.Models
         Link = 2,
         //New types
         LinkText = 3, //Both a URL and a Body are provided
-        Status = 4 //Only message content is provided - an update/selfsub post
+        Status = 4, //Only message content is provided - an update/selfsub post
+        Vote = 5 //Discussion Thread for a Vote
     }
 
     //DO NOT CHANGE THESE VALUES - ALIGNS WITH DB
