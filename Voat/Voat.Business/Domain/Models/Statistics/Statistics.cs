@@ -45,14 +45,14 @@ namespace Voat.Domain.Models
     public class StatBase
     {
         public ContentType ContentType { get; set; }
-        public Vote VoteType { get; set; }
+        public VoteValue VoteType { get; set; }
     }
 
     public class StatContentItem : ContentItem
     {
         public int ID { get; set; }
 
-        public Vote VoteType { get; set; }
+        public VoteValue VoteType { get; set; }
 
         public object Data { get; set; }
 

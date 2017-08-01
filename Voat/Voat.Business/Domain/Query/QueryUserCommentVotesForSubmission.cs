@@ -32,7 +32,7 @@ using Voat.Domain.Models;
 
 namespace Voat.Domain.Query
 {
-    public class QueryUserCommentVotesForSubmission : CachedQuery<IEnumerable<VoteValue>>
+    public class QueryUserCommentVotesForSubmission : CachedQuery<IEnumerable<VotedValue>>
     {
         protected int _submissionID;
 
@@ -61,7 +61,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override async Task<IEnumerable<VoteValue>> GetData()
+        protected override async Task<IEnumerable<VotedValue>> GetData()
         {
             using (var repo = new Repository(User))
             {

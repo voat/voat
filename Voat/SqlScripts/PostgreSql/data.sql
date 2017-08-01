@@ -37,3 +37,5 @@ WHERE NOT EXISTS (SELECT * FROM "dbo"."RuleSet" WHERE "ID" = 9);
 INSERT INTO "dbo"."RuleSet" ("ID", "IsActive", "Subverse", "ContentType", "SortOrder", "Name", "Description", "CreatedBy", "CreationDate")
 SELECT 10, FALSE, NULL, NULL, -100, 'Placeholder', 'Placeholder', 'Voat',  now() at time zone 'utc'
 WHERE NOT EXISTS (SELECT * FROM "dbo"."RuleSet" WHERE "ID" = 10);
+
+select setval('"dbo"."ruleset_id_seq"',(select max("ID") from "dbo"."RuleSet")::bigint);

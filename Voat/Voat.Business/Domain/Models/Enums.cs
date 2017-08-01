@@ -26,7 +26,7 @@ using System;
 
 namespace Voat.Domain.Models
 {
-    public enum Vote
+    public enum VoteValue
     {
         None = 0,
         Up = 1,

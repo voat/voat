@@ -331,7 +331,7 @@ namespace Voat.Domain
             return result;
         }
 
-        public static NestedComment Map(this usp_CommentTree_Result treeComment, IPrincipal user, string submissionOwnerName, IEnumerable<VoteValue> commentVotes = null, IEnumerable<BlockedItem> userBlocks = null)
+        public static NestedComment Map(this usp_CommentTree_Result treeComment, IPrincipal user, string submissionOwnerName, IEnumerable<VotedValue> commentVotes = null, IEnumerable<BlockedItem> userBlocks = null)
         {
             NestedComment result = null;
             if (treeComment != null)
@@ -487,7 +487,7 @@ namespace Voat.Domain
                 }
             }
         }
-        public static void HydrateUserData(IPrincipal user, Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<VoteValue> commentVotes = null, IEnumerable<BlockedItem> userBlocks = null)
+        public static void HydrateUserData(IPrincipal user, Domain.Models.Comment comment, bool populateMissingUserState = false, IEnumerable<VotedValue> commentVotes = null, IEnumerable<BlockedItem> userBlocks = null)
         {
             if (comment != null)
             {

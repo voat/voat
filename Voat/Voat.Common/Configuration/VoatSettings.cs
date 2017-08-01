@@ -135,7 +135,7 @@ namespace Voat.Configuration
         public bool ThumbnailsEnabled { get; set; } = true;
 
         public bool AllowUnicodeInTitles { get; set; } = false;
-        public int MinumumTitleLength { get; set; } = 10;
+        public int MinimumTitleLength { get; set; } = 10;
         public int MaximumTitleLength { get; set; } = 200;
         
         public string ApiEndPoint { get; set; } = "";
@@ -148,6 +148,7 @@ namespace Voat.Configuration
         public Size ThumbnailSize { get; set; } = new Size(100, 100);
         public Size AvatarSize { get; set; } = new Size(100, 100);
 
+        public bool IsDevelopment { get; set; } = false;
 
         #endregion AppSettings Accessors
 

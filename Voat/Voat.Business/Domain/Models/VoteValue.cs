@@ -30,7 +30,7 @@ using System.Threading.Tasks;
 
 namespace Voat.Domain.Models
 {
-    public class VoteValue
+    public class VotedValue
     {
         public int ID { get; set; }
         public int Value { get; set; }

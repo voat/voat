@@ -538,7 +538,7 @@ namespace Voat.Data
             }
         }
 
-        private int GetVoteValue(Subverse subverse, Data.Models.Submission submission, Domain.Models.Vote voteStatus)
+        private int GetVoteValue(Subverse subverse, Data.Models.Submission submission, Domain.Models.VoteValue voteStatus)
         {
             if (subverse.IsPrivate || subverse.MinCCPForDownvote > 0 || submission.IsAnonymized)
             {
@@ -1588,8 +1588,8 @@ namespace Voat.Data
             newSubmission.SubmissionVoteTrackers.Add(new SubmissionVoteTracker()
             {
                 UserName = newSubmission.UserName,
-                VoteStatus = (int)Domain.Models.Vote.Up,
-                VoteValue = GetVoteValue(subverseObject, newSubmission, Domain.Models.Vote.Up),
+                VoteStatus = (int)Domain.Models.VoteValue.Up,
+                VoteValue = GetVoteValue(subverseObject, newSubmission, Domain.Models.VoteValue.Up),
                 IPAddress = null,
                 CreationDate = Repository.CurrentDate,
             });
@@ -2069,7 +2069,7 @@ namespace Voat.Data
             return data;
         }
 
-        private async Task ResetVotes(ContentType contentType, int id, Domain.Models.Vote voteStatus, Domain.Models.Vote voteValue)
+        private async Task ResetVotes(ContentType contentType, int id, Domain.Models.VoteValue voteStatus, Domain.Models.VoteValue voteValue)
         {
             var u = new DapperUpdate();
             switch (contentType)
@@ -2110,7 +2110,7 @@ namespace Voat.Data
                         //User Deletions remove UpVoted CCP - This is one way ccp farmers accomplish their acts
                         if (comment.UpCount > comment.DownCount)
                         {
-                            await ResetVotes(ContentType.Comment, comment.ID, Domain.Models.Vote.Up, Domain.Models.Vote.None).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                            await ResetVotes(ContentType.Comment, comment.ID, Domain.Models.VoteValue.Up, Domain.Models.VoteValue.None).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
                         }
                     }
 
@@ -3503,15 +3503,15 @@ namespace Voat.Data
             return null;
         }
 
-        public IEnumerable<VoteValue> UserCommentVotesBySubmission(string userName, int submissionID)
+        public IEnumerable<VotedValue> UserCommentVotesBySubmission(string userName, int submissionID)
         {
-            IEnumerable<VoteValue> result = null;
+            IEnumerable<VotedValue> result = null;
             var q = new DapperQuery();
 
             q.Select = $"SELECT v.\"CommentID\" AS \"ID\", {SqlFormatter.IsNull("v.\"VoteStatus\"", "0")} AS \"Value\" FROM {SqlFormatter.Table("CommentVoteTracker", "v", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON v.\"CommentID\" = c.\"ID\"";
             q.Where = "v.\"UserName\" = @UserName AND c.\"SubmissionID\" = @ID";
 
-            result = _db.Connection.Query<VoteValue>(q.ToString(), new { UserName = userName, ID = submissionID });
+            result = _db.Connection.Query<VotedValue>(q.ToString(), new { UserName = userName, ID = submissionID });
 
             return result;
 
@@ -3794,9 +3794,9 @@ namespace Voat.Data
             }
             return 0;
         }
-        public IEnumerable<VoteValue> UserVoteStatus(string userName, ContentType type, int[] id)
+        public IEnumerable<VotedValue> UserVoteStatus(string userName, ContentType type, int[] id)
         {
-            IEnumerable<VoteValue> result = null;
+            IEnumerable<VotedValue> result = null;
             var q = new DapperQuery();
 
             switch (type)
@@ -3811,7 +3811,7 @@ namespace Voat.Data
                     break;
             }
 
-            result = _db.Connection.Query<VoteValue>(q.ToString(), new { UserName = userName, ID = id });
+            result = _db.Connection.Query<VotedValue>(q.ToString(), new { UserName = userName, ID = id });
 
             return result;
         }
@@ -4857,7 +4857,7 @@ namespace Voat.Data
             //}
         }
 
-        public int VoteCount(string sourceUser, string targetUser, ContentType contentType, Domain.Models.Vote voteType, TimeSpan timeSpan)
+        public int VoteCount(string sourceUser, string targetUser, ContentType contentType, Domain.Models.VoteValue voteType, TimeSpan timeSpan)
         {
             var sum = 0;
             var startDate = CurrentDate.Subtract(timeSpan);
@@ -4873,7 +4873,7 @@ namespace Voat.Data
                                  &&
                                  x.CreationDate > startDate
                                  &&
-                                 (voteType == Domain.Models.Vote.None || x.VoteStatus == (int)voteType)
+                                 (voteType == Domain.Models.VoteValue.None || x.VoteStatus == (int)voteType)
                              select x).Count();
                 sum += count;
             }
@@ -4888,7 +4888,7 @@ namespace Voat.Data
                                  &&
                                  x.CreationDate > startDate
                                  &&
-                                 (voteType == Domain.Models.Vote.None || x.VoteStatus == (int)voteType)
+                                 (voteType == Domain.Models.VoteValue.None || x.VoteStatus == (int)voteType)
                              select x).Count();
                 sum += count;
             }

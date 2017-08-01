@@ -49,7 +49,7 @@ namespace Voat
 
         public static string SanitizeInput(string message)
         {
-            message = message.TrimSafe();
+            message = message.StripWhiteSpace();
             if (!String.IsNullOrEmpty(message))
             {
                 message = message.SubstringMax(500);

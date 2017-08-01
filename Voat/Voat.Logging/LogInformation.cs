@@ -58,7 +58,7 @@ namespace Voat.Logging
 
         [JsonProperty(Order = 40, NullValueHandling = NullValueHandling.Ignore)]
         public Exception Exception { get; set; }
-
+        
         /// <summary>
         /// Any additional data that needs to be logged. This object will be serialized to JSON and stored as a string by system loggers.
         /// </summary>
@@ -66,7 +66,6 @@ namespace Voat.Logging
         public object Data { get; set; }
 
         public DateTime CreationDate { get; set; } = DateTime.UtcNow;
-
 
         /// <summary>
         /// Use only for simple debugging

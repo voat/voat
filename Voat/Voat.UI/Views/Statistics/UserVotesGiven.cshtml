@@ -25,11 +25,11 @@
 @{
     Dictionary<string, IEnumerable<Voat.Domain.Models.UserVoteStats>> segmented = new Dictionary<string, IEnumerable<Voat.Domain.Models.UserVoteStats>>();
 
-    segmented.Add("Most Submissions Upvoted", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Submission && x.VoteType == Voat.Domain.Models.Vote.Up));
-    segmented.Add("Most Submissions Downvoted", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Submission && x.VoteType == Voat.Domain.Models.Vote.Down));
+    segmented.Add("Most Submissions Upvoted", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Submission && x.VoteType == Voat.Domain.Models.VoteValue.Up));
+    segmented.Add("Most Submissions Downvoted", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Submission && x.VoteType == Voat.Domain.Models.VoteValue.Down));
 
-    segmented.Add("Most Comments Upvoted", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Comment && x.VoteType == Voat.Domain.Models.Vote.Up));
-    segmented.Add("Most Comments Downvoted", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Comment && x.VoteType == Voat.Domain.Models.Vote.Down));
+    segmented.Add("Most Comments Upvoted", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Comment && x.VoteType == Voat.Domain.Models.VoteValue.Up));
+    segmented.Add("Most Comments Downvoted", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Comment && x.VoteType == Voat.Domain.Models.VoteValue.Down));
 
 }
 <div id="container">

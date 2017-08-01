@@ -28,7 +28,9 @@ using System.IO;
 using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Configuration;
+using Voat.Data.Models;
 using Voat.IO;
+using Voat.Utilities.Components;
 
 namespace Voat.Utilities
 {
@@ -85,31 +87,38 @@ namespace Voat.Utilities
             var url = uri.ToString();
             if (!String.IsNullOrEmpty(url) && UrlUtility.IsUriValid(url))
             {
-                //Ok this all needs to be centralized, we should only make 1 request to a remote resource
-                using (var httpResource = new HttpResource(url, new HttpResourceOptions() { AllowAutoRedirect = true }))
+                try
                 {
-                    await httpResource.GiddyUp();
-
-                    if (httpResource.IsImage)
+                    //Ok this all needs to be centralized, we should only make 1 request to a remote resource
+                    using (var httpResource = new HttpResource(url, new HttpResourceOptions() { AllowAutoRedirect = true }))
                     {
-                        var fileManager = FileManager.Instance;
-                        if (fileManager.IsUploadPermitted(url.ToString(), FileType.Thumbnail, null, httpResource.Stream.Length))
+                        await httpResource.GiddyUp();
+
+                        if (httpResource.IsImage)
                         {
-                            var key = new FileKey();
-                            key.FileType = FileType.Thumbnail;
-                            key.ID = GenerateRandomFilename(Path.GetExtension(url.ToString()), FileType.Thumbnail);
-                            var stream = httpResource.Stream;
+                            var fileManager = FileManager.Instance;
+                            if (fileManager.IsUploadPermitted(url.ToString(), FileType.Thumbnail, null, httpResource.Stream.Length))
+                            {
+                                var key = new FileKey();
+                                key.FileType = FileType.Thumbnail;
+                                key.ID = GenerateRandomFilename(Path.GetExtension(url.ToString()), FileType.Thumbnail);
+                                var stream = httpResource.Stream;
 
-                            await GenerateImageThumbnail(fileManager, key, stream, VoatSettings.Instance.ThumbnailSize);
+                                await GenerateImageThumbnail(fileManager, key, stream, VoatSettings.Instance.ThumbnailSize);
 
-                            return key.ID;
+                                return key.ID;
+                            }
+                        }
+                        else if (httpResource.Image != null)
+                        {
+                            //just do it. again.
+                            return await GenerateThumbnail(httpResource.Image);
                         }
                     }
-                    else if (httpResource.Image != null)
-                    {
-                        //just do it. again.
-                        return await GenerateThumbnail(httpResource.Image);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    EventLogger.Instance.Log(ex, new { url = url, type = FileType.Thumbnail });
                 }
             }
             return null;

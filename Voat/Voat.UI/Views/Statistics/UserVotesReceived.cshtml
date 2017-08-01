@@ -25,11 +25,11 @@
 @{
     Dictionary<string, IEnumerable<Voat.Domain.Models.UserVoteReceivedStats>> segmented = new Dictionary<string, IEnumerable<Voat.Domain.Models.UserVoteReceivedStats>>();
 
-    segmented.Add("Submission Upvotes Received", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Submission && x.VoteType == Voat.Domain.Models.Vote.Up));
-    segmented.Add("Submission Downvotes Received", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Submission && x.VoteType == Voat.Domain.Models.Vote.Down));
+    segmented.Add("Submission Upvotes Received", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Submission && x.VoteType == Voat.Domain.Models.VoteValue.Up));
+    segmented.Add("Submission Downvotes Received", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Submission && x.VoteType == Voat.Domain.Models.VoteValue.Down));
 
-    segmented.Add("Comment Upvotes Received", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Comment && x.VoteType == Voat.Domain.Models.Vote.Up));
-    segmented.Add("Comment Downvotes Received", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Comment && x.VoteType == Voat.Domain.Models.Vote.Down));
+    segmented.Add("Comment Upvotes Received", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Comment && x.VoteType == Voat.Domain.Models.VoteValue.Up));
+    segmented.Add("Comment Downvotes Received", Model.Data.Where(x => x.ContentType == Voat.Domain.Models.ContentType.Comment && x.VoteType == Voat.Domain.Models.VoteValue.Down));
 
 }
 <div id="container">

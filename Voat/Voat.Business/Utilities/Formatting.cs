@@ -27,11 +27,34 @@ using MarkdownDeep;
 using Voat.Utilities.Components;
 using System.Text.RegularExpressions;
 using System.Linq;
+using System.Collections.Generic;
+using Voat.Common;
 
 namespace Voat.Utilities
 {
     public static class Formatting
     {
+        private static Dictionary<string, string> replacements = new Dictionary<string, string>() {
+            //{ @"\n", "" },
+            //{ @"\r", "" },
+            { @"([\#\>](\s+)?){2,}", ">" },
+            { @"(\-\s+){2,}(\-(\s+)?)", "-" }, //three or more - followed by spaces
+            { @"(\*\s+){2,}(\*(\s+)?)", "*" } //three or more * followed by spaces
+        };
+
+        public static string SanitizeInput(string message)
+        {
+            message = message.TrimSafe();
+            if (!String.IsNullOrEmpty(message))
+            {
+                //message = message.SubstringMax(500);
+                message = replacements.Aggregate(message, (value, keyPair) => Regex.Replace(value, keyPair.Key, keyPair.Value));
+                message = message.TrimSafe();
+            }
+
+            return message;
+        }
+
         public static string FormatMessage(String originalMessage, bool processContent = true, bool? forceLinksNewWindow = null)
         {
             //Test changes to this code against this markdown thread content:
@@ -41,6 +64,9 @@ namespace Voat.Utilities
             {
                 originalMessage = ContentProcessor.Instance.Process(originalMessage, ProcessingStage.Outbound, null);
             }
+
+            //Sanitize Markdown
+            var sanitizedMessage = SanitizeInput(originalMessage);
 
             var newWindow = false;
 
@@ -75,7 +101,7 @@ namespace Voat.Utilities
 
             try
             {
-                return m.Transform(originalMessage).Trim();
+                return m.Transform(sanitizedMessage).Trim();
             }
             catch (Exception ex)
             {

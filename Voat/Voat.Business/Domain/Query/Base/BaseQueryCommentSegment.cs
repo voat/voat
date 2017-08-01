@@ -43,7 +43,7 @@ namespace Voat.Domain.Query.Base
 
         protected int _collapseThreshold = -4;
         protected int _count = 4;
-        protected IEnumerable<VoteValue> _commentVotes = null;
+        protected IEnumerable<VotedValue> _commentVotes = null;
         protected IEnumerable<CommentSaveTracker> _commentSaves = null;
         protected IEnumerable<BlockedItem> _userBlocks = null;
 

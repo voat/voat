@@ -27,13 +27,24 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using Voat.Common;
+using Voat.Configuration;
 using Voat.Domain.Models;
 
 namespace Voat
 {
     public static class Extensions
     {
-
+        public static string CommandMessage(this Domain.Command.CommandResponse response)
+        {
+            if (VoatSettings.Instance.IsDevelopment)
+            {
+                if (response.Exception != null)
+                {
+                    return response.Exception.ToString();
+                }
+            }
+            return response.Message;
+        }
         public static string ToYesNo(this bool value)
         {
             return value ? "Yes" : "No";

@@ -41,23 +41,26 @@ namespace Voat.Tests.CommandTests
     [TestClass]
     public class RuleReportTests : BaseUnitTest
     {
+        private static List<int> ids;
 
         public override void ClassInitialize()
         {
+            List<RuleSet> inserts = new List<RuleSet>();
             //create basic rules
             using (var db = new VoatDataContext())
             {
-                db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, SortOrder = -100, Name = "Spam", Description = "Spam", CreatedBy = "Voat", CreationDate = Voat.Data.Repository.CurrentDate });
-                db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, SortOrder = -90, Name = "No Dox", Description = "No Dox Description", CreatedBy = "Voat", CreationDate = Voat.Data.Repository.CurrentDate });
-                db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, SortOrder = -80, Name = "No Illegal", Description = "No Illegal Description", CreatedBy = "Voat", CreationDate = Voat.Data.Repository.CurrentDate });
+                inserts.Add(db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, SortOrder = -100, Name = "Test - Spam", Description = "Test - Spam", CreatedBy = "Voat", CreationDate = Voat.Data.Repository.CurrentDate }).Entity);
+                inserts.Add(db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, SortOrder = -90, Name = "Test - No Dox", Description = "Test - No Dox Description", CreatedBy = "Voat", CreationDate = Voat.Data.Repository.CurrentDate }).Entity);
+                inserts.Add(db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, SortOrder = -80, Name = "Test - No Illegal", Description = "Test - No Illegal Description", CreatedBy = "Voat", CreationDate = Voat.Data.Repository.CurrentDate }).Entity);
 
                 //add rules per sub
-                db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, Subverse = SUBVERSES.Unit, SortOrder = 1, Name = "Rule #1", Description = "Rule #1", CreatedBy = USERNAMES.Unit, CreationDate = Voat.Data.Repository.CurrentDate });
-                db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, Subverse = SUBVERSES.Unit, SortOrder = 2, Name = "Rule #2", Description = "Rule #2", CreatedBy = USERNAMES.Unit, CreationDate = Voat.Data.Repository.CurrentDate });
+                inserts.Add(db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, Subverse = SUBVERSES.Unit, SortOrder = 1, Name = "Test - Rule #1", Description = "Test - Rule #1", CreatedBy = USERNAMES.Unit, CreationDate = Voat.Data.Repository.CurrentDate }).Entity);
+                inserts.Add(db.RuleSet.Add(new RuleSet() { IsActive = true, ContentType = null, Subverse = SUBVERSES.Unit, SortOrder = 2, Name = "Test - Rule #2", Description = "Test - Rule #2", CreatedBy = USERNAMES.Unit, CreationDate = Voat.Data.Repository.CurrentDate }).Entity);
 
                 db.SaveChanges();
 
             }
+            ids = inserts.Select(x => x.ID).ToList();
         }
 
 
@@ -69,11 +72,11 @@ namespace Voat.Tests.CommandTests
             var user = TestHelper.SetPrincipal(userName);
 
             //first report
-            await SubmitAndVerify(user, ContentType.Submission, 1, 1);
+            await SubmitAndVerify(user, ContentType.Submission, 1, ids[0]);
             //duplicate report
-            await SubmitAndVerify(user, ContentType.Submission, 1, 1);
+            await SubmitAndVerify(user, ContentType.Submission, 1, ids[0]);
             //alt report, ignore
-            await SubmitAndVerify(user, ContentType.Submission, 1, 2, 0);
+            await SubmitAndVerify(user, ContentType.Submission, 1, ids[1], 0);
         }
 
         [TestMethod]
@@ -84,11 +87,11 @@ namespace Voat.Tests.CommandTests
             var user = TestHelper.SetPrincipal(userName);
 
             //first report
-            await SubmitAndVerify(user, ContentType.Comment, 1, 1);
+            await SubmitAndVerify(user, ContentType.Comment, 1, ids[0]);
             //duplicate report
-            await SubmitAndVerify(user, ContentType.Comment, 1, 1);
+            await SubmitAndVerify(user, ContentType.Comment, 1, ids[0]);
             //alt report
-            await SubmitAndVerify(user, ContentType.Comment, 1, 2, 0);
+            await SubmitAndVerify(user, ContentType.Comment, 1, ids[1], 0);
         }
 
         [TestMethod]
@@ -105,16 +108,16 @@ namespace Voat.Tests.CommandTests
             userName = USERNAMES.Unit;
             user = TestHelper.SetPrincipal(userName);
             await SubmitAndVerify(user, ContentType.Submission, submission.ID, 1);
-            int ruleid = 1;
+            int index = 0;
 
             for (int i = 1; i < 20; i++)
             {
                 userName = $"TestUser{i.ToString().PadLeft(2, '0')}";
                 user = TestHelper.SetPrincipal(userName);
-                await SubmitAndVerify(user, ContentType.Submission, submission.ID, ruleid);
-                ruleid++;
-                if (ruleid > 5)
-                    ruleid = 1;
+                await SubmitAndVerify(user, ContentType.Submission, submission.ID, ids[index]);
+                index++;
+                if (index >= 4)
+                    index = 0;
             }
 
         }

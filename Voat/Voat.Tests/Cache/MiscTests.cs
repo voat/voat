@@ -113,26 +113,26 @@ namespace Voat.Tests.Cache
 
             var newItem = Convert<Item>(hashresults);
 
-            var d = new StackExchange.Redis.DataTypes.RedisTypeFactory(conn).GetDictionary<int, Item>("SeTest");
-            //var d = new StackExchange.Redis.DataTypes.Collections.RedisDictionary<int, Item>(db, "SeTest");
-            item = new Item() { ID = 1, Name = "Bill" };
-            d.Add(item.ID, item);
-            item = new Item() { ID = 2, Name = "Two" };
-            d.Add(item.ID, item);
+            //var d = new StackExchange.Redis.DataTypes.RedisTypeFactory(conn).GetDictionary<int, Item>("SeTest");
+            ////var d = new StackExchange.Redis.DataTypes.Collections.RedisDictionary<int, Item>(db, "SeTest");
+            //item = new Item() { ID = 1, Name = "Bill" };
+            //d.Add(item.ID, item);
+            //item = new Item() { ID = 2, Name = "Two" };
+            //d.Add(item.ID, item);
 
-            var s = new StackExchange.Redis.DataTypes.RedisTypeFactory(conn).GetSet<Item>("SeTest");
-            //var d = new StackExchange.Redis.DataTypes.Collections.RedisDictionary<int, Item>(db, "SeTest");
-            item = new Item() { ID = 1, Name = "Bill" };
-            s.Add(item);
-            item = new Item() { ID = 2, Name = "Two" };
-            s.Add(item);
+            //var s = new StackExchange.Redis.DataTypes.RedisTypeFactory(conn).GetSet<Item>("SeTest");
+            ////var d = new StackExchange.Redis.DataTypes.Collections.RedisDictionary<int, Item>(db, "SeTest");
+            //item = new Item() { ID = 1, Name = "Bill" };
+            //s.Add(item);
+            //item = new Item() { ID = 2, Name = "Two" };
+            //s.Add(item);
 
-            var l = new StackExchange.Redis.DataTypes.RedisTypeFactory(conn).GetList<Item>("SeTest");
-            //var d = new StackExchange.Redis.DataTypes.Collections.RedisDictionary<int, Item>(db, "SeTest");
-            item = new Item() { ID = 1, Name = "Bill" };
-            l.Add(item);
-            item = new Item() { ID = 2, Name = "Two" };
-            l.Add(item);
+            //var l = new StackExchange.Redis.DataTypes.RedisTypeFactory(conn).GetList<Item>("SeTest");
+            ////var d = new StackExchange.Redis.DataTypes.Collections.RedisDictionary<int, Item>(db, "SeTest");
+            //item = new Item() { ID = 1, Name = "Bill" };
+            //l.Add(item);
+            //item = new Item() { ID = 2, Name = "Two" };
+            //l.Add(item);
 
             //var redis = new RedisCacheHandler();
             //string key = DateTime.UtcNow.ToOADate().ToString();

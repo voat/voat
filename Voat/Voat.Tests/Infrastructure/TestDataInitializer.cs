@@ -542,7 +542,7 @@ namespace Voat.Tests.Infrastructure
                 UpCount = 500,
             }).Entity;
             context.SaveChanges();
-            VoteContent(context, Domain.Models.ContentType.Submission, s.ID, 500, Domain.Models.Vote.Up);
+            VoteContent(context, Domain.Models.ContentType.Submission, s.ID, 500, Domain.Models.VoteValue.Up);
 
             c = context.Comment.Add(new Comment()
             {
@@ -554,7 +554,7 @@ namespace Voat.Tests.Infrastructure
                 ParentID = null
             }).Entity;
             context.SaveChanges();
-            VoteContent(context, Domain.Models.ContentType.Comment, c.ID, 50, Domain.Models.Vote.Up);
+            VoteContent(context, Domain.Models.ContentType.Comment, c.ID, 50, Domain.Models.VoteValue.Up);
 
             c = context.Comment.Add(new Comment()
             {
@@ -566,7 +566,7 @@ namespace Voat.Tests.Infrastructure
                 ParentID = null
             }).Entity;
             context.SaveChanges();
-            VoteContent(context, Domain.Models.ContentType.Comment, c.ID, 100, Domain.Models.Vote.Up);
+            VoteContent(context, Domain.Models.ContentType.Comment, c.ID, 100, Domain.Models.VoteValue.Up);
 
             c = context.Comment.Add(new Comment()
             {
@@ -578,7 +578,7 @@ namespace Voat.Tests.Infrastructure
                 ParentID = null
             }).Entity;
             context.SaveChanges();
-            VoteContent(context, Domain.Models.ContentType.Comment, c.ID, 500, Domain.Models.Vote.Up);
+            VoteContent(context, Domain.Models.ContentType.Comment, c.ID, 500, Domain.Models.VoteValue.Up);
 
             #endregion Create Test Users
 
@@ -757,7 +757,7 @@ namespace Voat.Tests.Infrastructure
                 }
            // }
         }
-        public static void VoteContent(VoatDataContext context, Domain.Models.ContentType contentType, int id, int count, Domain.Models.Vote vote)
+        public static void VoteContent(VoatDataContext context, Domain.Models.ContentType contentType, int id, int count, Domain.Models.VoteValue vote)
         {
             for (int i = 0; i < count; i++)
             {

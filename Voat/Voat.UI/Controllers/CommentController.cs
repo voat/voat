@@ -54,7 +54,6 @@ namespace Voat.Controllers
 {
     public class CommentController : BaseController
     {
-
         private CommentSortAlgorithm GetSortMode(string sort)
         {
             var sortMode = CommentSortAlgorithm.Top;

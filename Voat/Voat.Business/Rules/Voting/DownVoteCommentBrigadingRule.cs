@@ -46,7 +46,7 @@ namespace Voat.Rules.Voting
 
             using (var repo = new Repository(context.User))
             {
-                var count = repo.VoteCount(context.UserName, comment.UserName, Domain.Models.ContentType.Comment, Domain.Models.Vote.Down, _timeSpan);
+                var count = repo.VoteCount(context.UserName, comment.UserName, Domain.Models.ContentType.Comment, Domain.Models.VoteValue.Down, _timeSpan);
                 if (count >= _threshold)
                 {
                     return CreateOutcome(RuleResult.Denied, "You need a cooling down period");

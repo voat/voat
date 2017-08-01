@@ -26,6 +26,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
 using Voat.Common;
+using Voat.Configuration;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
@@ -323,7 +324,29 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual(r.Message, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
             //Assert.AreNotEqual(0, r.Response.ID);
         }
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
+        public void PreventPartialUrlTitlePosts_Bug()
+        {
+            var user = TestHelper.SetPrincipal("TestUser09");
 
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = SUBVERSES.Whatever, Title = "test", Url = "http://beta.speedtest.net/" }).SetUserContext(user);
+            var r = cmd.Execute().Result;
+            VoatAssert.IsValid(r, Status.Success);
+            //Assert.AreNotEqual(0, r.Response.ID);
+        }
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
+        public void LongUrl_Bug()
+        {
+            var user = TestHelper.SetPrincipal("TestUser09");
+
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = SUBVERSES.Whatever, Title = "Long Url Bug", Url = "http://kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.com/" }).SetUserContext(user);
+            var r = cmd.Execute().Result;
+            VoatAssert.IsValid(r, Status.Success);
+            //Assert.AreNotEqual(0, r.Response.ID);
+        }
+        
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
         public void PreventInvalidUrlTitlePosts()
@@ -472,7 +495,7 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = SUBVERSES.Unit, Title = "What", Url = "http://www.hellogoodbye.com/images/feelsgoodman.jpg" }).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, Status.Denied);
-            Assert.AreEqual(r.Message, "A title may not be less than 5 characters");
+            Assert.AreEqual(r.Message, $"A title must be between {VoatSettings.Instance.MinimumTitleLength} and {VoatSettings.Instance.MaximumTitleLength} characters");
         }
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]

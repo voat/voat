@@ -87,7 +87,7 @@ namespace Voat.Rules.Posting
             {
                 return CreateOutcome(RuleResult.Denied, "Submission title can not contain Unicode or unprintable characters");
             }
-            int minTitleLength = VoatSettings.Instance.MinumumTitleLength;
+            int minTitleLength = VoatSettings.Instance.MinimumTitleLength;
             int maxTitleLength = VoatSettings.Instance.MaximumTitleLength;
 
             if (userSubmission.Title.Length < minTitleLength || userSubmission.Title.Length > maxTitleLength)

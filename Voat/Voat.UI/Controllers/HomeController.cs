@@ -186,7 +186,7 @@ namespace Voat.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, result.Message);
+                    ModelState.AddModelError(string.Empty, result.CommandMessage());
                 }
                 PreventSpamAttribute.Reset(HttpContext);
                 return View("Submit", model);

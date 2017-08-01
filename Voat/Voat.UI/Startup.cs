@@ -23,11 +23,13 @@
 #endregion LICENSE
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 using Voat.Common.Components;
 using Voat.Configuration;
 using Voat.Data;
@@ -65,6 +67,18 @@ namespace Voat
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
+            //var conn = $"127.0.1:6379";
+            //var redis = ConnectionMultiplexer.Connect(conn);
+            //services.AddDataProtection().PersistKeysToRedis(redis, "DataProtection-Keys");
+
+            //services.AddDistributedRedisCache(option =>
+            //{
+            //    option.Configuration = conn;
+            //    //option.InstanceName = "master";
+            //});
+            //services.AddSession();
+
             services.AddDbContext<IdentityDataContext>();
 
             services.AddIdentity<VoatIdentityUser, IdentityRole>(x => {
@@ -73,9 +87,9 @@ namespace Voat
                 x.Password.RequireNonAlphanumeric = false;
                 x.Password.RequireUppercase = false;
                 x.Password.RequireLowercase = false;
-            })
-                .AddEntityFrameworkStores<IdentityDataContext>()
-                .AddDefaultTokenProviders();
+            }).AddEntityFrameworkStores<IdentityDataContext>()
+            .AddDefaultTokenProviders();
+
 
             var mvcBuilder = services.AddMvc();
 
@@ -109,6 +123,7 @@ namespace Voat
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
                 //app.UseBrowserLink();
+                VoatSettings.Instance.IsDevelopment = true;
             }
             else
             {
