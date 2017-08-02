@@ -26,6 +26,7 @@ using System;
 using Voat.Data;
 using Voat.Domain.Models;
 using Voat.RulesEngine;
+using Voat.Utilities;
 
 namespace Voat.Rules.Posting
 {
@@ -50,7 +51,9 @@ namespace Voat.Rules.Posting
                     }
                     if (recentlySubmitted != null)
                     {
-                        return CreateOutcome(RuleResult.Denied, $"Sorry, this link has already been submitted recently. https://voat.co/v/{recentlySubmitted.Subverse}/{recentlySubmitted.ID}");
+                        string url = VoatUrlFormatter.BuildUrlPath(null, new Common.PathOptions() { FullyQualified = true, ProvideProtocol = true }, $"v/{recentlySubmitted.Subverse}/{recentlySubmitted.ID}");
+
+                        return CreateOutcome(RuleResult.Denied, $"Sorry, this link has already been submitted recently. {url}");
                     }
                     break;
 
