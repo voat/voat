@@ -282,7 +282,14 @@ namespace Voat.Domain
                 }, false);
             }
         }
-
+        //TODO: THis code needs to be wrapped and cached in a command
+        public int ContributionPointsForSubverse(string subverse)
+        {
+            using (var repo = new Repository(User))
+            {
+                return repo.UserContributionPoints(_userNameInit, ContentType.Comment, subverse).Sum;
+            }
+        }
         private T GetOrLoad<T>(ref T value, Func<string, T> loadFunc, bool recacheOnLoad = true)
         {
             if (EqualityComparer<T>.Default.Equals(value, default(T)))

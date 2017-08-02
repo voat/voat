@@ -96,6 +96,15 @@
                 created by <a href="/user/@subverseOwner" class="author may-blank">@subverseOwner</a>
                 <span class="userattrs"></span>
                 <span class="age">@(Model.ExcludeSitewideBans ? "*" : "") a community for <time title="@Model.CreationDate" datetime="@Model.CreationDate">@subverseAge</time></span>
+                @if (Model.MinCCPForDownvote > 0)
+                {
+                    <p>Minimum CCP required to downvote in this sub: @Model.MinCCPForDownvote</p>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <p>Your CCP for this sub: @userData.ContributionPointsForSubverse(Model.Name)</p>
+
+                    }
+                }
                 @if (Model.IsAnonymized.HasValue)
                 {
                     if (Model.IsAnonymized.Value)
@@ -107,6 +116,7 @@
                 {
                     <p>This subverse allows anonymized submissions.</p>
                 }
+              
                 <div class="sub-attributes">
                     <p>
                         NSFW: @Model.IsAdult.ToYesNo()
