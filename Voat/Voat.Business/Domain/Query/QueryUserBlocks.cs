@@ -34,18 +34,18 @@ namespace Voat.Domain.Query
 {
     public class QueryUserBlocks : CachedQuery<IList<BlockedItem>>
     {
-        private string _userName;
+        //private string _userName;
 
         public QueryUserBlocks(string userName = null) : base(new Caching.CachePolicy(TimeSpan.FromMinutes(30)))
         {
-            _userName = (String.IsNullOrEmpty(userName) ? UserName : userName);
+            //_userName = (String.IsNullOrEmpty(userName) ? UserName : userName);
         }
 
         public override string CacheKey
         {
             get
             {
-                return _userName;
+                return UserName;
             }
         }
 
@@ -53,7 +53,7 @@ namespace Voat.Domain.Query
         {
             get
             {
-                return CachingKey.UserBlocks(_userName);
+                return CachingKey.UserBlocks(UserName);
             }
         }
 
@@ -61,8 +61,8 @@ namespace Voat.Domain.Query
         {
             using (var db = new Repository(User))
             {
-                var blockedSubs = await db.GetBlockedSubverses(_userName);
-                var blockedUsers = db.GetBlockedUsers(_userName);
+                var blockedSubs = await db.GetBlockedSubverses(UserName);
+                var blockedUsers = db.GetBlockedUsers(UserName);
                 var blocked = blockedSubs.Concat(blockedUsers).ToList();
                 return blocked;
             }

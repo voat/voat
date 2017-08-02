@@ -29,6 +29,9 @@ namespace Voat.Common
         public ActivityIdentity()
         {
         }
+        public ActivityIdentity(string name) : this(name, false, "")
+        {
+        }
         internal ActivityIdentity(string name, bool isAuthenticated, string authenticationType)
         {
             this._name = name;

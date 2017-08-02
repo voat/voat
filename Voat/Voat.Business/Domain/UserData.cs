@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Common;
@@ -56,9 +57,9 @@ namespace Voat.Domain
     /// </summary>
     [Serializable]
     [JsonObject(MemberSerialization.Fields)]
-    public class UserData
+    public class UserData : SecurityContext<IPrincipal>
     {
-        protected string _userName;
+        protected string _userNameInit;
         protected UserInformation _info;
         protected Domain.Models.UserPreference _prefs;
         //protected IEnumerable<string> _subverseSubscriptions;
@@ -80,19 +81,17 @@ namespace Voat.Domain
         //    });
         //}
 
-        public string UserName
-        {
-            get
-            {
-                return _userName;
-            }
-        }
+        //public string UserName
+        //{
+        //    get
+        //    {
+        //        return _userName;
+        //    }
+        //}
 
         public static UserData GetContextUserData(HttpContext context)
         {
             UserData userData = null;
-
-            
             if (context.User.Identity.IsAuthenticated)
             {
                 var identity = context.User.Identity;
@@ -101,19 +100,20 @@ namespace Voat.Domain
                 if (userData == null)
                 {
                     EventLogger.Instance.Log(LogType.Debug, "ContextCache", $"Not found: {key}");
-                    userData = new UserData(identity.Name);
+                    userData = new UserData(context.User);
                     ContextCache.Set(context, key, userData);
                 }
             }
 
             return userData;
         }
-
-        public UserData(string userName, bool validateUserExists = false)
+        public UserData(IPrincipal user) : base(user)
         {
-
+            _userNameInit = user.Identity.Name;
+        }
+        public UserData(string userName, bool validateUserExists = false) : base(new ActivityContext(new ActivityPrincipal(new ActivityIdentity(userName))))
+        {
             System.Diagnostics.Debug.WriteLine("UserData({0}, {1})", userName, validateUserExists.ToString());
-
             var val = UserDefinition.Parse(userName);
             if (val == null)
             {
@@ -135,7 +135,7 @@ namespace Voat.Domain
                     throw new VoatNotFoundException("User doesn't exist");
                 }
             }
-            this._userName = userName;
+            _userNameInit = userName;
         }
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public int TotalVotesUsedIn24Hours
@@ -145,7 +145,7 @@ namespace Voat.Domain
                 var val = GetOrLoad(ref _votesInLast24Hours, userName =>
                 {
                     Debug.WriteLine("UserData[{0}].TotalVotesUsedIn24Hours(loading)", userName);
-                    using (var repo = new Repository())
+                    using (var repo = new Repository(User))
                     {
                         return repo.UserVotingBehavior(userName, ContentType.Comment | ContentType.Submission, TimeSpan.FromDays(1)).Total;
                     }
@@ -169,7 +169,7 @@ namespace Voat.Domain
                 var val = GetOrLoad(ref _submissionsInLast24Hours, userName =>
                 {
                     Debug.WriteLine("UserData[{0}].TotalSubmissionsPostedIn24Hours(loading)", userName);
-                    using (var repo = new Repository())
+                    using (var repo = new Repository(User))
                     {
                         return repo.UserSubmissionCount(userName, TimeSpan.FromDays(1));
                     }
@@ -193,7 +193,7 @@ namespace Voat.Domain
                 var val = GetOrLoad(ref _blockedSubverses, userName =>
                 {
                     Debug.WriteLine("UserData[{0}].BlockedSubverses(loading)", userName);
-                    var q = new QueryUserBlocks();
+                    var q = new QueryUserBlocks().SetUserContext(User);
                     var r = q.Execute();
                     return r.Where(x => x.Type == DomainType.Subverse).Select(x => x.Name);
                 }, false);
@@ -208,7 +208,7 @@ namespace Voat.Domain
                 var val = GetOrLoad(ref _blockedUsers, userName =>
                 {
                     Debug.WriteLine("UserData[{0}].BlockedUsers(loading)", userName);
-                    var q = new QueryUserBlocks();
+                    var q = new QueryUserBlocks().SetUserContext(User);
                     var r = q.Execute();
                     return r.Where(x => x.Type == DomainType.User).Select(x => x.Name);
                 }, false);
@@ -224,7 +224,7 @@ namespace Voat.Domain
                 return GetOrLoad(ref _prefs, userName =>
                 {
                     Debug.WriteLine("UserData[{0}].Preferences(loading)", userName);
-                    var q = new QueryUserPreferences(userName);
+                    var q = new QueryUserPreferences(userName).SetUserContext(User);
                     var result = q.Execute();
                     return result;
                 }, false);
@@ -244,7 +244,7 @@ namespace Voat.Domain
                 return GetOrLoad(ref _subscriptions, userName =>
                 {
                     Debug.WriteLine("UserData[{0}].Subscriptions(loading)", userName);
-                    var q = new QueryUserSubscriptions(userName);
+                    var q = new QueryUserSubscriptions(userName).SetUserContext(User);
                     var result = q.Execute();
                     return result;
                 }, false);
@@ -276,7 +276,7 @@ namespace Voat.Domain
                 return GetOrLoad(ref _info, userName =>
                 {
                     Debug.WriteLine("UserData[{0}].Information(loading)", userName);
-                    var q = new QueryUserInformation(userName);
+                    var q = new QueryUserInformation(userName).SetUserContext(User);
                     var result = q.Execute();
                     return result;
                 }, false);
@@ -287,7 +287,7 @@ namespace Voat.Domain
         {
             if (EqualityComparer<T>.Default.Equals(value, default(T)))
             {
-                value = loadFunc(this._userName);
+                value = loadFunc(_userNameInit);
                 if (recacheOnLoad)
                 {
                     Recache();
@@ -298,7 +298,7 @@ namespace Voat.Domain
 
         private void Recache()
         {
-            Task.Run(() => CacheHandler.Instance.Replace<UserData>(CachingKey.UserData(this._userName), this, TimeSpan.FromMinutes(5)));
+            Task.Run(() => CacheHandler.Instance.Replace<UserData>(CachingKey.UserData(UserName), this, TimeSpan.FromMinutes(5)));
         }
         #region 
 

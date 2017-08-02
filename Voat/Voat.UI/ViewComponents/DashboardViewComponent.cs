@@ -19,7 +19,7 @@ namespace Voat.UI.ViewComponents
             //backwards compat setting up this UserData variable 
             if (User.Identity.IsAuthenticated)
             {
-                UserData = new UserData(User.Identity.Name);
+                UserData = new UserData(User);
             }
 
             var showDashboard = (Request.Cookies["legacy"] == null);

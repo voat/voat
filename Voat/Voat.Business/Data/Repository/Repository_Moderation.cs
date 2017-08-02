@@ -38,6 +38,10 @@ namespace Voat.Data
                         s.Where = "\"ID\" = @id";
                         m.Add(s);
 
+                        //ProTip: The actual execution of code is important.
+                        var result = await _db.Connection.ExecuteScalarAsync<bool>(m.ToCommandDefinition());
+                        comment.IsDistinguished = result;
+
                         response = CommandResponse.FromStatus(comment, Status.Success);
                     }
                     else

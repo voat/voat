@@ -55,7 +55,7 @@ namespace Voat.Rules
                 if (_userData == null)
                 {
                     //var cmd = new QueryUserData(PropertyBag.UserName);
-                    _userData = new UserData(User.Identity.Name);
+                    _userData = new UserData(User);
                 }
                 return _userData;
             }

@@ -991,7 +991,7 @@ namespace Voat.Data
             UserData userData = null;
             if (User.Identity.IsAuthenticated)
             {
-                userData = new UserData(User.Identity.Name);
+                userData = new UserData(User);
                 userName = userData.UserName;
             }
 

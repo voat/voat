@@ -15,39 +15,42 @@ namespace Voat.UI.ViewComponents
         public async Task<IViewComponentResult> InvokeAsync(DomainReference domainReference) //, ContentReference contentReference = null
         {
             IViewComponentResult result = View("Default", domainReference);
-
-            switch (domainReference.Type)
+            if (domainReference != null)
             {
-                case DomainType.Subverse:
-                    Subverse subverse = null;
+                switch (domainReference.Type)
+                {
+                    case DomainType.Subverse:
+                        Subverse subverse = null;
 
-                    if (!String.IsNullOrEmpty(domainReference.Name))
-                    {
-                        var q = new QuerySubverse(domainReference.Name);
-                        subverse = await q.ExecuteAsync();
-                    }
-                    if (subverse != null)
-                    {
-                        var qa = new QueryActiveSessionCount(domainReference);
-                        ViewBag.OnlineUsers = await qa.ExecuteAsync();
+                        if (!String.IsNullOrEmpty(domainReference.Name))
+                        {
+                            var q = new QuerySubverse(domainReference.Name);
+                            subverse = await q.ExecuteAsync();
+                        }
+                        if (subverse != null)
+                        {
+                            var qa = new QueryActiveSessionCount(domainReference);
+                            ViewBag.OnlineUsers = await qa.ExecuteAsync();
 
-                        var view = "Subverse";// contentReference != null && contentReference.Type == ContentType.Submission ? "Submission" : "Subverse";
+                            var view = "Subverse";// contentReference != null && contentReference.Type == ContentType.Submission ? "Submission" : "Subverse";
 
-                        result = View(view, subverse);
-                    }
-                    else
-                    {
-                        result = View("Default");
-                    }
-                    break;
-                case DomainType.User:
-                    result = View("User", domainReference);
-                    break;
-                case DomainType.Set:
-                    var qSet = new QuerySet(domainReference.Name, domainReference.OwnerName);
-                    var set = await qSet.ExecuteAsync();
-                    result = View("Set", set);
-                    break;
+                            result = View(view, subverse);
+                        }
+                        else
+                        {
+                            result = View("Default");
+                        }
+                        break;
+                    case DomainType.User:
+                        result = View("User", domainReference);
+                        break;
+                    case DomainType.Set:
+                        var qSet = new QuerySet(domainReference.Name, domainReference.OwnerName);
+                        var set = await qSet.ExecuteAsync();
+                        result = View("Set", set);
+                        break;
+                }
+
             }
 
             return result;
