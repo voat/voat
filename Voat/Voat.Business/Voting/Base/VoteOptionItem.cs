@@ -5,9 +5,19 @@ using Voat.Voting.Options;
 
 namespace Voat.Voting
 {
-    public abstract class VoteOptionItem<T> where T : Option
+    public abstract class VoteOptionItem
     {
-        public void Parse(string json)
+        public static VoteOptionItem Construct(string typeName, string options)
+        {
+            var item = (VoteOptionItem)Activator.CreateInstance(Type.GetType(typeName));
+            item.Parse(options);
+            return item;
+        }
+        public abstract void Parse(string json);
+    }
+    public abstract class VoteOptionItem<T> : VoteOptionItem where T : Option
+    {
+        public override void Parse(string json)
         {
             Options = Option.Parse<T>(json);
         }

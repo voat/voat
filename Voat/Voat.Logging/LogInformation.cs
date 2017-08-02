@@ -26,6 +26,7 @@
 using System;
 using System.Reflection;
 using Newtonsoft.Json;
+using Voat.Configuration;
 
 namespace Voat.Logging
 {
@@ -58,12 +59,31 @@ namespace Voat.Logging
 
         [JsonProperty(Order = 40, NullValueHandling = NullValueHandling.Ignore)]
         public Exception Exception { get; set; }
-        
+
+        private string _data;
+        public string DataSerialized
+        {
+            get => _data;
+        }
         /// <summary>
         /// Any additional data that needs to be logged. This object will be serialized to JSON and stored as a string by system loggers.
         /// </summary>
         [JsonProperty(Order = 3, NullValueHandling = NullValueHandling.Ignore)]
-        public object Data { get; set; }
+        public object Data
+        {
+            get
+            {
+                if (!String.IsNullOrEmpty(_data))
+                {
+                    return JsonConvert.DeserializeObject(_data, JsonSettings.FriendlySerializationSettings);
+                }
+                return null;
+            }
+            set
+            {
+                _data = JsonConvert.SerializeObject(value, JsonSettings.FriendlySerializationSettings);
+            }
+        }
 
         public DateTime CreationDate { get; set; } = DateTime.UtcNow;
 

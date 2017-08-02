@@ -74,10 +74,7 @@ namespace Voat.Data
                 {
                     e.Exception = Newtonsoft.Json.JsonConvert.SerializeObject(info.Exception, JsonSettings.FriendlySerializationSettings);
                 }
-                if (info.Data != null)
-                {
-                    e.Data = Newtonsoft.Json.JsonConvert.SerializeObject(info.Data, JsonSettings.FriendlySerializationSettings);
-                }
+                e.Data = info.DataSerialized;
                 e.CreationDate = info.CreationDate;
                 e.UserName = info.UserName;
             }

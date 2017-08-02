@@ -21,7 +21,7 @@ namespace Voat.Voting.Restrictions
             {
                 where = $"in v/{Options.Subverse}";
             }   
-            return $"Have at submitted at least {Options.MinimumCount} {Options.ContentType} {where} from {Options.StartDate} to {Options.CutOffDate}";
+            return $"Has submitted at least {Options.MinimumCount} {Options.ContentType} {where} from {Options.StartDate} to {Options.CutOffDate}";
         }
     }
 }

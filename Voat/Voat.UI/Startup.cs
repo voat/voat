@@ -96,7 +96,7 @@ namespace Voat
             mvcBuilder.AddMvcOptions(o => {
                 o.Filters.Add(typeof(GlobalExceptionFilter));
                 o.Filters.Add(typeof(RuntimeStateFilter));
-                //o.Filters.Add(typeof(RouteLoggerFilter));
+                o.Filters.Add(typeof(RouteLoggerFilter));
             });
 
             services.AddAntiforgery(options => {

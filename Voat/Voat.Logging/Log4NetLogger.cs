@@ -141,7 +141,7 @@ namespace Voat.Logging
                     logData.Properties["Message"] = info.Message;
                     logData.Properties["Category"] = info.Category;
                     logData.Properties["ActivityID"] = info.ActivityID;
-                    logData.Properties["Data"] = (info.Data != null ? JsonConvert.SerializeObject(info.Data, _jsonSettings) : null);
+                    logData.Properties["Data"] = info.DataSerialized; // (info.Data != null ? JsonConvert.SerializeObject(info.Data, _jsonSettings) : null);
                     logData.Properties["CreationDate"] = DateTime.UtcNow;
 
                     if (info.Exception != null)

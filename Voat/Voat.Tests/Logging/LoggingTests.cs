@@ -209,7 +209,7 @@ namespace Voat.Tests.Logging
             else
             {
                 var activityID = Guid.NewGuid();
-                using (var durationLog = new DurationLogger(log, new LogInformation() { ActivityID = activityID, Type = LogType.Debug, Category = "Duration", UserName = "", Message = $"{this.GetType().Name}" }))
+                using (var durationLog = new DurationLogger(log, new LogInformation() { ActivityID = activityID, Type = LogType.Debug, Category = "Duration", UserName = "", Message = $"{this.GetType().Name}", Data = new { testNested = true, doesItWork = "Who knows" } }))
                 {
                     System.Threading.Thread.Sleep(1000);
                 }
