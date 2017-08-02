@@ -44,16 +44,20 @@ namespace Voat.Rules
                 return base.CreateOutcome(RuleResult.Denied, "Empty comments not allowed");
             }
 
-            // check for copypasta
-            using (var repo = new Repository())
+            //Was being triggered for edits with only case changes
+            if (Scope == RuleScope.PostComment)
             {
-                var copyPasta = repo.SimilarCommentSubmittedRecently(context.UserName, content, TimeSpan.FromHours(24));
-                if (copyPasta)
+                // check for copypasta
+                using (var repo = new Repository())
                 {
-                    return base.CreateOutcome(RuleResult.Denied, "You have recently submitted a similar comment. Please try to not use copy/paste so often.");
+                    var copyPasta = repo.SimilarCommentSubmittedRecently(context.UserName, content, TimeSpan.FromHours(24));
+                    if (copyPasta)
+                    {
+                        return base.CreateOutcome(RuleResult.Denied, "You have recently submitted a similar comment. Please try to not use copy/paste so often.");
+                    }
                 }
             }
-             
+
             return Allowed;
         }
     }

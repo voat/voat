@@ -128,12 +128,48 @@ namespace Voat.Data
             return q;
         }
     }
+    public class DapperMulti : List<DapperBase>
+    {
+
+        public CommandDefinition ToCommandDefinition()
+        {
+            return new CommandDefinition(this.ToString(), Parameters);
+        }
+
+        /// <summary>
+        /// Joins multiple statements into one block
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            foreach (var q in this)
+            {
+                sb.AppendLine(q.ToString());
+            }
+            return sb.ToString();
+        }
+        /// <summary>
+        /// Joins parameters from multiple statements
+        /// </summary>
+        public DynamicParameters Parameters
+        {
+            get
+            {
+                var p = new DynamicParameters();
+                foreach (var q in this)
+                {
+                    p.AddDynamicParams(q.Parameters);
+                }
+                return p;
+            }
+        }
+    }
+
     public class DapperBase
     {
         private DynamicParameters _params = null;
-
-        public string Where { get; set; }
-
+        
         public DynamicParameters Parameters
         {
             get
@@ -149,6 +185,8 @@ namespace Voat.Data
                 _params = value;
             }
         }
+
+        public string Where { get; set; }
 
         protected string EnsureStartsWith(string content, string prefix)
         {

@@ -272,5 +272,18 @@ namespace Voat.Data
         {
             return $"{value} AS {alias}";
         }
+        public static string ToggleBoolean(string name)
+        {
+            string result = $"CASE {name} WHEN 0 THEN 1 ELSE 0 END";
+            switch (DataConfigurationSettings.Instance.StoreType)
+            {
+                case DataStoreType.PostgreSql:
+                    result = $"NOT {name}";
+                //case DataStoreType.SqlServer:
+                //    result = $"lower({value})";
+                    break;
+            }
+            return result;
+        }
     }
 }

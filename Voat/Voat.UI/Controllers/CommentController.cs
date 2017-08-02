@@ -411,42 +411,11 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<JsonResult> DistinguishComment(int commentId)
         {
-            using (var _db = new VoatOutOfRepositoryDataContextAccessor())
+            using (var repo = new Repository(User))
             {
-                var commentToDistinguish = _db.Comment.Find(commentId);
-
-                if (commentToDistinguish != null)
-                {
-                    // check to see if request came from comment author
-                    if (User.Identity.Name == commentToDistinguish.UserName)
-                    {
-                        // check to see if comment author is also sub mod or sub admin for comment sub
-                        if (ModeratorPermission.HasPermission(User.Identity.Name, commentToDistinguish.Submission.Subverse, ModeratorAction.DistinguishContent))
-                        {
-                            // mark the comment as distinguished and save to db
-                            if (commentToDistinguish.IsDistinguished)
-                            {
-                                commentToDistinguish.IsDistinguished = false;
-                            }
-                            else
-                            {
-                                commentToDistinguish.IsDistinguished = true;
-                            }
-
-                            await _db.SaveChangesAsync();
-
-                            //Update Cache
-                            CacheHandler.Instance.DictionaryReplace<int, usp_CommentTree_Result>(CachingKey.CommentTree(commentToDistinguish.SubmissionID.Value), commentToDistinguish.ID, x => { x.IsDistinguished = commentToDistinguish.IsDistinguished; return x; }, true);
-
-                            Response.StatusCode = 200;
-                            return Json("Distinguish flag changed." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
-                        }
-                    }
-                }
+                var result = await repo.DistinguishComment(commentId);
+                return JsonResult(result);
             }
-
-            Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            return Json("Unauthorized distinguish attempt." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         }
 
         [HttpGet]
