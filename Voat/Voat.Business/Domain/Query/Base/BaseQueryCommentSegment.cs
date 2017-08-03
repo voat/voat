@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Common;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Models;
@@ -75,10 +76,10 @@ namespace Voat.Domain.Query.Base
             {
                 //var p = new QueryUserData(UserName).Execute();
                 //var preference = p.Preferences;
-                var qvotes = new QueryUserCommentVotesForSubmission(_submissionID, CachePolicy.None);
+                var qvotes = new QueryUserCommentVotesForSubmission(_submissionID, CachePolicy.None).SetUserContext(User);
                 _commentVotes = await qvotes.ExecuteAsync();
 
-                var qblocks = new QueryUserBlocks();
+                var qblocks = new QueryUserBlocks().SetUserContext(User);
                 _userBlocks = (await qblocks.ExecuteAsync()).Where(x => x.Type == DomainType.User);
                 //_commentSaves = new QueryUserSavedCommentsForSubmission(_submissionID).Execute();
             }

@@ -56,13 +56,13 @@ namespace Voat.Tests.CommandTests
             var user = TestHelper.SetPrincipal(userName);
 
             //Verify No Front / Blocked Sets
-            var userBlockQuery = new QueryUserBlocks(userName);
+            var userBlockQuery = new QueryUserBlocks(userName).SetUserContext(user);
             var userBlockResults = await userBlockQuery.ExecuteAsync();
 
             Assert.IsNotNull(userBlockResults, "Old McDonald had a farm ee i ee i o. And on that farm he shot some guys. Badda boom badda bing bang boom.");
             Assert.AreEqual(0, userBlockResults.Count(), "He is supposed to be Turkish. Some say his father was German. Nobody believed he was real.");
 
-            var userSetQuery = new QueryUserSets(userName);
+            var userSetQuery = new QueryUserSets(userName).SetUserContext(user);
             var userSetResults = await userSetQuery.ExecuteAsync();
 
             Assert.IsNotNull(userSetResults, "One cannot be betrayed if one has no people.");
@@ -82,7 +82,7 @@ namespace Voat.Tests.CommandTests
             var blockResult = await blockCmd.Execute();
 
             //Verify Front is created
-            userBlockQuery = new QueryUserBlocks(userName);
+            userBlockQuery = new QueryUserBlocks(userName).SetUserContext(user);
             userBlockResults = await userBlockQuery.ExecuteAsync();
 
             Assert.IsNotNull(userBlockResults, "What about it, pretzel man? What's your story?");

@@ -62,9 +62,11 @@ namespace Voat.Tests.Utils
         //[ExpectedException(typeof(WebException))]
         public async Task GenerateThumbFromImageUrl_Failure()
         {
-            await VoatAssert.ThrowsAsync<TaskCanceledException>(() => {
-                return ThumbGenerator.GenerateThumbnail("https://idontexistimprettysuremaybeIlladdrandom3243242.co/graphics/voat-goat.png", false);
-            });
+            //await VoatAssert.ThrowsAsync<TaskCanceledException>(() => {
+            //    return ThumbGenerator.GenerateThumbnail("https://idontexistimprettysuremaybeIlladdrandom3243242.co/graphics/voat-goat.png", false);
+            //});
+            var result = await ThumbGenerator.GenerateThumbnail("https://idontexistimprettysuremaybeIlladdrandom3243242.co/graphics/voat-goat.png", false);
+            Assert.AreEqual(null, result, "Expecting no thumb");
 
             //var result = await ThumbGenerator.GenerateThumbFromImageUrl("https://idontexistimprettysuremaybeIlladdrandom3243242.co/graphics/voat-goat.png", 5000, false);
             //Assert.AreEqual(null, result, "Expecting no thumb");

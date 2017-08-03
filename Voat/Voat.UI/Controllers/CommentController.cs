@@ -160,7 +160,7 @@ namespace Voat.Controllers
             {
                 model = await GetCommentSegment(submission.ID, null, 0, sortingMode);
             }
-
+            
             var q2 = new QuerySubverseModerators(subverseName).SetUserContext(User);
             ViewBag.ModeratorList = await q2.ExecuteAsync();
 

@@ -463,7 +463,7 @@ namespace Voat.Tests.CommandTests
             r = await cmd.Execute();
             Assert.IsNotNull(r, "Response was null");
             Assert.IsFalse(r.Success, r.Message);
-            Assert.AreEqual(r.Message, "Sorry, this link has already been submitted recently. https://voat.co/v/unit/" + id);
+            Assert.AreEqual(r.Message, $"Sorry, this link has already been submitted recently. {(VoatSettings.Instance.ForceHTTPS ? "https" : "http")}://{VoatSettings.Instance.SiteDomain}/v/unit/" + id);
         }
 
         [TestMethod]
