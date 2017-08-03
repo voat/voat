@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Voat.Domain.Command;
@@ -11,6 +12,66 @@ namespace Voat.Data
 {
     public partial class Repository
     {
+        public async Task<CommandResponse> ToggleSticky(int submissionID, string subverse = null, bool clearExisting = false)
+        {
+            DemandAuthentication();
+
+            // get model for selected submission
+            var submission = _db.Submission.Find(submissionID);
+            var response = CommandResponse.FromStatus(Status.Error);
+
+
+            if (submission == null || submission.IsDeleted)
+            {
+                return CommandResponse.FromStatus(Status.Error, "Submission is missing or deleted");
+            }
+            //Eventually we want users to be able to sticky other subs posts, but for now make sure we don't allow this
+            subverse = submission.Subverse;
+
+            // check if caller is subverse moderator, if not, deny change
+            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.AssignStickies))
+            {
+                return CommandResponse.FromStatus(Status.Denied, "Moderator Permissions are not satisfied");
+            }
+            try
+            {
+                // find and clear current sticky if toggling
+                var existingSticky = _db.StickiedSubmission.FirstOrDefault(s => s.SubmissionID == submissionID);
+                if (existingSticky != null)
+                {
+                    _db.StickiedSubmission.Remove(existingSticky);
+                }
+                else
+                {
+                    if (clearExisting)
+                    {
+                        // remove all stickies for subverse matching submission subverse
+                        _db.StickiedSubmission.RemoveRange(_db.StickiedSubmission.Where(s => s.Subverse == subverse));
+                    }
+
+                    // set new submission as sticky
+                    var stickyModel = new Data.Models.StickiedSubmission
+                    {
+                        SubmissionID = submissionID,
+                        CreatedBy = User.Identity.Name,
+                        CreationDate = Repository.CurrentDate,
+                        Subverse = subverse
+                    };
+
+                    _db.StickiedSubmission.Add(stickyModel);
+                }
+
+                await _db.SaveChangesAsync();
+
+                StickyHelper.ClearStickyCache(submission.Subverse);
+
+                return CommandResponse.FromStatus(Status.Success);
+            }
+            catch (Exception ex)
+            {
+                return CommandResponse.Error<CommandResponse>(ex);            }
+        }
+
         public async Task<CommandResponse<Comment>> DistinguishComment(int commentID)
         {
             DemandAuthentication();

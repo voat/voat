@@ -125,7 +125,8 @@ namespace Voat.Controllers
                     //}
                     if (result.IsLockedOut)
                     {
-                        return View("Lockout");
+                        ModelState.AddModelError(string.Empty, "This account has been locked out for security reasons. Try again later.");
+                        return View(model);
                     }
                     else
                     {
@@ -682,7 +683,7 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<ActionResult> ToggleNightMode()
         {
-            var q = new QueryUserPreferences();
+            var q = new QueryUserPreferences().SetUserContext(User);
             var preferences = await q.ExecuteAsync();
 
             var newPreferences = new Domain.Models.UserPreferenceUpdate();

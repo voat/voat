@@ -22,10 +22,10 @@
   </settings>
   <!--The order of the <file> elements determines the order of the images in the sprite.-->
   <files>
-    <file>/Graphics/voat-logo.png</file>
-    <file>/Graphics/nsfw-thumb.png</file>
-    <file>/Graphics/thumb-placeholder.png</file>
-    <file>/Graphics/404.png</file>
-    <file>/Graphics/voat-goat.png</file>
+    <file>/images/voat-logo.png</file>
+    <file>/images/nsfw-thumb.png</file>
+    <file>/images/thumb-placeholder.png</file>
+    <file>/images/404.png</file>
+    <file>/images/voat-goat.png</file>
   </files>
 </sprite>

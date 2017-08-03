@@ -819,6 +819,11 @@ namespace Voat
             );
 
             routes.MapRoute(
+               name: "acceptSubverseModeratorInvitation",
+               template: "v/{subverse}/about/moderatorinvitations/accept/{invitationId}",
+               defaults: new { controller = "SubverseModeration", action = "AcceptModeratorInvitation" }
+           );
+            routes.MapRoute(
                 name: "removeSubverseModeratorInvitation",
                 template: "v/{subverse}/about/moderatorinvitations/delete/{invitationId}",
                 defaults: new { controller = "SubverseModeration", action = "RecallModeratorInvitation" }

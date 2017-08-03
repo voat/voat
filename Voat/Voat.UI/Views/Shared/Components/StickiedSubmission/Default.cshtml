@@ -18,11 +18,12 @@
 
 *@
 
-@model Voat.Domain.Models.Submission
+@model IEnumerable<Voat.Domain.Models.Submission>
+
 
 @{
-    Model.Attributes.Insert(0, new Voat.Domain.Models.ContentAttribute() { CssClass = "promoted", Name = "sticky", Type = Voat.Domain.Models.AttributeType.Flair });
+    foreach (var submission in Model)
+    {
+        @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission, new ViewDataDictionary(ViewData) { })
+    }
 }
-   
-@Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", Model, new ViewDataDictionary(ViewData) {})
-

@@ -34,11 +34,11 @@ namespace Voat.Domain.Query
 {
     public class QueryUserBlocks : CachedQuery<IList<BlockedItem>>
     {
-        //private string _userName;
+        private string _userName;
 
         public QueryUserBlocks(string userName = null) : base(new Caching.CachePolicy(TimeSpan.FromMinutes(30)))
         {
-            //_userName = (String.IsNullOrEmpty(userName) ? UserName : userName);
+            _userName = userName;
         }
 
         public override string CacheKey
@@ -56,6 +56,7 @@ namespace Voat.Domain.Query
                 return CachingKey.UserBlocks(UserName);
             }
         }
+        public override string UserName => String.IsNullOrEmpty(_userName) ? base.UserName : _userName;
 
         protected override async Task<IList<BlockedItem>> GetData()
         {

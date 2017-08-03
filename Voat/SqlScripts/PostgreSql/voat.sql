@@ -453,7 +453,7 @@ ALTER TABLE "dbo"."ModeratorInvitation" ADD CONSTRAINT "PK_ModeratorInvitation" 
 ALTER TABLE "dbo"."RuleReport" ADD CONSTRAINT "PK_RuleReport" PRIMARY KEY ("ID");
 ALTER TABLE "dbo"."RuleSet" ADD CONSTRAINT "PK_RuleSet" PRIMARY KEY ("ID");
 ALTER TABLE "dbo"."SessionTracker" ADD CONSTRAINT "PK_SessionTracker" PRIMARY KEY ("SessionID","Subverse");
-ALTER TABLE "dbo"."StickiedSubmission" ADD CONSTRAINT "PK_StickiedSubmission" PRIMARY KEY ("SubmissionID");
+ALTER TABLE "dbo"."StickiedSubmission" ADD CONSTRAINT "PK_StickiedSubmission" PRIMARY KEY ("SubmissionID","Subverse");
 ALTER TABLE "dbo"."Submission" ADD CONSTRAINT "PK_Submission" PRIMARY KEY ("ID");
 ALTER TABLE "dbo"."SubmissionRemovalLog" ADD CONSTRAINT "PK_SubmissionRemovalLog" PRIMARY KEY ("SubmissionID");
 ALTER TABLE "dbo"."SubmissionSaveTracker" ADD CONSTRAINT "PK_SubmissionSaveTracker" PRIMARY KEY ("ID");

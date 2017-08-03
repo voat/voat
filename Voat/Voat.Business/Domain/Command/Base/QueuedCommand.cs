@@ -39,8 +39,18 @@ namespace Voat.Domain.Command
     //[JsonObject(MemberSerialization=MemberSerialization.Fields)]
     public abstract class QueuedCommand<T> : CacheCommand<T>, IExcutableCommand<T> where T : CommandResponse, new()
     {
-        private static CacheBatchOperation<QueuedCommand<T>> _commands = new CacheBatchOperation<QueuedCommand<T>>("Command", Voat.Caching.CacheHandler.Instance, 10, TimeSpan.FromMinutes(5), ProcessBatch);
-
+        private static BatchOperation<QueuedCommand<T>> _commands = null;
+        static QueuedCommand()
+        {
+            if (Voat.Caching.CacheHandler.Instance.CacheEnabled)
+            {
+                _commands = new CacheBatchOperation<QueuedCommand<T>>("Command", Voat.Caching.CacheHandler.Instance, 10, TimeSpan.FromMinutes(5), ProcessBatch);
+            }
+            else
+            {
+                _commands = new MemoryBatchOperation<QueuedCommand<T>>(10, TimeSpan.FromMinutes(5), ProcessBatch);
+            }
+        }
         protected static async Task ProcessBatch(IEnumerable<QueuedCommand<T>> batch)
         {
             foreach (var cmd in batch)

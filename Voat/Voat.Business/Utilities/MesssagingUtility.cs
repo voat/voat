@@ -24,7 +24,9 @@
 
 using System;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
+using Voat.Common;
 using Voat.Data.Models;
 using Voat.Domain.Models;
 using Voat.Domain.Query;

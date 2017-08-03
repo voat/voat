@@ -72,19 +72,11 @@ namespace Voat.Domain.Query
         protected override async Task<Domain.Models.UserPreference> GetData()
         {
             UserPreference pref = null;
-
             using (var db = new Repository(User))
             {
-                pref = await db.GetUserPreferences(_userToRetrieve);
+                var nameToUse = String.IsNullOrEmpty(_userToRetrieve) ? UserName : _userToRetrieve;
+                pref = await db.GetUserPreferences(nameToUse);
             }
-            //REPO now handles
-            ////User doesn't have prefs or user is is not logged in. Create default pref and return
-            //if (pref == null)
-            //{
-            //    pref = new UserPreference();
-            //    Repository.SetDefaultUserPreferences(pref);
-            //    pref.UserName = _userToRetrieve;
-            //}
             return pref.Map();
         }
     }

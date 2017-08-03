@@ -38,7 +38,7 @@ namespace Voat.Domain.Query
     {
         protected DomainReference _domainReference;
 
-        public QueryActiveSessionCount(DomainReference domainReference) : this(domainReference, new CachePolicy(TimeSpan.FromMinutes(5)))
+        public QueryActiveSessionCount(DomainReference domainReference) : this(domainReference, new CachePolicy(TimeSpan.FromMinutes(2)))
         {
 
         }

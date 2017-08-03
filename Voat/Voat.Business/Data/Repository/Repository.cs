@@ -754,16 +754,23 @@ namespace Voat.Data
                 return CommandResponse.Error<CommandResponse>(ex);
             }
         }
-        public async Task<Domain.Models.Submission> GetSticky(string subverse)
+        public async Task<IEnumerable<Domain.Models.Submission>> GetSticky(string subverse)
         {
-            var x = await _db.StickiedSubmission.FirstOrDefaultAsync(s => s.Subverse == subverse).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
-            if (x != null)
+            var dataStickies = await _db.StickiedSubmission.Where(s => s.Subverse == subverse).ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+            if (dataStickies != null && dataStickies.Count > 0)
             {
-                var submission = GetSubmission(x.SubmissionID);
-                if (!submission.IsDeleted)
+                var stickies = new List<Domain.Models.Submission>();
+                foreach (var s in dataStickies)
                 {
-                    return submission.Map();
+                    var submission = GetSubmission(s.SubmissionID);
+                    if (!submission.IsDeleted)
+                    {
+                        var sticky = submission.Map();
+                        sticky.Attributes.Insert(0, new Voat.Domain.Models.ContentAttribute() { CssClass = "promoted", Name = "sticky", Type = Voat.Domain.Models.AttributeType.Flair });
+                        stickies.Add(sticky);
+                    }
                 }
+                return stickies;
             }
             return null;
         }
@@ -5317,9 +5324,11 @@ namespace Voat.Data
         {
             var query = new DapperQuery();
             query.Select = SqlFormatter.IsNull("COUNT(*)", "0") + " FROM " + SqlFormatter.Table("SessionTracker");
-            query.Where = "\"Subverse\" = @Subverse";
-            var result = await _db.Database.GetDbConnection().ExecuteScalarAsync<int>(query.ToString(), new { Subverse = domainReference.Name });
-            return result;
+            query.Where = "\"Subverse\" = @Subverse AND \"CreationDate\" >= @StartDate";
+
+            var range = new DateRange(TimeSpan.FromMinutes(15), DateRangeDirection.Past, CurrentDate);
+            var result = await _db.Database.GetDbConnection().ExecuteScalarAsync<int>(query.ToString(), new { Subverse = domainReference.Name, StartDate =  range.StartDate});
+            return Math.Max(result, 1);
         }
 
         #endregion Misc

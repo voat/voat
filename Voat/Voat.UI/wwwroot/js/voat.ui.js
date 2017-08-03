@@ -1246,7 +1246,7 @@ UI.ImageExpandoSettings = (function () {
         autoLoad: false, //this setting will preload all image links
         autoShow: false, //if true then the click routine is run during event hookup
         initialSize: 0, //max size for initial display, if image exceeds this a click toggle is enabled. A value of 0 == max container width.
-        errorImageUrl: '~/Graphics/missing_image.png' //only relative path is supported right now.
+        errorImageUrl: '~/images/missing_image.png' //only relative path is supported right now.
     }
 })();
 

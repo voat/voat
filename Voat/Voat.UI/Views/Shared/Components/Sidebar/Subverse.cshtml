@@ -74,7 +74,7 @@
             </span>
             <p class="users-online fuzzed" title="number of users viewing this subverse in the past 15 minutes">
                 <span class="number">~@ViewBag.OnlineUsers</span>
-                <span class="word">users here now</span>
+                <span class="word">user(s) here now</span>
             </p>
             @if (User.Identity.IsAuthenticated && ModeratorPermission.IsModerator(User.Identity.Name, Model.Name))
         {

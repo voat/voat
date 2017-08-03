@@ -795,7 +795,7 @@ namespace Voat.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult> AcceptModInvitation(int invitationId)
+        public async Task<ActionResult> AcceptModeratorInvitation(int invitationId)
         {
             int maximumOwnedSubs = VoatSettings.Instance.MaximumOwnedSubs;
 
@@ -825,8 +825,8 @@ namespace Voat.Controllers
             }
 
             // check if subverse exists
-            var subverseToAddModTo = _db.Subverse.FirstOrDefault(s => s.Name.Equals(userInvitation.Subverse, StringComparison.OrdinalIgnoreCase));
-            if (subverseToAddModTo == null)
+            var subverse = _db.Subverse.FirstOrDefault(s => s.Name.Equals(userInvitation.Subverse, StringComparison.OrdinalIgnoreCase));
+            if (subverse == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
@@ -841,7 +841,7 @@ namespace Voat.Controllers
             // add user as moderator as specified in invitation
             var subAdm = new SubverseModerator
             {
-                Subverse = subverseToAddModTo.Name,
+                Subverse = subverse.Name,
                 UserName = UserHelper.OriginalUsername(userInvitation.Recipient),
                 Power = userInvitation.Power,
                 CreatedBy = UserHelper.OriginalUsername(userInvitation.CreatedBy),
@@ -853,22 +853,22 @@ namespace Voat.Controllers
             // notify sender that user has accepted the invitation
             var message = new Domain.Models.SendMessage()
             {
-                Sender = $"v/{subverseToAddModTo}",
-                Subject = $"Moderator invitation for v/{userInvitation.Subverse} accepted",
+                Sender = $"v/{subverse.Name}",
+                Subject = $"Moderator invitation for v/{subverse.Name} accepted",
                 Recipient = userInvitation.CreatedBy,
-                Message = $"User {User.Identity.Name} has accepted your invitation to moderate subverse v/{userInvitation.Subverse}."
+                Message = $"User {User.Identity.Name} has accepted your invitation to moderate subverse v/{subverse.Name}."
             };
             var cmd = new SendMessageCommand(message).SetUserContext(User);
             await cmd.Execute();
 
             //clear mod cache
-            CacheHandler.Instance.Remove(CachingKey.SubverseModerators(userInvitation.Subverse));
+            CacheHandler.Instance.Remove(CachingKey.SubverseModerators(subverse.Name));
 
             // delete the invitation from database
             _db.ModeratorInvitation.Remove(userInvitation);
             _db.SaveChanges();
 
-            return RedirectToAction("SubverseSettings", "SubverseModeration", new { subverse = userInvitation.Subverse });
+            return Update(subverse.Name);
         }
 
         // GET: show add moderators view for selected subverse
@@ -999,7 +999,9 @@ namespace Voat.Controllers
                     int invitationId = modInv.ID;
                     var invitationBody = new StringBuilder();
 
-                    string acceptInviteUrl = VoatUrlFormatter.BuildUrlPath(this.HttpContext, new PathOptions(true, true), "/acceptmodinvitation/" + invitationId);
+                    //v/{subverse}/about/moderatorinvitations/accept/{invitationId}
+
+                    string acceptInviteUrl = VoatUrlFormatter.BuildUrlPath(this.HttpContext, new PathOptions(true, true), $"/v/{subverseModel.Name}/about/moderatorinvitations/accept/{invitationId}");
 
                     invitationBody.Append("Hello,");
                     invitationBody.Append(Environment.NewLine);

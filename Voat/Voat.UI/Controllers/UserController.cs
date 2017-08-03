@@ -265,7 +265,7 @@ namespace Voat.Controllers
 
             switch (blockType) {
                 case Domain.Models.DomainType.User:
-                    var q = new QueryUserBlocks();
+                    var q = new QueryUserBlocks().SetUserContext(User);
                     var blocks = await q.ExecuteAsync();
 
                     var userBlocks = blocks.Where(x => x.Type == Domain.Models.DomainType.User).OrderBy(x => x.Name);

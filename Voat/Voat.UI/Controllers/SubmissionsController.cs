@@ -114,54 +114,12 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [VoatValidateAntiForgeryToken]
-        public ActionResult ToggleSticky(int submissionID)
+        public async Task<ActionResult> ToggleSticky(int submissionID)
         {
-            // get model for selected submission
-            var submissionModel = _db.Submission.Find(submissionID);
-
-            if (submissionModel == null || submissionModel.IsDeleted)
+            using (var repo = new Repository(User))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            // check if caller is subverse moderator, if not, deny change
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, submissionModel.Subverse, Domain.Models.ModeratorAction.AssignStickies))
-            {
-                return new HttpUnauthorizedResult();
-            }
-            try
-            {
-                // find and clear current sticky if toggling
-                var existingSticky = _db.StickiedSubmission.FirstOrDefault(s => s.SubmissionID == submissionID);
-                if (existingSticky != null)
-                {
-                    _db.StickiedSubmission.Remove(existingSticky);
-                }
-                else
-                {
-                    // remove all stickies for subverse matching submission subverse
-                    _db.StickiedSubmission.RemoveRange(_db.StickiedSubmission.Where(s => s.Subverse == submissionModel.Subverse));
-
-                    // set new submission as sticky
-                    var stickyModel = new StickiedSubmission
-                    {
-                        SubmissionID = submissionID,
-                        CreatedBy = User.Identity.Name,
-                        CreationDate = Repository.CurrentDate,
-                        Subverse = submissionModel.Subverse
-                    };
-
-                    _db.StickiedSubmission.Add(stickyModel);
-                }
-
-                _db.SaveChanges();
-
-                StickyHelper.ClearStickyCache(submissionModel.Subverse);
-
-                return new HttpStatusCodeResult(HttpStatusCode.OK);
-            }
-            catch (Exception)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
+                var response = await repo.ToggleSticky(submissionID);
+                return JsonResult(response);
             }
         }
 

@@ -24,8 +24,8 @@
     //This is an acceptable constructor call
     var userData = new Voat.Domain.UserData(userName);
 
-    System.Diagnostics.Debug.Assert(userData.UserName.IsEqual(userName), "Possible mismatched Profile 1");
-    System.Diagnostics.Debug.Assert(userData.Information.UserName.IsEqual(userName), "Possible mismatched Profile 2");
+    //System.Diagnostics.Debug.Assert(userData.UserName.IsEqual(userName), "Possible mismatched Profile 1");
+    //System.Diagnostics.Debug.Assert(userData.Information.UserName.IsEqual(userName), "Possible mismatched Profile 2");
 
     DateTime userRegistrationDateTime = userData.Information.RegistrationDate;
 
@@ -57,11 +57,13 @@
                     Follow
                 </a>
                 string blockText = "block";
+                string blockClass = "";
                 if (Voat.Utilities.MesssagingUtility.IsSenderBlocked(userName, User.Identity.Name))
                 {
                     blockText = "unblock";
+                    blockClass = "btn-voat-off";
                 }
-                <button type="button" onclick="return blockUserToggle(this, '@userName')" class="btn-whoaverse-paging">@blockText</button>
+                <button type="button" onclick="return blockUserToggle(this, '@userName')" class="btn-whoaverse-paging btn-voat @blockClass">@blockText</button>
                 <a href="#" class="btn-whoaverse-paging disabled">
                     Report
                 </a>

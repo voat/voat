@@ -47,7 +47,7 @@ namespace Voat.Common
             }
         }
         [JsonIgnore()]
-        public string UserName
+        public virtual string UserName
         {
             get
             {

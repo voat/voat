@@ -67,9 +67,9 @@
                     @foreach (var item in Model)
                 {
                         <tr>
-                            <td>@item.Name</td>
+                            <td><a href="/u/@item.Name">@item.Name</a></td>
                             <td>@item.CreationDate</td>
-                            <td><button type="button" onclick="return blockUserToggle(this, '@item.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-unsub">unblock</button></td>
+                            <td><button type="button" onclick="return blockUserToggle(this, '@item.Name')" class="btn-whoaverse-paging btn-xs btn-default btn-voat btn-voat-off">unblock</button></td>
                         </tr>
                     }
 
