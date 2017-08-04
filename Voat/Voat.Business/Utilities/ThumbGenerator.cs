@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Configuration;
 using Voat.Data.Models;
+using Voat.Domain.Command;
 using Voat.IO;
 using Voat.Utilities.Components;
 
@@ -38,22 +39,23 @@ namespace Voat.Utilities
 
     public static class ThumbGenerator
     {
-        public static async Task<string> GenerateAvatar(Stream imageStream, string fileName, string mimetype, bool purgeTempFile = true)
+        public static async Task<CommandResponse<string>> GenerateAvatar(Stream imageStream, string fileName, string mimetype, bool purgeTempFile = true)
         {
             var fileManager = FileManager.Instance;
-            if (fileManager.IsUploadPermitted(fileName, FileType.Avatar, mimetype, imageStream.Length))
-            {
+            var fileCheck = fileManager.IsUploadPermitted(fileName, FileType.Avatar, mimetype, imageStream.Length);
 
+            if (fileCheck.Success)
+            {
                 var key = new FileKey();
                 key.FileType = FileType.Avatar;
                 key.ID = GenerateRandomFilename(Path.GetExtension(fileName), FileType.Avatar);
 
                 await GenerateImageThumbnail(fileManager, key, imageStream, VoatSettings.Instance.AvatarSize);
 
-                return key.ID;
+                return CommandResponse.Successful(key.ID);
             }
 
-            return null;
+            return CommandResponse.FromStatus<string>(null, fileCheck.Status, fileCheck.Message);
         }
         // Generate a random filename for a thumbnail and make sure that the file does not exist.
         private static string GenerateRandomFilename(string extention, FileType fileType)
@@ -78,11 +80,11 @@ namespace Voat.Utilities
                 await fileManager.Upload(key, resizedStream);
             }
         }
-        public static async Task<string> GenerateThumbnail(string url, bool purgeTempFile = true)
+        public static async Task<CommandResponse<string>> GenerateThumbnail(string url, bool purgeTempFile = true)
         {
             return await GenerateThumbnail(new Uri(url), purgeTempFile);
         }
-        public static async Task<string> GenerateThumbnail(Uri uri, bool purgeTempFile = true)
+        public static async Task<CommandResponse<string>> GenerateThumbnail(Uri uri, bool purgeTempFile = true)
         {
             var url = uri.ToString();
             if (!String.IsNullOrEmpty(url) && UrlUtility.IsUriValid(url))
@@ -97,7 +99,9 @@ namespace Voat.Utilities
                         if (httpResource.IsImage)
                         {
                             var fileManager = FileManager.Instance;
-                            if (fileManager.IsUploadPermitted(url.ToString(), FileType.Thumbnail, null, httpResource.Stream.Length))
+                            var fileCheck = fileManager.IsUploadPermitted(url.ToString(), FileType.Thumbnail, null, httpResource.Stream.Length);
+
+                            if (fileCheck.Success)
                             {
                                 var key = new FileKey();
                                 key.FileType = FileType.Thumbnail;
@@ -106,7 +110,7 @@ namespace Voat.Utilities
 
                                 await GenerateImageThumbnail(fileManager, key, stream, VoatSettings.Instance.ThumbnailSize);
 
-                                return key.ID;
+                                return CommandResponse.Successful(key.ID);
                             }
                         }
                         else if (httpResource.Image != null)
@@ -119,6 +123,7 @@ namespace Voat.Utilities
                 catch (Exception ex)
                 {
                     EventLogger.Instance.Log(ex, new { url = url, type = FileType.Thumbnail });
+                    return CommandResponse.Error<CommandResponse<string>>(ex);
                 }
             }
             return null;

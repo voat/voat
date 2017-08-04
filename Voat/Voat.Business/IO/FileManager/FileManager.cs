@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Voat.Common;
+using Voat.Domain.Command;
 using Voat.Utilities;
 
 namespace Voat.IO
@@ -32,24 +33,30 @@ namespace Voat.IO
         {
             return true;
         }
-        public virtual bool IsUploadPermitted(string fileName, FileType fileType, string mimeType = null, long? length = null)
+        public virtual CommandResponse IsUploadPermitted(string fileName, FileType fileType, string mimeType = null, long? length = null)
         {
-            var result = false;
+
+            var result = CommandResponse.FromStatus(Status.Success);
+
             switch (fileType)
             {
                 case FileType.Avatar:
                 case FileType.Thumbnail:
                 case FileType.Badge:
 
-                    result = (
-                        fileName.IsImageExtension()
-                        && (String.IsNullOrEmpty(mimeType) || IsMimeTypePermitted(fileType, mimeType))
-                        && (length == null || length < 100000000)
-                        );
-
-
+                    if (!fileName.IsImageExtension())
+                    {
+                        result = CommandResponse.FromStatus(Status.Invalid, "File type is not permitted for upload");
+                    }
+                    else if (String.IsNullOrEmpty(mimeType) || IsMimeTypePermitted(fileType, mimeType))
+                    {
+                        result = CommandResponse.FromStatus(Status.Invalid, "Mime type is not permitted for upload");
+                    }
+                    else if (length == null || length < 100000000)
+                    {
+                        result = CommandResponse.FromStatus(Status.Invalid, "File length is too big or too small but we aren't saying");
+                    }
                     break;
-
             }
             return result;
         }

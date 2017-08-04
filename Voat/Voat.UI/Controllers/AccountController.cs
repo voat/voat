@@ -303,7 +303,7 @@ namespace Voat.Controllers
         }
 
         // GET: /Account/Manage
-        public ActionResult Manage(ManageMessageId? message)
+        public async Task<ActionResult> Manage(ManageMessageId? message)
         {
             ViewBag.SelectedSubverse = string.Empty;
             ViewBag.UserName = User.Identity.Name;
@@ -329,7 +329,8 @@ namespace Voat.Controllers
                 BasePath = null,
                 Sort = null
             };
-
+            var user = await UserManager.FindByNameAsync(User.Identity.Name);
+            ViewBag.UserEmailViewModel = new UserEmailViewModel() { EmailAddress = user.Email };
             return View();
         }
 
@@ -355,10 +356,8 @@ namespace Voat.Controllers
             {
                 return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
             }
-            AddErrors(result);
-           
-            // If we got this far, something failed, redisplay form
-            return RedirectToAction("Manage", new { Message = ManageMessageId.WrongPassword });
+            AddErrors(result, "OldPassword");
+            return View("Manage", model);
         }
 
         // POST: /Account/LogOff
@@ -452,6 +451,11 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferencesAbout([Bind("Bio, Avatarfile")] UserAboutViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View("Manage", model);
+            }
+
             ViewBag.UserName = User.Identity.Name;
 
             string avatarKey = null;
@@ -462,11 +466,20 @@ namespace Voat.Controllers
                 try
                 {
                     var stream = model.Avatarfile.OpenReadStream();
-                    avatarKey = await ThumbGenerator.GenerateAvatar(stream, model.Avatarfile.FileName, model.Avatarfile.ContentType);
+                    var result = await ThumbGenerator.GenerateAvatar(stream, model.Avatarfile.FileName, model.Avatarfile.ContentType);
+                    if (result.Success)
+                    {
+                        avatarKey = result.Response;
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Avatarfile", result.Message);
+                        return View("Manage", model);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Uploaded file is not recognized as a valid image.");
+                    ModelState.AddModelError("Avatarfile", "Uploaded file is not recognized as a valid image.");
                     return RedirectToAction("Manage", new { Message = ManageMessageId.InvalidFileFormat });
                 }
             }
@@ -718,7 +731,7 @@ namespace Voat.Controllers
             //CORE_PORT: Changes in User Manager
             //TODO: This code needs to be unit tested
             var user = await UserManager.FindByNameAsync(User.Identity.Name);
-            var existingEmail = await UserManager.GetEmailAsync(user);
+            var existingEmail = user.Email;
 
             if (existingEmail == null)
             {
@@ -747,16 +760,30 @@ namespace Voat.Controllers
                 return View("Manage", model);
             }
 
-            // make sure no other accounts use this email address
-            var existingAccount = await UserManager.FindByEmailAsync(model.EmailAddress);
-            if (existingAccount != null)
+            if (!String.IsNullOrEmpty(model.EmailAddress))
             {
-                ViewBag.StatusMessage = "This email address is already in use.";
-                return View("Manage", model);
+                // make sure no other accounts use this email address
+                var existingAccount = await UserManager.FindByEmailAsync(model.EmailAddress);
+                if (existingAccount != null)
+                {
+                    if (existingAccount.UserName == User.Identity.Name)
+                    {
+                        //we have the current user with the same email address, abort 
+                        return View("Manage", model);
+                    }
+                    else
+                    {
+                        ViewBag.StatusMessage = "This email address is already in use.";
+                        return View("Manage", model);
+                    }
+                }
             }
 
+            //find current user
+            var currentUser = await UserManager.FindByNameAsync(User.Identity.Name);
+
             // save changes
-            var result = await UserManager.SetEmailAsync(existingAccount, model.EmailAddress);
+            var result = await UserManager.SetEmailAsync(currentUser, model.EmailAddress);
             if (result.Succeeded)
             {
                 return RedirectToAction("Manage");
@@ -937,11 +964,11 @@ namespace Voat.Controllers
         //    //AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent }, identity);
         //}
 
-        private void AddErrors(IdentityResult result)
+        private void AddErrors(IdentityResult result, string key = "")
         {
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError("", error.Description);
+                ModelState.AddModelError(key, error.Description);
             }
         }
 

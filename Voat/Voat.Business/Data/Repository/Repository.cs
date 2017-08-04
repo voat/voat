@@ -1587,7 +1587,11 @@ namespace Voat.Data
                 if (VoatSettings.Instance.ThumbnailsEnabled && subverseObject.IsThumbnailEnabled)
                 {
                     // try to generate and assign a thumbnail to submission model
-                    newSubmission.Thumbnail = await ThumbGenerator.GenerateThumbnail(userSubmission.Url).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                    var result = await ThumbGenerator.GenerateThumbnail(userSubmission.Url).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                    if (result.Success)
+                    {
+                        newSubmission.Thumbnail = result.Response;
+                    }
                 }
             }
 

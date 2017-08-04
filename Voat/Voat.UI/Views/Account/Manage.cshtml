@@ -33,11 +33,11 @@
             <div class="well col-md-12">
                 <div class="alert-title">Your public profile</div>
 
-                @if (ViewBag.StatusMessage != String.Empty)
+                @if (!String.IsNullOrEmpty(ViewBag.StatusMessage))
                 {
                     <p class="validation-summary-errors">@ViewBag.StatusMessage</p>
                 }
-
+                <div asp-validation-summary="All"></div>
                 <section id="userPreferences">
                    @Html.Partial("_UserPreferencesAbout", new UserAboutViewModel()
                    {
@@ -53,7 +53,7 @@
 
                 <div class="alert-title">Account e-mail</div>
                 <section id="userEmail">
-                    @Html.Partial("_ChangeAccountEmail", new UserEmailViewModel() { EmailAddress = "todo@lazyputts.com" })
+                    @Html.Partial("_ChangeAccountEmail", (UserEmailViewModel)ViewBag.UserEmailViewModel)
                 </section>
 
                 <div class="alert-title">Change your password</div>

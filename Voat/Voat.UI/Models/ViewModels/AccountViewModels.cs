@@ -75,7 +75,7 @@ namespace Voat.Models.ViewModels
     {
         [Display(Name = "E-mail address")]
         [EmailAddress(ErrorMessage = "Please enter a valid E-mail address")]
-        [Required(ErrorMessage = "E-mail address is required. Please fill this field.")]
+        //[Required(ErrorMessage = "E-mail address is required. Please fill this field.")]
         public string EmailAddress { get; set; }
     }
 

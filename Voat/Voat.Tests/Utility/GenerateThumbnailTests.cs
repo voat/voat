@@ -43,7 +43,7 @@ namespace Voat.Tests.Utils
         {
             var result = await ThumbGenerator.GenerateThumbnail("https://www.yahoo.com", false);
 
-            var key = new FileKey(result, FileType.Thumbnail);
+            var key = new FileKey(result.Response, FileType.Thumbnail);
             Assert.AreEqual(true, FileManager.Instance.Exists(key), "Thumb did not get generated from image url");
             FileManager.Instance.Delete(key);
             Assert.AreEqual(false, FileManager.Instance.Exists(key), "Thumb did not delete");
@@ -77,7 +77,7 @@ namespace Voat.Tests.Utils
         public async Task GenerateThumbFromImageUrl()
         {
             var result = await ThumbGenerator.GenerateThumbnail("https://voat.co/graphics/voat-goat.png", false);
-            var key = new FileKey(result, FileType.Thumbnail);
+            var key = new FileKey(result.Response, FileType.Thumbnail);
             Assert.AreEqual(true, FileManager.Instance.Exists(key), "Thumb did not get generated from image url");
             FileManager.Instance.Delete(key);
             Assert.AreEqual(false, FileManager.Instance.Exists(key), "Thumb did not delete");

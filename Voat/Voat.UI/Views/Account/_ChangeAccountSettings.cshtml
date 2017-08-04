@@ -23,23 +23,25 @@
 @using (Html.BeginForm("Manage", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()    
-    @Html.ValidationSummary()
     <div class="form-group">
         @Html.LabelFor(m => m.OldPassword, new { @class = "col-md-4 control-label" })
         <div class="col-md-6">
-            @Html.PasswordFor(m => m.OldPassword, new { @class = "form-control" })
+            @Html.PasswordFor(m => m.OldPassword, new { @class = "form-control", autocomplete = "off" })
+            <span asp-validation-for="OldPassword"></span> 
         </div>
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.NewPassword, new { @class = "col-md-4 control-label" })
         <div class="col-md-6">
             @Html.PasswordFor(m => m.NewPassword, new { @class = "form-control" })
+            <span asp-validation-for="NewPassword"></span> 
         </div>
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-4 control-label" })
         <div class="col-md-6">
             @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+            <span asp-validation-for="ConfirmPassword"></span> 
         </div>
     </div>
     

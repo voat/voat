@@ -23,12 +23,12 @@
 @using (Html.BeginForm("UserPreferencesAbout", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
-    @Html.ValidationSummary()
-
+    
     <div class="form-group">
         @Html.LabelFor(m => m.Bio, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
             @Html.TextBoxFor(m => m.Bio, new { @class = "form-control" })
+            <span asp-validation-for="Bio"></span> 
         </div>
     </div>
    
@@ -36,6 +36,7 @@
         @Html.LabelFor(m => m.Avatarfile, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
             <input type="file" name="Avatarfile" />
+            <span asp-validation-for="Avatarfile"></span> 
         </div>
     </div>
 
