@@ -61,17 +61,20 @@ namespace Voat.Rules.Posting
                         return CreateOutcome(RuleResult.Denied, "A link submission must include a url");
                     }
 
-                    //Ensure user isn't submitting links as titles
-                    if (userSubmission.Title.Equals(userSubmission.Url, StringComparison.InvariantCultureIgnoreCase) || userSubmission.Url.Contains(userSubmission.Title))
-                    {
-                        return CreateOutcome(RuleResult.Denied, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
-                    }
-
+                    
                     // make sure the input URI is valid
                     if (!UrlUtility.IsUriValid(userSubmission.Url))
                     {
                         return CreateOutcome(RuleResult.Denied, "The url you are trying to submit is invalid");
                     }
+
+                    //Ensure user isn't submitting links as titles
+                    var linkDomain = UrlUtility.GetDomainFromUri(userSubmission.Url);
+                    if (userSubmission.Title.Equals(userSubmission.Url, StringComparison.InvariantCultureIgnoreCase) || userSubmission.Title.Contains(linkDomain))
+                    {
+                        return CreateOutcome(RuleResult.Denied, "Submission title may not be the same as the URL you are trying to submit. Why would you even think about doing this?! Why?");
+                    }
+
                     break;
 
                 case SubmissionType.Text:

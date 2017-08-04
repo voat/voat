@@ -330,7 +330,7 @@ namespace Voat.Tests.CommandTests
         {
             var user = TestHelper.SetPrincipal("TestUser09");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = SUBVERSES.Whatever, Title = "test", Url = "http://beta.speedtest.net/" }).SetUserContext(user);
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = SUBVERSES.Whatever, Title = "speedtesting", Url = "http://beta.speedtesting.net/" }).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, Status.Success);
             //Assert.AreNotEqual(0, r.Response.ID);

@@ -323,13 +323,13 @@ function voteSubmission(id, voteValue, errorSpan) {
             },
             error: function (data) {
                 if (errorSpan) {
-                    errorSpan.html("An Error Occured :(");
+                    errorSpan.html("An Error Occurred :(");
                 } else {
                     //voting was not registered - show error
                     var submission = $(".submission.id-" + id);
                     var div = submission.children(".entry");
                     div.children('span').remove();
-                    div.prepend('<span class="vote-error">An Error Occured :(</span>');
+                    div.prepend('<span class="vote-error">An Error Occurred :(</span>');
                 }
             },
             success: function (data) {
@@ -461,7 +461,7 @@ function voteComment(id, voteValue) {
                 var comment = $(".comment.id-" + id);
                 var div = comment.children(".entry");
                 div.children('span').remove();
-                div.prepend('<span class="vote-error">An Error Occured :(</span>');
+                div.prepend('<span class="vote-error">An Error Occurred :(</span>');
             },
             success: function (data) {
                 //TODO: data object includes vote related json, the below code can use the values this object contains, but not changing right now.
@@ -1226,8 +1226,12 @@ function setSubverseAddCallBack(sender, arguments) {
             message = "Subverse added to set";
             //message = "Subverse " + subverseName + " was added to set " + setName;
         }
-        else {
+        else if (response.data == false) {
             message = "Subverse removed from set";
+            //message = "Subverse " + subverseName + " was added to set " + setName;
+        }
+        else {
+            message = "No action was taken";
             //message = "Subverse " + subverseName + " was removed from set " + setName;
         }
     } else {
