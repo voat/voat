@@ -8,12 +8,12 @@ namespace Voat.Voting.Options
 {
     public abstract class Option
     {
-        public static T Parse<T>(string json)
+        public static T Deserialize<T>(string json) where T: Option
         {
             return JsonConvert.DeserializeObject<T>(json, JsonSettings.FriendlySerializationSettings);
         }
 
-        public override string ToString()
+        public string Serialize()
         {
             return JsonConvert.SerializeObject(this, JsonSettings.FriendlySerializationSettings);
         }

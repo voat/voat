@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Voat.Common;
 
 namespace Voat.Voting.Options
 {
@@ -10,6 +11,6 @@ namespace Voat.Voting.Options
         public DateTime CutOffDate { get; set; }
         public TimeSpan Duration { get; set; }
         [JsonIgnore]
-        public DateTime StartDate { get => CutOffDate.Subtract(Duration); }
+        public DateRange DateRange { get => new DateRange(Duration, DateRangeDirection.Past, CutOffDate); }
     }
 }

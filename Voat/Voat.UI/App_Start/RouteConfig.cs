@@ -1097,6 +1097,31 @@ namespace Voat
             }
             #endregion
 
+            #region Votes
+
+            routes.MapRoute(
+                name: "ViewVoteDirectly",
+                template: "vote/{id:int}",
+                defaults: new { controller = "Vote", action = "Index" }
+            );
+            routes.MapRoute(
+                name: "CreateVote",
+                template: "vote/create",
+                defaults: new { controller = "Vote", action = "Create" }
+            );
+            routes.MapRoute(
+               name: "EditVote",
+               template: "vote/edit/{id:int}",
+               defaults: new { controller = "Vote", action = "Edit" }
+           );
+            routes.MapRoute(
+                name: "DeleteVote",
+                template: "vote/delete/{id:int}",
+                defaults: new { controller = "Vote", action = "Delete" }
+            );
+
+            #endregion
+
             // submissions/applylinkflair
             routes.MapRoute(
                 name: "ApplyLinkFlair",

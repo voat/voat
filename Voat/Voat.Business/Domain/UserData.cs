@@ -171,7 +171,7 @@ namespace Voat.Domain
                     Debug.WriteLine("UserData[{0}].TotalSubmissionsPostedIn24Hours(loading)", userName);
                     using (var repo = new Repository(User))
                     {
-                        return repo.UserSubmissionCount(userName, TimeSpan.FromDays(1));
+                        return repo.UserContributionCount(userName, ContentType.Submission, null, new DateRange(TimeSpan.FromDays(1)));
                     }
 
                     //return UserGateway.TotalVotesUsedInPast24Hours(userName);

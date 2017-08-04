@@ -67,7 +67,7 @@ namespace Voat.Domain.Query
         {
             using (var db = new Repository(User))
             {
-                var stickies = await db.GetSticky(_subverse);
+                var stickies = await db.GetStickies(_subverse);
                 if (stickies != null)
                 {
                     return stickies;

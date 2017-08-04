@@ -24,6 +24,7 @@
 
 using System;
 using System.Linq;
+using Voat.Common;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
@@ -67,7 +68,8 @@ namespace Voat.Rules
             using (var repo = new Repository())
             {
                 // check how many submission user made today
-                var userSubmissionsToTargetSub = repo.UserSubmissionCount(context.UserName, TimeSpan.FromHours(24), null, subverse);
+                var userSubmissionsToTargetSub = repo.UserContributionCount(context.UserName, Domain.Models.ContentType.Submission, subverse, DateRange.StartFrom(TimeSpan.FromHours(24)));
+                //var userSubmissionsToTargetSub = repo.UserSubmissionCount(context.UserName, TimeSpan.FromHours(24), null, subverse);
 
                 if (limit <= userSubmissionsToTargetSub)
                 {
@@ -85,7 +87,7 @@ namespace Voat.Rules
             using (var repo = new Repository())
             {
                 // check how many submission user made today
-                var userSubmissionsToTargetSub = repo.UserSubmissionCount(context.UserName, TimeSpan.FromHours(24));
+                var userSubmissionsToTargetSub = repo.UserContributionCount(context.UserName, Domain.Models.ContentType.Submission,null, DateRange.StartFrom(TimeSpan.FromHours(24)));
                 
                 if (limit <= userSubmissionsToTargetSub)
                 {
@@ -104,9 +106,9 @@ namespace Voat.Rules
             using (var repo = new Repository())
             {
                 // check how many submission user made today
-                var userCommentSubmissionsInPast24Hours = repo.UserCommentCount(context.UserName, TimeSpan.FromHours(24)); 
+                var userCommentCountInPast24Hours = repo.UserContributionCount(context.UserName, Domain.Models.ContentType.Comment, null, DateRange.StartFrom(TimeSpan.FromHours(24))); 
                     
-                if (limit <= userCommentSubmissionsInPast24Hours)
+                if (limit <= userCommentCountInPast24Hours)
                 {
                     return true;
                 }
@@ -123,7 +125,7 @@ namespace Voat.Rules
             using (var repo = new Repository())
             {
                 // check how many submission user made today
-                var userCommentSubmissionsInPast24Hours = repo.UserCommentCount(context.UserName, TimeSpan.FromHours(24)); 
+                var userCommentSubmissionsInPast24Hours = repo.UserContributionCount(context.UserName, Domain.Models.ContentType.Comment, null, DateRange.StartFrom(TimeSpan.FromHours(24))); 
                     
                 if (limit <= userCommentSubmissionsInPast24Hours)
                 {
@@ -142,7 +144,7 @@ namespace Voat.Rules
             using (var repo = new Repository())
             {
                 // check how many comments user made in the last 59 minutes
-                var userCommentSubmissionsInPastHour = repo.UserCommentCount(context.UserName, TimeSpan.FromHours(1));
+                var userCommentSubmissionsInPastHour = repo.UserContributionCount(context.UserName, Domain.Models.ContentType.Comment, null, DateRange.StartFrom(TimeSpan.FromHours(1)));
                     
                 if (limit <= userCommentSubmissionsInPastHour)
                 {
@@ -161,7 +163,7 @@ namespace Voat.Rules
             using (var repo = new Repository())
             {
                 // check how many submission user made in the last hour
-                var userSubmissionsToTargetSub = repo.UserSubmissionCount(context.UserName, TimeSpan.FromHours(24), null, subverse);
+                var userSubmissionsToTargetSub = repo.UserContributionCount(context.UserName, Domain.Models.ContentType.Submission, subverse, DateRange.StartFrom(TimeSpan.FromHours(24)));
 
                 if (limit <= userSubmissionsToTargetSub)
                 {
@@ -197,7 +199,7 @@ namespace Voat.Rules
             using (var repo = new Repository())
             {
                 // check how many submission user made in the last hour
-                var totalUserSubmissionsForTimeSpam = repo.UserSubmissionCount(context.UserName, TimeSpan.FromHours(1)); 
+                var totalUserSubmissionsForTimeSpam = repo.UserContributionCount(context.UserName, Domain.Models.ContentType.Submission, null, DateRange.StartFrom(TimeSpan.FromHours(1))); 
 
                 if (limit <= totalUserSubmissionsForTimeSpam)
                 {
@@ -233,7 +235,7 @@ namespace Voat.Rules
             using (var repo = new Repository())
             {
                 // check how many submission user made today
-                var userSubmissionsToTargetSub = repo.UserSubmissionCount(context.UserName, TimeSpan.FromHours(24));
+                var userSubmissionsToTargetSub = repo.UserContributionCount(context.UserName, Domain.Models.ContentType.Submission, null, DateRange.StartFrom(TimeSpan.FromHours(24)));
 
                 if (limit <= userSubmissionsToTargetSub)
                 {

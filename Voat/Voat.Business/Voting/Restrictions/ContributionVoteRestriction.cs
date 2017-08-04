@@ -20,14 +20,14 @@ namespace Voat.Voting.Restrictions
             return false;
         }
 
-        public override string ToString()
+        public override string ToDescription()
         {
             var where = $"on {VoatSettings.Instance.SiteName}";
             if (!String.IsNullOrEmpty(Options.Subverse))
             {
                 where = $"in v/{Options.Subverse}";
             }
-            return $"Has voted at least {Options.MinimumCount} times on {Options.ContentType} {where} from {Options.StartDate} to {Options.CutOffDate}";
+            return $"Has voted at least {Options.MinimumCount} times on {Options.ContentType} {where} from {Options.DateRange.ToString()}";
 
         }
     }

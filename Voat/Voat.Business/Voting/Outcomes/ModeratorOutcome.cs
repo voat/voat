@@ -12,7 +12,7 @@ namespace Voat.Voting.Outcomes
             throw new NotImplementedException();
         }
 
-        public override string ToString()
+        public override string ToDescription()
         {
             if (Options.Action == ModeratorAction.Add)
             {

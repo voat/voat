@@ -11,7 +11,11 @@ namespace Voat.Common
     }
     public class DateRange
     {
-        public DateRange(DateTime start, DateTime end)
+        public DateRange()
+        {
+
+        }
+        public DateRange(DateTime? start, DateTime? end)
         {
             StartDate = start;
             EndDate = end;
@@ -22,18 +26,52 @@ namespace Voat.Common
 
             if (dateRangeDirection == DateRangeDirection.Past)
             {
-                StartDate = refDate.Subtract(timeSpan);
+                StartDate = refDate.Subtract(timeSpan.Duration());
                 EndDate = refDate;
             }
             else
             {
-                EndDate = refDate.Add(timeSpan);
+                EndDate = refDate.Add(timeSpan.Duration());
                 StartDate = refDate;
             }
         }
+        public static DateRange StartFrom(TimeSpan timeSpan, DateRangeDirection dateRangeDirection = DateRangeDirection.Past)
+        {
+            var d = new DateRange();
 
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+            if (dateRangeDirection == DateRangeDirection.Past)
+            {
+                d.StartDate = DateTime.UtcNow.Subtract(timeSpan.Duration());
+            }
+            else
+            {
+                d.StartDate = DateTime.UtcNow.Add(timeSpan.Duration());
+            }
+            return d;
+        }
+        //This needs to be an extension method
+        public override string ToString()
+        {
+            if (StartDate.HasValue && EndDate.HasValue)
+            {
+                return $"{StartDate.Value.ToShortDateString()} to {EndDate.Value.ToShortDateString()}";
+            }
+            else if (StartDate.HasValue)
+            {
+                return $"{StartDate.Value.ToShortDateString()} to now";
+            }
+            else if (EndDate.HasValue)
+            {
+                return $"until {EndDate.Value.ToShortDateString()}";
+            }
+            else 
+            {
+                return $"all time";
+            }
+
+        }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
     }
 }

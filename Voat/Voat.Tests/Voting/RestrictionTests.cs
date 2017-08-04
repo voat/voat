@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Voat.Tests.Infrastructure;
 using Voat.Voting;
 using Voat.Voting.Options;
 using Voat.Voting.Restrictions;
@@ -23,16 +24,26 @@ namespace Voat.Tests.Voting
                 Options = (new ContentOption() {
                     ContentType = Domain.Models.ContentType.Comment,
                     Duration = TimeSpan.FromDays(14),
-                    Subverse = "AskVoat",
-                    MinimumCount = 100,
-                    CutOffDate = DateTime.Now
-                }).ToString(),
+                    Subverse = "unit",
+                    MinimumCount = 1,
+                    CutOffDate = DateTime.UtcNow
+                }).Serialize(),
                 VoteID = 1
             };
 
-            var constructed = VoteOptionItem.Construct(r.Type, r.Options);
-            var description = constructed.ToString();
-            
+            var constructed = (IVoteRestriction)OptionHandler.Construct(r.Type, r.Options);
+            var user = TestHelper.SetPrincipal("User500CCP");
+            var outcome = constructed.Evaluate(user);
+
+            Assert.IsTrue(outcome);
+
+
+            var restrictionSet = new VoteRestrictionSet();
+            restrictionSet.Populate(new Voat.Data.Models.VoteRestriction[] { r });
+
+            outcome = restrictionSet.Evaluate(user);
+            Assert.IsTrue(outcome);
+
         }
     }
 }

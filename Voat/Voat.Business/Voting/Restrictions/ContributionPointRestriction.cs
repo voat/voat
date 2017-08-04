@@ -14,14 +14,14 @@ namespace Voat.Voting.Restrictions
             throw new NotImplementedException();
         }
 
-        public override string ToString()
+        public override string ToDescription()
         {
             var where = $"on {VoatSettings.Instance.SiteName}";
             if (!String.IsNullOrEmpty(Options.Subverse))
             {
                 where = $"in v/{Options.Subverse}";
             }
-            return $"Have at least {Options.MinimumCount} points for {Options.ContentType} {where} from {Options.StartDate} to {Options.CutOffDate}";
+            return $"Have at least {Options.MinimumCount} points for {Options.ContentType} {where} from {Options.DateRange.ToString()}";
 
         }
     }

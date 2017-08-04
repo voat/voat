@@ -14,7 +14,7 @@ namespace Voat.Voting.Restrictions
             throw new NotImplementedException();
         }
 
-        public override string ToString()
+        public override string ToDescription()
         {
             var where = $"to {VoatSettings.Instance.SiteName}";
             if (!String.IsNullOrEmpty(Options.Subverse))
