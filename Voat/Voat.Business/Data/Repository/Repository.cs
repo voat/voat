@@ -754,9 +754,9 @@ namespace Voat.Data
                 return CommandResponse.Error<CommandResponse>(ex);
             }
         }
-        public async Task<IEnumerable<Domain.Models.Submission>> GetSticky(string subverse)
+        public async Task<IEnumerable<Domain.Models.Submission>> GetStickies(string subverse)
         {
-            var dataStickies = await _db.StickiedSubmission.Where(s => s.Subverse == subverse).ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+            var dataStickies = await _db.StickiedSubmission.Where(s => s.Subverse == subverse).OrderByDescending(x => x.CreationDate).ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             if (dataStickies != null && dataStickies.Count > 0)
             {
                 var stickies = new List<Domain.Models.Submission>();

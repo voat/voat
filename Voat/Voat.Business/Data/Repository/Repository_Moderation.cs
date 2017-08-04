@@ -12,7 +12,7 @@ namespace Voat.Data
 {
     public partial class Repository
     {
-        public async Task<CommandResponse> ToggleSticky(int submissionID, string subverse = null, bool clearExisting = false)
+        public async Task<CommandResponse> ToggleSticky(int submissionID, string subverse = null, bool clearExisting = false, int stickyLimit = 3)
         {
             DemandAuthentication();
 
@@ -33,6 +33,7 @@ namespace Voat.Data
             {
                 return CommandResponse.FromStatus(Status.Denied, "Moderator Permissions are not satisfied");
             }
+            int affectedCount = 0;
             try
             {
                 // find and clear current sticky if toggling
@@ -40,6 +41,7 @@ namespace Voat.Data
                 if (existingSticky != null)
                 {
                     _db.StickiedSubmission.Remove(existingSticky);
+                    affectedCount += -1;
                 }
                 else
                 {
@@ -47,6 +49,7 @@ namespace Voat.Data
                     {
                         // remove all stickies for subverse matching submission subverse
                         _db.StickiedSubmission.RemoveRange(_db.StickiedSubmission.Where(s => s.Subverse == subverse));
+                        affectedCount = 0;
                     }
 
                     // set new submission as sticky
@@ -59,6 +62,14 @@ namespace Voat.Data
                     };
 
                     _db.StickiedSubmission.Add(stickyModel);
+                    affectedCount += 1;
+                }
+
+                //limit sticky counts 
+                var currentCount = _db.StickiedSubmission.Count(x => x.Subverse == subverse);
+                if ((currentCount + affectedCount) > stickyLimit)
+                {
+                    return CommandResponse.FromStatus(Status.Denied, $"Stickies are limited to {stickyLimit}");
                 }
 
                 await _db.SaveChangesAsync();

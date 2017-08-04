@@ -1551,8 +1551,14 @@ function toggleSticky(messageId) {
     $.ajax({
         type: "POST",
         url: "/submissions/togglesticky/" + messageId,
-        success: function () {
-            $('#togglesticky').html("toggled");
+        success: function (data) {
+            if (data.success) {
+                $('#togglesticky').html("toggled");
+            } else {
+                $('#togglesticky').html(data.error.message);
+            }
+
+
         },
         error: function () {
             alert('Something went wrong while sending a sticky toggle request.');
