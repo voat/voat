@@ -106,13 +106,13 @@ namespace Voat.Controllers
             var results = await q.ExecuteAsync();
 
             //CORE_PORT: This is bad mmkay
-            ViewBag.TotalBannedUsersInSubverse = -666;
+            ViewBag.TotalBannedUsersInSubverse = results.Item1;
             //using (var db = new voatEntities(CONSTANTS.CONNECTION_READONLY))
             //{
             //    ViewBag.TotalBannedUsersInSubverse = db.SubverseBans.Where(rl => rl.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)).Count();
             //}
 
-            var list = new PaginatedList<Domain.Models.SubverseBan>(results, options.Page, options.Count);
+            var list = new PaginatedList<Domain.Models.SubverseBan>(results.Item2, options.Page, options.Count);
 
             return View(list);
         }

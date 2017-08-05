@@ -34,7 +34,7 @@ using Voat.Data.Models;
 namespace Voat.Domain.Query
 {
 
-    public class QueryModLogBannedUsers : QuerySubverseBase<IEnumerable<Domain.Models.SubverseBan>>
+    public class QueryModLogBannedUsers : QuerySubverseBase<Tuple<int, IEnumerable<Domain.Models.SubverseBan>>>
     {
         public QueryModLogBannedUsers(string subverse, SearchOptions options) : base(subverse, options)
         {
@@ -49,7 +49,7 @@ namespace Voat.Domain.Query
             }
         }
 
-        protected override async Task<IEnumerable<Domain.Models.SubverseBan>> GetData()
+        protected override async Task<Tuple<int,IEnumerable<Domain.Models.SubverseBan>>> GetData()
         {
             using (var repo = new Repository(User))
             {

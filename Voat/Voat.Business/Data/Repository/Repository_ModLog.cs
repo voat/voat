@@ -36,7 +36,7 @@ namespace Voat.Data
 {
     public partial class Repository
     {
-        public async Task<IEnumerable<Domain.Models.SubverseBan>> GetModLogBannedUsers(string subverse, SearchOptions options)
+        public async Task<Tuple<int, IEnumerable<Domain.Models.SubverseBan>>> GetModLogBannedUsers(string subverse, SearchOptions options)
         {
             using (var db = new VoatDataContext(CONSTANTS.CONNECTION_READONLY))
             {
@@ -51,9 +51,11 @@ namespace Voat.Data
                                 ID = b.ID,
                                 UserName = b.UserName
                             });
+                //This is nasty imo
+                var count = data.Count();
                 data = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
                 var results = await data.ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
-                return results;
+                return Tuple.Create(count, results.AsEnumerable());
             }
         }
         public async Task<IEnumerable<Data.Models.SubmissionRemovalLog>> GetModLogRemovedSubmissions(string subverse, SearchOptions options)
