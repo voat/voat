@@ -42,7 +42,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0 || String.IsNullOrWhiteSpace(domainName) || pageNumber > 9)
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
             if (domainName.Length < 4)
             {

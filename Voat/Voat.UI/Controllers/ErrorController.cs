@@ -36,73 +36,24 @@ namespace Voat.Controllers
     {
         public ActionResult Index()
         {
-            return Type("index");
+            return Type(ErrorType.Default);
         }
-        public ActionResult Type(string type)
+        public ActionResult Type(ErrorType type)
         {
             
             var viewName = "Index";
-            var errorModel = GetErrorViewModel(type);
+            var errorModel = ErrorViewModel.GetErrorViewModel(type);
             return View(viewName, errorModel);
         }
-        public static ViewResult ErrorView(string type, ErrorViewModel model = null)
+        public static ViewResult ErrorView(ErrorType type, ErrorViewModel model = null)
         {
             var viewData = new ViewDataDictionary<ErrorViewModel>(new EmptyModelMetadataProvider(), new ModelStateDictionary());
-            viewData.Model = model == null ? GetErrorViewModel(type) : model;
+            viewData.Model = model == null ? ErrorViewModel.GetErrorViewModel(type) : model;
             return new ViewResult()
             {
                 ViewName = "~/Views/Error/Index.cshtml",
                 ViewData = viewData
             };
-        }
-        public static ErrorViewModel GetErrorViewModel(string type)
-        {
-            var errorModel = new ErrorViewModel();
-            type = type.TrimSafe();
-            if (!string.IsNullOrEmpty(type))
-            {
-                switch (type.ToLower())
-                {
-                    case "disabled":
-                        errorModel.Title = "Subverse Disabled";
-                        errorModel.Description = @"<h1>The subverse you were looking for has been disabled and is no longer accessible</h1>
-                                                    <p>If you are a moderator of this subverse you may contact Voat for information regarding why this subverse is no longer active</p>";
-                        //errorModel.FooterMessage = "";
-                        break;
-                    case "exists":
-                        errorModel.Title = "Mesosad!";
-                        errorModel.Description = "<h1>The subverse you were trying to create already exists. Sorry about that. Try another name?</h1>";
-                        errorModel.Footer = "Care to go back and try another name?";
-                        break;
-                    case "unathorized":
-                        errorModel.Title = "Hold on there fella!";
-                        errorModel.Description = "<h1>You were not supposed to be poking around here.</h1>";
-                        errorModel.Footer = "How about you stop poking around? :)";
-                        break;
-                    case "others":
-                        //errorModel.ShowGoat = false;
-                        errorModel.Title = "The Others";
-                        errorModel.Description = "<span style=\"font-size:10em;font-family:Verdana;\">O_o</span><p>This is not the place you think it is</p>";
-                        errorModel.Footer = "Hmmm...";
-                        break;
-                    case "subversenotfound":
-                        //errorModel.ShowGoat = false;
-                        errorModel.Title = "Whoops!";
-                        errorModel.Description = "<h1>The subverse you were looking for could not be found. Are you sure you typed it right? Also, I may have umm... eaten it.</h1>";
-                        errorModel.Footer = "Pushing F5 repeatedly will not help";
-                        break;
-                    case "notfound":
-                        //errorModel.ShowGoat = false;
-                        errorModel.Title = "Whoops!";
-                        errorModel.Description = "<h1>The thing you were looking for could not be found. Are you sure you typed it right? Also, I may have eaten it.</h1>";
-                        errorModel.Footer = "Pushing F5 repeatedly will not help";
-                        break;
-                    case "throw":
-                        throw new InvalidOperationException("I was told to do this");
-                        break;
-                }
-            }
-            return errorModel;
         }
     }
 }

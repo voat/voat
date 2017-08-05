@@ -28,6 +28,7 @@ using System;
 using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Data;
+using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Http.Filters;
 using Voat.Models.ViewModels;
@@ -55,7 +56,7 @@ namespace Voat.Controllers
                 //check perms
                 if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.AccessReports))
                 {
-                    return UnAuthorizedErrorView();
+                    return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.Unathorized));
                 }
             }
             //TODO: Implement Command/Query - Remove direct Repository access
@@ -122,8 +123,13 @@ namespace Voat.Controllers
             else
             {
                 PreventSpamAttribute.Reset(HttpContext);
-                return JsonError(ModelState.GetFirstErrorMessage());
+                return JsonResult(CommandResponse.FromStatus(Status.Error, ModelState.GetFirstErrorMessage()));
             }
+        }
+
+        private ActionResult JsonResult(string v)
+        {
+            throw new NotImplementedException();
         }
         #endregion
 

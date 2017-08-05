@@ -24,6 +24,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Voat.Models.ViewModels;
 
 namespace Voat.Controllers
 {
@@ -35,8 +36,12 @@ namespace Voat.Controllers
         // GET: CommentReplyForm
         public ActionResult CommentReplyForm(int? parentCommentId, int? messageId)
         {
-            if (parentCommentId == null || messageId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
+            if (parentCommentId == null || messageId == null)
+            {
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            
             ViewBag.MessageId = messageId;
             ViewBag.ParentCommentId = parentCommentId;
 
@@ -46,7 +51,11 @@ namespace Voat.Controllers
         // GET: PrivateMessageReplyForm
         public ActionResult PrivateMessageReplyForm(int? parentPrivateMessageId, string recipient, string subject)
         {
-            if (parentPrivateMessageId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (parentPrivateMessageId == null)
+            {
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             ViewBag.ParentPrivateMessageId = parentPrivateMessageId;
             ViewBag.Recipient = recipient;
             ViewBag.Subject = subject;

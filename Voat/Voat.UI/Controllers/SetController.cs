@@ -523,7 +523,7 @@ namespace Voat.Controllers
 
         //    if (pageNumber < 0)
         //    {
-        //        return NotFoundErrorView();
+        //        return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
         //    }
 
         //    try
@@ -556,7 +556,7 @@ namespace Voat.Controllers
 
         //    if (pageNumber < 0)
         //    {
-        //        return NotFoundErrorView();
+        //        return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
         //    }
 
         //    try
@@ -658,7 +658,7 @@ namespace Voat.Controllers
 
         //    if (pageNumber < 0)
         //    {
-        //        return NotFoundErrorView();
+        //        return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
         //    }
 
         //    // load user sets for logged in user
@@ -682,7 +682,7 @@ namespace Voat.Controllers
 
         //    if (pageNumber < 0)
         //    {
-        //        return NotFoundErrorView();
+        //        return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
         //    }
 
         //    // load user owned sets for logged in user

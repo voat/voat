@@ -78,14 +78,16 @@ namespace Voat.Controllers
 
             if (subverseObject == null || id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             var submission = DataCache.Submission.Retrieve(id);
 
             if (submission == null || submission.Subverse != subverse)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             // check if caller is subverse owner or moderator, if not, deny listing
@@ -158,7 +160,8 @@ namespace Voat.Controllers
                 submissionModel.MessageContent = Formatting.FormatMessage(submissionModel.MessageContent, true);
                 return PartialView("~/Views/AjaxViews/_MessageContent.cshtml", submissionModel);
             }
-            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            return HybridError(ErrorViewModel.GetErrorViewModel(HttpStatusCode.BadRequest));
+            //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
         // POST: preview stylesheet

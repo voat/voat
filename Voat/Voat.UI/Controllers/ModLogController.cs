@@ -33,6 +33,7 @@ using Voat.Caching;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Query;
+using Voat.Models.ViewModels;
 using Voat.Utilities;
 
 namespace Voat.Controllers
@@ -51,7 +52,7 @@ namespace Voat.Controllers
                 if (subverseObject.IsAdminDisabled.HasValue && subverseObject.IsAdminDisabled.Value)
                 {
                     ViewBag.Subverse = subverseObject.Name;
-                    return SubverseDisabledErrorView();
+                    return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseDisabled));
                 }
             }
             var options = new SearchOptions(Request.QueryString.Value);
@@ -75,7 +76,7 @@ namespace Voat.Controllers
                 if (subverseObject.IsAdminDisabled.HasValue && subverseObject.IsAdminDisabled.Value)
                 {
                     ViewBag.Subverse = subverseObject.Name;
-                    return SubverseDisabledErrorView();
+                    return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseDisabled));
                 }
             }
 
@@ -98,7 +99,7 @@ namespace Voat.Controllers
                 if (subverseObject.IsAdminDisabled.HasValue && subverseObject.IsAdminDisabled.Value)
                 {
                     ViewBag.Subverse = subverseObject.Name;
-                    return SubverseDisabledErrorView();
+                    return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseDisabled));
                 }
             }
             var options = new SearchOptions(Request.QueryString.Value);

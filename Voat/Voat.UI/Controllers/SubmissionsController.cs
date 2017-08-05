@@ -53,22 +53,29 @@ namespace Voat.Controllers
         {
             if (submissionID == null || flairId == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var submission = _db.Submission.Find(submissionID);
             if (submission == null || submission.IsDeleted)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             if (!ModeratorPermission.HasPermission(User, submission.Subverse, Domain.Models.ModeratorAction.AssignFlair))
             {
-                return new HttpUnauthorizedResult();
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.Unathorized));
+                //return new HttpUnauthorizedResult();
             }
 
             // find flair by id, apply it to submission
             var flairModel = _db.SubverseFlair.Find(flairId);
-            if (flairModel == null || flairModel.Subverse != submission.Subverse) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (flairModel == null || flairModel.Subverse != submission.Subverse)
+            {
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+            }
+            //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             // apply flair and save submission
             submission.FlairCss = flairModel.CssClass;
@@ -76,7 +83,8 @@ namespace Voat.Controllers
             _db.SaveChanges();
             DataCache.Submission.Remove(submissionID.Value);
 
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
+            return JsonResult(CommandResponse.FromStatus(Status.Success));
+            //return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         // POST: clear link flair from a given submission
@@ -87,14 +95,16 @@ namespace Voat.Controllers
         {
             if (submissionID == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             // get model for selected submission
             var submissionModel = _db.Submission.Find(submissionID);
 
             if (submissionModel == null || submissionModel.IsDeleted)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             // check if caller is subverse moderator, if not, deny posting
             if (!ModeratorPermission.HasPermission(User, submissionModel.Subverse, Domain.Models.ModeratorAction.AssignFlair))
@@ -107,7 +117,9 @@ namespace Voat.Controllers
             submissionModel.FlairLabel = null;
             _db.SaveChanges();
             DataCache.Submission.Remove(submissionID.Value);
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
+
+            return JsonResult(CommandResponse.FromStatus(Status.Success));
+            //return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         // POST: toggle sticky status of a submission
@@ -150,13 +162,15 @@ namespace Voat.Controllers
             {
                 DataCache.Submission.Remove(model.SubmissionId);
                 CacheHandler.Instance.Remove(CachingKey.Submission(model.SubmissionId));
-                return Json(new { response = response.Response.FormattedContent });
+                //return Json(new { response = response.Response.FormattedContent });
 
             }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
-            }
+            //else
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
+            //}
+
+            return JsonResult(response);
             
         }
 
@@ -168,32 +182,34 @@ namespace Voat.Controllers
         {
             var cmd = new DeleteSubmissionCommand(id, "This feature is not yet implemented").SetUserContext(User);
             var result = await cmd.Execute();
-            if (result.Success)
-            {
-                if (Request.IsAjaxRequest())
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.OK, result.Message);
-                }
-                else
-                {
-                    //CORE_PORT: Not Ported
-                    throw new NotImplementedException("Core port not implemented");
-                    //return Redirect(Request.Url.AbsolutePath);
-                }
-            }
-            else
-            {
-                if (Request.IsAjaxRequest())
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, result.Message);
-                }
-                else
-                {  
-                    //CORE_PORT: Not Ported
-                    throw new NotImplementedException("Core port not implemented");
-                    //return Redirect(Request.Url.AbsolutePath);
-                }
-            }
+
+            return JsonResult(result);
+            //if (result.Success)
+            //{
+            //    if (Request.IsAjaxRequest())
+            //    {
+            //        return new HttpStatusCodeResult(HttpStatusCode.OK, result.Message);
+            //    }
+            //    else
+            //    {
+            //        //CORE_PORT: Not Ported
+            //        throw new NotImplementedException("Core port not implemented");
+            //        //return Redirect(Request.Url.AbsolutePath);
+            //    }
+            //}
+            //else
+            //{
+            //    if (Request.IsAjaxRequest())
+            //    {
+            //        return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, result.Message);
+            //    }
+            //    else
+            //    {  
+            //        //CORE_PORT: Not Ported
+            //        throw new NotImplementedException("Core port not implemented");
+            //        //return Redirect(Request.Url.AbsolutePath);
+            //    }
+            //}
         }
         [HttpGet]
         [Authorize]
@@ -202,7 +218,7 @@ namespace Voat.Controllers
 
             if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.DeletePosts))
             {
-                return new HttpUnauthorizedResult();
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.Unathorized));
             }
 
             //New Domain Submission

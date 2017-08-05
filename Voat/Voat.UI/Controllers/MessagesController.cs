@@ -344,29 +344,30 @@ namespace Voat.Controllers
             var cmd = new SendMessageReplyCommand(message.ID, message.Body).SetUserContext(User);
             var response = await cmd.Execute();
 
-            if (response.Success)
-            {
-                if (Request.IsAjaxRequest())
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return RedirectToAction("Sent", "Messages");
-                }
-            }
-            else
-            {
-                if (Request.IsAjaxRequest())
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, response.Message);
-                    return View();
-                }
-            }
+            return JsonResult(response);
+            //if (response.Success)
+            //{
+            //    if (Request.IsAjaxRequest())
+            //    {
+            //        return new HttpStatusCodeResult(HttpStatusCode.OK);
+            //    }
+            //    else
+            //    {
+            //        return RedirectToAction("Sent", "Messages");
+            //    }
+            //}
+            //else
+            //{
+            //    if (Request.IsAjaxRequest())
+            //    {
+            //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
+            //    }
+            //    else
+            //    {
+            //        ModelState.AddModelError(string.Empty, response.Message);
+            //        return View();
+            //    }
+            //}
         }
 
         //url: messageRoot + "/mark/{type}/{action}/{id}",
@@ -385,14 +386,15 @@ namespace Voat.Controllers
             var cmd = new MarkMessagesCommand(ownerName, ownerType, type, markAction, id).SetUserContext(User);
             var response = await cmd.Execute();
 
-            if (response.Success)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.OK);
-            }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
-            }
+            return JsonResult(response);
+            //if (response.Success)
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.OK);
+            //}
+            //else
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
+            //}
         }
 
         //url: messageRoot + "/delete/{type}/{id}",
@@ -411,14 +413,15 @@ namespace Voat.Controllers
             var cmd = new DeleteMessagesCommand(ownerName, ownerType, type, id).SetUserContext(User);
             var response = await cmd.Execute();
 
-            if (response.Success)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.OK);
-            }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
-            }
+            return JsonResult(response);
+            //if (response.Success)
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.OK);
+            //}
+            //else
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
+            //}
         }
 
         public async Task<ActionResult> SubverseIndex(string subverse, MessageTypeFlag type, MessageState? state = null, int? page = null)

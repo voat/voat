@@ -105,26 +105,26 @@ namespace Voat.Controllers
 
             if (submission == null)
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
 
             // make sure that the combination of selected subverse and submission subverse are linked
             if (!submission.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
 
             var subverse = DataCache.Subverse.Retrieve(subverseName);
 
             if (subverse == null)
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
 
             if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
             {
                 ViewBag.Subverse = subverse.Name;
-                return SubverseDisabledErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseDisabled));
             }
 
             #endregion
@@ -209,20 +209,20 @@ namespace Voat.Controllers
 
             if (submission == null)
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
 
             var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
             if (subverse == null)
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
 
             if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
             {
                 ViewBag.Subverse = subverse.Name;
-                return SubverseDisabledErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseDisabled));
             }
 
             #endregion
@@ -257,20 +257,20 @@ namespace Voat.Controllers
 
             if (submission == null)
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
 
             var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
 
             if (subverse == null)
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
 
             if (subverse.IsAdminDisabled.HasValue && subverse.IsAdminDisabled.Value)
             {
                 ViewBag.Subverse = subverse.Name;
-                return SubverseDisabledErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseDisabled));
             }
 
             #endregion
@@ -291,7 +291,7 @@ namespace Voat.Controllers
         // GET: submitcomment
         public ActionResult SubmitComment()
         {
-            return NotFoundErrorView();
+            return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
         }
 
         // POST: submitcomment, adds a new root comment
@@ -301,21 +301,9 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SubmitComment([Bind("ID, Content, SubmissionID, ParentID")] Data.Models.Comment commentModel)
         {
-
-            //return JsonError("This is an error message");
-
             if (!ModelState.IsValid)
             {
-                //Model isn't valid, can include throttling
-                if (Request.IsAjaxRequest())
-                {
-                    return JsonError(ModelState.GetFirstErrorMessage());
-                }
-                else
-                {
-                    ModelState.AddModelError(String.Empty, "Sorry, you are either banned from this sub or doing that too fast. Please try again in 2 minutes.");
-                    return View("~/Views/Help/SpeedyGonzales.cshtml");
-                }
+                return JsonResult(CommandResponse.FromStatus(Status.Error, ModelState.GetFirstErrorMessage()));
             }
             else
             {
@@ -340,7 +328,7 @@ namespace Voat.Controllers
                 }
                 else
                 {
-                    return JsonError(result.Message);
+                    return JsonResult(result);
                 }
             }
         }
@@ -357,19 +345,15 @@ namespace Voat.Controllers
                 var cmd = new EditCommentCommand(commentModel.ID, commentModel.Content).SetUserContext(User);
                 var result = await cmd.Execute();
 
-                if (result.Success)
-                {
-                    return Json(new { response = result.Response.FormattedContent });
-                }
-                else
+                if (!result.Success)
                 {
                     PreventSpamAttribute.Reset(HttpContext);
-                    return JsonError(result.Message);
                 }
+                return JsonResult(result);
             }
             else
             {
-                return JsonError(ModelState.GetFirstErrorMessage());
+                return JsonResult(CommandResponse.FromStatus(Status.Error, ModelState.GetFirstErrorMessage()));
             }
         }
         // POST: deletecomment
@@ -382,26 +366,12 @@ namespace Voat.Controllers
             {
                 var cmd = new DeleteCommentCommand(id, "This feature is not yet implemented").SetUserContext(User);
                 var result = await cmd.Execute();
-
-                if (result.Success)
-                {
-                    if (Request.IsAjaxRequest())
-                    {
-                        return new HttpStatusCodeResult(HttpStatusCode.OK);
-                    }
-                    //CORE_PORT: Not ported
-                    throw new NotImplementedException("Core port");
-                    //var url = Request.UrlReferrer.AbsolutePath;
-                    //return Redirect(url);
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, result.Message);
-                }
+                return base.JsonResult(result);
             }
             else
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return base.JsonResult(CommandResponse.FromStatus(Status.Error, ModelState.GetFirstErrorMessage()));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
 

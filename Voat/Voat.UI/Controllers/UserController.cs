@@ -57,7 +57,7 @@ namespace Voat.Controllers
             var originalUserName = UserHelper.OriginalUsername(userName);
             if (String.IsNullOrEmpty(originalUserName))
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
             ViewBag.UserName = originalUserName;
             ViewBag.NavigationViewModel = new NavigationViewModel()
@@ -73,13 +73,13 @@ namespace Voat.Controllers
         {
             if (page.HasValue && page.Value < 0)
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
 
             var originalUserName = UserHelper.OriginalUsername(userName);
             if (String.IsNullOrEmpty(originalUserName))
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
             ViewBag.UserName = originalUserName;
 
@@ -117,14 +117,14 @@ namespace Voat.Controllers
         {
             if (page.HasValue && page.Value < 0)
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
 
 
             var originalUserName = UserHelper.OriginalUsername(userName);
             if (String.IsNullOrEmpty(originalUserName))
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
             ViewBag.UserName = originalUserName;
 
@@ -159,13 +159,13 @@ namespace Voat.Controllers
         {
             if (page.HasValue && page.Value < 0)
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
 
             var originalUserName = UserHelper.OriginalUsername(userName);
             if (String.IsNullOrEmpty(originalUserName))
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
             if (!User.Identity.IsAuthenticated || (User.Identity.IsAuthenticated && !User.Identity.Name.Equals(originalUserName, StringComparison.OrdinalIgnoreCase)))
             {
@@ -297,7 +297,7 @@ namespace Voat.Controllers
 
                     //if (pageNumber < 0)
                     //{
-                    //    return NotFoundErrorView();
+                    //    return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
                     //}
                     //string userName = User.Identity.Name;
                     //// get a list of user blocked subverses with details and order by subverse name, ascending
@@ -334,7 +334,7 @@ namespace Voat.Controllers
 
             if (String.IsNullOrEmpty(originalUserName))
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
 
             ViewBag.UserName = originalUserName;
@@ -414,14 +414,16 @@ namespace Voat.Controllers
         {
             var cmd = new SaveCommand(contentType, id).SetUserContext(User);
             var response = await cmd.Execute();
-            if (response.Success)
-            {
-                return Json(new { success = true });
-            }
-            else
-            {
-                return JsonError(response.Message);
-            }
+
+            return JsonResult(response);
+            //if (response.Success)
+            //{
+            //    return Json(new { success = true });
+            //}
+            //else
+            //{
+            //    return JsonError(response.Message);
+            //}
         }
 
         [HttpPost]

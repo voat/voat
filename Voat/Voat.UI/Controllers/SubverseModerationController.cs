@@ -70,7 +70,7 @@ namespace Voat.Controllers
             if (subverseObject == null)
             {
                 ViewBag.SelectedSubverse = "404";
-                return SubverseNotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
             }
 
             if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.ModifySettings))
@@ -232,7 +232,7 @@ namespace Voat.Controllers
             if (subverseObject == null)
             {
                 ViewBag.SelectedSubverse = "404";
-                return SubverseNotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
             }
             if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.ModifyCSS))
             {
@@ -325,7 +325,8 @@ namespace Voat.Controllers
             var subverseObject = DataCache.Subverse.Retrieve(subverse);
             if (subverseObject == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.InviteMods))
@@ -363,14 +364,17 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
 
             // get model for selected subverse
             var subverseObject = DataCache.Subverse.Retrieve(subverse);
 
             if (subverseObject == null)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            {
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
             if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.Banning))
             {
@@ -490,7 +494,8 @@ namespace Voat.Controllers
 
             if (banToBeRemoved == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             else
             {
@@ -521,14 +526,16 @@ namespace Voat.Controllers
         {
             if (invitationId == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             var moderatorInvitation = _db.ModeratorInvitation.Find(invitationId);
 
             if (moderatorInvitation == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             if (!ModeratorPermission.HasPermission(User, moderatorInvitation.Subverse, Domain.Models.ModeratorAction.InviteMods))
             {
@@ -557,15 +564,16 @@ namespace Voat.Controllers
             var invitationToBeRemoved = await _db.ModeratorInvitation.FindAsync(invitationId);
             if (invitationToBeRemoved == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             // check if subverse exists
             var subverse = DataCache.Subverse.Retrieve(invitationToBeRemoved.Subverse);
             if (subverse == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             // check if caller has clearance to remove a moderator invitation
@@ -596,7 +604,8 @@ namespace Voat.Controllers
         {
             if (subverse == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             var subModerator = _db.SubverseModerator.FirstOrDefault(s => s.Subverse == subverse && s.UserName == User.Identity.Name);
@@ -625,13 +634,15 @@ namespace Voat.Controllers
 
             if (subModerator == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             var subverseObject = DataCache.Subverse.Retrieve(subModerator.Subverse);
             if (subverseObject == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             // execute removal
@@ -655,7 +666,8 @@ namespace Voat.Controllers
 
             if (subverseObject == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             // check if caller is authorized for this sub, if not, deny listing
@@ -687,7 +699,8 @@ namespace Voat.Controllers
 
             if (subverseObject == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             //check perms
@@ -723,7 +736,10 @@ namespace Voat.Controllers
             // get model for selected subverse
             var subverseModel = DataCache.Subverse.Retrieve(subverseFlairSetting.Subverse);
             if (subverseModel == null)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            {
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
             subverseFlairSetting.Subverse = subverseModel.Name;
             _db.SubverseFlair.Add(subverseFlairSetting);
@@ -738,7 +754,8 @@ namespace Voat.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             var subverseFlairSetting = _db.SubverseFlair.Find(id);
@@ -766,12 +783,14 @@ namespace Voat.Controllers
             var linkFlairToRemove = await _db.SubverseFlair.FindAsync(id);
             if (linkFlairToRemove == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var subverse = DataCache.Subverse.Retrieve(linkFlairToRemove.Subverse);
             if (subverse == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             // check if caller has clearance to remove a link flair
@@ -799,13 +818,15 @@ namespace Voat.Controllers
             var userInvitation = _db.ModeratorInvitation.Find(invitationId);
             if (userInvitation == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return ErrorView(new ErrorViewModel() { Title = "Moderator Invite Not Found", Description = "The moderator invite is no longer valid", Footer = "Where did it go?" });
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             // check if logged in user is actually the invited user
             if (!User.Identity.Name.Equals(userInvitation.Recipient, StringComparison.OrdinalIgnoreCase))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+                return ErrorView(ErrorViewModel.GetErrorViewModel(HttpStatusCode.Unauthorized));
+                //return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
 
             // check if user is over modding limits
@@ -823,14 +844,16 @@ namespace Voat.Controllers
             var subverse = _db.Subverse.FirstOrDefault(s => s.Name.Equals(userInvitation.Subverse, StringComparison.OrdinalIgnoreCase));
             if (subverse == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             // check if user is already a moderator of this sub
             var userModerating = _db.SubverseModerator.Where(s => s.Subverse.Equals(userInvitation.Subverse, StringComparison.OrdinalIgnoreCase) && s.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
             if (userModerating.Any())
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return ErrorView(new ErrorViewModel(){ Title = "You = Moderator * 2?",  Description = "You are currently already a moderator of this subverse", Footer = "How much power do you want?" });
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             // add user as moderator as specified in invitation
@@ -874,7 +897,8 @@ namespace Voat.Controllers
             var subverseObject = DataCache.Subverse.Retrieve(subverse);
             if (subverseObject == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.InviteMods))
@@ -944,7 +968,8 @@ namespace Voat.Controllers
             subverseModel = DataCache.Subverse.Retrieve(subverseAdmin.Subverse);
             if (subverseModel == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             if ((subverseAdmin.Power < 1 || subverseAdmin.Power > 4) && subverseAdmin.Power != 99)
@@ -1035,7 +1060,8 @@ namespace Voat.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             var subModerator = _db.SubverseModerator.Find(id);

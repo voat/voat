@@ -25,9 +25,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
+using System.Net;
+using Voat.Configuration;
 using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
+using Voat.Http;
 using Voat.Models.ViewModels;
 
 namespace Voat.Controllers
@@ -47,65 +50,142 @@ namespace Voat.Controllers
         }
 
         #region JSON Responses
-        //These are beginning port to api structures
-        protected JsonResult JsonError(string type, string message)
-        {
-            //Response.StatusCode = 400;
-            return Json(new { success = false, error = new { type = type, message = message } });
-        }
-        protected JsonResult JsonError(string message)
-        {
-            return JsonError("General", message);
-        }
+       
         protected JsonResult JsonResult(CommandResponse response)
         {
-            if (response.Success)
+            return Json(MapToApiShimResponse(response));
+            //if (response.Success)
+            //{
+            //    return Json(new { success = true });
+            //}
+            //else
+            //{
+            //    return JsonError(response.Message);
+            //}
+        }
+        protected JsonResult JsonResult<T>(CommandResponse<T> response) 
+        {
+            return Json(MapToApiShimResponse(response));
+            //if (response.Success)
+            //{
+            //    return Json(new { success = true, data = response.Response });
+            //}
+            //else
+            //{
+            //    return JsonError(response.Message);
+            //}
+        }
+        private object MapToApiShimResponse(CommandResponse response)
+        {
+            // {
+            //    success: false, //all errors return false.
+            //    error: {
+            //        type: "NotFound", //the type of error that occured
+            //        message: "Subverse 'IJustMakeUpStuff' does not exist." //a message describing error
+            //    }
+            //}
+
+            if (response != null)
             {
-                return Json(new { success = true });
+                if (response.Success)
+                {
+                    return new { success = true };
+                    //return new ApiDataResponse<T>(response.Response);
+                }
+                else
+                {
+                    if (response.Exception != null)
+                    {
+                        if (VoatSettings.Instance.IsDevelopment)
+                        {
+                            return new { success = false, error = new { type = response.Exception.GetType().FullName, message = response.Exception.ToString() } };
+                        }
+                        else
+                        {
+                            return new { success = false, error = new { type = "ServerException", message = "An exception has been encountered." } };
+                        }
+                    }
+                    else
+                    {
+                        return new { success = false, error = new { type = response.Status, message = response.Message } };
+                    }
+                }
             }
             else
             {
-                return JsonError(response.Message);
+                return new { success = true, error = new { type = "NotFound", message = "Not Found" } };
             }
         }
-        protected JsonResult JsonResult<T>(CommandResponse<T> response)
+        private object MapToApiShimResponse<T>(CommandResponse<T> response)
         {
-            if (response.Success)
+            // {
+            //    success: false, //all errors return false.
+            //    error: {
+            //        type: "NotFound", //the type of error that occured
+            //        message: "Subverse 'IJustMakeUpStuff' does not exist." //a message describing error
+            //    }
+            //}
+            
+            if (response != null)
             {
-                return Json(new { success = true, data = response.Response });
+                if (response.Success)
+                {
+                    return new { success = true, data = response.Response };
+                    //return new ApiDataResponse<T>(response.Response);
+                }
+                else
+                {
+                    //Use defaults
+                    return MapToApiShimResponse((CommandResponse)response);
+                    //if (response.Exception != null)
+                    //{
+                    //    if (VoatSettings.Instance.IsDevelopment)
+                    //    {
+                    //        return new { success = false, error = new { type = response.Exception.GetType().FullName, message = response.Exception.ToString() } };
+                    //    }
+                    //    else
+                    //    {
+                    //        return new { success = false, error = new { type = "ServerException", message = "An exception has been encountered." } };
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    return new { success = false, error = new { type = response.Status, message = response.Message } };
+                    //}
+                }
             }
             else
             {
-                return JsonError(response.Message);
+                return new { success = true, error = new { type = "NotFound", message = "Not Found" } };
             }
         }
         #endregion
 
         #region Error View Accessors
-       
+
         protected ViewResult ErrorView(ErrorViewModel model = null)
         {
-            return ErrorController.ErrorView("generic", model);
+            return ErrorController.ErrorView(ErrorType.Default, model);
         }
-        protected ViewResult NotFoundErrorView()
-        {
-            return ErrorController.ErrorView("notfound");
-        }
-        protected ViewResult UnAuthorizedErrorView()
-        {
-            return ErrorController.ErrorView("unathorized");
-        }
-        protected ViewResult SubverseDisabledErrorView()
-        {
-            return ErrorController.ErrorView("disabled");
-        }
-        protected ActionResult SubverseNotFoundErrorView()
-        {
-            return ErrorController.ErrorView("subversenotfound");
-        }
-
         #endregion
 
+        #region Hybrid Ajax Errors
+        //These are meant to bridge the gap between the UI and ajax calls.
+
+        protected ActionResult HybridError(ErrorViewModel errorViewModel)
+        {
+            if (Request.IsAjaxRequest())
+            {
+                return JsonResult(CommandResponse.FromStatus(Status.Error, errorViewModel.Description));
+            }
+            else
+            {
+                return ErrorView(errorViewModel);
+            }
+        }
+
+
+        #endregion
         protected string ViewPath(DomainReference domainReference)
         {
             var isRetro = Request.IsCookiePresent("view", "retro", this.Response, TimeSpan.FromDays(7));

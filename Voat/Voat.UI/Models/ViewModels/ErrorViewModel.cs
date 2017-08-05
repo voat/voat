@@ -25,10 +25,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
+using Voat.Common;
 
 namespace Voat.Models.ViewModels
 {
+    public enum ErrorType
+    {
+        SubverseDisabled,
+        SubvereExists,
+        Unathorized,
+        TheOthers,
+        SubverseNotFound,
+        NotFound,
+        ThrowException,
+        Default
+    }
     public class ErrorViewModel
     {
         public ErrorViewModel() { }
@@ -46,6 +59,65 @@ namespace Voat.Models.ViewModels
         public string Footer { get; set; } = "Thank you for being a chap.";
 
 
+        public static ErrorViewModel GetErrorViewModel(HttpStatusCode code)
+        {
+            switch (code)
+            {
+                case HttpStatusCode.Forbidden:
+                case HttpStatusCode.Unauthorized:
+                    return GetErrorViewModel(ErrorType.Unathorized);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(code), "The status code you provided is not handled. Update your code.");
+                    break;
+            }
+        }
+        public static ErrorViewModel GetErrorViewModel(ErrorType type)
+        {
+            var errorModel = new ErrorViewModel();
+                switch (type)
+                {
+                    case ErrorType.SubverseDisabled:
+                        errorModel.Title = "Subverse Disabled";
+                        errorModel.Description = @"The subverse you were looking for has been disabled and is no longer accessible
+                                                    <p>If you are a moderator of this subverse you may contact Voat for information regarding why this subverse is no longer active</p>";
+                        //errorModel.FooterMessage = "";
+                        break;
+                    case ErrorType.SubvereExists:
+                        errorModel.Title = "Mesosad!";
+                        errorModel.Description = "The subverse you were trying to create already exists. Sorry about that. Try another name?";
+                        errorModel.Footer = "Care to go back and try another name?";
+                        break;
+                case ErrorType.Unathorized:
+                        errorModel.Title = "Hold on there fella!";
+                        errorModel.Description = "You were not supposed to be poking around here.</h1>";
+                        errorModel.Footer = "How about you stop poking around? :)";
+                        break;
+                case ErrorType.TheOthers:
+                        //errorModel.ShowGoat = false;
+                        errorModel.Title = "The Others";
+                        errorModel.Description = "<span style=\"font-size:10em;font-family:Verdana;\">O_o</span><p>This is not the place you think it is</p>";
+                        errorModel.Footer = "Hmmm...";
+                        break;
+                case ErrorType.SubverseNotFound:
+                        //errorModel.ShowGoat = false;
+                        errorModel.Title = "Whoops!";
+                        errorModel.Description = "The subverse you were looking for could not be found. Are you sure you typed it right? Also, I may have umm... eaten it.";
+                        errorModel.Footer = "Pushing F5 repeatedly will not help";
+                        break;
+                case ErrorType.NotFound:
+                        //errorModel.ShowGoat = false;
+                        errorModel.Title = "Whoops!";
+                        errorModel.Description = "The thing you were looking for could not be found. Are you sure you typed it right? Also, I may have eaten it.";
+                        errorModel.Footer = "Pushing F5 repeatedly will not help";
+                        break;
+                    case ErrorType.ThrowException:
+                        throw new InvalidOperationException("I was told to do this");
+                        break;
+                }
+            
+            return errorModel;
+        }
 
     }
 }

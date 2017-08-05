@@ -124,7 +124,7 @@ namespace Voat.Controllers
         public ActionResult Subversenotfound()
         {
             ViewBag.SelectedSubverse = "404";
-            return SubverseNotFoundErrorView();
+            return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
         }
 
         public ActionResult AdultContentFiltered(string destination)
@@ -378,7 +378,7 @@ namespace Voat.Controllers
                     if (subverseObject == null)
                     {
                         ViewBag.SelectedSubverse = "404";
-                        return SubverseNotFoundErrorView();
+                        return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
                     }
 
                     //HACK: Disable subverse
@@ -386,7 +386,7 @@ namespace Voat.Controllers
                     {
                         //viewProperties.Subverse = subverseObject.Name;
                         ViewBag.Subverse = subverseObject.Name;
-                        return SubverseDisabledErrorView();
+                        return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseDisabled));
                     }
 
                     //Check NSFW Settings
@@ -555,7 +555,7 @@ namespace Voat.Controllers
 
         //    if (pageNumber < 0)
         //    {
-        //        return NotFoundErrorView();
+        //        return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
         //    }
 
         //    try
@@ -628,7 +628,7 @@ namespace Voat.Controllers
 
             //if (pageNumber < 0)
             //{
-            //    return NotFoundErrorView();
+            //    return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             //}
 
             //// get a list of subcribed subverses with details and order by subverse names, ascending
@@ -664,7 +664,7 @@ namespace Voat.Controllers
 
         //    if (pageNumber < 0)
         //    {
-        //        return NotFoundErrorView();
+        //        return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
         //    }
 
         //    var subverses = _db.Subverses.Where(s => s.Description != null).OrderByDescending(s => s.CreationDate);
@@ -694,7 +694,7 @@ namespace Voat.Controllers
 
         //    if (pageNumber < 0)
         //    {
-        //        return NotFoundErrorView();
+        //        return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
         //    }
         //    var subverses = CacheHandler.Instance.Register("Legacy:ActiveSubverses", new Func<IList<Subverse>>(() => {
         //        using (var db = new VoatUIDataContextAccessor())

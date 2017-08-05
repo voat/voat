@@ -900,19 +900,25 @@ function editSubmission(submissionid) {
             $("#submissionid-" + submissionid + " span.field-validation-error").html(msg);
 
         },
-        success: function (data) {
+        success: function (response) {
 
-            //this has to be called beforehand - to busy to fix it correctly right now
-            removeSubmissionEditForm(submissionid);
+            if (response.success) {
+                //this has to be called beforehand - to busy to fix it correctly right now
+                removeSubmissionEditForm(submissionid);
 
-            var textElement = $("#submissionid-" + submissionid + " .usertext-body");
-            textElement.children('div').first().html(data.response); //set new content
-            textElement.show();
-            window.setTimeout(function () { UI.Notifications.raise('DOM', $("#submissionid-" + submissionid)); });
-            //remove edit form
-           
-            //clear any error msgs
-            $("#submissionid-" + submissionid + " span.field-validation-error").html('');
+                var textElement = $("#submissionid-" + submissionid + " .usertext-body");
+                textElement.children('div').first().html(response.data.formattedContent); //set new content
+                textElement.show();
+                window.setTimeout(function () { UI.Notifications.raise('DOM', $("#submissionid-" + submissionid)); });
+                //remove edit form
+
+                //clear any error msgs
+                $("#submissionid-" + submissionid + " span.field-validation-error").html('');
+            } else {
+                //var msg = getErrorMessage(response.error., "Oops, a problem happened");
+                var msg = response.error.message;
+                $("#submissionid-" + submissionid + " span.field-validation-error").html(msg);
+            }
         }
     });
 
@@ -994,17 +1000,14 @@ function editCommentSubmit(commentid) {
             var msg = getErrorMessage(error, "Oops, a problem happened");
             $('#commenteditform-' + commentid + " span.field-validation-error").html(msg);
         },
-        success: function (data) {
-
-            var errorObj = getErrorObject(arguments);
-
-            if (errorObj) {
-                $('#commenteditform-' + commentid + " span.field-validation-error").html(errorObj.error.message);
-            } else {
-                $("#" + commentid).find('.md').html(data.response);
+        success: function (response) {
+            if (response.success) {
+                $("#" + commentid).find('.md').html(response.data.formattedContent);
                 removeEditForm(commentid);
                 //notify UI framework of DOM insertion async
                 window.setTimeout(function () { UI.Notifications.raise('DOM', $('#' + commentid)); });
+            } else {
+                $('#commenteditform-' + commentid + " span.field-validation-error").html(response.error.message);
             }
         }
     });

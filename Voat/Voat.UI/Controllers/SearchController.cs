@@ -37,6 +37,7 @@ using Voat.Data.Models;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.Http.Filters;
+using Voat.Models.ViewModels;
 using Voat.UI.Utilities;
 using Voat.Utilities;
 
@@ -77,7 +78,7 @@ namespace Voat.Controllers
 
             if (pageNumber < 0)
             {
-                return NotFoundErrorView();
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
 
             var subverse = AGGREGATE_SUBVERSE.ANY;
