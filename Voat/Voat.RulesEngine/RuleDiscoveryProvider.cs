@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Voat.Common;
 
 namespace Voat.RulesEngine
 {
@@ -81,17 +82,17 @@ namespace Voat.RulesEngine
             }
         }
 
-        public static RuleInformation Map(Tuple<Type, RuleDiscoveryAttribute> discoveredRule)
+        public static RuleInformation Map(DiscoveredType<RuleDiscoveryAttribute> discoveredRule)
         {
             RuleInformation info = new RuleInformation();
             if (discoveredRule != null)
             {
-                info.Description = discoveredRule.Item2.Description;
-                info.PsuedoLogic = discoveredRule.Item2.PsuedoLogic;
-                info.Enabled = discoveredRule.Item2.Enabled;
+                info.Description = discoveredRule.Attribute.Description;
+                info.PsuedoLogic = discoveredRule.Attribute.PsuedoLogic;
+                info.Enabled = discoveredRule.Attribute.Enabled;
             }
 
-            Rule rule = RulesEngine<RequestContext>.ConstructRule(discoveredRule.Item1, false);
+            Rule rule = RulesEngine<RequestContext>.ConstructRule(discoveredRule.Type, false);
             info.Rule = rule;
             //if (rule != null)
             //{
@@ -118,7 +119,7 @@ namespace Voat.RulesEngine
                 else
                 {
                     //discover
-                    var discovered = DiscoverTypes<RuleDiscoveryAttribute>(new Assembly[] { assembly });
+                    var discovered = TypeDiscovery.DiscoverTypes<RuleDiscoveryAttribute>(new Assembly[] { assembly });
 
                     foreach (var rule in discovered)
                     {
@@ -131,42 +132,6 @@ namespace Voat.RulesEngine
                 }
             }
             return list;
-        }
-
-        public static List<Tuple<Type, T>> DiscoverTypes<T>(IEnumerable<Assembly> assemblies, Type subClassRestriction = null) where T : Attribute
-        {
-            var allRules = new List<Tuple<Type, T>>();
-
-            if (assemblies != null && assemblies.Count() > 0)
-            {
-                foreach (Assembly assembly in assemblies)
-                {
-                    var tempRules = new List<Tuple<Type, T>>();
-                    if (assembly != null)
-                    {
-                        var types = assembly.GetTypes();
-                        if (types != null && types.Length > 0)
-                        {
-                            foreach (Type type in types)
-                            {
-                                //Ensure a rule type
-                                if (subClassRestriction == null || (subClassRestriction != null && type.IsSubclassOf(subClassRestriction)))
-                                {
-                                    //See if loadable
-                                    var loadable = type.GetCustomAttribute<T>();
-                                    if (loadable != null)
-                                    {
-                                        //var description = type.GetCustomAttribute<T>();
-                                        tempRules.Add(new Tuple<Type, T>(type, loadable));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    allRules.AddRange(tempRules);
-                }
-            }
-            return allRules;
         }
     }
 

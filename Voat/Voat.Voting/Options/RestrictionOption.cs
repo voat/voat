@@ -8,9 +8,9 @@ namespace Voat.Voting.Options
 {
     public abstract class RestrictionOption : Option
     {
-        public DateTime CutOffDate { get; set; }
+        public DateTime EndDate { get; set; }
         public TimeSpan Duration { get; set; }
         [JsonIgnore]
-        public DateRange DateRange { get => new DateRange(Duration, DateRangeDirection.Past, CutOffDate); }
+        public DateRange DateRange { get => new DateRange(Duration, DateRangeDirection.Past, EndDate); }
     }
 }

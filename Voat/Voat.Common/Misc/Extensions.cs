@@ -7,7 +7,10 @@ namespace Voat.Common
 {
     public static class Extensions
     {
-
+        public static string ShortAssemblyQualifiedName(this Type type)
+        {
+            return $"{type.FullName}, {type.Assembly}";
+        }
         public static void Scale(int currentWidth, int currentHeight, int maxWidth, int maxHeight, float scalePercentage, out int scaleWidth, out int scaleHeight)
         {
             scaleWidth = currentWidth;

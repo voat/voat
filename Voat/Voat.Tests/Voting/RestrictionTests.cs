@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Voat.Common;
 using Voat.Domain.Command;
 using Voat.Tests.Infrastructure;
 using Voat.Voting;
@@ -21,13 +22,13 @@ namespace Voat.Tests.Voting
             {
                 ID = 1,
                 GroupName = "Default",
-                Type = typeof(ContributionCountRestriction).FullName,
+                Type = typeof(ContributionCountRestriction).ShortAssemblyQualifiedName(),
                 Options = (new ContentOption() {
                     ContentType = Domain.Models.ContentType.Comment,
                     Duration = TimeSpan.FromDays(14),
                     Subverse = "unit",
                     MinimumCount = 1,
-                    CutOffDate = DateTime.UtcNow
+                    EndDate = DateTime.UtcNow
                 }).Serialize(),
                 VoteID = 1
             };

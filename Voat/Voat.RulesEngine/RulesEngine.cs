@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using Voat.Common;
 
 namespace Voat.RulesEngine
 {
@@ -135,7 +136,7 @@ namespace Voat.RulesEngine
                                         if (t != null)
                                         {
                                             var ruleDescription = t.GetCustomAttribute<RuleDiscoveryAttribute>();
-                                            var ruleInfo = RuleDiscoveryProvider.Map(new Tuple<Type, RuleDiscoveryAttribute>(t, ruleDescription));
+                                            var ruleInfo = RuleDiscoveryProvider.Map(new DiscoveredType<RuleDiscoveryAttribute>() { Type = t, Attribute = ruleDescription });
 
                                             //force enabled from config
                                             ruleInfo.Enabled = ruleReference.Enabled;

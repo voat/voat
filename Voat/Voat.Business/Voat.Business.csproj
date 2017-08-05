@@ -34,5 +34,6 @@
     <ProjectReference Include="..\Voat.Data\Voat.Data.csproj" />
     <ProjectReference Include="..\Voat.Logging\Voat.Logging.csproj" />
     <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj" />
+    <ProjectReference Include="..\Voat.Voting\Voat.Voting.csproj" />
   </ItemGroup>
 </Project>

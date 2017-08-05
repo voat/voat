@@ -22,7 +22,7 @@ namespace Voat.Voting.Restrictions
             {
                 where = $"to v/{Options.Subverse}";
             }
-            return $"Was subscribed {where} before {Options.CutOffDate}";
+            return $"Was subscribed {where} before {Options.EndDate}";
         }
     }
 }

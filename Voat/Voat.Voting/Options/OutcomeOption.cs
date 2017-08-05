@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Voat.Voting.Options
 {
-    public class OutcomeOption : Option
+    public abstract class OutcomeOption : Option
     {
 
     }

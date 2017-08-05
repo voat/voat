@@ -9,9 +9,16 @@ namespace Voat.Voting
     {
         public static OptionHandler Construct(string typeName, string options) //where T : OptionHandler
         {
-            var item = (OptionHandler)Activator.CreateInstance(Type.GetType(typeName));
-            item.Parse(options);
-            return item;
+            try
+            {
+                var item = (OptionHandler)Activator.CreateInstance(Type.GetType(typeName));
+                item.Parse(options);
+                return item;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Can not contruct: {typeName} with options: '{options}'", ex);
+            }
         }
         public abstract void Parse(string json);
     }
