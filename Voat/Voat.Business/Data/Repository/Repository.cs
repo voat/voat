@@ -2148,7 +2148,7 @@ namespace Voat.Data
                                         "#Original Comment" + Environment.NewLine +
                                         comment.Content
                         };
-                        var cmd = new SendMessageCommand(message, isAnonymized: comment.IsAnonymized);
+                        var cmd = new SendMessageCommand(message, isAnonymized: comment.IsAnonymized).SetUserContext(User);
                         await cmd.Execute().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                         comment.IsDeleted = true;
