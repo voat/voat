@@ -227,7 +227,7 @@ namespace Voat.Controllers
 
             if (!string.IsNullOrEmpty(subverse))
             {
-                if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, ModeratorAction.SendMail))
+                if (!ModeratorPermission.HasPermission(User, subverse, ModeratorAction.SendMail))
                 {
                     return RedirectToAction("Home", "Index");
                 }
@@ -431,7 +431,7 @@ namespace Voat.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, ModeratorAction.ReadMail))
+            if (!ModeratorPermission.HasPermission(User, subverse, ModeratorAction.ReadMail))
             {
                 return RedirectToAction("Index", "Home");
             }

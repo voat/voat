@@ -53,7 +53,7 @@ namespace Voat.Controllers
             else
             {
                 //check perms
-                if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.AccessReports))
+                if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.AccessReports))
                 {
                     return UnAuthorizedErrorView();
                 }

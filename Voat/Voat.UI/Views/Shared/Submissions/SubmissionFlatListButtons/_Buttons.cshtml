@@ -51,13 +51,13 @@
                 @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonDelete.cshtml", Model, new ViewDataDictionary(ViewData) { { "submissionId", Model.ID } })
             </li>
 
-            if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignFlair, ViewBag.ModeratorList))
+            if (ModeratorPermission.HasPermission(User, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignFlair, ViewBag.ModeratorList))
             {
                 <li>
                     @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonFlair.cshtml", Model, new ViewDataDictionary(ViewData) { { "submissionId", Model.ID }, { "submissionSubverse", Model.Subverse } })
                 </li>
             }
-            if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignStickies, ViewBag.ModeratorList))
+            if (ModeratorPermission.HasPermission(User, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignStickies, ViewBag.ModeratorList))
             {
                 <li>
                     @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSticky.cshtml", Model, new ViewDataDictionary(ViewData) { { "submissionId", Model.ID } })
@@ -67,19 +67,19 @@
         }
         else if (!Model.IsDeleted)
         {
-            if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.DeletePosts, ViewBag.ModeratorList))
+            if (ModeratorPermission.HasPermission(User, Model.Subverse, Voat.Domain.Models.ModeratorAction.DeletePosts, ViewBag.ModeratorList))
             {
                 <li>
                     @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonModeratorDelete.cshtml", Model, new ViewDataDictionary(ViewData) { { "submissionId", Model.ID } })
                 </li>
             }
-            if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignFlair, ViewBag.ModeratorList))
+            if (ModeratorPermission.HasPermission(User, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignFlair, ViewBag.ModeratorList))
             {
                 <li>
                     @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonFlair.cshtml", Model, new ViewDataDictionary(ViewData) { { "submissionId", Model.ID }, { "submissionSubverse", Model.Subverse } })
                 </li>
             }
-            if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignStickies, ViewBag.ModeratorList))
+            if (ModeratorPermission.HasPermission(User, Model.Subverse, Voat.Domain.Models.ModeratorAction.AssignStickies, ViewBag.ModeratorList))
             {
                 <li>
                     @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSticky.cshtml", Model, new ViewDataDictionary(ViewData) { { "submissionId", Model.ID } })

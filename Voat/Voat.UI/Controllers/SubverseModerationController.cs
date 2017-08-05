@@ -73,12 +73,7 @@ namespace Voat.Controllers
                 return SubverseNotFoundErrorView();
             }
 
-            // check that the user requesting to edit subverse settings is subverse owner!
-            var subAdmin =
-                _db.SubverseModerator.FirstOrDefault(
-                    x => x.Subverse == subverse && x.UserName == User.Identity.Name && x.Power <= 2);
-
-            if (subAdmin == null)
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.ModifySettings))
             {
                 return RedirectToRoute(Models.ROUTE_NAMES.SUBVERSE_INDEX, new { subverse = subverse });
             }
@@ -130,7 +125,7 @@ namespace Voat.Controllers
                     SetNavigationViewModel(existingSubverse.Name);
 
                     // check if user requesting edit is authorized to do so for current subverse
-                    if (!ModeratorPermission.HasPermission(User.Identity.Name, updatedModel.Name, Domain.Models.ModeratorAction.ModifySettings))
+                    if (!ModeratorPermission.HasPermission(User, updatedModel.Name, Domain.Models.ModeratorAction.ModifySettings))
                     {
                         return new EmptyResult();
                     }
@@ -198,7 +193,7 @@ namespace Voat.Controllers
                     //}
 
                     // only subverse owners should be able to convert a sub to anonymized mode
-                    if (ModeratorPermission.IsLevel(User.Identity.Name, updatedModel.Name, Domain.Models.ModeratorLevel.Owner))
+                    if (ModeratorPermission.IsLevel(User, updatedModel.Name, Domain.Models.ModeratorLevel.Owner))
                     {
                         existingSubverse.IsAnonymized = updatedModel.IsAnonymized;
                     }
@@ -239,7 +234,7 @@ namespace Voat.Controllers
                 ViewBag.SelectedSubverse = "404";
                 return SubverseNotFoundErrorView();
             }
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.ModifyCSS))
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.ModifyCSS))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -280,7 +275,7 @@ namespace Voat.Controllers
                     SetNavigationViewModel(model.Name);
                     // check if user requesting edit is authorized to do so for current subverse
                     // check that the user requesting to edit subverse settings is subverse owner!
-                    if (!ModeratorPermission.HasPermission(User.Identity.Name, existingSubverse.Name, Domain.Models.ModeratorAction.ModifyCSS))
+                    if (!ModeratorPermission.HasPermission(User, existingSubverse.Name, Domain.Models.ModeratorAction.ModifyCSS))
                     {
                         return new EmptyResult();
                     }
@@ -333,7 +328,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.InviteMods))
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.InviteMods))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -377,7 +372,7 @@ namespace Voat.Controllers
             if (subverseObject == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.Banning))
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.Banning))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -405,7 +400,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.Banning))
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.Banning))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -429,7 +424,7 @@ namespace Voat.Controllers
                 return View(subverseBan);
             }
             //check perms
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverseBan.Subverse, Domain.Models.ModeratorAction.Banning))
+            if (!ModeratorPermission.HasPermission(User, subverseBan.Subverse, Domain.Models.ModeratorAction.Banning))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -466,7 +461,7 @@ namespace Voat.Controllers
             }
 
             // check if caller is subverse owner, if not, deny listing
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.Banning))
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.Banning))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -535,12 +530,12 @@ namespace Voat.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, moderatorInvitation.Subverse, Domain.Models.ModeratorAction.InviteMods))
+            if (!ModeratorPermission.HasPermission(User, moderatorInvitation.Subverse, Domain.Models.ModeratorAction.InviteMods))
             {
                 return RedirectToAction("SubverseModerators");
             }
             //make sure mods can't remove invites 
-            var currentModLevel = ModeratorPermission.Level(User.Identity.Name, moderatorInvitation.Subverse);
+            var currentModLevel = ModeratorPermission.Level(User, moderatorInvitation.Subverse);
             if (moderatorInvitation.Power <= (int)currentModLevel && currentModLevel != Domain.Models.ModeratorLevel.Owner)
             {
                 return RedirectToAction("SubverseModerators");
@@ -575,12 +570,12 @@ namespace Voat.Controllers
 
             // check if caller has clearance to remove a moderator invitation
             //if (!UserHelper.IsUserSubverseAdmin(User.Identity.Name, subverse.Name) || invitationToBeRemoved.Recipient == User.Identity.Name) return RedirectToAction("Index", "Home");
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse.Name, Domain.Models.ModeratorAction.InviteMods))
+            if (!ModeratorPermission.HasPermission(User, subverse.Name, Domain.Models.ModeratorAction.InviteMods))
             {
                 return RedirectToAction("Index", "Home");
             }
             //make sure mods can't remove invites 
-            var currentModLevel = ModeratorPermission.Level(User.Identity.Name, subverse.Name);
+            var currentModLevel = ModeratorPermission.Level(User, subverse.Name);
             if (invitationToBeRemoved.Power <= (int)currentModLevel && currentModLevel != Domain.Models.ModeratorLevel.Owner)
             {
                 return RedirectToAction("SubverseModerators");
@@ -664,7 +659,7 @@ namespace Voat.Controllers
             }
 
             // check if caller is authorized for this sub, if not, deny listing
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.ModifyFlair))
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.ModifyFlair))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -696,7 +691,7 @@ namespace Voat.Controllers
             }
 
             //check perms
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.ModifyFlair))
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.ModifyFlair))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -720,7 +715,7 @@ namespace Voat.Controllers
             }
 
             //check perms
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverseFlairSetting.Subverse, Domain.Models.ModeratorAction.ModifyFlair))
+            if (!ModeratorPermission.HasPermission(User, subverseFlairSetting.Subverse, Domain.Models.ModeratorAction.ModifyFlair))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -780,7 +775,7 @@ namespace Voat.Controllers
             }
 
             // check if caller has clearance to remove a link flair
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse.Name, Domain.Models.ModeratorAction.ModifyFlair))
+            if (!ModeratorPermission.HasPermission(User, subverse.Name, Domain.Models.ModeratorAction.ModifyFlair))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -882,7 +877,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.InviteMods))
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.InviteMods))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -907,7 +902,7 @@ namespace Voat.Controllers
             }
 
             // check if caller can add mods, if not, deny posting
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverseAdmin.Subverse, Domain.Models.ModeratorAction.InviteMods))
+            if (!ModeratorPermission.HasPermission(User, subverseAdmin.Subverse, Domain.Models.ModeratorAction.InviteMods))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -958,7 +953,7 @@ namespace Voat.Controllers
             }
 
             //check current mod level and invite level and ensure they are a lower level
-            var currentModLevel = ModeratorPermission.Level(User.Identity.Name, subverseModel.Name);
+            var currentModLevel = ModeratorPermission.Level(User, subverseModel.Name);
             if (subverseAdmin.Power <= (int)currentModLevel && currentModLevel != Domain.Models.ModeratorLevel.Owner)
             {
                 return sendFailureResult("Sorry, but you can only add moderators that are a lower level than yourself");
@@ -1050,7 +1045,7 @@ namespace Voat.Controllers
                 return RedirectToAction("NotFound","Error");
             }
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subModerator.Subverse, Domain.Models.ModeratorAction.RemoveMods))
+            if (!ModeratorPermission.HasPermission(User, subModerator.Subverse, Domain.Models.ModeratorAction.RemoveMods))
             {
                 return RedirectToAction("Index", "Home");
             }

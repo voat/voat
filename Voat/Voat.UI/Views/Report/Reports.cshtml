@@ -78,7 +78,7 @@
                                 <li>(@report.Count) @report.Name - @report.Description</li>
                             }
                         </ul>
-                        @if (status != Voat.Domain.Models.ReviewStatus.Reviewed && User.Identity.IsAuthenticated && ModeratorPermission.HasPermission(User.Identity.Name, subverse, Voat.Domain.Models.ModeratorAction.MarkReports))
+                        @if (status != Voat.Domain.Models.ReviewStatus.Reviewed && User.Identity.IsAuthenticated && ModeratorPermission.HasPermission(User, subverse, Voat.Domain.Models.ModeratorAction.MarkReports))
                         {
                             <input class="btn-whoaverse" value="Ignore" type="button" onclick="javascript:markReportAsReviewed(this, '@subverse', '@item.ContentType', @id);" />
                         }

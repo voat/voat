@@ -1723,7 +1723,7 @@ namespace Voat.Data
                 }
 
                 // delete submission if delete request is issued by subverse moderator
-                else if (ModeratorPermission.HasPermission(User.Identity.Name, submission.Subverse, ModeratorAction.DeletePosts))
+                else if (ModeratorPermission.HasPermission(User, submission.Subverse, ModeratorAction.DeletePosts))
                 {
                     if (String.IsNullOrEmpty(reason))
                     {
@@ -2126,7 +2126,7 @@ namespace Voat.Data
                     }
 
                     // delete comment if delete request is issued by subverse moderator
-                    else if (ModeratorPermission.HasPermission(User.Identity.Name, submission.Subverse, ModeratorAction.DeleteComments))
+                    else if (ModeratorPermission.HasPermission(User, submission.Subverse, ModeratorAction.DeleteComments))
                     {
                         if (String.IsNullOrEmpty(reason))
                         {
@@ -2744,7 +2744,7 @@ namespace Voat.Data
 
                         if (m.RecipientType == (int)IdentityType.Subverse)
                         {
-                            if (!ModeratorPermission.HasPermission(User.Identity.Name, m.Recipient, ModeratorAction.SendMail))
+                            if (!ModeratorPermission.HasPermission(User, m.Recipient, ModeratorAction.SendMail))
                             {
                                 commandResponse = new CommandResponse<Domain.Models.Message>(null, Status.NotProcessed, "Message integrity violated");
                             }
@@ -2883,7 +2883,7 @@ namespace Voat.Data
             if (sender.Type == IdentityType.Subverse)
             {
                 var subverse = sender.Name;
-                if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, ModeratorAction.SendMail))
+                if (!ModeratorPermission.HasPermission(User, subverse, ModeratorAction.SendMail))
                 {
                     return CommandResponse.FromStatus(responseMessage, Status.Denied, "User not allowed to send mail from subverse");
                 }
@@ -3200,7 +3200,7 @@ namespace Voat.Data
             //verify if this is a sub request
             if (ownerType == IdentityType.Subverse)
             {
-                if (!ModeratorPermission.HasPermission(User.Identity.Name, ownerName, ModeratorAction.DeleteMail))
+                if (!ModeratorPermission.HasPermission(User, ownerName, ModeratorAction.DeleteMail))
                 {
                     return CommandResponse.FromStatus(Status.Denied, "User does not have rights to modify mail");
                 }
@@ -3264,7 +3264,7 @@ namespace Voat.Data
             //verify if this is a sub request
             if (ownerType == IdentityType.Subverse)
             {
-                if (!ModeratorPermission.HasPermission(User.Identity.Name, ownerName, ModeratorAction.ReadMail))
+                if (!ModeratorPermission.HasPermission(User, ownerName, ModeratorAction.ReadMail))
                 {
                     return CommandResponse.FromStatus(Status.Denied, "User does not have rights to modify mail");
                 }
@@ -4002,7 +4002,7 @@ namespace Voat.Data
             bool? status = null;
 
             //check perms
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.Banning))
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.Banning))
             {
                 return new CommandResponse<bool?>(status, Status.Denied, "User does not have permission to ban");
             }
@@ -4133,7 +4133,7 @@ namespace Voat.Data
             }
 
             // check if caller has clearance to remove a moderator
-            if (!ModeratorPermission.HasPermission(originUserName, subverse.Name, Domain.Models.ModeratorAction.RemoveMods))
+            if (!ModeratorPermission.HasPermission(User, subverse.Name, Domain.Models.ModeratorAction.RemoveMods))
             {
                 return new CommandResponse<RemoveModeratorResponse>(response, Status.Denied, "User doesn't have permissions to execute action");
             }
@@ -4155,7 +4155,7 @@ namespace Voat.Data
                 //Determine if removal is allowed:
                 //Logic:
                 //L1: Can remove L1's but only if they invited them / or they were added after them
-                var currentModLevel = ModeratorPermission.Level(originUserName, subverse.Name).Value; //safe to get value as previous check ensures is mod
+                var currentModLevel = ModeratorPermission.Level(User, subverse.Name).Value; //safe to get value as previous check ensures is mod
                 var targetModLevel = (ModeratorLevel)subModerator.Power;
 
                 switch (currentModLevel)
@@ -4316,7 +4316,7 @@ namespace Voat.Data
             {
                 return CommandResponse.FromStatus(Status.Invalid, "Subverse does not exist");
             }
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, ModeratorAction.MarkReports))
+            if (!ModeratorPermission.HasPermission(User, subverse, ModeratorAction.MarkReports))
             {
                 return CommandResponse.FromStatus(Status.Denied, "User does not have permissions to mark reports");
             }

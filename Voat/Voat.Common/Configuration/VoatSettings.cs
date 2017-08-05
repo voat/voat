@@ -150,6 +150,7 @@ namespace Voat.Configuration
 
         public bool IsDevelopment { get; set; } = false;
 
+        public bool EnableRoles { get; set; } = false;
         #endregion AppSettings Accessors
 
     }

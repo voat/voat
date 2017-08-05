@@ -76,7 +76,7 @@
                 <span class="number">~@ViewBag.OnlineUsers</span>
                 <span class="word">user(s) here now</span>
             </p>
-            @if (User.Identity.IsAuthenticated && ModeratorPermission.IsModerator(User.Identity.Name, Model.Name))
+            @if (User.Identity.IsAuthenticated && ModeratorPermission.IsModerator(User, Model.Name))
         {
                 <div class="leavemoderator">
                     you are a moderator of this subverse. (<a href="/v/@Model.Name/about/moderators/resign">resign</a>)

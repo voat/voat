@@ -89,7 +89,7 @@ namespace Voat.Controllers
             }
 
             // check if caller is subverse owner or moderator, if not, deny listing
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.AssignFlair))
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.AssignFlair))
             {
                 return new HttpUnauthorizedResult();
             }

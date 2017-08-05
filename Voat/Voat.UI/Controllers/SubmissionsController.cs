@@ -61,7 +61,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, submission.Subverse, Domain.Models.ModeratorAction.AssignFlair))
+            if (!ModeratorPermission.HasPermission(User, submission.Subverse, Domain.Models.ModeratorAction.AssignFlair))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -97,7 +97,7 @@ namespace Voat.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             // check if caller is subverse moderator, if not, deny posting
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, submissionModel.Subverse, Domain.Models.ModeratorAction.AssignFlair))
+            if (!ModeratorPermission.HasPermission(User, submissionModel.Subverse, Domain.Models.ModeratorAction.AssignFlair))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -200,7 +200,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> ModeratorDelete(string subverse, int submissionID)
         {
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.DeletePosts))
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.DeletePosts))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -249,7 +249,7 @@ namespace Voat.Controllers
                 return View(model);
             }
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, s.Subverse, Domain.Models.ModeratorAction.DeletePosts))
+            if (!ModeratorPermission.HasPermission(User, s.Subverse, Domain.Models.ModeratorAction.DeletePosts))
             {
                 return new HttpUnauthorizedResult();
             }

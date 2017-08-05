@@ -34,13 +34,13 @@
             <a href="/v/@subverseName">Home</a>
         </li>
 
-        @if (ModeratorPermission.HasPermission(User.Identity.Name, subverseName, Voat.Domain.Models.ModeratorAction.ModifySettings))
+        @if (ModeratorPermission.HasPermission(User, subverseName, Voat.Domain.Models.ModeratorAction.ModifySettings))
         {
             <li class='@(url.EndsWith("about/edit/") ? "selected" : "disabled")'>
                 <a href="/v/@subverseName/about/edit/">Settings</a>
             </li>
         }
-        @if (ModeratorPermission.HasPermission(User.Identity.Name, subverseName, Voat.Domain.Models.ModeratorAction.ModifyCSS))
+        @if (ModeratorPermission.HasPermission(User, subverseName, Voat.Domain.Models.ModeratorAction.ModifyCSS))
         {
             <li class='@(url.Contains("about/edit/stylesheet") ? "selected" : "disabled")'>
                 <a href="/v/@subverseName/about/edit/stylesheet">CSS</a>
@@ -49,25 +49,25 @@
                 <a href="/v/@subverseName/about/flair/">Flair</a>
             </li>
         }
-        @if (ModeratorPermission.HasPermission(User.Identity.Name, subverseName, Voat.Domain.Models.ModeratorAction.InviteMods))
+        @if (ModeratorPermission.HasPermission(User, subverseName, Voat.Domain.Models.ModeratorAction.InviteMods))
         {
             <li class='@(url.Contains("about/moderators") ? "selected" : "disabled")'>
                 <a href="/v/@subverseName/about/moderators/">Mods</a>
             </li>
         }
-        @if (ModeratorPermission.HasPermission(User.Identity.Name, subverseName, Voat.Domain.Models.ModeratorAction.Banning))
+        @if (ModeratorPermission.HasPermission(User, subverseName, Voat.Domain.Models.ModeratorAction.Banning))
         {
             <li class='@(url.Contains("about/bans") ? "selected" : "disabled")'>
                 <a href="/v/@subverseName/about/bans/">Bans</a>
             </li>
         }
-        @if (ModeratorPermission.HasPermission(User.Identity.Name, subverseName, Voat.Domain.Models.ModeratorAction.AccessReports))
+        @if (ModeratorPermission.HasPermission(User, subverseName, Voat.Domain.Models.ModeratorAction.AccessReports))
         {
             <li class='@(url.Contains("about/reports") ? "selected" : "disabled")'>
                 <a href="/v/@subverseName/about/reports/">Reports</a>
             </li>
         }
-        @if (ModeratorPermission.HasPermission(User.Identity.Name, subverseName, Voat.Domain.Models.ModeratorAction.ReadMail))
+        @if (ModeratorPermission.HasPermission(User, subverseName, Voat.Domain.Models.ModeratorAction.ReadMail))
         {
             <li class='@(url.Contains("about/messages") ? "selected" : "disabled")'>
                 <a href="/v/@subverseName/about/messages/">SMail</a>

@@ -26,7 +26,7 @@
     string subverseName = ViewBag.SubverseName;
 
     var levelsAvailable  = Enum.GetValues(typeof(ModeratorLevel)).OfType<ModeratorLevel>();
-    var currentLevel = ModeratorPermission.Level(User.Identity.Name, subverseName);
+    var currentLevel = ModeratorPermission.Level(User, subverseName);
     levelsAvailable = levelsAvailable.Where(x => x > currentLevel || currentLevel == ModeratorLevel.Owner);
 
 }

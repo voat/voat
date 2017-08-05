@@ -20,7 +20,7 @@
 
 @model Voat.Data.Models.Subverse
 @if (   User.Identity.IsAuthenticated
-        && ModeratorPermission.IsModerator(User.Identity.Name, Model.Name,
+        && ModeratorPermission.IsModerator(User, Model.Name,
             new Voat.Domain.Models.ModeratorLevel[] {
                 Voat.Domain.Models.ModeratorLevel.Owner,
                 Voat.Domain.Models.ModeratorLevel.Moderator,
@@ -37,13 +37,13 @@
             <ul style="display: block;" class="content">
                 <li>
                     <ul class="flat-vert icon-menu hover">
-                        @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.ModifySettings))
+                        @if (ModeratorPermission.HasPermission(User, Model.Name, Voat.Domain.Models.ModeratorAction.ModifySettings))
                         {
                             <li>
                                 <a href="/v/@Model.Name/about/edit/">subverse settings</a>
                             </li>
                         }
-                        @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.ModifyCSS))
+                        @if (ModeratorPermission.HasPermission(User, Model.Name, Voat.Domain.Models.ModeratorAction.ModifyCSS))
                         {
                             <li>
                                 <a href="/v/@Model.Name/about/edit/stylesheet">edit stylesheet</a>
@@ -52,25 +52,25 @@
                                 <a href="/v/@Model.Name/about/flair/">flair settings</a>
                             </li>
                         }
-                        @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.InviteMods))
+                        @if (ModeratorPermission.HasPermission(User, Model.Name, Voat.Domain.Models.ModeratorAction.InviteMods))
                         {
                             <li>
                                 <a href="/v/@Model.Name/about/moderators/">subverse moderators</a>
                             </li>
                         }
-                        @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.Banning))
+                        @if (ModeratorPermission.HasPermission(User, Model.Name, Voat.Domain.Models.ModeratorAction.Banning))
                         {
                             <li>
                                 <a href="/v/@Model.Name/about/bans/">subverse bans</a>
                             </li>
                         }
-                        @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.AccessReports))
+                        @if (ModeratorPermission.HasPermission(User, Model.Name, Voat.Domain.Models.ModeratorAction.AccessReports))
                         {
                             <li>
                                 <a href="/v/@Model.Name/about/reports/">user reports</a>
                             </li>
                         }
-                        @if (ModeratorPermission.HasPermission(User.Identity.Name, Model.Name, Voat.Domain.Models.ModeratorAction.ReadMail))
+                        @if (ModeratorPermission.HasPermission(User, Model.Name, Voat.Domain.Models.ModeratorAction.ReadMail))
                         {
                             <li>
                                 <a href="/v/@Model.Name/about/messages/">subverse mail</a>

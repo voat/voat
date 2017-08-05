@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
+using Voat.Common;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
 
@@ -47,6 +48,14 @@ namespace Voat.Utilities
             }
         }
 
+        public static bool IsModerator(IPrincipal user, string subverse, ModeratorLevel[] levels = null, IEnumerable<Data.Models.SubverseModerator> modList = null)
+        {
+            if (user.IsInAnyRole(new[] { UserRole.GlobalAdmin, UserRole.Admin }))
+            {
+                return true;
+            }
+            return IsModerator(user.Identity.Name, subverse, levels, modList);
+        }
         public static bool IsModerator(string userName, string subverse, ModeratorLevel[] levels = null, IEnumerable<Data.Models.SubverseModerator> modList = null)
         {
             var mods = GetModerators(subverse, modList);
@@ -56,13 +65,18 @@ namespace Voat.Utilities
             );
         }
 
-        public static bool IsLevel(string userName, string subverse, ModeratorLevel level, IEnumerable<Data.Models.SubverseModerator> modList = null)
+        public static bool IsLevel(IPrincipal user, string subverse, ModeratorLevel level, IEnumerable<Data.Models.SubverseModerator> modList = null)
         {
-            return IsModerator(userName, subverse, new ModeratorLevel[] { level }, modList);
+            return IsModerator(user, subverse, new ModeratorLevel[] { level }, modList);
         }
 
-        public static ModeratorLevel? Level(string userName, string subverse, IEnumerable<Data.Models.SubverseModerator> modList = null)
+        public static ModeratorLevel? Level(IPrincipal user, string subverse, IEnumerable<Data.Models.SubverseModerator> modList = null)
         {
+            if (user.IsInAnyRole(new[] { UserRole.GlobalAdmin, UserRole.Admin }))
+            {
+                return ModeratorLevel.Owner;
+            }
+            var userName = user.Identity.Name;
             var mods = GetModerators(subverse, modList);
             var o = mods.FirstOrDefault(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
             if (o != null)
@@ -119,8 +133,14 @@ namespace Voat.Utilities
 
             return result;
         }
-        public static bool HasPermission(string userName, string subverse, ModeratorAction action, IEnumerable<Data.Models.SubverseModerator> modList = null)
+        public static bool HasPermission(IPrincipal user, string subverse, ModeratorAction action, IEnumerable<Data.Models.SubverseModerator> modList = null)
         {
+
+            if (user.IsInAnyRole(new[] { UserRole.GlobalAdmin, UserRole.Admin }))
+            {
+                return true;
+            }
+            var userName = user.Identity.Name;
             bool result = false;
             if (!String.IsNullOrEmpty(userName) && !String.IsNullOrEmpty(subverse))
             {

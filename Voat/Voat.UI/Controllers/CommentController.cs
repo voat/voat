@@ -423,7 +423,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> ModeratorDelete(string subverse, int submissionID, int commentID)
         {
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.DeleteComments))
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.DeleteComments))
             {
                 return new HttpUnauthorizedResult();
             }
@@ -453,7 +453,7 @@ namespace Voat.Controllers
                 return View(new ModeratorDeleteContentViewModel());
             }
 
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, comment.Subverse, Domain.Models.ModeratorAction.DeleteComments))
+            if (!ModeratorPermission.HasPermission(User, comment.Subverse, Domain.Models.ModeratorAction.DeleteComments))
             {
                 return new HttpUnauthorizedResult();
             }

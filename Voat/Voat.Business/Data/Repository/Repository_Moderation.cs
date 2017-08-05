@@ -29,7 +29,7 @@ namespace Voat.Data
             subverse = submission.Subverse;
 
             // check if caller is subverse moderator, if not, deny change
-            if (!ModeratorPermission.HasPermission(User.Identity.Name, subverse, Domain.Models.ModeratorAction.AssignStickies))
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.AssignStickies))
             {
                 return CommandResponse.FromStatus(Status.Denied, "Moderator Permissions are not satisfied");
             }
@@ -95,7 +95,7 @@ namespace Voat.Data
                 if (User.Identity.Name == comment.UserName)
                 {
                     // check to see if comment author is also sub mod or sub admin for comment sub
-                    if (ModeratorPermission.HasPermission(User.Identity.Name, comment.Subverse, ModeratorAction.DistinguishContent))
+                    if (ModeratorPermission.HasPermission(User, comment.Subverse, ModeratorAction.DistinguishContent))
                     {
                         var m = new DapperMulti();
 
