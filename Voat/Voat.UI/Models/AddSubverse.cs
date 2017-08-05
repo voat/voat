@@ -40,6 +40,7 @@ namespace Voat.Models
         [Display(Name="Short Title")]
         public string Title { get; set; }
 
+        [StringLength(4000, ErrorMessage = "The Sidebar length is limited to 4,000 characters")]
         public string Sidebar { get; set; }
  
         [Required(ErrorMessage = "Please describe what your subverse is about")]

@@ -34,7 +34,7 @@ namespace Voat
 {
     public static class Extensions
     {
-        public static string CommandMessage(this Domain.Command.CommandResponse response)
+        public static string DebugMessage(this Domain.Command.CommandResponse response)
         {
             if (VoatSettings.Instance.IsDevelopment)
             {
