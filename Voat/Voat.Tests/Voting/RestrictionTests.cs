@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Voat.Domain.Command;
 using Voat.Tests.Infrastructure;
 using Voat.Voting;
 using Voat.Voting.Options;
@@ -35,14 +36,14 @@ namespace Voat.Tests.Voting
             var user = TestHelper.SetPrincipal("User500CCP");
             var outcome = constructed.Evaluate(user);
 
-            Assert.IsTrue(outcome);
+            Assert.AreEqual(Status.Success, outcome.Status);
 
 
             var restrictionSet = new VoteRestrictionSet();
             restrictionSet.Populate(new Voat.Data.Models.VoteRestriction[] { r });
 
-            outcome = restrictionSet.Evaluate(user);
-            Assert.IsTrue(outcome);
+            var eval = restrictionSet.Evaluate(user);
+            Assert.IsTrue(eval.IsValid);
 
         }
     }

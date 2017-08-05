@@ -4,6 +4,7 @@ using System.Security.Principal;
 using System.Text;
 using Voat.Configuration;
 using Voat.Data;
+using Voat.Domain.Command;
 using Voat.Voting.Attributes;
 using Voat.Voting.Options;
 
@@ -12,16 +13,21 @@ namespace Voat.Voting.Restrictions
     [Restriction(
         Enabled = true, 
         Description = "Restriction by the count of posts (comments and/or submissions)", 
-        Name = "Contribution Count")]
+        Name = "Contribution Count Restriction")]
     public class ContributionCountRestriction : VoteRestriction<ContentOption>
     {
-        public override bool Evaluate(IPrincipal principal)
+        public override CommandResponse<IVoteRestriction> Evaluate(IPrincipal principal)
         {
+            var evaluation = CommandResponse.FromStatus<IVoteRestriction>(null, Status.Success);
             using (var repo = new Repository())
             {
                 var count = repo.UserContributionCount(principal.Identity.Name, Options.ContentType, Options.Subverse, Options.DateRange);
-                return count >= Options.MinimumCount;
+                if (count < Options.MinimumCount)
+                {
+                    evaluation = CommandResponse.FromStatus<IVoteRestriction>(this, Status.Denied, $"User only has {count} and needs {Options.MinimumCount}");
+                }
             }
+            return evaluation;
         }
 
         public override string ToDescription()

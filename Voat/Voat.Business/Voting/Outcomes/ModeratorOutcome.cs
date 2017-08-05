@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Voat.Domain.Command;
 using Voat.Voting.Options;
 
 namespace Voat.Voting.Outcomes
 {
     public class ModeratorOutcome : VoteOutcome<ModeratorOption>
     {
-        public override void Execute(ModeratorOption options)
+        public override CommandResponse Execute(ModeratorOption options)
         {
             throw new NotImplementedException();
         }

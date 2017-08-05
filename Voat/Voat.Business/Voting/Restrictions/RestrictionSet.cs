@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
+using Voat.Common;
 
 namespace Voat.Voting.Restrictions
 {
@@ -14,35 +15,44 @@ namespace Voat.Voting.Restrictions
         {
             foreach (var restriction in restrictions)
             {
+                var groupName = String.IsNullOrEmpty(restriction.GroupName.TrimSafe()) ? "" : restriction.GroupName.TrimSafe();
+
                 List<IVoteRestriction> groupList = null;
-                if (_restrictionSet.ContainsKey(restriction.GroupName))
+                if (_restrictionSet.ContainsKey(groupName))
                 {
-                    groupList = _restrictionSet[restriction.GroupName];
+                    groupList = _restrictionSet[groupName];
                 }
                 else
                 {
                     groupList = new List<IVoteRestriction>();
-                    _restrictionSet[restriction.GroupName] = groupList;
+                    _restrictionSet[groupName] = groupList;
                 }
                 groupList.Add((IVoteRestriction)OptionHandler.Construct(restriction.Type, restriction.Options));
             }
         }
-        public bool Evaluate(IPrincipal user)
+        public RestrictionEvaluation Evaluate(IPrincipal user)
         {
+            var violations = new RestrictionEvaluation();
             if (_restrictionSet.Count == 0)
             {
-                return true;
+                return violations;
             }
             foreach (string group in _restrictionSet.Keys)
             {
-                //evaluate all restrictions in group
-                var result = _restrictionSet[group].All(x => x.Evaluate(user));
-                if (result == true)
+                foreach (var restriction in _restrictionSet[group])
                 {
-                    return result;
+                    var v = restriction.Evaluate(user);
+                    if (!v.Success)
+                    {
+                        violations.Violations.Add(v);
+                    }
+                }
+                if (violations.IsValid)
+                {
+                    break;
                 }
             }
-            return false;
+            return violations;
         }
     }
 }

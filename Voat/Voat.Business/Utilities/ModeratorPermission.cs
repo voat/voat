@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
 

@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Security.Principal;
 using System.Text;
 using Voat.Configuration;
+using Voat.Domain.Command;
 using Voat.Voting.Options;
 
 namespace Voat.Voting.Restrictions
 {
     public class SubscriberRestriction : VoteRestriction<SubverseOption>
     {
-        public override bool Evaluate(IPrincipal principal)
+        public override CommandResponse<IVoteRestriction> Evaluate(IPrincipal principal)
         {
             throw new NotImplementedException();
         }
