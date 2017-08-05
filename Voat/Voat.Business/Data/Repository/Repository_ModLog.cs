@@ -58,15 +58,19 @@ namespace Voat.Data
         }
         public async Task<IEnumerable<Data.Models.SubmissionRemovalLog>> GetModLogRemovedSubmissions(string subverse, SearchOptions options)
         {
-            //This needs translating to Dapper, will not populate submission information as is, thus throwing error
-            throw new NotImplementedException("Core Port: This needs translating to EF Core or Dapper for related Submission object population. The Include(x => x.Submission) will not work as expected currently/");
-
             using (var db = new VoatDataContext(CONSTANTS.CONNECTION_READONLY))
             {
                 var data = (from b in db.SubmissionRemovalLog
                             join s in db.Submission on b.SubmissionID equals s.ID
                             where s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
-                            select b).Include(x => x.Submission);
+                            select new SubmissionRemovalLog()
+                            {
+                                SubmissionID = b.SubmissionID,
+                                Submission = s,
+                                CreationDate = b.CreationDate,
+                                Moderator = b.Moderator,
+                                Reason = b.Reason
+                            });
 
                 var data2 = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);
                 var results = await data2.ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
