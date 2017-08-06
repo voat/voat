@@ -886,7 +886,8 @@ namespace Voat.Controllers
             _db.ModeratorInvitation.Remove(userInvitation);
             _db.SaveChanges();
 
-            return Update(subverse.Name);
+            return RedirectToAction("Update", "SubverseModeration", new { subverse = subverse.Name });
+            //return Update(subverse.Name);
         }
 
         // GET: show add moderators view for selected subverse

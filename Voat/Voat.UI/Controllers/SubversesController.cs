@@ -436,7 +436,7 @@ namespace Voat.Controllers
                 {
                     navModel.BasePath = "";
                     navModel.Name = "";
-                    ViewBag.SelectedSubverse = "frontpage";
+                    //ViewBag.SelectedSubverse = "frontpage";
                     viewProperties.Context.Name = "";
                     pageList.RouteName = Models.ROUTE_NAMES.FRONT_INDEX;
                 }

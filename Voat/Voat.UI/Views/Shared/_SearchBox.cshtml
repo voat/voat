@@ -24,14 +24,22 @@
     if (VoatSettings.Instance.SearchEnabled)
     {
         string selectedSubverse = "";
+        bool limit = true;
+
         if (!String.IsNullOrEmpty(Context.Request.Query["sub"]))
         {
             selectedSubverse = Context.Request.Query["sub"];
         }
-        else if (!String.IsNullOrEmpty(ViewBag.SelectedSubverse))
+        else if (!String.IsNullOrEmpty(Model.Sub))
         {
-            selectedSubverse = ViewBag.SelectedSubverse;
+            selectedSubverse = Model.Sub;
         }
+
+        if (!String.IsNullOrEmpty(Context.Request.Query["l"]))
+        {
+            limit = Context.Request.Query["l"].First().ToLower() == "true";
+        }
+
 
         <div class="spacersection spacer">
     
@@ -49,7 +57,7 @@
                 {
                     @Html.Hidden("sub", selectedSubverse)
                     <input type="checkbox" name="l" value="true" id="l"
-                           @(!String.IsNullOrEmpty(selectedSubverse) ? "checked=\"checked\"" : "") />
+                           @(limit ? "checked=\"checked\"" : "") />
 
                     @Html.Label("selectedSubverse", "Limit to v/" + selectedSubverse)
                 }

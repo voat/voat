@@ -37,7 +37,7 @@
 }
 
 <div class="side">
-    @Html.Partial("_SearchBox", new SearchViewModel(), ViewData)
+    @Html.Partial("_SearchBox", new SearchViewModel() { Sub = Model.Name }, ViewData)
     @if (submission != null)
     {
         @Html.Partial("~/Views/Shared/Sidebars/_SidebarSubmissionInfo.cshtml", submission)

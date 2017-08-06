@@ -31,5 +31,7 @@ namespace Voat.Models.ViewModels
         [Required(ErrorMessage = "Please enter a term to search for")]
         [StringLength(100, ErrorMessage = "The search term must be between 3 and 100 characters in length.", MinimumLength = 3)]
         public string Q { get; set; }
+
+        public string Sub { get; set; }
     }
 }

@@ -49,7 +49,7 @@
                     var cmd = new Voat.Domain.Query.QueryMessageCounts(User.Identity.Name, Voat.Domain.Models.IdentityType.User, Voat.Domain.Models.MessageTypeFlag.All, Voat.Domain.Models.MessageState.Unread);
                     var count = cmd.Execute().Total;
                     <span class="notification-container">
-                        <a title="your messages" href="/messages/notifications" class="@(count > 0 ? "havemail" : "nohavemail")" id="mail">messages</a>
+                        <a title="your messages" href="/messages/index" class="@(count > 0 ? "havemail" : "nohavemail")" id="mail">messages</a>
                         <span class="notification-counter" id="mailcounter" style="display:@(count > 0 ? "block" : "none")">@count</span>
                     </span>
                 }

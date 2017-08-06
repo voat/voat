@@ -61,33 +61,51 @@ namespace Voat.Controllers
         public async Task<ActionResult> Index(int? page = null)
         {
 
-            var unread = new QueryMessageCounts(User, MessageTypeFlag.All, MessageState.Unread).SetUserContext(User);
+
+            var unread = new QueryAllMessageCounts(User, MessageTypeFlag.All, MessageState.Unread).SetUserContext(User);
             var counts = await unread.ExecuteAsync();
 
-            if (counts.Total > 0)
+            //var unread = new QueryMessageCounts(User, MessageTypeFlag.All, MessageState.Unread).SetUserContext(User);
+            //var counts = await unread.ExecuteAsync();
+
+
+            if (counts.Any(x => x.UserDefinition.Type == IdentityType.Subverse && x.Total > 0))
             {
-                if (counts.Counts.Any(x => x.Type == MessageType.Private))
-                {
-                    return await Private(page);
-                }
-                else if (counts.Counts.Any(x => x.Type == MessageType.SubmissionMention))
-                {
-                    return await Mentions(ContentType.Submission, page);
-                }
-                else if (counts.Counts.Any(x => x.Type == MessageType.CommentMention))
-                {
-                    return await Mentions(ContentType.Comment, page);
-                }
-                else if (counts.Counts.Any(x => x.Type == MessageType.SubmissionReply))
-                {
-                    return await Replies(ContentType.Submission, page);
-                }
-                else if (counts.Counts.Any(x => x.Type == MessageType.CommentReply))
-                {
-                    return await Replies(ContentType.Comment, page);
-                }
+                //is admin, send them to notfication page becasue they have smail 
+                SetMenuNavigationModel("Notifications", MenuType.UserMessages);
+                return View("Notifications", counts);
             }
-            return await Private(page);
+            else
+            {
+                var userCounts = counts.FirstOrDefault(x => x.UserDefinition.Type == IdentityType.User);
+
+                if (userCounts.Total > 0)
+                {
+                    if (userCounts.Counts.Any(x => x.Type == MessageType.Private))
+                    {
+                        return await Private(page);
+                    }
+                    else if (userCounts.Counts.Any(x => x.Type == MessageType.SubmissionMention))
+                    {
+                        return await Mentions(ContentType.Submission, page);
+                    }
+                    else if (userCounts.Counts.Any(x => x.Type == MessageType.CommentMention))
+                    {
+                        return await Mentions(ContentType.Comment, page);
+                    }
+                    else if (userCounts.Counts.Any(x => x.Type == MessageType.SubmissionReply))
+                    {
+                        return await Replies(ContentType.Submission, page);
+                    }
+                    else if (userCounts.Counts.Any(x => x.Type == MessageType.CommentReply))
+                    {
+                        return await Replies(ContentType.Comment, page);
+                    }
+                }
+                return await Private(page);
+            }
+
+           
         }
 
         private int SetPage(int? page = null)

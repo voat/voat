@@ -32,5 +32,8 @@ namespace Voat.Models
         public DateTime SaveDateTime { get; set; }
         public Submission SavedSubmission { get; set; }
         public Comment SavedComment { get; set; }
+
+        //HACK: This is really a hack to get a comment.Submission.Subverse reference working
+        public string Subverse { get; set; }
     }
 }

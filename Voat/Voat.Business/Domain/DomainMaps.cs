@@ -452,7 +452,9 @@ namespace Voat.Domain
                     {
                         var vote = repo.UserVoteStatus(user.Identity.Name, ContentType.Submission, submission.ID);
                         submission.Vote = vote;
-                        //saves are cached
+                        
+                        //submission.IsSaved = false;
+                        //submission.IsSaved = UserHelper.IsSaved(user, ContentType.Comment, comment.ID);
                     }
                 }
                 else

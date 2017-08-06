@@ -182,17 +182,20 @@ namespace Voat.Controllers
                                                           {
                                                               SaveDateTime = s.CreationDate,
                                                               SavedSubmission = m,
-                                                              SavedComment = null
+                                                              SavedComment = null,
+                                                              Subverse = m.Subverse
                                                           });
 
             IQueryable<SavedItem> savedComments = (from c in _db.Comment
+                                                    join sub in _db.Submission on c.SubmissionID equals sub.ID
                                                     join s in _db.CommentSaveTracker on c.ID equals s.CommentID
                                                     where !c.IsDeleted && s.UserName == User.Identity.Name
                                                     select new SavedItem()
                                                     {
                                                         SaveDateTime = s.CreationDate,
                                                         SavedSubmission = null,
-                                                        SavedComment = c
+                                                        SavedComment = c,
+                                                        Subverse = sub.Subverse
                                                     });
 
             // merge submissions and comments into one list sorted by date

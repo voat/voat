@@ -50,16 +50,18 @@ namespace Voat.Controllers
         [PreventSpam]
         public async Task<ActionResult> SearchResults(int? page, string q, string l, string sub)
         {
+
             if (!VoatSettings.Instance.SearchEnabled)
             {
                 return base.ErrorView(new Models.ViewModels.ErrorViewModel() { Title = "Search Disabled", Description = "Sorry, search is currently disabled. :(", Footer = "Tune in for The People vs. Search court case" });
             }
             //sanitize
             q = q.TrimSafe();
-
-            if (String.IsNullOrWhiteSpace(q) || q.Length < 3)
+            
+            if (String.IsNullOrWhiteSpace(q) || q.Length < 3 || q.Length > 50)
             {
-                return View("~/Views/Search/Index.cshtml", new PaginatedList<Data.Models.Submission>(new List<Data.Models.Submission>(), 0, 25, 24));
+                return ErrorView(new ErrorViewModel() { Title = "Your search found one result: An error", Description = "Search phrases are required to be between 3 and 50 characters", Footer = "Got it?" });
+                //return View("~/Views/Search/Index.cshtml", new PaginatedList<Domain.Models.Submission>(new List<Domain.Models.Submission>(), 0, 25, 24));
                 //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             

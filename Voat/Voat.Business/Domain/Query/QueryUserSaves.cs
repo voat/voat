@@ -46,14 +46,21 @@ namespace Voat.Domain.Query
         public override async Task<ISet<int>> ExecuteAsync()
         {
             DemandAuthentication();
-
+            
             var handler = CacheHandler.Instance;
-            var cacheKey = CachingKey.UserSavedItems(_type, User.Identity.Name);
-            if (!handler.Exists(cacheKey))
+            if (handler.CacheEnabled)
             {
-                handler.Replace(cacheKey, await GetData(), TimeSpan.FromMinutes(30));
+                var cacheKey = CachingKey.UserSavedItems(_type, User.Identity.Name);
+                if (!handler.Exists(cacheKey))
+                {
+                    handler.Replace(cacheKey, await GetData(), TimeSpan.FromMinutes(30));
+                }
+                return new CacheSetAccessor<int>(cacheKey);
             }
-            return new CacheSetAccessor<int>(cacheKey);
+            else
+            {
+                return await GetData();
+            }
         }
 
         protected async Task<ISet<int>> GetData()
