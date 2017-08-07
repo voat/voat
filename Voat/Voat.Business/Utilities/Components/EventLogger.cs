@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using Voat.Domain.Models;
 using Voat.Logging;
 using Voat.Common;
+using System.Diagnostics;
 
 namespace Voat.Utilities.Components
 {
@@ -50,10 +51,10 @@ namespace Voat.Utilities.Components
                     var configInstance = LoggingConfigurationSettings.Instance;
 
                     configInstance.OnUpdate += (sender, args) => {
-
                         var currentLogger = _logger;
                         //Create new logger based on config
-                        _logger = LoggingConfigurationSettings.Instance.GetDefault();
+                        _logger = args.GetDefault();
+                        Debug.WriteLine("Constructing new ILogger");
 
                         //Dispose current logger
                         var disposable = currentLogger as IDisposable;
@@ -65,6 +66,10 @@ namespace Voat.Utilities.Components
                     _logger = configInstance.GetDefault();
                 }
                 return _logger;
+            }
+            set
+            {
+                _logger = value;
             }
         }
         

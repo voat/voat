@@ -27,8 +27,7 @@ namespace Voat.Common.Configuration
             else
             {
                 //let
-                var updateable = Instance as IHandlesConfigurationUpdate<T>;
-                if (updateable != null)
+                if (Instance is IHandlesConfigurationUpdate<T> updateable)
                 {
                     updateable.Update(i);
                 }

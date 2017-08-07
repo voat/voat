@@ -384,27 +384,39 @@ namespace Voat.Caching
                     {
                         if (_instance == null)
                         {
-                            try
+                            var configSettings = CacheConfigurationSettings.Instance;
+                            var setInstance = new Action<CacheConfigurationSettings>(settings => 
                             {
-                                var handlerInfo = CacheConfigurationSettings.Instance.Handler;
-                                if (handlerInfo != null)
+                                try
                                 {
-                                    Debug.WriteLine("CacheHandler.Instance.Contruct({0})", handlerInfo.Type);
-                                    _instance = handlerInfo.Construct<ICacheHandler>();
+                                    var handler = settings.Handler;
+                                    if (handler != null)
+                                    {
+                                        Debug.WriteLine($"CacheHandler.Instance.Contruct({handler.Type})");
+                                        _instance = handler.Construct<ICacheHandler>();
+                                    }
                                 }
-                            }
-                            catch (Exception ex)
-                            {
-                                EventLogger.Log(ex);
-                            }
-                            finally
-                            {
-                                if (_instance == null)
+                                catch (Exception ex)
                                 {
-                                    //Can't load type, default to no caching.
-                                    _instance = new NullCacheHandler();
+                                    EventLogger.Log(ex);
                                 }
-                            }
+                                finally
+                                {
+                                    if (_instance == null)
+                                    {
+                                        //Can't load type, default to no caching.
+                                        _instance = new NullCacheHandler();
+                                    }
+                                }
+                            });
+                                
+                            setInstance(configSettings);
+
+                            //reset if update
+                            configSettings.OnUpdate += (sender, settings) =>
+                            {
+                                setInstance(settings);
+                            };
                         }
                     }
                 }

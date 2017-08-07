@@ -4,7 +4,7 @@ using Voat.Common.Configuration;
 namespace Voat.Data
 {
    
-    public class DataConfigurationSettings : ConfigurationSettings<DataConfigurationSettings>
+    public class DataConfigurationSettings : UpdatableConfigurationSettings<DataConfigurationSettings>
     {
        
         public DataStoreType StoreType { get; set; }

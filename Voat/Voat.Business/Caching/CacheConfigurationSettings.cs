@@ -29,7 +29,7 @@ using Voat.Configuration;
 
 namespace Voat.Caching
 {
-    public class CacheConfigurationSettings : ConfigurationSettings<CacheConfigurationSettings>
+    public class CacheConfigurationSettings : UpdatableConfigurationSettings<CacheConfigurationSettings>
     {
         public HandlerInfo Handler
         {
