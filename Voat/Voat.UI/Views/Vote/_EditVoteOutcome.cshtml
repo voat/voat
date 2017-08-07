@@ -3,7 +3,7 @@
 <div data-vote-item="Outcomes">
     <div class="form-horizontal" role="form">
       
-        @if (Model is Voat.Voting.Outcomes.ModeratorOutcome modOutcome)
+        @if (Model is Voat.Voting.Outcomes.RemoveModeratorOutcome modOutcome)
         {
             @Html.Partial("_EditModeratorOutcomeFields", modOutcome)
         }

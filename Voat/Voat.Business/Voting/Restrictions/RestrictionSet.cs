@@ -50,10 +50,6 @@ namespace Voat.Voting.Restrictions
                         violations.Violations.Add(v);
                     }
                 }
-                if (violations.IsValid)
-                {
-                    break;
-                }
             }
             return violations;
         }

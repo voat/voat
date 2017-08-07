@@ -82,7 +82,7 @@ namespace Voat.UI.Controllers
                         return PartialView("_EditVoteRestriction", new Voat.Voting.Restrictions.SubscriberRestriction());
                         break;
                     case "moderatoroutcome":
-                        return PartialView("_EditVoteOutcome", new Voat.Voting.Outcomes.ModeratorOutcome());
+                        return PartialView("_EditVoteOutcome", new Voat.Voting.Outcomes.RemoveModeratorOutcome());
                         break;
 
                 }

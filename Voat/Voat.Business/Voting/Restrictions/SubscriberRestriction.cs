@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Principal;
 using System.Text;
 using Voat.Configuration;
@@ -23,6 +24,7 @@ namespace Voat.Voting.Restrictions
             }
             return $"Was subscribed {where} before {EndDate}";
         }
+        [Required]
         public string Subverse { get; set; }
     }
 }
