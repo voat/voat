@@ -99,7 +99,7 @@ namespace Voat.Utilities
                         if (httpResource.IsImage)
                         {
                             var fileManager = FileManager.Instance;
-                            var fileCheck = fileManager.IsUploadPermitted(url.ToString(), FileType.Thumbnail, null, httpResource.Stream.Length);
+                            var fileCheck = fileManager.IsUploadPermitted(url.ToString(), FileType.Thumbnail, httpResource.Response.Content.Headers.ContentType.MediaType, httpResource.Stream.Length);
 
                             if (fileCheck.Success)
                             {
@@ -126,7 +126,7 @@ namespace Voat.Utilities
                     return CommandResponse.Error<CommandResponse<string>>(ex);
                 }
             }
-            return null;
+            return CommandResponse.FromStatus<string>("", Status.Invalid);
         }
     }
 }

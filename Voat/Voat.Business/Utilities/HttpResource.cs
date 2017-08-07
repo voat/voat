@@ -54,7 +54,8 @@ namespace Voat.Utilities
         /// </summary>
         /// <param name="options">Options to use with remote request</param>
         /// <returns></returns>
-        public async Task GiddyUp(HttpMethod method = null, HttpContent content = null, HttpCompletionOption options = HttpCompletionOption.ResponseContentRead)
+        //TODO: This method needs to return a status
+        public async Task<HttpStatusCode> GiddyUp(HttpMethod method = null, HttpContent content = null, HttpCompletionOption options = HttpCompletionOption.ResponseContentRead)
         {
             var handler = new HttpClientHandler() {
                 AllowAutoRedirect = _options.AllowAutoRedirect
@@ -89,6 +90,7 @@ namespace Voat.Utilities
                     _stream.Seek(0, SeekOrigin.Begin);
                 }
             }
+            return _response.StatusCode;
         }
         public bool IsImage
         {
