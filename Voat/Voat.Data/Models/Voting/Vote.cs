@@ -14,6 +14,7 @@ namespace Voat.Data.Models
         public int SubmissionID { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public DateTime ProcessedDate { get; set; }
         public bool ShowCurrentStats { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreationDate { get; set; }

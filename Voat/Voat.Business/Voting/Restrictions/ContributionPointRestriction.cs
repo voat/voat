@@ -4,11 +4,10 @@ using System.Security.Principal;
 using System.Text;
 using Voat.Configuration;
 using Voat.Domain.Command;
-using Voat.Voting.Options;
 
 namespace Voat.Voting.Restrictions
 {
-    public class ContributionPointRestriction : VoteRestriction<ContentOption>
+    public class ContributionPointRestriction : ContributionRestriction
     {
         public override CommandResponse<IVoteRestriction> Evaluate(IPrincipal principal)
         {
@@ -18,11 +17,11 @@ namespace Voat.Voting.Restrictions
         public override string ToDescription()
         {
             var where = $"on {VoatSettings.Instance.SiteName}";
-            if (!String.IsNullOrEmpty(Options.Subverse))
+            if (!String.IsNullOrEmpty(Subverse))
             {
-                where = $"in v/{Options.Subverse}";
+                where = $"in v/{Subverse}";
             }
-            return $"Have at least {Options.MinimumCount} points for {Options.ContentType} {where} from {Options.DateRange.ToString()}";
+            return $"Have at least {MinimumCount} points for {ContentType} {where} from {DateRange.ToString()}";
 
         }
     }

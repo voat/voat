@@ -4,11 +4,10 @@ using System.Security.Principal;
 using System.Text;
 using Voat.Configuration;
 using Voat.Domain.Command;
-using Voat.Voting.Options;
 
 namespace Voat.Voting.Restrictions
 {
-    public class SubscriberRestriction : VoteRestriction<SubverseOption>
+    public class SubscriberRestriction : VoteRestriction
     {
         public override CommandResponse<IVoteRestriction> Evaluate(IPrincipal principal)
         {
@@ -18,11 +17,12 @@ namespace Voat.Voting.Restrictions
         public override string ToDescription()
         {
             var where = $"to {VoatSettings.Instance.SiteName}";
-            if (!String.IsNullOrEmpty(Options.Subverse))
+            if (!String.IsNullOrEmpty(Subverse))
             {
-                where = $"to v/{Options.Subverse}";
+                where = $"to v/{Subverse}";
             }
-            return $"Was subscribed {where} before {Options.EndDate}";
+            return $"Was subscribed {where} before {EndDate}";
         }
+        public string Subverse { get; set; }
     }
 }

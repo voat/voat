@@ -134,9 +134,11 @@ namespace Voat.Configuration
         public string SiteName { get; set; } = "Voat";
 
         public string SiteSlogan { get; set; } = "Voat - have your say";
+
+        public string SiteUserName { get; set; } = "Voat";
         public int SubverseUpdateTimeLockInHours { get; set; } = 48;
 
-        public bool UseContentDeliveryNetwork { get; set; } = false;
+        
         public RuntimeStateSetting RuntimeState { get; set; } = RuntimeStateSetting.Enabled;
 
         public bool ThumbnailsEnabled { get; set; } = true;

@@ -51,7 +51,7 @@
         string SiteLogo { get; }
         string SiteName { get; }
         string SiteSlogan { get; }
+        string SiteUserName { get; }
         int SubverseUpdateTimeLockInHours { get; }
-        bool UseContentDeliveryNetwork { get; }
     }
 }

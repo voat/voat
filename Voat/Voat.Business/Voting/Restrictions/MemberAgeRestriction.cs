@@ -4,11 +4,10 @@ using System.Security.Principal;
 using System.Text;
 using Voat.Configuration;
 using Voat.Domain.Command;
-using Voat.Voting.Options;
 
 namespace Voat.Voting.Restrictions
 {
-    public class MemberAgeRestriction : VoteRestriction<RestrictionOption>
+    public class MemberAgeRestriction : VoteRestriction
     {
         public override CommandResponse<IVoteRestriction> Evaluate(IPrincipal principal)
         {
@@ -17,7 +16,7 @@ namespace Voat.Voting.Restrictions
 
         public override string ToDescription()
         {
-            return $"Account created before {Options.EndDate}";
+            return $"Account created before {EndDate}";
         }
     }
 }

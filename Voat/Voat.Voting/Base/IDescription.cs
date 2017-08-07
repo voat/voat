@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Voat.Voting.Options
+namespace Voat.Voting
 {
-    public abstract class OutcomeOption : Option
+    interface IDescription
     {
-
+        string ToDescription();
     }
 }

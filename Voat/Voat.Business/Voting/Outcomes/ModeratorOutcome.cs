@@ -1,28 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Voat.Domain.Command;
-using Voat.Voting.Options;
+using Voat.Domain.Models;
+using Voat.Voting.Models;
 
 namespace Voat.Voting.Outcomes
 {
-    public class ModeratorOutcome : VoteOutcome<ModeratorOption>
+    public class ModeratorOutcome : VoteOutcome
     {
-        public override CommandResponse Execute(ModeratorOption options)
+        public override CommandResponse Execute()
         {
             throw new NotImplementedException();
         }
 
         public override string ToDescription()
         {
-            if (Options.Action == ModeratorAction.Add)
+            if (Action == ModeratorVoteAction.Add)
             {
-                return $"Will add @{Options.UserName} to v/{Options.Subverse} as a {Options.Level}";
+                return $"Will add @{UserName} to v/{Subverse} as a {Level}";
             }
             else
             {
-                return $"Will remove @{Options.UserName} from v/{Options.Subverse} as a {Options.Level}";
+                return $"Will remove @{UserName} from v/{Subverse} as a {Level}";
             }
         }
+        [Required]
+        public string UserName { get; set; }
+
+        [Required]
+        public string Subverse { get; set; }
+
+        public ModeratorVoteAction Action { get; set; }
+
+        public ModeratorLevel Level { get; set; }
     }
 }

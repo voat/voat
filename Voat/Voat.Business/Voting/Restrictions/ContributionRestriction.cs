@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.Text;
 using Voat.Domain.Models;
 
-namespace Voat.Voting.Options
+namespace Voat.Voting.Restrictions
 {
-    public class ContentOption : SubverseOption
+    public abstract class ContributionRestriction : VoteRestriction
     {
         [DisplayName("Type")]
         public ContentType ContentType { get; set; }
@@ -14,5 +14,7 @@ namespace Voat.Voting.Options
         public int MinimumCount { get; set; }
         [DisplayName("Maximum Count")]
         public int? MaximumCount { get; set; }
+
+        public string Subverse { get; set; }
     }
 }

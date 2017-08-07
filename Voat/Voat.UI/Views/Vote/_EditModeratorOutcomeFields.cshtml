@@ -1,4 +1,4 @@
-﻿@model ModeratorOption
+﻿@model ModeratorOutcome
 
 
 <div class="form-group">
@@ -10,7 +10,7 @@
 <div class="form-group">
     <label class="col-md-2 control-label" asp-for="Action"></label>
     <div class="col-md-4">
-        <select asp-for="Action" asp-items="Enum.GetNames(typeof(Voat.Voting.Options.ModeratorAction)).Select(x => new SelectListItem() { Text = x, Value = x })" class="form-control" data-vote-field="Outcomes"></select>
+        <select asp-for="Action" asp-items="Enum.GetNames(typeof(ModeratorVoteAction)).Select(x => new SelectListItem() { Text = x, Value = x })" class="form-control" data-vote-field="Outcomes"></select>
     </div>
 </div>
 <div class="form-group">

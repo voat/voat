@@ -6,7 +6,6 @@ using Voat.Configuration;
 using Voat.Data;
 using Voat.Domain.Command;
 using Voat.Voting.Attributes;
-using Voat.Voting.Options;
 
 namespace Voat.Voting.Restrictions
 {
@@ -14,17 +13,17 @@ namespace Voat.Voting.Restrictions
         Enabled = true, 
         Description = "Restriction by the count of posts (comments and/or submissions)", 
         Name = "Contribution Count Restriction")]
-    public class ContributionCountRestriction : VoteRestriction<ContentOption>
+    public class ContributionCountRestriction : ContributionRestriction
     {
         public override CommandResponse<IVoteRestriction> Evaluate(IPrincipal principal)
         {
             var evaluation = CommandResponse.FromStatus<IVoteRestriction>(null, Status.Success);
             using (var repo = new Repository())
             {
-                var count = repo.UserContributionCount(principal.Identity.Name, Options.ContentType, Options.Subverse, Options.DateRange);
-                if (count < Options.MinimumCount)
+                var count = repo.UserContributionCount(principal.Identity.Name, ContentType, Subverse, DateRange);
+                if (count < MinimumCount)
                 {
-                    evaluation = CommandResponse.FromStatus<IVoteRestriction>(this, Status.Denied, $"User only has {count} and needs {Options.MinimumCount}");
+                    evaluation = CommandResponse.FromStatus<IVoteRestriction>(this, Status.Denied, $"User only has {count} and needs {MinimumCount}");
                 }
             }
             return evaluation;
@@ -33,11 +32,11 @@ namespace Voat.Voting.Restrictions
         public override string ToDescription()
         {
             var where = $"to {VoatSettings.Instance.SiteName}";
-            if (!String.IsNullOrEmpty(Options.Subverse))
+            if (!String.IsNullOrEmpty(Subverse))
             {
-                where = $"in v/{Options.Subverse}";
+                where = $"in v/{Subverse}";
             }   
-            return $"Has submitted at least {Options.MinimumCount} {Options.ContentType} {where} from {Options.DateRange.ToString()}";
+            return $"Has submitted at least {MinimumCount} {ContentType} {where} from {DateRange.ToString()}";
         }
     }
 }

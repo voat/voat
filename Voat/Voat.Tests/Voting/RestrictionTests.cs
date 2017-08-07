@@ -7,7 +7,6 @@ using Voat.Common;
 using Voat.Domain.Command;
 using Voat.Tests.Infrastructure;
 using Voat.Voting;
-using Voat.Voting.Options;
 using Voat.Voting.Restrictions;
 
 namespace Voat.Tests.Voting
@@ -22,8 +21,8 @@ namespace Voat.Tests.Voting
             {
                 ID = 1,
                 //GroupName = "Default",
-                Type = typeof(ContributionCountRestriction).ShortAssemblyQualifiedName(),
-                Options = (new ContentOption() {
+                Type = typeof(ContributionCountRestriction).Name,
+                Data = (new ContributionCountRestriction() {
                     ContentType = Domain.Models.ContentType.Comment,
                     Duration = TimeSpan.FromDays(14),
                     Subverse = "unit",
@@ -33,7 +32,7 @@ namespace Voat.Tests.Voting
                 VoteID = 1
             };
 
-            var constructed = (IVoteRestriction)OptionHandler.Construct(r.Type, r.Options);
+            var constructed = (IVoteRestriction)VoteItem.Deserialize<VoteItem>(r.Data);
             var user = TestHelper.SetPrincipal("User500CCP");
             var outcome = constructed.Evaluate(user);
 

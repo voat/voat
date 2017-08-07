@@ -5,11 +5,10 @@ using System.Text;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Domain.Command;
-using Voat.Voting.Options;
 
 namespace Voat.Voting.Restrictions
 {
-    public class ContributionVoteRestriction : VoteRestriction<ContentOption>
+    public class ContributionVoteRestriction : ContributionRestriction
     {
         public override CommandResponse<IVoteRestriction> Evaluate(IPrincipal principal)
         {
@@ -24,11 +23,11 @@ namespace Voat.Voting.Restrictions
         public override string ToDescription()
         {
             var where = $"on {VoatSettings.Instance.SiteName}";
-            if (!String.IsNullOrEmpty(Options.Subverse))
+            if (!String.IsNullOrEmpty(Subverse))
             {
-                where = $"in v/{Options.Subverse}";
+                where = $"in v/{Subverse}";
             }
-            return $"Has voted at least {Options.MinimumCount} times on {Options.ContentType} {where} from {Options.DateRange.ToString()}";
+            return $"Has voted at least {MinimumCount} times on {ContentType} {where} from {DateRange.ToString()}";
 
         }
     }

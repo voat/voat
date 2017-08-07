@@ -1,11 +1,11 @@
-﻿@model Voat.Voting.Outcomes.VoteOutcome<Voat.Voting.Options.ModeratorOption>
+﻿@model VoteOutcome
 
 <div data-vote-item="Outcomes">
     <div class="form-horizontal" role="form">
       
-        @if (Model is Voat.Voting.Outcomes.ModeratorOutcome)
+        @if (Model is Voat.Voting.Outcomes.ModeratorOutcome modOutcome)
         {
-            @Html.Partial("_EditModeratorOutcomeFields", ((Voat.Voting.Outcomes.ModeratorOutcome)Model).Options)
+            @Html.Partial("_EditModeratorOutcomeFields", modOutcome)
         }
 
         <div class="form-group">

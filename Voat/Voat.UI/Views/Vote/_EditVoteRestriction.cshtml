@@ -1,19 +1,19 @@
-﻿@model OptionHandler
+﻿@model VoteRestriction
 
 <div data-vote-item="Restrictions">
     <div class="form-horizontal" role="form">
 
-        @if (Model is Voat.Voting.Restrictions.VoteRestriction<Voat.Voting.Options.ContentOption> content)
+        @if (Model is ContributionRestriction content)
         {
-            @Html.Partial("_EditContentOptions", content.Options);
+            @Html.Partial("_EditContentOptions", content);
         }
-        else if (Model is Voat.Voting.Restrictions.VoteRestriction<Voat.Voting.Options.RestrictionOption> restrictioin)
+        else if (Model is SubscriberRestriction subscriber)
         {
-            @Html.Partial("_EditContentOptions", restrictioin.Options);
+            @Html.Partial("_EditContentOptions", subscriber);
         }
-        else if (Model is Voat.Voting.Restrictions.VoteRestriction<Voat.Voting.Options.SubverseOption> subverse)
+        else if (Model is MemberAgeRestriction member)
         {
-            @Html.Partial("_EditContentOptions", subverse.Options);
+            @Html.Partial("_EditContentOptions", member);
         }
 
         <div class="form-group">

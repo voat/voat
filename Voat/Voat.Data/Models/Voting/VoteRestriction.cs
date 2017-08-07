@@ -10,6 +10,6 @@ namespace Voat.Data.Models
         public int VoteID { get; set; }
         //public string GroupName { get; set; }
         public string Type { get; set; }
-        public string Options { get; set; }
+        public string Data { get; set; }
     }
 }

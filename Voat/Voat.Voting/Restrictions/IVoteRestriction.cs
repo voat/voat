@@ -9,5 +9,7 @@ namespace Voat.Voting.Restrictions
     public interface IVoteRestriction
     {
         CommandResponse<IVoteRestriction> Evaluate(IPrincipal principal);
+        
+        string Group { get; }
     }
 }
