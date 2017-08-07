@@ -344,9 +344,10 @@ namespace Voat.Controllers
             if (!ModelState.IsValid)
             {
                 PreventSpamAttribute.Reset(HttpContext);
+                
                 if (Request.IsAjaxRequest())
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ModelState.GetFirstErrorMessage());
+                    return new JsonResult(CommandResponse.FromStatus(Status.Invalid, ModelState.GetFirstErrorMessage()));
                 }
                 else
                 {

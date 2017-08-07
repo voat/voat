@@ -395,7 +395,7 @@ namespace Voat.Controllers
 
             if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.DeleteComments))
             {
-                return new HttpUnauthorizedResult();
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.Unauthorized));
             }
             var q = new QueryComment(commentID);
             var comment = await q.ExecuteAsync();
@@ -425,7 +425,7 @@ namespace Voat.Controllers
 
             if (!ModeratorPermission.HasPermission(User, comment.Subverse, Domain.Models.ModeratorAction.DeleteComments))
             {
-                return new HttpUnauthorizedResult();
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.Unauthorized));
             }
 
             if (!ModelState.IsValid)

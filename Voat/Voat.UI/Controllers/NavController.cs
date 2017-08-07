@@ -30,7 +30,7 @@ namespace Voat.Controllers
     public class NavController : BaseController
     {
         // GET: TabMenu
-        [ChildActionOnly]
+        
         public PartialViewResult TabMenu(string selectedSubverse, string sortingMode, string action, bool? frontpage, string selectedSubverseName)
         {
             ViewBag.selectedSubverse = selectedSubverse;
@@ -43,7 +43,7 @@ namespace Voat.Controllers
         }
 
         // GET: PmMenu
-        [ChildActionOnly]
+        
         public PartialViewResult PmMenu(string selectedView)
         {
             ViewBag.selectedView = selectedView;
@@ -52,7 +52,7 @@ namespace Voat.Controllers
         }
 
         // GET: UserProfileMenu
-        [ChildActionOnly]
+        
         public PartialViewResult UserProfileMenu(string whattodisplay, string selectedUser)
         {
             ViewBag.whattodisplay = whattodisplay;           
@@ -62,7 +62,7 @@ namespace Voat.Controllers
         }
 
         // GET: SubversesMenu
-        [ChildActionOnly]
+        
         public PartialViewResult SubversesMenu(string sortingMode, string subversesView)
         {
             ViewBag.sortingMode = sortingMode;
@@ -72,7 +72,7 @@ namespace Voat.Controllers
         }
 
         // GET: DomainsMenu
-        [ChildActionOnly]
+        
         public PartialViewResult DomainsMenu(string sortingMode, string selectedSubverse, string selectedDomain)
         {
             ViewBag.sortingMode = sortingMode;

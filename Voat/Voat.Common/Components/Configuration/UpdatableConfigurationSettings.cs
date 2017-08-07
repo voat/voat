@@ -6,14 +6,14 @@ namespace Voat.Common.Configuration
 {
     public interface IHandlesConfigurationUpdate<T>
     {
-        void Update(T configSettings);
+        void Update(T newSettings);
     }
 
     public abstract class UpdatableConfigurationSettings<T> : ConfigurationSettings<T>, IHandlesConfigurationUpdate<T> where T : UpdatableConfigurationSettings<T>, new()
     {
-        protected EventHandler _updateHandler;
+        protected EventHandler<T> _updateHandler;
 
-        public event EventHandler OnUpdate
+        public event EventHandler<T> OnUpdate
         {
             add
             {
@@ -25,14 +25,14 @@ namespace Voat.Common.Configuration
             }
         }
 
-        public virtual void Update(T configInstance)
+        public virtual void Update(T newSettings)
         {
             //TODO: Figure out how to copy this instance over to the new one with event handlers in place
             //Copy to Instance -- this is completely untested and it smells
-            configInstance._updateHandler = Instance._updateHandler;
-            Instance = configInstance;
+            newSettings._updateHandler = Instance._updateHandler;
+            Instance = newSettings;
 
-            _updateHandler?.Invoke(this, EventArgs.Empty);
+            _updateHandler?.Invoke(this, newSettings);
         }
     }
 }

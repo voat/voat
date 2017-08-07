@@ -12,6 +12,7 @@ namespace Voat.Data.Models
         public string Content { get; set; }
         public string FormattedContent { get; set; }
         public int SortOrder { get; set; }
-        
+     
+        public List<VoteOutcome> VoteOutcomes { get; set; }
     }
 }

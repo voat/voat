@@ -21,7 +21,7 @@ namespace Voat.Tests.Voting
             var r = new Voat.Data.Models.VoteRestriction()
             {
                 ID = 1,
-                GroupName = "Default",
+                //GroupName = "Default",
                 Type = typeof(ContributionCountRestriction).ShortAssemblyQualifiedName(),
                 Options = (new ContentOption() {
                     ContentType = Domain.Models.ContentType.Comment,

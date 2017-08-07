@@ -694,7 +694,7 @@ namespace Voat.Controllers
         //}
 
         //// GET: 40 most popular sets by subscribers
-        //[ChildActionOnly]
+        //
         //public PartialViewResult PopularSets()
         //{
         //    if (VoatSettings.Instance.SetsDisabled)

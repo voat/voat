@@ -592,7 +592,7 @@ namespace Voat.Controllers
         }
 
         //// GET: /Account/UserPreferences
-        //[ChildActionOnly]
+        //
         //public async Task<ActionResult> GetUserPreferences()
         //{
 
@@ -729,7 +729,7 @@ namespace Voat.Controllers
 
         // GET: /Account/UserAccountEmail
         [Authorize]
-        [ChildActionOnly]
+        
         public async Task<ActionResult> GetUserAccountEmail()
         {
             //CORE_PORT: Changes in User Manager
@@ -1004,37 +1004,37 @@ namespace Voat.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        private class ChallengeResult : HttpUnauthorizedResult
-        {
-            public ChallengeResult(string provider, string redirectUri)
-                : this(provider, redirectUri, null)
-            {
-            }
+        //private class ChallengeResult : HttpUnauthorizedResult
+        //{
+        //    public ChallengeResult(string provider, string redirectUri)
+        //        : this(provider, redirectUri, null)
+        //    {
+        //    }
 
-            public ChallengeResult(string provider, string redirectUri, string userId)
-            {
-                LoginProvider = provider;
-                RedirectUri = redirectUri;
-                UserId = userId;
-            }
+        //    public ChallengeResult(string provider, string redirectUri, string userId)
+        //    {
+        //        LoginProvider = provider;
+        //        RedirectUri = redirectUri;
+        //        UserId = userId;
+        //    }
 
-            public string LoginProvider { get; set; }
+        //    public string LoginProvider { get; set; }
 
-            public string RedirectUri { get; set; }
+        //    public string RedirectUri { get; set; }
 
-            public string UserId { get; set; }
+        //    public string UserId { get; set; }
 
-            //CORE_PORT: Not ported
-            //public override void ExecuteResult(ControllerContext context)
-            //{
-            //    var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
-            //    if (UserId != null)
-            //    {
-            //        properties.Dictionary[XsrfKey] = UserId;
-            //    }
-            //    context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
-            //}
-        }
+        //    //CORE_PORT: Not ported
+        //    //public override void ExecuteResult(ControllerContext context)
+        //    //{
+        //    //    var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
+        //    //    if (UserId != null)
+        //    //    {
+        //    //        properties.Dictionary[XsrfKey] = UserId;
+        //    //    }
+        //    //    context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
+        //    //}
+        //}
 
         #endregion Helpers
     }

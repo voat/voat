@@ -1106,20 +1106,29 @@ namespace Voat
             );
             routes.MapRoute(
                 name: "CreateVote",
-                template: "vote/create",
+                template: "v/{subverse}/vote/create",
                 defaults: new { controller = "Vote", action = "Create" }
             );
             routes.MapRoute(
+                name: "SaveVote",
+                template: "vote/save",
+                defaults: new { controller = "Vote", action = "Save" }
+            );
+            routes.MapRoute(
                name: "EditVote",
-               template: "vote/edit/{id:int}",
+               template: "v/{subverse}/vote/edit/{id:int}",
                defaults: new { controller = "Vote", action = "Edit" }
            );
             routes.MapRoute(
                 name: "DeleteVote",
-                template: "vote/delete/{id:int}",
+                template: "v/{subverse}/vote/delete/{id:int}",
                 defaults: new { controller = "Vote", action = "Delete" }
             );
-
+            routes.MapRoute(
+               name: "VoteElement",
+               template: "vote/element",
+               defaults: new { controller = "Vote", action = "Element" }
+           );
             #endregion
 
             // submissions/applylinkflair

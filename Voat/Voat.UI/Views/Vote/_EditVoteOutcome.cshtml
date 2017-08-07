@@ -1,0 +1,17 @@
+﻿@model Voat.Voting.Outcomes.VoteOutcome<Voat.Voting.Options.ModeratorOption>
+
+<div data-vote-item="Outcomes">
+    <div class="form-horizontal" role="form">
+      
+        @if (Model is Voat.Voting.Outcomes.ModeratorOutcome)
+        {
+            @Html.Partial("_EditModeratorOutcomeFields", ((Voat.Voting.Outcomes.ModeratorOutcome)Model).Options)
+        }
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button class="btn-voat" onclick="voat.voting.removeItem(this, 'div[data-vote-item=\'Outcomes\']');">Remove</button>
+            </div>
+        </div>
+    </div>
+</div>

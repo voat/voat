@@ -13,22 +13,23 @@ namespace Voat.Voting.Restrictions
 
         public void Populate(IEnumerable<Data.Models.VoteRestriction> restrictions)
         {
-            foreach (var restriction in restrictions)
-            {
-                var groupName = String.IsNullOrEmpty(restriction.GroupName.TrimSafe()) ? "" : restriction.GroupName.TrimSafe();
+            throw new NotImplementedException();
+            //foreach (var restriction in restrictions)
+            //{
+            //    var groupName = String.IsNullOrEmpty(restriction.Options.TrimSafe()) ? "" : restriction.GroupName.TrimSafe();
 
-                List<IVoteRestriction> groupList = null;
-                if (_restrictionSet.ContainsKey(groupName))
-                {
-                    groupList = _restrictionSet[groupName];
-                }
-                else
-                {
-                    groupList = new List<IVoteRestriction>();
-                    _restrictionSet[groupName] = groupList;
-                }
-                groupList.Add((IVoteRestriction)OptionHandler.Construct(restriction.Type, restriction.Options));
-            }
+            //    List<IVoteRestriction> groupList = null;
+            //    if (_restrictionSet.ContainsKey(groupName))
+            //    {
+            //        groupList = _restrictionSet[groupName];
+            //    }
+            //    else
+            //    {
+            //        groupList = new List<IVoteRestriction>();
+            //        _restrictionSet[groupName] = groupList;
+            //    }
+            //    groupList.Add((IVoteRestriction)OptionHandler.Construct(restriction.Type, restriction.Options));
+            //}
         }
         public RestrictionEvaluation Evaluate(IPrincipal user)
         {

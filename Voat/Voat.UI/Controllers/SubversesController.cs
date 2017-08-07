@@ -138,7 +138,10 @@ namespace Voat.Controllers
             ViewBag.SelectedSubverse = String.Empty;
 
             if (destination == null)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            {
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             if (nsfwok != null && nsfwok == true)
             {
                 // setup nswf cookie

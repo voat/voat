@@ -10,6 +10,14 @@ namespace Voat.Configuration
 {
     public class VoatSettings : UpdatableConfigurationSettings<VoatSettings>, IVoatSettings
     {
+        public VoatSettings()
+        {
+            base.OnUpdate += (object sender, VoatSettings newSettings) => {
+                //The IsDevelopment flag is set in startup, here we copy it to then settings files when settings get updated.
+                newSettings.IsDevelopment = IsDevelopment;
+            };
+        }
+
         private T GetValue<T>(string key, T defaultIfMissing)
         {
             //if (configValues.ContainsKey(key))
@@ -23,7 +31,6 @@ namespace Voat.Configuration
             //}
             return defaultIfMissing;
         }
-
         #region AppSettings Accessors
 
         public bool IsVoatBranded
@@ -151,6 +158,9 @@ namespace Voat.Configuration
         public bool IsDevelopment { get; set; } = false;
 
         public bool EnableRoles { get; set; } = false;
+
+        public bool EnableVotes { get; set; } = false;
+
         #endregion AppSettings Accessors
 
     }

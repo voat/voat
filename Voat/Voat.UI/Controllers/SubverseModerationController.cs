@@ -401,7 +401,8 @@ namespace Voat.Controllers
 
             if (subverseObject == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.Banning))
@@ -461,7 +462,7 @@ namespace Voat.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
 
             // check if caller is subverse owner, if not, deny listing

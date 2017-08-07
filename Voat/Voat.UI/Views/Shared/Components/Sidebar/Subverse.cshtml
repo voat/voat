@@ -53,6 +53,14 @@
             Discuss
         </a>
     </div>
+    @if (VoatSettings.Instance.EnableVotes)
+    {
+        <div class="spacer">
+            <a href="/v/@Model.Name/vote/create" class="btn-whoaverse btn-block contribute submit-text">
+                Create Vote
+            </a>
+        </div>
+    }
     <div class="spacer spacerbig">
         <div class="titlebox">
 

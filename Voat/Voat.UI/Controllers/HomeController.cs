@@ -322,7 +322,7 @@ namespace Voat.Controllers
         }
 
         // GET: list of subverses user is subscribed to for sidebar
-        [ChildActionOnly]
+        
         public async Task<ActionResult> SubversesUserIsSubscribedTo(string userName)
         {
             if (userName != null)

@@ -65,7 +65,7 @@ namespace Voat.Controllers
 
             if (!ModeratorPermission.HasPermission(User, submission.Subverse, Domain.Models.ModeratorAction.AssignFlair))
             {
-                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.Unathorized));
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.Unauthorized));
                 //return new HttpUnauthorizedResult();
             }
 
@@ -109,7 +109,7 @@ namespace Voat.Controllers
             // check if caller is subverse moderator, if not, deny posting
             if (!ModeratorPermission.HasPermission(User, submissionModel.Subverse, Domain.Models.ModeratorAction.AssignFlair))
             {
-                return new HttpUnauthorizedResult();
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.Unauthorized));
             }
 
             // clear flair and save submission
@@ -218,7 +218,7 @@ namespace Voat.Controllers
 
             if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.DeletePosts))
             {
-                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.Unathorized));
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.Unauthorized));
             }
 
             //New Domain Submission
@@ -267,7 +267,7 @@ namespace Voat.Controllers
 
             if (!ModeratorPermission.HasPermission(User, s.Subverse, Domain.Models.ModeratorAction.DeletePosts))
             {
-                return new HttpUnauthorizedResult();
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.Unauthorized));
             }
 
             if (!ModelState.IsValid)

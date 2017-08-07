@@ -56,7 +56,7 @@ namespace Voat.Controllers
                 //check perms
                 if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.AccessReports))
                 {
-                    return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.Unathorized));
+                    return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.Unauthorized));
                 }
             }
             //TODO: Implement Command/Query - Remove direct Repository access

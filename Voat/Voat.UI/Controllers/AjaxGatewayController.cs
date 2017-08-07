@@ -93,7 +93,7 @@ namespace Voat.Controllers
             // check if caller is subverse owner or moderator, if not, deny listing
             if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.AssignFlair))
             {
-                return new HttpUnauthorizedResult();
+                return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.Unauthorized));
             }
 
             var subverseLinkFlairs = _db.SubverseFlair
@@ -180,7 +180,7 @@ namespace Voat.Controllers
         //}
 
         // GET: basic info about a user
-        [OutputCache(Duration = 600, VaryByParam = "*")]
+        //[OutputCache(Duration = 600, VaryByParam = "*")]
         public ActionResult UserBasicInfo(string userName)
         {
             //acceptable constructor call

@@ -36,4 +36,7 @@
     <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj" />
     <ProjectReference Include="..\Voat.Voting\Voat.Voting.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Voting\Models\" />
+  </ItemGroup>
 </Project>

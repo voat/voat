@@ -35,7 +35,7 @@ namespace Voat.Models.ViewModels
     {
         SubverseDisabled,
         SubvereExists,
-        Unathorized,
+        Unauthorized,
         TheOthers,
         SubverseNotFound,
         NotFound,
@@ -65,7 +65,7 @@ namespace Voat.Models.ViewModels
             {
                 case HttpStatusCode.Forbidden:
                 case HttpStatusCode.Unauthorized:
-                    return GetErrorViewModel(ErrorType.Unathorized);
+                    return GetErrorViewModel(ErrorType.Unauthorized);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(code), "The status code you provided is not handled. Update your code.");
@@ -88,7 +88,7 @@ namespace Voat.Models.ViewModels
                         errorModel.Description = "The subverse you were trying to create already exists. Sorry about that. Try another name?";
                         errorModel.Footer = "Care to go back and try another name?";
                         break;
-                case ErrorType.Unathorized:
+                case ErrorType.Unauthorized:
                         errorModel.Title = "Hold on there fella!";
                         errorModel.Description = "You were not supposed to be poking around here.</h1>";
                         errorModel.Footer = "How about you stop poking around? :)";
