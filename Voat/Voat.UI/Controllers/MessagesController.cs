@@ -463,6 +463,10 @@ namespace Voat.Controllers
             var qSub = new QuerySubverse(subverse);
             var sub = await qSub.ExecuteAsync();
 
+            if (sub == null)
+            {
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
+            }
             //ViewBag.PmView = "mod";
             //ViewBag.Title = string.Format("v/{0} {1}", sub.Name, (type == MessageTypeFlag.Sent ? "Sent" : "Inbox"));
 

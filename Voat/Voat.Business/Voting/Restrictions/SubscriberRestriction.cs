@@ -5,9 +5,15 @@ using System.Security.Principal;
 using System.Text;
 using Voat.Configuration;
 using Voat.Domain.Command;
+using Voat.Voting.Attributes;
 
 namespace Voat.Voting.Restrictions
 {
+    [Restriction(
+      Enabled = true,
+      Name = "Subscriber Restriction",
+      Description = "Restriction by subverse subscription"
+    )]
     public class SubscriberRestriction : VoteRestriction
     {
         public override CommandResponse<IVoteRestriction> Evaluate(IPrincipal principal)

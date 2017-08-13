@@ -1152,6 +1152,20 @@ namespace Voat
                 defaults: new { controller = "Submissions", action = "ToggleSticky" }
             );
 
+            #region Log
+            routes.MapRoute(
+               name: "GloballyBannedUserLog",
+               template: "log/banned/user",
+               defaults: new { controller = "Log", action = "BannedUsers" }
+           );
+            routes.MapRoute(
+               name: "GloballyBannedDomainLog",
+               template: "log/banned/domain",
+               defaults: new { controller = "Log", action = "BannedDomains" }
+           );
+
+            #endregion
+
             //catch The Others 
             routes.MapRoute(
                 name: "Error",

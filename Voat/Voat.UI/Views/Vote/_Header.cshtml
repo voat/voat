@@ -1,0 +1,6 @@
+﻿@model VoteItem
+@{
+    var metadata = Voat.Domain.Models.VoteMetadata.Instance.FindByType(Model.GetType());
+}
+<h2>@metadata.Attribute.Name</h2>
+<span>@metadata.Attribute.Description</span>

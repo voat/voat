@@ -106,113 +106,11 @@
             <div class="userstats-heading-1">Comment ratings</div>
             <p class="userstats-heading-2">3 highest rated comments:</p>
             <div class="userstats-body">
-                @{
-                    if (userStatsModel.HighestRatedComments.Count > 0)
-                    {
-                        foreach (Comment item in userStatsModel.HighestRatedComments)
-                        {
-                            var score = item.UpCount - item.DownCount;
-
-                            <div class="thread comment" data-ups="@item.UpCount" data-downs="@item.DownCount">
-                                <p>EF CORE ISSUE FIXME - ALSO THIS CODE IS DUPLICATED </p>
-                                @*<p>
-                                    <a href="@VoatUrlFormatter.CommentsPagePath(item.Submission.Subverse, item.SubmissionID.Value)" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
-
-                                    submitted by <a href="/user/@item.Submission.UserName">@item.Submission.UserName</a> to <a href="/v/@item.Submission.Subverse" class="userstats-submission-subverse">@item.Submission.Subverse</a>
-                                </p>*@
-
-                                <div class="entry unvoted">
-                                    <p class="tagline">
-                                        <a href="/user/@userName" class="author may-blank userinfo tooltipstered" data-username="@userName">@userName</a>
-                                        <span class="score dislikes">@item.DownCount points</span>
-                                        <span class="userstats-submission-score">@score points</span>
-                                        <span class="score likes">@item.UpCount points</span>
-                                        <span class="commentvotesratio">(<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</span>
-                                        <time title="@item.CreationDate" datetime="@item.CreationDate">@Age.ToRelative(item.CreationDate)</time> ago
-                                    </p>
-                                    <div class="usertext-body">
-                                        <div class="md">
-                                            @* To save processing just display formatted content if we have it, else trim it and format it. *@
-                                            @if (!String.IsNullOrEmpty(item.FormattedContent))
-                                            {
-                                                @Html.Raw(item.FormattedContent)
-                                            }
-                                            else
-                                            {
-                                                string trimmedComment = item.Content.TruncateAtWord(300);
-                                                @Html.Raw(@Formatting.FormatMessage(trimmedComment))
-                                            }
-                                        </div>
-                                    </div>
-                                    <ul class="flat-list buttons">
-                                        <li class="first">
-                                            <p>EF CORE ISSUE FIXME - ALSO THIS CODE IS DUPLICATED </p>
-                                            @*<a href="@VoatUrlFormatter.CommentsPagePath(item.Submission.Subverse, item.Submission.ID, item.ID)" class="bylink" rel="nofollow">permalink</a>*@
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <p>This user made no comments.</p>
-                    }
-
-                }
+               @Html.Partial("_RatedCommentList.cshtml", (IEnumerable<Voat.Data.Models.Comment>)userStatsModel.HighestRatedComments) 
             </div>
             <p class="userstats-heading-2">3 lowest rated comments:</p>
             <div class="userstats-body">
-                @{
-                    if (userStatsModel.LowestRatedComments.Count > 0)
-                    {
-                        foreach (Comment item in userStatsModel.LowestRatedComments)
-                        {
-                            var score = item.UpCount - item.DownCount;
-
-                            <div class="thread comment" data-ups="@item.UpCount" data-downs="@item.DownCount">
-                                <p>EF CORE ISSUE FIXME - ALSO THIS CODE IS DUPLICATED </p>
-                                @*<a href="@VoatUrlFormatter.CommentsPagePath(item.Submission.Subverse, item.SubmissionID.Value)" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
-                                submitted by <a href="/user/@item.Submission.UserName">@item.Submission.UserName</a> to <a href="/v/@item.Submission.Subverse" class="userstats-submission-subverse">@item.Submission.Subverse</a>*@
-
-                                <div class="entry unvoted">
-                                    <p class="tagline">
-                                        <a href="/user/@userName" class="author may-blank userinfo tooltipstered" data-username="@userName">@userName</a>
-                                        <span class="score dislikes">@item.DownCount points</span>
-                                        <span class="userstats-submission-score">@score points</span>
-                                        <span class="score likes">@item.UpCount points</span>
-                                        <span class="commentvotesratio">(<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</span>
-                                        <time title="@item.CreationDate" datetime="@item.CreationDate">@Age.ToRelative(item.CreationDate)</time> ago
-                                    </p>
-                                    <div class="usertext-body">
-                                        <div class="md">
-                                            @* To save processing just display formatted content if we have it, else trim it and format it. *@
-                                            @if (!String.IsNullOrEmpty(item.FormattedContent))
-                                            {
-                                                @Html.Raw(item.FormattedContent)
-                                            }
-                                            else
-                                            {
-                                                string trimmedComment = item.Content.TruncateAtWord(300);
-                                                @Html.Raw(@Formatting.FormatMessage(trimmedComment))
-                                            }
-                                        </div>
-                                    </div>
-                                    <ul class="flat-list buttons">
-                                        <li class="first">
-                                            <p>EF CORE ISSUE FIXME - ALSO THIS CODE IS DUPLICATED </p>
-                                            @*<a href="@VoatUrlFormatter.CommentsPagePath(item.Submission.Subverse, item.SubmissionID.Value, item.ID)" class="bylink" rel="nofollow">permalink</a>*@
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <p>This user made no comments.</p>
-                    }
-                }
+               @Html.Partial("_RatedCommentList.cshtml", (IEnumerable<Voat.Data.Models.Comment>)userStatsModel.LowestRatedComments) 
             </div>
         </div>
     </div>

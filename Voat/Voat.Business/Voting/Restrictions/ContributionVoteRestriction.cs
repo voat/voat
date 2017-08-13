@@ -5,9 +5,15 @@ using System.Text;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Domain.Command;
+using Voat.Voting.Attributes;
 
 namespace Voat.Voting.Restrictions
 {
+    [Restriction(
+       Enabled = true,
+       Name = "Contribution Vote Restriction",
+       Description = "Restriction by the votes given on (comments and/or submissions)"
+   )]
     public class ContributionVoteRestriction : ContributionRestriction
     {
         public override CommandResponse<IVoteRestriction> Evaluate(IPrincipal principal)

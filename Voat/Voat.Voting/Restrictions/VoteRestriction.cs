@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Principal;
 using System.Text;
 using Voat.Common;
@@ -13,6 +14,7 @@ namespace Voat.Voting.Restrictions
     {
         [DisplayName("Group")]
         public string Group { get; set; }
+        [Required]
         [DisplayName("End Date")]
         public DateTime EndDate { get; set; }
         [DisplayName("Duration")]

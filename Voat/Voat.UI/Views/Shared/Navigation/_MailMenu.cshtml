@@ -24,7 +24,7 @@
 
     <span class="hover pagename"><a href="@Model.BasePath">@Model.Description</a></span>
     <ul class="tabmenu ">
-        <li class='@(Model.Name.Equals("Inbox") ? "selected" : "disabled")'><a href="@Model.BasePath">Inbox</a></li>
+        <li class='@(Model.Name.Equals("Inbox") ? "selected" : "disabled")'><a href="@Model.BasePath/private">Inbox</a></li>
         <li class='@(Model.Name.Equals("Sent")  ? "selected" : "disabled")'><a href="@Model.BasePath/sent">Sent</a></li>
         <li class='@(Model.Name.Equals("Compose")  ? "selected" : "disabled")'><a href="@Model.BasePath/compose">Compose</a></li>
         <li class='@(Model.Name.Equals("Notifications")  ? "selected" : "disabled")'><a href="/messages/notifications">Summary</a></li>

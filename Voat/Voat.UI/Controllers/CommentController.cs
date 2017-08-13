@@ -41,6 +41,7 @@ using Voat.Data.Models;
 using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
+using Voat.Domain.Models.Input;
 using Voat.Domain.Query;
 using Voat.Http;
 using Voat.Http.Filters;
@@ -299,10 +300,11 @@ namespace Voat.Controllers
         [Authorize]
         [PreventSpam(15, "Sorry, you are doing that too fast. Please try again later.")]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> SubmitComment([Bind("ID, Content, SubmissionID, ParentID")] Data.Models.Comment commentModel)
+        public async Task<ActionResult> SubmitComment(CommentInput commentModel)
         {
             if (!ModelState.IsValid)
             {
+                PreventSpamAttribute.Reset(HttpContext);
                 return JsonResult(CommandResponse.FromStatus(Status.Error, ModelState.GetFirstErrorMessage()));
             }
             else
@@ -338,7 +340,7 @@ namespace Voat.Controllers
         [Authorize]
         [VoatValidateAntiForgeryToken]
         [PreventSpam(15, "Sorry, you are doing that too fast. Please try again later.")]
-        public async Task<ActionResult> EditComment([FromBody()] Data.Models.Comment commentModel)
+        public async Task<ActionResult> EditComment([FromBody()] CommentEditInput commentModel)
         {
             if (ModelState.IsValid)
             {
@@ -353,6 +355,7 @@ namespace Voat.Controllers
             }
             else
             {
+                PreventSpamAttribute.Reset(HttpContext);
                 return JsonResult(CommandResponse.FromStatus(Status.Error, ModelState.GetFirstErrorMessage()));
             }
         }

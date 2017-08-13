@@ -60,7 +60,7 @@
                                 switch (itemCount.Type)
                                 {
                                     case Voat.Domain.Models.MessageType.Private:
-                                        <p><a href="/messages/">@itemCount.Type.ToFriendly()</a> - @itemCount.Count</p>
+                                        <p><a href="/messages/private">@itemCount.Type.ToFriendly()</a> - @itemCount.Count</p>
                                         break;
                                     case Voat.Domain.Models.MessageType.Sent:
                                         <p><a href="/messages/sent">@itemCount.Type.ToFriendly()</a> - @itemCount.Count</p>

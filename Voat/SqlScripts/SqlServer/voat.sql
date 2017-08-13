@@ -526,7 +526,7 @@ CREATE TABLE [dbo].[Submission](
 	[Subverse] [nvarchar](20) NULL,
 	[UpCount] [int] NOT NULL,
 	[DownCount] [int] NOT NULL,
-	[Thumbnail] [nchar](40) NULL,
+	[Thumbnail] [nvarchar](150) NULL,
 	[LastEditDate] [datetime] NULL,
 	[FlairLabel] [nvarchar](50) NULL,
 	[FlairCss] [nvarchar](50) NULL,

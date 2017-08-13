@@ -37,7 +37,7 @@ namespace Voat.Utilities
         private static Dictionary<string, string> replacements = new Dictionary<string, string>() {
             //{ @"\n", "" },
             //{ @"\r", "" },
-            { @"([\#\>](\s+)?){2,}", ">" },
+            { @"([\>](\s+)?){4,}", ">" }, // https://voat.co/v/voatdev/2050918
             { @"(\-\s+){2,}(\-(\s+)?)", "-" }, //three or more - followed by spaces
             { @"(\*\s+){2,}(\*(\s+)?)", "*" } //three or more * followed by spaces
         };

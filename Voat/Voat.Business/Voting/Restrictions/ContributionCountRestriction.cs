@@ -10,9 +10,10 @@ using Voat.Voting.Attributes;
 namespace Voat.Voting.Restrictions
 {
     [Restriction(
-        Enabled = true, 
-        Description = "Restriction by the count of posts (comments and/or submissions)", 
-        Name = "Contribution Count Restriction")]
+        Enabled = true,
+        Name = "Contribution Count Restriction",
+        Description = "Restriction by the count of posts (comments and/or submissions)" 
+        )]
     public class ContributionCountRestriction : ContributionRestriction
     {
         public override CommandResponse<IVoteRestriction> Evaluate(IPrincipal principal)

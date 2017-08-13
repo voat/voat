@@ -1,4 +1,4 @@
-#region LICENSE
+﻿#region LICENSE
 
 /*
     
@@ -31,13 +31,13 @@ using Voat.Data.Models;
 
 namespace Voat.Domain.Query
 {
-    public class QueryBannedDomains : CachedQuery<IEnumerable<BannedDomain>>
+    public class QueryBannedUsers : CachedQuery<IEnumerable<BannedUser>>
     {
-        public QueryBannedDomains() : this(new CachePolicy(TimeSpan.FromHours(1)))
+        public QueryBannedUsers() : this(new CachePolicy(TimeSpan.FromHours(1)))
         {
         }
 
-        public QueryBannedDomains(CachePolicy policy) : base(policy)
+        public QueryBannedUsers(CachePolicy policy) : base(policy)
         {
         }
 
@@ -45,15 +45,15 @@ namespace Voat.Domain.Query
         {
             get
             {
-                return "Banned:Domains";
+                return "Banned:Users";
             }
         }
 
-        protected override async Task<IEnumerable<BannedDomain>> GetData()
+        protected override async Task<IEnumerable<BannedUser>> GetData()
         {
             using (var repo = new Repository(User))
             {
-                return repo.GetBannedDomains();
+                return repo.GetBannedUsers();
             }
         }
     }

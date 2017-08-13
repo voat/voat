@@ -42,6 +42,7 @@ using Voat.Domain.Command;
 using Voat.Common;
 using System.Threading.Tasks;
 using Voat.Business.Utilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Voat.Utilities
 {
@@ -166,8 +167,7 @@ namespace Voat.Utilities
 
                     // get 3 highest rated comments
                     var highestRatedComments = db.Comment
-                        //CORE_PORT: EF has changed
-                        //.Include("Submission")
+                        .Include(x => x.Submission)
                         .Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
                         .OrderByDescending(s => s.UpCount - s.DownCount)
                         .Take(3)
@@ -175,8 +175,7 @@ namespace Voat.Utilities
 
                     // get 3 lowest rated comments
                     var lowestRatedComments = db.Comment
-                        //CORE_PORT: EF has changed
-                        //.Include("Submission")
+                        .Include(x => x.Submission)
                         .Where(a => a.UserName == userName && !a.IsAnonymized && !a.IsDeleted)
                         .OrderBy(s => s.UpCount - s.DownCount)
                         .Take(3)

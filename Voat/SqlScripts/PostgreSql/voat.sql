@@ -248,7 +248,7 @@ CREATE TABLE "dbo"."Submission"(
 	"Subverse" varchar(20),
 	"UpCount" int NOT NULL,
 	"DownCount" int NOT NULL,
-	"Thumbnail" char(40),
+	"Thumbnail" varchar(150),
 	"LastEditDate" timestamp,
 	"FlairLabel" varchar(50),
 	"FlairCss" varchar(50),

@@ -36,6 +36,7 @@ using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
+using Voat.Domain.Models.Input;
 using Voat.Http.Filters;
 using Voat.Models.ViewModels;
 using Voat.UI.Utilities;
@@ -721,11 +722,11 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [VoatValidateAntiForgeryToken]
-        public ActionResult AddLinkFlair([Bind("Id,Subverse,Label,CssClass")] SubverseFlair subverseFlairSetting)
+        public ActionResult AddLinkFlair(SubverseFlairInput subverseFlairSetting)
         {
             if (!ModelState.IsValid)
             {
-                return View(subverseFlairSetting);
+                return View("~/Views/Subverses/Admin/Flair/AddLinkFlair.cshtml", subverseFlairSetting);
             }
 
             //check perms
@@ -743,7 +744,11 @@ namespace Voat.Controllers
             }
 
             subverseFlairSetting.Subverse = subverseModel.Name;
-            _db.SubverseFlair.Add(subverseFlairSetting);
+            _db.SubverseFlair.Add(new SubverseFlair() {
+                Label = subverseFlairSetting.Label,
+                CssClass = subverseFlairSetting.CssClass,
+                Subverse = subverseFlairSetting.Subverse
+            });
             _db.SaveChanges();
 
             return RedirectToAction("SubverseFlairSettings");

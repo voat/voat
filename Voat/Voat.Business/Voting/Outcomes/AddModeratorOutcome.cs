@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
+using Voat.Voting.Attributes;
 
 namespace Voat.Voting.Outcomes
 {
+    [Outcome(Enabled = true, Name = "Add Moderator Outcome", Description = "Adds a moderator to a subverse")]
     public class AddModeratorOutcome : ModeratorOutcome
     {
         public override CommandResponse Execute()

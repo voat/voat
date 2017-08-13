@@ -1,0 +1,51 @@
+﻿
+@model IEnumerable<Voat.Data.Models.Comment>
+
+@if (Model != null && Model.Any())
+{
+    foreach (Voat.Data.Models.Comment item in Model)
+    {
+        var score = item.UpCount - item.DownCount;
+
+        <div class="thread comment" data-ups="@item.UpCount" data-downs="@item.DownCount">
+            <p>
+                <a href="@VoatUrlFormatter.CommentsPagePath(item.Submission.Subverse, item.SubmissionID.Value)" class="userstats-submission-title" rel="nofollow">@item.Submission.Title</a>
+                submitted by <a href="/user/@item.Submission.UserName">@item.Submission.UserName</a> to <a href="/v/@item.Submission.Subverse" class="userstats-submission-subverse">@item.Submission.Subverse</a>
+            </p>
+
+            <div class="entry unvoted">
+                <p class="tagline">
+                    <a href="/user/@item.UserName" class="author may-blank userinfo tooltipstered" data-username="@item.UserName">@item.UserName</a>
+                    <span class="score dislikes">@item.DownCount points</span>
+                    <span class="userstats-submission-score">@score points</span>
+                    <span class="score likes">@item.UpCount points</span>
+                    <span class="commentvotesratio">(<span class="post_upvotes">+@item.UpCount</span>|<span class="post_downvotes">-@item.DownCount</span>)</span>
+                    <time title="@item.CreationDate" datetime="@item.CreationDate">@Age.ToRelative(item.CreationDate)</time> ago
+                </p>
+                <div class="usertext-body">
+                    <div class="md">
+                        @* To save processing just display formatted content if we have it, else trim it and format it. *@
+                        @if (!String.IsNullOrEmpty(item.FormattedContent))
+                    {
+                            @Html.Raw(item.FormattedContent)
+                        }
+                        else
+                        {
+                            string trimmedComment = item.Content.TruncateAtWord(300);
+                            @Html.Raw(@Formatting.FormatMessage(trimmedComment))
+                        }
+                    </div>
+                </div>
+                <ul class="flat-list buttons">
+                    <li class="first">
+                        <a href="@VoatUrlFormatter.CommentsPagePath(item.Submission.Subverse, item.Submission.ID, item.ID)" class="bylink" rel="nofollow">permalink</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p>This user made no comments.</p>
+}

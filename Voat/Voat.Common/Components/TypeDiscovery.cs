@@ -13,7 +13,7 @@ namespace Voat.Common
     }
     public static class TypeDiscovery
     {
-        public static IEnumerable<DiscoveredType<A>> DiscoverTypes<A>(IEnumerable<Assembly> assemblies, Type subClassRestriction = null) where A : Attribute
+        public static IEnumerable<DiscoveredType<A>> DiscoverTypes<A>(IEnumerable<Assembly> assemblies, bool inherit = false, Type subClassRestriction = null) where A : Attribute
         {
             var discovered = new List<DiscoveredType<A>>();
 
@@ -32,7 +32,7 @@ namespace Voat.Common
                                 //Ensure a rule type
                                 if (subClassRestriction == null || (subClassRestriction != null && type.IsSubclassOf(subClassRestriction)))
                                 {
-                                    var attribute = type.GetCustomAttribute<A>();
+                                    var attribute = type.GetCustomAttribute<A>(inherit);
                                     if (attribute != null)
                                     {
                                         tempDiscovered.Add(new DiscoveredType<A>() { Type = type, Attribute = attribute });

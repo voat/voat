@@ -18,33 +18,46 @@
 
 *@
 
-@model Voat.Data.Models.VoteOption
+@model Voat.Domain.Models.VoteOption
 
-<div data-vote-item="Options">
+<div data-voat-item="Options">
     <div class="form-horizontal" role="form">
         <h2>Option</h2>
         <div class="form-group">
             <label class="col-md-2 control-label" asp-for="Title">Title</label>
             <div class="col-md-10">
-                <input asp-for="Title" class="form-control" type="text" value="@Model.Title" data-vote-field="Options">
+                <input asp-for="Title" class="form-control" type="text" value="@Model.Title" data-voat-field="Options">
+                <span asp-validation-for="Title"></span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-md-2 control-label" asp-for="Content">Description</label>
             <div class="col-md-10">
-                <textarea asp-for="Content" class="form-control" value="@Model.Content" data-vote-field="Options"></textarea>
+                <textarea asp-for="Content" class="form-control" value="@Model.Content" data-voat-field="Options"></textarea>
+                <span asp-validation-for="Content"></span>
             </div>
         </div>
         
         <div class="col-md-offset-2 col-md-10">
-            <div data-vote-list="Outcomes"></div>
+            <div data-voat-list="Outcomes">
+                @if (Model.VoteOutcomes != null && Model.VoteOutcomes.Any())
+                {
+                    foreach (var item in Model.VoteOutcomes)
+                    {
+                        @Html.Partial("_EditVoteOutcome", item);
+                    }
+                }
+            </div>
             <div class="form-horizontal" role="form">
                 <div class="form-group">
                     <label class="col-md-2 control-label" for="Bio">Outcome (Optional)</label>
                     <div class="col-md-10">
                         @*Get this via reflection*@
-                        <select name="vote-outcome-type" class="form-control" id="vote-outcome-type" type="text">
-                            <option value="ModeratorOutcome">Moderator Outcome</option>
+                        <select id="vote-outcome-type" name="vote-outcome-type" class="form-control" type="text"
+                               asp-items="Voat.Domain.Models.VoteMetadata.Instance.Outcomes.Select(x => new SelectListItem() {
+                                Text = x.Attribute.Name,
+                                Value = x.Type.Name
+                            })">
                         </select>
                     </div>
                 </div>
@@ -57,7 +70,7 @@
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <button class="btn-voat" onclick="voat.voting.removeItem(this, '*[data-vote-item=\'Options\']');">Remove</button>
+                <button class="btn-voat" onclick="voat.voting.removeItem(this, '*[data-voat-item=\'Options\']');">Remove</button>
             </div>
         </div>
     </div>

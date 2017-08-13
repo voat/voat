@@ -61,7 +61,6 @@ namespace Voat.Configuration
                     {
                         TypeNameHandling = TypeNameHandling.All,
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-
                     };
                 });
                 return settings;

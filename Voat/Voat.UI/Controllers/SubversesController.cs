@@ -366,10 +366,16 @@ namespace Voat.Controllers
                     {
                         // selected subverse is ALL, show submissions from all subverses, sorted by rank
                         viewProperties.Title = "all subverses";
-                        viewProperties.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "all");
-                        subverse = AGGREGATE_SUBVERSE.ALL;
-                        //ViewBag.SelectedSubverse = "all";
-                        //ViewBag.Title = "all subverses";
+                        if (AGGREGATE_SUBVERSE.ANY.IsEqual(subverse))
+                        {
+                            viewProperties.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, AGGREGATE_SUBVERSE.ANY);
+                            subverse = AGGREGATE_SUBVERSE.ANY;
+                        }
+                        else
+                        {
+                            viewProperties.Context = new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, "all");
+                            subverse = AGGREGATE_SUBVERSE.ALL;
+                        }
                     }
                 }
                 else

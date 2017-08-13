@@ -1,0 +1,52 @@
+﻿
+@model PaginatedList<Voat.Data.Models.BannedUser>
+
+@{
+    ViewBag.Title = "Globally Banned Users";
+}
+
+<div id="container">
+    <div class="side">
+        <div class="spacersection spacer">
+            @Html.Partial("_LogSidebarLinks")
+        </div>
+    </div>
+    <div class="content">
+        <div class="sitetable linklisting">
+           @if (Model != null && Model.Any())
+           {
+                <div id="removedCommentsList" class="">
+                    <div class="alert alert-info">
+                        <p>Showing users banned by @VoatSettings.Instance.SiteName</p>
+                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>User Name</th>
+                                <th>Reason</th>
+                                <th>Created by</th>
+                                <th>Age</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var logItem in Model)
+                            {
+                                <tr>
+                                    <td><a href="/user/@logItem.UserName">@logItem.UserName</a></td>
+                                    <td>@Html.Raw(Formatting.FormatMessage(logItem.Reason))</td>
+                                    <td>@logItem.CreatedBy</td>
+                                    <td><time title="@logItem.CreationDate" datetime="@logItem.CreationDate">@Age.ToRelative(logItem.CreationDate) ago</time></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+           }
+           else
+           {
+             <span>There are no admin-banned users.</span>
+           }
+        </div>
+        @Html.DisplayFor(model => Model, "IPaginatedList")
+    </div>
+</div>

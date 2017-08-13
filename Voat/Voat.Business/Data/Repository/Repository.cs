@@ -4161,39 +4161,46 @@ namespace Voat.Data
                 switch (currentModLevel)
                 {
                     case ModeratorLevel.Owner:
-                        if (targetModLevel == ModeratorLevel.Owner)
+                        if (User.IsInAnyRole(new[] { UserRole.GlobalAdmin, UserRole.Admin }))
                         {
-                            var isTargetOriginalMod = (String.IsNullOrEmpty(subModerator.CreatedBy) && !subModerator.CreationDate.HasValue); //Currently original mods have these fields nulled
-                            if (isTargetOriginalMod)
-                            {
-                                allowRemoval = false;
-                                errorMessage = "The creator can not be destroyed";
-                            }
-                            else
-                            {
-                                //find current mods record
-                                var originModeratorRecord = _db.SubverseModerator.FirstOrDefault(x =>
-                                    x.Subverse.Equals(subModerator.Subverse, StringComparison.OrdinalIgnoreCase)
-                                    && x.UserName.Equals(originUserName, StringComparison.OrdinalIgnoreCase));
-
-                                //Creators of subs have no creation date so set it low
-                                var originModCreationDate = (originModeratorRecord.CreationDate.HasValue ? originModeratorRecord.CreationDate.Value : new DateTime(2000, 1, 1));
-
-                                if (originModeratorRecord == null)
-                                {
-                                    allowRemoval = false;
-                                    errorMessage = "Can not find current mod record";
-                                }
-                                else
-                                {
-                                    allowRemoval = (originModCreationDate < subModerator.CreationDate);
-                                    errorMessage = "Moderator has seniority. Oldtimers can't be removed by a young'un";
-                                }
-                            }
+                            allowRemoval = true;
                         }
                         else
                         {
-                            allowRemoval = true;
+                            if (targetModLevel == ModeratorLevel.Owner)
+                            {
+                                var isTargetOriginalMod = (String.IsNullOrEmpty(subModerator.CreatedBy) && !subModerator.CreationDate.HasValue); //Currently original mods have these fields nulled
+                                if (isTargetOriginalMod)
+                                {
+                                    allowRemoval = false;
+                                    errorMessage = "The creator can not be destroyed";
+                                }
+                                else
+                                {
+                                    //find current mods record
+                                    var originModeratorRecord = _db.SubverseModerator.FirstOrDefault(x =>
+                                    x.Subverse.Equals(subModerator.Subverse, StringComparison.OrdinalIgnoreCase)
+                                    && x.UserName.Equals(originUserName, StringComparison.OrdinalIgnoreCase));
+
+                                    if (originModeratorRecord == null)
+                                    {
+                                        allowRemoval = false;
+                                        errorMessage = "Something seems fishy";
+                                    }
+                                    else
+                                    {
+                                        //Creators of subs have no creation date so set it low
+                                        var originModCreationDate = (originModeratorRecord.CreationDate.HasValue ? originModeratorRecord.CreationDate.Value : new DateTime(2000, 1, 1));
+
+                                        allowRemoval = (originModCreationDate < subModerator.CreationDate);
+                                        errorMessage = "Moderator has seniority. Oldtimers can't be removed by a young'un";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                allowRemoval = true;
+                            }
                         }
                         break;
 
@@ -4918,6 +4925,12 @@ namespace Voat.Data
         public IEnumerable<BannedDomain> GetBannedDomains()
         {
             return (from x in _db.BannedDomain
+                    orderby x.CreationDate descending
+                    select x).ToList();
+        }
+        public IEnumerable<BannedUser> GetBannedUsers()
+        {
+            return (from x in _db.BannedUser
                     orderby x.CreationDate descending
                     select x).ToList();
         }

@@ -198,7 +198,7 @@ namespace Voat.Domain
 
 
                 //add flair if present
-                if (!String.IsNullOrEmpty(submission.FlairCss) && !String.IsNullOrEmpty(submission.FlairLabel))
+                if (!String.IsNullOrEmpty(submission.FlairLabel))
                 {
                     result.Attributes.Add(new ContentAttribute() { ID = -1, Type = AttributeType.Flair, Name = submission.FlairLabel, CssClass = submission.FlairCss } );
                 }

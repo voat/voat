@@ -83,28 +83,28 @@
     <link rel=StyleSheet href="~/css/ui-themes/autocomplete/autocompletebundle.min.css" type="text/css">
 
     @* Icons... Icons everywhere! Thanks to http://www.favicomatic.com/ for the help generating these.  *@
-    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="~/Graphics/Icons/Arrow/apple-touch-icon-57x57.png" />
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="~/Graphics/Icons/Arrow/apple-touch-icon-114x114.png" />
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="~/Graphics/Icons/Arrow/apple-touch-icon-72x72.png" />
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="~/Graphics/Icons/Arrow/apple-touch-icon-144x144.png" />
-    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="~/Graphics/Icons/Arrow/apple-touch-icon-60x60.png" />
-    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="~/Graphics/Icons/Arrow/apple-touch-icon-120x120.png" />
-    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="~/Graphics/Icons/Arrow/apple-touch-icon-76x76.png" />
-    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="~/Graphics/Icons/Arrow/apple-touch-icon-152x152.png" />
-    <link rel="icon" type="image/png" href="~/Graphics/Icons/Arrow/favicon-196x196.png" sizes="196x196" />
-    <link rel="icon" type="image/png" href="~/Graphics/Icons/Arrow/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/png" href="~/Graphics/Icons/Arrow/favicon-32x32.png" sizes="32x32" />
-    <link rel="icon" type="image/png" href="~/Graphics/Icons/Arrow/favicon-16x16.png" sizes="16x16" />
-    <link rel="icon" type="image/png" href="~/Graphics/Icons/Arrow/favicon-128.png" sizes="128x128" />
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="~/images/Icons/Arrow/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="~/images/Icons/Arrow/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="~/images/Icons/Arrow/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="~/images/Icons/Arrow/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="~/images/Icons/Arrow/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="~/images/Icons/Arrow/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="~/images/Icons/Arrow/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="~/images/Icons/Arrow/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="~/images/Icons/Arrow/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="~/images/Icons/Arrow/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="~/images/Icons/Arrow/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="~/images/Icons/Arrow/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="~/images/Icons/Arrow/favicon-128.png" sizes="128x128" />
     <meta name="application-name" content="@VoatSettings.Instance.SiteName" />
     <meta name="msapplication-TileColor" content="#000000" />
-    <meta name="msapplication-TileImage" content="~/Graphics/Icons/Arrow/mstile-144x144.png" />
-    <meta name="msapplication-square70x70logo" content="~/Graphics/Icons/Arrow/mstile-70x70.png" />
-    <meta name="msapplication-square150x150logo" content="~/Graphics/Icons/Arrow/mstile-150x150.png" />
-    <meta name="msapplication-wide310x150logo" content="~/Graphics/Icons/Arrow/mstile-310x150.png" />
-    <meta name="msapplication-square310x310logo" content="~/Graphics/Icons/Arrow/mstile-310x310.png" />
+    <meta name="msapplication-TileImage" content="~/images/Icons/Arrow/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="~/images/Icons/Arrow/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="~/images/Icons/Arrow/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="~/images/Icons/Arrow/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="~/images/Icons/Arrow/mstile-310x310.png" />
     @* Standard favicon *@
-    <link rel='shortcut icon' href="/favicon.ico" type="image/x-icon" />
+    <link rel='shortcut icon' href="/images/favicon.ico" type="image/x-icon" />
 
     @* render any additional header info like stylesheet paths *@
     @RenderSection("PageHeader", required: false)
@@ -115,11 +115,20 @@
 
     <environment names="Development">
         <script type="text/javascript" src="~/lib/legacy/modernizr-2.8.3.js"></script>
-        <script type="text/javascript" src="~/lib/legacy/jquery-2.1.4.js"></script>
+
+        @*<script type="text/javascript" src="~/lib/legacy/jquery-2.1.4.js"></script>
         <script type="text/javascript" src="~/lib/legacy/jquery-ui.js"></script>
         <script type="text/javascript" src="~/lib/legacy/jquery.tooltipster.js"></script>
         <script type="text/javascript" src="~/lib/legacy/jquery.unobtrusive-ajax.js"></script>
-        <script type="text/javascript" src="~/lib/legacy/jquery.validate.js"></script>
+        <script type="text/javascript" src="~/lib/legacy/jquery.validate.js"></script>*@
+        
+        <script type="text/javascript" src="~/lib/jquery/dist/jquery.js"></script>
+        <script type="text/javascript" src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+        <script type="text/javascript" src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+
+        <script type="text/javascript" src="~/lib/legacy/jquery-ui.js"></script>
+        <script type="text/javascript" src="~/lib/legacy/jquery.tooltipster.js"></script>
+        
         <script type="text/javascript" src="~/js/voat.dashboard.js"></script>
         <script type="text/javascript" src="~/js/voat.ui.js"></script>
         <script type="text/javascript" src="~/js/voat.js"></script>

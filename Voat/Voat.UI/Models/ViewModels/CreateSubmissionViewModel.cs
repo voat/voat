@@ -38,7 +38,7 @@ namespace Voat.Models.ViewModels
         [Required(ErrorMessage = "You must enter a subverse to send the post to. Examples: programming, videos, pics, funny...")]
         public string Subverse { get; set; }
 
-        [MaxLength(10000, ErrorMessage = "Content is limited to 10000 characters")]
+        [MaxLength(10000, ErrorMessage = "Content is limited to 10,000 characters")]
         //CORE_PORT: Not supported
         //[AllowHtml]
         public string Content { get; set; }
