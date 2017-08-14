@@ -32,6 +32,7 @@ using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.IO;
 using Voat.Utilities.Components;
+using Voat.Imaging;
 
 namespace Voat.Utilities
 {

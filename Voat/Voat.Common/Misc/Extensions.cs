@@ -11,30 +11,7 @@ namespace Voat.Common
         {
             return $"{type.FullName}, {type.Assembly}";
         }
-        public static void Scale(int currentWidth, int currentHeight, int maxWidth, int maxHeight, float scalePercentage, out int scaleWidth, out int scaleHeight)
-        {
-            scaleWidth = currentWidth;
-            scaleHeight = currentHeight;
-
-            if (scalePercentage == 0.0 && (maxWidth > 0 || maxHeight > 0))
-            {
-                if (currentWidth > currentHeight)
-                {
-                    scaleWidth = maxWidth;
-                    scaleHeight = (int)(currentHeight * ((float)maxWidth / currentWidth));
-                }
-                else
-                {
-                    scaleHeight = maxHeight;
-                    scaleWidth = (int)(currentWidth * ((float)maxHeight / currentHeight));
-                }
-            }
-            if (scalePercentage > 0.0)
-            {
-                scaleWidth = (int)(scaleWidth * (scalePercentage / 100F));
-                scaleHeight = (int)(scaleHeight * (scalePercentage / 100F));
-            }
-        }
+       
 
         //public static string Standarize(this string value)
         //{
