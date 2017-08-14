@@ -41,10 +41,6 @@
                     <span class="upvoatsGiven" title="total upvotes given"><a href="/user/@User.Identity.Name" class="upvoatsGiven" id="upvoatsGiven">@upvotesGiven</a></span>
                 </span>
                 <span class="separator">|</span>
-                <span class="user">@Html.ActionLink("Manage", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage", id = "manage" })</span>
-                <span class="separator">|</span>
-                <a id="nightmodetoggle" onclick="toggleNightMode()" title="Toggle Night Mode"></a>
-                <span class="separator">|</span>
                 @{
                     var cmd = new Voat.Domain.Query.QueryMessageCounts(User.Identity.Name, Voat.Domain.Models.IdentityType.User, Voat.Domain.Models.MessageTypeFlag.All, Voat.Domain.Models.MessageState.Unread);
                     var count = cmd.Execute().Total;
@@ -53,6 +49,10 @@
                         <span class="notification-counter" id="mailcounter" style="display:@(count > 0 ? "block" : "none")">@count</span>
                     </span>
                 }
+                <span class="separator">|</span>
+                <span class="user">@Html.ActionLink("Manage", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage", id = "manage" })</span>
+                <span class="separator">|</span>
+                <a id="nightmodetoggle" onclick="toggleNightMode()" title="Toggle Night Mode"></a>
                 <span class="separator">|</span>
                 <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
             </div>
