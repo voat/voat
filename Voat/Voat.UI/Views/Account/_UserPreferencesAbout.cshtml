@@ -35,7 +35,7 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Avatarfile, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            <input type="file" name="Avatarfile" />
+            <input type="file" name="Avatarfile" accept='image/*' />
             <span asp-validation-for="Avatarfile"></span> 
         </div>
     </div>

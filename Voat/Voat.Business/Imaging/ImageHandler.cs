@@ -12,48 +12,70 @@ namespace Voat.Imaging
     public class ImageHandler
     {
         //This is a direct port for default thumbnails that Voat has used in the past
-        public static Stream Resize(Stream input, Size destinationSize, bool scale = true, bool center = true)
+        public static Stream Resize(Stream input, Size maximumSize, bool forceJpegFormat = false, bool square = true, bool scale = true, bool center = true)
         {
             MemoryStream output = null;
-            using (var image = new Bitmap(Image.FromStream(input)))
+            using (var image = Image.FromStream(input))
             {
-                var resized = new Bitmap(destinationSize.Width, destinationSize.Height);
-
-                using (var graphics = Graphics.FromImage(resized))
+                using (var bitmapImage = new Bitmap(image))
                 {
-                    graphics.CompositingQuality = CompositingQuality.HighSpeed;
-                    graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    graphics.CompositingMode = CompositingMode.SourceCopy;
-
-                    //Draw black background
-                    graphics.DrawRectangle(new Pen(new SolidBrush(Color.Black)), new Rectangle(0, 0, destinationSize.Width, destinationSize.Height));
-
-                    Size scaledSize = scale ? Scale(image.Size, destinationSize) : destinationSize;
+                   
+                    var destinationSize = new Size(maximumSize.Width, maximumSize.Height);
+                    //Sizing
+                    Size scaledSize = scale ? Scale(bitmapImage.Size, maximumSize) : maximumSize;
                     //The original image size is our source
-                    var sourceRectangle = new Rectangle(0, 0, image.Size.Width, image.Size.Height);
+                    var sourceRectangle = new Rectangle(0, 0, bitmapImage.Size.Width, bitmapImage.Size.Height);
 
                     //default destination
                     var destinationRectangle = new Rectangle(0, 0, scaledSize.Width, scaledSize.Height);
                     //centered destination
-                    if (center)
+                    if (square && center)
                     {
-                        destinationRectangle = Center(destinationSize, scaledSize);
+                        destinationRectangle = Center(maximumSize, scaledSize);
+                    }
+                    //allow non-squared output
+                    if (!square)
+                    {
+                        destinationSize = destinationRectangle.Size;
                     }
 
-                    graphics.DrawImage(image, destinationRectangle, sourceRectangle, GraphicsUnit.Pixel);
+                    var resized = new Bitmap(destinationSize.Width, destinationSize.Height);
 
-                    output = new MemoryStream();
-                    
-                    var qualityParamId = System.Drawing.Imaging.Encoder.Quality;
-                    var encoderParameters = new EncoderParameters(1);
-                    encoderParameters.Param[0] = new EncoderParameter(qualityParamId, 100);
-                    var codec = ImageCodecInfo.GetImageDecoders().FirstOrDefault(x => x.FormatID == ImageFormat.Jpeg.Guid);
-                    resized.Save(output, codec, encoderParameters);
+                    using (var graphics = Graphics.FromImage(resized))
+                    {
+                        graphics.CompositingQuality = CompositingQuality.HighSpeed;
+                        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        graphics.CompositingMode = CompositingMode.SourceCopy;
 
-                    //reset resized stream
-                    output.Seek(0, SeekOrigin.Begin);
+                        //Assuming that if we are forcing jpeg we are creating site thumbnails which uses black bars
+                        if (forceJpegFormat)
+                        {
+                            //Draw black background
+                            graphics.DrawRectangle(new Pen(new SolidBrush(Color.Black)), new Rectangle(0, 0, maximumSize.Width, maximumSize.Height));
+                        }
+
+                        graphics.DrawImage(bitmapImage, destinationRectangle, sourceRectangle, GraphicsUnit.Pixel);
+
+                        output = new MemoryStream();
+                        var qualityParamId = System.Drawing.Imaging.Encoder.Quality;
+                        var encoderParameters = new EncoderParameters(1);
+                        encoderParameters.Param[0] = new EncoderParameter(qualityParamId, 100);
+
+                        var codec = ImageCodecInfo.GetImageDecoders().FirstOrDefault(x =>
+                            //Force JPEG
+                            (forceJpegFormat && x.FormatID == ImageFormat.Jpeg.Guid)
+                            //Allow source format
+                            || (!forceJpegFormat && x.FormatID == image.RawFormat.Guid)
+                        );
+
+                        resized.Save(output, codec, encoderParameters);
+
+                        //reset resized stream
+                        output.Seek(0, SeekOrigin.Begin);
+                    }
                 }
             }
+            
 
             return output;
         }

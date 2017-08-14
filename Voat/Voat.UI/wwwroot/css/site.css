@@ -20,11 +20,12 @@
 
 .user-avatar {
     margin: 0;
+    /*
     padding: 2px 2px 2px;
     background: none repeat scroll 0% 0% #FFF;
-    /*z-index: 2;*/
     border-radius: 4px;
     box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.1), 0px 1px 5px rgba(0, 0, 0, 0.15);
+    */
 }
 
 .user-quote {
@@ -37,8 +38,7 @@
     with the License. You may obtain a copy of the License at
     http://code.reddit.com/LICENSE.   
 */
-
-.no-select {
+    .no-select {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;

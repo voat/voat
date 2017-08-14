@@ -51,7 +51,7 @@ namespace Voat.Utilities
                 key.FileType = FileType.Avatar;
                 key.ID = GenerateRandomFilename(Path.GetExtension(fileName), FileType.Avatar);
 
-                await GenerateImageThumbnail(fileManager, key, imageStream, VoatSettings.Instance.AvatarSize);
+                await GenerateImageThumbnail(fileManager, key, imageStream, VoatSettings.Instance.AvatarSize, false, false);
 
                 return CommandResponse.Successful(key.ID);
             }
@@ -74,9 +74,9 @@ namespace Voat.Utilities
 
             return fileName;
         }
-        private static async Task GenerateImageThumbnail(FileManager fileManager, FileKey key, Stream stream, Size size)
+        private static async Task GenerateImageThumbnail(FileManager fileManager, FileKey key, Stream stream, Size size, bool forceJpegFormat = true, bool square = true)
         {
-            using (var resizedStream = ImageHandler.Resize(stream, size))
+            using (var resizedStream = ImageHandler.Resize(stream, size, forceJpegFormat, square))
             {
                 await fileManager.Upload(key, resizedStream);
             }
@@ -106,10 +106,10 @@ namespace Voat.Utilities
                             {
                                 var key = new FileKey();
                                 key.FileType = FileType.Thumbnail;
-                                key.ID = GenerateRandomFilename(Path.GetExtension(url.ToString()), FileType.Thumbnail);
+                                key.ID = GenerateRandomFilename(".jpg", FileType.Thumbnail);
                                 var stream = httpResource.Stream;
 
-                                await GenerateImageThumbnail(fileManager, key, stream, VoatSettings.Instance.ThumbnailSize);
+                                await GenerateImageThumbnail(fileManager, key, stream, VoatSettings.Instance.ThumbnailSize, true);
 
                                 return CommandResponse.Successful(key.ID);
                             }
