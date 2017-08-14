@@ -181,8 +181,8 @@ namespace Voat.Controllers
                 //Help formatting issues with unicode.
                 if (model.Title.ContainsUnicode())
                 {
-                    ModelState.AddModelError(string.Empty, "Voat has strip searched your title and removed it's unicode. Please verify you approve of what you see.");
                     model.Title = model.Title.StripUnicode();
+                    ModelState.AddModelError(String.Empty, "Voat has strip searched your title and removed it's unicode. Please verify you approve of what you see.");
                 }
                 else
                 {
