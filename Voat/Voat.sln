@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.0
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Business", "Voat.Business\Voat.Business.csproj", "{B15B77CF-A140-4E92-BC1F-B2906BA390B4}"
 EndProject
@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Http", "Voat.Http\Voat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenGraph-Net", "External\Source\ghorsey\OpenGraph-Net\OpenGraph-Net.csproj", "{A82ACE11-5840-453A-B1DA-226593F1F71C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Voat.Voting", "Voat.Voting\Voat.Voting.csproj", "{169EB91D-171E-48E5-83CD-28EAE9D37B7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Voting", "Voat.Voting\Voat.Voting.csproj", "{169EB91D-171E-48E5-83CD-28EAE9D37B7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
