@@ -306,7 +306,7 @@ CREATE TABLE [dbo].[EventLog](
 	[ParentID] [int] NULL,
 	[ActivityID] [varchar](50) NULL,
 	[UserName] [nvarchar](100) NULL,
-	[Origin] [varchar](20) NULL,
+	[Origin] [varchar](100) NULL,
 	[Type] [varchar](300) NOT NULL,
 	[Message] [varchar](1500) NOT NULL,
 	[Category] [varchar](1000) NOT NULL,

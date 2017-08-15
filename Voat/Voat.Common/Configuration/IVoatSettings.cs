@@ -35,7 +35,7 @@
         int MinimumCommentPointsForSendingMessages { get; }
         int MinimumCommentPointsForSubverseCreation { get; }
         int MinimumSubmissionPointsForSubverseCreation { get; }
-        Origin Origin { get; }
+        string Origin { get; }
         string RecaptchaPrivateKey { get; }
         string RecaptchaPublicKey { get; }
         bool RedirectToSiteDomain { get; }

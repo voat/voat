@@ -22,7 +22,8 @@ namespace Voat.Common.Components
 
         public string LocalPath(params string[] relativeParts)
         {
-            return Path.Combine(ProcessRelative(_physicalPathRoot, relativeParts).ToArray());
+            var result = Path.Combine(ProcessRelative(_physicalPathRoot, relativeParts).ToArray());
+            return result;
         }
         //public string UrlPath(string relativePath)
         //{

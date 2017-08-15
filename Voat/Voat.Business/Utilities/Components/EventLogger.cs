@@ -78,12 +78,12 @@ namespace Voat.Utilities.Components
         /// Log an exception to the database
         /// </summary>
         /// <param name="exception">The System.Exception to log</param>
-        public static void Log(Exception exception, Origin origin = Origin.Unknown)
+        public static void Log(Exception exception, string origin = "Unknown")
         {
             Log(null, exception, origin);
         }
 
-        private static void Log(int? parentID, Exception exception, Origin origin = Origin.Unknown)
+        private static void Log(int? parentID, Exception exception, string origin = "Unknown")
         {
             if (exception != null)
             {

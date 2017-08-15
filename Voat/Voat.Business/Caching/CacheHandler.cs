@@ -31,6 +31,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Voat.Common;
+using Voat.Configuration;
 using Voat.Data;
 using Voat.Logging;
 using Voat.Utilities;
@@ -328,7 +329,7 @@ namespace Voat.Caching
                     }
                     catch (Exception ex)
                     {
-                        EventLogger.Log(ex, Origin.Unknown);
+                        EventLogger.Log(ex, VoatSettings.Instance.Origin);
                     }
                 }
                 else

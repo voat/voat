@@ -140,7 +140,7 @@ CREATE TABLE "dbo"."EventLog"(
 	"ParentID" int,
 	"ActivityID" varchar(50),
 	"UserName" varchar(100),
-	"Origin" varchar(20),
+	"Origin" varchar(100),
 	"Type" varchar(300) NOT NULL,
 	"Message" varchar(1500) NOT NULL,
 	"Category" varchar(1000) NOT NULL,

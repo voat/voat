@@ -39,10 +39,10 @@ namespace Voat.Domain.Command
     [Obsolete("No", true)]
     public class LogRequestCommand : Command<CommandResponse>
     {
-        private Origin _origin;
+        private string _origin;
         private RequestInfo _info;
 
-        public LogRequestCommand(Origin origin, RequestInfo requestInfo)
+        public LogRequestCommand(string origin, RequestInfo requestInfo)
         {
             this._origin = origin;
             this._info = requestInfo;
@@ -53,7 +53,7 @@ namespace Voat.Domain.Command
 
             var logEntry = new LogInformation
             {
-                Origin = _origin.ToString(),
+                Origin = _origin,
                 Type = LogType.Debug,
                 UserName = _info.UserName,
                 Message = "Request",

@@ -106,7 +106,7 @@ namespace Voat.Configuration
         public int MinimumCommentPointsForDownvoting { get; set; } = 100;
         public int MinimumCommentPointsForUpvoting { get; set; } = 20;
 
-        public Origin Origin { get; set; } = Origin.Unknown;
+        public string Origin { get; set; } = "Unknown";
         public string RecaptchaPrivateKey { get; set; } = "";
 
         public string RecaptchaPublicKey { get; set; } = "";
