@@ -31,6 +31,7 @@ using System.Net;
 using Voat.Tests.Infrastructure;
 using Voat.IO;
 using System.Net.Http;
+using Voat.Domain.Command;
 
 namespace Voat.Tests.Utils
 {
@@ -54,7 +55,8 @@ namespace Voat.Tests.Utils
         public async Task GenerateThumbFromWebsiteUrl_Failure()
         {
             var result = await ThumbGenerator.GenerateThumbnail("http://www.idontexistimprettysuremaybeIlladdrandom3243242.com", false);
-            Assert.AreEqual(null, result, "Expecting no thumb");
+            Assert.AreNotEqual(Status.Success, result.Status, "Expecting no thumb");
+            Assert.AreEqual("", result.Response);
         }
 
         [TestMethod]
@@ -66,7 +68,8 @@ namespace Voat.Tests.Utils
             //    return ThumbGenerator.GenerateThumbnail("https://idontexistimprettysuremaybeIlladdrandom3243242.co/graphics/voat-goat.png", false);
             //});
             var result = await ThumbGenerator.GenerateThumbnail("https://idontexistimprettysuremaybeIlladdrandom3243242.co/graphics/voat-goat.png", false);
-            Assert.AreEqual(null, result, "Expecting no thumb");
+            Assert.AreNotEqual(Status.Success, result.Status, "Expecting no thumb");
+            Assert.AreEqual("", result.Response);
 
             //var result = await ThumbGenerator.GenerateThumbFromImageUrl("https://idontexistimprettysuremaybeIlladdrandom3243242.co/graphics/voat-goat.png", 5000, false);
             //Assert.AreEqual(null, result, "Expecting no thumb");

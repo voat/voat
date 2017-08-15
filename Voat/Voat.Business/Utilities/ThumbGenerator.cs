@@ -124,7 +124,9 @@ namespace Voat.Utilities
                 catch (Exception ex)
                 {
                     EventLogger.Instance.Log(ex, new { url = url, type = FileType.Thumbnail });
-                    return CommandResponse.Error<CommandResponse<string>>(ex);
+                    var response = CommandResponse.Error<CommandResponse<string>>(ex);
+                    response.Response = ""; //Make sure this returns string.empty as other failures do.
+                    return response;
                 }
             }
             return CommandResponse.FromStatus<string>("", Status.Invalid);
