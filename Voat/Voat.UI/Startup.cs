@@ -30,6 +30,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
+using System;
+using Voat.Common;
 using Voat.Common.Components;
 using Voat.Configuration;
 using Voat.Data;
@@ -90,6 +92,16 @@ namespace Voat
             }).AddEntityFrameworkStores<IdentityDataContext>()
             .AddDefaultTokenProviders();
 
+            services.ConfigureApplicationCookie(options => {
+                if (!String.IsNullOrEmpty(VoatSettings.Instance.CookieDomain))
+                {
+                    options.Cookie.Domain = VoatSettings.Instance.CookieDomain;
+                }
+                if (!String.IsNullOrEmpty(VoatSettings.Instance.CookieName))
+                {
+                    options.Cookie.Name = VoatSettings.Instance.CookieName;
+                }
+            });
 
             var mvcBuilder = services.AddMvc();
 

@@ -6,6 +6,10 @@
         bool ApiKeyCreationEnabled { get; }
         bool CaptchaEnabled { get; }
         bool ChatEnabled { get; }
+
+        string CookieDomain { get; }
+        string CookieName { get; }
+        string SiteThemeDefault { get; set; }
         int DailyCommentPostingQuota { get; }
         int DailyCommentPostingQuotaForNegativeScore { get; }
         int DailyCrossPostingQuota { get; }

@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Common.Components;
 using Voat.Configuration;
+using Voat.Logging;
 using Voat.Utilities;
+using Voat.Utilities.Components;
 
 namespace Voat.IO
 {
@@ -65,7 +67,9 @@ namespace Voat.IO
         {
             EnsureLocalDirectoryExists(key.FileType);
 
-            using (var destinationStream = new FileStream(FilePather.Instance.LocalPath(ContentPath(key.FileType), key.ID), FileMode.Create, FileAccess.Write, FileShare.None, 1048576, true))
+            string destinationFile = FilePather.Instance.LocalPath(ContentPath(key.FileType), key.ID);
+
+            using (var destinationStream = new FileStream(destinationFile, FileMode.Create, FileAccess.Write))
             {
                 await stream.CopyToAsync(destinationStream);
             }

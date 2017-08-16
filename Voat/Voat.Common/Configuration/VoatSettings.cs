@@ -49,6 +49,9 @@ namespace Voat.Configuration
 
         public bool ChatEnabled { get; set; } = false;
 
+        public string CookieDomain { get; set; } = "voat.co";
+        public string CookieName { get; set; } = null;
+
         public int DailyCommentPostingQuota { get; set; } = 20;
 
         public int DailyCommentPostingQuotaForNegativeScore { get; set; } = 10;
@@ -136,6 +139,7 @@ namespace Voat.Configuration
         public string SiteSlogan { get; set; } = "Voat - have your say";
 
         public string SiteUserName { get; set; } = "Voat";
+        public string SiteThemeDefault { get; set; } = "light"; //valid values: light or dark
         public int SubverseUpdateTimeLockInHours { get; set; } = 48;
 
         

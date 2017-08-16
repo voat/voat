@@ -12,7 +12,6 @@ namespace Voat.Common
             return $"{type.FullName}, {type.Assembly}";
         }
        
-
         //public static string Standarize(this string value)
         //{
         //    if (!String.IsNullOrEmpty(value))

@@ -10,6 +10,17 @@ namespace Voat.Common
 {
     public static class StringExtensions
     {
+
+        
+        public static string NullIfEmpty(this string text)
+        {
+            if (String.IsNullOrEmpty(text))
+            {
+                return null;
+            }
+            return text;
+        }
+
         public static bool IsTrimSafeNullOrEmpty(this string text)
         {
             return String.IsNullOrEmpty(text.TrimSafe());

@@ -52,6 +52,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Voat.Common;
 using Voat.Common.Components;
 using Voat.IO;
+using Voat.Logging;
 
 namespace Voat.Data
 {
@@ -1584,7 +1585,18 @@ namespace Voat.Data
                 newSubmission.Url = userSubmission.Url;
 
                 //TODO: This code needs to execute outside of the repository on it's own thread... Move this Future People!
-                if (VoatSettings.Instance.ThumbnailsEnabled && subverseObject.IsThumbnailEnabled)
+                var generateThumbnail = VoatSettings.Instance.ThumbnailsEnabled && subverseObject.IsThumbnailEnabled;
+
+                EventLogger.Instance.Log(new LogInformation()
+                {
+                    Type = LogType.Debug,
+                    Category = "Thumbnail Diag",
+                    Message = "Thumbs Enabled",
+                    Data = new { thumbsEnabled = VoatSettings.Instance.ThumbnailsEnabled, subThumbsEnabled = subverseObject.IsThumbnailEnabled },
+                    Origin = "Thumbnail"
+                });
+
+                if (generateThumbnail)
                 {
                     // try to generate and assign a thumbnail to submission model
                     var result = await ThumbGenerator.GenerateThumbnail(userSubmission.Url).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);

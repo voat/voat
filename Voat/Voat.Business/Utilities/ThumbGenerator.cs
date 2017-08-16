@@ -33,6 +33,7 @@ using Voat.Domain.Command;
 using Voat.IO;
 using Voat.Utilities.Components;
 using Voat.Imaging;
+using Voat.Logging;
 
 namespace Voat.Utilities
 {
@@ -95,12 +96,12 @@ namespace Voat.Utilities
                     //Ok this all needs to be centralized, we should only make 1 request to a remote resource
                     using (var httpResource = new HttpResource(url, new HttpResourceOptions() { AllowAutoRedirect = true }))
                     {
-                        await httpResource.GiddyUp();
-
+                        var result = await httpResource.GiddyUp();
+                    
                         if (httpResource.IsImage)
                         {
                             var fileManager = FileManager.Instance;
-                            var fileCheck = fileManager.IsUploadPermitted(url.ToString(), FileType.Thumbnail, httpResource.Response.Content.Headers.ContentType.MediaType, httpResource.Stream.Length);
+                            var fileCheck = fileManager.IsUploadPermitted(url, FileType.Thumbnail, httpResource.Response.Content.Headers.ContentType.MediaType, httpResource.Stream.Length);
 
                             if (fileCheck.Success)
                             {
@@ -113,6 +114,7 @@ namespace Voat.Utilities
 
                                 return CommandResponse.Successful(key.ID);
                             }
+                          
                         }
                         else if (httpResource.Image != null)
                         {
@@ -129,6 +131,14 @@ namespace Voat.Utilities
                     return response;
                 }
             }
+            EventLogger.Instance.Log(new LogInformation()
+            {
+                Type = LogType.Debug,
+                Category = "Thumbnail Diag",
+                Message = "Default Response",
+                Data = new { url = url },
+                Origin = VoatSettings.Instance.Origin
+            });
             return CommandResponse.FromStatus<string>("", Status.Invalid);
         }
     }

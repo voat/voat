@@ -43,6 +43,7 @@ using Voat.Common;
 using System.Threading.Tasks;
 using Voat.Business.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Voat.Configuration;
 
 namespace Voat.Utilities
 {
@@ -113,7 +114,7 @@ namespace Voat.Utilities
         public static string UserStylePreference(HttpContext context)
         {
 
-            string theme = "light";
+            string theme = VoatSettings.Instance.SiteThemeDefault;
 
             var tc = context.Request.Cookies["theme"];
             if (!String.IsNullOrEmpty(tc))
