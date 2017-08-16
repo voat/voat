@@ -21,140 +21,89 @@
 @model Voat.Domain.Models.Vote
 <div id="container">
     <div role="main">
-        <div class="row nomargin" data-voat-item="vote">
-            <div asp-validation-summary="All" class="validation-summary-errors">THIS IS A NON FUNCTIONAL PROTOTYPE</div>
-            <div class="alert-title">Create/Edit Vote</div>
-            <div class="form-horizontal" role="form">
-                @*<input asp-for="SubverseID" type="hidden" data-voat-field="vote">*@
-                <input asp-for="ID" type="hidden" data-voat-field="vote">
-                <div class="form-group">
-                    <label class="col-md-2 control-label" for="Subverse">Subverse</label>
-                    <div class="col-md-10">
-                        <input id="Subverse" name="Subverse" class="form-control" type="text" data-voat-field="vote" disabled="disabled" value="Subverse Name">
+        <form id="formSave" asp-action="Save" asp-controller="Vote" method="post">
+            <div class="row nomargin" data-voat-item="vote">
+                <div asp-validation-summary="All" class="validation-summary-errors">THIS IS A NON FUNCTIONAL PROTOTYPE</div>
+                <div class="alert-title">Create/Edit Vote</div>
+                <div class="form-horizontal" role="form">
+                    @*<input asp-for="SubverseID" type="hidden" data-voat-field="vote">*@
+                    <input asp-for="ID" type="hidden" data-voat-field="vote">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="Subverse">Subverse</label>
+                        <div class="col-md-10">
+                            <input id="Subverse" name="Subverse" class="form-control" type="text" data-voat-field="vote" disabled="disabled" value="Subverse Name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="Bio">Title</label>
+                        <div class="col-md-10">
+                            <input asp-for="Title" class="form-control" type="text" data-voat-field="vote">
+                            <span asp-validation-for="Title"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="Bio">Description</label>
+                        <div class="col-md-10">
+                            <textarea asp-for="Content" class="form-control" data-voat-field="vote"></textarea>
+                            <span asp-validation-for="Content"></span>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="col-md-2 control-label" for="Bio">Title</label>
-                    <div class="col-md-10">
-                        <input asp-for="Title" class="form-control" type="text" data-voat-field="vote">
-                        <span asp-validation-for="Title"></span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2 control-label" for="Bio">Description</label>
-                    <div class="col-md-10">
-                        <textarea asp-for="Content" class="form-control" data-voat-field="vote"></textarea>
-                        <span asp-validation-for="Content"></span>
-                    </div>
-                </div>
-            </div>
-            <div>
-                <div class="alert-title">Options</div>
-                <div data-voat-list="Options">
-                    @if (Model.Options != null && Model.Options.Any())
+                <div>
+                    <div class="alert-title">Options</div>
+                    <div data-voat-list="Options">
+                        @if (Model.Options != null && Model.Options.Any())
                     {
                         for (int i = 0; i < Model.Options.Count; i++)
                         {
-
-                            <div data-voat-item="Options">
-                                <div class="form-horizontal" role="form">
-                                    <h2>Option</h2>
-                                    <div class="form-group">
-                                        <label class="col-md-2 control-label" asp-for="Options[i].Title">Title</label>
-                                        <div class="col-md-10">
-                                            <input asp-for="Options[i].Title" class="form-control" type="text" value="@Model.Options[i].Title" data-voat-field="Options">
-                                            <span asp-validation-for="Options[i].Title"></span>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-2 control-label" asp-for="Options[i].Content">Description</label>
-                                        <div class="col-md-10">
-                                            <textarea asp-for="Options[i].Content" class="form-control" value="@Model.Options[i].Content" data-voat-field="Options"></textarea>
-                                            <span asp-validation-for="Options[i].Content"></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-offset-2 col-md-10">
-                                        <div data-voat-list="Outcomes">
-                                            @if (Model.Options[i].VoteOutcomes != null && Model.Options[i].VoteOutcomes.Any())
-                                            {
-                                                foreach (var item in Model.Options[i].VoteOutcomes)
-                                                {
-                                                    @Html.Partial("_EditVoteOutcome", item);
-                                                }
-                                            }
-                                        </div>
-                                        <div class="form-horizontal" role="form">
-                                            <div class="form-group">
-                                                <label class="col-md-2 control-label" for="Bio">Outcome (Optional)</label>
-                                                <div class="col-md-10">
-                                                    @*Get this via reflection*@
-                                                    <select id="vote-outcome-type" name="vote-outcome-type" class="form-control" type="text"
-                                                            asp-items="Voat.Domain.Models.VoteMetadata.Instance.Outcomes.Select(x => new SelectListItem() {
+                                @Html.PartialFor(x => Model.Options[i], "_Option");
+                        }
+                    }
+                    </div>
+                    <div class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-3">
+                                <button class="btn-whoaverse" onclick="voat.voting.addOption(this);" type="button">Add Option</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="alert-title">Restrictions</div>
+                    <div data-voat-list="Restrictions">
+                        @if (Model.Restrictions != null && Model.Restrictions.Any())
+                    {
+                        for (int i = 0; i < Model.Restrictions.Count; i++)
+                        {
+                            var viewData = new ViewDataDictionary(ViewData);
+                            viewData.TemplateInfo.HtmlFieldPrefix = $"Restrictions[{i.ToString()}]";
+                                @Html.Partial("_EditVoteRestriction", Model.Restrictions[i], viewData);
+                        }
+                    }
+                    </div>
+                    <div class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="Bio">Restriction (Optional)</label>
+                            <div class="col-md-10">
+                                @*Get this data from reflection*@
+                                <select name="vote-restriction-type" class="form-control" id="vote-restriction-type" type="text"
+                                        asp-items="Voat.Domain.Models.VoteMetadata.Instance.Restrictions.Select(x => new SelectListItem() {
                                 Text = x.Attribute.Name,
                                 Value = x.Type.Name
                             })"></select>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <div class="col-md-offset-2 col-md-3">
-                                                    <button class="btn-whoaverse" type="button" onclick="voat.voting.addOutcome(this);">Add Outcome</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="col-md-offset-2 col-md-10">
-                                            <button class="btn-voat" onclick="voat.voting.removeItem(this, '*[data-voat-item=\'Options\']');">Remove</button>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
-                        }
-                    }
-                </div>
-                <div class="form-horizontal" role="form">
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-3">
-                            <button class="btn-whoaverse" onclick="voat.voting.addOption(this);" type="button">Add Option</button>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-3">
+                                <button class="btn-whoaverse" type="button" onclick="voat.voting.addRestriction(this);">Add Restriction</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div>
-                <div class="alert-title">Restrictions</div>
-                <div data-voat-list="Restrictions">
-                    @if (Model.Restrictions != null && Model.Restrictions.Any())
-                    {
-                        foreach (var item in Model.Restrictions)
-                        {
-                            @Html.Partial("_EditVoteRestriction", item);
-                        }
-                    }
-                </div>
-                <div class="form-horizontal" role="form">
-                    <div class="form-group">
-                        <label class="col-md-2 control-label" for="Bio">Restriction (Optional)</label>
-                        <div class="col-md-10">
-                            @*Get this data from reflection*@
-                            <select name="vote-restriction-type" class="form-control" id="vote-restriction-type" type="text" 
-                                asp-items="Voat.Domain.Models.VoteMetadata.Instance.Restrictions.Select(x => new SelectListItem() {
-                                Text = x.Attribute.Name,
-                                Value = x.Type.Name
-                            })">
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-3">
-                            <button class="btn-whoaverse" type="button" onclick="voat.voting.addRestriction(this);">Add Restriction</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <button class="btn-whoaverse" type="button" onclick="voat.voting.save();">Save</button>
+            <button class="btn-whoaverse" type="submit">Save</button>
+        </form>
     </div>
 </div>
 

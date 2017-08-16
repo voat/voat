@@ -115,19 +115,20 @@
                 "default",
                 "announcements",
                 "voat",
+                "askvoat",
                 "front",
                 "random"
             ],
             "reservedUserNames": [
                 "voat",
-                "voatbot",
                 "system",
                 "youcanclaimthissub",
-                "puttitout",
+                "voatbot",
                 "atko",
+                "puttitout",
                 "derpyguy"
             ],
-
+            
             //Rule Thresholds
             "minimumAccountAgeInDaysForSubverseCreation": 30,
             "minimumSubmissionPointsForSubverseCreation": 10,

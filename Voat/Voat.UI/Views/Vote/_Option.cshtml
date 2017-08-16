@@ -37,28 +37,31 @@
                 <span asp-validation-for="Content"></span>
             </div>
         </div>
-        
+
         <div class="col-md-offset-2 col-md-10">
             <div data-voat-list="Outcomes">
-                @if (Model.VoteOutcomes != null && Model.VoteOutcomes.Any())
+                @if (Model.Outcomes != null && Model.Outcomes.Any())
                 {
-                    foreach (var item in Model.VoteOutcomes)
+                    for (int i2 = 0; i2 < Model.Outcomes.Count; i2++)
                     {
-                        @Html.Partial("_EditVoteOutcome", item);
+                        @Html.PartialFor(x => x.Outcomes[i2], "_EditVoteOutcome");
+                        @*var viewData = new ViewDataDictionary(ViewData);
+                            viewData.TemplateInfo.HtmlFieldPrefix = $"Options[{i.ToString()}].VoteOutcomes[{i2.ToString()}]";
+                            @Html.Partial("_EditVoteOutcome", Model.Outcomes[i2],
+                            viewData);*@
                     }
                 }
             </div>
             <div class="form-horizontal" role="form">
                 <div class="form-group">
-                    <label class="col-md-2 control-label" for="Bio">Outcome (Optional)</label>
+                    <label class="col-md-2 control-label" for="Bio">Outcome(Optional)</label>
                     <div class="col-md-10">
                         @*Get this via reflection*@
                         <select id="vote-outcome-type" name="vote-outcome-type" class="form-control" type="text"
-                               asp-items="Voat.Domain.Models.VoteMetadata.Instance.Outcomes.Select(x => new SelectListItem() {
-                                Text = x.Attribute.Name,
-                                Value = x.Type.Name
-                            })">
-                        </select>
+                                asp-items="Voat.Domain.Models.VoteMetadata.Instance.Outcomes.Select(x => new SelectListItem() {
+                                                        Text = x.Attribute.Name,
+                                                        Value = x.Type.Name
+                                                    })"></select>
                     </div>
                 </div>
                 <div class="form-group">

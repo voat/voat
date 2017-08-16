@@ -15,11 +15,13 @@ gulp.task('default', function () {
 
 
 var paths = {
-    root: "./Content/"
+    root: "./Content/",
+    dest: "./wwwroot/css"
 }
+
 paths.scss = paths.root + "Sass/**/*.scss";
 gulp.task('sass', function () {
     gulp.src(paths.scss)
         .pipe(sass())
-        .pipe(gulp.dest(paths.root));
+        .pipe(gulp.dest(paths.dest));
 });

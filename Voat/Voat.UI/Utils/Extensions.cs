@@ -22,14 +22,19 @@
 
 #endregion LICENSE
 
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Voat.Common;
 
 namespace Voat
@@ -114,6 +119,17 @@ namespace Voat
             return replacements.Aggregate(routedUrl, (value, keyPair) => value.Replace(keyPair.Key, keyPair.Value));
 
         }
+        public static IHtmlContent PartialFor<TModel, TProperty>(this IHtmlHelper<TModel> helper, Expression<Func<TModel, TProperty>> expression, string partialViewName)
+        {
+            string name = ExpressionHelper.GetExpressionText(expression);
+            object model = ExpressionMetadataProvider.FromLambdaExpression(expression, helper.ViewData, helper.MetadataProvider).Model;
+            var viewData = new ViewDataDictionary(helper.ViewData);
 
+            var previousName = helper.ViewData.TemplateInfo.HtmlFieldPrefix;
+            var fullName = String.IsNullOrEmpty(previousName) ? name : $"{previousName}.{name}";
+            viewData.TemplateInfo.HtmlFieldPrefix = fullName;
+
+            return helper.Partial(partialViewName, model, viewData);
+        }
     }
 }

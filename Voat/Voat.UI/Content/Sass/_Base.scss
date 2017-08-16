@@ -3396,3 +3396,7 @@ input[type=checkbox].form-control {
 }
 
 /* ------------------------------------- RETRO PROTOTYPE END ------------------------------ */
+
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+    background-color: $disabled-background-color;
+}

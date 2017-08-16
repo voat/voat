@@ -125,6 +125,6 @@ namespace Voat.Domain.Models
         public string FormattedContent { get; set; }
         public int SortOrder { get; set; }
 
-        public List<VoteOutcome> VoteOutcomes { get; set; } = new List<VoteOutcome>();
+        public List<VoteOutcome> Outcomes { get; set; } = new List<VoteOutcome>();
     }
 }

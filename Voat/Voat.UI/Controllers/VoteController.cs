@@ -32,13 +32,8 @@ namespace Voat.UI.Controllers
                 return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.Unauthorized));
             }
 
-            var model = new Voat.Domain.Models.Vote();
-            model.Title = "";
-            model.Content = "Main Vote Content";
-
-            //model.Options = new List<Data.Models.VoteOption>();
-            model.Options.Add(new Domain.Models.VoteOption() { Title = "Title 1", Content = "Content 1" });
-            model.Options.Add(new Domain.Models.VoteOption() { Title = "Title 2", Content = "Content 2" });
+            var model = new Vote();
+            model.Subverse = subverse;
 
             return View("Edit", model);
         }
@@ -47,12 +42,13 @@ namespace Voat.UI.Controllers
         {
             var domainModel = Map(model);
             var result = TryValidateModel(domainModel);
+            return PartialView("_Edit", domainModel);
 
-            if (!ModelState.IsValid)
-            {
-                return PartialView("_Edit", domainModel);
-            }
-            return Create("ast");
+            //if (!ModelState.IsValid)
+            //{
+            //    return PartialView("_Edit", domainModel);
+            //}
+            //return Create("ast");
         }
         private Vote Map(CreateVote transform)
         {
@@ -77,7 +73,7 @@ namespace Voat.UI.Controllers
                 x.Outcomes.ForEach(o =>
                 {
                     var outcome = o.Construct<VoteOutcome>();
-                    option.VoteOutcomes.Add(outcome);
+                    option.Outcomes.Add(outcome);
                 });
                 model.Options.Add(option);
             });

@@ -1436,8 +1436,11 @@ function markAsRead(obj, type, action, id, context) {
 }
 // function to load select link flair modal dialog for given subverse and given submission
 function selectflair(messageId, subverseName) {
+
+    var url = "/ajaxhelpers/linkflairselectdialog/" + subverseName + "/" + messageId + "?nocache=" + cachePrevention();
+
     var flairSelectDialog = $.get(
-        "/ajaxhelpers/linkflairselectdialog/" + subverseName + "/" + messageId,
+        url,
         null,
         function (data) {
             $("#linkFlairSelectModal").html(data);

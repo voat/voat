@@ -18,6 +18,9 @@
                 url: '/vote/element?type=' + type,
                 success: function (data) {
                     $('div[data-voat-list="Restrictions"]').append(data);
+                    $("form").removeData("validator");
+                    $("form").removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse("form");
                 }
             });
         },
@@ -171,6 +174,9 @@
 
                 }
             }
+            //var x = $("#formSave").validate();
+
+            //var results = $.validator.unobtrusive.parse("#formSave");
             $.ajax({
                 type: 'POST',
                 url: '/vote/save',
@@ -190,6 +196,14 @@
         }
     }
 }
+$("form").submit(function(x) {
+    if ($(x.currentTarget).valid()) {
+        voat.voting.save();
+    }
+    return false;
+})
+
+//$.validator.unobtrusive.parse("#formSave");
         //$('#saveVote').on('submit', function (e) {
         //    //e.preventDefault();
         //    $.ajax({

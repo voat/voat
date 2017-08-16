@@ -1,4 +1,42 @@
 @charset "UTF-8";
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
+/*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*/
 /*  ============================================================================
     Minity CSS stylesheet for Voat (http://voat.co/)
     Designed by Nurdoidz
@@ -383,7 +421,7 @@ input, button, select, textarea {
   overflow: hidden; }
 
 .moderator.accept-invite .main:before {
-  background-image: url(/Graphics/WVSprite.png);
+  background-image: url(/images/WVSprite.png);
   background-position: 0 -642px;
   background-repeat: no-repeat; }
 
@@ -485,7 +523,7 @@ input, button, select, textarea {
   color: #FFF; }
 
 .titlebox form.leavecontributor-button:before {
-  background-image: url(/Graphics/WVSprite.png);
+  background-image: url(/images/WVSprite.png);
   background-position: -66px -730px;
   background-repeat: no-repeat; }
 
@@ -500,7 +538,7 @@ input, button, select, textarea {
   padding: 5px; }
 
 .titlebox .leavemoderator:before, .moderator.toggle .main:before {
-  background-image: url(/Graphics/WVSprite.png);
+  background-image: url(/images/WVSprite.png);
   background-position: 0 -1546px;
   background-repeat: no-repeat; }
 
@@ -818,42 +856,42 @@ select.form-control {
 /* ! Body : WVSprites
 ------------------------------------------------------------------------------------ */
 .whoaverse_padded {
-  background: url(/Graphics/WVSprite.png) 0 0;
+  background: url(/images/WVSprite.png) 0 0;
   height: 44px;
   width: 125px; }
 
 .nsfw-thumb {
-  background: url(/Graphics/WVSprite.png) 0 -176px;
+  background: url(/images/WVSprite.png) 0 -176px;
   height: 70px;
   width: 70px; }
 
 .pattern-welcome {
-  background: url(/Graphics/WVSprite.png) 0 -246px;
+  background: url(/images/WVSprite.png) 0 -246px;
   height: 128px;
   width: 128px; }
 
 .thumb-placeholder {
-  background: url(/Graphics/WVSprite.png) 0 -374px;
+  background: url(/images/WVSprite.png) 0 -374px;
   height: 70px;
   width: 70px; }
 
 .whoaverse-404 {
-  background: url(/Graphics/WVSprite.png) 0 -444px;
+  background: url(/images/WVSprite.png) 0 -444px;
   height: 405px;
   width: 450px; }
 
 .whoaverse-bg {
-  background: url(/Graphics/WVSprite.png) 0 -849px;
+  background: url(/images/WVSprite.png) 0 -849px;
   height: 250px;
   width: 1920px; }
 
 .whoaverse-mascot {
-  background: url(/Graphics/WVSprite.png) 0 -1099px;
+  background: url(/images/WVSprite.png) 0 -1099px;
   height: 404px;
   width: 400px; }
 
 .whoaverse {
-  background: url(/Graphics/WVSprite.png) 0 -1503px;
+  background: url(/images/WVSprite.png) 0 -1503px;
   height: 43px;
   width: 120px; }
 
@@ -1322,7 +1360,7 @@ pre, code {
   vertical-align: unset; }
 
 #header-img.default-header {
-  background-image: url(/Graphics/WVSprite.png);
+  background-image: url(/images/WVSprite.png);
   background-position: 0 -313px;
   background-repeat: no-repeat;
   display: inline-block;
@@ -1783,19 +1821,19 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 .thumbnail.nsfw {
   background-repeat: no-repeat;
-  background: url("/Graphics/WVSprite.png") -1px -33px;
+  background: url("/images/WVSprite.png") -1px -33px;
   height: 70px;
   width: 70px; }
 
 .thumbnail.self {
   background-repeat: no-repeat;
-  background: url("/Graphics/WVSprite.png") -1px -104px;
+  background: url("/images/WVSprite.png") -1px -104px;
   height: 70px;
   width: 70px; }
 
 .thumbnail.default {
   background-repeat: no-repeat;
-  background: url("/Graphics/WVSprite.png") -1px -104px;
+  background: url("/images/WVSprite.png") -1px -104px;
   height: 70px;
   width: 70px; }
 
@@ -2801,6 +2839,9 @@ input[type=checkbox].form-control {
     width: 100%; } }
 
 /* ------------------------------------- RETRO PROTOTYPE END ------------------------------ */
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+  background-color: #444; }
+
 .settitlesortinglabel {
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1); }
 

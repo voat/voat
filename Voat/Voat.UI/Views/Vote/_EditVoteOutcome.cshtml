@@ -5,7 +5,7 @@
 
         @Html.Partial("_Header", Model)
 
-        @Html.Hidden("Type", Model.GetType().ShortAssemblyQualifiedName(), new { data_voat_field = "Outcomes" })
+        @Html.Hidden("Type", Model.GetType().Name, new { data_voat_field = "Outcomes" })
 
         @if (Model is AddModeratorOutcome add)
         {
