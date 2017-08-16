@@ -1550,25 +1550,46 @@ function suggestTitle() {
 }
 
 // a function to toggle sticky mode for a submission
-function toggleSticky(messageId) {
+function toggleSticky(submissionID) {
     $.ajax({
         type: "POST",
-        url: "/submissions/togglesticky/" + messageId,
+        url: "/submissions/togglesticky/" + submissionID,
         success: function (data) {
             if (data.success) {
                 $('#togglesticky').html("toggled");
             } else {
                 $('#togglesticky').html(data.error.message);
             }
-
-
         },
         error: function () {
             alert('Something went wrong while sending a sticky toggle request.');
         }
     });
 }
-
+function toggleNSFW(submissionID) {
+    $.ajax({
+        type: "POST",
+        url: "/submissions/togglensfw/" + submissionID,
+        success: function (response) {
+            if (response.success) {
+                
+                if (response.data) {
+                    //has nsfw flair add it
+                    $('#submissionid-' + submissionID + " p.title").prepend('<span title="Not Safe For Work" class="flair linkflairlabel" id="nsfwflair">NSFW</span>');
+                } else {
+                    //has not nsfw flair
+                    $('#nsfwflair').remove();
+                }
+                $('#togglensfw').html("toggled");
+            } else {
+                $('#togglensfw').html(response.error.message);
+            }
+        },
+        error: function () {
+            alert('Something went wrong while sending a nsfw toggle request.');
+        }
+    });
+}
 // a function to display a preview of a message without submitting it
 function showMessagePreview(senderButton, messageContent, previewArea) {
     var rawSubmissionContent = $(messageContent).val();

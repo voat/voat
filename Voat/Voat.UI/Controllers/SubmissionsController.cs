@@ -135,6 +135,17 @@ namespace Voat.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost]
+        [VoatValidateAntiForgeryToken]
+        public async Task<ActionResult> ToggleNSFW(int submissionID)
+        {
+            using (var repo = new Repository(User))
+            {
+                var response = await repo.ToggleNSFW(submissionID);
+                return JsonResult(response);
+            }
+        }
         //// vote on a submission
         //// POST: vote/{messageId}/{typeOfVote}
         //[HttpPost]

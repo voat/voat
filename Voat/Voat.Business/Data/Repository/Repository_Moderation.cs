@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Common;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Utilities;
@@ -12,6 +13,73 @@ namespace Voat.Data
 {
     public partial class Repository
     {
+        public async Task<CommandResponse<string>> RegenerateThumbnail(int submissionID)
+        {
+            DemandAuthentication();
+
+            // get model for selected submission
+            var submission = _db.Submission.Find(submissionID);
+            var response = CommandResponse.FromStatus(Status.Error);
+
+            if (submission == null || submission.IsDeleted)
+            {
+                return CommandResponse.FromStatus("", Status.Error, "Submission is missing or deleted");
+            }
+            var subverse = submission.Subverse;
+
+            // check if caller is subverse moderator, if not, deny change
+            if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.AssignFlair))
+            {
+                return CommandResponse.FromStatus("", Status.Denied, "Moderator Permissions are not satisfied");
+            }
+            try
+            {
+                throw new NotImplementedException();
+
+                await _db.SaveChangesAsync();
+
+                return CommandResponse.FromStatus("", Status.Success);
+            }
+            catch (Exception ex)
+            {
+                return CommandResponse.Error<CommandResponse<string>>(ex);
+            }
+        }
+        public async Task<CommandResponse<bool>> ToggleNSFW(int submissionID)
+        {
+            DemandAuthentication();
+
+            // get model for selected submission
+            var submission = _db.Submission.Find(submissionID);
+            var response = CommandResponse.FromStatus(Status.Error);
+
+            if (submission == null || submission.IsDeleted)
+            {
+                return CommandResponse.FromStatus(false, Status.Error, "Submission is missing or deleted");
+            }
+            var subverse = submission.Subverse;
+
+            if (!User.Identity.Name.IsEqual(submission.UserName))
+            {
+                // check if caller is subverse moderator, if not, deny change
+                if (!ModeratorPermission.HasPermission(User, subverse, Domain.Models.ModeratorAction.AssignFlair))
+                {
+                    return CommandResponse.FromStatus(false, Status.Denied, "Moderator Permissions are not satisfied");
+                }
+            }
+            try
+            {
+                submission.IsAdult = !submission.IsAdult;
+                
+                await _db.SaveChangesAsync();
+
+                return CommandResponse.FromStatus(submission.IsAdult, Status.Success);
+            }
+            catch (Exception ex)
+            {
+                return CommandResponse.Error<CommandResponse<bool>>(ex);
+            }
+        }
         public async Task<CommandResponse> ToggleSticky(int submissionID, string subverse = null, bool clearExisting = false, int stickyLimit = 3)
         {
             DemandAuthentication();
@@ -80,7 +148,8 @@ namespace Voat.Data
             }
             catch (Exception ex)
             {
-                return CommandResponse.Error<CommandResponse>(ex);            }
+                return CommandResponse.Error<CommandResponse>(ex);
+            }
         }
 
         public async Task<CommandResponse<Comment>> DistinguishComment(int commentID)

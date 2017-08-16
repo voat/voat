@@ -1151,6 +1151,11 @@ namespace Voat
                 template: "submissions/togglesticky/{submissionId}",
                 defaults: new { controller = "Submissions", action = "ToggleSticky" }
             );
+            routes.MapRoute(
+                name: "ToggleNSFW",
+                template: "submissions/togglensfw/{submissionId}",
+                defaults: new { controller = "Submissions", action = "ToggleNSFW" }
+            );
 
             #region Log
             routes.MapRoute(
