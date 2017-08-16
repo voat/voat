@@ -2593,7 +2593,7 @@ namespace Voat.Data
         public static void SetDefaultUserPreferences(Data.Models.UserPreference p)
         {
             p.Language = "en";
-            p.NightMode = false;
+            p.NightMode = VoatSettings.Instance.SiteThemeDefault.IsEqual("dark");
             //p.OpenInNewWindow = false;
             p.UseSubscriptionsMenu = true;
             p.DisableCSS = false;

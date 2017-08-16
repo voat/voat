@@ -49,14 +49,14 @@
     @if (theme == null || theme == "light")
     {
         <environment names="Development">
-            <link rel="stylesheet" type="text/css" href="~/css/bootstrap.css"  /> 
-            <link rel="stylesheet" type="text/css" href="~/css/site.css"  /> 
-            <link rel="stylesheet" type="text/css" href="~/css/tooltipster.css"  /> 
-            <link rel="stylesheet" type="text/css" href="~/css/voat-light.css"  /> 
-            <link rel="stylesheet" type="text/css" href="~/css/markdowneditor.css" /> 
+            <link rel="stylesheet" type="text/css" href="~/css/bootstrap.css" asp-append-version="true" /> 
+            <link rel="stylesheet" type="text/css" href="~/css/site.css" asp-append-version="true" /> 
+            <link rel="stylesheet" type="text/css" href="~/css/tooltipster.css" asp-append-version="true" /> 
+            <link rel="stylesheet" type="text/css" href="~/css/voat-light.css" asp-append-version="true" /> 
+            <link rel="stylesheet" type="text/css" href="~/css/markdowneditor.css" asp-append-version="true" /> 
         </environment>
         <environment names="Stage,Production">
-            <link rel="stylesheet" type="text/css" href="~/css/min/voat.light.min.css" /> 
+            <link rel="stylesheet" type="text/css" href="~/css/min/voat.light.min.css" asp-append-version="true" /> 
         </environment>
         @*@Styles.Render("~/Content/Light")*@
     }
@@ -68,14 +68,14 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
         <environment names="Development">
-            <link rel="stylesheet" type="text/css" href="~/css/bootstrap.css" />
-            <link rel="stylesheet" type="text/css" href="~/css/site.css" />
-            <link rel="stylesheet" type="text/css" href="~/css/tooltipster.css" />
-            <link rel="stylesheet" type="text/css" href="~/css/voat-dark.css" />
-            <link rel="stylesheet" type="text/css" href="~/css/markdowneditor.css" />
+            <link rel="stylesheet" type="text/css" href="~/css/bootstrap.css" asp-append-version="true" />
+            <link rel="stylesheet" type="text/css" href="~/css/site.css" asp-append-version="true" />
+            <link rel="stylesheet" type="text/css" href="~/css/tooltipster.css" asp-append-version="true" />
+            <link rel="stylesheet" type="text/css" href="~/css/voat-dark.css" asp-append-version="true" />
+            <link rel="stylesheet" type="text/css" href="~/css/markdowneditor.css" asp-append-version="true" />
         </environment>
         <environment names="Stage,Production">
-            <link rel="stylesheet" type="text/css" href="~/css/min/voat.dark.min.css" />
+            <link rel="stylesheet" type="text/css" href="~/css/min/voat.dark.min.css" asp-append-version="true" />
         </environment>
         @*@Styles.Render("~/Content/Dark")*@
     }
@@ -114,32 +114,28 @@
     @RenderBody()
 
     <environment names="Development">
-        <script type="text/javascript" src="~/lib/legacy/modernizr-2.8.3.js"></script>
+        <script type="text/javascript" src="~/lib/legacy/modernizr-2.8.3.js" asp-append-version="true"></script>
 
-        @*<script type="text/javascript" src="~/lib/legacy/jquery-2.1.4.js"></script>
-        <script type="text/javascript" src="~/lib/legacy/jquery-ui.js"></script>
-        <script type="text/javascript" src="~/lib/legacy/jquery.tooltipster.js"></script>
-        <script type="text/javascript" src="~/lib/legacy/jquery.unobtrusive-ajax.js"></script>
-        <script type="text/javascript" src="~/lib/legacy/jquery.validate.js"></script>*@
+        <script type="text/javascript" src="~/lib/jquery/dist/jquery.js" asp-append-version="true"></script>
+        <script type="text/javascript" src="~/lib/jquery-validation/dist/jquery.validate.js" asp-append-version="true"></script>
+        <script type="text/javascript" src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js" asp-append-version="true"></script>
+
+        <script type="text/javascript" src="~/lib/legacy/jquery-ui.js" asp-append-version="true"></script>
+        <script type="text/javascript" src="~/lib/legacy/jquery.tooltipster.js" asp-append-version="true"></script>
         
-        <script type="text/javascript" src="~/lib/jquery/dist/jquery.js"></script>
-        <script type="text/javascript" src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
-        <script type="text/javascript" src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+        <script type="text/javascript" src="~/js/voat.dashboard.js" asp-append-version="true"></script>
+        <script type="text/javascript" src="~/js/voat.ui.js" asp-append-version="true"></script>
+        <script type="text/javascript" src="~/js/voat.js" asp-append-version="true"></script>
+        <script type="text/javascript" src="~/js/voat.markdownEditor.js" asp-append-version="true"></script>
+        <script type="text/javascript" src="~/js/voat.voting.js" asp-append-version="true"></script>
 
-        <script type="text/javascript" src="~/lib/legacy/jquery-ui.js"></script>
-        <script type="text/javascript" src="~/lib/legacy/jquery.tooltipster.js"></script>
-        
-        <script type="text/javascript" src="~/js/voat.dashboard.js"></script>
-        <script type="text/javascript" src="~/js/voat.ui.js"></script>
-        <script type="text/javascript" src="~/js/voat.js"></script>
-        <script type="text/javascript" src="~/js/voat.markdownEditor.js"></script>
-
-        <script type="text/javascript" src="~/lib/legacy/bootstrap.js"></script>
-        <script type="text/javascript" src="~/lib/legacy/respond.js"></script>
+        <script type="text/javascript" src="~/lib/legacy/bootstrap.js" asp-append-version="true"></script>
+        <script type="text/javascript" src="~/lib/legacy/respond.js" asp-append-version="true"></script>
     </environment>
     <environment names="Stage,Production">
-        <script type="text/javascript" src="~/js/min/voat.min.js"></script>
-        <script type="text/javascript" src="~/js/min/bootstrap.min.js"></script>
+        <script type="text/javascript" src="~/js/min/jquery.min.js" asp-append-version="true"></script>
+        <script type="text/javascript" src="~/js/min/bootstrap.min.js" asp-append-version="true"></script>
+        <script type="text/javascript" src="~/js/min/voat.min.js" asp-append-version="true"></script>
     </environment>
 
     @*
