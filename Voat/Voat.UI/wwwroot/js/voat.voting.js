@@ -1,12 +1,18 @@
 ﻿var voat = {
     voting: {
         //UI Stuff
+        syncValidationChanges: function() {
+            $("form").removeData("validator");
+            $("form").removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse("form");
+        },
         addOption: function (source) {
             $.ajax({
                 type: 'GET',
                 url: '/vote/element?type=VoteOption',
                 success: function (data) {
                     $('div[data-voat-list="Options"]').append(data);
+                    voat.voting.syncValidationChanges();
                 }
             });
         },
@@ -18,9 +24,7 @@
                 url: '/vote/element?type=' + type,
                 success: function (data) {
                     $('div[data-voat-list="Restrictions"]').append(data);
-                    $("form").removeData("validator");
-                    $("form").removeData("unobtrusiveValidation");
-                    $.validator.unobtrusive.parse("form");
+                    voat.voting.syncValidationChanges();
                 }
             });
         },
@@ -36,7 +40,7 @@
                     var optionItem = $(caller).closest('div[data-voat-item="Options"]');
                     var outcomeList = optionItem.find('div[data-voat-list="Outcomes"]');
                     outcomeList.append(data);
-
+                    voat.voting.syncValidationChanges();
                 }
             });
         },
@@ -44,60 +48,15 @@
             var itemToRemove = $(source).parents(itemClass);
             itemToRemove.remove();
         },
-
-        //BUILD JSON
-        populateModelList: function (model, container, listName) {
-
-            var selector = '*[data-voat-item="' + listName + '"]';
-            var items = container.find(selector);
-
-            for (var i = 0; i < items.length; i++) {
-                model[i] = {};
-                var listItem = $(items[i]);
-                voat.voting.populateModel(model[i], listItem, listName, 1);
-            }
-        },
-        populateModelFields: function (model, item, listName) {
-
-            var fields = item.find('*[data-voat-field="' + listName + '"]');
-            //var fields = voat.voting.filterLevel(allFields, '[data-voat-field]', item.parents('[data-voat-field]').length);
-            $(fields).each(function () {
-                var field = $(this);
-                model[field.attr('name')] = field.val();
-            });
-
-        },
-        populateModel: function (model, rootSelector, listName, level) {
-
-            //populate fields
-            voat.voting.populateModelFields(model, $(rootSelector), listName);
-
-            //populate lists
-            var allLists = $(rootSelector).find('*[data-voat-list]')
-            var lists = voat.voting.filterLevel(allLists, '*[data-voat-list]', level);
-            $(lists).each(function () {
-                var list = $(this);
-                var listName = list.attr('data-voat-list');
-                model[listName] = [];
-                var listModel = model[listName];
-                voat.voting.populateModelList(listModel, list, listName)
-            });
-        },
-
-        filterLevel: function (items, selector, nestLevel) {
-            var filtered = [];
-            //var currentNestLevel = $(selector).parents(selector).length;
-            //relativeNestLevel += currentNestLevel;
-            $(items).each(function () {
-                var item = $(this);
-                if (item.parents(selector).length == nestLevel) {
-                    filtered.push(item);
+        gimmieTheFormMEOW: function() {
+            $("form").submit(function(x) {
+                if ($(x.currentTarget).valid()) {
+                    voat.voting.save();
                 }
+                return false;
             })
-            return filtered;
         },
         save: function () {
-            //var r = $('[data-voat-item="vote"]').validate();
 
             function filterItemsByLevel(level) {
                 return function () {
@@ -116,6 +75,7 @@
                     object = isItem ? {} : [];
                 if (parent === null) {
                     item = $('[data-voat-item]').filter(filterItemsByLevel(0));
+                    //root - depends if you want root or not, we don't
                     /*object[item.data('vote-item')] = listToObject(item, true, 1);
                     return object;*/
                     return toFuzzyModel(item, true, 1);
@@ -146,14 +106,8 @@
                 return object;
             }
 
-            //Mine
-            //var model = {};
-            //voat.voting.populateModel(model, '*[data-voat-item="vote"]', "vote", 0);
-            // Fuzzy
             var model = toFuzzyModel(null, true, 0, false);
-            //var puttsModel = model;
-
-
+            
             //translate to Model Site Expects
             for (var i = 0; i < model.Restrictions.length; i++) {
                 var item = model.Restrictions[i];
@@ -174,9 +128,8 @@
 
                 }
             }
-            //var x = $("#formSave").validate();
 
-            //var results = $.validator.unobtrusive.parse("#formSave");
+            //Post
             $.ajax({
                 type: 'POST',
                 url: '/vote/save',
@@ -186,33 +139,13 @@
                     var args = arguments;
                 },
                 success: function (data) {
-                    $("#container").html(data);
-                    //document.open();
-                    //document.write(data);
-                    //document.close();
+                    $("#container").replaceWith(data);
+                    voat.voting.syncValidationChanges();
+                    voat.voting.gimmieTheFormMEOW();
                 }
             });
 
         }
     }
 }
-$("form").submit(function(x) {
-    if ($(x.currentTarget).valid()) {
-        voat.voting.save();
-    }
-    return false;
-})
-
-//$.validator.unobtrusive.parse("#formSave");
-        //$('#saveVote').on('submit', function (e) {
-        //    //e.preventDefault();
-        //    $.ajax({
-        //        url: 'submit.php',
-        //        cache: false,
-        //        type: 'POST',
-        //        data: $('#formID').serialize(),
-        //        success: function (json) {
-        //            alert('all done');
-        //        }
-        //    });
-        //});
+voat.voting.gimmieTheFormMEOW();
