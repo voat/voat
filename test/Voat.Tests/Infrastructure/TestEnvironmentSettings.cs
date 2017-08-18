@@ -30,6 +30,6 @@ namespace Voat.Tests.Infrastructure
     public class TestEnvironmentSettings
     {
         public static string SqlScriptRelativePath { get; set; } =
-            Path.Combine("..", "..", "..", "..", "SqlScripts", DataConfigurationSettings.Instance.StoreType.ToString() );
+            Path.Combine("..", "..", "..", "..", "..", "misc", "SqlScripts", DataConfigurationSettings.Instance.StoreType.ToString() );
     }
 }

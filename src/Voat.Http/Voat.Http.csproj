@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Voat.Business\Voat.Business.csproj" />
+    <ProjectReference Include="..\Voat.Common\Voat.Common.csproj" />
     <ProjectReference Include="..\Voat.Logging\Voat.Logging.csproj" />
   </ItemGroup>
 

@@ -35,11 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Voat.Business\Voat.Business.csproj" />
-    <ProjectReference Include="..\Voat.Http\Voat.Http.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="wwwroot\css\min\" />
     <Folder Include="wwwroot\js\min\" />
   </ItemGroup>
@@ -190,6 +185,14 @@
     <None Include="~appsettings.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Voat.Business\Voat.Business.csproj" />
+    <ProjectReference Include="..\Voat.Common\Voat.Common.csproj" />
+    <ProjectReference Include="..\Voat.Http\Voat.Http.csproj" />
+    <ProjectReference Include="..\Voat.Logging\Voat.Logging.csproj" />
+    <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj" />
   </ItemGroup>
 
 </Project>

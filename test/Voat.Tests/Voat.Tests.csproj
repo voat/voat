@@ -26,13 +26,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Voat.RulesEngine\Voat.RulesEngine.csproj" />
-    <ProjectReference Include="..\Voat.Data\Voat.Data.csproj" />
-    <ProjectReference Include="..\Voat.Business\Voat.Business.csproj" />
+    <Folder Include="Properties\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <ProjectReference Include="..\..\src\Voat.Business\Voat.Business.csproj" />
+    <ProjectReference Include="..\..\src\Voat.Logging\Voat.Logging.csproj" />
+    <ProjectReference Include="..\..\src\Voat.RulesEngine\Voat.RulesEngine.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -28,8 +28,8 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\External\Source\ghorsey\OpenGraph-Net\OpenGraph-Net.csproj" />
-    <ProjectReference Include="..\External\Source\toptensoftware\MarkdownDeep\MarkdownDeep.csproj" />
+    <ProjectReference Include="..\external\Source\ghorsey\OpenGraph-Net\OpenGraph-Net.csproj" />
+    <ProjectReference Include="..\external\Source\toptensoftware\MarkdownDeep\MarkdownDeep.csproj" />
     <ProjectReference Include="..\Voat.Common\Voat.Common.csproj" />
     <ProjectReference Include="..\Voat.Data\Voat.Data.csproj" />
     <ProjectReference Include="..\Voat.Logging\Voat.Logging.csproj" />
