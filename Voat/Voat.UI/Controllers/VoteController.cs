@@ -1,13 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Voat.Caching;
 using Voat.Common;
 using Voat.Configuration;
 using Voat.Controllers;
+using Voat.Domain;
+using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Models.ViewModels;
 using Voat.Voting.Outcomes;
@@ -18,6 +23,8 @@ namespace Voat.UI.Controllers
     [Authorize]
     public class VoteController : BaseController
     {
+        private static MemoryCacheHandler cache = new MemoryCacheHandler(false);
+
         [HttpGet]
         public ActionResult Index(int id)
         {
@@ -32,53 +39,53 @@ namespace Voat.UI.Controllers
                 return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.Unauthorized));
             }
 
-            var model = new Vote();
-            model.Subverse = subverse;
+            var model = cache.Retrieve<Vote>($"VoteCreate:{User.Identity.Name}");
+            if (model == null)
+            {
+                model = new Vote();
+                model.Subverse = subverse;
+            }
 
             return View("Edit", model);
         }
+        public bool TryValidateModel2<TModel, TProperty>(Expression<Func<TModel, TProperty>> expression)
+        {
+            string name = ExpressionHelper.GetExpressionText(expression);
+            object model = null;// expression.Model;
+            //object model = ExpressionMetadataProvider.FromLambdaExpression(expression, helper.ViewData, helper.MetadataProvider).Model;
+            return TryValidateModel(model, name);
+        }
         [HttpPost]
-        public ActionResult Save([FromBody] Voat.Domain.Models.CreateVote model)
+        public async Task<ActionResult> Save([FromBody] CreateVote model)
         {
-            var domainModel = Map(model);
-            var result = TryValidateModel(domainModel);
-            return PartialView("_Edit", domainModel);
+            ModelState.Clear();
 
-            //if (!ModelState.IsValid)
+            //Map to Domain Model
+            var domainModel = model.Map();
+
+            //Reinsert Cache
+            cache.Replace($"VoteCreate:{User.Identity.Name}", domainModel);
+
+
+            //var valResult = Voat.Validation.ValidationHandler.Validate(domainModel);
+            //if (valResult != null)
             //{
-            //    return PartialView("_Edit", domainModel);
+            //    valResult.ForEach(x => ModelState.AddModelError(x.MemberNames.FirstOrDefault(), x.ErrorMessage));
             //}
-            //return Create("ast");
-        }
-        private Vote Map(CreateVote transform)
-        {
-            var model = new Vote();
-            model.Title = transform.Title;
-            model.Content = transform.Content;
-            model.Subverse = transform.Subverse;
-
-            foreach (var r in transform.Restrictions)
+            if (ModelState.IsValid)
             {
-                var o = r.Construct<VoteRestriction>();
-                string value = r.Options.ToString();
-                var options = r.Options;
-                model.Restrictions.Add(o);
+                //Save Vote
+                var cmd = new SaveVoteCommand(domainModel);
+                var result = await cmd.Execute();
+
+                return PartialView("_View", domainModel);
             }
-            transform.Options.ForEach(x =>
+            else
             {
-                var option = new VoteOption();
-                option.Title = x.Title;
-                option.Content = x.Content;
-
-                x.Outcomes.ForEach(o =>
-                {
-                    var outcome = o.Construct<VoteOutcome>();
-                    option.Outcomes.Add(outcome);
-                });
-                model.Options.Add(option);
-            });
-            return model;
+                return PartialView("_Edit", domainModel);
+            }
         }
+        
         [HttpGet]
         public ActionResult Edit(string subverse, int id)
         {
@@ -92,7 +99,7 @@ namespace Voat.UI.Controllers
             return View("Delete", model);
         }
         [HttpGet]
-        public ActionResult Element(string type)
+        public ActionResult Element(string subverse, string type)
         {
             var typeName = type.TrimSafe();
 

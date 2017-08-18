@@ -24,7 +24,10 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using System;
+using System.IO;
 using System.Net;
 using Voat.Configuration;
 using Voat.Domain;

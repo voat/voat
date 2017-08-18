@@ -1126,7 +1126,7 @@ namespace Voat
             );
             routes.MapRoute(
                name: "VoteElement",
-               template: "vote/element",
+               template: "v/{subverse}/vote/element",
                defaults: new { controller = "Vote", action = "Element" }
            );
             #endregion

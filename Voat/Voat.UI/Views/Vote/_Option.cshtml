@@ -23,6 +23,9 @@
 <div data-voat-item="Options">
     <div class="form-horizontal" role="form">
         <h2>Option</h2>
+
+        <input asp-for="ID" type="hidden" data-voat-field="Options">
+
         <div class="form-group">
             <label class="col-md-2 control-label" asp-for="Title">Title</label>
             <div class="col-md-10">
@@ -33,7 +36,7 @@
         <div class="form-group">
             <label class="col-md-2 control-label" asp-for="Content">Description</label>
             <div class="col-md-10">
-                <textarea asp-for="Content" class="form-control" value="@Model.Content" data-voat-field="Options"></textarea>
+                @Html.MarkdownEditorFor(x => x.Content, new { data_voat_field = "Options", @class = "form-control" })
                 <span asp-validation-for="Content"></span>
             </div>
         </div>

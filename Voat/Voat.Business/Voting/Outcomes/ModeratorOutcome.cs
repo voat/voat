@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Voat.Voting.Outcomes
 {
-    public abstract class ModeratorOutcome : VoteOutcome
+    public abstract class ModeratorOutcome : VoteOutcome, ISubverse
     {
         [Required]
         public string UserName { get; set; }

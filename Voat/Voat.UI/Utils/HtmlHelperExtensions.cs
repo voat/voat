@@ -48,6 +48,6 @@ namespace Voat.UI.Utilities
             textareaString.WriteTo(writer, HtmlEncoder.Default);
             return new HtmlString(writer.ToString());
         }
-
+        
     }
 }

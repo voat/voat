@@ -7,9 +7,10 @@
             $.validator.unobtrusive.parse("form");
         },
         addOption: function (source) {
+            var subverse = $("#Subverse").val();
             $.ajax({
                 type: 'GET',
-                url: '/vote/element?type=VoteOption',
+                url: '/v/' + subverse + '/vote/element?type=VoteOption',
                 success: function (data) {
                     $('div[data-voat-list="Options"]').append(data);
                     voat.voting.syncValidationChanges();
@@ -18,10 +19,11 @@
         },
         addRestriction: function (source) {
             var type = $("#vote-restriction-type").val();
+            var subverse = $("#Subverse").val();
 
             $.ajax({
                 type: 'GET',
-                url: '/vote/element?type=' + type,
+                url: '/v/' + subverse + '/vote/element?type=' + type,
                 success: function (data) {
                     $('div[data-voat-list="Restrictions"]').append(data);
                     voat.voting.syncValidationChanges();
@@ -32,9 +34,11 @@
 
             var type = $(source).closest("[data-voat-item]").find("#vote-outcome-type").val();
             var caller = source;
+            var subverse = $("#Subverse").val();
+
             $.ajax({
                 type: 'GET',
-                url: '/vote/element?type=' + type,
+                url: '/v/' + subverse + '/vote/element?type=' + type,
                 success: function (data) {
 
                     var optionItem = $(caller).closest('div[data-voat-item="Options"]');
@@ -136,12 +140,13 @@
                 data: JSON.stringify(model),
                 contentType: "application/json",
                 error: function () {
-                    var args = arguments;
+                    alert("error on post");
                 },
                 success: function (data) {
                     $("#container").replaceWith(data);
                     voat.voting.syncValidationChanges();
                     voat.voting.gimmieTheFormMEOW();
+                    history.pushState({what:"isthis"}, "View", "?view=true");
                 }
             });
 

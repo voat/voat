@@ -44,7 +44,7 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label" for="Bio">Description</label>
                         <div class="col-md-10">
-                            <textarea asp-for="Content" class="form-control" data-voat-field="vote"></textarea>
+                            @Html.MarkdownEditorFor(x => x.Content, new { data_voat_field = "vote", @class = "form-control"  })
                             <span asp-validation-for="Content"></span>
                         </div>
                     </div>
@@ -52,7 +52,7 @@
                 <div>
                     <div class="alert-title">Options</div>
                     <div data-voat-list="Options">
-                        @if (Model.Options != null && Model.Options.Any())
+                    @if (Model.Options != null && Model.Options.Any())
                     {
                         for (int i = 0; i < Model.Options.Count; i++)
                         {
@@ -69,33 +69,31 @@
                     </div>
                 </div>
                 <div>
-                    <div class="alert-title">Restrictions</div>
+                    <div class="alert-title">Restrictions (Optional)</div>
                     <div data-voat-list="Restrictions">
-                        @if (Model.Restrictions != null && Model.Restrictions.Any())
+                    @if (Model.Restrictions != null && Model.Restrictions.Any())
                     {
                         for (int i = 0; i < Model.Restrictions.Count; i++)
                         {
                             var viewData = new ViewDataDictionary(ViewData);
                             viewData.TemplateInfo.HtmlFieldPrefix = $"Restrictions[{i.ToString()}]";
-                                @Html.Partial("_EditVoteRestriction", Model.Restrictions[i], viewData);
+                            @Html.Partial("_EditVoteRestriction", Model.Restrictions[i], viewData);
                         }
                     }
                     </div>
-                    <div class="form-horizontal" role="form">
+                    <div class="form-horizontal addVoteOption" role="form">
                         <div class="form-group">
-                            <label class="col-md-2 control-label" for="Bio">Restriction (Optional)</label>
                             <div class="col-md-10">
                                 @*Get this data from reflection*@
                                 <select name="vote-restriction-type" class="form-control" id="vote-restriction-type" type="text"
                                         asp-items="Voat.Domain.Models.VoteMetadata.Instance.Restrictions.Select(x => new SelectListItem() {
-                                Text = x.Attribute.Name,
-                                Value = x.Type.Name
-                            })"></select>
+                                    Text = x.Attribute.Name,
+                                    Value = x.Type.Name
+                                })"></select>
                             </div>
                         </div>
-
                         <div class="form-group">
-                            <div class="col-md-offset-2 col-md-3">
+                            <div class="class="col-md-10">
                                 <button class="btn-whoaverse" type="button" onclick="voat.voting.addRestriction(this);">Add Restriction</button>
                             </div>
                         </div>

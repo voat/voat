@@ -116,10 +116,25 @@ namespace Voat.Domain.Command
     {
         protected abstract Task<T> ProtectedExecute();
 
+        protected virtual Task<T> ExecuteStage(CommandStage stage)
+        {
+            //return true
+            var response = new T();
+            response.Status = Status.Success;
+            return Task.FromResult(response);
+        }
+
         public virtual async Task<T> Execute()
         {
             try
             {
+                //Implement Valdation prechecks 
+                var validationResponse = await ExecuteStage(CommandStage.BeforeExecute);
+                if (!validationResponse.Success)
+                {
+                    return validationResponse;
+                }
+
                 return await ProtectedExecute();
             }
             catch (Exception ex)
