@@ -30,6 +30,7 @@
   <ItemGroup>
     <ProjectReference Include="..\external\Source\ghorsey\OpenGraph-Net\OpenGraph-Net.csproj" />
     <ProjectReference Include="..\external\Source\toptensoftware\MarkdownDeep\MarkdownDeep.csproj" />
+    <ProjectReference Include="..\frameworks\Voat.Validation\Voat.Validation.fsproj" />
     <ProjectReference Include="..\Voat.Common\Voat.Common.csproj" />
     <ProjectReference Include="..\Voat.Data\Voat.Data.csproj" />
     <ProjectReference Include="..\Voat.Logging\Voat.Logging.csproj" />

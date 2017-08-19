@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Voat, Inc.</Authors>
+    <Company>Voat, Inc.</Company>
+    <Description>Port from legacy .net 3.5 validation runtime library for .net 4.5 and now to Core 2</Description>
+    <Version>2.0.1</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="ValidationSeverity.fs" />
+    <Compile Include="ValidationViolation.fs" />
+    <Compile Include="ValidationPathResult.fs" />
+    <Compile Include="ValidationPathResultComposite.fs" />
+    <Compile Include="ValidationSummary.fs" />
+    <Compile Include="DataValidationAttribute.fs" />
+    <Compile Include="ValidationErrorException.fs" />
+    <Compile Include="ValidationHandler.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Voat.Common.Fs\Voat.Common.Fs.fsproj" />
+  </ItemGroup>
+
+</Project>

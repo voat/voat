@@ -2,3 +2,12 @@
 
 
 @Html.Partial("_Edit", Model)
+
+@section PageScripts
+    {
+    <script type="text/javascript">
+            $(document).ready(function () {
+                voat.voting.gimmieTheFormMEOW();
+            });
+    </script>
+}

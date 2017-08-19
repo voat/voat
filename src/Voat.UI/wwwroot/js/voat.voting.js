@@ -99,6 +99,7 @@
                                 object[stripPathedName(item.attr('name'))] = val;
                             }
                         } else {
+                            object[item.data('voat-list')] = {};//Create empty object
                             object[item.data('voat-list')] = toFuzzyModel(item, false, level, includeEmptyFields);
                         }
                     }
@@ -153,4 +154,4 @@
         }
     }
 }
-voat.voting.gimmieTheFormMEOW();
+

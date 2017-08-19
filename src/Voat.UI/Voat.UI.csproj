@@ -188,6 +188,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\frameworks\Voat.Validation\Voat.Validation.fsproj" />
     <ProjectReference Include="..\Voat.Business\Voat.Business.csproj" />
     <ProjectReference Include="..\Voat.Common\Voat.Common.csproj" />
     <ProjectReference Include="..\Voat.Http\Voat.Http.csproj" />

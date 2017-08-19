@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+
+    <Authors>Voat, Inc.</Authors>
+
+    <Company>Voat, Inc.</Company>
+
+    <Description>Port from legacy .net 3.5 validation runtime library for .net 4.5 and now to Core 2</Description>
+
+    <Version>2.0.1</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170628-02" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\frameworks\Voat.Validation\Voat.Validation.fsproj" />
+  </ItemGroup>
+
+</Project>

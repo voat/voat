@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Voat, Inc.</Authors>
+    <Company>Voat, Inc.</Company>
+    <Description>Port from legacy .net 3.5 validation runtime library for .net 4.5 and now to Core 2</Description>
+    <Version>2.0.1</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="ActivePatterns.fs" />
+    <Compile Include="LoaderAttribute.fs" />
+    <Compile Include="AttributeFinder.fs" />
+    <Compile Include="Extensions.fs" />
+    <Compile Include="Helper.fs" />
+    <Compile Include="Pathed.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.2.2" />
+  </ItemGroup>
+
+</Project>
