@@ -113,6 +113,7 @@ namespace Voat
 
             services.AddAntiforgery(options => {
                 options.HeaderName = Utilities.CONSTANTS.REQUEST_VERIFICATION_HEADER_NAME;
+                options.FormFieldName = Utilities.CONSTANTS.REQUEST_VERIFICATION_HEADER_NAME;
             });
             
             // Add application services.
