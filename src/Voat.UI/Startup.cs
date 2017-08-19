@@ -112,7 +112,7 @@ namespace Voat
             });
 
             services.AddAntiforgery(options => {
-                options.HeaderName = "__RequestVerificationToken";
+                options.HeaderName = Utilities.CONSTANTS.REQUEST_VERIFICATION_HEADER_NAME;
             });
             
             // Add application services.

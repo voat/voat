@@ -19,20 +19,23 @@
 */
 
 $(document).ready(function () {
+    //THIS VALUE MUST MATCH CONSTANTS.REQUEST_VERIFICATION_HEADER_NAME
+    var requestVerificationTokenName = "VoatRequestVerificationToken";
+
     // activate bootstrap popovers
     $('[data-toggle="popover"]').popover({ trigger: 'hover', 'placement': 'top' });
 
     // prepare auth tokens
-    securityToken = $('[name=__RequestVerificationToken]').val();
+    securityToken = $('[name=' + requestVerificationTokenName+']').val();
     $(document).ajaxSend(function (elm, xhr, s) {
         if (s.type == 'POST' && typeof securityToken != 'undefined') {
             if (s.contentType.toLowerCase().lastIndexOf('application/json', 0) === 0) {
                 //json request
-                xhr.setRequestHeader('__RequestVerificationToken', securityToken);
+                xhr.setRequestHeader(requestVerificationTokenName, securityToken);
             } else {
                 //form request
-                if (!s.data || s.data.indexOf('__RequestVerificationToken') == -1) {
-                    s.data = (s.data && s.data.length > 0 ? s.data + '&' : '') + '__RequestVerificationToken=' + encodeURIComponent(securityToken);
+                if (!s.data || s.data.indexOf(requestVerificationTokenName) == -1) {
+                    s.data = (s.data && s.data.length > 0 ? s.data + '&' : '') + requestVerificationTokenName + '=' + encodeURIComponent(securityToken);
                     //this will force the data to be re-evaled if none is provided on initiation call
                     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 }
@@ -575,7 +578,7 @@ function reply(parentcommentid, messageid) {
         return;
     }
 
-    var token = $("input[name='__RequestVerificationToken']").val();
+    //var token = $("input[name='__RequestVerificationToken']").val();
 
     replyCommentFormRequest = $.ajax({
         url: "/ajaxhelpers/commentreplyform/" + parentcommentid + "/" + messageid,
@@ -604,7 +607,7 @@ function messageReplyForm(id) {
         return;
     }
 
-    var token = $("input[name='__RequestVerificationToken']").val();
+    //var token = $("input[name='__RequestVerificationToken']").val();
 
     replyFormPMRequest = $.ajax({
         url: "/messages/reply/" + id + "?nocache=" + cachePrevention(),
@@ -634,7 +637,7 @@ function replyToCommentNotification(commentId, submissionId) {
         return;
     }
 
-    var token = $("input[name='__RequestVerificationToken']").val();
+    //var token = $("input[name='__RequestVerificationToken']").val();
 
     replyToCommentFormRequest = $.ajax({
         url: "/ajaxhelpers/commentreplyform/" + commentId + "/" + submissionId,

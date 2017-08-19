@@ -382,6 +382,8 @@ namespace Voat.Controllers
 
         // POST: comments/distinguish/{commentId}
         [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<JsonResult> DistinguishComment(int commentId)
         {
             using (var repo = new Repository(User))
