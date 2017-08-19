@@ -1064,6 +1064,53 @@ YouTubeExpando.prototype.process = function (source) {
     });
 };
 
+/* HookTube */
+var HookTubeExpando = function (options) {
+    IFrameEmbedderExpando.call(this, /(?:hooktube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)?|youtu\.be\/)([^"&?\/ ]{11}(?:[?&]t=(?:(?:\d+[hms]){1,3}|\d+))?)/i, options);
+    this.getSrcUrl = function (id, fun) {
+        var match = id.match(/([^?&]+)(?:[?&]t=((?:(?:\d+[hms]){1,3}|\d+)))?/),
+            start = "", time, seconds = 0;
+        id = match[1];
+        if (typeof match[2] !== "undefined") {
+            start = "?start=";
+            time = match[2].match(/^(\d+)$/);
+            if (time !== null) {
+                start += parseInt(time[1], 10);
+            } else {
+                time = match[2].match(/(\d+)h/);
+                if (time !== null) {
+                    seconds += parseInt(time[1], 10) * 60 * 60;
+                }
+                time = match[2].match(/(\d+)m/);
+                if (time !== null) {
+                    seconds += parseInt(time[1], 10) * 60;
+                }
+                time = match[2].match(/(\d+)s/);
+                if (time !== null) {
+                    seconds += parseInt(time[1], 10);
+                }
+                start += seconds;
+            }
+        }
+        fun('//hooktube.com/embed/' + id + start);
+    };
+};
+HookTubeExpando.prototype = new IFrameEmbedderExpando();
+HookTubeExpando.prototype.constructor = YouTubeExpando;
+HookTubeExpando.prototype.process = function (source) {
+    var target = this.options.targetFunc($(source));
+
+    var width = Math.min(560, UI.Common.availableWidth(target.parent()));
+
+    this.hook($(source), 'HookTube', {
+        width: width.toString(),
+        height: (width * this.defaultRatio).toString(),
+        frameborder: '0',
+        allowfullscreen: true
+    });
+};
+
+
 /* vid.me */
 var VidmeExpando = function (options) {
     IFrameEmbedderExpando.call(this, /(?:https?\:\/\/)?(?:.*vid\.me)\/(.+)/i, options);
@@ -1338,7 +1385,8 @@ $(document).ready(function () {
             new ImgurAlbumExpando(commentOptions),
             new ImgurGifvExpando(commentOptions),
             new WebMExpando(commentOptions),
-            new MP4Expando(commentOptions)
+            new MP4Expando(commentOptions),
+            new HookTubeExpando(commentOptions)
         ]);
 
 
@@ -1404,7 +1452,8 @@ $(document).ready(function () {
             new ImgurAlbumExpando(submissionOptions),
             new ImgurGifvExpando(submissionOptions),
             new WebMExpando(submissionOptions),
-            new MP4Expando(submissionOptions)
+            new MP4Expando(submissionOptions),
+            new HookTubeExpando(submissionOptions)
         ]);
 
 
