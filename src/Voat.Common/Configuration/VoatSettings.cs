@@ -164,6 +164,7 @@ namespace Voat.Configuration
         public bool IsDevelopment { get; set; } = false;
 
         public bool EnableRoles { get; set; } = false;
+        public string[] EnabledRoles { get; set; } = new string[] { };
 
         public bool EnableVotes { get; set; } = false;
 

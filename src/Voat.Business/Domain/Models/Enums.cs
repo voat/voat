@@ -332,7 +332,8 @@ namespace Voat.Domain.Models
     {
         GlobalAdmin = 2147483647,
         Admin = 2147483646,
-        DelegateAdmin = 10000
+        DelegateAdmin = 10000,
+        GlobalJanitor = 9001
     }
 
     [DatabaseMappedValue]

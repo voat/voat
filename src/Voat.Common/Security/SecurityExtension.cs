@@ -31,9 +31,11 @@ namespace Voat.Common
             {
                 if (roles != null && roles.Length > 0 && user != null && user.Identity.IsAuthenticated)
                 {
-                    for (int i = 0; i < roles.Length; i++)
+                    //intersection of enabled roles
+                    var rolesToCheck = roles.Where(x => VoatSettings.Instance.EnabledRoles.Any(r => x.IsEqual(r) || r == "*")).ToArray();
+                    for (int i = 0; i < rolesToCheck.Length; i++)
                     {
-                        result = user.IsInRole(roles[i]);
+                        result = user.IsInRole(rolesToCheck[i]);
                         if (result)
                         {
                             break;

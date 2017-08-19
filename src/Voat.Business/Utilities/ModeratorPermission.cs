@@ -50,7 +50,7 @@ namespace Voat.Utilities
 
         public static bool IsModerator(IPrincipal user, string subverse, ModeratorLevel[] levels = null, IEnumerable<Data.Models.SubverseModerator> modList = null)
         {
-            if (user.IsInAnyRole(new[] { UserRole.GlobalAdmin, UserRole.Admin }))
+            if (user.IsInAnyRole(new[] { UserRole.GlobalAdmin, UserRole.Admin, UserRole.DelegateAdmin, UserRole.GlobalJanitor }))
             {
                 return true;
             }
@@ -72,16 +72,21 @@ namespace Voat.Utilities
 
         public static ModeratorLevel? Level(IPrincipal user, string subverse, IEnumerable<Data.Models.SubverseModerator> modList = null)
         {
-            if (user.IsInAnyRole(new[] { UserRole.GlobalAdmin, UserRole.Admin }))
+            if (user.IsInAnyRole(new[] { UserRole.GlobalAdmin, UserRole.Admin, UserRole.DelegateAdmin }))
             {
                 return ModeratorLevel.Owner;
             }
+
             var userName = user.Identity.Name;
             var mods = GetModerators(subverse, modList);
             var o = mods.FirstOrDefault(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
             if (o != null)
             {
                 return (ModeratorLevel)Enum.Parse(typeof(ModeratorLevel), o.Power.ToString());
+            }
+            else if (user.IsInAnyRole(new[] { UserRole.GlobalJanitor }))
+            {
+                return ModeratorLevel.Janitor;
             }
             return null;
         }
@@ -136,7 +141,7 @@ namespace Voat.Utilities
         public static bool HasPermission(IPrincipal user, string subverse, ModeratorAction action, IEnumerable<Data.Models.SubverseModerator> modList = null)
         {
 
-            if (user.IsInAnyRole(new[] { UserRole.GlobalAdmin, UserRole.Admin }))
+            if (user.IsInAnyRole(new[] { UserRole.GlobalAdmin, UserRole.Admin, UserRole.DelegateAdmin }))
             {
                 return true;
             }
@@ -151,6 +156,14 @@ namespace Voat.Utilities
                     result = r.Any(x =>
                                 x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) &&
                                 HasPermission((ModeratorLevel)x.Power, action));
+                }
+                //if they don't have permissions check if global janitor and request is for janitor role 
+                if (!result)
+                {
+                    if (user.IsInAnyRole(new[] { UserRole.GlobalJanitor }))
+                    {
+                        result = HasPermission(ModeratorLevel.Janitor, action);
+                    }
                 }
             }
             return result;
