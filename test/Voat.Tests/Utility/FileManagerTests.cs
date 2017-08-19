@@ -31,6 +31,7 @@ using Voat.Tests.Infrastructure;
 using System.Threading.Tasks;
 using Voat.IO;
 using Voat.Utilities;
+using System.Linq;
 
 namespace Voat.Tests.Utils
 {
@@ -190,7 +191,7 @@ namespace Voat.Tests.Utils
             var key = new FileKey() { ID = fileName, FileType = FileType.Thumbnail };
             string partialPath = String.Join("/", new string[] { VoatSettings.Instance.DestinationPathThumbs, fileName }.ToPathParts());
 
-            Assert.IsFalse(fm.Exists(key));
+            Assert.IsFalse(await fm.Exists(key));
 
             using (var httpRehorse = new HttpResource("https://voat.co/Graphics/voat-goat.png"))
             {
@@ -199,14 +200,14 @@ namespace Voat.Tests.Utils
                 await fm.Upload(key, httpRehorse.Stream);
             }
 
-            Assert.IsTrue(fm.Exists(key));
+            Assert.IsTrue(await fm.Exists(key));
 
             var url = fm.Uri(key, new PathOptions() { FullyQualified = false, ProvideProtocol = false });
             Assert.AreEqual($"/{partialPath}", url, "Condition:1.1");
 
             fm.Delete(key);
 
-            Assert.IsFalse(fm.Exists(key));
+            Assert.IsFalse(await fm.Exists(key));
         }
 
         [TestMethod]
@@ -214,7 +215,7 @@ namespace Voat.Tests.Utils
         public void ContentDelivery_AvatarPath()
         {
             var fileName = "puttitout.jpg";
-            var fm = new ContentDeliveryNetworkFileManager("");
+            var fm = new AzureBlobFileManager("");
             var key = new FileKey() { ID = fileName, FileType = FileType.Avatar };
             string partialPath = String.Join("/", new string[] { "avatars", fileName }.ToPathParts());
 
@@ -267,7 +268,7 @@ namespace Voat.Tests.Utils
         public void ContentDelivery_BadgePath()
         {
             var fileName = "Donor.jpg";
-            var fm = new ContentDeliveryNetworkFileManager("");
+            var fm = new AzureBlobFileManager("");
             var key = new FileKey() { ID = fileName, FileType = FileType.Badge };
             string partialPath = String.Join("/", new string[] { "~/images/Badges", fileName }.ToPathParts());
 
@@ -280,7 +281,7 @@ namespace Voat.Tests.Utils
         public void ContentDelivery_ThumbnailPath()
         {
             var fileName = "SOMEQUIDHERE.jpg";
-            var fm = new ContentDeliveryNetworkFileManager("");
+            var fm = new AzureBlobFileManager("");
             var key = new FileKey() { ID = fileName, FileType = FileType.Thumbnail };
             string partialPath = String.Join("/", new string[] { "thumbs", fileName }.ToPathParts());
 
@@ -288,16 +289,28 @@ namespace Voat.Tests.Utils
 
         }
         //CORE_PORT: Not fully ported
-        //[TestMethod]
+        [TestMethod]
         [TestCategory("Formatting"), TestCategory("Formatting.Paths")]
         public async Task ContentDelivery_FileLifeCycle()
         {
-            var fileName = Guid.NewGuid().ToString() + ".png";
-            var fm = new ContentDeliveryNetworkFileManager("");
-            var key = new FileKey() { ID = fileName, FileType = FileType.Thumbnail };
-            string partialPath = String.Join("/", new string[] { VoatSettings.Instance.DestinationPathThumbs, fileName }.ToPathParts());
+            string fmType = "AzureBlob";
 
-            Assert.IsFalse(fm.Exists(key));
+            var handler = FileManagerConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Name.IsEqual(fmType));
+
+            if (handler == null)
+            {
+                Assert.Inconclusive($"Can't find {fmType}");
+            }
+            var fm = handler.Construct<AzureBlobFileManager>();
+            if (fm == null)
+            {
+                Assert.Inconclusive($"Can't construct {fmType}");
+            }
+            var fileName = Guid.NewGuid().ToString() + ".png";
+            var key = new FileKey() { ID = fileName, FileType = FileType.Thumbnail };
+            //string partialPath = String.Join("/", new string[] { VoatSettings.Instance.DestinationPathThumbs, fileName }.ToPathParts());
+
+            Assert.IsFalse(await fm.Exists(key));
 
             using (var httpRehorse = new HttpResource("https://voat.co/Graphics/voat-goat.png"))
             {
@@ -306,20 +319,20 @@ namespace Voat.Tests.Utils
                 await fm.Upload(key, httpRehorse.Stream);
             }
             
-            Assert.IsTrue(fm.Exists(key));
+            Assert.IsTrue(await fm.Exists(key));
 
-            var url = fm.Uri(key, new PathOptions() { FullyQualified = false, ProvideProtocol = false });
-            Assert.AreEqual($"/{partialPath}", url, "Condition:1.1");
+            var url = fm.Uri(key, new PathOptions() { FullyQualified = true, ProvideProtocol = true });
+            //Assert.AreEqual($"/{partialPath}", url, "Condition:1.1");
 
-            fm.Delete(key);
+            await fm.Delete(key);
 
-            Assert.IsFalse(fm.Exists(key));
+            Assert.IsFalse(await fm.Exists(key));
         }
         [TestMethod]
         [TestCategory("Formatting"), TestCategory("Formatting.Paths")]
         public void ContentDelivery_ExceptionPaths()
         {
-            var fm = new ContentDeliveryNetworkFileManager("");
+            var fm = new AzureBlobFileManager("");
             
             var key = new FileKey() { ID = null, FileType = FileType.Avatar };
             VerifyPath(fm, key, "");

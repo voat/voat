@@ -80,13 +80,31 @@
             "handlers": [
                 {
                     "enabled": true,
+                    "name": "Local",
                     "type": "Voat.IO.LocalNetworkFileManager, Voat.Business",
                     "arguments": ""
                 },
                 {
                     "enabled": false,
-                    "type": "Voat.IO.ContentDeliveryNetworkFileManager, Voat.Business",
-                    "arguments": "[System.String]()"
+                    "name": "AzureBlob",
+                    "type": "Voat.IO.AzureBlobFileManager, Voat.Business",
+                    "arguments": "[System.String](<connection string>);[System.String]()"
+                }
+            ]
+        },
+        "emailSender": {
+            "handlers": [
+                {
+                    "enabled": false,
+                    "name": "Smtp",
+                    "type": "Voat.IO.Email.SmtpEmailSender, Voat.Business",
+                    "arguments": "[System.String](127.0.0.1);[System.Int32](0)"
+                },
+                {
+                    "enabled": true,
+                    "name": "SendGrid",
+                    "type": "Voat.IO.Email.SendGridEmailSender, Voat.Business",
+                    "arguments": "[System.String](<send grid api key here>)"
                 }
             ]
         },
@@ -166,11 +184,8 @@
                 "width": 68
             },
             "destinationPathThumbs": "~/storage/thumbs",
-            "destinationPathAvatars": "~/storage/avatars",
+            "destinationPathAvatars": "~/storage/avatars"
 
-            //Voat Settings
-            "StorageConnectionString": "<enter here>",
-            "emailServiceKey": "<enter here>"
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Voat.Utilities
             {
                 var key = new FileKey();
                 key.FileType = FileType.Avatar;
-                key.ID = GenerateRandomFilename(Path.GetExtension(fileName), FileType.Avatar);
+                key.ID = await GenerateRandomFilename(Path.GetExtension(fileName), FileType.Avatar);
 
                 await GenerateImageThumbnail(fileManager, key, imageStream, VoatSettings.Instance.AvatarSize, false, false);
 
@@ -60,7 +60,7 @@ namespace Voat.Utilities
             return CommandResponse.FromStatus<string>(null, fileCheck.Status, fileCheck.Message);
         }
         // Generate a random filename for a thumbnail and make sure that the file does not exist.
-        private static string GenerateRandomFilename(string extention, FileType fileType)
+        private static async Task<string> GenerateRandomFilename(string extention, FileType fileType)
         {
             string fileName = null;
             if (String.IsNullOrEmpty(extention))
@@ -71,7 +71,7 @@ namespace Voat.Utilities
             do
             {
                 fileName = $"{Guid.NewGuid().ToString()}.{extention.ToLower()}";
-            } while (FileManager.Instance.Exists(new FileKey(fileName, fileType)));
+            } while (await FileManager.Instance.Exists(new FileKey(fileName, fileType)));
 
             return fileName;
         }
@@ -107,7 +107,7 @@ namespace Voat.Utilities
                             {
                                 var key = new FileKey();
                                 key.FileType = FileType.Thumbnail;
-                                key.ID = GenerateRandomFilename(".jpg", FileType.Thumbnail);
+                                key.ID = await GenerateRandomFilename(".jpg", FileType.Thumbnail);
                                 var stream = httpResource.Stream;
 
                                 await GenerateImageThumbnail(fileManager, key, stream, VoatSettings.Instance.ThumbnailSize, true);

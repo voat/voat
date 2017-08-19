@@ -19,7 +19,7 @@ namespace Voat.IO
                 var handlerInfo = FileManagerConfigurationSettings.Instance.Handler;
                 if (handlerInfo != null)
                 {
-                    Debug.WriteLine("CacheHandler.Instance.Contruct({0})", handlerInfo.Type);
+                    Debug.WriteLine("FileManager.Instance.Contruct({0})", handlerInfo.Type);
                     _fileManager = handlerInfo.Construct<FileManager>();
                 }
                 return _fileManager;
@@ -64,8 +64,8 @@ namespace Voat.IO
 
         protected abstract string Domain { get; }
 
-        public abstract void Delete(FileKey key);
-        public abstract bool Exists(FileKey key);
+        public abstract Task<bool> Delete(FileKey key);
+        public abstract Task<bool> Exists(FileKey key);
 
         public abstract Task Upload(FileKey key, Stream stream);
 

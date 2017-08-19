@@ -15,9 +15,9 @@ namespace Voat.IO
 
         string Uri(K key, PathOptions options = null);
 
-        bool Exists(K key);
+        Task<bool> Exists(K key);
 
-        void Delete(K key);
+        Task<bool> Delete(K key);
     }
     
     public class FileKey

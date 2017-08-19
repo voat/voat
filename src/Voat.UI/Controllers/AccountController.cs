@@ -42,6 +42,7 @@ using Microsoft.Extensions.Options;
 using Voat.Common;
 using Voat.Http.Filters;
 using Voat.Http;
+using Voat.IO.Email;
 
 namespace Voat.Controllers
 {
@@ -859,9 +860,6 @@ namespace Voat.Controllers
         [ValidateCaptcha]
         public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
-            //CORE_PORT: Not implemented
-            throw new NotImplementedException("Core port not implemented");
-            /*
             if (ModelState.IsValid)
             {
                 var user = await UserManager.FindByEmailAsync(model.Email);
@@ -873,18 +871,20 @@ namespace Voat.Controllers
 
                 // Send an email with this link
                 string code = await UserManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                await UserManager.SendEmailAsync(
-                    user, 
+                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.GetUrl().Scheme);
+
+                var response = await EmailSender.Instance.SendEmail(
+                    user.Email,
                     "Voat Password Reset Request", 
                     $"You have requested to reset your Voat password.<br/><br/>If you did not do this, please ignore this email.<br/><br/>To reset your password please click the following link or copy and paste the url into your browser address bar: <a href=\"{callbackUrl}\">{callbackUrl}</a>");
+
                 return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
 
             // If we got this far, something failed, redisplay form
             ViewBag.SelectedSubverse = string.Empty;
             return View(model);
-            */
+            
         }
 
         //

@@ -13,10 +13,10 @@ namespace Voat.IO
 {
     public class LocalNetworkFileManager : FileManager
     {
-        protected virtual string ContentPath(FileType type)
+        protected virtual string ContentPath(FileKey key)
         {
             var path = "";
-            switch (type)
+            switch (key.FileType)
             {
                 case FileType.Avatar:
                     path = VoatSettings.Instance.DestinationPathAvatars;
@@ -32,25 +32,28 @@ namespace Voat.IO
         }
         protected override string Domain { get => VoatSettings.Instance.SiteDomain; }
 
-        protected void EnsureLocalDirectoryExists(FileType type)
+        protected void EnsureLocalDirectoryExists(FileKey key)
         {
-            var dir = FilePather.Instance.LocalPath(ContentPath(type));
+            var dir = FilePather.Instance.LocalPath(ContentPath(key));
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
             }
         }
-        public override void Delete(FileKey key)
+        public override async Task<bool> Delete(FileKey key)
         {
-            if (Exists(key))
+            if (await Exists(key))
             {
-                File.Delete(FilePather.Instance.LocalPath(ContentPath(key.FileType), key.ID));
+                File.Delete(FilePather.Instance.LocalPath(ContentPath(key), key.ID));
+                return await Task.FromResult(true);
             }
+            return await Task.FromResult(false);
         }
 
-        public override bool Exists(FileKey key)
+        public override Task<bool> Exists(FileKey key)
         {
-            return File.Exists(FilePather.Instance.LocalPath(ContentPath(key.FileType), key.ID));
+            var exists = File.Exists(FilePather.Instance.LocalPath(ContentPath(key), key.ID));
+            return Task.FromResult(exists);
         }
 
         public override string Uri(FileKey key, PathOptions options = null)
@@ -60,14 +63,14 @@ namespace Voat.IO
                 return null;
             }
 
-            return VoatUrlFormatter.BuildUrlPath(null, options, (new string[] { ContentPath(key.FileType), key.ID }).ToPathParts());
+            return VoatUrlFormatter.BuildUrlPath(null, options, (new string[] { ContentPath(key), key.ID }).ToPathParts());
         }
 
         public override async Task Upload(FileKey key, Stream stream)
         {
-            EnsureLocalDirectoryExists(key.FileType);
+            EnsureLocalDirectoryExists(key);
 
-            string destinationFile = FilePather.Instance.LocalPath(ContentPath(key.FileType), key.ID);
+            string destinationFile = FilePather.Instance.LocalPath(ContentPath(key), key.ID);
 
             using (var destinationStream = new FileStream(destinationFile, FileMode.Create, FileAccess.Write))
             {

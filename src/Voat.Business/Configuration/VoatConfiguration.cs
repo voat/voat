@@ -24,6 +24,7 @@ namespace Voat.Configuration
             Data.DataConfigurationSettings.Load(config, "voat:data", reloading);
             VoatSettings.Load(config, "voat:settings", reloading);
             IO.FileManagerConfigurationSettings.Load(config, "voat:fileManager", reloading);
+            IO.Email.EmailConfigurationSettings.Load(config, "voat:emailSender", reloading);
 
             if (!reloading)
             {

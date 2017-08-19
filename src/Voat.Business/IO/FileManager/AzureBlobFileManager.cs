@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Voat.Common;
@@ -7,24 +9,54 @@ using Voat.Utilities;
 
 namespace Voat.IO
 {
-    public class ContentDeliveryNetworkFileManager : LocalNetworkFileManager
+    public class AzureBlobFileManager : LocalNetworkFileManager
     {
         private string _connectionString = null;
+        private string _containerNameSuffix = null;
 
-        public ContentDeliveryNetworkFileManager(string connectionString)
+        public AzureBlobFileManager(string connectionString, string containerNameSuffix = "")
         {
             this._connectionString = connectionString;
+            this._containerNameSuffix = String.IsNullOrEmpty(containerNameSuffix) ? "" : $"-{containerNameSuffix}";
         }
 
         protected override string Domain => VoatSettings.Instance.ContentDeliveryDomain;
 
-        public override void Delete(FileKey key)
+        private string GetContainerName(FileKey key)
         {
-            throw new NotImplementedException();
+            var name = "default";
+            switch (key.FileType)
+            {
+                case FileType.Thumbnail:
+                    name = "thumbs";
+                    break;
+                case FileType.Avatar:
+                    name = "avatars";
+                    break;
+                case FileType.Badge:
+                default:
+                    name = key.FileType.ToString();
+                    break;
+            }
+            //azure blobs are 3-63 chars, lower case, only alphanumeric and -
+            return $"{name}{_containerNameSuffix}".SubstringMax(63).ToNormalized(Normalization.Lower);
         }
-        public override bool Exists(FileKey key)
+
+        public override async Task<bool> Delete(FileKey key)
         {
-            throw new NotImplementedException();
+            //var storageAccount = CloudStorageAccount.Parse(_connectionString);
+            //var blobClient = storageAccount.CreateCloudBlobClient();
+            //var containerReference = blobClient.GetContainerReference(GetContainerName(key));
+            //var blockReference = containerReference.GetBlockBlobReference(key.ID);
+            var blockBlob = await GetBlock(key, false);
+
+            return await blockBlob.DeleteIfExistsAsync();
+        }
+        public override async Task<bool> Exists(FileKey key)
+        {
+            var blockBlob = await GetBlock(key, false);
+
+            return await blockBlob.ExistsAsync();
         }
         public override string Uri(FileKey key, PathOptions options = null)
         {
@@ -44,33 +76,62 @@ namespace Voat.IO
                     break;
                 case FileType.Avatar:
                 case FileType.Thumbnail:
-                    return VoatUrlFormatter.BuildUrlPath(null, options, (new string[] { ContentPath(key.FileType), key.ID }).ToPathParts());
+                    return VoatUrlFormatter.BuildUrlPath(null, options, (new string[] { ContentPath(key), key.ID }).ToPathParts());
                     break;
             }
             return result;
             
         }
-        public override Task Upload(FileKey key, Stream stream)
+        public override async Task Upload(FileKey key, Stream stream)
         {
-            throw new NotImplementedException();
-            return base.Upload(key, stream);
+            var blockBlob = await GetBlock(key);
+
+            await blockBlob.UploadFromStreamAsync(stream);
+
         }
-        protected override string ContentPath(FileType type)
+        private async Task<CloudBlockBlob> GetBlock(FileKey key, bool ensureCreated = true)
         {
-            var path = "";
-            switch (type)
+            // Retrieve storage account information from connection string
+            var storageAccount = CloudStorageAccount.Parse(_connectionString);
+
+            // Create a blob client for interacting with the blob service.
+            var blobClient = storageAccount.CreateCloudBlobClient();
+
+            // Create a container for organizing blobs within the storage account.
+            var container = blobClient.GetContainerReference(GetContainerName(key));
+
+            if (ensureCreated)
             {
-                case FileType.Badge:
-                    path = base.ContentPath(type);
-                    break;
-                case FileType.Avatar:
-                    path = "avatars";
-                    break;
-                case FileType.Thumbnail:
-                    path = "thumbs";
-                    break;
+                await container.CreateIfNotExistsAsync();
+
+                // allow public access to blobs in this container
+                await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
             }
-            return path;
+
+            // Upload a BlockBlob to the newly created container, default mode: overwrite existing
+            var blockBlob = container.GetBlockBlobReference(key.ID);
+
+            return blockBlob;
+        }
+        protected override string ContentPath(FileKey key)
+        {
+            //container is part of path for azureblobs. We can have folders in a container but currenty we aren't using this 
+            //so we just return container-name
+            return GetContainerName(key);
+            //var path = "";
+            //switch (type)
+            //{
+            //    case FileType.Badge:
+            //        path = base.ContentPath(type);
+            //        break;
+            //    case FileType.Avatar:
+            //        path = "avatars";
+            //        break;
+            //    case FileType.Thumbnail:
+            //        path = "thumbs";
+            //        break;
+            //}
+            //return path;
         }
     }
     /*
