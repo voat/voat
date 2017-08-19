@@ -10,23 +10,26 @@ namespace Voat.IO
 {
     public abstract class FileManager : IFileManager<FileKey>
     {
-        private static FileManager _fileManager = null;
+        private static FileManager _instance = null;
 
         public static FileManager Instance
         {
             get
             {
-                var handlerInfo = FileManagerConfigurationSettings.Instance.Handler;
-                if (handlerInfo != null)
+                if (_instance == null)
                 {
-                    Debug.WriteLine("FileManager.Instance.Contruct({0})", handlerInfo.Type);
-                    _fileManager = handlerInfo.Construct<FileManager>();
+                    var handlerInfo = FileManagerConfigurationSettings.Instance.Handler;
+                    if (handlerInfo != null)
+                    {
+                        Debug.WriteLine("FileManager.Instance.Construct({0})", handlerInfo.Type);
+                        _instance = handlerInfo.Construct<FileManager>();
+                    }
                 }
-                return _fileManager;
+                return _instance;
             }
             set
             {
-                _fileManager = value;
+                _instance = value;
             }
         }
         public virtual bool IsMimeTypePermitted(FileType fileType, string mimeType)

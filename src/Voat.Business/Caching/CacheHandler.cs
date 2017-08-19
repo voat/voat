@@ -393,7 +393,7 @@ namespace Voat.Caching
                                     var handler = settings.Handler;
                                     if (handler != null)
                                     {
-                                        Debug.WriteLine($"CacheHandler.Instance.Contruct({handler.Type})");
+                                        Debug.WriteLine($"CacheHandler.Instance.Construct({handler.Type})");
                                         _instance = handler.Construct<ICacheHandler>();
                                     }
                                 }
