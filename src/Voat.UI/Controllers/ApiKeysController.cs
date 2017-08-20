@@ -45,6 +45,7 @@ namespace Voat.Controllers
         }
 
         [HttpPost]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(ApiKeyCreateRequest request)
         {
             if (ModelState.IsValid)

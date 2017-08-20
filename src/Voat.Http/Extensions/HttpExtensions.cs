@@ -203,6 +203,11 @@ namespace Voat.Http
                     clientIpAddress = request.Headers[key];
                     if (!String.IsNullOrEmpty(clientIpAddress))
                     {
+                        //strip port 
+                        if (clientIpAddress.Contains(":"))
+                        {
+                            clientIpAddress = clientIpAddress.Substring(0, clientIpAddress.IndexOf(":"));
+                        }
                         break;
                     }
                 }

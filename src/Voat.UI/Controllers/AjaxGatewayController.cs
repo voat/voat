@@ -71,7 +71,7 @@ namespace Voat.Controllers
 
         // GET: subverse link flairs for selected subverse
         [Authorize]
-        public ActionResult SubverseLinkFlairs(string subverse, int? id)
+        public async Task<ActionResult> SubverseLinkFlairs(string subverse, int? id)
         {
             // get model for selected subverse
             var subverseObject = DataCache.Subverse.Retrieve(subverse);
@@ -79,7 +79,6 @@ namespace Voat.Controllers
             if (subverseObject == null || id == null)
             {
                 return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
-                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             var submission = DataCache.Submission.Retrieve(id);
@@ -87,7 +86,6 @@ namespace Voat.Controllers
             if (submission == null || submission.Subverse != subverse)
             {
                 return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
-                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             // check if caller is subverse owner or moderator, if not, deny listing
@@ -96,16 +94,13 @@ namespace Voat.Controllers
                 return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.Unauthorized));
             }
 
-            var subverseLinkFlairs = _db.SubverseFlair
-                .Where(n => n.Subverse == subverse)
-                .Take(10)
-                .ToList()
-                .OrderBy(s => s.ID);
+            var q = new QuerySubverseFlair(subverseObject.Name);
+            var flairs = await q.ExecuteAsync();
 
             ViewBag.SubmissionId = id;
             ViewBag.SubverseName = subverse;
 
-            return PartialView("~/Views/AjaxViews/_LinkFlairSelectDialog.cshtml", subverseLinkFlairs);
+            return PartialView("~/Views/AjaxViews/_LinkFlairSelectDialog.cshtml", flairs);
         }
 
         // GET: title from Uri

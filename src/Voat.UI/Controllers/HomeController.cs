@@ -124,7 +124,7 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
-        [PreventSpam(60, "Sorry, you are doing that too fast. Please try again in 60 seconds.")]
+        [PreventSpam(60)]
         public async Task<ActionResult> Submit(CreateSubmissionViewModel model)
         {
             //set this incase invalid submittal 

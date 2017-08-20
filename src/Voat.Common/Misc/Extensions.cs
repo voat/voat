@@ -62,28 +62,56 @@ namespace Voat.Common
         }
 
         //I don't like this
-        public static IEnumerable<T> GetEnumFlags<T>(this T value) where T : struct, IConvertible
+        public static IEnumerable<T> GetEnumFlags<T>(this T flags) where T : struct, IConvertible
         {
-
             var type = typeof(T);
             if (!type.IsEnum)
             {
-                throw new ArgumentException("T must be an enumerated type");
+                throw new ArgumentException("The generic type parameter must be an Enum.");
             }
 
-            List<T> list = new List<T>();
-            var vals = Enum.GetValues(type);
-            int flag = (int)Enum.Parse(type, value.ToString());
-            foreach (T v in vals)
+            if (flags.GetType() != typeof(T))
             {
-                int i = 0;
-                if (((int)Enum.Parse(type, v.ToString()) & flag) > 0)
+                throw new ArgumentException("The generic type parameter does not match the target type.");
+            }
+
+            Enum flagsEnum = (Enum)Enum.Parse(type, flags.ToString());
+            ulong flag = 1;
+            foreach (var value in Enum.GetValues(flags.GetType()).Cast<T>())
+            {
+                ulong bits = System.Convert.ToUInt64(value);
+                while (flag < bits)
                 {
-                    list.Add(v);
+                    flag <<= 1;
+                }
+
+                if (flag == bits && flagsEnum.HasFlag(value as Enum))
+                {
+                    yield return value;
                 }
             }
-            return list;
         }
+        //public static IEnumerable<T> GetEnumFlags<T>(this T value) where T : struct, IConvertible
+        //{
+        //    var type = typeof(T);
+        //    if (!type.IsEnum)
+        //    {
+        //        throw new ArgumentException("T must be an enumerated type");
+        //    }
+
+        //    List<T> list = new List<T>();
+        //    var vals = Enum.GetValues(type);
+        //    int flag = (int)Enum.Parse(type, value.ToString());
+        //    foreach (T v in vals)
+        //    {
+        //        int i = 0;
+        //        if (((int)Enum.Parse(type, v.ToString()) & flag) > 0)
+        //        {
+        //            list.Add(v);
+        //        }
+        //    }
+        //    return list;
+        //}
 
         public static T EnsureRange<T>(this T value, T low, T high) where T : IComparable
         {

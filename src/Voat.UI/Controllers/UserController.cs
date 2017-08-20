@@ -34,6 +34,7 @@ using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
 using Voat.Http;
+using Voat.Http.Filters;
 using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Utilities;
@@ -413,6 +414,7 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
+        [PreventSpam(5)]
         public async Task<ActionResult> Save(Domain.Models.ContentType contentType, int id)
         {
             var cmd = new SaveCommand(contentType, id).SetUserContext(User);

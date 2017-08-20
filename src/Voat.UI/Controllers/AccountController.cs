@@ -452,7 +452,7 @@ namespace Voat.Controllers
         // POST: /Account/UserPreferences
         [Authorize]
         [HttpPost]
-        [PreventSpam(15, "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(15)]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferencesAbout([Bind("Bio, Avatarfile")] UserAboutViewModel model)
         {
@@ -630,7 +630,7 @@ namespace Voat.Controllers
         // POST: /Account/UserPreferences
         [Authorize]
         [HttpPost]
-        [PreventSpam(15,"Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(15)]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserPreferences(Domain.Models.UserPreferenceUpdate model)
         {
@@ -754,7 +754,7 @@ namespace Voat.Controllers
         // POST: /Account/UserAccountEmail
         [Authorize]
         [HttpPost]
-        [PreventSpam(15, "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(15)]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> UserAccountEmail([Bind("EmailAddress")] UserEmailViewModel model)
         {
@@ -799,7 +799,7 @@ namespace Voat.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [PreventSpam(5, "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(5)]
         public async Task<JsonResult> CheckUsernameAvailability()
         {
             //CORE_PORT: Ported correctly?

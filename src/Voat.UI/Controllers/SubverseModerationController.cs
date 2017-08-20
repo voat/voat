@@ -107,7 +107,7 @@ namespace Voat.Controllers
 
         // POST: Eddit a Subverse
         [HttpPost]
-        [PreventSpam(30, "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
+        [PreventSpam(30)]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Update(SubverseSettingsViewModel updatedModel)
         {
@@ -257,7 +257,7 @@ namespace Voat.Controllers
         [HttpPost]
         //CORE_PORT: Not supported
         //[ValidateInput(false)]
-        [PreventSpam(30, "Sorry, you are doing that too fast. Please try again in 30 seconds.")]
+        [PreventSpam(30)]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SubverseStylesheetEditor(SubverseStylesheetViewModel model)
         {
@@ -691,6 +691,8 @@ namespace Voat.Controllers
 
             return View("~/Views/Subverses/Admin/Flair/FlairSettings.cshtml", subverseFlairsettings);
         }
+        
+        #region ADD/REMOVE SUB FLAIR 
 
         // GET: show add link flair view for selected subverse
         [Authorize]
@@ -722,6 +724,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [VoatValidateAntiForgeryToken]
+        [PreventSpam(5)]
         public ActionResult AddLinkFlair(SubverseFlairInput subverseFlairSetting)
         {
             if (!ModelState.IsValid)
@@ -736,20 +739,22 @@ namespace Voat.Controllers
             }
 
             // get model for selected subverse
-            var subverseModel = DataCache.Subverse.Retrieve(subverseFlairSetting.Subverse);
-            if (subverseModel == null)
+            var subverse = DataCache.Subverse.Retrieve(subverseFlairSetting.Subverse);
+            if (subverse == null)
             {
                 return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
-                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            subverseFlairSetting.Subverse = subverseModel.Name;
+            subverseFlairSetting.Subverse = subverse.Name;
             _db.SubverseFlair.Add(new SubverseFlair() {
                 Label = subverseFlairSetting.Label,
                 CssClass = subverseFlairSetting.CssClass,
                 Subverse = subverseFlairSetting.Subverse
             });
             _db.SaveChanges();
+
+            //clear cache
+            CacheHandler.Instance.Remove(CachingKey.SubverseFlair(subverse.Name));
 
             return RedirectToAction("SubverseFlairSettings");
         }
@@ -783,6 +788,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost, ActionName("RemoveLinkFlair")]
         [VoatValidateAntiForgeryToken]
+        [PreventSpam(5)]
         public async Task<ActionResult> RemoveLinkFlair(int id)
         {
             // get link flair for selected subverse
@@ -809,8 +815,13 @@ namespace Voat.Controllers
             var subverseFlairSetting = await _db.SubverseFlair.FindAsync(id);
             _db.SubverseFlair.Remove(subverseFlairSetting);
             await _db.SaveChangesAsync();
+            //clear cache
+            CacheHandler.Instance.Remove(CachingKey.SubverseFlair(subverse.Name));
+
             return RedirectToAction("SubverseFlairSettings");
         }
+        #endregion ADD/REMOVE SUB FLAIR 
+
         #region ADD/REMOVE MODERATORS LOGIC
 
         [HttpGet]

@@ -298,12 +298,13 @@ namespace Voat.Controllers
         // POST: submitcomment, adds a new root comment
         [HttpPost]
         [Authorize]
-        [PreventSpam(15, "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(30)]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> SubmitComment(CommentInput commentModel)
         {
             if (!ModelState.IsValid)
             {
+                //we want to reset spam filter if the modelstate was not triggered by preventspam
                 PreventSpamAttribute.Reset(HttpContext);
                 return JsonResult(CommandResponse.FromStatus(Status.Error, ModelState.GetFirstErrorMessage()));
             }
@@ -330,6 +331,7 @@ namespace Voat.Controllers
                 }
                 else
                 {
+                    PreventSpamAttribute.Reset(HttpContext);
                     return JsonResult(result);
                 }
             }
@@ -339,7 +341,7 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
-        [PreventSpam(15, "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(15)]
         public async Task<ActionResult> EditComment([FromBody()] CommentEditInput commentModel)
         {
             if (ModelState.IsValid)
@@ -363,6 +365,7 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
+        [PreventSpam(15)]
         public async Task<ActionResult> DeleteComment(int id)
         {
             if (ModelState.IsValid)
@@ -384,6 +387,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PreventSpam(15)]
         public async Task<JsonResult> DistinguishComment(int commentId)
         {
             using (var repo = new Repository(User))

@@ -204,6 +204,14 @@ namespace Voat.Data
             }
             return response;
         }
+        public Task<IEnumerable<Models.SubverseFlair>> GetSubverseFlair(string subverse)
+        {
 
+            var subverseLinkFlairs = _db.SubverseFlair
+                .Where(n => n.Subverse == subverse)
+                .OrderBy(s => s.Label).ToList();
+
+            return Task.FromResult(subverseLinkFlairs.AsEnumerable());
+        }
     }
 }

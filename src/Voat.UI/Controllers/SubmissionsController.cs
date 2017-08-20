@@ -34,6 +34,7 @@ using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Http;
+using Voat.Http.Filters;
 using Voat.Models;
 using Voat.Models.ViewModels;
 using Voat.Utilities;
@@ -91,6 +92,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [VoatValidateAntiForgeryToken]
+        [PreventSpam(5)]
         public ActionResult ClearLinkFlair(int? submissionID)
         {
             if (submissionID == null)
@@ -126,6 +128,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [VoatValidateAntiForgeryToken]
+        [PreventSpam(5)]
         public async Task<ActionResult> ToggleSticky(int submissionID)
         {
             using (var repo = new Repository(User))
@@ -138,6 +141,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [VoatValidateAntiForgeryToken]
+        [PreventSpam(5)]
         public async Task<ActionResult> ToggleNSFW(int submissionID)
         {
             using (var repo = new Repository(User))
@@ -146,19 +150,7 @@ namespace Voat.Controllers
                 return JsonResult(response);
             }
         }
-        //// vote on a submission
-        //// POST: vote/{messageId}/{typeOfVote}
-        //[HttpPost]
-        //[Authorize]
-        //[VoatValidateAntiForgeryToken]
-        //public async Task<JsonResult> Vote(int submissionID, int typeOfVote)
-        //{
-        //    System.Threading.Thread.Sleep(3000);
-        //    var cmd = new SubmissionVoteCommand(submissionID, typeOfVote, IpHash.CreateHash(UserHelper.UserIpAddress(this.Request)));
-        //    var result = await cmd.Execute();
-        //    return Json(result);
-        //}
-
+        
         // POST: editsubmission
         [Authorize]
         [HttpPost]
@@ -188,38 +180,14 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
+        [PreventSpam(30)]
         public async Task<ActionResult> DeleteSubmission(int id)
         {
             var cmd = new DeleteSubmissionCommand(id, "This feature is not yet implemented").SetUserContext(User);
             var result = await cmd.Execute();
 
             return JsonResult(result);
-            //if (result.Success)
-            //{
-            //    if (Request.IsAjaxRequest())
-            //    {
-            //        return new HttpStatusCodeResult(HttpStatusCode.OK, result.Message);
-            //    }
-            //    else
-            //    {
-            //        //CORE_PORT: Not Ported
-            //        throw new NotImplementedException("Core port not implemented");
-            //        //return Redirect(Request.Url.AbsolutePath);
-            //    }
-            //}
-            //else
-            //{
-            //    if (Request.IsAjaxRequest())
-            //    {
-            //        return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, result.Message);
-            //    }
-            //    else
-            //    {  
-            //        //CORE_PORT: Not Ported
-            //        throw new NotImplementedException("Core port not implemented");
-            //        //return Redirect(Request.Url.AbsolutePath);
-            //    }
-            //}
+            
         }
         [HttpGet]
         [Authorize]
@@ -255,6 +223,7 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
+        [PreventSpam(10)]
         public async Task<ActionResult> ModeratorDelete(string subverse, int submissionID, ModeratorDeleteContentViewModel model)
         {
             //New Domain Submission

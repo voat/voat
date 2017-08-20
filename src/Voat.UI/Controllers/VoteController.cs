@@ -56,6 +56,7 @@ namespace Voat.UI.Controllers
             return TryValidateModel(model, name);
         }
         [HttpPost]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Save([FromBody] CreateVote model)
         {
             ModelState.Clear();

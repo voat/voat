@@ -61,7 +61,7 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
-        [PreventSpam(300, "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(300)]
         public async Task<ActionResult> CreateSubverse([Bind("Name, Title, Description, Type, Sidebar, CreationDate, Owner")] AddSubverse subverseTmpModel)
         {
             // abort if model state is invalid

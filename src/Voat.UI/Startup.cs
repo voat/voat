@@ -76,17 +76,6 @@ namespace Voat
                 options.RequireHeaderSymmetry = false;
             });
 
-            //var conn = $"127.0.1:6379";
-            //var redis = ConnectionMultiplexer.Connect(conn);
-            //services.AddDataProtection().PersistKeysToRedis(redis, "DataProtection-Keys");
-
-            //services.AddDistributedRedisCache(option =>
-            //{
-            //    option.Configuration = conn;
-            //    //option.InstanceName = "master";
-            //});
-            //services.AddSession();
-
             services.AddDbContext<IdentityDataContext>();
 
             services.AddIdentity<VoatIdentityUser, IdentityRole>(x => {

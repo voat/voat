@@ -266,7 +266,7 @@ namespace Voat.Controllers
 
         // POST: Compose
         [HttpPost]
-        [PreventSpam(30, "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(30)]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Compose(NewMessageViewModel message)
         {
@@ -337,7 +337,7 @@ namespace Voat.Controllers
         }
         // POST: Compose
         [HttpPost]
-        [PreventSpam(30, "Sorry, you are doing that too fast. Please try again later.")]
+        [PreventSpam(30)]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Reply(MessageReplyViewModel message)
         {
@@ -364,29 +364,7 @@ namespace Voat.Controllers
             var response = await cmd.Execute();
 
             return JsonResult(response);
-            //if (response.Success)
-            //{
-            //    if (Request.IsAjaxRequest())
-            //    {
-            //        return new HttpStatusCodeResult(HttpStatusCode.OK);
-            //    }
-            //    else
-            //    {
-            //        return RedirectToAction("Sent", "Messages");
-            //    }
-            //}
-            //else
-            //{
-            //    if (Request.IsAjaxRequest())
-            //    {
-            //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
-            //    }
-            //    else
-            //    {
-            //        ModelState.AddModelError(string.Empty, response.Message);
-            //        return View();
-            //    }
-            //}
+          
         }
 
         //url: messageRoot + "/mark/{type}/{action}/{id}",
@@ -406,14 +384,7 @@ namespace Voat.Controllers
             var response = await cmd.Execute();
 
             return JsonResult(response);
-            //if (response.Success)
-            //{
-            //    return new HttpStatusCodeResult(HttpStatusCode.OK);
-            //}
-            //else
-            //{
-            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
-            //}
+            
         }
 
         //url: messageRoot + "/delete/{type}/{id}",
@@ -433,14 +404,7 @@ namespace Voat.Controllers
             var response = await cmd.Execute();
 
             return JsonResult(response);
-            //if (response.Success)
-            //{
-            //    return new HttpStatusCodeResult(HttpStatusCode.OK);
-            //}
-            //else
-            //{
-            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
-            //}
+       
         }
 
         public async Task<ActionResult> SubverseIndex(string subverse, MessageTypeFlag type, MessageState? state = null, int? page = null)
