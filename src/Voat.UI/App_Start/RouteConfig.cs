@@ -1182,7 +1182,7 @@ namespace Voat
             routes.MapRoute(
                 name: "Others",
                 template: "r/{name}/{*url}",
-                defaults: new { controller = "Error", action = "Type", type = "others" }
+                defaults: new { controller = "Error", action = "Type", type = "TheOthers" }
             );
             
             //CORE_PORT: I think we need this

@@ -137,7 +137,7 @@
                             var hoursLeft = (Model.LastUpdateDate == null ? 0 : VoatSettings.Instance.SubverseUpdateTimeLockInHours - DateTime.UtcNow.Subtract(Model.LastUpdateDate.Value).TotalHours);
                             if (hoursLeft > 0)
                             {
-                                <p>These settings are locked from changes for an additional @Math.Round(hoursLeft, 0) hour(s).</p>
+                                <p class="validation-summary-errors">These settings are locked from changes for an additional @Math.Round(hoursLeft, 0) hour(s).</p>
                             }
                             else
                             {

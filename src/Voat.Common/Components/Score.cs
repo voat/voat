@@ -28,12 +28,41 @@ using System.Runtime.Serialization;
 
 namespace Voat.Common
 {
+    public class CountedScore : Score
+    {
+        private int _count = 0;
+        public int Count { get => _count; set => _count = value; }
+
+        public double Average
+        {
+            get
+            {
+                return Math.Round(Sum / (double)Count, _roundingDecimals);
+            }
+        }
+        public double AverageUpVotes
+        {
+            get
+            {
+                return Math.Round(UpCount / (double)Count, _roundingDecimals);
+            }
+        }
+        public double AverageDownVotes
+        {
+            get
+            {
+                return Math.Round(DownCount / (double)Count, _roundingDecimals);
+            }
+        }
+
+    }
+
     /// <summary>
     /// A generic class to store up/down votes and up/down ccp and scp calculations.
     /// </summary>
     public class Score
     {
-        private short _roundingDecimals = 2;
+        protected short _roundingDecimals = 2;
         private int _up = 0;
         private int _down = 0;
 

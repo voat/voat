@@ -1076,12 +1076,17 @@ function deleteSubmission(senderButton, submissionid) {
         }
     });
 }
-
+var reportDialogLock;
 function getReportDialog(sender, subverse, type, id) {
     //"v/{subverse}/about/reports/{type}/{id}/dialog"
+
+    if (reportDialogLock) {
+        return;
+    }
+
     var urlComplete = "/v/" + subverse + "/about/reports/" + type + "/" + id + "/dialog?nocache=" + cachePrevention();
 
-    $.ajax({
+    reportDialogLock = $.ajax({
         type: "GET",
         url: urlComplete,
         success: function (arg1, request, value) {
@@ -1089,11 +1094,13 @@ function getReportDialog(sender, subverse, type, id) {
             $(sender).parents('div').first().append(arg1);
         },
         error: function (error) {
-            $(sender).text("Oops... a problem");
             //Something bad happened
+            $(sender).text("Oops... a problem");
+        },
+        complete: function () {
+            reportDialogLock = null;
         }
     });
-    //$(obj).parent().parent().find('.option, .main').toggleClass("active");
     return false;
 }
 function cancelReportDialog(sender) {
@@ -1453,17 +1460,28 @@ function selectflair(messageId, subverseName) {
 }
 
 // function to apply flair to a given submission
-function applyflair(submissionID, flairID, flairLabel, flairCssClass) {
+function applyflair(sender, submissionID, flairID, flairLabel, flairCssClass) {
     $.ajax({
         type: "POST",
         url: "/submissions/applylinkflair/" + submissionID + "/" + flairID,
-        success: function () {
+        success: function (response) {
+
             $('#linkFlairSelectModal').modal('hide');
 
-            //set linkflair
-            $('#linkflair').attr('class', "flair " + flairCssClass);
-            $('#linkflair').attr('title', flairLabel);
-            $('#linkflair').html(flairLabel);
+            if (response.success) {
+                $('#linkFlairSelectModal').modal('hide');
+
+                //set linkflair
+                $('#linkflair').attr('class', "flair " + flairCssClass);
+                $('#linkflair').attr('title', flairLabel);
+                $('#linkflair').html(flairLabel);
+            }
+            else
+            {
+                //sender is a <button> and this code doesn't work'
+                //$(sender).html(response.error.message);
+                //$(sender).prop('value', response.error.message); 
+            }
         },
         error: function () {
             alert('Unable to apply link flair.');

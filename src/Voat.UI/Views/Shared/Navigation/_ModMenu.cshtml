@@ -31,7 +31,7 @@
     <ul class="tabmenu">
 
         <li class="disabled">
-            <a href="/v/@subverseName">Home</a>
+            <a href='/v/@(String.IsNullOrEmpty(subverseName) ? "all" : subverseName)'>Home</a>
         </li>
 
         @if (ModeratorPermission.HasPermission(User, subverseName, Voat.Domain.Models.ModeratorAction.ModifySettings))

@@ -165,23 +165,22 @@ namespace Voat.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> EditSubmission([FromBody] EditSubmission model)
         {
-
-            var cmd = new EditSubmissionCommand(model.SubmissionId, new Domain.Models.UserSubmission() { Content = model.SubmissionContent }).SetUserContext(User);
-            var response = await cmd.Execute();
-
-            if (response.Success)
+            if (ModelState.IsValid)
             {
-                DataCache.Submission.Remove(model.SubmissionId);
-                CacheHandler.Instance.Remove(CachingKey.Submission(model.SubmissionId));
-                //return Json(new { response = response.Response.FormattedContent });
+                var cmd = new EditSubmissionCommand(model.SubmissionId, new Domain.Models.UserSubmission() { Content = model.SubmissionContent }).SetUserContext(User);
+                var response = await cmd.Execute();
 
+                if (response.Success)
+                {
+                    DataCache.Submission.Remove(model.SubmissionId);
+                    CacheHandler.Instance.Remove(CachingKey.Submission(model.SubmissionId));
+                    //return Json(new { response = response.Response.FormattedContent });
+
+                }
+                return JsonResult(response);
             }
-            //else
-            //{
-            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, response.Message);
-            //}
 
-            return JsonResult(response);
+            return JsonResult(CommandResponse.FromStatus(Status.Error, ModelState.GetFirstErrorMessage()));
             
         }
 

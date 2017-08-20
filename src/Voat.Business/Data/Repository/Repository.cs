@@ -993,7 +993,7 @@ namespace Voat.Data
             DateTime? startDate = options.StartDate;
             DateTime? endDate = options.EndDate;
             //string subverse = subverse;
-            bool nsfw = false;
+            
             string userName = null;
 
             UserData userData = null;
@@ -1002,7 +1002,7 @@ namespace Voat.Data
                 userData = new UserData(User);
                 userName = userData.UserName;
             }
-
+            bool nsfw = nsfw = (User.Identity.IsAuthenticated ? userData.Preferences.EnableAdultContent : false);
 
             var joinSet = new Action<DapperQuery, string, string, SetType?, bool>((q, setName, setOwnerName, setType, include) =>
             {
@@ -1036,7 +1036,10 @@ namespace Voat.Data
                             //         join subscribed in _db.SubverseSubscriptions on x.Subverse equals subscribed.Subverse
                             //         where subscribed.UserName == User.Identity.Name
                             //         select x);
-
+                            if (!nsfw)
+                            {
+                                query.Where += $" AND s.\"IsAdult\" = {SqlFormatter.BooleanLiteral(false)}";
+                            }
                             break;
                         case AGGREGATE_SUBVERSE.DEFAULT:
                             //if no user or user has no subscriptions or logged in user requests default page
@@ -1054,7 +1057,10 @@ namespace Voat.Data
                                 query.Append(x => x.Where, "(s.\"UpCount\" - s.\"DownCount\" >= 20) AND s.\"CreationDate\" >= @EndDate");
                                 query.Parameters.Add("EndDate", CurrentDate.AddHours(-24));
                             }
-
+                            if (!nsfw)
+                            {
+                                query.Where += $" AND s.\"IsAdult\" = {SqlFormatter.BooleanLiteral(false)}";
+                            }
                             //query = (from x in _db.Submissions
                             //         join defaults in _db.DefaultSubverses on x.Subverse equals defaults.Subverse
                             //         select x);
@@ -1085,7 +1091,7 @@ namespace Voat.Data
                             //where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(userName)
                             //select message).OrderByDescending(s => s.CreationDate);
 
-                            nsfw = (User.Identity.IsAuthenticated ? userData.Preferences.EnableAdultContent : false);
+                            
 
                             //v/all has certain conditions
                             //1. Only subs that have a MinCCP of zero

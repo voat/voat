@@ -75,7 +75,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-md-4 control-label">Add a Subverse</label>
+                    <label class="col-md-4 control-label">Toggle a Subverse</label>
                     <div class="col-md-5">
                         <input type="text" id="subName" class="form-control" data-autocomplete-subverse="1" />
                     </div>
@@ -83,7 +83,7 @@
                 
                 <div class="form-group">
                     <div class="col-md-offset-4 col-md-5">
-                        <input type="button" value="Add" class="btn-whoaverse" onclick="javascript:setSubverseListToggle($(this), '@Model.Set.FullName', $('#subName').val(), '@Voat.Domain.Models.SubscriptionAction.Toggle.ToString()', setSubverseAddCallBack);" />
+                        <input type="button" value="Toggle" class="btn-whoaverse" onclick="javascript:setSubverseListToggle($(this), '@Model.Set.FullName', $('#subName').val(), '@Voat.Domain.Models.SubscriptionAction.Toggle.ToString()', setSubverseAddCallBack);" />
                     </div>
                 </div>
             </div>

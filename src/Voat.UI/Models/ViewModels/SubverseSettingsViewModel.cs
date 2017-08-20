@@ -40,11 +40,11 @@ namespace Voat.Models.ViewModels
         [StringLength(500, ErrorMessage = "The description is limited to 500 characters.")]
         public string Description { get; set; }
 
-        [StringLength(50000, ErrorMessage = "The stylesheet is limited to 50000 characters.")]
+        [StringLength(50000, ErrorMessage = "The stylesheet is limited to 50,000 characters.")]
         public string Stylesheet { get; set; }
 
         [Required(ErrorMessage = "Please enter a sidebar text.")]
-        [StringLength(4000, ErrorMessage = "The sidebar text is limited to 4000 characters.")]
+        [StringLength(4000, ErrorMessage = "The sidebar text is limited to 4,000 characters.")]
         //CORE_PORT: Not Supported
         //[AllowHtml]
         public string SideBar { get; set; }
@@ -68,7 +68,7 @@ namespace Voat.Models.ViewModels
         public bool? IsAnonymized { get; set; }
 
         [Required(ErrorMessage = "This setting is required.")]
-        [Range(0, 10000, ErrorMessage = "Minimum CCP value must be between 0 and 10000")]
+        [Range(0, 10000, ErrorMessage = "Minimum CCP value must be between 0 and 10,000")]
         public int MinCCPForDownvote { get; set; }
 
         public DateTime? LastUpdateDate { get; set; }

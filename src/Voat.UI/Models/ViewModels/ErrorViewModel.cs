@@ -90,7 +90,7 @@ namespace Voat.Models.ViewModels
                         break;
                 case ErrorType.Unauthorized:
                         errorModel.Title = "Hold on there fella!";
-                        errorModel.Description = "You were not supposed to be poking around here.</h1>";
+                        errorModel.Description = "You were not supposed to be poking around here.";
                         errorModel.Footer = "How about you stop poking around? :)";
                         break;
                 case ErrorType.TheOthers:

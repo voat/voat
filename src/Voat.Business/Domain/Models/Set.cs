@@ -58,6 +58,7 @@ namespace Voat.Domain.Models
 
         public System.DateTime CreationDate { get; set; }
 
+        [Display(Name = "Public")]
         public bool IsPublic { get; set; }
     }
 }
