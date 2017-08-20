@@ -26,18 +26,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Voat.Data.Models;
 using Voat.Domain.Command;
 using Voat.Models;
 using System.Threading;
 using Voat.Utilities;
 using Voat.Common;
 using Voat.Tests.Infrastructure;
+using Voat.Data.Models;
+using System.Linq;
 
 namespace Voat.Tests.BugTraps
 {
     [TestClass]
-    public class BugTrapTests
+    public class BugTrapTests : BaseUnitTest
     {
         private int count = 31;
         private int submissionID = 1;
@@ -141,6 +142,78 @@ namespace Voat.Tests.BugTraps
             Assert.AreEqual(count, exCount, "Execution count is off");
             AssertData(beforesubmission, aftersubmission);
         }
+
+
+        [TestMethod]
+        [TestCategory("Bug"), TestCategory("User.Delete"), TestCategory("Process")]
+        public async Task Bug_Trap_Positive_ContributionPoints_Removed()
+        {
+            //Test that when a user deletes comments and submissions with positive points, that the points are reset
+            var altList = new[] { "UnitTestUser10", "UnitTestUser11", "UnitTestUser12", "UnitTestUser13", "UnitTestUser14", "UnitTestUser15" };
+            var primaryUser = "UnitTestUser20";
+            var currentUser = TestHelper.SetPrincipal(primaryUser);
+            var cmdSubmission = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Title = "Test Positive SCP Removed upon Delete", Content = "Does this get removed?", Subverse = "unit" }).SetUserContext(currentUser);
+            var subResponse = await cmdSubmission.Execute();
+            VoatAssert.IsValid(subResponse);
+            var submissionID = subResponse.Response.ID;
+
+            var cmdComment = new CreateCommentCommand(submissionID, null, "This is my manipulation comment. Upvote. Go.").SetUserContext(currentUser);
+            var commentResponse = await cmdComment.Execute();
+            VoatAssert.IsValid(commentResponse);
+            var commentID = commentResponse.Response.ID;
+
+            var vote = new Func<int, Domain.Models.ContentType, string[], Task>(async (id, contentType, users) => {
+
+                foreach (string user in users)
+                {
+                    var userIdentity = TestHelper.SetPrincipal(user);
+                    switch (contentType)
+                    {
+                        case Domain.Models.ContentType.Comment:
+                            
+                            var c = new CommentVoteCommand(id, 1, Guid.NewGuid().ToString()).SetUserContext(userIdentity);
+                            var cr = await c.Execute();
+                            VoatAssert.IsValid(cr);
+
+                            break;
+                        case Domain.Models.ContentType.Submission:
+
+                            var s = new SubmissionVoteCommand(id, 1, Guid.NewGuid().ToString()).SetUserContext(userIdentity);
+                            var sr = await s.Execute();
+                            VoatAssert.IsValid(sr);
+                            break;
+                    }
+                }
+            });
+
+            await vote(commentID, Domain.Models.ContentType.Comment, altList);
+            var deleteComment = new DeleteCommentCommand(commentID).SetUserContext(currentUser);
+            var deleteCommentResponse = await deleteComment.Execute();
+            VoatAssert.IsValid(deleteCommentResponse);
+            //verify ups where reset 
+            using (var context = new Voat.Data.Models.VoatDataContext())
+            {
+                var votes = context.CommentVoteTracker.Where(x => x.CommentID == commentID);
+                Assert.AreEqual(altList.Length, votes.Count());
+                var anyInvalid = votes.Any(x => x.VoteValue != 0);
+                Assert.IsFalse(anyInvalid, "Found comment votes with a non-zero vote value");
+            }
+
+
+            await vote(submissionID, Domain.Models.ContentType.Submission, altList);
+            var deleteSubmission = new DeleteSubmissionCommand(submissionID).SetUserContext(currentUser);
+            var deleteSubmissionResponse = await deleteSubmission.Execute();
+            VoatAssert.IsValid(deleteSubmissionResponse);
+            //verify ups where reset 
+            using (var context = new Voat.Data.Models.VoatDataContext())
+            {
+                var votes = context.SubmissionVoteTracker.Where(x => x.SubmissionID == submissionID);
+                Assert.AreEqual(altList.Length + 1, votes.Count()); //author has a vote
+                var anyInvalid = votes.Any(x => x.VoteValue != 0);
+                Assert.IsFalse(anyInvalid, "Found submission votes with a non-zero vote value");
+            }
+        }
+
 
         #region Dups
 

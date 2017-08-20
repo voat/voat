@@ -1707,7 +1707,7 @@ namespace Voat.Data
         [Authorize]
 
         //LOGIC COPIED FROM SubmissionController.DeleteSubmission(int)
-        public Models.Submission DeleteSubmission(int submissionID, string reason = null)
+        public async Task<CommandResponse<Models.Submission>> DeleteSubmission(int submissionID, string reason = null)
         {
             DemandAuthentication();
 
@@ -1737,7 +1737,13 @@ namespace Voat.Data
                         _db.StickiedSubmission.Remove(existingSticky);
                     }
 
-                    _db.SaveChanges();
+                    await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+
+                    //User Deletions remove UpVoted CCP - This is one way scp farmers accomplish their acts
+                    if (submission.UpCount > submission.DownCount)
+                    {
+                        await ResetVotes(ContentType.Submission, submission.ID, Domain.Models.VoteValue.Up, Domain.Models.VoteValue.None).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                    }
                 }
 
                 // delete submission if delete request is issued by subverse moderator
@@ -1790,7 +1796,6 @@ namespace Voat.Data
                         _db.StickiedSubmission.Remove(existingSticky);
                     }
 
-
                     _db.SaveChanges();
 
                     var cmd = new SendMessageCommand(message, isAnonymized: submission.IsAnonymized).SetActivityContext(Context);
@@ -1798,11 +1803,11 @@ namespace Voat.Data
                 }
                 else
                 {
-                    throw new VoatSecurityException("User doesn't have permission to delete submission.");
+                    return CommandResponse.FromStatus(Selectors.SecureSubmission(submission), Status.Denied, "User doesn't have permission to delete submission.");
                 }
             }
 
-            return Selectors.SecureSubmission(submission);
+            return CommandResponse.FromStatus(Selectors.SecureSubmission(submission), Status.Success, "");
         }
 
         private static string UserDeletedContentMessage()
@@ -2104,8 +2109,12 @@ namespace Voat.Data
             switch (contentType)
             {
                 case ContentType.Comment:
-                    u.Update = $"UPDATE v SET v.\"VoteValue\" = @VoteValue FROM {SqlFormatter.Table("CommentVoteTracker", "v")} INNER JOIN {SqlFormatter.Table("Comment", "c", "NOLOCK")} ON c.\"ID\" = v.\"CommentID\" INNER JOIN {SqlFormatter.Table("Submission", "s", "NOLOCK")}  ON c.\"SubmissionID\" = s.\"ID\"";
+                    u.Update = $"UPDATE v SET v.\"VoteValue\" = @VoteValue FROM {SqlFormatter.Table("CommentVoteTracker", "v")} INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"ID\" = v.\"CommentID\" INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")}  ON c.\"SubmissionID\" = s.\"ID\"";
                     u.Where = "v.CommentID = @ID AND v.VoteStatus = @VoteStatus AND s.ArchiveDate IS NULL";
+                    break;
+                case ContentType.Submission:
+                    u.Update = $"UPDATE v SET v.\"VoteValue\" = @VoteValue FROM {SqlFormatter.Table("SubmissionVoteTracker", "v")} INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")}  ON v.\"SubmissionID\" = s.\"ID\"";
+                    u.Where = "v.SubmissionID = @ID AND v.VoteStatus = @VoteStatus AND s.ArchiveDate IS NULL";
                     break;
                 default:
                     throw new NotImplementedException($"Method not implemented for ContentType: {contentType.ToString()}");

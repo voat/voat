@@ -31,7 +31,7 @@ using Voat.Utilities;
 
 namespace Voat.Domain.Command
 {
-    public class DeleteSubmissionCommand : CacheCommand<CommandResponse, Data.Models.Submission>
+    public class DeleteSubmissionCommand : CacheCommand<CommandResponse<Data.Models.Submission>>
     {
         private int _submissionID = 0;
         private string _reason = null;
@@ -42,21 +42,22 @@ namespace Voat.Domain.Command
             _reason = reason;
         }
 
-        protected override async Task<Tuple<CommandResponse, Data.Models.Submission>> CacheExecute()
+        protected override async Task<CommandResponse<Data.Models.Submission>> CacheExecute()
         {
-            var result = await Task.Run(() =>
+            using (var db = new Repository(User))
             {
-                using (var db = new Repository(User))
-                {
-                    return db.DeleteSubmission(_submissionID, _reason);
-                }
-            }).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
-            return Tuple.Create(CommandResponse.Successful(), result);
+                var result = await db.DeleteSubmission(_submissionID, _reason);
+                return result;
+            }
+           
         }
 
-        protected override void UpdateCache(Data.Models.Submission result)
+        protected override void UpdateCache(CommandResponse<Data.Models.Submission> result)
         {
-            CacheHandler.Instance.Remove(CachingKey.Submission(result.ID));
+            if (result.Success)
+            {
+                CacheHandler.Instance.Remove(CachingKey.Submission(result.Response.ID));
+            }
 
             //Legacy item removal
             //CacheHandler.Instance.Remove(DataCache.Keys.Submission(result.ID));

@@ -117,7 +117,14 @@ namespace Voat.IO
         {
             //container is part of path for azureblobs. We can have folders in a container but currenty we aren't using this 
             //so we just return container-name
-            return GetContainerName(key);
+            if (key.FileType == FileType.Badge)
+            {
+                return base.ContentPath(key);
+            }
+            else
+            {
+                return GetContainerName(key);
+            }
             //var path = "";
             //switch (type)
             //{
