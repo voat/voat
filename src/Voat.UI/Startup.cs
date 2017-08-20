@@ -25,6 +25,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -69,7 +70,12 @@ namespace Voat
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.All;
+                options.RequireHeaderSymmetry = false;
+            });
+
             //var conn = $"127.0.1:6379";
             //var redis = ConnectionMultiplexer.Connect(conn);
             //services.AddDataProtection().PersistKeysToRedis(redis, "DataProtection-Keys");
