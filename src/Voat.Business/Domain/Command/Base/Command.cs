@@ -28,6 +28,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Voat.Rules;
 using Voat.Common;
+using System.Collections.Generic;
 
 namespace Voat.Domain.Command
 {
@@ -39,11 +40,6 @@ namespace Voat.Domain.Command
     public interface IExcutableCommand<R> where R : CommandResponse
     {
         Task<R> Execute();
-    }
-
-    public interface IUpdateCache
-    {
-        Task Update();
     }
 
     /// <summary>
@@ -114,6 +110,7 @@ namespace Voat.Domain.Command
     [Serializable]
     public abstract class Command<T> : Command, IExcutableCommand<T> where T : CommandResponse, new()
     {
+        protected CommandStage CommandStageMask { get; set; } = CommandStage.All;
         protected abstract Task<T> ProtectedExecute();
 
         protected virtual Task<T> ExecuteStage(CommandStage stage)
@@ -124,18 +121,45 @@ namespace Voat.Domain.Command
             return Task.FromResult(response);
         }
 
+        private async Task<T> ExecuteStages(IEnumerable<CommandStage> stages, T response)
+        {
+            if (response.Success)
+            {
+                foreach (var stage in stages)
+                {
+                    var r = await ExecuteStage(stage);
+                    if (!r.Success)
+                    {
+                        return r;
+                    }
+                }
+            }
+            return response;
+        }
+
         public virtual async Task<T> Execute()
         {
             try
             {
-                //Implement Valdation prechecks 
-                var validationResponse = await ExecuteStage(CommandStage.BeforeExecute);
-                if (!validationResponse.Success)
-                {
-                    return validationResponse;
-                }
+                //Execute prestage
+                var response = await ExecuteStages(
+                    CommandStageMask.GetEnumFlagsIntersect(
+                    CommandStage.OnAuthorization |
+                    CommandStage.OnValidation |
+                    CommandStage.OnQueuing |
+                    CommandStage.OnExecuting
+                ), new T() { Status = Status.Success });
 
-                return await ProtectedExecute();
+                if (!response.Success)
+                {
+                    return response;
+                }
+                //execute
+                response = await ProtectedExecute();
+
+                //Execute poststage
+                response = await ExecuteStages(CommandStageMask.GetEnumFlagsIntersect(CommandStage.OnExecuted), response);
+                return response;
             }
             catch (Exception ex)
             {

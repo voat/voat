@@ -333,7 +333,8 @@ namespace Voat.Domain.Models
         GlobalAdmin = 2147483647,
         Admin = 2147483646,
         DelegateAdmin = 10000,
-        GlobalJanitor = 9001
+        GlobalBans = 9500,
+        GlobalJanitor = 9001,
     }
 
     [DatabaseMappedValue]
@@ -399,5 +400,11 @@ namespace Voat.Domain.Models
         Up = 2,
         Down = 4,
         Any = Up | Down,
+    }
+
+    public enum BanType
+    {
+        User = 1,
+        Domain = 2
     }
 }

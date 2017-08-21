@@ -57,5 +57,6 @@
         string SiteSlogan { get; }
         string SiteUserName { get; }
         int SubverseUpdateTimeLockInHours { get; }
+        string ManagementAreaName { get; set; }
     }
 }

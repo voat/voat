@@ -26,9 +26,8 @@ namespace Voat.Domain.Command
         {
             switch (stage)
             {
-                case CommandStage.BeforeExecute:
+                case CommandStage.OnExecuting:
                     //perform validationn return non-success if not success
-                    
                     break;
             }
             return base.ExecuteStage(stage);

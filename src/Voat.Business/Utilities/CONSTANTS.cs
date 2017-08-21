@@ -28,7 +28,8 @@ namespace Voat.Utilities
 {
     public static class CONSTANTS
     {
-        
+        public const string ADMIN_AREA = "6310C05A-E33A-4DD5-BC3B-15C20EF02C9C";
+
         public const string SYSTEM_USER_NAME = "Voat";
         public const string CONNECTION_USERS = "voatUsers";
         public const string CONNECTION_LIVE = "ReadWrite";
@@ -40,14 +41,15 @@ namespace Voat.Utilities
         public const string COMMENT_ID_REGEX = @"\d*";
         public const string NSFW_FLAG = "nsfw|nsfl";
         public const string REQUEST_VERIFICATION_HEADER_NAME = "VoatRequestVerificationToken";
-
+        
         //public const string SET_REGEX = SUBVERSE_REGEX + @"\-" + USER_NAME_REGEX;
         public static readonly string SET_REGEX = $"(?<name>{SUBVERSE_REGEX})(\\{SET_SEPERATOR}(?<ownerName>{USER_NAME_REGEX}))?";
 
         public const string SET_SEPERATOR = "@";
 
         //matches url after protocol
-        public const string PROTOCOL_LESS_LINK_REGEX = @"(\/\/|%2[fF]%2[fF])(?<fullDomain>([wW]{3}\.)?(?<domain>[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*))(:(?<port>[0-9]*))?(\/?)(?<query>[a-zA-Z0-9\*\-\.\?\,\'\/\\\+&amp;%\$#_=!@:\(\)]*)(?<![\.\?\,]|\s{1,})";
+        public const string PROTOCOL_LESS_LINK_REGEX = @"(\/\/|%2[fF]%2[fF])" + HOST_AND_PATH_LINK_REGEX;
+        public const string HOST_AND_PATH_LINK_REGEX = @"(?<fullDomain>([wW]{3}\.)?(?<domain>[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*))(:(?<port>[0-9]*))?(\/?)(?<query>[a-zA-Z0-9\*\-\.\?\,\'\/\\\+&amp;%\$#_=!@:\(\)]*)(?<![\.\?\,]|\s{1,})";
 
         public const string HTTP_LINK_REGEX = @"(?<protocol>([hH][tT]|[fF])[tT][pP]([sS]?))(\:|%3[aA])" + PROTOCOL_LESS_LINK_REGEX;
 

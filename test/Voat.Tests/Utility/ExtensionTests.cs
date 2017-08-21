@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Voat.Common;
+using Voat.Domain.Models;
 using Voat.Tests.Infrastructure;
 
 namespace Voat.Tests.Utils
@@ -439,6 +440,51 @@ namespace Voat.Tests.Utils
                 var safeClass = new TestEnumClass();
                 safeClass.CommentSort = 203;
             });
+
+        }
+        [Flags]
+        public enum Numbers
+        {
+            One = 1,
+            Two = 2,
+            Three = One | Two,
+            Four = 4,
+            Five = Four | One,
+            Six = Four | Two,
+            Seven = Four | Two | One,
+            Eight = 8,
+            Nine = Eight | One,
+            Ten = Eight | Two
+        }
+
+        [TestMethod]
+        [TestCategory("Utility"), TestCategory("Extentions")]
+        //[ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Enum_Flag_Tests()
+        {
+            var check = new Action<IEnumerable<Numbers>, IEnumerable<Numbers>>((first, second) =>
+            {
+                Assert.AreEqual(first.Count(), second.Count());
+                first.ToList().ForEach(x => {
+                    Assert.IsTrue(second.Contains(x));
+                });
+            });
+
+            var val = Numbers.Ten;
+            var values = val.GetEnumFlags();
+            check(values, new[] { Numbers.Eight, Numbers.Two });
+
+            val = Numbers.Eight;
+            values = val.GetEnumFlags();
+            check(values, new[] { Numbers.Eight });
+
+            val = Numbers.Seven;
+            values = val.GetEnumFlags();
+            check(values, new[] { Numbers.Four, Numbers.Two, Numbers.One });
+
+            values = val.GetEnumFlagsIntersect(Numbers.Six);
+            check(values, new[] { Numbers.Four, Numbers.Two});
+
 
         }
     }

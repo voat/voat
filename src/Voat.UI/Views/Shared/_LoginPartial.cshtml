@@ -27,7 +27,7 @@
     int commentKarma = userData.Information.CommentPoints.Sum;
     int upvotesGiven = userData.Information.CommentVoting.UpCount + userData.Information.SubmissionVoting.UpCount;
 
-    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "nav navbar-nav navbar-right" }))
+    using (Html.BeginForm("LogOff", "Account", new { area ="" }, FormMethod.Post, true, new { id = "logoutForm", @class = "nav navbar-nav navbar-right" }))
     {
         @Html.AntiForgeryToken()
         <div id="header-account">
@@ -50,7 +50,7 @@
                     </span>
                 }
                 <span class="separator">|</span>
-                <span class="user">@Html.ActionLink("Manage", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage", id = "manage" })</span>
+                <span class="user">@Html.ActionLink("Manage", "Manage", "Account", routeValues: new {area = "" }, htmlAttributes: new { title = "Manage", id = "manage" })</span>
                 <span class="separator">|</span>
                 <a id="nightmodetoggle" onclick="toggleNightMode()" title="Toggle Night Mode"></a>
                 <span class="separator">|</span>

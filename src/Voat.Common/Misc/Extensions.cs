@@ -61,6 +61,11 @@ namespace Voat.Common
 
         }
 
+        public static IEnumerable<T> GetEnumFlagsIntersect<T>(this T flags, T intersection) where T : struct, IConvertible
+        {
+            var setFlags = flags.GetEnumFlags();
+            return setFlags.Where(x => (x.Convert<int>() & intersection.Convert<int>()) > 0).ToList();
+        }
         //I don't like this
         public static IEnumerable<T> GetEnumFlags<T>(this T flags) where T : struct, IConvertible
         {
@@ -70,7 +75,7 @@ namespace Voat.Common
                 throw new ArgumentException("The generic type parameter must be an Enum.");
             }
 
-            if (flags.GetType() != typeof(T))
+            if (flags.GetType() != type)
             {
                 throw new ArgumentException("The generic type parameter does not match the target type.");
             }

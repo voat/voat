@@ -25,8 +25,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -39,6 +41,7 @@ using Voat.Data;
 using Voat.Data.Models;
 using Voat.Http.Filters;
 using Voat.Http.Middleware;
+using Voat.UI.Areas.Admin;
 using Voat.UI.Runtime;
 
 namespace Voat
@@ -96,9 +99,14 @@ namespace Voat
                 {
                     options.Cookie.Name = VoatSettings.Instance.CookieName;
                 }
+                options.AccessDeniedPath = new PathString("/error/default");
             });
 
             var mvcBuilder = services.AddMvc();
+
+            services.Configure<RazorViewEngineOptions>(options => {
+                options.ViewLocationExpanders.Add(new ViewLocationExpander());
+            });
 
             mvcBuilder.AddMvcOptions(o => {
                 o.Filters.Add(typeof(GlobalExceptionFilter));

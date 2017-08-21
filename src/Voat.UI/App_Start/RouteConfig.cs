@@ -1184,9 +1184,9 @@ namespace Voat
                 template: "r/{name}/{*url}",
                 defaults: new { controller = "Error", action = "Type", type = "TheOthers" }
             );
-            
-            //CORE_PORT: I think we need this
-            //routes.MapMvcAttributeRoutes();
+
+            //Map Admin Area
+            Voat.UI.Areas.Admin.RouteConfig.RegisterRoutes(routes);
 
             // default route
             routes.MapRoute(

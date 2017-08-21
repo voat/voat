@@ -108,6 +108,16 @@ namespace Voat.Data
             }
         }
     }
+    public class DapperInsert : DapperBase
+    {
+        public string Insert { get; set; }
+
+        public override string ToString()
+        {
+            var q = $"{EnsureStartsWith(Insert, "INSERT INTO ")} {EnsureStartsWith(Where, "WHERE ")}";
+            return q;
+        }
+    }
     public class DapperUpdate : DapperBase
     {
         public string Update { get; set; }
@@ -124,7 +134,7 @@ namespace Voat.Data
 
         public override string ToString()
         {
-            var q = $"{EnsureStartsWith(Delete, "DELETE ")} {EnsureStartsWith(Where, "WHERE ")}";
+            var q = $"{EnsureStartsWith(Delete, "DELETE FROM ")} {EnsureStartsWith(Where, "WHERE ")}";
             return q;
         }
     }

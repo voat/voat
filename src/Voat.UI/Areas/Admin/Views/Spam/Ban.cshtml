@@ -1,0 +1,74 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+@model Voat.UI.Areas.Admin.Models.BanViewModel
+<div id="container">
+
+    <div class="side">
+        <div class="spacersection spacer">
+            <div class="spacer">
+                <div class="sidecontentbox ">
+                    <div class="title">
+                        <h1 class="alert-h1">Spam Links</h1>
+                    </div>
+                    <ul class="content">
+                        <li><a rel="nofollow" href="/v/ReportSpammers">v/ReportSpammers</a></li>
+                        <li><a rel="nofollow" href="/log/banned/user">Banned users</a></li>
+                        <li><a rel="nofollow" href="/log/banned/domain">Banned domains</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content" role="main">
+      
+
+        <div class="row nomargin">
+            <div class="well col-md-12">
+                <div class="alert-title">Ban Utility</div>
+                <div asp-validation-summary="All"></div>
+                <section id="banDomains">
+                    @using (Html.BeginForm("Ban", "Spam", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <label asp-for="Name" class="col-md-4 control-label"></label>
+                            <div class="col-md-6">
+                                <input asp-for="Name" type="text" class="form-control" value="@Model.Name" />
+                                <span asp-validation-for="Name" class="danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="BanType" class="col-md-4 control-label"></label>
+                            <div class="col-md-6">
+                                <select asp-for="BanType" asp-items="Enum.GetNames(typeof(Voat.Domain.Models.BanType)).Select(x => new SelectListItem() { Selected = x == Model.BanType.Value.ToString(), Text = x, Value = x })" class="form-control"></select>
+                                <span asp-validation-for="BanType" class="danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Reason" class="col-md-4 control-label"></label>
+                            <div class="col-md-6">
+                                <input asp-for="Reason" class="form-control" value="@Model.Reason" />
+                                <span asp-validation-for="Reason" class="danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-4 col-md-3">
+                                @if (ViewBag.SuccessMessage != null)
+                                {
+                                    <p>@ViewBag.SuccessMessage</p>
+
+                                }
+                                <input type="submit" value="Save" class="btn-whoaverse" />
+                            </div>
+                        </div>
+                    }
+                </section>
+
+
+            </div>
+        </div>
+    </div>
+
+</div>

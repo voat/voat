@@ -168,6 +168,8 @@ namespace Voat.Configuration
 
         public bool EnableVotes { get; set; } = false;
 
+        public string ManagementAreaName { get; set; } = "Admin";
+
         #endregion AppSettings Accessors
 
     }
