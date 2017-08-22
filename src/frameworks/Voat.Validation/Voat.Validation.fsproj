@@ -27,4 +27,8 @@
     <ProjectReference Include="..\Voat.Common.Fs\Voat.Common.Fs.fsproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.2.3" />
+  </ItemGroup>
+
 </Project>
