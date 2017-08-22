@@ -134,7 +134,7 @@ namespace Voat.Data
 
         public override string ToString()
         {
-            var q = $"{EnsureStartsWith(Delete, "DELETE FROM ")} {EnsureStartsWith(Where, "WHERE ")}";
+            var q = $"{EnsureStartsWith(Delete, "DELETE ")} {EnsureStartsWith(Where, "WHERE ")}";
             return q;
         }
     }

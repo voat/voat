@@ -1038,7 +1038,7 @@ namespace Voat.Data
                             //         select x);
                             if (!nsfw)
                             {
-                                query.Where += $" AND s.\"IsAdult\" = {SqlFormatter.BooleanLiteral(false)}";
+                                query.Append(x => x.Where, $"s.\"IsAdult\" = {SqlFormatter.BooleanLiteral(false)}");
                             }
                             break;
                         case AGGREGATE_SUBVERSE.DEFAULT:
@@ -1059,7 +1059,7 @@ namespace Voat.Data
                             }
                             if (!nsfw)
                             {
-                                query.Where += $" AND s.\"IsAdult\" = {SqlFormatter.BooleanLiteral(false)}";
+                                query.Append(x => x.Where, $"s.\"IsAdult\" = {SqlFormatter.BooleanLiteral(false)}");
                             }
                             //query = (from x in _db.Submissions
                             //         join defaults in _db.DefaultSubverses on x.Subverse equals defaults.Subverse
@@ -1069,7 +1069,7 @@ namespace Voat.Data
                             //allowing subverse marked private to not be filtered
                             //Should subs marked as private be excluded from an ANY query? I don't know.
                             //query.Where = "sub.IsAdminPrivate = 0 AND sub.IsPrivate = 0";
-                            query.Where = $"sub.\"IsAdminPrivate\" = {SqlFormatter.BooleanLiteral(false)}";
+                            query.Append(x => x.Where, $"sub.\"IsAdminPrivate\" = {SqlFormatter.BooleanLiteral(false)}");
                             //query = (from x in _db.Submissions
                             //         where
                             //         !x.Subverse1.IsAdminPrivate
@@ -1091,14 +1091,14 @@ namespace Voat.Data
                             //where !(from ubs in _db.UserBlockedSubverses where ubs.Subverse.Equals(subverse.Name) select ubs.UserName).Contains(userName)
                             //select message).OrderByDescending(s => s.CreationDate);
 
-                            
+
 
                             //v/all has certain conditions
                             //1. Only subs that have a MinCCP of zero
                             //2. Don't show private subs
                             //3. Don't show NSFW subs if nsfw isn't enabled in profile, if they are logged in
                             //4. Don't show blocked subs if logged in // not implemented
-                            query.Where = $"sub.\"MinCCPForDownvote\" = 0 AND sub.\"IsAdminPrivate\" = {SqlFormatter.BooleanLiteral(false)} AND sub.\"IsPrivate\" = {SqlFormatter.BooleanLiteral(false)}";
+                            query.Append(x => x.Where, $"sub.\"MinCCPForDownvote\" = 0 AND sub.\"IsAdminPrivate\" = {SqlFormatter.BooleanLiteral(false)} AND sub.\"IsPrivate\" = {SqlFormatter.BooleanLiteral(false)}");
                             if (!nsfw)
                             {
                                 query.Where += $" AND sub.\"IsAdult\" = {SqlFormatter.BooleanLiteral(false)} AND s.\"IsAdult\" = {SqlFormatter.BooleanLiteral(false)}";
@@ -5292,15 +5292,10 @@ namespace Voat.Data
                         });
                         statements.Add(u);
 
-                        //Start Update Tasks
-                        //TODO: Run this in better 
-                        //var updateTasks = statements.Select(x => Task.Factory.StartNew(() => { _db.Connection.ExecuteAsync(x.ToString(), x.Parameters); }));
-
                         foreach (var statement in statements)
                         {
                             await _db.Connection.ExecuteAsync(statement.ToString(), statement.Parameters);
                         }
-
 
                         // delete user preferences
                         var userPrefs = _db.UserPreference.Find(userName);

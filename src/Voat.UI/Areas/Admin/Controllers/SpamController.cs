@@ -42,7 +42,7 @@ namespace Voat.UI.Areas.Admin.Controllers
                 else
                 {
                     ModelState.AddModelError("", response.Message);
-                    return View("Index", model);
+                    return View("Ban", model);
                 }
             }
             return View("Ban", new BanViewModel());

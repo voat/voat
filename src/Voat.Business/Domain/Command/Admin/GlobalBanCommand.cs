@@ -46,14 +46,24 @@ namespace Voat.Domain.Command
                             switch (banItem.Type)
                             {
                                 case BanType.Domain:
-                                    var match = Regex.Match(banItem.Name, CONSTANTS.HOST_AND_PATH_LINK_REGEX, RegexOptions.IgnoreCase);
-                                    if (!match.Success)
+                                    //check full url first
+                                    var match = Regex.Match(banItem.Name, CONSTANTS.HTTP_LINK_REGEX, RegexOptions.IgnoreCase);
+                                    if (match.Success)
                                     {
-                                        commandResponse = CommandResponse.FromStatus(Status.Invalid, "Domain is not valid");
+                                        banItem.Name = match.Groups["domain"].Value;
                                     }
                                     else
                                     {
-                                        banItem.Name = match.Groups["domain"].Value;
+                                        //check partial
+                                        match = Regex.Match(banItem.Name, CONSTANTS.HOST_AND_PATH_LINK_REGEX, RegexOptions.IgnoreCase);
+                                        if (!match.Success)
+                                        {
+                                            commandResponse = CommandResponse.FromStatus(Status.Invalid, $"Domain {banItem.Name} is not valid");
+                                        }
+                                        else
+                                        {
+                                            banItem.Name = match.Groups["domain"].Value;
+                                        }
                                     }
 
                                     break;
@@ -61,14 +71,14 @@ namespace Voat.Domain.Command
                                     var result = UserDefinition.Parse(banItem.Name);
                                     if (result == null)
                                     {
-                                        commandResponse = CommandResponse.FromStatus(Status.Invalid, "UserName is not valid");
+                                        commandResponse = CommandResponse.FromStatus(Status.Invalid, $"UserName {banItem.Name} is not valid");
                                     }
                                     else
                                     {
                                         var originalName = UserHelper.OriginalUsername(result.Name);
                                         if (String.IsNullOrEmpty(originalName))
                                         {
-                                            commandResponse = CommandResponse.FromStatus(Status.Invalid, "User does not exist");
+                                            commandResponse = CommandResponse.FromStatus(Status.Invalid, $"User {banItem.Name} does not exist");
                                         }
                                         banItem.Name = originalName;
                                     }

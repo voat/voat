@@ -68,5 +68,57 @@ namespace Voat.Tests.QueryTests
             }
         }
 
+
+        [TestMethod]
+        [TestCategory("Query")]
+        [TestCategory("Submission")]
+        public async Task QuerySubmissions_Default_New_NotLogged_In()
+        {
+            var options = SearchOptions.Default;
+            options.Sort = Domain.Models.SortAlgorithm.New;
+
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, AGGREGATE_SUBVERSE.DEFAULT), options);
+            //q.CachePolicy.Duration = cacheTime; //Cache this request
+            var result = await q.ExecuteAsync();
+
+            //VoatAssert.IsValid(result);
+
+            //Assert.IsTrue(result.Any(), "Found no results");
+
+        }
+        [TestMethod]
+        [TestCategory("Query")]
+        [TestCategory("Submission")]
+        public async Task QuerySubmissions_Front_New_NotLogged_In()
+        {
+            var options = SearchOptions.Default;
+            options.Sort = Domain.Models.SortAlgorithm.New;
+
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, AGGREGATE_SUBVERSE.FRONT), options);
+            //q.CachePolicy.Duration = cacheTime; //Cache this request
+            var result = await q.ExecuteAsync();
+
+            //VoatAssert.IsValid(result);
+
+            //Assert.IsTrue(result.Any(), "Found no results");
+
+        }
+        [TestMethod]
+        [TestCategory("Query")]
+        [TestCategory("Submission")]
+        public async Task QuerySubmissions_All_New_NotLogged_In()
+        {
+            var options = SearchOptions.Default;
+            options.Sort = Domain.Models.SortAlgorithm.New;
+
+            var q = new QuerySubmissions(new Domain.Models.DomainReference(Domain.Models.DomainType.Subverse, AGGREGATE_SUBVERSE.ALL), options);
+            //q.CachePolicy.Duration = cacheTime; //Cache this request
+            var result = await q.ExecuteAsync();
+
+            //VoatAssert.IsValid(result);
+
+            //Assert.IsTrue(result.Any(), "Found no results");
+
+        }
     }
 }

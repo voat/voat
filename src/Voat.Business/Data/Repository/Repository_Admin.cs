@@ -37,7 +37,7 @@ namespace Voat.Data
                         break;
                     case BanType.User:
                         insert.Parameters.Add("Value", banItem.Name);
-                        tablename = "BanedUser";
+                        tablename = "BannedUser";
                         columnname = "UserName";
                         break;
                 }
