@@ -160,9 +160,12 @@
                         </li>
                         if (!string.IsNullOrEmpty(routeActiveSubverse) && routeActiveSubverse == "all")
                         {
-                            <li>
-                                @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonBlockSubverse.cshtml", Model, new ViewDataDictionary(ViewData) { { "subverseName", Model.Subverse } })
-                            </li>
+                            if (!Model.Attributes.Any(x => x.Name.IsEqual("sticky")))
+                            {
+                                <li>
+                                    @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonBlockSubverse.cshtml", Model, new ViewDataDictionary(ViewData) { { "subverseName", Model.Subverse } })
+                                </li>
+                            }
                         }
                     }
                 }

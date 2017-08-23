@@ -2109,12 +2109,14 @@ namespace Voat.Data
             switch (contentType)
             {
                 case ContentType.Comment:
-                    u.Update = $"UPDATE v SET v.\"VoteValue\" = @VoteValue FROM {SqlFormatter.Table("CommentVoteTracker", "v")} INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"ID\" = v.\"CommentID\" INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")}  ON c.\"SubmissionID\" = s.\"ID\"";
-                    u.Where = "v.CommentID = @ID AND v.VoteStatus = @VoteStatus AND s.ArchiveDate IS NULL";
+                   
+
+                    u.Update = SqlFormatter.UpdateSetBlock("\"VoteValue\" = @VoteValue", SqlFormatter.Table("CommentVoteTracker"), "t");
+                    u.Where = $"t.\"ID\" IN (SELECT v.\"ID\" FROM {SqlFormatter.Table("CommentVoteTracker", "v", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Comment", "c", null, "NOLOCK")} ON c.\"ID\" = v.\"CommentID\" INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")}  ON c.\"SubmissionID\" = s.\"ID\" WHERE v.\"CommentID\" = @ID AND v.\"VoteStatus\" = @VoteStatus AND s.\"ArchiveDate\" IS NULL)";
                     break;
                 case ContentType.Submission:
-                    u.Update = $"UPDATE v SET v.\"VoteValue\" = @VoteValue FROM {SqlFormatter.Table("SubmissionVoteTracker", "v")} INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")}  ON v.\"SubmissionID\" = s.\"ID\"";
-                    u.Where = "v.SubmissionID = @ID AND v.VoteStatus = @VoteStatus AND s.ArchiveDate IS NULL";
+                    u.Update = SqlFormatter.UpdateSetBlock("\"VoteValue\" = @VoteValue", SqlFormatter.Table("SubmissionVoteTracker"), "t");
+                    u.Where = $"t.\"ID\" IN (SELECT v.\"ID\" FROM {SqlFormatter.Table("SubmissionVoteTracker", "v", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Submission", "s", null, "NOLOCK")}  ON v.\"SubmissionID\" = s.\"ID\" WHERE v.\"SubmissionID\" = @ID AND v.\"VoteStatus\" = @VoteStatus AND s.\"ArchiveDate\" IS NULL)";
                     break;
                 default:
                     throw new NotImplementedException($"Method not implemented for ContentType: {contentType.ToString()}");
