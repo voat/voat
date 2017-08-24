@@ -62,7 +62,8 @@ namespace Voat.Rules
             }
             using (var repo = new Repository())
             {
-                if (repo.SubverseExists(name))
+                name = repo.ToCorrectSubverseCasing(name);
+                if (!String.IsNullOrEmpty(name))
                 {
                     return base.CreateOutcome(RuleResult.Denied, "Sorry, The subverse you are trying to create already exists, but you can try to claim it by submitting a takeover request to /v/subverserequest");
                 }

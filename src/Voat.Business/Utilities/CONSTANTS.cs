@@ -56,9 +56,9 @@ namespace Voat.Utilities
         //used for apps OAuth redirects - no named capture or backtracking in js regex
         public const string URI_LINK_REGEX_UI = @"([a-zA-Z0-9_-]+)(\:|%3[aA])(\/\/|%2[fF]%2[fF])([wW]{3}\.)?[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)[a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_=!@:\(\)]*";
 
-        public const string SET_LINK_REGEX_SHORT = @"/?(?<prefix>s)/(?<name>[a-zA-Z0-9]+)(/(?<owner>[a-zA-Z0-9]+))?";
+        public const string SET_LINK_REGEX_SHORT = @"/?(?<prefix>s)/(?<name>[a-zA-Z0-9]+(@(?<owner>[a-zA-Z0-9]+))?)";
 
-        public const string SUBVERSE_LINK_REGEX_SHORT = @"/?(?<prefix>v)/(?<name>[a-zA-Z0-9]+)";
+        public const string SUBVERSE_LINK_REGEX_SHORT = @"/?(?<prefix>v)/(?<name>[a-zA-Z0-9]+(@(?<owner>[a-zA-Z0-9]+))?)";
         public const string SUBVERSE_LINK_REGEX_FULL = "((" + SUBVERSE_LINK_REGEX_SHORT + @"(?<fullPath>(((/(new|top(\?time=(day|week|month|year|all))?|(comments/)?\d+(/\d+(?:/\d+(?:\d+)?)?)?)))?)(?<anchor>#(?:\d+|submissionTop))?)))";
 
         public static string USER_HOT_LINK_REGEX

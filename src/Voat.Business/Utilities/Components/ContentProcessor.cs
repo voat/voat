@@ -56,6 +56,7 @@ namespace Voat.Utilities.Components
                                 new UserMentionNotificationFilter(),
                                 new UserMentionLinkFilter(),
                                 new SubverseLinkFilter(),
+                                new SetLinkFilter(),
                                 new RawHyperlinkFilter(),
                                 new RedditLinkFilter()
                             });

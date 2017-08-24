@@ -155,6 +155,7 @@ namespace Voat.Controllers
         [Authorize]
         [HttpPost]
         [VoatValidateAntiForgeryToken]
+        [PreventSpam(30)]
         public async Task<ActionResult> EditSubmission([FromBody] EditSubmission model)
         {
             if (ModelState.IsValid)

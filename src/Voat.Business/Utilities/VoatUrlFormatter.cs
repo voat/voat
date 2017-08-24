@@ -50,7 +50,18 @@ namespace Voat.Utilities
             }
             return "#";
         }
+        public static string Set(string setName, PathOptions options = null)
+        {
+            //these are all default relative I believe
+            options = options == null ? new PathOptions(false, false) : options;
 
+            if (!String.IsNullOrEmpty(setName))
+            {
+                return BuildUrlPath(null, options, "s", setName);
+                //return $"{GetProtocol(protocol)}//{_domain}/v/{subverse}";
+            }
+            return "#";
+        }
         public static string CommentsPagePath(string subverse, int submissionID, int? commentID = null, PathOptions options = null)
         {
             //these are all default relative I believe

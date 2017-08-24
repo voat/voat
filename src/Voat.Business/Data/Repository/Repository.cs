@@ -757,7 +757,7 @@ namespace Voat.Data
         }
         public async Task<IEnumerable<Domain.Models.Submission>> GetStickies(string subverse)
         {
-            var dataStickies = await _db.StickiedSubmission.Where(s => s.Subverse == subverse).OrderByDescending(x => x.CreationDate).ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+            var dataStickies = await _db.StickiedSubmission.Where(s => String.Equals(s.Subverse, subverse, StringComparison.OrdinalIgnoreCase)).OrderByDescending(x => x.CreationDate).ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
             if (dataStickies != null && dataStickies.Count > 0)
             {
                 var stickies = new List<Domain.Models.Submission>();
@@ -884,7 +884,8 @@ namespace Voat.Data
             {
                 throw new VoatValidationException("A username must be provided.");
             }
-            if (!String.IsNullOrEmpty(subverse) && !SubverseExists(subverse))
+            var correctSubverseName = ToCorrectSubverseCasing(subverse);
+            if (!String.IsNullOrEmpty(subverse) && !String.IsNullOrEmpty(correctSubverseName))
             {
                 throw new VoatValidationException("Subverse '{0}' doesn't exist.", subverse);
             }
@@ -1113,8 +1114,8 @@ namespace Voat.Data
 
                         //for regular subverse queries
                         default:
-
-                            if (!SubverseExists(name))
+                            name = ToCorrectSubverseCasing(name);
+                            if (String.IsNullOrEmpty(name))
                             {
                                 throw new VoatNotFoundException("Subverse '{0}' not found.", name);
                             }
@@ -1128,7 +1129,6 @@ namespace Voat.Data
                             //    where !(from bu in _db.SubverseBans where bu.Subverse == subverse.Name select bu.UserName).Contains(message.UserName)
                             //    select message).OrderByDescending(s => s.CreationDate);
 
-                            name = ToCorrectSubverseCasing(name);
                             query.Where = "s.\"Subverse\" = @Name";
 
                             ////Filter out stickies in subs
@@ -3315,7 +3315,7 @@ namespace Voat.Data
             u.Where = q.Where;
             u.Parameters = q.Parameters;
 
-            u.Update = $"m SET m.\"ReadDate\" = @ReadDate FROM {SqlFormatter.Table("Message", "m")}";
+            u.Update = SqlFormatter.UpdateSetBlock($"\"ReadDate\" = @ReadDate", SqlFormatter.Table("Message"), "m");
 
             if (id.HasValue)
             {
@@ -4347,8 +4347,8 @@ namespace Voat.Data
         {
 
             DemandAuthentication();
-
-            if (!SubverseExists(subverse))
+            subverse = ToCorrectSubverseCasing(subverse);
+            if (String.IsNullOrEmpty(subverse))
             {
                 return CommandResponse.FromStatus(Status.Invalid, "Subverse does not exist");
             }
@@ -5012,16 +5012,11 @@ namespace Voat.Data
             return subname;
         }
 
-        public bool SubverseExists(string subverse)
-        {
-            return _db.Subverse.Any(x => x.Name == subverse);
-        }
-
         public string ToCorrectSubverseCasing(string subverse)
         {
             if (!String.IsNullOrEmpty(subverse))
             {
-                var sub = _db.Subverse.FirstOrDefault(x => x.Name == subverse);
+                var sub = _db.Subverse.FirstOrDefault(x => String.Equals(x.Name, subverse, StringComparison.OrdinalIgnoreCase));
                 return (sub == null ? null : sub.Name);
             }
             else

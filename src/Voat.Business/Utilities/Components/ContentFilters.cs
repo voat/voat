@@ -192,7 +192,28 @@ namespace Voat.Utilities.Components
             return replacer.Replace(content, context);
         }
     }
+    public class SetLinkFilter : ContentFilter
+    {
+        public SetLinkFilter()
+        {
+            ProcessingStage = ProcessingStage.Outbound;
+            Priority = 10;
+            IsReadOnly = false;
 
+            ProcessLogic = delegate (Match m, string matchSource, object state)
+            {
+                return String.Format("[{0}]({1})", m.Value, VoatUrlFormatter.Set(m.Groups["name"].Value + (m.Groups["fullPath"].Success ? m.Groups["fullPath"].Value : ""), new Common.PathOptions(true, true)));
+            };
+        }
+
+        protected override string ProcessContent(string content, object context)
+        {
+            MatchProcessingReplacer replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + CONSTANTS.SET_LINK_REGEX_SHORT,
+               ProcessLogic
+            );
+            return replacer.Replace(content, context);
+        }
+    }
     public class RedditLinkFilter : ContentFilter
     {
         public RedditLinkFilter()
