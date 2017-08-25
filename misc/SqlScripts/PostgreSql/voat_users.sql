@@ -1,62 +1,63 @@
 BEGIN;
+CREATE EXTENSION IF NOT EXISTS citext;
 CREATE SCHEMA IF NOT EXISTS "dbo";
 ALTER DATABASE {dbName} SET search_path TO dbo;
 
-CREATE TABLE "dbo"."AspNetRoleClaims"( 
+CREATE TABLE "dbo"."AspNetRoleClaims"(
 	"Id" int NOT NULL,
-	"ClaimType" varchar(256),
-	"ClaimValue" varchar(256),
-	"RoleId" varchar(128) NOT NULL);
+	"ClaimType" citext CHECK (char_length("ClaimType") <= 256),
+	"ClaimValue" citext CHECK (char_length("ClaimValue") <= 256),
+	"RoleId" citext NOT NULL CHECK (char_length("RoleId") <= 128));
 
-CREATE TABLE "dbo"."AspNetRoles"( 
-	"Id" varchar(128) NOT NULL,
-	"ConcurrencyStamp" varchar(50),
-	"Name" varchar(256),
-	"NormalizedName" varchar(256));
+CREATE TABLE "dbo"."AspNetRoles"(
+	"Id" citext NOT NULL CHECK (char_length("Id") <= 128),
+	"ConcurrencyStamp" citext CHECK (char_length("ConcurrencyStamp") <= 50),
+	"Name" citext CHECK (char_length("Name") <= 256),
+	"NormalizedName" citext CHECK (char_length("NormalizedName") <= 256));
 
-CREATE TABLE "dbo"."AspNetUserClaims"( 
+CREATE TABLE "dbo"."AspNetUserClaims"(
 	"Id" int NOT NULL,
-	"ClaimType" varchar,
-	"ClaimValue" varchar,
-	"UserId" varchar(128) NOT NULL);
+	"ClaimType" citext,
+	"ClaimValue" citext,
+	"UserId" citext NOT NULL CHECK (char_length("UserId") <= 128));
 
-CREATE TABLE "dbo"."AspNetUserLogins"( 
-	"UserId" varchar(128) NOT NULL,
-	"LoginProvider" varchar(128) NOT NULL,
-	"ProviderKey" varchar(128) NOT NULL,
-	"ProviderDisplayName" varchar(500) NOT NULL);
+CREATE TABLE "dbo"."AspNetUserLogins"(
+	"UserId" citext NOT NULL CHECK (char_length("UserId") <= 128),
+	"LoginProvider" citext NOT NULL CHECK (char_length("LoginProvider") <= 128),
+	"ProviderKey" citext NOT NULL CHECK (char_length("ProviderKey") <= 128),
+	"ProviderDisplayName" citext NOT NULL CHECK (char_length("ProviderDisplayName") <= 500));
 
-CREATE TABLE "dbo"."AspNetUserRoles"( 
-	"UserId" varchar(128) NOT NULL,
-	"RoleId" varchar(128) NOT NULL);
+CREATE TABLE "dbo"."AspNetUserRoles"(
+	"UserId" citext NOT NULL CHECK (char_length("UserId") <= 128),
+	"RoleId" citext NOT NULL CHECK (char_length("RoleId") <= 128));
 
-CREATE TABLE "dbo"."AspNetUserTokens"( 
-	"UserId" varchar(128) NOT NULL,
-	"LoginProvider" varchar(128) NOT NULL,
-	"Name" varchar(128) NOT NULL,
-	"Value" varchar);
+CREATE TABLE "dbo"."AspNetUserTokens"(
+	"UserId" citext NOT NULL CHECK (char_length("UserId") <= 128),
+	"LoginProvider" citext NOT NULL CHECK (char_length("LoginProvider") <= 128),
+	"Name" citext NOT NULL CHECK (char_length("Name") <= 128),
+	"Value" citext);
 
-CREATE TABLE "dbo"."AspNetUsers"( 
-	"Id" varchar(128) NOT NULL,
-	"UserName" varchar(256) NOT NULL,
-	"PasswordHash" varchar,
-	"SecurityStamp" varchar,
-	"Email" varchar(256),
+CREATE TABLE "dbo"."AspNetUsers"(
+	"Id" citext NOT NULL CHECK (char_length("Id") <= 128),
+	"UserName" citext NOT NULL CHECK (char_length("UserName") <= 256),
+	"PasswordHash" citext,
+	"SecurityStamp" citext,
+	"Email" citext CHECK (char_length("Email") <= 256),
 	"EmailConfirmed" boolean NOT NULL,
-	"PhoneNumber" varchar(20),
+	"PhoneNumber" citext CHECK (char_length("PhoneNumber") <= 20),
 	"PhoneNumberConfirmed" boolean NOT NULL,
 	"TwoFactorEnabled" boolean NOT NULL,
 	"LockoutEnd" timestamp with time zone,
 	"LockoutEnabled" boolean NOT NULL,
 	"AccessFailedCount" int,
 	"RegistrationDateTime" timestamp NOT NULL,
-	"RecoveryQuestion" varchar(50),
-	"Answer" varchar(50),
-	"LastLoginFromIp" varchar(50),
+	"RecoveryQuestion" citext CHECK (char_length("RecoveryQuestion") <= 50),
+	"Answer" citext CHECK (char_length("Answer") <= 50),
+	"LastLoginFromIp" citext CHECK (char_length("LastLoginFromIp") <= 50),
 	"LastLoginDateTime" timestamp NOT NULL,
-	"ConcurrencyStamp" varchar(50),
-	"NormalizedEmail" varchar(256),
-	"NormalizedUserName" varchar(256));
+	"ConcurrencyStamp" citext CHECK (char_length("ConcurrencyStamp") <= 50),
+	"NormalizedEmail" citext CHECK (char_length("NormalizedEmail") <= 256),
+	"NormalizedUserName" citext CHECK (char_length("NormalizedUserName") <= 256));
 
 
 CREATE SEQUENCE "dbo"."aspnetroleclaims_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."AspNetRoleClaims"."Id";
