@@ -2,6 +2,7 @@ BEGIN;
 CREATE EXTENSION IF NOT EXISTS citext;
 CREATE SCHEMA IF NOT EXISTS "dbo";
 alter database {dbName} set search_path to 'dbo';
+alter database {dbName} set TimeZone to 'UTC';
 
 CREATE TABLE "dbo"."Ad"(
 	"ID" int NOT NULL,
@@ -10,10 +11,10 @@ CREATE TABLE "dbo"."Ad"(
 	"DestinationUrl" citext CHECK (char_length("DestinationUrl") <= 1000),
 	"Name" citext NOT NULL CHECK (char_length("Name") <= 100),
 	"Description" citext NOT NULL CHECK (char_length("Description") <= 2000),
-	"StartDate" timestamp,
-	"EndDate" timestamp,
+	"StartDate" timestamptz,
+	"EndDate" timestamptz,
 	"Subverse" citext CHECK (char_length("Subverse") <= 50),
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."AdminLog"(
 	"ID" int NOT NULL,
@@ -27,7 +28,7 @@ CREATE TABLE "dbo"."AdminLog"(
 	"Action" citext NOT NULL CHECK (char_length("Action") <= 100),
 	"Details" citext NOT NULL CHECK (char_length("Details") <= 1000),
 	"InternalDetails" citext,
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."ApiClient"(
 	"ID" int NOT NULL,
@@ -39,8 +40,8 @@ CREATE TABLE "dbo"."ApiClient"(
 	"RedirectUrl" citext CHECK (char_length("RedirectUrl") <= 200),
 	"PublicKey" citext NOT NULL CHECK (char_length("PublicKey") <= 100),
 	"PrivateKey" citext NOT NULL CHECK (char_length("PrivateKey") <= 100),
-	"LastAccessDate" timestamp,
-	"CreationDate" timestamp NOT NULL,
+	"LastAccessDate" timestamptz,
+	"CreationDate" timestamptz NOT NULL,
 	"ApiThrottlePolicyID" int,
 	"ApiPermissionPolicyID" int);
 
@@ -55,7 +56,7 @@ CREATE TABLE "dbo"."ApiCorsPolicy"(
 	"UserName" citext CHECK (char_length("UserName") <= 100),
 	"Description" citext CHECK (char_length("Description") <= 500),
 	"CreatedBy" citext NOT NULL CHECK (char_length("CreatedBy") <= 100),
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."ApiLog"(
 	"ID" int NOT NULL,
@@ -64,7 +65,7 @@ CREATE TABLE "dbo"."ApiLog"(
 	"Url" citext NOT NULL CHECK (char_length("Url") <= 500),
 	"Headers" citext,
 	"Body" citext,
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."ApiPermissionPolicy"(
 	"ID" int NOT NULL,
@@ -86,13 +87,13 @@ CREATE TABLE "dbo"."BannedDomain"(
 	"ID" int NOT NULL,
 	"Domain" citext NOT NULL CHECK (char_length("Domain") <= 100),
 	"CreatedBy" citext NOT NULL CHECK (char_length("CreatedBy") <= 50),
-	"CreationDate" timestamp NOT NULL,
+	"CreationDate" timestamptz NOT NULL,
 	"Reason" citext NOT NULL CHECK (char_length("Reason") <= 500));
 
 CREATE TABLE "dbo"."BannedUser"(
 	"ID" int NOT NULL,
 	"UserName" citext NOT NULL CHECK (char_length("UserName") <= 50),
-	"CreationDate" timestamp NOT NULL,
+	"CreationDate" timestamptz NOT NULL,
 	"Reason" citext NOT NULL CHECK (char_length("Reason") <= 500),
 	"CreatedBy" citext NOT NULL CHECK (char_length("CreatedBy") <= 50));
 
@@ -100,8 +101,8 @@ CREATE TABLE "dbo"."Comment"(
 	"ID" int NOT NULL,
 	"UserName" citext NOT NULL CHECK (char_length("UserName") <= 50),
 	"Content" citext NOT NULL,
-	"CreationDate" timestamp NOT NULL,
-	"LastEditDate" timestamp,
+	"CreationDate" timestamptz NOT NULL,
+	"LastEditDate" timestamptz,
 	"SubmissionID" int,
 	"UpCount" int NOT NULL,
 	"DownCount" int NOT NULL,
@@ -114,21 +115,21 @@ CREATE TABLE "dbo"."Comment"(
 CREATE TABLE "dbo"."CommentRemovalLog"(
 	"CommentID" int NOT NULL,
 	"Moderator" citext NOT NULL CHECK (char_length("Moderator") <= 50),
-	"CreationDate" timestamp NOT NULL,
+	"CreationDate" timestamptz NOT NULL,
 	"Reason" citext NOT NULL CHECK (char_length("Reason") <= 500));
 
 CREATE TABLE "dbo"."CommentSaveTracker"(
 	"ID" int NOT NULL,
 	"CommentID" int NOT NULL,
 	"UserName" citext NOT NULL CHECK (char_length("UserName") <= 50),
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."CommentVoteTracker"(
 	"ID" int NOT NULL,
 	"CommentID" int NOT NULL,
 	"UserName" citext NOT NULL CHECK (char_length("UserName") <= 50),
 	"VoteStatus" int NOT NULL,
-	"CreationDate" timestamp NOT NULL,
+	"CreationDate" timestamptz NOT NULL,
 	"IPAddress" citext CHECK (char_length("IPAddress") <= 90),
 	"VoteValue" double precision NOT NULL);
 
@@ -147,7 +148,7 @@ CREATE TABLE "dbo"."EventLog"(
 	"Category" citext NOT NULL CHECK (char_length("Category") <= 1000),
 	"Exception" citext,
 	"Data" citext,
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."Featured"(
 	"ID" int NOT NULL,
@@ -155,15 +156,15 @@ CREATE TABLE "dbo"."Featured"(
 	"DomainID" int NOT NULL,
 	"Title" citext CHECK (char_length("Title") <= 100),
 	"Description" citext CHECK (char_length("Description") <= 500),
-	"StartDate" timestamp NOT NULL,
-	"EndDate" timestamp,
+	"StartDate" timestamptz NOT NULL,
+	"EndDate" timestamptz,
 	"CreatedBy" citext NOT NULL CHECK (char_length("CreatedBy") <= 50));
 
 CREATE TABLE "dbo"."FeaturedSubverse"(
 	"ID" int NOT NULL,
 	"Subverse" citext NOT NULL CHECK (char_length("Subverse") <= 20),
 	"CreatedBy" citext NOT NULL CHECK (char_length("CreatedBy") <= 50),
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."Filter"(
 	"ID" int NOT NULL,
@@ -174,7 +175,7 @@ CREATE TABLE "dbo"."Filter"(
 	"Replacement" citext CHECK (char_length("Replacement") <= 1000),
 	"AppliesTo" int,
 	"Action" int,
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."Message"(
 	"ID" int NOT NULL,
@@ -192,14 +193,14 @@ CREATE TABLE "dbo"."Message"(
 	"SubmissionID" int,
 	"CommentID" int,
 	"IsAnonymized" boolean NOT NULL,
-	"ReadDate" timestamp,
+	"ReadDate" timestamptz,
 	"CreatedBy" citext CHECK (char_length("CreatedBy") <= 50),
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."ModeratorInvitation"(
 	"ID" int NOT NULL,
 	"CreatedBy" citext NOT NULL CHECK (char_length("CreatedBy") <= 50),
-	"CreationDate" timestamp NOT NULL,
+	"CreationDate" timestamptz NOT NULL,
 	"Recipient" citext NOT NULL CHECK (char_length("Recipient") <= 50),
 	"Subverse" citext NOT NULL CHECK (char_length("Subverse") <= 50),
 	"Power" int NOT NULL);
@@ -212,9 +213,9 @@ CREATE TABLE "dbo"."RuleReport"(
 	"CommentID" int,
 	"RuleSetID" int NOT NULL,
 	"ReviewedBy" citext CHECK (char_length("ReviewedBy") <= 100),
-	"ReviewedDate" timestamp,
+	"ReviewedDate" timestamptz,
 	"CreatedBy" citext NOT NULL CHECK (char_length("CreatedBy") <= 100),
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."RuleSet"(
 	"ID" int NOT NULL,
@@ -225,24 +226,24 @@ CREATE TABLE "dbo"."RuleSet"(
 	"Name" citext NOT NULL CHECK (char_length("Name") <= 200),
 	"Description" citext CHECK (char_length("Description") <= 1000),
 	"CreatedBy" citext NOT NULL CHECK (char_length("CreatedBy") <= 50),
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."SessionTracker"(
 	"SessionID" citext NOT NULL CHECK (char_length("SessionID") <= 90),
 	"Subverse" citext NOT NULL CHECK (char_length("Subverse") <= 20),
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."StickiedSubmission"(
 	"SubmissionID" int NOT NULL,
 	"Subverse" citext NOT NULL CHECK (char_length("Subverse") <= 20),
 	"CreatedBy" citext NOT NULL CHECK (char_length("CreatedBy") <= 50),
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."Submission"(
 	"ID" int NOT NULL,
 	"UserName" citext NOT NULL CHECK (char_length("UserName") <= 50),
 	"Content" citext,
-	"CreationDate" timestamp NOT NULL,
+	"CreationDate" timestamptz NOT NULL,
 	"Type" int NOT NULL,
 	"Title" citext CHECK (char_length("Title") <= 200),
 	"Rank" double precision NOT NULL,
@@ -250,7 +251,7 @@ CREATE TABLE "dbo"."Submission"(
 	"UpCount" int NOT NULL,
 	"DownCount" int NOT NULL,
 	"Thumbnail" citext CHECK (char_length("Thumbnail") <= 150),
-	"LastEditDate" timestamp,
+	"LastEditDate" timestamptz,
 	"FlairLabel" citext CHECK (char_length("FlairLabel") <= 50),
 	"FlairCss" citext CHECK (char_length("FlairCss") <= 50),
 	"IsAnonymized" boolean NOT NULL,
@@ -260,26 +261,26 @@ CREATE TABLE "dbo"."Submission"(
 	"Url" citext CHECK (char_length("Url") <= 3000),
 	"FormattedContent" citext,
 	"IsAdult" boolean NOT NULL,
-	"ArchiveDate" timestamp);
+	"ArchiveDate" timestamptz);
 
 CREATE TABLE "dbo"."SubmissionRemovalLog"(
 	"SubmissionID" int NOT NULL,
 	"Moderator" citext NOT NULL CHECK (char_length("Moderator") <= 50),
-	"CreationDate" timestamp NOT NULL,
+	"CreationDate" timestamptz NOT NULL,
 	"Reason" citext NOT NULL CHECK (char_length("Reason") <= 500));
 
 CREATE TABLE "dbo"."SubmissionSaveTracker"(
 	"ID" int NOT NULL,
 	"SubmissionID" int NOT NULL,
 	"UserName" citext NOT NULL CHECK (char_length("UserName") <= 50),
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."SubmissionVoteTracker"(
 	"ID" int NOT NULL,
 	"SubmissionID" int NOT NULL,
 	"UserName" citext NOT NULL CHECK (char_length("UserName") <= 50),
 	"VoteStatus" int NOT NULL,
-	"CreationDate" timestamp NOT NULL,
+	"CreationDate" timestamptz NOT NULL,
 	"IPAddress" citext CHECK (char_length("IPAddress") <= 90),
 	"VoteValue" double precision NOT NULL);
 
@@ -292,25 +293,25 @@ CREATE TABLE "dbo"."Subverse"(
 	"IsAdult" boolean NOT NULL,
 	"IsThumbnailEnabled" boolean NOT NULL,
 	"ExcludeSitewideBans" boolean NOT NULL,
-	"CreationDate" timestamp NOT NULL,
+	"CreationDate" timestamptz NOT NULL,
 	"Stylesheet" citext,
 	"SubscriberCount" int,
 	"IsPrivate" boolean NOT NULL,
 	"IsAuthorizedOnly" boolean NOT NULL,
 	"IsAnonymized" boolean,
-	"LastSubmissionDate" timestamp,
+	"LastSubmissionDate" timestamptz,
 	"MinCCPForDownvote" int NOT NULL,
 	"IsAdminPrivate" boolean NOT NULL,
 	"IsAdminDisabled" boolean,
 	"CreatedBy" citext CHECK (char_length("CreatedBy") <= 50),
-	"LastUpdateDate" timestamp);
+	"LastUpdateDate" timestamptz);
 
 CREATE TABLE "dbo"."SubverseBan"(
 	"ID" int NOT NULL,
 	"Subverse" citext NOT NULL CHECK (char_length("Subverse") <= 20),
 	"UserName" citext NOT NULL CHECK (char_length("UserName") <= 50),
 	"CreatedBy" citext NOT NULL CHECK (char_length("CreatedBy") <= 50),
-	"CreationDate" timestamp NOT NULL,
+	"CreationDate" timestamptz NOT NULL,
 	"Reason" citext NOT NULL CHECK (char_length("Reason") <= 500));
 
 CREATE TABLE "dbo"."SubverseFlair"(
@@ -325,7 +326,7 @@ CREATE TABLE "dbo"."SubverseModerator"(
 	"UserName" citext NOT NULL CHECK (char_length("UserName") <= 50),
 	"Power" int NOT NULL,
 	"CreatedBy" citext CHECK (char_length("CreatedBy") <= 50),
-	"CreationDate" timestamp);
+	"CreationDate" timestamptz);
 
 CREATE TABLE "dbo"."SubverseSet"(
 	"ID" int NOT NULL,
@@ -336,31 +337,31 @@ CREATE TABLE "dbo"."SubverseSet"(
 	"Type" int NOT NULL,
 	"IsPublic" boolean NOT NULL,
 	"SubscriberCount" int NOT NULL,
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."SubverseSetList"(
 	"ID" int NOT NULL,
 	"SubverseSetID" int NOT NULL,
 	"SubverseID" int NOT NULL,
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."SubverseSetSubscription"(
 	"ID" int NOT NULL,
 	"SubverseSetID" int NOT NULL,
 	"UserName" citext NOT NULL CHECK (char_length("UserName") <= 50),
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."UserBadge"(
 	"ID" int NOT NULL,
 	"UserName" citext NOT NULL CHECK (char_length("UserName") <= 50),
 	"BadgeID" citext NOT NULL CHECK (char_length("BadgeID") <= 50),
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."UserBlockedUser"(
 	"ID" int NOT NULL,
 	"BlockUser" citext NOT NULL CHECK (char_length("BlockUser") <= 50),
 	"UserName" citext NOT NULL CHECK (char_length("UserName") <= 50),
-	"CreationDate" timestamp NOT NULL);
+	"CreationDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."UserContribution"(
 	"ID" int NOT NULL,
@@ -370,8 +371,8 @@ CREATE TABLE "dbo"."UserContribution"(
 	"VoteStatus" int NOT NULL,
 	"VoteCount" int NOT NULL,
 	"VoteValue" double precision NOT NULL,
-	"ValidThroughDate" timestamp NOT NULL,
-	"LastUpdateDate" timestamp NOT NULL);
+	"ValidThroughDate" timestamptz NOT NULL,
+	"LastUpdateDate" timestamptz NOT NULL);
 
 CREATE TABLE "dbo"."UserPreference"(
 	"UserName" citext NOT NULL CHECK (char_length("UserName") <= 50),
@@ -563,21 +564,21 @@ ALTER TABLE "dbo"."UserPreference" ALTER COLUMN "BlockAnonymized" SET DEFAULT fa
 ALTER TABLE "dbo"."UserPreference" ALTER COLUMN "DisplayAds" SET DEFAULT false;
 ALTER TABLE "dbo"."UserPreference" ALTER COLUMN "DisplaySubscriptions" SET DEFAULT false;
 ALTER TABLE "dbo"."UserPreference" ALTER COLUMN "UseSubscriptionsMenu" SET DEFAULT true;
-ALTER TABLE "dbo"."Ad" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."AdminLog" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."ApiClient" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."ApiCorsPolicy" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."ApiLog" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."EventLog" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."Filter" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."RuleReport" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."RuleSet" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."SessionTracker" ALTER COLUMN "CreationDate" SET DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE "dbo"."SubverseSet" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."SubverseSetList" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."SubverseSetSubscription" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."UserBlockedUser" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."UserContribution" ALTER COLUMN "LastUpdateDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "dbo"."Ad" ALTER COLUMN "CreationDate" SET DEFAULT now();
+ALTER TABLE "dbo"."AdminLog" ALTER COLUMN "CreationDate" SET DEFAULT now();
+ALTER TABLE "dbo"."ApiClient" ALTER COLUMN "CreationDate" SET DEFAULT now();
+ALTER TABLE "dbo"."ApiCorsPolicy" ALTER COLUMN "CreationDate" SET DEFAULT now();
+ALTER TABLE "dbo"."ApiLog" ALTER COLUMN "CreationDate" SET DEFAULT now();
+ALTER TABLE "dbo"."EventLog" ALTER COLUMN "CreationDate" SET DEFAULT now();
+ALTER TABLE "dbo"."Filter" ALTER COLUMN "CreationDate" SET DEFAULT now();
+ALTER TABLE "dbo"."RuleReport" ALTER COLUMN "CreationDate" SET DEFAULT now();
+ALTER TABLE "dbo"."RuleSet" ALTER COLUMN "CreationDate" SET DEFAULT now();
+ALTER TABLE "dbo"."SessionTracker" ALTER COLUMN "CreationDate" SET DEFAULT now();
+ALTER TABLE "dbo"."SubverseSet" ALTER COLUMN "CreationDate" SET DEFAULT now();
+ALTER TABLE "dbo"."SubverseSetList" ALTER COLUMN "CreationDate" SET DEFAULT now();
+ALTER TABLE "dbo"."SubverseSetSubscription" ALTER COLUMN "CreationDate" SET DEFAULT now();
+ALTER TABLE "dbo"."UserBlockedUser" ALTER COLUMN "CreationDate" SET DEFAULT now();
+ALTER TABLE "dbo"."UserContribution" ALTER COLUMN "LastUpdateDate" SET DEFAULT now();
 select setval('"dbo"."ad_id_seq"',(select max("ID") from "dbo"."Ad")::bigint);
 select setval('"dbo"."adminlog_id_seq"',(select max("ID") from "dbo"."AdminLog")::bigint);
 select setval('"dbo"."apiclient_id_seq"',(select max("ID") from "dbo"."ApiClient")::bigint);

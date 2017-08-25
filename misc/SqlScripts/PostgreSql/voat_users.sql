@@ -2,6 +2,7 @@ BEGIN;
 CREATE EXTENSION IF NOT EXISTS citext;
 CREATE SCHEMA IF NOT EXISTS "dbo";
 ALTER DATABASE {dbName} SET search_path TO dbo;
+alter database {dbName} set TimeZone to 'UTC';
 
 CREATE TABLE "dbo"."AspNetRoleClaims"(
 	"Id" int NOT NULL,
@@ -47,14 +48,14 @@ CREATE TABLE "dbo"."AspNetUsers"(
 	"PhoneNumber" citext CHECK (char_length("PhoneNumber") <= 20),
 	"PhoneNumberConfirmed" boolean NOT NULL,
 	"TwoFactorEnabled" boolean NOT NULL,
-	"LockoutEnd" timestamp with time zone,
+	"LockoutEnd" timestamptz,
 	"LockoutEnabled" boolean NOT NULL,
 	"AccessFailedCount" int,
-	"RegistrationDateTime" timestamp NOT NULL,
+	"RegistrationDateTime" timestamptz NOT NULL,
 	"RecoveryQuestion" citext CHECK (char_length("RecoveryQuestion") <= 50),
 	"Answer" citext CHECK (char_length("Answer") <= 50),
 	"LastLoginFromIp" citext CHECK (char_length("LastLoginFromIp") <= 50),
-	"LastLoginDateTime" timestamp NOT NULL,
+	"LastLoginDateTime" timestamptz NOT NULL,
 	"ConcurrencyStamp" citext CHECK (char_length("ConcurrencyStamp") <= 50),
 	"NormalizedEmail" citext CHECK (char_length("NormalizedEmail") <= 256),
 	"NormalizedUserName" citext CHECK (char_length("NormalizedUserName") <= 256));
@@ -84,7 +85,7 @@ ALTER TABLE "dbo"."AspNetUserRoles" ADD CONSTRAINT "FK_AspNetUserRoles_AspNetRol
 ALTER TABLE "dbo"."AspNetUserRoles" ADD CONSTRAINT "FK_AspNetUserRoles_AspNetUsers" FOREIGN KEY ("UserId") REFERENCES "dbo"."AspNetUsers" ( "Id") ON DELETE CASCADE;
 ALTER TABLE "dbo"."AspNetRoleClaims" ALTER COLUMN "Id" SET DEFAULT nextval('"dbo"."aspnetroleclaims_id_seq"');
 ALTER TABLE "dbo"."AspNetUserClaims" ALTER COLUMN "Id" SET DEFAULT nextval('"dbo"."aspnetuserclaims_id_seq"');
-ALTER TABLE "dbo"."AspNetUsers" ALTER COLUMN "RegistrationDateTime" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "dbo"."AspNetUsers" ALTER COLUMN "RegistrationDateTime" SET DEFAULT now();
 select setval('"dbo"."aspnetroleclaims_id_seq"',(select max("Id") from "dbo"."AspNetRoleClaims")::bigint);
 select setval('"dbo"."aspnetuserclaims_id_seq"',(select max("Id") from "dbo"."AspNetUserClaims")::bigint);
 
