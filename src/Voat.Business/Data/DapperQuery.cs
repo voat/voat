@@ -155,7 +155,7 @@ namespace Voat.Data
             var sb = new StringBuilder();
             foreach (var q in this)
             {
-                sb.AppendLine(q.ToString());
+                sb.AppendLine(q.ToString() + ";");
             }
             return sb.ToString();
         }

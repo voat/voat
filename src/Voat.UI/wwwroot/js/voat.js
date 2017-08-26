@@ -1161,7 +1161,7 @@ function markReportAsReviewed(sender, subverse, type, id) {
             var errorObj = getErrorObject(arguments);
 
             if (errorObj) {
-                sender.text(errorObj.error.message);
+                $(sender).val(errorObj.error.message);
             } else {
                 $(sender).parents(".contentReport").remove();
             }
@@ -1930,10 +1930,11 @@ function previewStylesheet(obj, subverseName) {
         var sendingButton = $(obj);
         sendingButton.html('Hold on...');
         sendingButton.prop('disabled', true);
+        var url = '/ajaxhelpers/previewstylesheet?subverse=' + subverseName + '&previewMode=true' + '&nocache=' + cachePrevention();
 
         $.ajax({
             type: 'GET',
-            url: '/ajaxhelpers/previewstylesheet?subverse=' + subverseName + '&previewMode=true' + '&nocache=' + cachePrevention(),
+            url: url,
             dataType: 'html',
             success: function (data) {
                 $("#stylesheetpreviewarea").html(data);

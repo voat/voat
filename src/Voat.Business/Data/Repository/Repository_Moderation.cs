@@ -169,7 +169,8 @@ namespace Voat.Data
                         var m = new DapperMulti();
 
                         var u = new DapperUpdate();
-                        u.Update = $"{SqlFormatter.Table("Comment")} SET \"IsDistinguished\" = {SqlFormatter.ToggleBoolean("\"IsDistinguished\"")}";
+                        //u.Update = $"{SqlFormatter.Table("Comment")} SET \"IsDistinguished\" = {SqlFormatter.ToggleBoolean("\"IsDistinguished\"")}";
+                        u.Update = SqlFormatter.UpdateSetBlock($"\"IsDistinguished\" = {SqlFormatter.ToggleBoolean("\"IsDistinguished\"")}", SqlFormatter.Table("Comment"));
                         u.Where = "\"ID\" = @id";
                         u.Parameters.Add("id", commentID);
                         m.Add(u);

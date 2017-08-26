@@ -266,7 +266,7 @@ namespace Voat.Controllers
                 if (!ModelState.IsValid)
                 {
                     SetNavigationViewModel(model.Name);
-                    return View("~/Views/Subverses/Admin/SubverseSettings.cshtml");
+                    return View("~/Views/Subverses/Admin/SubverseStylesheetEditor.cshtml");
                 }
                 var existingSubverse = _db.Subverse.FirstOrDefault(x => x.Name.ToUpper() == model.Name.ToUpper());
 

@@ -191,7 +191,7 @@ namespace Voat.Http
 
         }
 
-        public static string RemoteAddress(this HttpRequest request, string headerKeys = "CF-Connecting-IP, X-Original-For")
+        public static string RemoteAddress(this HttpRequest request, string headerKeys = "CF-Connecting-IP, X-Forwarded-For, X-Original-For")
         {
             var keys = headerKeys.Split(',', ';').Select(x => x.TrimSafe());
             string clientIpAddress = String.Empty;
@@ -203,24 +203,34 @@ namespace Voat.Http
                     clientIpAddress = request.Headers[key];
                     if (!String.IsNullOrEmpty(clientIpAddress))
                     {
-                        //strip port 
-                        if (clientIpAddress.Contains(":"))
-                        {
-                            clientIpAddress = clientIpAddress.Substring(0, clientIpAddress.IndexOf(":"));
-                        }
-                        break;
+                        return clientIpAddress.StripIPAddressPort();
                     }
                 }
             }
             return clientIpAddress;
         }
-        public static string Signature(this HttpRequest request)
+        public static string StripIPAddressPort(this string ipAddress)
         {
-            //Port from PreventSpam Attribute
-            var originationInfo = request.RemoteAddress(); 
-            originationInfo += request.Headers["User-Agent"].ToString();
-            var targetInfo = request.GetUrl();
-            var hashValue = string.Join("", MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(originationInfo + targetInfo)).Select(s => s.ToString("x2")));
+            //TODO: We need to strip ports on v4 or else rules will not work in development
+            if (!String.IsNullOrEmpty(ipAddress) && Regex.IsMatch(ipAddress, @"((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"))
+            {
+                if (ipAddress.Contains(":"))
+                {
+                    return ipAddress.Substring(0, ipAddress.IndexOf(":"));
+                }
+            }
+            return ipAddress;
+        }
+        public static string Signature(this HttpRequest request, bool full = true)
+        {
+            var originationInfo = request.RemoteAddress();
+            if (full)
+            {
+                originationInfo += request.Headers["User-Agent"].ToString();
+                originationInfo += request.GetUrl();
+            }
+
+            var hashValue = string.Join("", MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(originationInfo)).Select(s => s.ToString("x2")));
             return hashValue;
         }
 

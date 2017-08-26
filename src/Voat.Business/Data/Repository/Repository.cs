@@ -3243,7 +3243,7 @@ namespace Voat.Data
             d.Where = q.Where;
             d.Parameters = q.Parameters;
 
-            d.Delete = $"m FROM {SqlFormatter.Table("Message", "m")}";
+            d.Delete = $"FROM {SqlFormatter.Table("Message", "m")}";
 
             if (id.HasValue)
             {
@@ -4358,7 +4358,7 @@ namespace Voat.Data
             }
 
             var q = new DapperUpdate();
-            q.Update = $"r SET r.\"ReviewedBy\" = @UserName, r.\"ReviewedDate\" = @CreationDate FROM {SqlFormatter.Table("RuleReport", "r")}";
+            q.Update = SqlFormatter.UpdateSetBlock($"\"ReviewedBy\" = @UserName, \"ReviewedDate\" = @CreationDate", SqlFormatter.Table("RuleReport"), "r");
             if (contentType == ContentType.Submission)
             {
                 q.Where = "r.\"Subverse\" = @Subverse AND r.\"SubmissionID\" = @ID";
@@ -4575,7 +4575,7 @@ namespace Voat.Data
                     }
                     if (User.Identity.Name.IsEqual(name))
                     {
-                        return new CommandResponse<bool?>(null, Status.Error, "Attempting to open worm hold denied. Can not block yourself.");
+                        return new CommandResponse<bool?>(null, Status.Error, "Attempting to open worm hole denied. Can not block yourself.");
                     }
 
                     var userBlock = _db.UserBlockedUser.FirstOrDefault(n => n.BlockUser.ToLower() == name.ToLower() && n.UserName == User.Identity.Name);

@@ -89,12 +89,10 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<ActionResult> Mark(string subverse, ContentType type, int id)
         {
-            //TODO: Implement Command/Query - Remove direct Repository access
-            using (var repo = new Repository(User))
-            {
-                var result = await repo.MarkReportsAsReviewed(subverse, type, id);
-                return JsonResult(result);
-            }
+
+            var cmd = new MarkReportsCommand(subverse, type, id).SetUserContext(User);
+            var result = await cmd.Execute();
+            return JsonResult(result);
         }
 
         [Authorize]
@@ -117,12 +115,9 @@ namespace Voat.Controllers
         {
             if (ModelState.IsValid)
             {
-                //TODO: Implement Command/Query - Remove direct Repository access
-                using (var repo = new Repository(User))
-                {
-                    var result = await repo.SaveRuleReport(model.ContentType, model.ID, model.RuleSetID.Value);
-                    return JsonResult(result);
-                }
+                var cmd = new SaveRuleReportCommand(model.ContentType, model.ID, model.RuleSetID.Value).SetUserContext(User);
+                var result = await cmd.Execute();
+                return JsonResult(result);
             }
             else
             {
