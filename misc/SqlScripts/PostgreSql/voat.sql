@@ -1,6 +1,7 @@
 BEGIN;
+CREATE EXTENSION IF NOT EXISTS citext;
 CREATE SCHEMA IF NOT EXISTS "dbo";
-alter database {dbName} set search_path to 'dbo';
+alter database {dbName} set search_path to 'dbo,public';
 
 CREATE TABLE "dbo"."Ad"(
 	"ID" int NOT NULL,
@@ -286,7 +287,7 @@ CREATE TABLE "dbo"."Subverse"(
 	"ID" int NOT NULL,
 	"Name" varchar(20) NOT NULL,
 	"Title" varchar(100) NOT NULL,
-	"Description" varchar(500),
+	"Description" citext CHECK (char_length("Description") <= 500),
 	"SideBar" varchar(4000),
 	"IsAdult" boolean NOT NULL,
 	"IsThumbnailEnabled" boolean NOT NULL,
