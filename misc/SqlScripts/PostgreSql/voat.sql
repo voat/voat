@@ -1,7 +1,7 @@
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS citext;
 CREATE SCHEMA IF NOT EXISTS "dbo";
-alter database {dbName} set search_path to 'dbo,public';
+ALTER DATABASE {dbName} SET search_path to 'dbo,public';
 
 CREATE TABLE "dbo"."Ad"(
 	"ID" int NOT NULL,

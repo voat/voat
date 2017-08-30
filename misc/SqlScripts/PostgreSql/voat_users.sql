@@ -1,6 +1,6 @@
 BEGIN;
 CREATE SCHEMA IF NOT EXISTS "dbo";
-ALTER DATABASE {dbName} SET search_path TO dbo;
+ALTER DATABASE {dbName} SET search_path TO 'dbo,public';
 
 CREATE TABLE "dbo"."AspNetRoleClaims"( 
 	"Id" int NOT NULL,
