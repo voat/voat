@@ -33,7 +33,6 @@ namespace Voat.Data.Models
         {
             _connectionName = connectionName;
         }
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             this.Configure(optionsBuilder, _connectionName);
@@ -41,30 +40,9 @@ namespace Voat.Data.Models
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            switch (DataConfigurationSettings.Instance.StoreType)
-            {
-                case DataStoreType.PostgreSql:
-
-                    //modelBuilder.Entity<Subverse>().Property(x => x.Name).HasColumnType("citext");
-                    //modelBuilder.Entity<Subverse>().Property(x => x.Title).HasColumnType("citext");
-                    modelBuilder.Entity<Subverse>().Property(x => x.Description).HasColumnType("citext");
-
-
-                    //We have to use the modelBuilder here to set up the citext handling. This has to be programatic to support portability
-
-                    //This is an EF6 way of telling the runtime to use citext for string columns. We need an EF Core way
-                    //modelBuilder.Properties<string>().Configure(s => s.HasColumnType("public.citext"));
-
-                    //var x  = modelBuilder.Model.Npgsql().GetOrAddPostgresExtension("public.citext");
-
-                    //modelBuilder.Entity<Submission>(x => x.p
-
-                    break;
-            }
-
+            modelBuilder.HasDefaultSchema(SqlFormatter.DefaultSchema);
             base.OnModelCreating(modelBuilder);
         }
-
         //Added this to ensure Dapper and direct connections can still execute
         public System.Data.Common.DbConnection Connection
         {

@@ -62,23 +62,9 @@ public class UnitTestSetup
 
         if (config["voat:test:preventDatabaseDrop"] != "True")
         {
-            //Force db to drop & seed
-            //Database.SetInitializer();
+            //Drop and reseed database
             using (var db = new VoatDataContext())
             {
-                try
-                {
-                    //Force configuration
-                    var x = db.Ad.FirstOrDefault();
-                }
-                catch {
-                    if (db.Connection.State == System.Data.ConnectionState.Open)
-                    {
-                        db.Connection.Close();
-
-                    }
-                }
-
                 var init = new TestDataInitializer();
                 init.InitializeDatabase(db); //This attempts to create and seed unit test db
             }

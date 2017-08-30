@@ -64,6 +64,7 @@ namespace Voat.Tests.Infrastructure
                 var builder = new DbConnectionStringBuilder();
                 builder.ConnectionString = originalConnectionString;
                 builder["database"] = DataConfigurationSettings.Instance.StoreType == DataStoreType.SqlServer ? "master" : "postgres";
+                builder["Application Name"] = "Voat Unit Tests";
                 connection.ConnectionString = builder.ConnectionString;
 
                 var cmd = connection.CreateCommand();
@@ -160,9 +161,10 @@ namespace Voat.Tests.Infrastructure
              *
              *                      DO NOT EDIT EXISTING SEED CODE, ALWAYS APPEND TO IT.
              *
-             *      EXISTING DATA BASED UNIT TESTS ARE BUILD UPON WHAT IS SPECIFIED HERE AND IF CHANGED WILL FAIL
+             *      EXISTING DATA BASED UNIT TESTS ARE BUILT UPON WHAT IS SPECIFIED HERE AND IF CHANGED WILL FAIL
              *
-             *      UPON SECOND THOUGHT THIS SOUNDS WRONG BUT THIS ALSO SOUNDS LIKE A FUTURE PERSON PROBLEM
+             *        UPON SECOND THOUGHT THIS SOUNDS WRONG BUT THIS ALSO SOUNDS LIKE A FUTURE PERSON PROBLEM
+             *        
             */
 
             //*******************************************************************************************************
