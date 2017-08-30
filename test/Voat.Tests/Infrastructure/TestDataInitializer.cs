@@ -137,6 +137,13 @@ namespace Voat.Tests.Infrastructure
 
                     }
                 }
+
+                switch (DataConfigurationSettings.Instance.StoreType)
+                {
+                    case DataStoreType.PostgreSql:
+                        ((Npgsql.NpgsqlConnection)connection).ReloadTypes();
+                        break;
+                }
             }
             finally
             {
