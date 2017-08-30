@@ -45,6 +45,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing;
 using Voat.Common;
 using Voat.Http;
+using Voat.Http.Filters;
 
 namespace Voat.Controllers
 {
@@ -257,7 +258,7 @@ namespace Voat.Controllers
                     }
                 }
             }
-            return View();
+            return await Index(name, "");
         }
         [Authorize]
         [HttpPost]
@@ -285,6 +286,7 @@ namespace Voat.Controllers
         [HttpPost]
         [Authorize]
         [VoatValidateAntiForgeryToken]
+        [PreventSpam(60)]
         public async Task<ActionResult> Create(Set set)
         {
             if (!VoatSettings.Instance.SetCreationEnabled)

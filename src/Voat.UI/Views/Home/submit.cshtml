@@ -132,7 +132,7 @@
                         @Html.CheckBoxFor(model => model.IsAdult, new { @class = "form-control" })
                     </div>
                 </div>
-                <div id="AnonDiv" class="form-group" style=@(Model.AllowAnonymized ? "display:block;" : "display:none;")>
+                <div id="AnonDiv" class="form-group">
                     @Html.LabelFor(model => model.IsAnonymized, new { @class = "control-label col-md-2" })
                     <div class="col-md-9">
                         @Html.CheckBoxFor(model => model.IsAnonymized, new { @class = "form-control" })

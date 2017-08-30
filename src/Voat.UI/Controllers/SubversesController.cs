@@ -390,6 +390,9 @@ namespace Voat.Controllers
                         return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
                     }
 
+                    //Set to proper cased name
+                    subverse = subverseObject.Name;
+
                     //HACK: Disable subverse
                     if (subverseObject.IsAdminDisabled.HasValue && subverseObject.IsAdminDisabled.Value)
                     {

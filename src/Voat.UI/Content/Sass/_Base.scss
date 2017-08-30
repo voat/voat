@@ -3259,7 +3259,14 @@ input[type=checkbox].form-control {
     padding-right:5px;
 }
 
+//Bug Fix in Preview: https://voat.co/v/voatdev/2085954
+#submission-preview-area {
+    overflow: auto;
+}
 
+#submission-preview-area .panel-body {
+    display: block;
+}
 /* ------------------------------------- RETRO PROTOTYPE ------------------------------ */
 
 .retro .submission > a {

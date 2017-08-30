@@ -659,7 +659,7 @@ namespace Voat.Data
             using (var db = new VoatDataContext())
             {
                 var query = (from x in db.Subverse
-                             where x.Name == subverse
+                             where x.Name.Equals(subverse, StringComparison.OrdinalIgnoreCase)
                              select x);
                 if (filterDisabled)
                 {
@@ -682,7 +682,7 @@ namespace Voat.Data
         {
             var data = (from x in _db.SubverseModerator
                         where x.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
-                        orderby x.Power ascending, x.CreationDate ascending
+                        orderby x.Power ascending, x.CreationDate descending
                         select x).ToList();
 
             return data.AsEnumerable();
@@ -5154,16 +5154,16 @@ namespace Voat.Data
 
             if (exactMatch)
             {
-                q.Where = "\"Name\" = @Name";
+                q.Where = $"{SqlFormatter.ToNormalized("\"Name\"", Normalization.Lower)} = @Name";
                 q.TakeCount = 1;
             }
             else
             {
-                q.Where = "\"Name\" LIKE CONCAT(@Name, '%') OR \"Name\" = @Name";
+                q.Where = $"{SqlFormatter.ToNormalized("\"Name\"", Normalization.Lower)} LIKE CONCAT(@Name, '%') OR {SqlFormatter.ToNormalized("\"Name\"", Normalization.Lower)} = @Name";
                 q.TakeCount = 10;
             }
 
-            return await _db.Connection.QueryAsync<SubverseSubmissionSetting>(q.ToString(), new { Name = subverseName });
+           return await _db.Connection.QueryAsync<SubverseSubmissionSetting>(q.ToString(), new { Name = subverseName.ToLower() });
 
         }
 

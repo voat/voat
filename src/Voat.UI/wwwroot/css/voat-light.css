@@ -2733,6 +2733,12 @@ input[type=checkbox].form-control {
 .content-menu-container > span {
   padding-right: 5px; }
 
+#submission-preview-area {
+  overflow: auto; }
+
+#submission-preview-area .panel-body {
+  display: block; }
+
 /* ------------------------------------- RETRO PROTOTYPE ------------------------------ */
 .retro .submission > a {
   font-size: 1.2em;

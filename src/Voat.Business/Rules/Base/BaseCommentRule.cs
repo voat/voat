@@ -23,6 +23,7 @@
 #endregion LICENSE
 
 using System;
+using Voat.Common;
 using Voat.Data;
 using Voat.RulesEngine;
 using Voat.Utilities;
@@ -50,7 +51,7 @@ namespace Voat.Rules
                 // check for copypasta
                 using (var repo = new Repository())
                 {
-                    var copyPasta = repo.SimilarCommentSubmittedRecently(context.UserName, content, TimeSpan.FromHours(24));
+                    var copyPasta = repo.SimilarCommentSubmittedRecently(context.UserName, content.TrimWhiteSpace(), TimeSpan.FromHours(24));
                     if (copyPasta)
                     {
                         return base.CreateOutcome(RuleResult.Denied, "You have recently submitted a similar comment. Please try to not use copy/paste so often.");

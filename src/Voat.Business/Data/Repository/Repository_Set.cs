@@ -126,15 +126,15 @@ namespace Voat.Data
             {
                 var d = new DapperDelete();
 
-                d.Delete = SqlFormatter.Table("SubverseSetSubscription");
+                d.Delete = SqlFormatter.DeleteBlock(SqlFormatter.Table("SubverseSetSubscription"));
                 d.Where = "\"SubverseSetID\" = @ID";
                 await conn.ExecuteAsync(d.ToString(), param);
 
-                d.Delete = SqlFormatter.Table("SubverseSetList");
+                d.Delete = SqlFormatter.DeleteBlock(SqlFormatter.Table("SubverseSetList"));
                 d.Where = "\"SubverseSetID\" = @ID";
                 await conn.ExecuteAsync(d.ToString(), param);
 
-                d.Delete = SqlFormatter.Table("SubverseSet");
+                d.Delete = SqlFormatter.DeleteBlock(SqlFormatter.Table("SubverseSet"));
                 d.Where = "\"ID\" = @ID";
                 await conn.ExecuteAsync(d.ToString(), param);
 

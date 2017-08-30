@@ -37,7 +37,18 @@ namespace Voat.Data
         {
             get
             {
-                return "dbo";
+                switch (DataConfigurationSettings.Instance.StoreType)
+                {
+                    case DataStoreType.SqlServer:
+                        return "dbo";
+                        break;
+                    case DataStoreType.PostgreSql:
+                        //will be public when we remove dbo schema from pg files
+                        return "dbo";
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
             }
         }
 

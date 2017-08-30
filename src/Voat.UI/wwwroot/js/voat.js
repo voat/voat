@@ -82,7 +82,7 @@ $(document).ready(function () {
                         var anonCheckBox = $('#IsAnonymized');
                         var anonDiv = $('#AnonDiv')
 
-                        anonDiv.hide();
+                        //anonDiv.hide();
                         anonCheckBox.prop("disabled", true);
                         anonCheckBox.prop("readonly", true);
 
@@ -1247,11 +1247,11 @@ function setSubverseAddCallBack(sender, arguments) {
             message = "No action was taken";
             //message = "Subverse " + subverseName + " was removed from set " + setName;
         }
+        $('input[data-autocomplete-subverse=1]').val('');
     } else {
         message = "Oops: " + response.error.message;
     }
     $(sender).parents(".updateSection").find(".updateResult").html(message);
-    $(subverseAutoCompleteSelector).val('');
 }
 function setSubverseListToggleCallBack(s, arguments) {
 

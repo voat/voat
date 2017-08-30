@@ -12,7 +12,6 @@ namespace Voat.Data.Models
         {
             //This code should remain independent of any backend 
 
-            modelBuilder.HasDefaultSchema("dbo");
             //CORE_PORT: Keys, will fix later and each table should have a ID INT PK
             modelBuilder.Entity<CommentRemovalLog>().HasKey(x => new { x.CommentID });
             modelBuilder.Entity<SubmissionRemovalLog>().HasKey(x => new { x.SubmissionID });

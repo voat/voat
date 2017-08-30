@@ -58,7 +58,7 @@ namespace Voat.Data.Models
     {
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.HasDefaultSchema("dbo");
+            builder.HasDefaultSchema(SqlFormatter.DefaultSchema);
             base.OnModelCreating(builder);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

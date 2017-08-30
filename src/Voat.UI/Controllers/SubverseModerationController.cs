@@ -852,8 +852,7 @@ namespace Voat.Controllers
             {
                 if (amountOfSubsUserModerates.Count() >= maximumOwnedSubs)
                 {
-                    ModelState.AddModelError(string.Empty, "Sorry, you can not own or moderate more than " + maximumOwnedSubs + " subverses.");
-                    return RedirectToAction("Index", "Home");
+                    return ErrorView(new ErrorViewModel() { Title = "Maximum Moderation Level Exceeded", Description = $"Sorry, you can not own or moderate more than {maximumOwnedSubs} subverses.", Footer = "That's too bad" });
                 }
             }
 
