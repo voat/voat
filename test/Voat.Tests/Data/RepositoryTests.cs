@@ -486,15 +486,15 @@ namespace Voat.Tests.Repository
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Any(), "Result expected");
 
-                result = repo.BannedDomains(new string[] { "invalid" }, 100);
+                result = repo.BannedDomains(new string[] { "invalid" }, 100, 100);
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Any(), "Result expected");
 
-                result = repo.BannedDomains(new string[] { "invalid" }, null);
+                result = repo.BannedDomains(new string[] { "invalid" });
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Any(), "Result expected");
 
-                result = repo.BannedDomains(new string[] { null }, null);
+                result = repo.BannedDomains(new string[] { null });
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Any(), "Result expected");
 
@@ -533,11 +533,11 @@ namespace Voat.Tests.Repository
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Any(), "Result expected");
 
-                result = repo.BannedDomains(new string[] { "sub.domain.ru" }, null);
+                result = repo.BannedDomains(new string[] { "sub.domain.ru" }, 0);
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsFalse(result.Any(), "Result expected");
 
-                result = repo.BannedDomains(new string[] { "sub.domain.ru" }, -1000);
+                result = repo.BannedDomains(new string[] { "ru" }, -1000);
                 Assert.IsNotNull(result, "Result was null");
                 Assert.IsTrue(result.Any(), "Result expected");
 

@@ -393,5 +393,6 @@ namespace Voat.Tests.Utils
             expectingToFind = identifier;
             Assert.AreEqual(expectingToFind, spoofs.FirstOrDefault(x => x == expectingToFind));
         }
+        
     }
 }

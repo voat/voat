@@ -23,17 +23,21 @@
 #endregion LICENSE
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Common;
 using Voat.Data;
 
 //using Microsoft.AspNet.SignalR;
 //using Voat.Data.Models;
 using Voat.Data.Models;
 using Voat.Domain.Query;
+using Voat.Utilities;
 
-namespace Voat.Utilities.Components
+namespace Voat.Notifications
 {
     public static class NotificationManager
     {
@@ -49,112 +53,119 @@ namespace Voat.Utilities.Components
             return allowed;
         }
 
-        public static async Task SendUserMentionNotification(string user, Comment comment)
+        internal static async Task SendUserMentionNotification(Comment comment, IEnumerable<string> users)
         {
             if (comment != null)
             {
-                if (!UserHelper.UserExists(user))
+                foreach (var user in users)
                 {
-                    return;
-                }
-                try
-                {
-                    string recipient = UserHelper.OriginalUsername(user);
-
-                    //BlockedUser Implementation - Comment User Mention
-                    if (!MesssagingUtility.IsSenderBlocked(comment.UserName, recipient))
+                    if (!UserHelper.UserExists(user))
                     {
-                        if (await UserAllowsAnonMentions(user, comment.IsAnonymized))
+                        return;
+                    }
+                    try
+                    {
+                        string recipient = UserHelper.OriginalUsername(user);
+
+                        //BlockedUser Implementation - Comment User Mention
+                        if (!MesssagingUtility.IsSenderBlocked(comment.UserName, recipient))
                         {
-                            //var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
-
-                            var q = new QuerySubmission(comment.SubmissionID.Value);
-                            var submission = await q.ExecuteAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
-                            //var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-
-                            var message = new Domain.Models.Message();
-
-                            message.IsAnonymized = comment.IsAnonymized;
-                            message.Recipient = recipient;
-                            message.RecipientType = Domain.Models.IdentityType.User;
-                            message.Sender = comment.UserName;
-                            message.SenderType = Domain.Models.IdentityType.User;
-                            message.Subverse = submission.Subverse;
-                            message.SubmissionID = comment.SubmissionID;
-                            message.CommentID = comment.ID;
-                            message.Type = Domain.Models.MessageType.CommentMention;
-                            message.CreationDate = Repository.CurrentDate;
-
-                            using (var repo = new Repository())
+                            if (await UserAllowsAnonMentions(user, comment.IsAnonymized))
                             {
-                                var response = await repo.SendMessage(message);
+                                //var submission = DataCache.Submission.Retrieve(comment.SubmissionID);
 
-                                if (response.Success)
+                                var q = new QuerySubmission(comment.SubmissionID.Value);
+                                var submission = await q.ExecuteAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                                //var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+
+                                var message = new Domain.Models.Message();
+
+                                message.IsAnonymized = comment.IsAnonymized;
+                                message.Recipient = recipient;
+                                message.RecipientType = Domain.Models.IdentityType.User;
+                                message.Sender = comment.UserName;
+                                message.SenderType = Domain.Models.IdentityType.User;
+                                message.Subverse = submission.Subverse;
+                                message.SubmissionID = comment.SubmissionID;
+                                message.CommentID = comment.ID;
+                                message.Type = Domain.Models.MessageType.CommentMention;
+                                message.CreationDate = Repository.CurrentDate;
+
+                                using (var repo = new Repository())
                                 {
-                                    EventNotification.Instance.SendMentionNotice(recipient, comment.UserName, Domain.Models.ContentType.Comment, comment.ID, comment.Content);
+                                    var response = await repo.SendMessage(message);
+
+                                    if (response.Success)
+                                    {
+                                        EventNotification.Instance.SendMentionNotice(recipient, comment.UserName, Domain.Models.ContentType.Comment, comment.ID, comment.Content);
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
                 }
             }
         }
 
-        public static async Task SendUserMentionNotification(string user, Submission submission)
+        internal static async Task SendUserMentionNotification(Submission submission, IEnumerable<string> users)
         {
             if (submission != null)
             {
-                if (!UserHelper.UserExists(user))
+                foreach (var user in users)
                 {
-                    return;
-                }
-                try
-                {
-                    string recipient = UserHelper.OriginalUsername(user);
 
-                    //BlockedUser Implementation - Submission User Mention
-                    if (!MesssagingUtility.IsSenderBlocked(submission.UserName, recipient))
+                    if (!UserHelper.UserExists(user))
                     {
-                        if (await UserAllowsAnonMentions(user, submission.IsAnonymized))
+                        return;
+                    }
+                    try
+                    {
+                        string recipient = UserHelper.OriginalUsername(user);
+
+                        //BlockedUser Implementation - Submission User Mention
+                        if (!MesssagingUtility.IsSenderBlocked(submission.UserName, recipient))
                         {
-                            //var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-                            var message = new Domain.Models.Message();
-
-                            message.IsAnonymized = submission.IsAnonymized;
-                            message.Recipient = recipient;
-                            message.RecipientType = Domain.Models.IdentityType.User;
-                            message.Sender = submission.UserName;
-                            message.SenderType = Domain.Models.IdentityType.User;
-                            message.Subverse = submission.Subverse;
-                            message.SubmissionID = submission.ID;
-                            message.Type = Domain.Models.MessageType.SubmissionMention;
-                            message.CreationDate = Repository.CurrentDate;
-
-                            using (var repo = new Repository())
+                            if (await UserAllowsAnonMentions(user, submission.IsAnonymized))
                             {
-                                var response = await repo.SendMessage(message);
+                                //var subverse = DataCache.Subverse.Retrieve(submission.Subverse);
+                                var message = new Domain.Models.Message();
 
-                                if (response.Success)
+                                message.IsAnonymized = submission.IsAnonymized;
+                                message.Recipient = recipient;
+                                message.RecipientType = Domain.Models.IdentityType.User;
+                                message.Sender = submission.UserName;
+                                message.SenderType = Domain.Models.IdentityType.User;
+                                message.Subverse = submission.Subverse;
+                                message.SubmissionID = submission.ID;
+                                message.Type = Domain.Models.MessageType.SubmissionMention;
+                                message.CreationDate = Repository.CurrentDate;
+
+                                using (var repo = new Repository())
                                 {
-                                    EventNotification.Instance.SendMentionNotice(recipient, submission.UserName, Domain.Models.ContentType.Submission, submission.ID, submission.Content);
+                                    var response = await repo.SendMessage(message);
+
+                                    if (response.Success)
+                                    {
+                                        EventNotification.Instance.SendMentionNotice(recipient, submission.UserName, Domain.Models.ContentType.Submission, submission.ID, submission.Content);
+                                    }
                                 }
                             }
-                        }
 
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
                 }
             }
         }
 
-        public static async Task SendCommentReplyNotification(IPrincipal user, Data.Models.Submission submission, Data.Models.Comment comment)
+        internal static async Task SendCommentReplyNotification(IPrincipal user, Data.Models.Submission submission, Data.Models.Comment comment)
         {
             try
             {
@@ -221,7 +232,7 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendSubmissionReplyNotification(IPrincipal user, Data.Models.Submission submission, Data.Models.Comment comment)
+        internal static async Task SendSubmissionReplyNotification(IPrincipal user, Data.Models.Submission submission, Data.Models.Comment comment)
         {
             try
             {
@@ -273,7 +284,7 @@ namespace Voat.Utilities.Components
             }
         }
 
-        public static async Task SendCommentNotification(IPrincipal user, Data.Models.Submission submission, Data.Models.Comment comment)
+        public static async Task OnCommentPosted(IPrincipal user, Data.Models.Submission submission, Data.Models.Comment comment)
         {
             if (comment.ParentID != null && comment.Content != null)
             {
@@ -283,6 +294,35 @@ namespace Voat.Utilities.Components
             {
                 await SendSubmissionReplyNotification(user, submission, comment);
             }
+            var users = FindMentions(comment.Content);
+            if (users.Any())
+            {
+                await SendUserMentionNotification(comment, users);
+            }
+        }
+
+        public static async Task OnSubmissionPosted(IPrincipal user, Data.Models.Submission submission)
+        {
+            string input = submission.Title + " " + submission.Content;
+            var users = FindMentions(input);
+            if (users.Any())
+            {
+                await SendUserMentionNotification(submission, users);
+            }
+        }
+        private static IEnumerable<string> FindMentions(string input)
+        {
+            var matchmaker = new MatchMaker() { IgnoreDuplicateMatches = true, MatchThreshold = 5 };
+            matchmaker.IsDuplicate = (match, matches) => { return matches.Any(x => String.Equals(x.Groups["user"].Value, match.Groups["user"].Value, StringComparison.OrdinalIgnoreCase)); };
+
+            if (matchmaker.Process(input, CONSTANTS.ACCEPTABLE_LEADS + CONSTANTS.USER_HOT_LINK_REGEX))
+            {
+                var matches = matchmaker.FilteredMatches;
+                var users = matches.Where(x => !x.Groups["notify"].Success).Select(x => x.Groups["user"].Value);
+                return users.ToList();
+            }
+
+            return Enumerable.Empty<string>();
         }
     }
 }

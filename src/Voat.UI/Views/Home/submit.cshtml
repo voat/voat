@@ -44,7 +44,8 @@
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => Model.Type);
-            
+            @Html.HiddenFor(model => Model.AllowAnonymized);
+
             <div class="alert alert-info">You are submitting a @(Model.Type.ToString().ToLower()) post.</div>
             <div class="form-horizontal">
                 @Html.ValidationSummary(true)
@@ -135,7 +136,15 @@
                 <div id="AnonDiv" class="form-group">
                     @Html.LabelFor(model => model.IsAnonymized, new { @class = "control-label col-md-2" })
                     <div class="col-md-9">
-                        @Html.CheckBoxFor(model => model.IsAnonymized, new { @class = "form-control" })
+                        @{ 
+                            //Such a hack, need to create a tagHelper for this instead
+                            object anonCheckBoxHtmlAttributes = new { @class = "form-control" };
+                            if (!Model.AllowAnonymized)
+                            {
+                                anonCheckBoxHtmlAttributes = new { @class = "form-control", disabled="disabled" };
+                            }
+                        }
+                        @Html.CheckBoxFor(model => model.IsAnonymized, anonCheckBoxHtmlAttributes)
                     </div>
                 </div>
                 @if (Model.RequireCaptcha && VoatSettings.Instance.CaptchaEnabled)

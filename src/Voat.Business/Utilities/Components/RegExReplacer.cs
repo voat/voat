@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Linq.Expressions;
+using Voat.Common;
 
 namespace Voat.Utilities.Components
 {
@@ -66,7 +67,7 @@ namespace Voat.Utilities.Components
             return content;
         }
     }
-
+   
     public class MatchProcessingReplacer : IReplacer
     {
         #region IReplacer Members
@@ -193,47 +194,57 @@ namespace Voat.Utilities.Components
             {
                 return content;
             }
-            var matches = PreFilterMatches(Regex.Matches(content, RegEx, RegexOptions.IgnoreCase));
             string result = content;
-            string[] escapeBlocks = { "~~~", "`" };
 
-            int offset = 0;
-
-            //List<string> matchvalues = new List<string>();
-            List<Match> processedMatches = new List<Match>();
-            int maxIndex = (MatchThreshold > 0) ? Math.Min(MatchThreshold, matches.Count) : matches.Count;
-
-            //flag content as having ignored areas if it has more than 1 match
-            bool requiresAdditionalProcecessing = (maxIndex > 0) ? HasAnyTokens(content, escapeBlocks) : false;
-
-            for (int i = 0; i < maxIndex; i++)
+            var matchmaker = new MatchMaker() { MatchThreshold = MatchThreshold, IgnoreDuplicateMatches = IgnoreDuplicateMatches };
+            if (matchmaker.Process(content, RegEx))
             {
-                Match m = matches[i];
+                //var matches = PreFilterMatches(Regex.Matches(content, RegEx, RegexOptions.IgnoreCase));
+                
+                string[] escapeBlocks = { "~~~", "`" };
 
-                //make sure this match isn't in a block
-                if (!requiresAdditionalProcecessing || (requiresAdditionalProcecessing && !IsInBlock(m, content, escapeBlocks)))
+                int offset = 0;
+
+                //List<string> matchvalues = new List<string>();
+                //List<Match> processedMatches = new List<Match>();
+                //int maxIndex = (MatchThreshold > 0) ? Math.Min(MatchThreshold, matches.Count) : matches.Count;
+
+                //flag content as having ignored areas if it has more than 1 match
+                bool requiresAdditionalProcecessing = (matchmaker.Matches.Count() > 0) ? HasAnyTokens(content, escapeBlocks) : false;
+
+                foreach (Match m in matchmaker.FilteredMatches)
                 {
-                    //make sure this match isn't in an anchor
-                    if (!IsInMarkDownAnchor(m, content))
+                    //Match m = matches[i];
+
+                    //make sure this match isn't in a block
+                    if (!requiresAdditionalProcecessing || (requiresAdditionalProcecessing && !IsInBlock(m, content, escapeBlocks)))
                     {
-                        if (!IgnoreDuplicateMatches || IgnoreDuplicateMatches && !IsDuplicate(m, processedMatches))
+                        //make sure this match isn't in an anchor
+                        if (!IsInMarkDownAnchor(m, content))
                         {
-                            //get the replacement value for match
-                            string substitution = _replacementFunc(m, content, state);
+                            //if (!IgnoreDuplicateMatches || IgnoreDuplicateMatches && !IsDuplicate(m, processedMatches))
+                            //{
+                                //get the replacement value for match
+                                string substitution = _replacementFunc(m, content, state);
 
-                            //Concat method (fractions of milliseconds faster)
-                            result = String.Concat(result.Substring(0, m.Index + offset), substitution, result.Substring(m.Index + m.Length + offset, result.Length - (m.Length + m.Index + offset)));
+                                //Concat method (fractions of milliseconds faster)
+                                result = String.Concat(result.Substring(0, m.Index + offset), substitution, result.Substring(m.Index + m.Length + offset, result.Length - (m.Length + m.Index + offset)));
 
-                            //Replace method
-                            //result = result.Remove(m.Index + offset, m.Length).Insert(m.Index + offset, substitution);
+                                //Replace method
+                                //result = result.Remove(m.Index + offset, m.Length).Insert(m.Index + offset, substitution);
 
-                            offset += substitution.Length - m.Length;
+                                offset += substitution.Length - m.Length;
 
-                            processedMatches.Add(m);
+                                //processedMatches.Add(m);
+                            //}
                         }
                     }
                 }
             }
+
+
+
+            
             return result;
         }
 

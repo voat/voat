@@ -41,7 +41,8 @@ namespace Voat.Utilities
         public const string COMMENT_ID_REGEX = @"\d*";
         public const string NSFW_FLAG = "nsfw|nsfl";
         public const string REQUEST_VERIFICATION_HEADER_NAME = "VoatRequestVerificationToken";
-        
+        public const string ACCEPTABLE_LEADS = @"(?<=\s{1,}|^|\(|\[|\>)";
+
         //public const string SET_REGEX = SUBVERSE_REGEX + @"\-" + USER_NAME_REGEX;
         public static readonly string SET_REGEX = $"(?<name>{SUBVERSE_REGEX})(\\{SET_SEPERATOR}(?<ownerName>{USER_NAME_REGEX}))?";
 

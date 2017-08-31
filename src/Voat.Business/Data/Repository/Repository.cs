@@ -53,6 +53,7 @@ using Voat.Common;
 using Voat.Common.Components;
 using Voat.IO;
 using Voat.Logging;
+using Voat.Notifications;
 
 namespace Voat.Data
 {
@@ -1576,10 +1577,11 @@ namespace Voat.Data
 
             if (userSubmission.Type == SubmissionType.Text)
             {
-                if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
-                {
-                    userSubmission.Content = ContentProcessor.Instance.Process(userSubmission.Content, ProcessingStage.InboundPreSave, newSubmission);
-                }
+                //Removing this stage of processing from content filters
+                //if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
+                //{
+                //    userSubmission.Content = ContentProcessor.Instance.Process(userSubmission.Content, ProcessingStage.InboundPreSave, newSubmission);
+                //}
 
                 newSubmission.Title = userSubmission.Title;
                 newSubmission.Content = userSubmission.Content;
@@ -1626,11 +1628,14 @@ namespace Voat.Data
 
             await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
+            //Removing this stage of processing from content filters
             //This sends notifications by parsing content
-            if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
-            {
-                ContentProcessor.Instance.Process(String.Concat(newSubmission.Title, " ", newSubmission.Content), ProcessingStage.InboundPostSave, newSubmission);
-            }
+            //if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
+            //{
+            //    ContentProcessor.Instance.Process(String.Concat(newSubmission.Title, " ", newSubmission.Content), ProcessingStage.InboundPostSave, newSubmission);
+            //}
+
+            await NotificationManager.OnSubmissionPosted(User, newSubmission);
 
             return CommandResponse.Successful(newSubmission.Map());
         }
@@ -2235,10 +2240,11 @@ namespace Voat.Data
                     comment.LastEditDate = CurrentDate;
                     comment.Content = content;
 
-                    if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
-                    {
-                        comment.Content = ContentProcessor.Instance.Process(comment.Content, ProcessingStage.InboundPreSave, comment);
-                    }
+                    //Removing this stage of processing from content filters
+                    //if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPreSave))
+                    //{
+                    //    comment.Content = ContentProcessor.Instance.Process(comment.Content, ProcessingStage.InboundPreSave, comment);
+                    //}
 
                     var formattedComment = Voat.Utilities.Formatting.FormatMessage(comment.Content);
                     comment.FormattedContent = formattedComment;
@@ -2302,7 +2308,7 @@ namespace Voat.Data
                 //c.IsAnonymized = (submission.IsAnonymized || subverse.IsAnonymized);
                 c.IsAnonymized = submission.IsAnonymized;
 
-                c.Content = ContentProcessor.Instance.Process(commentContent, ProcessingStage.InboundPreSave, c);
+                c.Content = commentContent;
 
                 //save fully formatted content
                 var formattedComment = Formatting.FormatMessage(c.Content);
@@ -2311,12 +2317,13 @@ namespace Voat.Data
                 _db.Comment.Add(c);
                 await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
-                if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
-                {
-                    ContentProcessor.Instance.Process(c.Content, ProcessingStage.InboundPostSave, c);
-                }
+                //Taking out
+                //if (ContentProcessor.Instance.HasStage(ProcessingStage.InboundPostSave))
+                //{
+                //    ContentProcessor.Instance.Process(c.Content, ProcessingStage.InboundPostSave, c);
+                //}
 
-                await NotificationManager.SendCommentNotification(User, submission, c).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                await NotificationManager.OnCommentPosted(User, submission, c).ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
                 return MapRuleOutCome(outcome, DomainMaps.Map(Selectors.SecureComment(c), User, submission.Subverse));
             }
@@ -4963,24 +4970,30 @@ namespace Voat.Data
                     orderby x.CreationDate descending
                     select x).ToList();
         }
-        public IEnumerable<BannedDomain> BannedDomains(string[] domains, int? gtldMinimumPartEvaulationCount = 1)
+        public IEnumerable<BannedDomain> BannedDomains(string[] domains, int minimumPartCount = 1, int maximumPartCount = 5)
         {
+
+            int minPartCount = Math.Max(0, minimumPartCount);
+            if (minPartCount > maximumPartCount)
+            {
+                throw new ArgumentOutOfRangeException("Minimum part count must be equal or less than maximum part count");
+            }
 
             List<string> alldomains = domains.Where(x => !String.IsNullOrEmpty(x)).ToList();
 
             if (alldomains.Any())
             {
-                if (gtldMinimumPartEvaulationCount != null)
+                if (minPartCount > 0)
                 {
-                    int minPartCount = Math.Max(1, gtldMinimumPartEvaulationCount.Value);
-
                     foreach (var domain in domains)
                     {
                         var pieces = domain.Split('.');
                         if (pieces.Length > minPartCount)
                         {
                             pieces = pieces.Reverse().ToArray();
-                            for (int i = pieces.Length - 1; i >= minPartCount; i--)
+                            var startIndex = Math.Min(pieces.Length - 1, maximumPartCount);
+
+                            for (int i = startIndex; i >= minPartCount; i--)
                             {
                                 string newDomain = String.Join(".", pieces.Take(i).Reverse());
                                 if (!String.IsNullOrEmpty(newDomain))

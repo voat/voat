@@ -25,10 +25,10 @@
 using System;
 using Voat.Domain.Models;
 
-namespace Voat.Utilities
+namespace Voat.Notifications
 {
     /// <summary>
-    /// This class is an eventing hub used to simply raise events.
+    /// This class is an eventing hub used to simply raise events to socket clients
     /// </summary>
     public class EventNotification
     {
@@ -74,10 +74,6 @@ namespace Voat.Utilities
             OnMentionReceived?.Invoke(this, new MessageReceivedEventArgs() { TargetUserName = userName, MessageType = MessageTypeFlag.CommentMention, ReferenceType = type, ReferenceID = referenceID, Message = message });
         }
 
-        //public void SendCommentReplyNotice(string userName, MessageType type, int id)
-        //{
-        //    OnCommentReplyReceived?.Invoke(this, new MessageReceivedEventArgs() { UserName = userName, MessageType = type, ReferenceID = id });
-        //}
         public void SendMessageNotice(string userName, string sendingUserName, MessageTypeFlag type, ContentType? referenceType, int? referenceID, string message = null)
         {
             OnMessageReceived?.Invoke(this, new MessageReceivedEventArgs() { TargetUserName = userName, SendingUserName = sendingUserName, MessageType = type, ReferenceType = referenceType, ReferenceID = referenceID, Message = message });

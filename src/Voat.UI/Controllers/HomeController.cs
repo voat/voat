@@ -110,7 +110,7 @@ namespace Voat.Controllers
                     model.Subverse = subverse.Name;
                     model.IsAdult = subverse.IsAdult;
                     model.IsAnonymized = subverse.IsAnonymized.HasValue ? subverse.IsAnonymized.Value : false;
-                    model.AllowAnonymized = !subverse.IsAnonymized.HasValue;
+                    model.AllowAnonymized = subverse.IsAnonymized == null || subverse.IsAnonymized.Value;
                 }
             }
 

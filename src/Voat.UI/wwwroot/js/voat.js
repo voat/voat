@@ -80,11 +80,16 @@ $(document).ready(function () {
 
                         var adultCheckBox = $('#IsAdult');
                         var anonCheckBox = $('#IsAnonymized');
+                        var anonHiddenField = $('#AllowAnonymized');
                         var anonDiv = $('#AnonDiv')
 
                         //anonDiv.hide();
                         anonCheckBox.prop("disabled", true);
                         anonCheckBox.prop("readonly", true);
+
+                        if (item.allowAnonymized) {
+                            anonHiddenField.val(item.allowAnonymized);
+                        }
 
                         if (item.isAdult) {
                             if (!adultCheckBox.prop('checked')) {

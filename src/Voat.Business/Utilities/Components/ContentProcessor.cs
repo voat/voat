@@ -22,6 +22,7 @@
 
 #endregion LICENSE
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -53,7 +54,7 @@ namespace Voat.Utilities.Components
                         {
                             var p = new ContentProcessor();
                             p.Filters.AddRange(new ContentFilter[] {
-                                new UserMentionNotificationFilter(),
+                                //new UserMentionNotificationFilter(),
                                 new UserMentionLinkFilter(),
                                 new SubverseLinkFilter(),
                                 new SetLinkFilter(),

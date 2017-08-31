@@ -468,7 +468,6 @@ namespace Voat.Tests.CommandTests
             }
         }
 
-
         public async Task TestUserMentionNotification(string sub, string user1, string user2, string user3)
         {
             var id = Guid.NewGuid().ToString();

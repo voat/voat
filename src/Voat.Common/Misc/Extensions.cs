@@ -142,13 +142,23 @@ namespace Voat.Common
             return String.Equals(string1, string2, StringComparison.OrdinalIgnoreCase);
         }
        
-        public static string SubstringMax(this string text, int count)
+        public static string SubstringMax(this string text, int count, bool ending = true, string substringAppend = "")
         {
             if (!String.IsNullOrEmpty(text))
             {
                 if (text.Length > count)
                 {
-                    return text.Substring(0, count);
+                    if (ending)
+                    {
+                        var subbed = text.Substring(0, count);
+                        return subbed + substringAppend;
+                    }
+                    else
+                    {
+                        var subbed = text.Substring(text.Length - count, count);
+                        return substringAppend + subbed;
+
+                    }
                 }
             }
             return text;

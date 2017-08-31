@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Domain.Command;
 using Voat.Domain.Query;
+using Voat.Notifications;
 using Voat.Tests.Infrastructure;
 using Voat.Tests.Repository;
 using Voat.Utilities;

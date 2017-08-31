@@ -230,26 +230,6 @@ namespace Voat.Tests.Utils
         [TestMethod]
         [TestCategory("Content Processor")]
         [TestCategory("Formatting")]
-        public void TestNoNotifyUserMentionIncoming()
-        {
-            string content = "-@user";
-
-            string processed = ContentProcessor.Instance.Process(content, ProcessingStage.InboundPostSave, null);
-            //Assert.AreEqual("[@user](https://voat.co/user/user)");
-
-            content = "@user";
-            processed = ContentProcessor.Instance.Process(content, ProcessingStage.InboundPostSave, null);
-
-            content = "-/u/user";
-            processed = ContentProcessor.Instance.Process(content, ProcessingStage.InboundPostSave, null);
-
-            content = "/u/user";
-            processed = ContentProcessor.Instance.Process(content, ProcessingStage.InboundPostSave, null);
-        }
-
-        [TestMethod]
-        [TestCategory("Content Processor")]
-        [TestCategory("Formatting")]
         public void TestParsingTimes()
         {
             //HAVE TO USE NON-HTTPCONTEXT DEPENDENT MATCHES FOR TESTS

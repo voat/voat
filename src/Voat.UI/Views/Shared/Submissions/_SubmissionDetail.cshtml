@@ -28,8 +28,9 @@
     string submissionDomainHref = "/v/" + Model.Subverse;
     if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
     {
-        submissionDomain = UrlUtility.GetDomainFromUri(Model.Url);
-        submissionDomainHref = "/domains/" + submissionDomain;
+        var domain = UrlUtility.GetDomainFromUri(Model.Url);
+        submissionDomain = domain.SubstringMax(100, false, "...");
+        submissionDomainHref = "/domains/" + domain;
     }
 }
 

@@ -27,16 +27,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Voat.Data.Models;
+using Voat.Notifications;
 
 namespace Voat.Utilities.Components
 {
     public abstract class ContentFilter
     {
-        private ProcessingStage _stage = ProcessingStage.InboundPostSave;
+        private ProcessingStage _stage = ProcessingStage.Outbound;
         private int _priority = 0;
         private bool _isReadOnly = false;
 
-        public const string ACCEPTABLE_LEADS = @"(?<=\s{1,}|^|\(|\[|\>)";
+        
 
         public bool IsReadOnly
         {
@@ -74,8 +75,8 @@ namespace Voat.Utilities.Components
     [Flags]
     public enum ProcessingStage
     {
-        InboundPreSave = 1,
-        InboundPostSave = 2,
+        //InboundPreSave = 1,
+        //InboundPostSave = 2,
         Outbound = 4
     }
 
@@ -97,7 +98,7 @@ namespace Voat.Utilities.Components
 
         public UserMentionFilter(int matchThreshold, bool ignoreDuplicatMatches)
         {
-            _replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + CONSTANTS.USER_HOT_LINK_REGEX, MatchFound) { MatchThreshold = matchThreshold, IgnoreDuplicateMatches = ignoreDuplicatMatches };
+            _replacer = new MatchProcessingReplacer(CONSTANTS.ACCEPTABLE_LEADS + CONSTANTS.USER_HOT_LINK_REGEX, MatchFound) { MatchThreshold = matchThreshold, IgnoreDuplicateMatches = ignoreDuplicatMatches };
         }
        
         protected override string ProcessContent(string content, object context)
@@ -108,51 +109,52 @@ namespace Voat.Utilities.Components
         public abstract string MatchFound(Match match, string matchSource, object context);
     }
 
-    public class UserMentionNotificationFilter : UserMentionFilter
-    {
-        private class DuplicateUserNameDetectionReplacer : MatchProcessingReplacer
-        {
-            public DuplicateUserNameDetectionReplacer(string regEx, Func<Match, string, object, string> replacementFunc) : base(regEx, replacementFunc)
-            {
-            }
-            public override bool IsDuplicate(Match currentMatch, IEnumerable<Match> processedMatches)
-            {
-                string groupName = "user";
-                var found = processedMatches.Any(x => String.Equals(x.Groups[groupName].Value, currentMatch.Groups[groupName].Value, StringComparison.OrdinalIgnoreCase));
-                return found;
-            }
-        }
+    //[Obsolete("This should not be part of the content filters", true)]
+    //public class UserMentionNotificationFilter : UserMentionFilter
+    //{
+    //    private class DuplicateUserNameDetectionReplacer : MatchProcessingReplacer
+    //    {
+    //        public DuplicateUserNameDetectionReplacer(string regEx, Func<Match, string, object, string> replacementFunc) : base(regEx, replacementFunc)
+    //        {
+    //        }
+    //        public override bool IsDuplicate(Match currentMatch, IEnumerable<Match> processedMatches)
+    //        {
+    //            string groupName = "user";
+    //            var found = processedMatches.Any(x => String.Equals(x.Groups[groupName].Value, currentMatch.Groups[groupName].Value, StringComparison.OrdinalIgnoreCase));
+    //            return found;
+    //        }
+    //    }
 
-        public UserMentionNotificationFilter()
-            : base(5, true)
-        {
-            _replacer = new DuplicateUserNameDetectionReplacer(_replacer.RegEx, MatchFound) { MatchThreshold = _replacer.MatchThreshold, IgnoreDuplicateMatches = _replacer.IgnoreDuplicateMatches };
-            Priority = 1;
-            ProcessingStage = ProcessingStage.InboundPostSave;
-            IsReadOnly = true;
-        }
+    //    public UserMentionNotificationFilter()
+    //        : base(5, true)
+    //    {
+    //        _replacer = new DuplicateUserNameDetectionReplacer(_replacer.RegEx, MatchFound) { MatchThreshold = _replacer.MatchThreshold, IgnoreDuplicateMatches = _replacer.IgnoreDuplicateMatches };
+    //        Priority = 1;
+    //        ProcessingStage = ProcessingStage.InboundPostSave;
+    //        IsReadOnly = true;
+    //    }
        
-        public override string MatchFound(Match match, string matchSource, object context)
-        {
-            if (!match.Groups["notify"].Success)
-            {
-                //Comment mentions
-                Comment c = context as Comment;
-                if (c != null && c.LastEditDate == null)
-                {
-                    NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, c);
-                }
+    //    public override string MatchFound(Match match, string matchSource, object context)
+    //    {
+    //        if (!match.Groups["notify"].Success)
+    //        {
+    //            //Comment mentions
+    //            Comment c = context as Comment;
+    //            if (c != null && c.LastEditDate == null)
+    //            {
+    //                NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, c);
+    //            }
 
-                //Message mentions
-                Submission m = context as Submission;
-                if (m != null && m.LastEditDate == null)
-                {
-                    NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, m);
-                }
-            }
-            return match.Value;
-        }
-    }
+    //            //Message mentions
+    //            Submission m = context as Submission;
+    //            if (m != null && m.LastEditDate == null)
+    //            {
+    //                NotificationManager.SendUserMentionNotification(match.Groups["user"].Value, m);
+    //            }
+    //        }
+    //        return match.Value;
+    //    }
+    //}
 
     public class UserMentionLinkFilter : UserMentionFilter
     {
@@ -169,7 +171,6 @@ namespace Voat.Utilities.Components
             return String.Format("[{0}]({1})", replace, VoatUrlFormatter.UserProfile(match.Groups["user"].Value, new Common.PathOptions(true, true)));
         }
     }
-
     public class SubverseLinkFilter : ContentFilter
     {
         public SubverseLinkFilter()
@@ -186,7 +187,7 @@ namespace Voat.Utilities.Components
 
         protected override string ProcessContent(string content, object context)
         {
-            MatchProcessingReplacer replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + CONSTANTS.SUBVERSE_LINK_REGEX_FULL,
+            MatchProcessingReplacer replacer = new MatchProcessingReplacer(CONSTANTS.ACCEPTABLE_LEADS + CONSTANTS.SUBVERSE_LINK_REGEX_FULL,
                ProcessLogic
             );
             return replacer.Replace(content, context);
@@ -208,7 +209,7 @@ namespace Voat.Utilities.Components
 
         protected override string ProcessContent(string content, object context)
         {
-            MatchProcessingReplacer replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + CONSTANTS.SET_LINK_REGEX_SHORT,
+            MatchProcessingReplacer replacer = new MatchProcessingReplacer(CONSTANTS.ACCEPTABLE_LEADS + CONSTANTS.SET_LINK_REGEX_SHORT,
                ProcessLogic
             );
             return replacer.Replace(content, context);
@@ -229,11 +230,10 @@ namespace Voat.Utilities.Components
 
         protected override string ProcessContent(string content, object context)
         {
-            MatchProcessingReplacer replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + @"((/?r/)(?'sub'[a-zA-Z0-9_]+))", ProcessLogic);
+            MatchProcessingReplacer replacer = new MatchProcessingReplacer(CONSTANTS.ACCEPTABLE_LEADS + @"((/?r/)(?'sub'[a-zA-Z0-9_]+))", ProcessLogic);
             return replacer.Replace(content, context);
         }
     }
-
     public class RawHyperlinkFilter : ContentFilter
     {
         public RawHyperlinkFilter()
@@ -249,7 +249,7 @@ namespace Voat.Utilities.Components
 
         protected override string ProcessContent(string content, object context)
         {
-            MatchProcessingReplacer replacer = new MatchProcessingReplacer(ACCEPTABLE_LEADS + CONSTANTS.HTTP_LINK_REGEX,
+            MatchProcessingReplacer replacer = new MatchProcessingReplacer(CONSTANTS.ACCEPTABLE_LEADS + CONSTANTS.HTTP_LINK_REGEX,
                ProcessLogic
             );
             return replacer.Replace(content, context);

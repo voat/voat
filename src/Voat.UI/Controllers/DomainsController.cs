@@ -44,9 +44,13 @@ namespace Voat.Controllers
             {
                 return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
-            if (domainName.Length < 4)
+            if (String.IsNullOrEmpty(domainName) || domainName.Length < 4)
             {
-                return RedirectToAction("UnAuthorized", "Error");
+                return ErrorView(new ErrorViewModel() { Title = "Domain too short", Description = "The domain you are searching for requires at least 4 characters", Footer = "We have standards around here" });
+            }
+            if (!domainName.Contains(".") || domainName.Split('.', StringSplitOptions.RemoveEmptyEntries).Length <= 1)
+            {
+                return ErrorView(new ErrorViewModel() { Title = "Wacky domain", Description = "The domain you are searching for appears to be invalid", Footer = "What is really going on?" });
             }
 
             sortingMode = (sortingMode == "new" ? "new" : "hot");

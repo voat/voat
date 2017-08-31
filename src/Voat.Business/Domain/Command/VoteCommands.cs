@@ -26,6 +26,7 @@ using System;
 using System.Threading.Tasks;
 using Voat.Data;
 using Voat.Models;
+using Voat.Notifications;
 using Voat.Utilities;
 
 namespace Voat.Domain.Command

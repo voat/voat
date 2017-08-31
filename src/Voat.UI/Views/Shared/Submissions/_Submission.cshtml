@@ -58,8 +58,9 @@
     if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
     {
         titleUrl = Model.Url;
-        submissionDomain = UrlUtility.GetDomainFromUri(Model.Url);
-        submissionDomainHref = "/domains/" + submissionDomain;
+        var domain = UrlUtility.GetDomainFromUri(Model.Url);
+        submissionDomain = domain.SubstringMax(100, false, "...");
+        submissionDomainHref = "/domains/" + domain;
     }
     var submissionClass = Model.Type == Voat.Domain.Models.SubmissionType.Text ? "self" : "";
     var classes = "";
