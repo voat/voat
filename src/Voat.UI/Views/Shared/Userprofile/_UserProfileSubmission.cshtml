@@ -20,15 +20,9 @@
 
 @model Voat.Domain.Models.Submission
 
-@* 1 user submission with details without comments *@
-@if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
-{
-    //type 2 = urls, model.Content = url, model.linkdescription = link description
-    @Html.Partial("Userprofile/_UserProfileSubmissionLink", Model);
+@{ 
+    ViewData["VoteTypeAllowed"] = Voat.Domain.Models.VoteTypeAllowed.None;
 }
-else
-{
-    //type 1 = message
-    @Html.Partial("Userprofile/_UserProfileSubmissionSelf", Model);
-}
+@Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", Model)
+
 

@@ -59,7 +59,7 @@
     {
         titleUrl = Model.Url;
         var domain = UrlUtility.GetDomainFromUri(Model.Url);
-        submissionDomain = domain.SubstringMax(100, false, "...");
+        submissionDomain = domain.SubstringMax(50, false, "...");
         submissionDomainHref = "/domains/" + domain;
     }
     var submissionClass = Model.Type == Voat.Domain.Models.SubmissionType.Text ? "self" : "";
@@ -72,9 +72,7 @@
 <div class="submission id-@Model.ID @classes link @submissionClass" data-fullname="@Model.ID" data-ups="@Model.UpCount" data-downs="@Model.DownCount">
     <p class="parent"></p>
 
-    @Html.Partial("~/Views/Shared/VotingIcons/_VotingIconsSubmission.cshtml", Model, new ViewDataDictionary(ViewData) {
-        { "VoteTypeAllowed", ViewBag.VoteTypeAllowed }
-    })
+    @Html.Partial("~/Views/Shared/VotingIcons/_VotingIconsSubmission.cshtml", Model)
     
     @{
 

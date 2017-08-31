@@ -29,7 +29,7 @@
     if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
     {
         var domain = UrlUtility.GetDomainFromUri(Model.Url);
-        submissionDomain = domain.SubstringMax(100, false, "...");
+        submissionDomain = domain.SubstringMax(50, false, "...");
         submissionDomainHref = "/domains/" + domain;
     }
 }
