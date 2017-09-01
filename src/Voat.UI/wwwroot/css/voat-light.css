@@ -907,16 +907,16 @@ select.form-control {
   outline-style: none; }
 
 .arrow-upvote {
-  background-position: 0 -12px; }
+  background-position: 0 -16px; }
 
 .arrow-upvoted {
-  background-position: -16px -12px; }
+  background-position: -19px -16px; }
 
 .arrow-downvote {
-  background-position: 0 -28px; }
+  background-position: 0 -34px; }
 
 .arrow-downvoted {
-  background-position: -16px -28px; }
+  background-position: -19px -34px; }
 
 .arrow-upvote, .arrow-upvoted {
   margin-bottom: 3px; }
@@ -932,16 +932,16 @@ select.form-control {
   width: 12px; }
 
 .comment .arrow-upvote {
-  background-position: -32px -12px; }
+  background-position: -38px -16px; }
 
 .comment .arrow-upvoted {
-  background-position: -44px -12px; }
+  background-position: -53px -16px; }
 
 .comment .arrow-downvote {
-  background-position: -32px -24px; }
+  background-position: -38px -30px; }
 
 .comment .arrow-downvoted {
-  background-position: -44px -24px; }
+  background-position: -53px -30px; }
 
 /* Disabled */
 .disabled-downvote {
@@ -1519,7 +1519,7 @@ pre, code {
 
 #manage {
   background: url("/images/Light-SpriteSheet.png");
-  background-position: -56px 0;
+  background-position: -68px 0;
   cursor: pointer;
   display: inline-block;
   height: 16px;
@@ -1531,7 +1531,7 @@ pre, code {
 
 #nightmodetoggle {
   background: url("/images/Light-SpriteSheet.png");
-  background-position: -86px 0;
+  background-position: -98px 0;
   display: inline-block;
   cursor: pointer;
   height: 16px;
@@ -1548,7 +1548,7 @@ pre, code {
 
 #mail.havemail {
   background: url("/images/Light-SpriteSheet.png");
-  background-position: -18px 0;
+  background-position: -21px 0;
   cursor: pointer;
   height: 12px;
   width: 18px; }
@@ -1947,37 +1947,37 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 .expando-button.selftext.collapsed {
   background: url("/images/Light-SpriteSheet.png");
-  background-position: 0 -44px;
+  background-position: 0 -53px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.collapsed:hover {
   background: url("/images/Light-SpriteSheet.png");
-  background-position: -16px -44px;
+  background-position: -19px -53px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.expanded {
   background: url("/images/Light-SpriteSheet.png");
-  background-position: 0 -60px;
+  background-position: 0 -72px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.expanded:hover {
   background: url("/images/Light-SpriteSheet.png");
-  background-position: -16px -60px;
+  background-position: -19px -72px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.loading {
   background: url("/images/Light-SpriteSheet.png");
-  background-position: 0 -76px;
+  background-position: 0 -91px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.loading:hover {
   background: url("/images/Light-SpriteSheet.png");
-  background-position: -16px -76px;
+  background-position: -19px -91px;
   height: 16px;
   width: 16px; }
 
@@ -2598,13 +2598,13 @@ input[type=checkbox].form-control {
     height: 16px;
     width: 16px; }
   .comment .arrow-upvote {
-    background-position: 0 -12px; }
+    background-position: 0 -16px; }
   .comment .arrow-upvoted {
-    background-position: -16px -12px; }
+    background-position: -19px -16px; }
   .comment .arrow-downvote {
-    background-position: 0 -28px; }
+    background-position: 0 -34px; }
   .comment .arrow-downvoted {
-    background-position: -16px -28px; }
+    background-position: -19px -34px; }
   .comment .arrow-upvote, .comment .arrow-upvoted {
     margin-bottom: 3px; }
   .comment .arrow-downvote, .comment .arrow-downvoted {
@@ -2643,27 +2643,27 @@ input[type=checkbox].form-control {
     width: 32px; }
   .expando-button.selftext.collapsed {
     background: url("/images/Light-SpriteSheet.png");
-    background-position: -32px -44px;
+    background-position: -38px -53px;
     height: 32px;
     width: 32px; }
   .expando-button.selftext.collapsed:hover {
     background: url("/images/Light-SpriteSheet.png");
-    background-position: -32px -44px;
+    background-position: -38px -53px;
     height: 32px;
     width: 32px; }
   .expando-button.selftext.expanded {
     background: url("/images/Light-SpriteSheet.png");
-    background-position: -64px -44px;
+    background-position: -73px -53px;
     height: 32px;
     width: 32px; }
   .expando-button.selftext.expanded:hover {
     background: url("/images/Light-SpriteSheet.png");
-    background-position: -64px -44px;
+    background-position: -73px -53px;
     height: 32px;
     width: 32px; }
   .expando-button.selftext.loading, .expando-button.selftext.loading:hover {
     background: url("/images/Light-SpriteSheet.png");
-    background-position: -32px -76px;
+    background-position: -38px -88px;
     height: 32px;
     width: 32px; }
   .link {

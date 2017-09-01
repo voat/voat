@@ -12,7 +12,7 @@ var paths = {
 }
 
 paths.scss = paths.root + "Sass/**/*.scss";
-gulp.task('Compile Sass', function () {
+gulp.task('CompileSass', function () {
     gulp.src(paths.scss)
         .pipe(sass())
         .pipe(gulp.dest(paths.dest));

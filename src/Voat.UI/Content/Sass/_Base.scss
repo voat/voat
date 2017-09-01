@@ -33,9 +33,11 @@
 
 @mixin gradient-top($first-color, $last-color, $initial: $first-color) {
     background: $initial;
+
     @each $prefix in -webkit-, -ms- {
         background: #{$prefix}linear-gradient( top,$first-color,$last-color );
     }
+
     background: linear-gradient( to bottom,$first-color,$last-color );
 }
 
@@ -111,26 +113,28 @@ body {
     line-height: 1.43;
     margin: 0;
 }
+
 body > .content .link .rank {
     width: 3.2ex;
 }
+
 a, a:visited {
     color: $color-3;
     text-decoration: none;
 }
 
-    a:hover {
-        color: $color-4;
-        text-decoration: none;
-    }
+a:hover {
+    color: $color-4;
+    text-decoration: none;
+}
 
-    a:focus {
-        text-decoration: none;
-    }
+a:focus {
+    text-decoration: none;
+}
 
-    a.author {
-        margin: 0 0;
-    }
+a.author {
+    margin: 0 0;
+}
 
 .tagline a.author:hover {
     text-decoration: none;
@@ -165,23 +169,23 @@ label {
     color: inherit;
 }
 
-    .md a[href="#s"]::after {
-        content: attr(title);
-        background: $background-6;
-        color: $color-6;
-        border: 1px solid $border-3;
-        padding: 2px;
-        visibility: visible;
-        margin-left: 5px;
-        cursor: default;
-    }
+.md a[href="#s"]::after {
+    content: attr(title);
+    background: $background-6;
+    color: $color-6;
+    border: 1px solid $border-3;
+    padding: 2px;
+    visibility: visible;
+    margin-left: 5px;
+    cursor: default;
+}
 
-    .md a[href="#s"]:hover::after,
-    .md a[href="#s"]:focus::after,
-    .md a[href="#s"]:active::after {
-        color: $color-2;
-        background: $background-7;
-    }
+.md a[href="#s"]:hover::after,
+.md a[href="#s"]:focus::after,
+.md a[href="#s"]:active::after {
+    color: $color-2;
+    background: $background-7;
+}
 
 /* Alerts */
 
@@ -203,9 +207,9 @@ label {
     font-size: 12px;
 }
 
-    .alert-info a {
-        color: $color-9;
-    }
+.alert-info a {
+    color: $color-9;
+}
 
 .alert-warning {
     @include gradient-top($background-11, $background-12);
@@ -256,9 +260,9 @@ label {
     margin: 10px auto;
 }
 
-    .alert-firsttimevisitorwelcome > p {
-        margin: 0 0 10px;
-    }
+.alert-firsttimevisitorwelcome > p {
+    margin: 0 0 10px;
+}
 
 a.btn-tour {
     @include gradient-top($background-17, $background-18, $background-16);
@@ -290,14 +294,14 @@ a.btn-tour {
     white-space: nowrap;
 }
 
-    .settitlelabel > a {
-        color: $color-13;
-        text-decoration: none;
-    }
+.settitlelabel > a {
+    color: $color-13;
+    text-decoration: none;
+}
 
-        .settitlelabel > a:hover {
-            color: $color-14;
-        }
+.settitlelabel > a:hover {
+    color: $color-14;
+}
 
 .settitlesortinglabel {
     background: $background-19;
@@ -315,11 +319,11 @@ a.btn-tour {
     white-space: nowrap;
 }
 
-    .settitlesortinglabel:hover {
-        border-color: $border-color-8;
-        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.2 );
-        color: $color-16;
-    }
+.settitlesortinglabel:hover {
+    border-color: $border-color-8;
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.2 );
+    color: $color-16;
+}
 
 .set-title .label {
     background: $background-19;
@@ -334,19 +338,19 @@ a.btn-tour {
     text-align: center;
 }
 
-    .set-title .label:hover {
-        border-color: $border-color-8;
-        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.2 );
-        color: $color-16;
-    }
+.set-title .label:hover {
+    border-color: $border-color-8;
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.2 );
+    color: $color-16;
+}
 
-    .set-title .label a {
-        color: $color-17;
-    }
+.set-title .label a {
+    color: $color-17;
+}
 
-        .set-title .label a:hover {
-            color: $color-17;
-        }
+.set-title .label a:hover {
+    color: $color-17;
+}
 
 .alert-title {
     border-bottom: 2px solid;
@@ -568,30 +572,30 @@ input, button, select, textarea {
     font-size: 11px;
 }
 
-    .tagline a {
-        color: $color-3;
-    }
+.tagline a {
+    color: $color-3;
+}
 
-        .tagline a:visited {
-            color: $color-29;
-        }
+.tagline a:visited {
+    color: $color-29;
+}
 
-        .tagline a:hover {
-            color: $color-30;
-            text-decoration: underline;
-        }
+.tagline a:hover {
+    color: $color-30;
+    text-decoration: underline;
+}
 
-    .tagline .submitter {
-        color: $color-3;
-    }
+.tagline .submitter {
+    color: $color-3;
+}
 
-    .tagline .moderator {
-        color: $color-31;
-    }
+.tagline .moderator {
+    color: $color-31;
+}
 
-    .tagline .admin {
-        color: $color-32;
-    }
+.tagline .admin {
+    color: $color-32;
+}
 
 .text-danger:hover {
     color: $color-1;
@@ -629,12 +633,12 @@ input, button, select, textarea {
     color: inherit;
 }
 
-    .user .userkarma {
-        border-bottom: 1px dotted $border-bottom-3;
-        cursor: help;
-        font-weight: normal;
-        margin: 0 2px;
-    }
+.user .userkarma {
+    border-bottom: 1px dotted $border-bottom-3;
+    cursor: help;
+    font-weight: normal;
+    margin: 0 2px;
+}
 
 /* User profile stats */
 
@@ -669,34 +673,34 @@ input, button, select, textarea {
     margin: 10px 0px;
 }
 
-    .userstats-body > p {
-        margin: 0 0 6px;
-    }
+.userstats-body > p {
+    margin: 0 0 6px;
+}
 
-    .userstats-body > .entry {
-        margin-top: 5px;
-        margin-bottom: 5px;
-    }
+.userstats-body > .entry {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
 
-    .userstats-body .comment .flat-list.buttons li a {
-        font-size: 11px;
-    }
+.userstats-body .comment .flat-list.buttons li a {
+    font-size: 11px;
+}
 
 .userstats-submission-title {
     color: $color-3;
 }
 
-    .userstats-submission-title:hover {
-        text-decoration: underline;
-    }
+.userstats-submission-title:hover {
+    text-decoration: underline;
+}
 
 .userstats-submission-author {
     font-weight: bold;
 }
 
-    .userstats-submission-author:hover {
-        color: $color-34;
-    }
+.userstats-submission-author:hover {
+    color: $color-34;
+}
 
 .userstats-submission-score {
     color: $color-35;
@@ -707,9 +711,9 @@ input, button, select, textarea {
     color: $color-3;
 }
 
-    .userstats-submission-subverse:hover {
-        text-decoration: underline;
-    }
+.userstats-submission-subverse:hover {
+    text-decoration: underline;
+}
 
 .validation-summary-errors {
     font-weight: bold;
@@ -750,35 +754,35 @@ h2.whoaversename {
     text-align: center;
 }
 
-    .btn-whoaverse:hover {
-        @include gradient-top($background-28, $background-29);
-        border-color: $border-color-12;
-        color: $color-37;
-    }
+.btn-whoaverse:hover {
+    @include gradient-top($background-28, $background-29);
+    border-color: $border-color-12;
+    color: $color-37;
+}
 
-    .btn-whoaverse:active {
-        position: relative;
-        top: 1px;
-    }
+.btn-whoaverse:active {
+    position: relative;
+    top: 1px;
+}
 
-    .btn-whoaverse.disabled, .btn-whoaverse[disabled], fieldset[disabled] .btn {
-        cursor: not-allowed;
-        pointer-events: none;
-        opacity: 0.65;
-        box-shadow: none;
-    }
+.btn-whoaverse.disabled, .btn-whoaverse[disabled], fieldset[disabled] .btn {
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.65;
+    box-shadow: none;
+}
 
-    /* Promoted */
-    .btn-whoaverse.contribute {
-        @include gradient-top($background-30, $background-31);
-        border-color: $border-color-13;
-        color: $color-38;
-    }
+/* Promoted */
+.btn-whoaverse.contribute {
+    @include gradient-top($background-30, $background-31);
+    border-color: $border-color-13;
+    color: $color-38;
+}
 
-        .btn-whoaverse.contribute:hover {
-            @include gradient-top($background-32, $background-33);
-            border-color: $border-color-14;
-        }
+.btn-whoaverse.contribute:hover {
+    @include gradient-top($background-32, $background-33);
+    border-color: $border-color-14;
+}
 
 a.btn-whoaverse {
     color: $color-36;
@@ -796,42 +800,42 @@ a.btn-whoaverse {
     text-align: center;
 }
 
-    .btn-voat:hover,
-    .btn-whoaverse-paging:hover {
-        @include gradient-top($background-36, $background-37);
-        border-color: $border-color-15;
-        color: $color-39;
-        text-decoration: none;
-    }
+.btn-voat:hover,
+.btn-whoaverse-paging:hover {
+    @include gradient-top($background-36, $background-37);
+    border-color: $border-color-15;
+    color: $color-39;
+    text-decoration: none;
+}
 
-    .btn-voat:active,
-    .btn-whoaverse-paging:active {
-        position: relative;
-        top: 1px;
-    }
+.btn-voat:active,
+.btn-whoaverse-paging:active {
+    position: relative;
+    top: 1px;
+}
 
-    .btn-voat:focus,
-    .btn-whoaverse-paging:focus {
-        color: $color-1;
-    }
+.btn-voat:focus,
+.btn-whoaverse-paging:focus {
+    color: $color-1;
+}
 
-    .btn-voat.disabled, .btn-voat[disabled],
-    .btn-whoaverse-paging.disabled, .btn-whoaverse-paging[disabled], fieldset[disabled] .btn {
-        cursor: not-allowed;
-        pointer-events: none;
-        opacity: 0.65;
-        box-shadow: none;
-    }
+.btn-voat.disabled, .btn-voat[disabled],
+.btn-whoaverse-paging.disabled, .btn-whoaverse-paging[disabled], fieldset[disabled] .btn {
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.65;
+    box-shadow: none;
+}
 
-    .btn-voat a,
-    .btn-whoaverse-paging a {
-        color: $color-39 !important;
-    }
+.btn-voat a,
+.btn-whoaverse-paging a {
+    color: $color-39 !important;
+}
 
-    .btn-voat:visited,
-    .btn-whoaverse-paging:visited {
-        color: $color-39 !important;
-    }
+.btn-voat:visited,
+.btn-whoaverse-paging:visited {
+    color: $color-39 !important;
+}
 
 .btn-whoaverse-medium {
     @include gradient-top($background-39, $background-40, $background-38);
@@ -846,12 +850,12 @@ a.btn-whoaverse {
     text-align: center;
 }
 
-    .btn-whoaverse-medium:hover {
-        @include gradient-top($background-41, $background-42);
-        border-color: $border-color-16;
-        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
-        color: $color-1;
-    }
+.btn-whoaverse-medium:hover {
+    @include gradient-top($background-41, $background-42);
+    border-color: $border-color-16;
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
+    color: $color-1;
+}
 
 .btn-voat {
     @include gradient-top($background-30, $background-31);
@@ -859,12 +863,12 @@ a.btn-whoaverse {
     color: $color-38;
 }
 
-    .btn-voat:hover,
-    .btn-voat:active,
-    .btn-voat:focus {
-        @include gradient-top($background-32, $background-33);
-        border-color: $border-color-14;
-    }
+.btn-voat:hover,
+.btn-voat:active,
+.btn-voat:focus {
+    @include gradient-top($background-32, $background-33);
+    border-color: $border-color-14;
+}
 
 .btn-voat-off {
     @include gradient-top($background-25, $background-70);
@@ -872,13 +876,13 @@ a.btn-whoaverse {
     color: $color-71;
 }
 
-    .btn-voat-off:hover,
-    .btn-voat-off:active,
-    .btn-voat-off:focus {
-        @include gradient-top($background-71, $background-72);
-        border-color: $border-color-29;
-        color: $color-70;
-    }
+.btn-voat-off:hover,
+.btn-voat-off:active,
+.btn-voat-off:focus {
+    @include gradient-top($background-71, $background-72);
+    border-color: $border-color-29;
+    color: $color-70;
+}
 
 /* ! Body : Forms
 ------------------------------------------------------------------------------------ */
@@ -898,9 +902,9 @@ a.btn-whoaverse {
     resize: vertical;
 }
 
-    .commenttextarea:focus {
-        border-color: $border-color-17;
-    }
+.commenttextarea:focus {
+    border-color: $border-color-17;
+}
 
 .form-control {
     background: $background-43;
@@ -918,32 +922,33 @@ a.btn-whoaverse {
     width: 100%;
 }
 
-    .form-control:focus {
-        border-color: $border-color-17;
-        box-shadow: none;
-    }
+.form-control:focus {
+    border-color: $border-color-17;
+    box-shadow: none;
+}
 
-    .form-control::-moz-placeholder {
-        color: $color-35;
-        opacity: 1;
-    }
+.form-control::-moz-placeholder {
+    color: $color-35;
+    opacity: 1;
+}
 
-    .form-control:-ms-input-placeholder {
-        color: $color-35;
-    }
+.form-control:-ms-input-placeholder {
+    color: $color-35;
+}
 
-    .form-control::-webkit-input-placeholder {
-        color: $color-35;
-    }
-    select.form-control {
-        font-size: 13px;
-        line-height: 100%;
-        padding: 6px;
-        width: auto;
-        background: none;
-        color: $color-12;
-        background-color: $background-color-6;
-    }
+.form-control::-webkit-input-placeholder {
+    color: $color-35;
+}
+
+select.form-control {
+    font-size: 13px;
+    line-height: 100%;
+    padding: 6px;
+    width: auto;
+    background: none;
+    color: $color-12;
+    background-color: $background-color-6;
+}
 
 /* ! Body : WVSprites
 ------------------------------------------------------------------------------------ */
@@ -1011,19 +1016,19 @@ a.btn-whoaverse {
 }
 
 .arrow-upvote {
-    background-position: 0 -12px;
+    background-position: 0 -16px;
 }
 
 .arrow-upvoted {
-    background-position: -16px -12px;
+    background-position: -19px -16px;
 }
 
 .arrow-downvote {
-    background-position: 0 -28px;
+    background-position: 0 -34px;
 }
 
 .arrow-downvoted {
-    background-position: -16px -28px;
+    background-position: -19px -34px;
 }
 
 .arrow-upvote, .arrow-upvoted {
@@ -1044,19 +1049,19 @@ a.btn-whoaverse {
 }
 
 .comment .arrow-upvote {
-    background-position: -32px -12px;
+    background-position: -38px -16px;
 }
 
 .comment .arrow-upvoted {
-    background-position: -44px -12px;
+    background-position: -53px -16px;
 }
 
 .comment .arrow-downvote {
-    background-position: -32px -24px;
+    background-position: -38px -30px;
 }
 
 .comment .arrow-downvoted {
-    background-position: -44px -24px;
+    background-position: -53px -30px;
 }
 
 /* Disabled */
@@ -1073,74 +1078,74 @@ a.btn-whoaverse {
     overflow: auto;
 }
 
-    .md a:hover {
-        color: $color-34 !important;
-    }
+.md a:hover {
+    color: $color-34 !important;
+}
 
-    .md a:visited {
-        color: $color-42;
-    }
+.md a:visited {
+    color: $color-42;
+}
 
-    .md blockquote {
-        background: $background-44;
-        border-color: $border-color-18 $border-color-18 $border-color-18 $border-color-19;
-        border-style: solid;
-        border-width: 1px 1px 1px 3px;
-        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
-        font-size: inherit;
-        margin: 5px 10px;
-        padding: 0 8px 4px;
-    }
+.md blockquote {
+    background: $background-44;
+    border-color: $border-color-18 $border-color-18 $border-color-18 $border-color-19;
+    border-style: solid;
+    border-width: 1px 1px 1px 3px;
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+    font-size: inherit;
+    margin: 5px 10px;
+    padding: 0 8px 4px;
+}
 
-        .md blockquote p {
-            margin: 6px 0;
-        }
+.md blockquote p {
+    margin: 6px 0;
+}
 
-    .md h1 {
-        border-bottom: 1px dotted $border-bottom-4;
-        font-size: 125%;
-        font-weight: normal;
-        line-height: 163%;
-        margin: 10px 0;
-    }
+.md h1 {
+    border-bottom: 1px dotted $border-bottom-4;
+    font-size: 125%;
+    font-weight: normal;
+    line-height: 163%;
+    margin: 10px 0;
+}
 
-    .md h2 {
-        color: inherit;
-        font-size: 115%;
-        font-weight: bold;
-        line-height: 163%;
-        margin: 10px 0;
-    }
+.md h2 {
+    color: inherit;
+    font-size: 115%;
+    font-weight: bold;
+    line-height: 163%;
+    margin: 10px 0;
+}
 
-    .md h3, .md h4, .md h5, .md h6 {
-        font-size: 110%;
-        font-style: italic;
-        line-height: 163%;
-        margin: 10px 0;
-    }
+.md h3, .md h4, .md h5, .md h6 {
+    font-size: 110%;
+    font-style: italic;
+    line-height: 163%;
+    margin: 10px 0;
+}
 
-    .md hr {
-        margin: 10px 0;
-    }
+.md hr {
+    margin: 10px 0;
+}
 
-    .md p {
-        line-height: 150%;
-        margin: 7px 0;
-    }
+.md p {
+    line-height: 150%;
+    margin: 7px 0;
+}
 
-    .md table {
-        background-color: $background-color-6;
-        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
-    }
+.md table {
+    background-color: $background-color-6;
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
+}
 
-        .md table thead {
-            border-bottom: 2px solid $border-bottom-2;
-        }
+.md table thead {
+    border-bottom: 2px solid $border-bottom-2;
+}
 
-    .md td, .md th {
-        border: 1px solid $border-20;
-        padding: 2px 5px;
-    }
+.md td, .md th {
+    border: 1px solid $border-20;
+    padding: 2px 5px;
+}
 
 p.heading-2 {
     font-size: 125%;
@@ -1158,9 +1163,9 @@ pre {
     padding: 4px 6px;
 }
 
-    pre code {
-        border: 0;
-    }
+pre code {
+    border: 0;
+}
 
 pre, code {
     background: $background-44;
@@ -1211,10 +1216,10 @@ pre, code {
     font-size: 12px;
 }
 
-    .panel-title a:hover {
-        color: $color-1;
-        text-decoration: underline;
-    }
+.panel-title a:hover {
+    color: $color-1;
+    text-decoration: underline;
+}
 
 .panel-footer {
     background: $background-47;
@@ -1285,21 +1290,21 @@ pre, code {
     transition: 500ms margin;
 }
 
-    #show-menu-button.show-mobile-sidebar {
-        margin-left: -8px;
-        margin-right: 8px;
-    }
+#show-menu-button.show-mobile-sidebar {
+    margin-left: -8px;
+    margin-right: 8px;
+}
 
-    #show-menu-button::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-top: 12px double $border-top-2;
-        border-bottom: 4px solid $border-bottom-6;
-    }
+#show-menu-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-top: 12px double $border-top-2;
+    border-bottom: 4px solid $border-bottom-6;
+}
 
 #modal-background {
     z-index: 1;
@@ -1358,11 +1363,11 @@ pre, code {
     top: -1px;
 }
 
-    #sr-more-link:hover {
-        background: $background-48;
-        color: $color-1;
-        text-decoration: none;
-    }
+#sr-more-link:hover {
+    background: $background-48;
+    color: $color-1;
+    text-decoration: none;
+}
 
 /* ! Header : Top : Subverses list : Subscription menu
 ------------------------------------------------------------------------------------ */
@@ -1373,49 +1378,49 @@ pre, code {
     text-transform: lowercase;
 }
 
-    .whoaSubscriptionMenu li {
-        float: left;
-        list-style: none;
-    }
+.whoaSubscriptionMenu li {
+    float: left;
+    list-style: none;
+}
 
-        .whoaSubscriptionMenu li ul {
-            border: 1px solid;
-            border-color: $border-color-22 $border-color-23 $border-color-23;
-            box-shadow: 3px 3px 3px hsla( 0,0%,0%,0.2 );
-            font-size: 10px;
-            margin: 0;
-            padding: 0;
-            position: absolute;
-            display: none;
-            z-index: 99;
-        }
+.whoaSubscriptionMenu li ul {
+    border: 1px solid;
+    border-color: $border-color-22 $border-color-23 $border-color-23;
+    box-shadow: 3px 3px 3px hsla( 0,0%,0%,0.2 );
+    font-size: 10px;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    display: none;
+    z-index: 99;
+}
 
-        .whoaSubscriptionMenu:hover li ul,
-        .no-touch .whoaSubscriptionMenu > li > a[href="#"]:focus ~ ul {
-            display: block;
-        }
+.whoaSubscriptionMenu:hover li ul,
+.no-touch .whoaSubscriptionMenu > li > a[href="#"]:focus ~ ul {
+    display: block;
+}
 
-            .whoaSubscriptionMenu li ul li {
-                display: inline;
-                float: none;
-            }
+.whoaSubscriptionMenu li ul li {
+    display: inline;
+    float: none;
+}
 
-                .whoaSubscriptionMenu li ul li a:link,
-                .whoaSubscriptionMenu li ul li a:visited {
-                    background: $background-15;
-                    border-bottom: 1px solid $border-bottom-7;
-                    color: $color-45;
-                    display: block;
-                    line-height: 16px;
-                    padding: 1px 6px;
-                    text-decoration: none;
-                    width: auto;
-                }
+.whoaSubscriptionMenu li ul li a:link,
+.whoaSubscriptionMenu li ul li a:visited {
+    background: $background-15;
+    border-bottom: 1px solid $border-bottom-7;
+    color: $color-45;
+    display: block;
+    line-height: 16px;
+    padding: 1px 6px;
+    text-decoration: none;
+    width: auto;
+}
 
-                .whoaSubscriptionMenu li ul li a:hover {
-                    @include gradient-top($background-50, $background-49, $background-49);
-                    color: $color-1 !important;
-                }
+.whoaSubscriptionMenu li ul li a:hover {
+    @include gradient-top($background-50, $background-49, $background-49);
+    color: $color-1 !important;
+}
 
 .drop-arrow {
     border-width: 4px 4px 0;
@@ -1497,29 +1502,29 @@ pre, code {
     }
 }
 
-  @media screen and (max-width: 1600px){   
-    #dashboard ul > li {    
-      min-width: 24.7%;    
-    }  
-  }
+@media screen and (max-width: 1600px) {
+    #dashboard ul > li {
+        min-width: 24.7%;
+    }
+}
 
-  @media screen and (max-width: 1024px) {  
-    #dashboard ul > li {    
-      min-width: 33%;    
-    }  
-  }
+@media screen and (max-width: 1024px) {
+    #dashboard ul > li {
+        min-width: 33%;
+    }
+}
 
-  @media screen and (max-width: 800px) {  
-    #dashboard ul > li {    
-      min-width: 49.5%;    
-    }  
-  }
+@media screen and (max-width: 800px) {
+    #dashboard ul > li {
+        min-width: 49.5%;
+    }
+}
 
-  @media screen and (max-width: 500px) {  
-    #dashboard ul > li {    
-      min-width: 100%;
-    }  
-  }
+@media screen and (max-width: 500px) {
+    #dashboard ul > li {
+        min-width: 100%;
+    }
+}
 
 
 /* ! Header : Banner
@@ -1556,17 +1561,17 @@ pre, code {
     vertical-align: unset;
 }
 
-    #header-img.default-header {
-        background-image: url( /images/WVSprite.png );
-        background-position: 0 -313px;
-        background-repeat: no-repeat;
-        display: inline-block;
-        height: 40px;
-        margin-bottom: 3px;
-        text-indent: -9999px;
-        vertical-align: bottom;
-        width: 120px;
-    }
+#header-img.default-header {
+    background-image: url( /images/WVSprite.png );
+    background-position: 0 -313px;
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 40px;
+    margin-bottom: 3px;
+    text-indent: -9999px;
+    vertical-align: bottom;
+    width: 120px;
+}
 
 /* ! Header : Banner : Page name
 ------------------------------------------------------------------------------------ */
@@ -1580,16 +1585,16 @@ pre, code {
     vertical-align: bottom;
 }
 
-    .pagename a {
-        color: $color-46;
-        display: inline-block;
-        padding: 6px 12px;
-    }
+.pagename a {
+    color: $color-46;
+    display: inline-block;
+    padding: 6px 12px;
+}
 
-        .pagename a:hover {
-            color: $color-14;
-            text-decoration: none;
-        }
+.pagename a:hover {
+    color: $color-14;
+    text-decoration: none;
+}
 
 /* ! Header : Banner : Tab menu
 ------------------------------------------------------------------------------------ */
@@ -1603,77 +1608,77 @@ pre, code {
     white-space: nowrap;
 }
 
-    /* ! Header : Banner : Tab menu : Tab
+/* ! Header : Banner : Tab menu : Tab
     ------------------------------------------------------------------------------------ */
 
-    .tabmenu li {
-        display: inline;
-        font-weight: normal;
-        margin: 0 2px;
-    }
+.tabmenu li {
+    display: inline;
+    font-weight: normal;
+    margin: 0 2px;
+}
 
-        .tabmenu li a {
-            background: none;
-            padding: 4px 8px;
-        }
+.tabmenu li a {
+    background: none;
+    padding: 4px 8px;
+}
 
-        .tabmenu li.disabled a, .tabmenu li.selected a {
-            border: 1px solid transparent;
-            border-radius: 3px;
-        }
+.tabmenu li.disabled a, .tabmenu li.selected a {
+    border: 1px solid transparent;
+    border-radius: 3px;
+}
 
-        /* ! Header : Banner : Tab menu : Tab : Selected
+/* ! Header : Banner : Tab menu : Tab : Selected
         ------------------------------------------------------------------------------------ */
 
-        .tabmenu li.selected a {
-            @include gradient-top($background-15, $background-51);
-            border: solid $border-22;
-            border-width: 1px 1px 2px;
-            color: $color-45;
-        }
+.tabmenu li.selected a {
+    @include gradient-top($background-15, $background-51);
+    border: solid $border-22;
+    border-width: 1px 1px 2px;
+    color: $color-45;
+}
 
-            .tabmenu li.selected a:hover {
-                color: $color-47;
-            }
+.tabmenu li.selected a:hover {
+    color: $color-47;
+}
 
-            .tabmenu li.selected a.contribute {
-                @include gradient-top($background-30, $background-31);
-                border: solid $border-23;
-                border-width: 1px 1px 2px;
-                color: $color-38;
-                font-weight: bold;
-            }
+.tabmenu li.selected a.contribute {
+    @include gradient-top($background-30, $background-31);
+    border: solid $border-23;
+    border-width: 1px 1px 2px;
+    color: $color-38;
+    font-weight: bold;
+}
 
-                .tabmenu li.selected a.contribute:hover {
-                    @include gradient-top($background-32, $background-33);
-                    border-color: $border-color-14;
-                }
+.tabmenu li.selected a.contribute:hover {
+    @include gradient-top($background-32, $background-33);
+    border-color: $border-color-14;
+}
 
-        /* ! Header : Banner : Tab menu : Tab : Unselected
+/* ! Header : Banner : Tab menu : Tab : Unselected
         ------------------------------------------------------------------------------------ */
 
-        .tabmenu li.disabled a {
-            color: $color-48;
-        }
+.tabmenu li.disabled a {
+    color: $color-48;
+}
 
-            .tabmenu li.disabled a:hover {
-                @include gradient-top($background-15, $background-51);
-                border: solid $border-22;
-                border-width: 1px 1px 2px;
-                color: $color-45;
-            }
+.tabmenu li.disabled a:hover {
+    @include gradient-top($background-15, $background-51);
+    border: solid $border-22;
+    border-width: 1px 1px 2px;
+    color: $color-45;
+}
 
-            .tabmenu li.disabled a.contribute {
-                @include gradient-top($background-30, $background-31);
-                border: solid $border-23;
-                border-width: 1px 1px 2px;
-                color: $color-49;
-            }
+.tabmenu li.disabled a.contribute {
+    @include gradient-top($background-30, $background-31);
+    border: solid $border-23;
+    border-width: 1px 1px 2px;
+    color: $color-49;
+}
 
-                .tabmenu li.disabled a.contribute:hover {
-                    @include gradient-top($background-32, $background-33);
-                    border-color: $border-color-14;
-                }
+.tabmenu li.disabled a.contribute:hover {
+    @include gradient-top($background-32, $background-33);
+    border-color: $border-color-14;
+}
 
 /* ! Header : Banner : Account
 ------------------------------------------------------------------------------------ */
@@ -1686,18 +1691,18 @@ pre, code {
     bottom: 0;
 }
 
-    #header-account a {
-        color: $color-24;
-    }
+#header-account a {
+    color: $color-24;
+}
 
-        #header-account a:hover {
-            color: $color-14;
-        }
+#header-account a:hover {
+    color: $color-14;
+}
 
-    #header-account .separator {
-        color: $color-50;
-        margin: 0 4px;
-    }
+#header-account .separator {
+    color: $color-50;
+    margin: 0 4px;
+}
 
 /* logged in */
 
@@ -1724,13 +1729,13 @@ pre, code {
     font-weight: bold;
 }
 
-    #header-account .logged-out a:hover {
-        text-decoration: underline;
-    }
+#header-account .logged-out a:hover {
+    text-decoration: underline;
+}
 
 #manage {
     background: url( $spritesheet );
-    background-position: -56px 0;
+    background-position: -68px 0;
     cursor: pointer;
     display: inline-block;
     height: 16px;
@@ -1743,7 +1748,7 @@ pre, code {
 
 #nightmodetoggle {
     background: url($spritesheet );
-    background-position: -86px 0;
+    background-position: -98px 0;
     display: inline-block;
     cursor: pointer;
     height: 16px;
@@ -1760,21 +1765,21 @@ pre, code {
     top: 2px;
 }
 
-    #mail.havemail {
-        background: url( $spritesheet );
-        background-position: -18px 0;
-        cursor: pointer;
-        height: 12px;
-        width: 18px;
-    }
+#mail.havemail {
+    background: url( $spritesheet );
+    background-position: -21px 0;
+    cursor: pointer;
+    height: 12px;
+    width: 18px;
+}
 
-    #mail.nohavemail {
-        background: url( $spritesheet );
-        background-position: 0 0;
-        cursor: pointer;
-        height: 12px;
-        width: 18px;
-    }
+#mail.nohavemail {
+    background: url( $spritesheet );
+    background-position: 0 0;
+    cursor: pointer;
+    height: 12px;
+    width: 18px;
+}
 
 /* ! Container
 -------------------------------------------------------------------------------- */
@@ -1803,17 +1808,17 @@ pre, code {
     transition: 500ms right;
 }
 
-    .side .spacer {
-        margin: 3px 0 10px;
-    }
+.side .spacer {
+    margin: 3px 0 10px;
+}
 
-        .side .spacer.spacersection {
-            background: $background-52;
-            border: 1px solid $border-15;
-            border-width: 1px 1px 2px;
-            border-radius: 2px;
-            padding: 8px;
-        }
+.side .spacer.spacersection {
+    background: $background-52;
+    border: 1px solid $border-15;
+    border-width: 1px 1px 2px;
+    border-radius: 2px;
+    padding: 8px;
+}
 
 .sidebox .spacer {
     background: none;
@@ -1837,11 +1842,11 @@ pre, code {
     border: 0;
 }
 
-    .submissioninfo h2.whoaversename {
-        color: $color-52;
-        font-size: 15px;
-        margin: 10px 0;
-    }
+.submissioninfo h2.whoaversename {
+    color: $color-52;
+    font-size: 15px;
+    margin: 10px 0;
+}
 
 .ikp {
     border-bottom: 1px dotted $border-bottom-8;
@@ -1856,19 +1861,19 @@ pre, code {
     width: 100% !important;
 }
 
-    .titlebox.footer {
-        border: 0;
-        margin: 0;
-        padding: 15px 0 0;
-    }
+.titlebox.footer {
+    border: 0;
+    margin: 0;
+    padding: 15px 0 0;
+}
 
-        .titlebox.footer .bottom {
-            font-size: 12px;
-        }
+.titlebox.footer .bottom {
+    font-size: 12px;
+}
 
-    .titlebox .bottom {
-        border-top: 1px solid $border-top-4;
-    }
+.titlebox .bottom {
+    border-top: 1px solid $border-top-4;
+}
 
 .minimum-ccp-downvote {
     margin-top: 6px;
@@ -1889,14 +1894,14 @@ pre, code {
     text-align: left;
 }
 
-    .titlebox h1 a {
-        color: inherit;
-    }
+.titlebox h1 a {
+    color: inherit;
+}
 
-        .titlebox h1 a:hover {
-            color: $color-14;
-            text-decoration: none;
-        }
+.titlebox h1 a:hover {
+    color: $color-14;
+    text-decoration: none;
+}
 
 /* ! Sidebar : Titlebox : Markdown
 ------------------------------------------------------------------------------------ */
@@ -1961,9 +1966,9 @@ ul.content {
     z-index: 1;
 }
 
-    .content > br {
-        display: none;
-    }
+.content > br {
+    display: none;
+}
 
 .sitetable {
     list-style-type: none;
@@ -1977,61 +1982,61 @@ ul.content {
     padding: 12px 0;
 }
 
-    .link:last-child {
-        border: 0;
-    }
+.link:last-child {
+    border: 0;
+}
 
-    .link > .link {
-        border: 0;
-        margin: 0;
-        padding: 0;
-    }
+.link > .link {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
 
-    /* ! Sitetable : Link : Rank
+/* ! Sitetable : Link : Rank
     ------------------------------------------------------------------------------------ */
 
-    .link .rank {
-        color: $color-54;
-        float: left;
-        font-family: inherit;
-        font-size: 10px;
-        margin-top: 19px;
-        min-width: 16px;
-        text-align: center;
-    }
+.link .rank {
+    color: $color-54;
+    float: left;
+    font-family: inherit;
+    font-size: 10px;
+    margin-top: 19px;
+    min-width: 16px;
+    text-align: center;
+}
 
-    /* ! Sitetable : Link : Votes
+/* ! Sitetable : Link : Votes
     ------------------------------------------------------------------------------------ */
 
-    .link .midcol {
-        font-size: 12px;
-        font-weight: bold;
-    }
+.link .midcol {
+    font-size: 12px;
+    font-weight: bold;
+}
 
-    .link .score {
-        color: $color-55;
-        line-height: 13px;
-        min-width: 28px;
-        text-align: center;
-    }
+.link .score {
+    color: $color-55;
+    line-height: 13px;
+    min-width: 28px;
+    text-align: center;
+}
 
-        .link .score.dislikes {
-            color: $color-26;
-        }
+.link .score.dislikes {
+    color: $color-26;
+}
 
-        .link .score.likes {
-            color: $color-25;
-        }
+.link .score.likes {
+    color: $color-25;
+}
 
 .score.likes, .score.dislikes,
 .likes .score, .dislikes .score {
     display: none;
 }
 
-    .likes .score.likes,
-    .dislikes .score.dislikes {
-        display: inline;
-    }
+.likes .score.likes,
+.dislikes .score.dislikes {
+    display: inline;
+}
 
 .likes div.score.likes,
 .dislikes div.score.dislikes {
@@ -2198,14 +2203,14 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     font-weight: bold;
 }
 
-    .link a.title.may-blank:visited {
-        color: $color-58;
-    }
+.link a.title.may-blank:visited {
+    color: $color-58;
+}
 
-    .link a.title.may-blank:hover {
-        color: $color-3;
-        text-decoration: none;
-    }
+.link a.title.may-blank:hover {
+    color: $color-3;
+    text-decoration: none;
+}
 
 /* ! Sitetable : Link : Title : Domain
 ------------------------------------------------------------------------------------ */
@@ -2215,22 +2220,22 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     font-size: 11px;
 }
 
-    .domain a {
-        color: $color-60;
-        max-width: none;
-        overflow: hidden;
-        -ms-text-overflow: ellipsis;
-        -o-text-overflow: ellipsis;
-        text-overflow: ellipsis;
-        vertical-align: middle;
-        visibility: visible;
-        white-space: nowrap;
-    }
+.domain a {
+    color: $color-60;
+    max-width: none;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    visibility: visible;
+    white-space: nowrap;
+}
 
-        .domain a:hover {
-            color: $color-14;
-            text-decoration: none;
-        }
+.domain a:hover {
+    color: $color-14;
+    text-decoration: none;
+}
 
 /* ! Sitetable : Link : Expando
 ------------------------------------------------------------------------------------ */
@@ -2243,47 +2248,47 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     cursor: pointer;
 }
 
-    .expando-button.selftext.collapsed {
-        background: url( $spritesheet );
-        background-position: 0 -44px;
-        height: 16px;
-        width: 16px;
-    }
+.expando-button.selftext.collapsed {
+    background: url( $spritesheet );
+    background-position: 0 -53px;
+    height: 16px;
+    width: 16px;
+}
 
-        .expando-button.selftext.collapsed:hover {
-            background: url( $spritesheet );
-            background-position: -16px -44px;
-            height: 16px;
-            width: 16px;
-        }
+.expando-button.selftext.collapsed:hover {
+    background: url( $spritesheet );
+    background-position: -19px -53px;
+    height: 16px;
+    width: 16px;
+}
 
-    .expando-button.selftext.expanded {
-        background: url( $spritesheet );
-        background-position: 0 -60px;
-        height: 16px;
-        width: 16px;
-    }
+.expando-button.selftext.expanded {
+    background: url( $spritesheet );
+    background-position: 0 -72px;
+    height: 16px;
+    width: 16px;
+}
 
-        .expando-button.selftext.expanded:hover {
-            background: url( $spritesheet );
-            background-position: -16px -60px;
-            height: 16px;
-            width: 16px;
-        }
+.expando-button.selftext.expanded:hover {
+    background: url( $spritesheet );
+    background-position: -19px -72px;
+    height: 16px;
+    width: 16px;
+}
 
-    .expando-button.selftext.loading {
-        background: url( $spritesheet );
-        background-position: 0 -76px;
-        height: 16px;
-        width: 16px;
-    }
+.expando-button.selftext.loading {
+    background: url( $spritesheet );
+    background-position: 0 -91px;
+    height: 16px;
+    width: 16px;
+}
 
-        .expando-button.selftext.loading:hover {
-            background: url( $spritesheet );
-            background-position: -16px -76px;
-            height: 16px;
-            width: 16px;
-        }
+.expando-button.selftext.loading:hover {
+    background: url( $spritesheet );
+    background-position: -19px -91px;
+    height: 16px;
+    width: 16px;
+}
 /* ! Sitetable : Link : Tag line
 ------------------------------------------------------------------------------------ */
 
@@ -2292,28 +2297,28 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     font-weight: bold;
 }
 
-    .link a.subverse:visited {
-        color: $color-61;
-    }
+.link a.subverse:visited {
+    color: $color-61;
+}
 
-    .link a.subverse:hover {
-        color: $color-34;
-        text-decoration: none;
-    }
+.link a.subverse:hover {
+    color: $color-34;
+    text-decoration: none;
+}
 
 .link a.author {
     color: $color-30;
     font-weight: normal;
 }
 
-    .link a.author:visited {
-        color: $color-30;
-    }
+.link a.author:visited {
+    color: $color-30;
+}
 
-    .link a.author:hover {
-        color: $color-34;
-        text-decoration: underline;
-    }
+.link a.author:hover {
+    color: $color-34;
+    text-decoration: underline;
+}
 
 .link .tagline {
     font-size: 12px;
@@ -2345,22 +2350,22 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     padding: 0;
 }
 
-    .link .flat-list li {
-        border: 0;
-        display: inline-block;
-        line-height: 150%;
-        padding-right: 3px;
-        text-align: center;
-    }
+.link .flat-list li {
+    border: 0;
+    display: inline-block;
+    line-height: 150%;
+    padding-right: 3px;
+    text-align: center;
+}
 
-        .link .flat-list li a {
-            color: $color-62;
-            font-weight: bold;
-        }
+.link .flat-list li a {
+    color: $color-62;
+    font-weight: bold;
+}
 
-            .link .flat-list li a:hover {
-                text-decoration: underline;
-            }
+.link .flat-list li a:hover {
+    text-decoration: underline;
+}
 
 /* ! Sitetable : Link : Markdown
 ------------------------------------------------------------------------------------ */
@@ -2375,13 +2380,13 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     max-width: 60em;
 }
 
-    .link .usertext .md blockquote {
-        background: $background-61;
-    }
+.link .usertext .md blockquote {
+    background: $background-61;
+}
 
-    .link .usertext .md pre, .link .usertext .md code {
-        background: $background-61;
-    }
+.link .usertext .md pre, .link .usertext .md code {
+    background: $background-61;
+}
 
 /* ! Sitetable : Comments
 ------------------------------------------------------------------------------------ */
@@ -2396,150 +2401,150 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     padding: 0;
 }
 
-    .menuarea .spacer {
-        display: inline;
-        margin: 0;
-    }
+.menuarea .spacer {
+    display: inline;
+    margin: 0;
+}
 
 .comment {
     margin: 10px 0 0;
     overflow: hidden;
 }
 
-    .comment .comment {
-        border: 1px solid $border-24;
-        border-radius: 3px;
-        margin: 4px 0 2px 8px;
-        padding: 4px 6px 4px 8px;
-    }
+.comment .comment {
+    border: 1px solid $border-24;
+    border-radius: 3px;
+    margin: 4px 0 2px 8px;
+    padding: 4px 6px 4px 8px;
+}
 
-    .comment.thread > .comment.child {
-        margin-left: 30px;
-    }
+.comment.thread > .comment.child {
+    margin-left: 30px;
+}
 
-    .comment .comment .comment,
-    .comment .comment .comment .comment .comment,
-    .comment .comment .comment .comment .comment .comment .comment,
-    .comment .comment .comment .comment .comment .comment .comment .comment .comment,
-    .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment {
-        background-color: $background-color-6;
-    }
+.comment .comment .comment,
+.comment .comment .comment .comment .comment,
+.comment .comment .comment .comment .comment .comment .comment,
+.comment .comment .comment .comment .comment .comment .comment .comment .comment,
+.comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment {
+    background-color: $background-color-6;
+}
 
-        .comment .comment .comment blockquote,
-        .comment .comment .comment .comment .comment blockquote,
-        .comment .comment .comment .comment .comment .comment .comment blockquote,
-        .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote,
-        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote {
-            background-color: $background-color-8;
-        }
+.comment .comment .comment blockquote,
+.comment .comment .comment .comment .comment blockquote,
+.comment .comment .comment .comment .comment .comment .comment blockquote,
+.comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote,
+.comment .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote {
+    background-color: $background-color-8;
+}
 
-        .comment .comment,
-        .comment .comment .comment .comment,
-        .comment .comment .comment .comment .comment .comment,
-        .comment .comment .comment .comment .comment .comment .comment .comment,
-        .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment {
-            background-color: $background-color-9;
-        }
+.comment .comment,
+.comment .comment .comment .comment,
+.comment .comment .comment .comment .comment .comment,
+.comment .comment .comment .comment .comment .comment .comment .comment,
+.comment .comment .comment .comment .comment .comment .comment .comment .comment .comment {
+    background-color: $background-color-9;
+}
 
-            .comment .comment blockquote,
-            .comment .comment .comment .comment blockquote,
-            .comment .comment .comment .comment .comment .comment blockquote,
-            .comment .comment .comment .comment .comment .comment .comment .comment blockquote,
-            .comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote {
-                background-color: $background-color-10;
-            }
+.comment .comment blockquote,
+.comment .comment .comment .comment blockquote,
+.comment .comment .comment .comment .comment .comment blockquote,
+.comment .comment .comment .comment .comment .comment .comment .comment blockquote,
+.comment .comment .comment .comment .comment .comment .comment .comment .comment .comment blockquote {
+    background-color: $background-color-10;
+}
 
-    .comment .midcol {
-        margin-top: 5px;
-    }
+.comment .midcol {
+    margin-top: 5px;
+}
 
-    .comment p.parent {
-        font-size: 14px;
-    }
+.comment p.parent {
+    font-size: 14px;
+}
 
-    .comment .showreplies {
-        display: block;
-        margin-bottom: 15px;
-        margin-top: 7px;
-        padding: 5px;
-    }
+.comment .showreplies {
+    display: block;
+    margin-bottom: 15px;
+    margin-top: 7px;
+    padding: 5px;
+}
 
-    /* ! Sitetable : Comments : Tag line
+/* ! Sitetable : Comments : Tag line
     ------------------------------------------------------------------------------------ */
 
-    .comment a.expand {
-        color: $color-63;
-        margin: 0 3px 0 0;
-    }
+.comment a.expand {
+    color: $color-63;
+    margin: 0 3px 0 0;
+}
 
-        .comment a.expand:hover {
-            color: $color-64;
-            text-decoration: none;
-        }
+.comment a.expand:hover {
+    color: $color-64;
+    text-decoration: none;
+}
 
-    .comment .collapsed {
-        color: $color-63;
-        font-size: 11px;
-        font-style: italic;
-        margin-left: 30px;
-    }
+.comment .collapsed {
+    color: $color-63;
+    font-size: 11px;
+    font-style: italic;
+    margin-left: 30px;
+}
 
-        .comment .collapsed a {
-            color: $color-65;
-        }
+.comment .collapsed a {
+    color: $color-65;
+}
 
-    .comment a.author {
-        color: $color-3;
-        font-weight: bold;
-        margin: 3px;
-    }
+.comment a.author {
+    color: $color-3;
+    font-weight: bold;
+    margin: 3px;
+}
 
-        .comment a.author:visited {
-            color: $color-3;
-        }
+.comment a.author:visited {
+    color: $color-3;
+}
 
-        .comment a.author:hover {
-            text-decoration: underline;
-        }
+.comment a.author:hover {
+    text-decoration: underline;
+}
 
-    .comment a.submitter {
-        color: $color-26;
-    }
+.comment a.submitter {
+    color: $color-26;
+}
 
-    .comment a.moderator {
-        color: $color-31;
-    }
+.comment a.moderator {
+    color: $color-31;
+}
 
-    .comment a.admin {
-        color: $color-32;
-    }
+.comment a.admin {
+    color: $color-32;
+}
 
-    .comment .tagline .number {
-        font-weight: bold;
-    }
+.comment .tagline .number {
+    font-weight: bold;
+}
 
-    .comment .flat-list.buttons li a:hover {
-        text-decoration: underline;
-    }
+.comment .flat-list.buttons li a:hover {
+    text-decoration: underline;
+}
 
-    /* ! Sitetable : Comments : Markdown
+/* ! Sitetable : Comments : Markdown
     ------------------------------------------------------------------------------------ */
 
-    .comment .md {
-        font-size: 13px;
-        max-width: 60em;
-    }
+.comment .md {
+    font-size: 13px;
+    max-width: 60em;
+}
 
-    /* ! Sitetable : Comments : Form
+/* ! Sitetable : Comments : Form
     ------------------------------------------------------------------------------------ */
 
-    .comment .form-control {
-        margin-bottom: 10px;
-    }
+.comment .form-control {
+    margin-bottom: 10px;
+}
 
-    .comment .col-md-5 {
-        width: 100%;
-    }
+.comment .col-md-5 {
+    width: 100%;
+}
 
 /* ! Sitetable : Pagination
 ------------------------------------------------------------------------------------ */
@@ -2549,12 +2554,12 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     padding: 0;
 }
 
-    .pagination-container .btn-whoaverse-paging a {
-        display: inline-block;
-        height: 20px;
-        line-height: 20px;
-        width: 64px;
-    }
+.pagination-container .btn-whoaverse-paging a {
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    width: 64px;
+}
 
 /* ! Footer
 -------------------------------------------------------------------------------- */
@@ -2571,23 +2576,23 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     margin: 15px auto 20px;
 }
 
-    .footer a:hover {
-        text-decoration: underline;
-    }
+.footer a:hover {
+    text-decoration: underline;
+}
 
 .bottommenu {
     color: $color-66;
     font-size: 11px;
 }
 
-    .bottommenu a {
-        color: inherit;
-        text-decoration: underline;
-    }
+.bottommenu a {
+    color: inherit;
+    text-decoration: underline;
+}
 
-        .bottommenu a:hover {
-            text-decoration: underline;
-        }
+.bottommenu a:hover {
+    text-decoration: underline;
+}
 
 /* ! About
 -------------------------------------------------------------------------------- */
@@ -2622,9 +2627,9 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     padding: 5px 10px;
 }
 
-    #about-main .md .panel-heading a:hover {
-        text-decoration: underline;
-    }
+#about-main .md .panel-heading a:hover {
+    text-decoration: underline;
+}
 
 #about-main .md .panel-heading-messagetitle {
     background: $background-62;
@@ -2655,13 +2660,13 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     text-align: center;
 }
 
-    #about-main .btn-whoaverse-paging:hover {
-        @include gradient-top($background-63, $background-64);
-        border-color: $border-color-27;
-        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
-        color: $color-68;
-        text-decoration: none;
-    }
+#about-main .btn-whoaverse-paging:hover {
+    @include gradient-top($background-63, $background-64);
+    border-color: $border-color-27;
+    box-shadow: 0 1px 0 hsla( 0,0%,0%,0.15 );
+    color: $color-68;
+    text-decoration: none;
+}
 
 #about-main .md ul.flat-list {
     margin: 10px 0;
@@ -2697,10 +2702,10 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     padding: 10px;
 }
 
-    .well label.control-label {
-        margin-bottom: 5px;
-        resize: vertical;
-    }
+.well label.control-label {
+    margin-bottom: 5px;
+    resize: vertical;
+}
 
 textarea.form-control {
     font-size: 13px;
@@ -2752,9 +2757,9 @@ input[type=checkbox].form-control {
     padding: 20px;
 }
 
-    .modal-body > p {
-        margin: 0 0 10px;
-    }
+.modal-body > p {
+    margin: 0 0 10px;
+}
 
 .form-horizontal .form-group {
     margin-left: 0;
@@ -2782,21 +2787,21 @@ input[type=checkbox].form-control {
     width: 100%;
 }
 
-    .modal-body .col-md-4 input.form-control {
-        border-radius: 0 0 3px 3px;
-        border-top: 0;
-        clear: both;
-        font-size: 15px;
-        height: 36px;
-        margin: 0;
-        text-align: left;
-        @include transition(border-color 0.25s ease-in-out);
-        width: 360px;
-    }
+.modal-body .col-md-4 input.form-control {
+    border-radius: 0 0 3px 3px;
+    border-top: 0;
+    clear: both;
+    font-size: 15px;
+    height: 36px;
+    margin: 0;
+    text-align: left;
+    @include transition(border-color 0.25s ease-in-out);
+    width: 360px;
+}
 
-        .modal-body .col-md-4 input.form-control:focus {
-            border-color: $border-color-28;
-        }
+.modal-body .col-md-4 input.form-control:focus {
+    border-color: $border-color-28;
+}
 
 .modal-body .checkbox {
     display: inline-block;
@@ -2804,16 +2809,16 @@ input[type=checkbox].form-control {
     height: 14px;
 }
 
-    .modal-body .checkbox input[type="checkbox"] {
-        margin: 0;
-        height: 14px;
-    }
+.modal-body .checkbox input[type="checkbox"] {
+    margin: 0;
+    height: 14px;
+}
 
-    .modal-body .checkbox label {
-        font-size: 14px;
-        line-height: 100%;
-        vertical-align: top;
-    }
+.modal-body .checkbox label {
+    font-size: 14px;
+    line-height: 100%;
+    vertical-align: top;
+}
 
 .modal-body .forgotpassword {
     display: inline;
@@ -2904,9 +2909,10 @@ input[type=checkbox].form-control {
         top: 0;
     }
 
-        .tabmenu li a {
-            padding: 4px 7px;
-        }
+    .tabmenu li a {
+        padding: 4px 7px;
+    }
+
     .submenu {
         position: relative !important;
     }
@@ -2931,9 +2937,9 @@ input[type=checkbox].form-control {
         overflow: visible;
     }
 
-        #container.page-userprofile {
-            padding-top: 10px;
-        }
+    #container.page-userprofile {
+        padding-top: 10px;
+    }
 
     .side {
         position: absolute;
@@ -3061,19 +3067,19 @@ input[type=checkbox].form-control {
     }
 
     .comment .arrow-upvote {
-        background-position: 0 -12px;
+        background-position: 0 -16px;
     }
 
     .comment .arrow-upvoted {
-        background-position: -16px -12px;
+        background-position: -19px -16px;
     }
 
     .comment .arrow-downvote {
-        background-position: 0 -28px;
+        background-position: 0 -34px;
     }
 
     .comment .arrow-downvoted {
-        background-position: -16px -28px;
+        background-position: -19px -34px;
     }
 
     .comment .arrow-upvote, .comment .arrow-upvoted {
@@ -3123,78 +3129,78 @@ input[type=checkbox].form-control {
         width: 32px;
     }
 
-        .expando-button.selftext.collapsed {
-            background: url( $spritesheet );
-            background-position: -32px -44px;
-            height: 32px;
-            width: 32px;
-        }
+    .expando-button.selftext.collapsed {
+        background: url( $spritesheet );
+        background-position: -38px -53px;
+        height: 32px;
+        width: 32px;
+    }
 
-            .expando-button.selftext.collapsed:hover {
-                background: url( $spritesheet );
-                background-position: -32px -44px;
-                height: 32px;
-                width: 32px;
-            }
+    .expando-button.selftext.collapsed:hover {
+        background: url( $spritesheet );
+        background-position: -38px -53px;
+        height: 32px;
+        width: 32px;
+    }
 
-        .expando-button.selftext.expanded {
-            background: url( $spritesheet );
-            background-position: -64px -44px;
-            height: 32px;
-            width: 32px;
-        }
+    .expando-button.selftext.expanded {
+        background: url( $spritesheet );
+        background-position: -73px -53px;
+        height: 32px;
+        width: 32px;
+    }
 
-            .expando-button.selftext.expanded:hover {
-                background: url( $spritesheet );
-                background-position: -64px -44px;
-                height: 32px;
-                width: 32px;
-            }
+    .expando-button.selftext.expanded:hover {
+        background: url( $spritesheet );
+        background-position: -73px -53px;
+        height: 32px;
+        width: 32px;
+    }
 
-        .expando-button.selftext.loading, .expando-button.selftext.loading:hover {
-            background: url( $spritesheet );
-            background-position: -32px -76px;
-            height: 32px;
-            width: 32px;
-        }
+    .expando-button.selftext.loading, .expando-button.selftext.loading:hover {
+        background: url( $spritesheet );
+        background-position: -38px -88px;
+        height: 32px;
+        width: 32px;
+    }
 
     .link {
         padding-bottom: 6px;
     }
 
-        .link .flat-list.buttons {
-            margin: 0;
-            padding: 5px 0;
-        }
+    .link .flat-list.buttons {
+        margin: 0;
+        padding: 5px 0;
+    }
 
-            .link .flat-list.buttons li a {
-                background: $background-15;
-                border: 1px solid $border-35;
-                line-height: 30px;
-                padding: 4px 6px;
-            }
+    .link .flat-list.buttons li a {
+        background: $background-15;
+        border: 1px solid $border-35;
+        line-height: 30px;
+        padding: 4px 6px;
+    }
 
-                .link .flat-list.buttons li a:hover {
-                    text-decoration: none;
-                }
+    .link .flat-list.buttons li a:hover {
+        text-decoration: none;
+    }
 
     .comment .flat-list.buttons {
         display: inline-block;
         padding: 5px 0;
     }
 
-        .comment .flat-list.buttons li a {
-            background: $background-15;
-            border: 1px solid $border-36;
-            border-radius: 2px;
-            box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
-            line-height: 30px;
-            padding: 4px 6px;
-        }
+    .comment .flat-list.buttons li a {
+        background: $background-15;
+        border: 1px solid $border-36;
+        border-radius: 2px;
+        box-shadow: 0 1px 0 hsla( 0,0%,0%,0.1 );
+        line-height: 30px;
+        padding: 4px 6px;
+    }
 
-            .comment .flat-list.buttons li a:hover {
-                text-decoration: none;
-            }
+    .comment .flat-list.buttons li a:hover {
+        text-decoration: none;
+    }
 }
 
 @media ( max-width: 480px ) {
@@ -3220,9 +3226,9 @@ input[type=checkbox].form-control {
         font-size: 12px;
     }
 
-        .modal-body .col-md-4 input.form-control {
-            width: 260px;
-        }
+    .modal-body .col-md-4 input.form-control {
+        width: 260px;
+    }
 }
 
 @media ( max-width: 380px ) {
@@ -3237,9 +3243,9 @@ input[type=checkbox].form-control {
     color: $color-2;
 }
 
-    .faqAnchor:visited {
-        color: $color-2;
-    }
+.faqAnchor:visited {
+    color: $color-2;
+}
 
 .vote-error {
     color: $color-69;
@@ -3252,11 +3258,11 @@ input[type=checkbox].form-control {
 .sorting-thingy, .content-menu-container {
     border-bottom: 1px solid;
     border-color: $border-color-10;
-    padding-bottom:5px;
+    padding-bottom: 5px;
 }
 
 .content-menu-container > span {
-    padding-right:5px;
+    padding-right: 5px;
 }
 
 //Bug Fix in Preview: https://voat.co/v/voatdev/2085954
@@ -3280,11 +3286,13 @@ input[type=checkbox].form-control {
 .retro .submission {
     padding-bottom: 1.4em;
 }
+
 .retro .submission > span > a {
     font-size: 2em;
     line-height: 100%;
     color: $body-color;
 }
+
 .retro > .body > .column {
     width: 32%;
     float: left;
@@ -3308,15 +3316,18 @@ input[type=checkbox].form-control {
     text-transform: uppercase;
     text-shadow: 5px 2px 2px rgba(150, 150, 150, 0.5);
 }
+
 .retro .head > div {
     width: 80%;
     margin: 0 auto;
 }
+
 .top-submission > a {
     font-size: 4em;
     font-weight: bold;
     text-transform: uppercase;
 }
+
 .highlight > a {
     color: $retro-highlight-link-color !important;
 }
@@ -3333,16 +3344,20 @@ input[type=checkbox].form-control {
     margin: 0px;
     z-index: 1;
 }
+
 .retro .summary {
-    text-align:left;
+    text-align: left;
 }
+
 .retro .summary > div {
     padding: 5px;
 }
+
 .retro .submission, .retro .submission > a {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 @media ( max-width: 600px ) {
     .retro > .body > .column {
         width: 90%;
