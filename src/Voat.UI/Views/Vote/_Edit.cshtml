@@ -51,6 +51,7 @@
                 </div>
                 <div>
                     <div class="alert-title">Options</div>
+                    <span asp-validation-for="Options"></span>
                     <div data-voat-list="Options">
                     @if (Model.Options != null && Model.Options.Any())
                     {
@@ -70,6 +71,7 @@
                 </div>
                 <div>
                     <div class="alert-title">Restrictions (Optional)</div>
+                    <span asp-validation-for="Restrictions"></span>
                     <div data-voat-list="Restrictions">
                     @if (Model.Restrictions != null && Model.Restrictions.Any())
                     {

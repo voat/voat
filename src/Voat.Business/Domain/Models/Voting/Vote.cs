@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using Voat.Common;
 using Voat.Configuration;
+using Voat.Validation;
 using Voat.Voting.Attributes;
 using Voat.Voting.Outcomes;
 using Voat.Voting.Restrictions;
@@ -16,7 +17,7 @@ namespace Voat.Domain.Models
 
     public class CreateVote
     {
-        
+        public int ID { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
         public string Subverse { get; set; }
@@ -96,7 +97,10 @@ namespace Voat.Domain.Models
         }
     }
 
-    public class Vote
+    
+
+    //[DataValidation(typeof(VoteModelValidator), "", "", 1)]
+    public class Vote : IValidatableObject
     {
         public int ID { get; set; }
         [Required]
@@ -115,6 +119,25 @@ namespace Voat.Domain.Models
         public List<VoteOption> Options { get; set; } = new List<VoteOption>();
         public List<VoteRestriction> Restrictions { get; set; } = new List<VoteRestriction>();
 
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var errors = new List<ValidationResult>();
+
+            if (Options == null || Options.Count < 2)
+            {
+                errors.Add(ValidationPathResult.Create(this, "A Vote must have at least 2 options", "Error", (m) => m.Options));
+                //errors.Add(new ValidationResult("A Vote must have at least 2 options"));
+                int i = 0;
+                errors.Add(ValidationPathResult.Create(this, "Title sucks", "Error", m => m.Options[i].Title));
+            }
+            if (Options.Count > 10)
+            {
+                errors.Add(new ValidationResult("A Vote is limited to 10 options"));
+            }
+          
+
+            return errors;
+        }
     }
     public class VoteOption
     {

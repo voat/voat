@@ -38,8 +38,11 @@ type ValidationHandler() =
                     let t = model.GetType()
 
                     let handleValidationResult (validator: Object, valResponse: ValidationResult) =
-                        let del = typedefof<Func<_,_>>.MakeGenericType(root.Type, root.Type)
-                        validationResults.Add(ValidationPathResult.Create(model, valResponse.ErrorMessage, validator.GetType().Name, Expression.Lambda(del, expression, root)))
+                        match valResponse with
+                        | :? ValidationPathResult as pathResult -> validationResults.Add(pathResult)
+                        | _ ->
+                            let del = typedefof<Func<_,_>>.MakeGenericType(root.Type, root.Type)
+                            validationResults.Add(ValidationPathResult.Create(model, valResponse.ErrorMessage, validator.GetType().Name, Expression.Lambda(del, expression, root)))
 
                     //type check
                     match box model with

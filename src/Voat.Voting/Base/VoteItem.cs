@@ -13,12 +13,15 @@ namespace Voat.Voting
         public abstract string ToDescription();
         public static T Deserialize<T>(string json) where T : VoteItem
         {
-            Newtonsoft.Json.Linq.JObject x;
-           
-
             return JsonConvert.DeserializeObject<T>(json, JsonSettings.DataSerializationSettings);
         }
-
+        public string TypeName
+        {
+            get
+            {
+                return this.GetType().Name;
+            }
+        }
         public string Serialize()
         {
             return JsonConvert.SerializeObject(this, JsonSettings.DataSerializationSettings);

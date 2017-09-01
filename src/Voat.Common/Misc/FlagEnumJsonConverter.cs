@@ -27,7 +27,15 @@ namespace Voat.Common
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            var valueString = value.ToString();
+            var values = valueString.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+            writer.WriteStartArray();
+            foreach (string enumValue in values)
+            {
+                writer.WriteValue(enumValue);
+            }
+            writer.WriteEndArray();
         }
     }
 }

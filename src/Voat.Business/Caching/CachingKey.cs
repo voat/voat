@@ -241,6 +241,11 @@ namespace Voat.Caching
         {
             return $"Subverse:ModLog:{subverse}:Comments{options.ToString(":{0}", "page=0")}";
         }
+        public static string Vote(int id)
+        {
+            return $"Vote:Object:{id}";
+        }
+        
 
         public class Statistics
         {

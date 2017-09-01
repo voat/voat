@@ -23,7 +23,7 @@ namespace Voat.Tests.Voting
                 //GroupName = "Default",
                 Type = typeof(ContributionCountRestriction).Name,
                 Data = (new ContributionCountRestriction() {
-                    ContentType = Domain.Models.ContentType.Comment,
+                    ContentType = Domain.Models.ContentType.Comment | Domain.Models.ContentType.Submission,
                     Duration = TimeSpan.FromDays(14),
                     Subverse = "unit",
                     MinimumCount = 1,

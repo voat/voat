@@ -88,6 +88,11 @@
                         }
                     </div>
                 </div>
+                @if (Model.CreatedBy == User.Identity.Name)
+                {
+                    <a href="/v/@Model.Subverse/vote/edit/@Model.ID">Edit</a>
+
+                 }
             </div>
     </div>
 </div>

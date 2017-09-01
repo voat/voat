@@ -1093,3 +1093,135 @@ ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[ViewStatistic] CHECK CONSTRAINT [FK_ViewStatistic_Submission]
 GO
+
+/*** VOTE SCHEMA ***/
+
+/****** Object:  Table [dbo].[Vote]    Script Date: 8/31/2017 1:40:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Vote](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[Title] [nchar](10) NOT NULL,
+	[Content] [nchar](10) NULL,
+	[FormattedContent] [nchar](10) NULL,
+	[Subverse] [nvarchar](50) NULL,
+	[SubmissionID] [int] NULL,
+	[DisplayStatistics] [bit] NOT NULL,
+	[Status] [int] NULL,
+	[StartDate] [datetime] NOT NULL,
+	[EndDate] [datetime] NOT NULL,
+	[LastEditDate] [datetime] NULL,
+	[ProcessedDate] [datetime] NULL,
+	[CreatedBy] [nvarchar](50) NOT NULL,
+	[CreationDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_Vote] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[VoteOption]    Script Date: 8/31/2017 1:40:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[VoteOption](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[VoteID] [int] NOT NULL,
+	[Title] [nvarchar](200) NOT NULL,
+	[Content] [nvarchar](max) NULL,
+	[FormattedContent] [nvarchar](max) NULL,
+	[SortOrder] [int] NOT NULL,
+ CONSTRAINT [PK_VoteOption] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[VoteOptionOutcome]    Script Date: 8/31/2017 1:40:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[VoteOptionOutcome](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[VoteOptionID] [int] NOT NULL,
+	[Type] [nvarchar](1000) NOT NULL,
+	[Data] [nvarchar](max) NOT NULL,
+ CONSTRAINT [PK_VoteOptionOutcome] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[VoteRestriction]    Script Date: 8/31/2017 1:40:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[VoteRestriction](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[VoteID] [int] NOT NULL,
+	[Type] [nvarchar](1000) NOT NULL,
+	[Data] [nvarchar](max) NOT NULL,
+ CONSTRAINT [PK_VoteRestriction] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[VoteTracker]    Script Date: 8/31/2017 1:40:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[VoteTracker](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[VoteID] [int] NOT NULL,
+	[VoteOptionID] [int] NOT NULL,
+	[RestrictionsPassed] [bit] NOT NULL,
+	[UserName] [nvarchar](50) NOT NULL,
+	[CreationDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_VoteTracker] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+ALTER TABLE [dbo].[Vote] ADD  CONSTRAINT [DF_Vote_CreationDate]  DEFAULT (getutcdate()) FOR [CreationDate]
+GO
+ALTER TABLE [dbo].[VoteTracker] ADD  CONSTRAINT [DF_VoteTracker_CreationDate]  DEFAULT (getutcdate()) FOR [CreationDate]
+GO
+ALTER TABLE [dbo].[VoteOption]  WITH CHECK ADD  CONSTRAINT [FK_VoteOption_Vote] FOREIGN KEY([VoteID])
+REFERENCES [dbo].[Vote] ([ID])
+GO
+ALTER TABLE [dbo].[VoteOption] CHECK CONSTRAINT [FK_VoteOption_Vote]
+GO
+ALTER TABLE [dbo].[VoteOptionOutcome]  WITH CHECK ADD  CONSTRAINT [FK_VoteOptionOutcome_VoteOption] FOREIGN KEY([VoteOptionID])
+REFERENCES [dbo].[VoteOption] ([ID])
+GO
+ALTER TABLE [dbo].[VoteOptionOutcome] CHECK CONSTRAINT [FK_VoteOptionOutcome_VoteOption]
+GO
+ALTER TABLE [dbo].[VoteRestriction]  WITH CHECK ADD  CONSTRAINT [FK_VoteRestriction_Vote] FOREIGN KEY([VoteID])
+REFERENCES [dbo].[Vote] ([ID])
+GO
+ALTER TABLE [dbo].[VoteRestriction] CHECK CONSTRAINT [FK_VoteRestriction_Vote]
+GO
+ALTER TABLE [dbo].[VoteTracker]  WITH CHECK ADD  CONSTRAINT [FK_VoteTracker_Vote] FOREIGN KEY([VoteID])
+REFERENCES [dbo].[Vote] ([ID])
+GO
+ALTER TABLE [dbo].[VoteTracker] CHECK CONSTRAINT [FK_VoteTracker_Vote]
+GO
+ALTER TABLE [dbo].[VoteTracker]  WITH CHECK ADD  CONSTRAINT [FK_VoteTracker_VoteOption] FOREIGN KEY([VoteOptionID])
+REFERENCES [dbo].[VoteOption] ([ID])
+GO
+ALTER TABLE [dbo].[VoteTracker] CHECK CONSTRAINT [FK_VoteTracker_VoteOption]
+GO
+

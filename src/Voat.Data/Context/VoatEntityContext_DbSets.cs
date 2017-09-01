@@ -45,6 +45,14 @@ namespace Voat.Data.Models
         public virtual DbSet<SubverseSetSubscription> SubverseSetSubscription { get; set; }
         public virtual DbSet<Featured> Featured { get; set; }
 
+        //Votes
+        public virtual DbSet<Vote> Vote { get; set; }
+        public virtual DbSet<VoteOption> VoteOption { get; set; }
+        public virtual DbSet<VoteRestriction> VoteRestriction { get; set; }
+        public virtual DbSet<VoteOutcome> VoteOutcome { get; set; }
+        public virtual DbSet<VoteTracker> VoteTracker { get; set; }
+
+
         //CORE_PORT: Code no worky. Future people problems.
         //public virtual ObjectResult<usp_CommentTree_Result> usp_CommentTree(Nullable<int> submissionID, Nullable<int> depth, Nullable<int> parentID)
         //{

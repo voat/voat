@@ -14,6 +14,7 @@ using Voat.Controllers;
 using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
+using Voat.Domain.Query;
 using Voat.Models.ViewModels;
 using Voat.Voting.Outcomes;
 using Voat.Voting.Restrictions;
@@ -30,6 +31,14 @@ namespace Voat.UI.Controllers
         {
             object model = null;
             return View("Index", model);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> View(int id)
+        {
+            var q = new QueryVote(id);
+            var vote = await q.ExecuteAsync();
+            return View(vote);
         }
         [HttpGet]
         public ActionResult Create(string subverse)
@@ -68,30 +77,35 @@ namespace Voat.UI.Controllers
             cache.Replace($"VoteCreate:{User.Identity.Name}", domainModel);
 
 
-            //var valResult = Voat.Validation.ValidationHandler.Validate(domainModel);
-            //if (valResult != null)
-            //{
-            //    valResult.ForEach(x => ModelState.AddModelError(x.MemberNames.FirstOrDefault(), x.ErrorMessage));
-            //}
+            var valResult = Voat.Validation.ValidationHandler.Validate(domainModel);
+            if (valResult != null)
+            {
+                valResult.ForEach(x => ModelState.AddModelError(x.MemberNames.FirstOrDefault(), x.ErrorMessage));
+            }
             if (ModelState.IsValid)
             {
                 //Save Vote
-                var cmd = new SaveVoteCommand(domainModel);
+                var cmd = new SaveVoteCommand(domainModel).SetUserContext(User);
                 var result = await cmd.Execute();
+                if (result.Success)
+                {
+                    return View("View", result.Response);
+                }
+                else
+                {
+                    ModelState.AddModelError("", result.Message);
+                }
+            }
 
-                return PartialView("_View", domainModel);
-            }
-            else
-            {
-                return PartialView("_Edit", domainModel);
-            }
+            return PartialView("_Edit", domainModel);
         }
         
         [HttpGet]
-        public ActionResult Edit(string subverse, int id)
+        public async Task<ActionResult> Edit(string subverse, int id)
         {
-            object model = null;
-            return View("Edit", model);
+            var q = new QueryVote(id);
+            var vote = await q.ExecuteAsync();
+            return View(vote);
         }
         [HttpGet]
         public ActionResult Delete(string subverse, int id)

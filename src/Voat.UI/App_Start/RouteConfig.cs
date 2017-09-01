@@ -1100,9 +1100,9 @@ namespace Voat
             #region Votes
 
             routes.MapRoute(
-                name: "ViewVoteDirectly",
-                template: "vote/{id:int}",
-                defaults: new { controller = "Vote", action = "Index" }
+                name: "ViewVote",
+                template: "v/{subverse}/vote/{id:int}",
+                defaults: new { controller = "Vote", action = "View" }
             );
             routes.MapRoute(
                 name: "CreateVote",
