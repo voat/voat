@@ -2478,8 +2478,7 @@ input[type=checkbox].form-control {
   .logged-out {
     margin: 0; }
   #manage {
-    position: relative;
-    top: 2px; }
+    position: relative; }
   #header-banner {
     font-size: 13px;
     height: 64px; }
