@@ -47,15 +47,14 @@ namespace Voat.Utilities
         // return domain from URI
         public static string GetDomainFromUri(string completeUri)
         {
-            try
+            Uri uriResult;
+
+            if (Uri.TryCreate(completeUri, UriKind.Absolute, out uriResult))
             {
-                var tmpUri = new Uri(completeUri);
-                return tmpUri.GetLeftPart(UriPartial.Authority).Replace("/www.", "/").Replace("http://", "").Replace("https://", "");
+                return uriResult.GetLeftPart(UriPartial.Authority).Replace("/www.", "/").Replace("http://", "").Replace("https://", "");
             }
-            catch (Exception)
-            {
-                return null;
-            }
+
+            return null; 
         }
 
         // check if a URI is valid HTTP or HTTPS URI
@@ -64,15 +63,18 @@ namespace Voat.Utilities
             Uri uriResult;
             bool result = false;
 
-            if (Uri.TryCreate(completeUri, UriKind.Absolute, out uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+            if (Uri.TryCreate(completeUri, UriKind.Absolute, out uriResult))
             {
-                if (evaluateRegex)
+                if (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)
                 {
-                    result = Regex.IsMatch(completeUri, String.Concat("^", CONSTANTS.HTTP_LINK_REGEX, "$"), RegexOptions.IgnoreCase);
-                }
-                else
-                {
-                    result = true;
+                    if (evaluateRegex)
+                    {
+                        result = Regex.IsMatch(completeUri, String.Concat("^", CONSTANTS.HTTP_LINK_REGEX, "$"), RegexOptions.IgnoreCase);
+                    }
+                    else
+                    {
+                        result = true;
+                    }
                 }
             }
             return result;

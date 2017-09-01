@@ -249,7 +249,7 @@ namespace Voat.Utilities.Components
 
         protected override string ProcessContent(string content, object context)
         {
-            MatchProcessingReplacer replacer = new MatchProcessingReplacer(CONSTANTS.ACCEPTABLE_LEADS + CONSTANTS.HTTP_LINK_REGEX,
+            MatchProcessingReplacer replacer = new MatchProcessingReplacer(CONSTANTS.ACCEPTABLE_LEADS + CONSTANTS.HTTP_LINK_REGEX + CONSTANTS.ACCEPTABLE_TRAILING,
                ProcessLogic
             );
             return replacer.Replace(content, context);
