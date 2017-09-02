@@ -2737,6 +2737,9 @@ namespace Voat.Data
             }
             else
             {
+
+                
+
                 var message = new Domain.Models.Message();
                 CommandResponse<Domain.Models.Message> commandResponse = null;
 
@@ -2782,21 +2785,26 @@ namespace Voat.Data
                         {
                             if (!ModeratorPermission.HasPermission(User, m.Recipient, ModeratorAction.SendMail))
                             {
-                                commandResponse = new CommandResponse<Domain.Models.Message>(null, Status.NotProcessed, "Message integrity violated");
+                               return new CommandResponse<Domain.Models.Message>(null, Status.NotProcessed, "Message integrity violated");
                             }
 
                             message.Recipient = m.Sender;
                             message.RecipientType = (IdentityType)m.SenderType;
 
-                            message.Sender = m.Recipient;
+                            message.Sender = userName;
                             message.SenderType = (IdentityType)m.RecipientType;
                         }
                         else
                         {
+                            if (!m.Recipient.IsEqual(userName))
+                            {
+                                return new CommandResponse<Domain.Models.Message>(null, Status.Denied, "Looks like you are poking around");
+                            }
+
                             message.Recipient = m.Sender;
                             message.RecipientType = (IdentityType)m.SenderType;
 
-                            message.Sender = m.Recipient;
+                            message.Sender = userName;
                             message.SenderType = (IdentityType)m.RecipientType;
                         }
 
@@ -3250,7 +3258,7 @@ namespace Voat.Data
             d.Where = q.Where;
             d.Parameters = q.Parameters;
 
-            d.Delete = $"FROM {SqlFormatter.Table("Message", "m")}";
+            d.Delete = SqlFormatter.DeleteBlock(SqlFormatter.Table("Message"), "m");
 
             if (id.HasValue)
             {
