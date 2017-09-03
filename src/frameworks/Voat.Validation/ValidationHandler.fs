@@ -4,6 +4,7 @@ open System
 open System.ComponentModel.DataAnnotations
 open System.Reflection
 open System.Collections.Generic
+open System.Linq
 open System.Linq.Expressions
 open System.Collections
 open Voat.Common.Fs
@@ -39,11 +40,34 @@ type ValidationHandler() =
 
                     let handleValidationResult (validator: Object, valResponse: ValidationResult) =
                         match valResponse with
-                        | :? ValidationPathResult as pathResult -> validationResults.Add(pathResult)
+                        | :? ValidationPathResult as pathResult -> 
+                            match pathResult.PathExpression with 
+                                | _ -> 
+                                    match pathResult.PathExpression.Body with 
+                                        | :? System.Linq.Expressions.MemberExpression as m ->
+                                            let cast = Expression.Convert(expression, t)
+                                            let newPath = Expression.Lambda(Expression.MakeMemberAccess(cast, m.Member))
+                                            validationResults.Add(new ValidationPathResult(pathResult.ErrorMessage, newPath, pathResult.Type))
+                                        | _ -> validationResults.Add(pathResult)
+                                | null ->
+                                    validationResults.Add(pathResult)
+                                    
+                                   
                         | _ ->
-                            let del = typedefof<Func<_,_>>.MakeGenericType(root.Type, root.Type)
-                            validationResults.Add(ValidationPathResult.Create(model, valResponse.ErrorMessage, validator.GetType().Name, Expression.Lambda(del, expression, root)))
-
+                            //this only finds the first member name in a regular ValidationResult object, will need to update this maybe
+                            let del = typedefof<Func<_,_>>.MakeGenericType(root.Type, t)
+                            let name = match validator with 
+                                | null -> t.Name
+                                | _ -> validator.GetType().Name
+                            let lambda = Expression.Lambda(del, expression, root)
+                            let f, p = Helper.NormalizeExpressionPath lambda
+                            let memberName = valResponse.MemberNames.FirstOrDefault()
+                            let fullPath = match String.IsNullOrEmpty(memberName) with 
+                                | true -> p
+                                | false -> String.Concat(p, ".", memberName)
+                            validationResults.Add(new ValidationPathResult(valResponse.ErrorMessage, fullPath, name))
+                            //validationResults.Add(ValidationPathResult.Create(model, valResponse.ErrorMessage, name, Expression.Lambda(del, expression, root)))
+                        
                     //type check
                     match box model with
                     | :? IValidatableObject as x ->
@@ -89,32 +113,40 @@ type ValidationHandler() =
                                     )
                         |> ignore
 
-                        //loop
-                        AttributeFinder.FindValidatableProperties(t)
-                        |> Seq.iter(fun (p, t) ->
-                            match p.PropertyType.GetInterface(typeof<IEnumerable>.Name) with
-                            | null ->
-                                let newRoot = Expression.MakeMemberAccess(expression, p);
-                                evaluateType (p.GetValue(model), newRoot) |> ignore
-                            | _ ->
-                                match p.GetValue(model) with
-                                | null -> ()
-                                | collection ->
-                                    let property = Expression.Property(expression, p)
-                                    match collection with
-                                    | :? IEnumerable<_> as col ->
-                                        Seq.iteri(fun i x ->
-                                            let newRoot = Expression.MakeIndex(property, p.PropertyType.GetProperty("Item"), [|Expression.Constant(i)|])
-                                            evaluateType (x, newRoot)
-                                        ) (col :?> IEnumerable<_>)
-                                    | _ ->
-                                        for entry in (collection :?> IEnumerable) do
-                                            let etype = entry.GetType()
-                                            let key = etype.GetProperty("Key").GetValue(entry)
-                                            let value = etype.GetProperty("Value").GetValue(entry)
-                                            let newRoot = Expression.MakeIndex(property, p.PropertyType.GetProperty("Item"), [|Expression.Constant(key)|])
-                                            evaluateType (value, newRoot)
-                        )
+                    //loop
+                    let validatableProperties = AttributeFinder.FindValidatableProperties(t)
+                    validatableProperties
+                    |> Seq.filter(fun (p, t) -> 
+                        //we don't care about the overhead here because each type will be cached
+                        let atts = AttributeFinder.Find<ValidationAttribute>(t, true, true, fun x -> filter.Invoke(x :?> ValidationAttribute))
+                        match atts.ContainsKey(t) with
+                            | true -> true
+                            | false -> typedefof<IValidatableObject>.IsAssignableFrom(t)
+                       )
+                    |> Seq.iter(fun (p, t) ->
+                        match p.PropertyType.GetInterface(typeof<IEnumerable>.Name) with
+                        | null ->
+                            let newRoot = Expression.MakeMemberAccess(expression, p);
+                            evaluateType (p.GetValue(model), newRoot) 
+                        | _ ->
+                            match p.GetValue(model) with
+                            | null -> ()
+                            | collection ->
+                                let property = Expression.Property(expression, p)
+                                match collection with
+                                | :? IEnumerable<_> as col ->
+                                    Seq.iteri(fun i x ->
+                                        let newRoot = Expression.MakeIndex(property, p.PropertyType.GetProperty("Item"), [|Expression.Constant(i)|])
+                                        evaluateType (x, newRoot)
+                                    ) (col :?> IEnumerable<_>)
+                                | _ ->
+                                    for entry in (collection :?> IEnumerable) do
+                                        let etype = entry.GetType()
+                                        let key = etype.GetProperty("Key").GetValue(entry)
+                                        let value = etype.GetProperty("Value").GetValue(entry)
+                                        let newRoot = Expression.MakeIndex(property, p.PropertyType.GetProperty("Item"), [|Expression.Constant(key)|])
+                                        evaluateType (value, newRoot)
+                    )
 
             evaluateType (model :> Object, root)
 

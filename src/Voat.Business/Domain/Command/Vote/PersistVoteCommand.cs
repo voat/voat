@@ -7,10 +7,10 @@ using Voat.Domain.Models;
 
 namespace Voat.Domain.Command
 {
-    public class SaveVoteCommand : CacheCommand<CommandResponse<Domain.Models.Vote>>
+    public class PersistVoteCommand : CacheCommand<CommandResponse<Domain.Models.Vote>>
     {
         private Vote _model = null;
-        public SaveVoteCommand(Vote model)
+        public PersistVoteCommand(Vote model)
         {
             _model = model;
         }

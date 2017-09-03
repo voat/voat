@@ -15,6 +15,10 @@ namespace Voat.Data
 {
     public partial class Repository
     {
+        public async Task<CommandResponse> RecordUserVote(int voteID, int optionID)
+        {
+            throw new NotImplementedException();
+        }
         public async Task<CommandResponse<Domain.Models.Vote>> SaveVote(Domain.Models.Vote vote)
         {
 

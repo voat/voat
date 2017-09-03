@@ -25,6 +25,8 @@
 using System;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Common;
+using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
 
@@ -43,7 +45,19 @@ namespace Voat.Domain.Command
             this.SubmissionID = submissionID;
             this.ParentCommentID = parentCommentID;
         }
-
+        protected override async Task<CommandResponse<Models.Comment>> ExecuteStage(CommandStage stage)
+        {
+            switch (stage)
+            {
+                case CommandStage.OnValidation:
+                    if (Content.Length > 10000)
+                    {
+                        return CommandResponse.FromStatus<Models.Comment>(null, Status.Denied, "Comment can not exceed 10,000 characters");
+                    }
+                    break;
+            }
+            return CommandResponse.FromStatus<Models.Comment>(null, Status.Success);
+        }
         public string Content { get; set; }
 
         public int? ParentCommentID { get; set; }
@@ -146,6 +160,19 @@ namespace Voat.Domain.Command
         public int CommentID { get; set; }
 
         public string Content { get; set; }
+        protected override async Task<CommandResponse<Models.Comment>> ExecuteStage(CommandStage stage)
+        {
+            switch (stage)
+            {
+                case CommandStage.OnValidation:
+                    if (Content.Length > 10000)
+                    {
+                        return CommandResponse.FromStatus<Models.Comment>(null, Status.Denied, "Comment can not exceed 10,000 characters");
+                    }
+                    break;
+            }
+            return CommandResponse.FromStatus<Models.Comment>(null, Status.Success);
+        }
 
         protected override async Task<Tuple<CommandResponse<Domain.Models.Comment>, Comment>> CacheExecute()
         {

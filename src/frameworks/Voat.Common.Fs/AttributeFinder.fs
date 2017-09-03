@@ -20,7 +20,7 @@ type AttributeFinder() =
 
     static let getValidatableProperties(objType: Type) =
             objType.GetProperties(BindingFlags.Instance ||| BindingFlags.Public)
-            |> Seq.filter(fun x -> x.PropertyType.IsClass && not x.PropertyType.IsPrimitive && x.PropertyType<> typeof<string>)
+            |> Seq.filter(fun x -> x.PropertyType.IsClass && not x.PropertyType.IsPrimitive && x.PropertyType <> typeof<string>)
             |> Seq.sortBy(fun x -> x.Name) //Sort by name, might need to take out for performance later
 
     static let getGroupedValidatableProperties(objType: Type) =

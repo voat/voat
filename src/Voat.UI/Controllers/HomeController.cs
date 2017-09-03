@@ -153,7 +153,7 @@ namespace Voat.Controllers
             var userSubmission = new Domain.Models.UserSubmission();
             userSubmission.IsAdult = model.IsAdult;
             userSubmission.IsAnonymized = model.IsAnonymized;
-            userSubmission.Subverse = model.Subverse;
+            userSubmission.Subverse = model.Subverse.TrimSafe();
 
             userSubmission.Title = model.Title.StripWhiteSpace();
             userSubmission.Content = (model.Type == Domain.Models.SubmissionType.Text ? model.Content.TrimSafe() : null);

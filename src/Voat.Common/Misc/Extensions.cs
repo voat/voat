@@ -310,6 +310,25 @@ namespace Voat.Common
             }
         }
 
-       
+        public static void ForEachIndex<T>(this IEnumerable<T> items, Action<T,int> action)
+        {
+            if (items != null && items.Any())
+            {
+                int index = 0;
+                foreach (var item in items)
+                {
+                    action(item, index);
+                    index++;
+                }
+            }
+        }
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> col)
+        {
+            if (col != null)
+            {
+                return !col.Any();
+            }
+            return true;
+        }
     }
 }

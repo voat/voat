@@ -50,7 +50,7 @@ namespace Voat.Utilities
         public const string SET_SEPERATOR = "@";
 
         //matches url after protocol
-        public const string HOST_AND_PATH_LINK_REGEX = @"(?<fullDomain>([wW]{3}\.)?(?<domain>[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*))(:(?<port>[0-9]*))?(\/?)(?<query>[a-zA-Z0-9\*\-\.\?\,\'\/\\\+&amp;%\$#_=!@:\(\)]*)";
+        public const string HOST_AND_PATH_LINK_REGEX = @"(?<fullDomain>([wW]{3}\.)?(?<domain>[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*))(:(?<port>[0-9]*))?(?<path>((\/[.\w\$\-_#]*)*))?\??(?<query>[a-zA-Z0-9\*\-\.\?\,\'\/\\\+&amp;%\$#_=!@:\(\)]*)";
         public const string PROTOCOL_LESS_LINK_REGEX = @"(\/\/|%2[fF]%2[fF])" + HOST_AND_PATH_LINK_REGEX;
         public const string HTTP_LINK_REGEX = @"(?<protocol>([hH][tT]|[fF])[tT][pP]([sS]?))(\:|%3[aA])" + PROTOCOL_LESS_LINK_REGEX;
 

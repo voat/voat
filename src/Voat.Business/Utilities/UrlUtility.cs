@@ -69,7 +69,9 @@ namespace Voat.Utilities
                 {
                     if (evaluateRegex)
                     {
-                        result = Regex.IsMatch(completeUri, String.Concat("^", CONSTANTS.HTTP_LINK_REGEX, "$"), RegexOptions.IgnoreCase);
+                        //we had blocking on this when we used ^ and $ so now we just match for a link and ensure the match equals the url
+                        var match = Regex.Match(completeUri, CONSTANTS.HTTP_LINK_REGEX, RegexOptions.IgnoreCase);
+                        result = match.Success && match.Value == completeUri; 
                     }
                     else
                     {

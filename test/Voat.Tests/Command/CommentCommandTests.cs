@@ -426,5 +426,25 @@ namespace Voat.Tests.CommandTests
                 Assert.IsNotNull(notice, "Did not find a reply notification");
             }
         }
+
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
+        [TestCategory("Validation"), TestCategory("Submission.Validation")]
+        public async Task Comment_Length_Validations()
+        {
+            var user = TestHelper.SetPrincipal("TestUser20");
+
+            var createCmd = new CreateCommentCommand(1, null, "Can you hear me now?".RepeatUntil(10001)).SetUserContext(user);
+            var r = await createCmd.Execute();
+            VoatAssert.IsValid(r, Status.Denied);
+
+            createCmd = new CreateCommentCommand(1, null, "Can you hear me now?").SetUserContext(user);
+            r = await createCmd.Execute();
+            VoatAssert.IsValid(r);
+
+            var editCmd = new EditCommentCommand(r.Response.ID, "Can you hear me now?".RepeatUntil(100001)).SetUserContext(user);
+            r = await editCmd.Execute();
+            VoatAssert.IsValid(r, Status.Denied);
+        }
     }
 }

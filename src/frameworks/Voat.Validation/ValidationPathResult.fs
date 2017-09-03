@@ -6,36 +6,50 @@ open System.Linq.Expressions
 open System.Text.RegularExpressions
 open System.ComponentModel.DataAnnotations
 open Voat.Common.Fs
+open System.IO
+open System.Xml.XPath
+open System.Xml
 
-type ValidationPathResult(errorMessage: string, memberPath: string, validationType: string) =
+type ValidationPathResult(errorMessage: string, memberPath: string, validationType: string) as this =
     inherit ValidationResult(errorMessage, [memberPath])
+    
+    let mutable _type: string = ValidationPathResult.CleanType(validationType)
+    let mutable _pathExpression: LambdaExpression = null
+   
+    member this.PathExpression with get() = _pathExpression and set(value) = _pathExpression <- value
 
-    let mutable _type = validationType
-    do
-        if _type.EndsWith("Attribute") then
-            _type <- _type.Replace("Attribute","")
+    member val Severity = ValidationSeverity.Error with get, set
 
-    static let getResult (path, errorMessage, validationType) =
-        let f, p = Helper.NormalizeExpressionPath path
+    member this.Type
+        with get() : string = 
+            _type
+        and set(value : string)  = 
+           _type <- ValidationPathResult.CleanType(value)
+
+    member this.ToEnumerable() = [|this|] :> IEnumerable<ValidationPathResult>
+
+    new (errorMessage: string, pathExpression: LambdaExpression, validationType: string) as x = 
+        let f, p = Helper.NormalizeExpressionPath pathExpression
 
         let err =
             match errorMessage with
             | null -> "{0} is invalid"
             | _ -> errorMessage
+        
+        new ValidationPathResult (String.Format(err, f), p, validationType) then 
+        x.PathExpression <- pathExpression
 
-        new ValidationPathResult(String.Format(err, f), p, validationType)
-
-    member val Severity = ValidationSeverity.Error with get, set
-
-    member this.Type with get() = _type and set(value) = _type <- value
-
-    member this.ToEnumerable() = [|this|] :> IEnumerable<ValidationPathResult>
+    static member CleanType (x) : string = 
+        if x.EndsWith("Attribute") then 
+            x.Replace("Attribute","")
+        else
+            x
 
     static member Create<'m, 'prop>(model: 'm, errorMessage: string, path: Expression<Func<'m, 'prop>>) =
-        getResult (path, errorMessage, "")
+        ValidationPathResult (errorMessage, path, "")
 
     static member Create<'m, 'prop>(model: 'm, errorMessage: string, validationType: string, path: Expression<Func<'m, 'prop>>) =
-        getResult (path, errorMessage, validationType)
+        ValidationPathResult (errorMessage, path, validationType)
 
     static member Create<'m>(model: 'm, errorMessage: string, validationType: string, path: LambdaExpression) =
-        getResult (path, errorMessage, validationType)
+        ValidationPathResult (errorMessage, path, validationType)

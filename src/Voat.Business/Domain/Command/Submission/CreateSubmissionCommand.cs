@@ -23,11 +23,14 @@
 #endregion LICENSE
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Common;
 using Voat.Data;
 using Voat.Domain.Models;
 using Voat.Utilities;
+using Voat.Validation;
 
 namespace Voat.Domain.Command
 {
@@ -38,8 +41,22 @@ namespace Voat.Domain.Command
         public CreateSubmissionCommand(UserSubmission submission)
         {
             _userSubmission = submission;
+            base.CommandStageMask = CommandStage.OnValidation;
         }
-
+        protected override async Task<CommandResponse<Submission>> ExecuteStage(CommandStage stage)
+        {
+            switch (stage)
+            {
+                case CommandStage.OnValidation:
+                    var results = ValidationHandler.Validate(_userSubmission);
+                    if (!results.IsNullOrEmpty())
+                    {
+                        return CommandResponse.FromStatus<Submission>(null, Status.Invalid, results.FirstOrDefault().ErrorMessage);
+                    }
+                    break;
+            }
+            return await base.ExecuteStage(stage);
+        }
         public UserSubmission UserSubmission { get => _userSubmission; set => _userSubmission = value; }
 
         protected override async Task<CommandResponse<Domain.Models.Submission>> ProtectedExecute()

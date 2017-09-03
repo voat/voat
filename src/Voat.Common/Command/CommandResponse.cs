@@ -24,6 +24,7 @@
 
 using Newtonsoft.Json;
 using System;
+using System.ComponentModel.DataAnnotations;
 using Voat.Common;
 
 namespace Voat.Domain.Command

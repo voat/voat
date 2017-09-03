@@ -61,7 +61,6 @@ namespace Voat.Rules.Posting
                         return CreateOutcome(RuleResult.Denied, "A link submission must include a url");
                     }
 
-                    
                     // make sure the input URI is valid
                     if (!UrlUtility.IsUriValid(userSubmission.Url))
                     {

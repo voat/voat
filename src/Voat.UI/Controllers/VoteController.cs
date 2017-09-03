@@ -85,7 +85,7 @@ namespace Voat.UI.Controllers
             if (ModelState.IsValid)
             {
                 //Save Vote
-                var cmd = new SaveVoteCommand(domainModel).SetUserContext(User);
+                var cmd = new PersistVoteCommand(domainModel).SetUserContext(User);
                 var result = await cmd.Execute();
                 if (result.Success)
                 {

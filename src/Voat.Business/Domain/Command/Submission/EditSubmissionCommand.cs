@@ -23,30 +23,45 @@
 #endregion LICENSE
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Voat.Caching;
+using Voat.Common;
 using Voat.Data;
 using Voat.Domain.Models;
 using Voat.Utilities;
+using Voat.Validation;
 
 namespace Voat.Domain.Command
 {
     public class EditSubmissionCommand : CacheCommand<CommandResponse<Domain.Models.Submission>, Data.Models.Submission>
     {
-        private UserSubmission _submission;
+        private UserSubmission _userSubmission;
         private int _submissionID;
 
         public EditSubmissionCommand(int submissionID, UserSubmission submission)
         {
             _submissionID = submissionID;
-            _submission = submission;
+            _userSubmission = submission;
         }
-
+        protected override async Task<CommandResponse<Submission>> ExecuteStage(CommandStage stage)
+        {
+            switch (stage)
+            {
+                case CommandStage.OnValidation:
+                    if (_userSubmission.Content.Length > 10000)
+                    {
+                        return CommandResponse.FromStatus<Submission>(null, Status.Invalid, "Content can not exceed 10,000 characters");
+                    }
+                    break;
+            }
+            return await base.ExecuteStage(stage);
+        }
         protected override async Task<Tuple<CommandResponse<Domain.Models.Submission>, Data.Models.Submission>> CacheExecute()
         {
             using (var db = new Repository(User))
             {
-                var result = await db.EditSubmission(_submissionID, _submission);
+                var result = await db.EditSubmission(_submissionID, _userSubmission);
                 if (result.Success)
                 {
                     return Tuple.Create(CommandResponse.FromStatus(result.Response.Map(), Status.Success, ""), result.Response);

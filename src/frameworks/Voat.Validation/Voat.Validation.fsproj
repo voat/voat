@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="PerformValidation.fs" />
     <Compile Include="ValidationSeverity.fs" />
     <Compile Include="ValidationViolation.fs" />
     <Compile Include="ValidationPathResult.fs" />

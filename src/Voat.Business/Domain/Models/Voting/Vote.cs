@@ -103,8 +103,11 @@ namespace Voat.Domain.Models
     public class Vote : IValidatableObject
     {
         public int ID { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Title is required")]
+        [StringLength(200, ErrorMessage = "The title must be at least 10 and no more than 200 characters long", MinimumLength = 10)]
         public string Title { get; set; }
+
+        [MaxLength(10000, ErrorMessage = "Content is limited to 10,000 characters")]
         public string Content { get; set; }
         public string FormattedContent { get; set; }
         public int SubmissionID { get; set; }
@@ -125,16 +128,26 @@ namespace Voat.Domain.Models
 
             if (Options == null || Options.Count < 2)
             {
-                errors.Add(ValidationPathResult.Create(this, "A Vote must have at least 2 options", "Error", (m) => m.Options));
-                //errors.Add(new ValidationResult("A Vote must have at least 2 options"));
-                int i = 0;
-                errors.Add(ValidationPathResult.Create(this, "Title sucks", "Error", m => m.Options[i].Title));
+                errors.Add(ValidationPathResult.Create(this, "A Vote must have at least 2 options", (m) => m.Options));
             }
             if (Options.Count > 10)
             {
-                errors.Add(new ValidationResult("A Vote is limited to 10 options"));
+                errors.Add(ValidationPathResult.Create(this, "A Vote is limited to 10 options", (m) => m.Options));
             }
-          
+            //Options.ForEachIndex((option, optionIndex) => {
+            //    option.Outcomes.ForEachIndex((outcome, outcomeIndex) => {
+
+            //        if (outcome is IValidatableObject v)
+            //        {
+            //            validationContext.MemberName = $"Options[{optionIndex}].Outcomes[{outcomeIndex}]";
+            //            var x = v.Validate(validationContext);
+            //            errors.AddRange(x);
+            //        }
+            //        int i = 0;
+
+
+            //    });
+            //});
 
             return errors;
         }
@@ -142,8 +155,11 @@ namespace Voat.Domain.Models
     public class VoteOption
     {
         public int ID { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Title is required")]
+        [StringLength(200, ErrorMessage = "The title must be at least 10 and no more than 200 characters long", MinimumLength = 10)]
         public string Title { get; set; }
+
+        [MaxLength(10000, ErrorMessage = "Content is limited to 10,000 characters")]
         public string Content { get; set; }
         public string FormattedContent { get; set; }
         public int SortOrder { get; set; }

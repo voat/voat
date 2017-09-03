@@ -603,18 +603,80 @@ namespace Voat.Tests.CommandTests
             //    repo.BannedDomain.Add(new BannedDomain() { Domain = "a.a.a.co", Reason = "FUZZY!", CreatedBy = "UnitTest", CreationDate = DateTime.UtcNow });
             //    repo.SaveChanges();
             //}
+            var user = TestHelper.SetPrincipal("TestUser19");
 
-            string url = "http://a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.co/#?";
+            string url;
+            CreateSubmissionCommand cmd;
+            CommandResponse<Domain.Models.Submission> r;
 
-            var user = TestHelper.SetPrincipal("TestUser02");
+            url = "https://this.will.break.url.com/a?&b=***&c=1234567890-&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?&=*?.,\0\0\0^$";
+            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = SUBVERSES.Unit, Title = "Hello Man - Longer because of Rules", Url = url }).SetUserContext(user);
+            r = await cmd.Execute();
+            VoatAssert.IsValid(r, Status.Denied);
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = SUBVERSES.Unit, Title = "Hello Man - Longer because of Rules", Url = url }).SetUserContext(user);
-            var r = await cmd.Execute();
+            url = "http://a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.a.co/#?";
+            cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = SUBVERSES.Unit, Title = "Hello Man - Longer because of Rules", Url = url }).SetUserContext(user);
+            r = await cmd.Execute();
             VoatAssert.IsValid(r);
 
             cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = SUBVERSES.Unit, Title = "Hello Man - Longer because of Rules", Content = $"Check out this cool image I found using dogpile.com: {url}" }).SetUserContext(user);
             r = await cmd.Execute();
             VoatAssert.IsValid(r);
+        }
+
+        [TestMethod]
+        [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]
+        [TestCategory("Validation"), TestCategory("Submission.Validation")]
+        public async Task Submission_Length_Validations()
+        {
+            var user = TestHelper.SetPrincipal("TestUser20");
+
+            var createCmd = new CreateSubmissionCommand(
+                new Domain.Models.UserSubmission() {
+                    Subverse = SUBVERSES.Unit,
+                    Title = "Can you hear me now?".RepeatUntil(201),
+                    Content = null
+                }).SetUserContext(user);
+            var r = await createCmd.Execute();
+            VoatAssert.IsValid(r, Status.Invalid);
+
+            createCmd = new CreateSubmissionCommand(
+                new Domain.Models.UserSubmission()
+                {
+                    Subverse = SUBVERSES.Unit,
+                    Title = "Can you hear me now?",
+                    Content = "Great!".RepeatUntil(10001)
+                }).SetUserContext(user);
+            r = await createCmd.Execute();
+            VoatAssert.IsValid(r, Status.Invalid);
+
+            createCmd = new CreateSubmissionCommand(
+                new Domain.Models.UserSubmission()
+                {
+                    Subverse = SUBVERSES.Unit,
+                    Title = "Can you hear me now?",
+                    Content = "Great!"
+                }).SetUserContext(user);
+            r = await createCmd.Execute();
+            VoatAssert.IsValid(r);
+
+            var editCmd = new EditSubmissionCommand(r.Response.ID, new Domain.Models.UserSubmission()
+            {
+                Subverse = SUBVERSES.Unit,
+                Title = "Can you hear me now?",
+                Content = "Great!".RepeatUntil(10001),
+            }).SetUserContext(user);
+            r = await editCmd.Execute();
+            VoatAssert.IsValid(r, Status.Invalid);
+
+            //editCmd = new EditSubmissionCommand(r.Response.ID, new Domain.Models.UserSubmission()
+            //{
+            //    Subverse = SUBVERSES.Unit,
+            //    Title = "Can you hear me now?",
+            //    Content = "Great!".RepeatUntil(10001),
+            //}).SetUserContext(user);
+            //r = await createCmd.Execute();
+            //VoatAssert.IsValid(r, Status.Denied);
 
         }
     }
