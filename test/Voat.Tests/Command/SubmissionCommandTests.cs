@@ -24,6 +24,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Configuration;
@@ -649,6 +650,7 @@ namespace Voat.Tests.CommandTests
                 }).SetUserContext(user);
             r = await createCmd.Execute();
             VoatAssert.IsValid(r, Status.Invalid);
+            Assert.IsTrue(r.ValidationErrors.Any(x => x.MemberNames.Any(m => m.IsEqual("content"))));
 
             createCmd = new CreateSubmissionCommand(
                 new Domain.Models.UserSubmission()

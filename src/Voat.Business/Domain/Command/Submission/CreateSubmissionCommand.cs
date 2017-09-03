@@ -51,7 +51,7 @@ namespace Voat.Domain.Command
                     var results = ValidationHandler.Validate(_userSubmission);
                     if (!results.IsNullOrEmpty())
                     {
-                        return CommandResponse.FromStatus<Submission>(null, Status.Invalid, results.FirstOrDefault().ErrorMessage);
+                        return CommandResponse.Invalid<Submission>(results);
                     }
                     break;
             }

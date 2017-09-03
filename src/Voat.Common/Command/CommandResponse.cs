@@ -24,6 +24,8 @@
 
 using Newtonsoft.Json;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Voat.Common;
 
@@ -60,6 +62,8 @@ namespace Voat.Domain.Command
         /// </summary>
         public virtual string Message { get; set; }
 
+        public IEnumerable<ValidationResult> ValidationErrors { get; set; }
+
         [JsonIgnore]
         public Exception Exception { get; set; }
 
@@ -92,6 +96,12 @@ namespace Voat.Domain.Command
         public static CommandResponse<R> FromStatus<R>(R response, Status status)
         {
             return new CommandResponse<R>(response, status, DefaultDescription(status));
+        }
+        public static CommandResponse<R> Invalid<R>(IEnumerable<ValidationResult> results)
+        {
+            var result = new CommandResponse<R>(default(R), Status.Invalid, DefaultDescription(Status.Invalid));
+            result.ValidationErrors = results;
+            return result;
         }
         //public static CommandResponse<R> Denied<R>(R response, string description)
         //{
