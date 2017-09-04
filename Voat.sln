@@ -6,37 +6,37 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{57C37AFB-4FE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{BE90693F-B693-4E8F-A853-4682BC867578}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Tests", "test\Voat.Tests\Voat.Tests.csproj", "{FEF638A6-0E86-4C17-995F-81C367417EAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Tests", "test/Voat.Tests/Voat.Tests.csproj", "{FEF638A6-0E86-4C17-995F-81C367417EAD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Business", "src\Voat.Business\Voat.Business.csproj", "{6AFD77FD-A6F0-4B03-B46C-2121512D716D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Business", "src/Voat.Business/Voat.Business.csproj", "{6AFD77FD-A6F0-4B03-B46C-2121512D716D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Common", "src\Voat.Common\Voat.Common.csproj", "{9BECA48D-46AB-49AB-980D-863591738C99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Common", "src/Voat.Common/Voat.Common.csproj", "{9BECA48D-46AB-49AB-980D-863591738C99}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Data", "src\Voat.Data\Voat.Data.csproj", "{DB05E664-9941-4ADC-8774-F9DC2930B97C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Data", "src/Voat.Data/Voat.Data.csproj", "{DB05E664-9941-4ADC-8774-F9DC2930B97C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Http", "src\Voat.Http\Voat.Http.csproj", "{AAF06E2F-B7DB-4796-9FF9-CB0731C571F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Http", "src/Voat.Http/Voat.Http.csproj", "{AAF06E2F-B7DB-4796-9FF9-CB0731C571F0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Logging", "src\Voat.Logging\Voat.Logging.csproj", "{4D20B576-B34D-4AAD-988E-B7060177E001}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Logging", "src/Voat.Logging/Voat.Logging.csproj", "{4D20B576-B34D-4AAD-988E-B7060177E001}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.RulesEngine", "src\Voat.RulesEngine\Voat.RulesEngine.csproj", "{458637D5-7851-4059-A25F-B959711F0ED7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.RulesEngine", "src/Voat.RulesEngine/Voat.RulesEngine.csproj", "{458637D5-7851-4059-A25F-B959711F0ED7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.UI", "src\Voat.UI\Voat.UI.csproj", "{F435BF55-1CCD-4457-97FF-D4A841FC7033}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.UI", "src/Voat.UI/Voat.UI.csproj", "{F435BF55-1CCD-4457-97FF-D4A841FC7033}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Voting", "src\Voat.Voting\Voat.Voting.csproj", "{DDE186BC-B087-4FE5-8B7C-E3C7CD35817D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Voting", "src/Voat.Voting/Voat.Voting.csproj", "{DDE186BC-B087-4FE5-8B7C-E3C7CD35817D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "external", "external", "{DACF5E4B-80DB-43A5-9C0C-F84B6865777F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenGraph-Net", "src\external\Source\ghorsey\OpenGraph-Net\OpenGraph-Net.csproj", "{D795C957-179A-4185-A96A-1F380CD94199}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenGraph-Net", "src/external/Source/ghorsey/OpenGraph-Net/OpenGraph-Net.csproj", "{D795C957-179A-4185-A96A-1F380CD94199}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarkdownDeep", "src\external\Source\toptensoftware\MarkdownDeep\MarkdownDeep.csproj", "{FF071AA9-65EC-400E-B77A-870BAF12F5E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarkdownDeep", "src/external/Source/toptensoftware/MarkdownDeep/MarkdownDeep.csproj", "{FF071AA9-65EC-400E-B77A-870BAF12F5E0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "frameworks", "frameworks", "{6D9A74B8-813D-4C7F-9873-6783DD25C197}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Voat.Validation", "src\frameworks\Voat.Validation\Voat.Validation.fsproj", "{494CF6DD-53FB-4604-8A02-91C805154A4F}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Voat.Validation", "src/frameworks/Voat.Validation/Voat.Validation.fsproj", "{494CF6DD-53FB-4604-8A02-91C805154A4F}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Voat.Common.Fs", "src\frameworks\Voat.Common.Fs\Voat.Common.Fs.fsproj", "{2089F8BD-A49C-40F8-B9F6-4ABD2B4C4392}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Voat.Common.Fs", "src/frameworks/Voat.Common.Fs/Voat.Common.Fs.fsproj", "{2089F8BD-A49C-40F8-B9F6-4ABD2B4C4392}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Validation.Tests", "test\Voat.Validation.Tests\Voat.Validation.Tests.csproj", "{A8DAC3A9-B4D7-4093-8E39-7C98C3EBC206}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voat.Validation.Tests", "test/Voat.Validation.Tests/Voat.Validation.Tests.csproj", "{A8DAC3A9-B4D7-4093-8E39-7C98C3EBC206}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
