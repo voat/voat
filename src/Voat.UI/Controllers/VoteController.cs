@@ -34,7 +34,7 @@ namespace Voat.UI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> View(int id)
+        public async Task<ActionResult> View(string subverse, int id)
         {
             var q = new QueryVote(id);
             var vote = await q.ExecuteAsync();
@@ -89,7 +89,7 @@ namespace Voat.UI.Controllers
                 var result = await cmd.Execute();
                 if (result.Success)
                 {
-                    return View("View", result.Response);
+                    return PartialView("_View", result.Response);
                 }
                 else
                 {

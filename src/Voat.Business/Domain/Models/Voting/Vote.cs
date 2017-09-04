@@ -14,10 +14,18 @@ using Voat.Voting.Restrictions;
 
 namespace Voat.Domain.Models
 {
-
-    public class CreateVote
+    public interface IIdentifier<T>
     {
-        public int ID { get; set; }
+        T ID { get; set; }
+    }
+    //testing out base type ID
+    public class Identifier<T> : IIdentifier<T>
+    {
+        public T ID { get; set; }
+    }
+    public class CreateVote : Identifier<int>
+    {
+        //public int ID { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
         public string Subverse { get; set; }
@@ -25,7 +33,7 @@ namespace Voat.Domain.Models
         public List<CreateVoteOption> Options { get; set; } = new List<CreateVoteOption>();
         public List<CreateVoteType> Restrictions { get; set; } = new List<CreateVoteType>();
 
-        public class CreateVoteOption
+        public class CreateVoteOption : Identifier<int>
         {
             [Required]
             public string Title { get; set; }
@@ -33,7 +41,7 @@ namespace Voat.Domain.Models
 
             public List<CreateVoteType> Outcomes { get; set; } = new List<CreateVoteType>();
         }
-        public class CreateVoteType 
+        public class CreateVoteType : Identifier<int>
         {
             
             public string Type { get; set; }
@@ -115,11 +123,14 @@ namespace Voat.Domain.Models
         public string Subverse { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public bool ShowCurrentStats { get; set; }
+        public bool DisplayStatistics { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreationDate { get; set; }
 
+        [PerformValidation]
         public List<VoteOption> Options { get; set; } = new List<VoteOption>();
+
+        [PerformValidation]
         public List<VoteRestriction> Restrictions { get; set; } = new List<VoteRestriction>();
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -163,7 +174,7 @@ namespace Voat.Domain.Models
         public string Content { get; set; }
         public string FormattedContent { get; set; }
         public int SortOrder { get; set; }
-
+        [PerformValidation]
         public List<VoteOutcome> Outcomes { get; set; } = new List<VoteOutcome>();
     }
 }

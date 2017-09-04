@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Voat.Domain.Models;
+using Voat.Utilities;
 using Voat.Voting;
 using Voat.Voting.Outcomes;
 using Voat.Voting.Restrictions;
@@ -21,11 +22,11 @@ namespace Voat.Domain
             vote.Subverse = entity.Subverse;
             vote.SubmissionID = entity.SubmissionID;
             vote.StartDate = entity.StartDate;
-            vote.ShowCurrentStats = entity.DisplayStatistics;
+            vote.DisplayStatistics = entity.DisplayStatistics;
             vote.EndDate = entity.EndDate;
             vote.CreationDate = entity.CreationDate;
             vote.CreatedBy = entity.CreatedBy;
-
+            
             entity.VoteOptions?.ForEach(x => {
                 var newOption = new Domain.Models.VoteOption();
 
@@ -37,6 +38,7 @@ namespace Voat.Domain
 
                 x.VoteOutcomes?.ForEach(o => {
                     var obj = VoteItem.Deserialize<VoteOutcome>(o.Data);
+                    obj.ID = o.ID;
                     newOption.Outcomes.Add(obj);
                 });
 
@@ -45,6 +47,7 @@ namespace Voat.Domain
 
             entity.VoteRestrictions?.ForEach(x => {
                 var obj = VoteItem.Deserialize<VoteRestriction>(x.Data);
+                obj.ID = x.ID;
                 vote.Restrictions.Add(obj);
             });
 
@@ -57,13 +60,14 @@ namespace Voat.Domain
             vote.Title = entity.Title;
             vote.Content = entity.Content;
             vote.FormattedContent = entity.FormattedContent;
-            vote.DisplayStatistics = entity.ShowCurrentStats;
-
+            vote.DisplayStatistics = entity.DisplayStatistics;
+            vote.Subverse = entity.Subverse;
+            vote.SubmissionID = entity.SubmissionID;
 
             vote.VoteOptions = new List<Data.Models.VoteOption>();
             entity.Options.ForEach(x => {
                 var newOption = new Data.Models.VoteOption();
-
+                newOption.ID = x.ID;
                 newOption.Title = x.Title;
                 newOption.Content = x.Content;
                 newOption.FormattedContent = x.FormattedContent;
@@ -72,6 +76,7 @@ namespace Voat.Domain
                 newOption.VoteOutcomes = new List<Data.Models.VoteOutcome>();
                 x.Outcomes.ForEach(o => {
                     var newOutcome = new Data.Models.VoteOutcome();
+                    newOutcome.ID = o.ID;
                     newOutcome.Type = o.TypeName;
                     newOutcome.Data = o.Serialize();
                     newOption.VoteOutcomes.Add(newOutcome);
@@ -82,7 +87,7 @@ namespace Voat.Domain
             vote.VoteRestrictions = new List<Data.Models.VoteRestriction>();
             entity.Restrictions.ForEach(x => {
                 var newRestriction = new Data.Models.VoteRestriction();
-
+                newRestriction.ID = x.ID;
                 newRestriction.Type = x.TypeName;
                 newRestriction.Data = x.Serialize();
 
@@ -98,7 +103,29 @@ namespace Voat.Domain
             model.ID = transform.ID;
             model.Title = transform.Title;
             model.Content = transform.Content;
+            model.FormattedContent = Formatting.FormatMessage(transform.Content);
             model.Subverse = transform.Subverse;
+            
+            transform.Options.ForEach(x =>
+            {
+                var option = new VoteOption();
+                option.ID = x.ID;
+                option.Title = x.Title;
+                option.Content = x.Content;
+                option.FormattedContent = Formatting.FormatMessage(x.Content);
+               
+                x.Outcomes.ForEach(o =>
+                {
+                    var outcome = o.Construct<VoteOutcome>();
+                    if (outcome is ISubverse setSub)
+                    {
+                        setSub.Subverse = model.Subverse;
+                    }
+                    outcome.ID = o.ID;
+                    option.Outcomes.Add(outcome);
+                });
+                model.Options.Add(option);
+            });
 
             foreach (var r in transform.Restrictions)
             {
@@ -107,26 +134,10 @@ namespace Voat.Domain
                 {
                     setSub.Subverse = model.Subverse;
                 }
+                o.ID = r.ID;
                 model.Restrictions.Add(o);
             }
-            transform.Options.ForEach(x =>
-            {
-                var option = new VoteOption();
-                option.Title = x.Title;
-                option.Content = x.Content;
 
-                x.Outcomes.ForEach(o =>
-                {
-                    var outcome = o.Construct<VoteOutcome>();
-                    if (outcome is ISubverse setSub)
-                    {
-                        setSub.Subverse = model.Subverse;
-                    }
-
-                    option.Outcomes.Add(outcome);
-                });
-                model.Options.Add(option);
-            });
             return model;
         }
     }

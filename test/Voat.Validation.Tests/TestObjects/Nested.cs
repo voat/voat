@@ -7,7 +7,7 @@ using System.Text;
 namespace Voat.Validation.Tests.TestObjects
 {
    
-    public class Nested //: IValidatableObject
+    public class Nested<T> //: IValidatableObject
     {
         //[Required]
         public string UserName { get; set; }
@@ -27,13 +27,13 @@ namespace Voat.Validation.Tests.TestObjects
             return errors;
         }
 
-        //[PerformValidation]
-        public List<NestedSubType> Options { get; set; } = new List<NestedSubType>();
+        [PerformValidation]
+        public List<T> Options { get; set; } = new List<T>();
     }
 
-
+    public class NestedSubTypeBase { }
     
-    public class NestedSubType : IValidatableObject
+    public class NestedSubType : NestedSubTypeBase, IValidatableObject
     {
         public string UserName { get; set; }
 

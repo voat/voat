@@ -19,6 +19,13 @@ type ValidationHandler() =
 
             let root = Expression.Parameter(model.GetType(), "Model")
 
+            let convertIfNotType (obj: Object, typeDef: Type, expression: Expression) = 
+                let runtimeType = obj.GetType();
+                if runtimeType = typeDef then
+                    expression
+                else
+                    Expression.Convert(expression, runtimeType) :> Expression
+                
             let runValidate (valAtt: ValidationAttribute, model, modelRelative, validationResults: List<ValidationResult>, contextDictionary, resultFun) =
                 match valAtt.GetValidationResult(modelRelative, new ValidationContext(model, contextDictionary)) with
                 | null -> ()
@@ -45,9 +52,9 @@ type ValidationHandler() =
                                 | _ -> 
                                     match pathResult.PathExpression.Body with 
                                         | :? System.Linq.Expressions.MemberExpression as m ->
-                                            let cast = Expression.Convert(expression, t)
-                                            let newPath = Expression.Lambda(Expression.MakeMemberAccess(cast, m.Member))
-                                            validationResults.Add(new ValidationPathResult(pathResult.ErrorMessage, newPath, pathResult.Type))
+                                            let newPath = convertIfNotType (model, t, Expression.MakeMemberAccess(expression, m.Member))
+                                            let lambda = Expression.Lambda(newPath)
+                                            validationResults.Add(new ValidationPathResult(pathResult.ErrorMessage, lambda, pathResult.Type))
                                         | _ -> validationResults.Add(pathResult)
                                 | null ->
                                     validationResults.Add(pathResult)
@@ -101,10 +108,7 @@ type ValidationHandler() =
                                                     let m = p.GetValue(model)
                                                     let handleValidationResultForProperty (validator: Object, valResponse: ValidationResult) =
                                                         let del = typedefof<Func<_,_>>.MakeGenericType(root.Type, p.PropertyType)
-                                                        //if (expression.Type <> p.ReflectedType) then
-                                                        //    raise (new Exception("Mismatched types!"))
-
-                                                        let property = Expression.Property(Expression.Convert(expression, p.ReflectedType), p.Name);
+                                                        let property = Expression.Property(convertIfNotType(model, p.ReflectedType, expression), p.Name);
                                                         //let property = Expression.Property(Expression.Convert(expression, p.ReflectedType), p.Name);
                                                         validationResults.Add(ValidationPathResult.Create(model, v.ErrorMessage, validator.GetType().Name, Expression.Lambda(del, property, [|root|])))
 
@@ -120,8 +124,12 @@ type ValidationHandler() =
                         //we don't care about the overhead here because each type will be cached
                         let atts = AttributeFinder.Find<ValidationAttribute>(t, true, true, fun x -> filter.Invoke(x :?> ValidationAttribute))
                         match atts.ContainsKey(t) with
-                            | true -> true
-                            | false -> typedefof<IValidatableObject>.IsAssignableFrom(t)
+                        | true -> true
+                        | false -> 
+                            if typedefof<IValidatableObject>.IsAssignableFrom(t) || typedefof<IPerformValidation>.IsAssignableFrom(t) then
+                                true
+                            else 
+                                p.GetCustomAttributes(typedefof<PerformValidation>).Any() 
                        )
                     |> Seq.iter(fun (p, t) ->
                         match p.PropertyType.GetInterface(typeof<IEnumerable>.Name) with
@@ -136,8 +144,10 @@ type ValidationHandler() =
                                 match collection with
                                 | :? IEnumerable<_> as col ->
                                     Seq.iteri(fun i x ->
+                                        //let newRoot = Expression.Convert(Expression.MakeIndex(property, p.PropertyType.GetProperty("Item"), [|Expression.Constant(i)|]), x.GetType())
+                                        //evaluateType(x, newRoot)
                                         let newRoot = Expression.MakeIndex(property, p.PropertyType.GetProperty("Item"), [|Expression.Constant(i)|])
-                                        evaluateType (x, newRoot)
+                                        evaluateType(x, convertIfNotType (x, t, newRoot))
                                     ) (col :?> IEnumerable<_>)
                                 | _ ->
                                     for entry in (collection :?> IEnumerable) do
@@ -145,7 +155,7 @@ type ValidationHandler() =
                                         let key = etype.GetProperty("Key").GetValue(entry)
                                         let value = etype.GetProperty("Value").GetValue(entry)
                                         let newRoot = Expression.MakeIndex(property, p.PropertyType.GetProperty("Item"), [|Expression.Constant(key)|])
-                                        evaluateType (value, newRoot)
+                                        evaluateType (value, convertIfNotType (value, t, newRoot))
                     )
 
             evaluateType (model :> Object, root)

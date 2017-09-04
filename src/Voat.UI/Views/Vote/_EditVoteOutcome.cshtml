@@ -6,6 +6,7 @@
         @Html.Partial("_Header", Model)
 
         @Html.Hidden("Type", Model.TypeName, new { data_voat_field = "Outcomes" })
+        <input asp-for="ID" type="hidden" data-voat-field="Outcomes">
 
         @if (Model is AddModeratorOutcome add)
         {

@@ -1103,9 +1103,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Vote](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[Title] [nchar](10) NOT NULL,
-	[Content] [nchar](10) NULL,
-	[FormattedContent] [nchar](10) NULL,
+	[Title] [nvarchar](200) NOT NULL,
+	[Content] [nvarchar](max) NULL,
+	[FormattedContent] [nvarchar](max) NULL,
 	[Subverse] [nvarchar](50) NULL,
 	[SubmissionID] [int] NULL,
 	[DisplayStatistics] [bit] NOT NULL,
@@ -1147,12 +1147,12 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[VoteOptionOutcome](
+CREATE TABLE [dbo].[VoteOutcome](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[VoteOptionID] [int] NOT NULL,
 	[Type] [nvarchar](1000) NOT NULL,
 	[Data] [nvarchar](max) NOT NULL,
- CONSTRAINT [PK_VoteOptionOutcome] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_VoteOutcome] PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1204,10 +1204,10 @@ REFERENCES [dbo].[Vote] ([ID])
 GO
 ALTER TABLE [dbo].[VoteOption] CHECK CONSTRAINT [FK_VoteOption_Vote]
 GO
-ALTER TABLE [dbo].[VoteOptionOutcome]  WITH CHECK ADD  CONSTRAINT [FK_VoteOptionOutcome_VoteOption] FOREIGN KEY([VoteOptionID])
+ALTER TABLE [dbo].[VoteOutcome]  WITH CHECK ADD  CONSTRAINT [FK_VoteOutcome_VoteOption] FOREIGN KEY([VoteOptionID])
 REFERENCES [dbo].[VoteOption] ([ID])
 GO
-ALTER TABLE [dbo].[VoteOptionOutcome] CHECK CONSTRAINT [FK_VoteOptionOutcome_VoteOption]
+ALTER TABLE [dbo].[VoteOutcome] CHECK CONSTRAINT [FK_VoteOutcome_VoteOption]
 GO
 ALTER TABLE [dbo].[VoteRestriction]  WITH CHECK ADD  CONSTRAINT [FK_VoteRestriction_Vote] FOREIGN KEY([VoteID])
 REFERENCES [dbo].[Vote] ([ID])

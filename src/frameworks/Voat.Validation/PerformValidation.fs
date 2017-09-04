@@ -5,9 +5,11 @@ open System
 open System.Reflection
 open System.Collections.Generic
 
-[<AttributeUsage(AttributeTargets.Property ||| AttributeTargets.Class, AllowMultiple=true)>]
+/// <summary>Marker Attribute for forcing validator to validate this type</summary>
+[<AttributeUsage(AttributeTargets.Property ||| AttributeTargets.Class, AllowMultiple = false)>]
 type PerformValidation() =
-    inherit ValidationAttribute()
+    inherit Attribute()
 
-     override this.IsValid(model, context) =
-        null
+/// <summary>Marker Interface for forcing validator to validate this type</summary>
+type IPerformValidation = interface end
+
