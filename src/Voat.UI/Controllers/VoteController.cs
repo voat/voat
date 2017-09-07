@@ -16,6 +16,7 @@ using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.Models.ViewModels;
+using Voat.UI.Utils;
 using Voat.Voting.Outcomes;
 using Voat.Voting.Restrictions;
 
@@ -24,8 +25,11 @@ namespace Voat.UI.Controllers
     [Authorize]
     public class VoteController : BaseController
     {
-        private static MemoryCacheHandler cache = new MemoryCacheHandler(false);
-
+        private IViewRenderService _viewRenderService;
+        public VoteController(IViewRenderService viewRenderService)
+        {
+            _viewRenderService = viewRenderService;
+        }
         [HttpGet]
         public ActionResult Index(int id)
         {
@@ -38,23 +42,36 @@ namespace Voat.UI.Controllers
         {
             var q = new QueryVote(id);
             var vote = await q.ExecuteAsync();
+
+            if (vote == null)
+            {
+                return ErrorController.ErrorView(ErrorType.NotFound);
+            }
+            if (!vote.Subverse.IsEqual(subverse))
+            {
+                return ErrorController.ErrorView(ErrorType.NotFound);
+            }
             return View(vote);
         }
         [HttpGet]
-        public ActionResult Create(string subverse)
+        public async Task<ActionResult> Create(string subverse)
         {
             if (!VoatSettings.Instance.EnableVotes)
             {
                 return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.Unauthorized));
             }
 
-            var model = cache.Retrieve<Vote>($"VoteCreate:{User.Identity.Name}");
-            if (model == null)
+            var q = new QuerySubverse(subverse);
+            var sub = await q.ExecuteAsync();
+
+            if (sub == null)
             {
-                model = new Vote();
-                model.Subverse = subverse;
+                return ErrorController.ErrorView(ErrorType.SubverseNotFound);
             }
 
+            var model = new Vote();
+            model.Subverse = sub.Name;
+            
             return View("Edit", model);
         }
         public bool TryValidateModel2<TModel, TProperty>(Expression<Func<TModel, TProperty>> expression)
@@ -68,36 +85,55 @@ namespace Voat.UI.Controllers
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Save([FromBody] CreateVote model)
         {
-            ModelState.Clear();
-
-            //Map to Domain Model
-            var domainModel = model.Map();
-
-            //Reinsert Cache
-            cache.Replace($"VoteCreate:{User.Identity.Name}", domainModel);
-
-
-            var valResult = Voat.Validation.ValidationHandler.Validate(domainModel);
-            if (valResult != null)
+            try
             {
-                valResult.ForEach(x => ModelState.AddModelError(x.MemberNames.FirstOrDefault(), x.ErrorMessage));
+
+                ModelState.Clear();
+
+                //Map to Domain Model
+                var domainModel = model.Map();
+
+                ////Reinsert Cache
+                //cache.Replace($"VoteCreate:{User.Identity.Name}", domainModel);
+
+
+                var valResult = Voat.Validation.ValidationHandler.Validate(domainModel);
+                if (valResult != null)
+                {
+                    valResult.ForEach(x => ModelState.AddModelError(x.MemberNames.FirstOrDefault(), x.ErrorMessage));
+                }
+                CommandResponse<string> response = new CommandResponse<string>("", Status.Success, "");
+
+                if (ModelState.IsValid)
+                {
+                    //Save Vote
+                    var cmd = new PersistVoteCommand(domainModel).SetUserContext(User);
+                    var result = await cmd.Execute();
+                    if (result.Success)
+                    {
+                        response.Response = await _viewRenderService.RenderToStringAsync("Vote/_View", result.Response);
+                        return JsonResult(response);
+                        //return PartialView("_View", result.Response);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", result.Message);
+                    }
+                }
+
+                response.Status = Status.Error;
+                response.Response = await _viewRenderService.RenderToStringAsync("_Edit", domainModel, ModelState);
+                return JsonResult(response);
+                //return PartialView("_Edit", domainModel);
+
             }
-            if (ModelState.IsValid)
+            catch (Exception ex)
             {
-                //Save Vote
-                var cmd = new PersistVoteCommand(domainModel).SetUserContext(User);
-                var result = await cmd.Execute();
-                if (result.Success)
-                {
-                    return PartialView("_View", result.Response);
-                }
-                else
-                {
-                    ModelState.AddModelError("", result.Message);
-                }
+                var x = ex;
+                throw ex;
             }
 
-            return PartialView("_Edit", domainModel);
+            
         }
         
         [HttpGet]
@@ -105,6 +141,17 @@ namespace Voat.UI.Controllers
         {
             var q = new QueryVote(id);
             var vote = await q.ExecuteAsync();
+
+            if (vote == null)
+            {
+                return ErrorController.ErrorView(ErrorType.NotFound);
+            }
+
+            if (!vote.CreatedBy.IsEqual(User.Identity.Name))
+            {
+                return ErrorController.ErrorView(ErrorType.Unauthorized);
+            }
+
             return View(vote);
         }
         [HttpGet]

@@ -25,6 +25,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using Voat.Common;
 using Voat.Data;
 using Voat.Domain.Query;
 using Voat.Models.ViewModels;
@@ -64,7 +65,7 @@ namespace Voat.Controllers
             options.Page = pageNumber;
             options.Sort = sortingMode == "new" ? Domain.Models.SortAlgorithm.New : Domain.Models.SortAlgorithm.Hot;
 
-            var q = new QuerySubmissionsByDomain(domainName, options);
+            var q = new QuerySubmissionsByDomain(domainName, options).SetUserContext(User);
             var results = await q.ExecuteAsync();
             //var results = CacheHandler.Instance.Register(CachingKey.DomainSearch(domainname, pageNumber, sortingmode), () => {
             //    using (var db = new VoatUIDataContextAccessor())

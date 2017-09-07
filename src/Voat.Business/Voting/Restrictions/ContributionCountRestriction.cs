@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Principal;
 using System.Text;
+using Voat.Common;
 using Voat.Configuration;
 using Voat.Data;
 using Voat.Domain.Command;
@@ -21,7 +23,7 @@ namespace Voat.Voting.Restrictions
             var evaluation = CommandResponse.FromStatus<IVoteRestriction>(null, Status.Success);
             using (var repo = new Repository())
             {
-                var count = repo.UserContributionCount(principal.Identity.Name, ContentType, Subverse, DateRange);
+                var count = repo.UserContributionCount(principal.Identity.Name, (Voat.Domain.Models.ContentType)ContentType, Subverse, DateRange);
                 if (count < MinimumCount)
                 {
                     evaluation = CommandResponse.FromStatus<IVoteRestriction>(this, Status.Denied, $"User only has {count} and needs {MinimumCount}");
@@ -32,12 +34,7 @@ namespace Voat.Voting.Restrictions
 
         public override string ToDescription()
         {
-            var where = $"to {VoatSettings.Instance.SiteName}";
-            if (!String.IsNullOrEmpty(Subverse))
-            {
-                where = $"in v/{Subverse}";
-            }   
-            return $"Has submitted at least {MinimumCount} {ContentType} {where} from {DateRange.ToString()}";
+            return $"Requires {MinimumCount} {ContentTypeDescription()} posts {WhereDescription()} {DateRangeDescription()}";
         }
     }
 }

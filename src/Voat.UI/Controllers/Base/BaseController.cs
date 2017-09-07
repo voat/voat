@@ -134,27 +134,25 @@ namespace Voat.Controllers
                 if (response.Success)
                 {
                     return new { success = true, data = response.Response };
-                    //return new ApiDataResponse<T>(response.Response);
                 }
                 else
                 {
                     //Use defaults
-                    return MapToApiShimResponse((CommandResponse)response);
-                    //if (response.Exception != null)
-                    //{
-                    //    if (VoatSettings.Instance.IsDevelopment)
-                    //    {
-                    //        return new { success = false, error = new { type = response.Exception.GetType().FullName, message = response.Exception.ToString() } };
-                    //    }
-                    //    else
-                    //    {
-                    //        return new { success = false, error = new { type = "ServerException", message = "An exception has been encountered." } };
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    return new { success = false, error = new { type = response.Status, message = response.Message } };
-                    //}
+                    if (response.Exception != null)
+                    {
+                        if (VoatSettings.Instance.IsDevelopment)
+                        {
+                            return new { success = false, error = new { type = response.Exception.GetType().FullName, message = response.Exception.ToString() }, data = response.Response };
+                        }
+                        else
+                        {
+                            return new { success = false, error = new { type = "ServerException", message = "An exception has been encountered." }, data = response.Response };
+                        }
+                    }
+                    else
+                    {
+                        return new { success = false, error = new { type = response.Status, message = response.Message }, data = response.Response };
+                    }
                 }
             }
             else

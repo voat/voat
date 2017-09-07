@@ -66,7 +66,7 @@ namespace Voat.Tests.CommandTests
 
             var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = SUBVERSES.Whatever, Title = "This is a title", Url = "javascript:alert('arst');" }).SetUserContext(user);
             var r = cmd.Execute().Result;
-            VoatAssert.IsValid(r, Status.Denied);
+            VoatAssert.IsValid(r, Status.Invalid);
             Assert.AreEqual(r.Message, "The url you are trying to submit is invalid");
         }
 
@@ -357,8 +357,8 @@ namespace Voat.Tests.CommandTests
             var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = SUBVERSES.Whatever, Title = "Super rad website", Url = "http//www.yahoo.com" }).SetUserContext(user);
 
             var r = cmd.Execute().Result;
-            VoatAssert.IsValid(r, Status.Denied);
-            Assert.AreEqual(r.Message, "The url you are trying to submit is invalid");
+            VoatAssert.IsValid(r, Status.Invalid);
+            Assert.AreEqual("The url you are trying to submit is invalid", r.Message);
             //Assert.AreNotEqual(0, r.Response.ID);
         }
         [TestMethod]
@@ -495,7 +495,7 @@ namespace Voat.Tests.CommandTests
 
             var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = SUBVERSES.Unit, Title = "What", Url = "http://www.hellogoodbye.com/images/feelsgoodman.jpg" }).SetUserContext(user);
             var r = cmd.Execute().Result;
-            VoatAssert.IsValid(r, Status.Denied);
+            VoatAssert.IsValid(r, Status.Invalid);
             Assert.AreEqual(r.Message, $"A title must be between {VoatSettings.Instance.MinimumTitleLength} and {VoatSettings.Instance.MaximumTitleLength} characters");
         }
         [TestMethod]

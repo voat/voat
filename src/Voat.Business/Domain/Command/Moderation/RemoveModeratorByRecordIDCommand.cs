@@ -28,12 +28,12 @@ using Voat.Data;
 
 namespace Voat.Domain.Command
 {
-    public class RemoveModeratorCommand : CacheCommand<CommandResponse<RemoveModeratorResponse>>, IExcutableCommand<CommandResponse<RemoveModeratorResponse>>
+    public class RemoveModeratorByRecordIDCommand : CacheCommand<CommandResponse<RemoveModeratorResponse>>, IExcutableCommand<CommandResponse<RemoveModeratorResponse>>
     {
         private int _subversModeratorRecordID;
         private bool _allowSelfExecution;
 
-        public RemoveModeratorCommand(int subverseModeratorRecordID, bool allowSelfExecution = false)
+        public RemoveModeratorByRecordIDCommand(int subverseModeratorRecordID, bool allowSelfExecution = false)
         {
             this._subversModeratorRecordID = subverseModeratorRecordID;
             this._allowSelfExecution = allowSelfExecution;

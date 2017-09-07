@@ -3265,12 +3265,16 @@ input[type=checkbox].form-control {
 }
 
 //Bug Fix in Preview: https://voat.co/v/voatdev/2085954
-#submission-preview-area {
+#submission-preview-area, .panel-message-body, .panel-heading-messagetitle {
     overflow: auto;
 }
 
 #submission-preview-area .panel-body {
     display: block;
+}
+
+.form-horizontal {
+    overflow: auto;
 }
 /* ------------------------------------- RETRO PROTOTYPE ------------------------------ */
 

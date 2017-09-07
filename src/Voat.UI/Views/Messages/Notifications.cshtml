@@ -25,7 +25,6 @@
 
 @model IEnumerable<Voat.Domain.Models.MessageCounts>
 
-
 <div id="container">
     <div class="content-no-margin" role="main">
         <div class="alert-title">Unread Notifications for @User.Identity.Name</div>
@@ -36,7 +35,7 @@
                 var inboxUrl = "";
                 if (messageCount.UserDefinition.Type == Voat.Domain.Models.IdentityType.User)
                 {
-                    inboxUrl = @"/messages";
+                    inboxUrl = @"/messages/private";
                 }
                 else
                 {

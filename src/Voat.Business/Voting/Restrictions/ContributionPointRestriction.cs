@@ -22,13 +22,7 @@ namespace Voat.Voting.Restrictions
 
         public override string ToDescription()
         {
-            var where = $"on {VoatSettings.Instance.SiteName}";
-            if (!String.IsNullOrEmpty(Subverse))
-            {
-                where = $"in v/{Subverse}";
-            }
-            return $"Have at least {MinimumCount} points for {ContentType} {where} from {DateRange.ToString()}";
-
+            return $"Requires {MinimumCount} earned points for {ContentTypeDescription(true)} {WhereDescription()} {DateRangeDescription()}";
         }
     }
 }

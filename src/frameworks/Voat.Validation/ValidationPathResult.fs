@@ -10,6 +10,7 @@ open System.IO
 open System.Xml.XPath
 open System.Xml
 
+
 type ValidationPathResult(errorMessage: string, memberPath: string, validationType: string) as this =
     inherit ValidationResult(errorMessage, [memberPath])
     
@@ -33,10 +34,14 @@ type ValidationPathResult(errorMessage: string, memberPath: string, validationTy
 
         let err =
             match errorMessage with
-            | null -> "{0} is invalid"
-            | _ -> errorMessage
+            | null -> String.Format("{0} is invalid", f)
+            | _ -> 
+                if errorMessage.Contains("{0}") then 
+                    String.Format(errorMessage, f)
+                else
+                    errorMessage
         
-        new ValidationPathResult (String.Format(err, f), p, validationType) then 
+        new ValidationPathResult (err, p, validationType) then 
         x.PathExpression <- pathExpression
 
     static member CleanType (x) : string = 

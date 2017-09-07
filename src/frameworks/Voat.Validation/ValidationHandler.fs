@@ -110,7 +110,7 @@ type ValidationHandler() =
                                                         let del = typedefof<Func<_,_>>.MakeGenericType(root.Type, p.PropertyType)
                                                         let property = Expression.Property(convertIfNotType(model, p.ReflectedType, expression), p.Name);
                                                         //let property = Expression.Property(Expression.Convert(expression, p.ReflectedType), p.Name);
-                                                        validationResults.Add(ValidationPathResult.Create(model, v.ErrorMessage, validator.GetType().Name, Expression.Lambda(del, property, [|root|])))
+                                                        validationResults.Add(ValidationPathResult.Create(model, v.FormatErrorMessage(p.Name), validator.GetType().Name, Expression.Lambda(del, property, [|root|])))
 
                                                     runValidate (v, model, m, validationResults, contextDictionary, handleValidationResultForProperty)
                                                     )

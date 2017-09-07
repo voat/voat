@@ -99,7 +99,7 @@
                                 object[stripPathedName(item.attr('name'))] = val;
                             }
                         } else {
-                            object[item.data('voat-list')] = {};//Create empty object
+                            object[item.data('voat-list')] = {}; //Create empty object
                             object[item.data('voat-list')] = toFuzzyModel(item, false, level, includeEmptyFields);
                         }
                     }
@@ -113,11 +113,12 @@
 
             var model = toFuzzyModel(null, true, 0, false);
             
-            //translate to Model Site Expects
+            //transform to intermediate model
             for (var i = 0; i < model.Restrictions.length; i++) {
                 var item = model.Restrictions[i];
                 var newItem = {};
-                newItem.Type = item.Type;
+                newItem.ID = item.ID;
+                newItem.TypeName = item.TypeName;
                 newItem.Options = JSON.stringify(item);
                 model.Restrictions[i] = newItem;
             }
@@ -127,7 +128,8 @@
                 for (var i2 = 0; i2 < item.Outcomes.length; i2++) {
                     var item2 = item.Outcomes[i2];
                     var newItem = {};
-                    newItem.Type = item2.Type;
+                    newItem.ID = item2.ID;
+                    newItem.TypeName = item2.TypeName;
                     newItem.Options = JSON.stringify(item2);
                     item.Outcomes[i2] = newItem;
 
@@ -143,14 +145,21 @@
                 error: function () {
                     alert("error on post");
                 },
-                success: function (data) {
-                    $("#container").replaceWith(data);
+                success: function (result) {
+
+                    if (result.success) {
+
+                    } else {
+
+                    }
+
+                    //TODO: Need to return a commandResponse object and act on success/failure
+                    $("#container").replaceWith(result.data);
                     voat.voting.syncValidationChanges();
                     voat.voting.gimmieTheFormMEOW();
-                    history.pushState({what:"isthis"}, "View", "?view=true");
+                    //history.pushState({what:"isthis"}, "View", "?view=true");
                 }
             });
-
         }
     }
 }

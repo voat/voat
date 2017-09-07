@@ -55,7 +55,7 @@ namespace Voat.IO
                     {
                         result = CommandResponse.FromStatus(Status.Invalid, "Mime type is not permitted for upload");
                     }
-                    else if (length == null || length.Value == 0 || length > 100000000)
+                    else if (length == null || length.Value == 0 || length > 2500000)
                     {
                         result = CommandResponse.FromStatus(Status.Invalid, "File length is too big or too small but we aren't saying");
                     }

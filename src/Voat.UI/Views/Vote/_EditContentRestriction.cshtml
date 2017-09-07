@@ -18,7 +18,11 @@
 <div class="form-group">
     <label class="col-md-2 control-label" asp-for="ContentType"></label>
     <div class="col-md-2">
-        <select asp-for="ContentType" asp-items="Enum.GetNames(typeof(Voat.Domain.Models.ContentType)).Select(x => new SelectListItem() { Text = x, Value = x })" multiple="multiple" class="form-control" data-voat-field="Restrictions"></select>
+        <select asp-for="ContentType" asp-items="Enum.GetNames(typeof(Voat.Voting.Restrictions.ContentTypeRestriction)).Select(x =>
+                new SelectListItem() {
+                    Text = x,
+                    Value = x
+                })" class="form-control" data-voat-field="Restrictions"></select>
         <span asp-validation-for="ContentType"></span>
     </div>
 </div>

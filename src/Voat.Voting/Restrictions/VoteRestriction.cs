@@ -12,10 +12,10 @@ namespace Voat.Voting.Restrictions
 {
     public abstract class VoteRestriction : VoteItem, IVoteRestriction
     {
-        [Required]
+        //[Required]
         [DisplayName("Group")]
         public string Group { get; set; }
-        [Required]
+        //[Required]
         [DisplayName("End Date")]
         public DateTime? EndDate { get; set; }
         [DisplayName("Duration")]

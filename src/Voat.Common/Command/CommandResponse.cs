@@ -27,6 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Voat.Common;
 
 namespace Voat.Domain.Command
@@ -99,7 +100,15 @@ namespace Voat.Domain.Command
         }
         public static CommandResponse<R> Invalid<R>(IEnumerable<ValidationResult> results)
         {
-            var result = new CommandResponse<R>(default(R), Status.Invalid, DefaultDescription(Status.Invalid));
+            
+            var message = DefaultDescription(Status.Invalid);
+            //This is a hack to return first error message since validation errors being returned from command objects is new
+            if (results != null && results.Any())
+            {
+                message = results.First().ErrorMessage;
+            }
+
+            var result = new CommandResponse<R>(default(R), Status.Invalid, message);
             result.ValidationErrors = results;
             return result;
         }

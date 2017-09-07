@@ -270,7 +270,10 @@ namespace Voat.Controllers
                 var result = await cmd.Execute();
                 return JsonResult(result);
             }
-            return View(set);           
+            else
+            {
+                return JsonResult(CommandResponse.FromStatus(Status.Invalid, ModelState.GetFirstErrorMessage()));
+            }
         }
 
         [Authorize]

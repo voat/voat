@@ -43,6 +43,7 @@ using Voat.Http.Filters;
 using Voat.Http.Middleware;
 using Voat.UI.Areas.Admin;
 using Voat.UI.Runtime;
+using Voat.UI.Utils;
 
 namespace Voat
 {
@@ -118,8 +119,9 @@ namespace Voat
                 options.HeaderName = Utilities.CONSTANTS.REQUEST_VERIFICATION_HEADER_NAME;
                 options.FormFieldName = Utilities.CONSTANTS.REQUEST_VERIFICATION_HEADER_NAME;
             });
-            
+
             // Add application services.
+            services.AddScoped<IViewRenderService, ViewRenderService>();
             //services.AddTransient<IEmailSender, AuthMessageSender>();
             //services.AddTransient<ISmsSender, AuthMessageSender>();
         }

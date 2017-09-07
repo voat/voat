@@ -351,7 +351,7 @@ namespace Voat.Controllers
                 Description = originalUserName + "'s Sets",
             };
 
-            var q = new QueryUserSets(userName);
+            var q = new QueryUserSets(userName).SetUserContext(User);
             var results = await q.ExecuteAsync();
 
             return View(results);

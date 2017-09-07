@@ -836,11 +836,21 @@ function postPrivateMessageReplyAjax(senderButton, parentprivatemessageid) {
                 $form.find("#errorMessage").toggle(true);
             },
             success: function (response) {
-                // remove reply form 
-                removereplyform(parentprivatemessageid);
-                // change reply button to "reply sent" and disable it               
-                $("#messageContainer-" + parentprivatemessageid).find("#replyPrivateMessage").html("Reply sent.");
-                $("#messageContainer-" + parentprivatemessageid).find("#replyPrivateMessage").addClass("disabled");
+
+                if (response.success) {
+                    // remove reply form 
+                    removereplyform(parentprivatemessageid);
+                    // change reply button to "reply sent" and disable it               
+                    $("#messageContainer-" + parentprivatemessageid).find("#replyPrivateMessage").html("Reply sent.");
+                    $("#messageContainer-" + parentprivatemessageid).find("#replyPrivateMessage").addClass("disabled");
+
+                } else {
+                    //submission failed, likely cause: user triggered anti-spam throttle
+                    $form.find("#submitbutton").val("Submit reply");
+                    $form.find("#submitbutton").prop('disabled', false);
+                    $form.find("#errorMessage").html(response.message);
+                    $form.find("#errorMessage").toggle(true);
+                }
             }
         });
 
@@ -1479,7 +1489,7 @@ function applyflair(sender, submissionID, flairID, flairLabel, flairCssClass) {
                 //set linkflair
                 $('#linkflair').attr('class', "flair " + flairCssClass);
                 $('#linkflair').attr('title', flairLabel);
-                $('#linkflair').html(flairLabel);
+                $('#linkflair').text(flairLabel);
             }
             else
             {

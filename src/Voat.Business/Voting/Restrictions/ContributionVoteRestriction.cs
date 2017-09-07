@@ -28,13 +28,7 @@ namespace Voat.Voting.Restrictions
 
         public override string ToDescription()
         {
-            var where = $"on {VoatSettings.Instance.SiteName}";
-            if (!String.IsNullOrEmpty(Subverse))
-            {
-                where = $"in v/{Subverse}";
-            }
-            return $"Has voted at least {MinimumCount} times on {ContentType} {where} from {DateRange.ToString()}";
-
+            return $"Requires {MinimumCount} votes on {ContentTypeDescription(true)} {WhereDescription()} {DateRangeDescription()}";
         }
     }
 }

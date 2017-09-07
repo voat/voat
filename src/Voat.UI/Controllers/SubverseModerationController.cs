@@ -518,8 +518,6 @@ namespace Voat.Controllers
                 }
             }
         }
-
-
         #endregion
 
         // GET: show remove moderator invitation view for selected subverse
@@ -744,6 +742,16 @@ namespace Voat.Controllers
             {
                 return HybridError(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
             }
+            var count = _db.SubverseFlair.Count(x => x.Subverse == subverseFlairSetting.Subverse);
+            if (count >= 20)
+            {
+                ViewBag.SubverseModel = subverse;
+                ViewBag.SubverseName = subverse.Name;
+                ViewBag.SelectedSubverse = string.Empty;
+                SetNavigationViewModel(subverse.Name);
+                ModelState.AddModelError("", "Subverses are limited to 20 flairs");
+                return View("~/Views/Subverses/Admin/Flair/AddLinkFlair.cshtml", subverseFlairSetting);
+            }
 
             subverseFlairSetting.Subverse = subverse.Name;
             _db.SubverseFlair.Add(new SubverseFlair() {
@@ -868,6 +876,8 @@ namespace Voat.Controllers
             var userModerating = _db.SubverseModerator.Where(s => s.Subverse.Equals(userInvitation.Subverse, StringComparison.OrdinalIgnoreCase) && s.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
             if (userModerating.Any())
             {
+                _db.ModeratorInvitation.Remove(userInvitation);
+                _db.SaveChanges();
                 return ErrorView(new ErrorViewModel(){ Title = "You = Moderator * 2?",  Description = "You are currently already a moderator of this subverse", Footer = "How much power do you want?" });
                 //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
@@ -965,7 +975,8 @@ namespace Voat.Controllers
                 {
                     UserName = subverseAdmin.UserName,
                     Power = subverseAdmin.Power
-                });
+                }
+                );
             });
 
             // prevent invites to the current moderator
@@ -986,7 +997,6 @@ namespace Voat.Controllers
             if (subverseModel == null)
             {
                 return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
-                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             if ((subverseAdmin.Power < 1 || subverseAdmin.Power > 4) && subverseAdmin.Power != 99)
@@ -1107,7 +1117,7 @@ namespace Voat.Controllers
         public async Task<ActionResult> RemoveModerator(int id)
         {
 
-            var cmd = new RemoveModeratorCommand(id, true).SetUserContext(User);
+            var cmd = new RemoveModeratorByRecordIDCommand(id, true).SetUserContext(User);
             var response = await cmd.Execute();
 
             if (response.Success)

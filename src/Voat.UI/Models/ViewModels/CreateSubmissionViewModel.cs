@@ -39,10 +39,11 @@ namespace Voat.Models.ViewModels
         public string Content { get; set; }
 
         [Required(ErrorMessage = "You must enter a subverse to send the post to. Examples: programming, videos, pics, funny.")]
+        [MaxLength(50, ErrorMessage = "Subverse is limited to {1} characters")]
         public string Subverse { get; set; }
 
         [Required(ErrorMessage = "URL is required. Please provide this field")]
-        [Url(ErrorMessage = "Please enter a valid http, https, or ftp URL")]
+        [Url(ErrorMessage = "Please enter a valid http or https link")]
         [MaxLength(3000, ErrorMessage = "URL is limited to {1} characters")]
         public string Url { get; set; }
 

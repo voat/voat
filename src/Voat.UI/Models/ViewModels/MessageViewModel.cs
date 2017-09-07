@@ -33,7 +33,7 @@ namespace Voat.Models.ViewModels
         public int ID { get; set; }
 
         [Required(ErrorMessage = "Please enter some text")]
-        [StringLength(10000, ErrorMessage = "Body is limited to 10000 characters")]
+        [StringLength(10000, ErrorMessage = "Body is limited to 10,000 characters")]
         //CORE_PORT: Not Supported
         //[AllowHtml]
         public string Body { get; set; }
@@ -41,12 +41,12 @@ namespace Voat.Models.ViewModels
 
     public class NewMessageViewModel
     {
-
+        [StringLength(100, ErrorMessage = "{0} is limited to {1} characters", MinimumLength = 1)]
         public string Sender { get; set; }
 
         //[RegularExpression("^[a-zA-Z0-9-_]+$", ErrorMessage="Please use only alphanumeric characters.")]
-        [Required(ErrorMessage = "Please enter a username")]
-        //[StringLength(23, ErrorMessage = "Username is limited to 23 characters.")]
+        [Required(ErrorMessage = "Please enter a recipient")]
+        [StringLength(500, ErrorMessage = "Recipient is limited to {1} characters", MinimumLength = 1)]
         public string Recipient { get; set; }
         
         [Required(ErrorMessage = "Please enter a subject")]
@@ -54,7 +54,7 @@ namespace Voat.Models.ViewModels
         public string Subject { get; set; }
 
         [Required(ErrorMessage = "Please enter some text")]
-        [StringLength(10000, ErrorMessage = "Body is limited to 10000 characters")]
+        [StringLength(10000, ErrorMessage = "Body is limited to 10,000 characters")]
         //CORE_PORT: Not supported
         //[AllowHtml]
         public string Body { get; set; }

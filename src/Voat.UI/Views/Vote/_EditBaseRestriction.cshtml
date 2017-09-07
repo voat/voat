@@ -1,7 +1,6 @@
 ﻿
 @model VoteRestriction
 
-<input asp-for="ID" type="hidden" data-voat-field="Restrictions">
 <div class="form-group">
     <label class="col-md-2 control-label" asp-for="Duration"></label>
     <div class="col-md-2">
@@ -21,5 +20,9 @@
     <div class="col-md-2">
         <input asp-for="Group" class="form-control" type="text" data-voat-field="Restrictions">
         <span asp-validation-for="Group"></span>
+    </div>
+    <div class="col-md-offset-2 col-md-10">
+        <p>Used to group multiple restrictions by name.</p>
+        <p>One group must be satisfied for restrictions to pass. (Optional, Advanced)</p>    
     </div>
 </div>

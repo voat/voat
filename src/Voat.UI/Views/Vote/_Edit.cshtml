@@ -18,12 +18,15 @@
 
 *@
 
+@{ 
+    Layout = null;
+}
 @model Voat.Domain.Models.Vote
 <div id="container">
     <div role="main">
         <form id="formSave" asp-action="Save" asp-controller="Vote" method="post">
             <div class="row nomargin" data-voat-item="vote">
-                <div asp-validation-summary="All" class="validation-summary-errors">THIS IS A NON FUNCTIONAL PROTOTYPE</div>
+                <div asp-validation-summary="All"></div>
                 <div class="alert-title">Create/Edit Vote</div>
                 <div class="form-horizontal" role="form">
                     @*<input asp-for="SubverseID" type="hidden" data-voat-field="vote">*@
@@ -31,7 +34,7 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label" for="Subverse">Subverse</label>
                         <div class="col-md-10">
-                            <input asp-for="Subverse" class="form-control" type="text" data-voat-field="vote" disabled="disabled">
+                            <input asp-for="Subverse" class="form-control" type="text" data-voat-field="vote" disabled="disabled" value="@Model.Subverse">
                         </div>
                     </div>
                     <div class="form-group">

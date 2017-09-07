@@ -342,10 +342,9 @@ namespace Voat.Controllers
         // POST: /Account/Manage
         [HttpPost]
         [VoatValidateAntiForgeryToken]
-        public async Task<ActionResult> Manage(ManageUserViewModel model)
+        public async Task<ActionResult> ChangePassword(ChangePasswordViewModel model)
         {
             ViewBag.UserName = User.Identity.Name;
-
 
             ViewBag.ReturnUrl = Url.Action("Manage");
             var user = await UserManager.FindByNameAsync(User.Identity.Name);

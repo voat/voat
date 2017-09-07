@@ -37,15 +37,16 @@ namespace Voat.Models.ViewModels
         public string UserName { get; set; }
     }
 
-    public class ManageUserViewModel
+    public class ChangePasswordViewModel
     {
         [Required(ErrorMessage = "Current password is required.")]
         [DataType(DataType.Password)]
         [Display(Name = "Current password")]
+        [StringLength(100, ErrorMessage = "The {0} must be between {2} and {1} characters", MinimumLength = 2)]
         public string OldPassword { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "The {0} must be between {2} and {1} characters", MinimumLength = 6)]
         [RegularExpression("^[^<]+$", ErrorMessage = "The character < is not allowed. Sorry.")]
         [DataType(DataType.Password)]
         [Display(Name = "New password")]
@@ -75,7 +76,7 @@ namespace Voat.Models.ViewModels
     {
         [Display(Name = "E-mail address")]
         [EmailAddress(ErrorMessage = "Please enter a valid E-mail address")]
-        [StringLength(255, ErrorMessage = "E-mail is limited to a maximum of {0} characters")]
+        [StringLength(255, ErrorMessage = "E-mail is limited to a maximum of {1} characters")]
         public string EmailAddress { get; set; }
     }
 
@@ -123,7 +124,7 @@ namespace Voat.Models.ViewModels
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "{0} must be between {1} and {2} characters in length", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }

@@ -40,7 +40,7 @@ namespace Voat.Domain.Models
 
         [Required(ErrorMessage = "A set name is required")]
         [MaxLength(20, ErrorMessage = "Name is limited to 20 characters")]
-        [RegularExpression(CONSTANTS.SUBVERSE_REGEX, ErrorMessage = "Set name can not contain anything but letters and numbers")]
+        [RegularExpression(CONSTANTS.SUBVERSE_REGEX, ErrorMessage = "Set name can not contain anything but letters and numbers and is limited to 20 characters")]
         public string Name { get; set; }
 
         public string UserName { get; set; }

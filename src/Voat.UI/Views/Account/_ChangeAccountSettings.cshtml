@@ -18,9 +18,9 @@
 
 *@
 
-@model Voat.Models.ViewModels.ManageUserViewModel
+@model Voat.Models.ViewModels.ChangePasswordViewModel
 
-@using (Html.BeginForm("Manage", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@using (Html.BeginForm("ChangePassword", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()    
     <div class="form-group">

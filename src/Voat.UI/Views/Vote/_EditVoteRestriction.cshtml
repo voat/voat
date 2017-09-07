@@ -5,8 +5,9 @@
 
         @Html.Partial("_Header", Model)
 
-        @Html.Hidden("Type", Model.TypeName, new { data_voat_field = "Restrictions" })
         <input asp-for="ID" type="hidden" data-voat-field="Restrictions">
+        <input asp-for="TypeName" type="hidden" data-voat-field="Restrictions">
+        
         @if (Model is ContributionRestriction content)
         {
             @Html.Partial("_EditContentRestriction", content)

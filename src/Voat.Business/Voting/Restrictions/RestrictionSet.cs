@@ -10,7 +10,6 @@ namespace Voat.Voting.Restrictions
     public class VoteRestrictionSet
     {
         private Dictionary<string, List<IVoteRestriction>> _restrictionSet = new Dictionary<string, List<IVoteRestriction>>();
-
         public void Populate(IEnumerable<Data.Models.VoteRestriction> restrictions)
         {
             //throw new NotImplementedException();

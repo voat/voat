@@ -14,7 +14,7 @@ namespace Voat.Voting.Restrictions
       Name = "Subscriber Restriction",
       Description = "Restriction by subverse subscription"
     )]
-    public class SubscriberRestriction : VoteRestriction
+    public class SubscriberRestriction : VoteRestriction, ISubverse
     {
         public override CommandResponse<IVoteRestriction> Evaluate(IPrincipal principal)
         {

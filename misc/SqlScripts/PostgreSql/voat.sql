@@ -1,9 +1,9 @@
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS citext;
 CREATE SCHEMA IF NOT EXISTS "dbo";
-alter database {dbName} set search_path to 'dbo,public';
+ALTER database {dbName} SET search_path TO 'dbo,public';
 
-CREATE TABLE "dbo"."Ad"(
+CREATE TABLE "dbo"."Ad"( 
 	"ID" int NOT NULL,
 	"IsActive" boolean NOT NULL,
 	"GraphicUrl" varchar(100) NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE "dbo"."Ad"(
 	"Subverse" varchar(50),
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."AdminLog"(
+CREATE TABLE "dbo"."AdminLog"( 
 	"ID" int NOT NULL,
 	"UserName" varchar(20) NOT NULL,
 	"RefUserName" varchar(20),
@@ -29,7 +29,7 @@ CREATE TABLE "dbo"."AdminLog"(
 	"InternalDetails" varchar,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."ApiClient"(
+CREATE TABLE "dbo"."ApiClient"( 
 	"ID" int NOT NULL,
 	"IsActive" boolean NOT NULL,
 	"UserName" varchar(100),
@@ -44,7 +44,7 @@ CREATE TABLE "dbo"."ApiClient"(
 	"ApiThrottlePolicyID" int,
 	"ApiPermissionPolicyID" int);
 
-CREATE TABLE "dbo"."ApiCorsPolicy"(
+CREATE TABLE "dbo"."ApiCorsPolicy"( 
 	"ID" int NOT NULL,
 	"IsActive" boolean NOT NULL,
 	"AllowOrigin" varchar(100) NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE "dbo"."ApiCorsPolicy"(
 	"CreatedBy" varchar(100) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."ApiLog"(
+CREATE TABLE "dbo"."ApiLog"( 
 	"ID" int NOT NULL,
 	"ApiClientID" int NOT NULL,
 	"Method" varchar(10) NOT NULL,
@@ -66,37 +66,37 @@ CREATE TABLE "dbo"."ApiLog"(
 	"Body" varchar,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."ApiPermissionPolicy"(
+CREATE TABLE "dbo"."ApiPermissionPolicy"( 
 	"ID" int NOT NULL,
 	"Name" varchar(100) NOT NULL,
 	"Policy" varchar(2000) NOT NULL);
 
-CREATE TABLE "dbo"."ApiThrottlePolicy"(
+CREATE TABLE "dbo"."ApiThrottlePolicy"( 
 	"ID" int NOT NULL,
 	"Name" varchar(100) NOT NULL,
 	"Policy" varchar(2000) NOT NULL);
 
-CREATE TABLE "dbo"."Badge"(
+CREATE TABLE "dbo"."Badge"( 
 	"ID" varchar(50) NOT NULL,
 	"Graphic" varchar(50) NOT NULL,
 	"Title" varchar(300) NOT NULL,
 	"Name" varchar(50) NOT NULL);
 
-CREATE TABLE "dbo"."BannedDomain"(
+CREATE TABLE "dbo"."BannedDomain"( 
 	"ID" int NOT NULL,
 	"Domain" varchar(100) NOT NULL,
 	"CreatedBy" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL,
 	"Reason" varchar(500) NOT NULL);
 
-CREATE TABLE "dbo"."BannedUser"(
+CREATE TABLE "dbo"."BannedUser"( 
 	"ID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL,
 	"Reason" varchar(500) NOT NULL,
 	"CreatedBy" varchar(50) NOT NULL);
 
-CREATE TABLE "dbo"."Comment"(
+CREATE TABLE "dbo"."Comment"( 
 	"ID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"Content" varchar NOT NULL,
@@ -111,19 +111,19 @@ CREATE TABLE "dbo"."Comment"(
 	"FormattedContent" varchar,
 	"IsDeleted" boolean NOT NULL);
 
-CREATE TABLE "dbo"."CommentRemovalLog"(
+CREATE TABLE "dbo"."CommentRemovalLog"( 
 	"CommentID" int NOT NULL,
 	"Moderator" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL,
 	"Reason" varchar(500) NOT NULL);
 
-CREATE TABLE "dbo"."CommentSaveTracker"(
+CREATE TABLE "dbo"."CommentSaveTracker"( 
 	"ID" int NOT NULL,
 	"CommentID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."CommentVoteTracker"(
+CREATE TABLE "dbo"."CommentVoteTracker"( 
 	"ID" int NOT NULL,
 	"CommentID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
@@ -132,11 +132,11 @@ CREATE TABLE "dbo"."CommentVoteTracker"(
 	"IPAddress" varchar(90),
 	"VoteValue" double precision NOT NULL);
 
-CREATE TABLE "dbo"."DefaultSubverse"(
+CREATE TABLE "dbo"."DefaultSubverse"( 
 	"Subverse" varchar(20) NOT NULL,
 	"Order" int NOT NULL);
 
-CREATE TABLE "dbo"."EventLog"(
+CREATE TABLE "dbo"."EventLog"( 
 	"ID" int NOT NULL,
 	"ParentID" int,
 	"ActivityID" varchar(50),
@@ -149,7 +149,7 @@ CREATE TABLE "dbo"."EventLog"(
 	"Data" varchar,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."Featured"(
+CREATE TABLE "dbo"."Featured"( 
 	"ID" int NOT NULL,
 	"DomainType" int NOT NULL,
 	"DomainID" int NOT NULL,
@@ -159,13 +159,13 @@ CREATE TABLE "dbo"."Featured"(
 	"EndDate" timestamp,
 	"CreatedBy" varchar(50) NOT NULL);
 
-CREATE TABLE "dbo"."FeaturedSubverse"(
+CREATE TABLE "dbo"."FeaturedSubverse"( 
 	"ID" int NOT NULL,
 	"Subverse" varchar(20) NOT NULL,
 	"CreatedBy" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."Filter"(
+CREATE TABLE "dbo"."Filter"( 
 	"ID" int NOT NULL,
 	"IsActive" boolean NOT NULL,
 	"Name" varchar(100) NOT NULL,
@@ -176,7 +176,7 @@ CREATE TABLE "dbo"."Filter"(
 	"Action" int,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."Message"(
+CREATE TABLE "dbo"."Message"( 
 	"ID" int NOT NULL,
 	"CorrelationID" varchar(36) NOT NULL,
 	"ParentID" int,
@@ -196,7 +196,7 @@ CREATE TABLE "dbo"."Message"(
 	"CreatedBy" varchar(50),
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."ModeratorInvitation"(
+CREATE TABLE "dbo"."ModeratorInvitation"( 
 	"ID" int NOT NULL,
 	"CreatedBy" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL,
@@ -204,7 +204,7 @@ CREATE TABLE "dbo"."ModeratorInvitation"(
 	"Subverse" varchar(50) NOT NULL,
 	"Power" int NOT NULL);
 
-CREATE TABLE "dbo"."RuleReport"(
+CREATE TABLE "dbo"."RuleReport"( 
 	"ID" bigint NOT NULL,
 	"Subverse" varchar(50),
 	"UserName" varchar(100),
@@ -216,7 +216,7 @@ CREATE TABLE "dbo"."RuleReport"(
 	"CreatedBy" varchar(100) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."RuleSet"(
+CREATE TABLE "dbo"."RuleSet"( 
 	"ID" int NOT NULL,
 	"IsActive" boolean NOT NULL,
 	"Subverse" varchar(50),
@@ -227,18 +227,18 @@ CREATE TABLE "dbo"."RuleSet"(
 	"CreatedBy" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."SessionTracker"(
+CREATE TABLE "dbo"."SessionTracker"( 
 	"SessionID" varchar(90) NOT NULL,
 	"Subverse" varchar(20) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."StickiedSubmission"(
+CREATE TABLE "dbo"."StickiedSubmission"( 
 	"SubmissionID" int NOT NULL,
 	"Subverse" varchar(20) NOT NULL,
 	"CreatedBy" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."Submission"(
+CREATE TABLE "dbo"."Submission"( 
 	"ID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"Content" varchar,
@@ -262,19 +262,19 @@ CREATE TABLE "dbo"."Submission"(
 	"IsAdult" boolean NOT NULL,
 	"ArchiveDate" timestamp);
 
-CREATE TABLE "dbo"."SubmissionRemovalLog"(
+CREATE TABLE "dbo"."SubmissionRemovalLog"( 
 	"SubmissionID" int NOT NULL,
 	"Moderator" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL,
 	"Reason" varchar(500) NOT NULL);
 
-CREATE TABLE "dbo"."SubmissionSaveTracker"(
+CREATE TABLE "dbo"."SubmissionSaveTracker"( 
 	"ID" int NOT NULL,
 	"SubmissionID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."SubmissionVoteTracker"(
+CREATE TABLE "dbo"."SubmissionVoteTracker"( 
 	"ID" int NOT NULL,
 	"SubmissionID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
@@ -283,11 +283,11 @@ CREATE TABLE "dbo"."SubmissionVoteTracker"(
 	"IPAddress" varchar(90),
 	"VoteValue" double precision NOT NULL);
 
-CREATE TABLE "dbo"."Subverse"(
+CREATE TABLE "dbo"."Subverse"( 
 	"ID" int NOT NULL,
 	"Name" varchar(20) NOT NULL,
 	"Title" varchar(100) NOT NULL,
-	"Description" citext CHECK (char_length("Description") <= 500),
+	"Description" varchar(500),
 	"SideBar" varchar(4000),
 	"IsAdult" boolean NOT NULL,
 	"IsThumbnailEnabled" boolean NOT NULL,
@@ -305,7 +305,7 @@ CREATE TABLE "dbo"."Subverse"(
 	"CreatedBy" varchar(50),
 	"LastUpdateDate" timestamp);
 
-CREATE TABLE "dbo"."SubverseBan"(
+CREATE TABLE "dbo"."SubverseBan"( 
 	"ID" int NOT NULL,
 	"Subverse" varchar(20) NOT NULL,
 	"UserName" varchar(50) NOT NULL,
@@ -313,13 +313,13 @@ CREATE TABLE "dbo"."SubverseBan"(
 	"CreationDate" timestamp NOT NULL,
 	"Reason" varchar(500) NOT NULL);
 
-CREATE TABLE "dbo"."SubverseFlair"(
+CREATE TABLE "dbo"."SubverseFlair"( 
 	"ID" int NOT NULL,
 	"Subverse" varchar(20) NOT NULL,
 	"Label" varchar(50),
 	"CssClass" varchar(50));
 
-CREATE TABLE "dbo"."SubverseModerator"(
+CREATE TABLE "dbo"."SubverseModerator"( 
 	"ID" int NOT NULL,
 	"Subverse" varchar(20) NOT NULL,
 	"UserName" varchar(50) NOT NULL,
@@ -327,7 +327,7 @@ CREATE TABLE "dbo"."SubverseModerator"(
 	"CreatedBy" varchar(50),
 	"CreationDate" timestamp);
 
-CREATE TABLE "dbo"."SubverseSet"(
+CREATE TABLE "dbo"."SubverseSet"( 
 	"ID" int NOT NULL,
 	"Name" varchar(20) NOT NULL,
 	"Title" varchar(100),
@@ -338,31 +338,31 @@ CREATE TABLE "dbo"."SubverseSet"(
 	"SubscriberCount" int NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."SubverseSetList"(
+CREATE TABLE "dbo"."SubverseSetList"( 
 	"ID" int NOT NULL,
 	"SubverseSetID" int NOT NULL,
 	"SubverseID" int NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."SubverseSetSubscription"(
+CREATE TABLE "dbo"."SubverseSetSubscription"( 
 	"ID" int NOT NULL,
 	"SubverseSetID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."UserBadge"(
+CREATE TABLE "dbo"."UserBadge"( 
 	"ID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"BadgeID" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."UserBlockedUser"(
+CREATE TABLE "dbo"."UserBlockedUser"( 
 	"ID" int NOT NULL,
 	"BlockUser" varchar(50) NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."UserContribution"(
+CREATE TABLE "dbo"."UserContribution"( 
 	"ID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"IsReceived" boolean NOT NULL,
@@ -373,7 +373,7 @@ CREATE TABLE "dbo"."UserContribution"(
 	"ValidThroughDate" timestamp NOT NULL,
 	"LastUpdateDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."UserPreference"(
+CREATE TABLE "dbo"."UserPreference"( 
 	"UserName" varchar(50) NOT NULL,
 	"DisableCSS" boolean NOT NULL,
 	"NightMode" boolean NOT NULL,
@@ -393,9 +393,53 @@ CREATE TABLE "dbo"."UserPreference"(
 	"BlockAnonymized" boolean NOT NULL,
 	"CommentSort" int);
 
-CREATE TABLE "dbo"."ViewStatistic"(
+CREATE TABLE "dbo"."ViewStatistic"( 
 	"SubmissionID" int NOT NULL,
 	"ViewerID" varchar(90) NOT NULL);
+
+CREATE TABLE "dbo"."Vote"( 
+	"ID" int NOT NULL,
+	"Title" varchar(200) NOT NULL,
+	"Content" varchar,
+	"FormattedContent" varchar,
+	"Subverse" varchar(50),
+	"SubmissionID" int,
+	"DisplayStatistics" boolean NOT NULL,
+	"Status" int,
+	"StartDate" timestamp NOT NULL,
+	"EndDate" timestamp NOT NULL,
+	"LastEditDate" timestamp,
+	"ProcessedDate" timestamp,
+	"CreatedBy" varchar(50) NOT NULL,
+	"CreationDate" timestamp NOT NULL);
+
+CREATE TABLE "dbo"."VoteOption"( 
+	"ID" int NOT NULL,
+	"VoteID" int NOT NULL,
+	"Title" varchar(200) NOT NULL,
+	"Content" varchar,
+	"FormattedContent" varchar,
+	"SortOrder" int NOT NULL);
+
+CREATE TABLE "dbo"."VoteOutcome"( 
+	"ID" int NOT NULL,
+	"VoteOptionID" int NOT NULL,
+	"Type" varchar(1000) NOT NULL,
+	"Data" varchar NOT NULL);
+
+CREATE TABLE "dbo"."VoteRestriction"( 
+	"ID" int NOT NULL,
+	"VoteID" int NOT NULL,
+	"Type" varchar(1000) NOT NULL,
+	"Data" varchar NOT NULL);
+
+CREATE TABLE "dbo"."VoteTracker"( 
+	"ID" int NOT NULL,
+	"VoteID" int NOT NULL,
+	"VoteOptionID" int NOT NULL,
+	"RestrictionsPassed" boolean NOT NULL,
+	"UserName" varchar(50) NOT NULL,
+	"CreationDate" timestamp NOT NULL);
 
 CREATE SEQUENCE "dbo"."ad_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."Ad"."ID";
 CREATE SEQUENCE "dbo"."adminlog_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."AdminLog"."ID";
@@ -430,6 +474,11 @@ CREATE SEQUENCE "dbo"."subversesetsubscription_id_seq" INCREMENT BY 1 MINVALUE 1
 CREATE SEQUENCE "dbo"."userbadge_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."UserBadge"."ID";
 CREATE SEQUENCE "dbo"."userblockeduser_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."UserBlockedUser"."ID";
 CREATE SEQUENCE "dbo"."usercontribution_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."UserContribution"."ID";
+CREATE SEQUENCE "dbo"."vote_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."Vote"."ID";
+CREATE SEQUENCE "dbo"."voteoption_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."VoteOption"."ID";
+CREATE SEQUENCE "dbo"."voteoutcome_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."VoteOutcome"."ID";
+CREATE SEQUENCE "dbo"."voterestriction_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."VoteRestriction"."ID";
+CREATE SEQUENCE "dbo"."votetracker_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."VoteTracker"."ID";
 ALTER TABLE "dbo"."Ad" ADD CONSTRAINT "PK_Ad" PRIMARY KEY ("ID");
 ALTER TABLE "dbo"."AdminLog" ADD CONSTRAINT "PK_AdminLog" PRIMARY KEY ("ID");
 ALTER TABLE "dbo"."ApiClient" ADD CONSTRAINT "PK_ApiClient" PRIMARY KEY ("ID");
@@ -471,6 +520,11 @@ ALTER TABLE "dbo"."UserBlockedUser" ADD CONSTRAINT "PK_UserBlockedUser" PRIMARY 
 ALTER TABLE "dbo"."UserContribution" ADD CONSTRAINT "PK_UserContribution" PRIMARY KEY ("ID");
 ALTER TABLE "dbo"."UserPreference" ADD CONSTRAINT "PK_UserPreference" PRIMARY KEY ("UserName");
 ALTER TABLE "dbo"."ViewStatistic" ADD CONSTRAINT "PK_ViewStatistic" PRIMARY KEY ("SubmissionID","ViewerID");
+ALTER TABLE "dbo"."Vote" ADD CONSTRAINT "PK_Vote" PRIMARY KEY ("ID");
+ALTER TABLE "dbo"."VoteOption" ADD CONSTRAINT "PK_VoteOption" PRIMARY KEY ("ID");
+ALTER TABLE "dbo"."VoteOutcome" ADD CONSTRAINT "PK_VoteOutcome" PRIMARY KEY ("ID");
+ALTER TABLE "dbo"."VoteRestriction" ADD CONSTRAINT "PK_VoteRestriction" PRIMARY KEY ("ID");
+ALTER TABLE "dbo"."VoteTracker" ADD CONSTRAINT "PK_VoteTracker" PRIMARY KEY ("ID");
 ALTER TABLE "dbo"."Subverse" ADD CONSTRAINT "IX_Subverse" UNIQUE ("ID");
 ALTER TABLE "dbo"."ApiClient" ADD CONSTRAINT "FK_ApiClient_ApiPermissionPolicy" FOREIGN KEY ("ApiPermissionPolicyID") REFERENCES "dbo"."ApiPermissionPolicy" ( "ID");
 ALTER TABLE "dbo"."ApiClient" ADD CONSTRAINT "FK_ApiClient_ApiThrottlePolicy" FOREIGN KEY ("ApiThrottlePolicyID") REFERENCES "dbo"."ApiThrottlePolicy" ( "ID");
@@ -495,6 +549,11 @@ ALTER TABLE "dbo"."SubverseSetList" ADD CONSTRAINT "FK_SubverseSetList_SubverseS
 ALTER TABLE "dbo"."SubverseSetSubscription" ADD CONSTRAINT "FK_SubverseSetSubscription_Set" FOREIGN KEY ("SubverseSetID") REFERENCES "dbo"."SubverseSet" ( "ID");
 ALTER TABLE "dbo"."UserBadge" ADD CONSTRAINT "FK_UserBadge_Badge" FOREIGN KEY ("BadgeID") REFERENCES "dbo"."Badge" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "dbo"."ViewStatistic" ADD CONSTRAINT "FK_ViewStatistic_Submission" FOREIGN KEY ("SubmissionID") REFERENCES "dbo"."Submission" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "dbo"."VoteOption" ADD CONSTRAINT "FK_VoteOption_Vote" FOREIGN KEY ("VoteID") REFERENCES "dbo"."Vote" ( "ID");
+ALTER TABLE "dbo"."VoteOutcome" ADD CONSTRAINT "FK_VoteOutcome_VoteOption" FOREIGN KEY ("VoteOptionID") REFERENCES "dbo"."VoteOption" ( "ID");
+ALTER TABLE "dbo"."VoteRestriction" ADD CONSTRAINT "FK_VoteRestriction_Vote" FOREIGN KEY ("VoteID") REFERENCES "dbo"."Vote" ( "ID");
+ALTER TABLE "dbo"."VoteTracker" ADD CONSTRAINT "FK_VoteTracker_Vote" FOREIGN KEY ("VoteID") REFERENCES "dbo"."Vote" ( "ID");
+ALTER TABLE "dbo"."VoteTracker" ADD CONSTRAINT "FK_VoteTracker_VoteOption" FOREIGN KEY ("VoteOptionID") REFERENCES "dbo"."VoteOption" ( "ID");
 ALTER TABLE "dbo"."Ad" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."ad_id_seq"');
 ALTER TABLE "dbo"."Ad" ALTER COLUMN "IsActive" SET DEFAULT true;
 ALTER TABLE "dbo"."AdminLog" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."adminlog_id_seq"');
@@ -563,6 +622,11 @@ ALTER TABLE "dbo"."UserPreference" ALTER COLUMN "BlockAnonymized" SET DEFAULT fa
 ALTER TABLE "dbo"."UserPreference" ALTER COLUMN "DisplayAds" SET DEFAULT false;
 ALTER TABLE "dbo"."UserPreference" ALTER COLUMN "DisplaySubscriptions" SET DEFAULT false;
 ALTER TABLE "dbo"."UserPreference" ALTER COLUMN "UseSubscriptionsMenu" SET DEFAULT true;
+ALTER TABLE "dbo"."Vote" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."vote_id_seq"');
+ALTER TABLE "dbo"."VoteOption" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."voteoption_id_seq"');
+ALTER TABLE "dbo"."VoteOutcome" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."voteoutcome_id_seq"');
+ALTER TABLE "dbo"."VoteRestriction" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."voterestriction_id_seq"');
+ALTER TABLE "dbo"."VoteTracker" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."votetracker_id_seq"');
 ALTER TABLE "dbo"."Ad" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
 ALTER TABLE "dbo"."AdminLog" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
 ALTER TABLE "dbo"."ApiClient" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
@@ -578,6 +642,8 @@ ALTER TABLE "dbo"."SubverseSetList" ALTER COLUMN "CreationDate" SET DEFAULT (now
 ALTER TABLE "dbo"."SubverseSetSubscription" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
 ALTER TABLE "dbo"."UserBlockedUser" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
 ALTER TABLE "dbo"."UserContribution" ALTER COLUMN "LastUpdateDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "dbo"."Vote" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "dbo"."VoteTracker" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
 select setval('"dbo"."ad_id_seq"',(select max("ID") from "dbo"."Ad")::bigint);
 select setval('"dbo"."adminlog_id_seq"',(select max("ID") from "dbo"."AdminLog")::bigint);
 select setval('"dbo"."apiclient_id_seq"',(select max("ID") from "dbo"."ApiClient")::bigint);
@@ -611,5 +677,10 @@ select setval('"dbo"."subversesetsubscription_id_seq"',(select max("ID") from "d
 select setval('"dbo"."userbadge_id_seq"',(select max("ID") from "dbo"."UserBadge")::bigint);
 select setval('"dbo"."userblockeduser_id_seq"',(select max("ID") from "dbo"."UserBlockedUser")::bigint);
 select setval('"dbo"."usercontribution_id_seq"',(select max("ID") from "dbo"."UserContribution")::bigint);
+select setval('"dbo"."vote_id_seq"',(select max("ID") from "dbo"."Vote")::bigint);
+select setval('"dbo"."voteoption_id_seq"',(select max("ID") from "dbo"."VoteOption")::bigint);
+select setval('"dbo"."voteoutcome_id_seq"',(select max("ID") from "dbo"."VoteOutcome")::bigint);
+select setval('"dbo"."voterestriction_id_seq"',(select max("ID") from "dbo"."VoteRestriction")::bigint);
+select setval('"dbo"."votetracker_id_seq"',(select max("ID") from "dbo"."VoteTracker")::bigint);
 
 COMMIT;

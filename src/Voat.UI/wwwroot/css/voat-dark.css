@@ -2732,11 +2732,14 @@ input[type=checkbox].form-control {
 .content-menu-container > span {
   padding-right: 5px; }
 
-#submission-preview-area {
+#submission-preview-area, .panel-message-body, .panel-heading-messagetitle {
   overflow: auto; }
 
 #submission-preview-area .panel-body {
   display: block; }
+
+.form-horizontal {
+  overflow: auto; }
 
 /* ------------------------------------- RETRO PROTOTYPE ------------------------------ */
 .retro .submission > a {

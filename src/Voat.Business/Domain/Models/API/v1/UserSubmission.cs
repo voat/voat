@@ -56,6 +56,7 @@ namespace Voat.Domain.Models
         }
 
         //[JsonIgnore] CORE_PORT Need this for serialization tests
+        [Required(ErrorMessage = "A subverse must be provided")]
         public string Subverse { get; set; }
 
         [JsonIgnore]
@@ -99,8 +100,7 @@ namespace Voat.Domain.Models
         /// The title for a post. This value is editable within a 10 minute window, afterwards title edits are ignored.
         /// </summary>
         //[Required]
-        [MinLength(10)]
-        [MaxLength(200)]
+        [StringLength(200, ErrorMessage = "A title must be between {2} and {1} characters", MinimumLength = 10)]
         [JsonConverter(typeof(JsonUnprintableCharConverter))]
         public string Title
         {
@@ -119,7 +119,7 @@ namespace Voat.Domain.Models
         /// <summary>
         /// Optional. A value containing the url for a link submission. If this value is set, content is ignored.  Not-Editable once saved.
         /// </summary>
-        [Url]
+        [Url(ErrorMessage = "The url you are trying to submit is invalid")]
         public string Url
         {
             get
