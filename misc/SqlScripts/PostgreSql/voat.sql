@@ -1,9 +1,7 @@
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS citext;
-CREATE SCHEMA IF NOT EXISTS "dbo";
-ALTER database {dbName} SET search_path TO 'dbo,public';
 
-CREATE TABLE "dbo"."Ad"( 
+CREATE TABLE "Ad"( 
 	"ID" int NOT NULL,
 	"IsActive" boolean NOT NULL,
 	"GraphicUrl" varchar(100) NOT NULL,
@@ -15,7 +13,7 @@ CREATE TABLE "dbo"."Ad"(
 	"Subverse" varchar(50),
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."AdminLog"( 
+CREATE TABLE "AdminLog"( 
 	"ID" int NOT NULL,
 	"UserName" varchar(20) NOT NULL,
 	"RefUserName" varchar(20),
@@ -29,7 +27,7 @@ CREATE TABLE "dbo"."AdminLog"(
 	"InternalDetails" varchar,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."ApiClient"( 
+CREATE TABLE "ApiClient"( 
 	"ID" int NOT NULL,
 	"IsActive" boolean NOT NULL,
 	"UserName" varchar(100),
@@ -44,7 +42,7 @@ CREATE TABLE "dbo"."ApiClient"(
 	"ApiThrottlePolicyID" int,
 	"ApiPermissionPolicyID" int);
 
-CREATE TABLE "dbo"."ApiCorsPolicy"( 
+CREATE TABLE "ApiCorsPolicy"( 
 	"ID" int NOT NULL,
 	"IsActive" boolean NOT NULL,
 	"AllowOrigin" varchar(100) NOT NULL,
@@ -57,7 +55,7 @@ CREATE TABLE "dbo"."ApiCorsPolicy"(
 	"CreatedBy" varchar(100) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."ApiLog"( 
+CREATE TABLE "ApiLog"( 
 	"ID" int NOT NULL,
 	"ApiClientID" int NOT NULL,
 	"Method" varchar(10) NOT NULL,
@@ -66,37 +64,37 @@ CREATE TABLE "dbo"."ApiLog"(
 	"Body" varchar,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."ApiPermissionPolicy"( 
+CREATE TABLE "ApiPermissionPolicy"( 
 	"ID" int NOT NULL,
 	"Name" varchar(100) NOT NULL,
 	"Policy" varchar(2000) NOT NULL);
 
-CREATE TABLE "dbo"."ApiThrottlePolicy"( 
+CREATE TABLE "ApiThrottlePolicy"( 
 	"ID" int NOT NULL,
 	"Name" varchar(100) NOT NULL,
 	"Policy" varchar(2000) NOT NULL);
 
-CREATE TABLE "dbo"."Badge"( 
+CREATE TABLE "Badge"( 
 	"ID" varchar(50) NOT NULL,
 	"Graphic" varchar(50) NOT NULL,
 	"Title" varchar(300) NOT NULL,
 	"Name" varchar(50) NOT NULL);
 
-CREATE TABLE "dbo"."BannedDomain"( 
+CREATE TABLE "BannedDomain"( 
 	"ID" int NOT NULL,
 	"Domain" varchar(100) NOT NULL,
 	"CreatedBy" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL,
 	"Reason" varchar(500) NOT NULL);
 
-CREATE TABLE "dbo"."BannedUser"( 
+CREATE TABLE "BannedUser"( 
 	"ID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL,
 	"Reason" varchar(500) NOT NULL,
 	"CreatedBy" varchar(50) NOT NULL);
 
-CREATE TABLE "dbo"."Comment"( 
+CREATE TABLE "Comment"( 
 	"ID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"Content" varchar NOT NULL,
@@ -111,19 +109,19 @@ CREATE TABLE "dbo"."Comment"(
 	"FormattedContent" varchar,
 	"IsDeleted" boolean NOT NULL);
 
-CREATE TABLE "dbo"."CommentRemovalLog"( 
+CREATE TABLE "CommentRemovalLog"( 
 	"CommentID" int NOT NULL,
 	"Moderator" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL,
 	"Reason" varchar(500) NOT NULL);
 
-CREATE TABLE "dbo"."CommentSaveTracker"( 
+CREATE TABLE "CommentSaveTracker"( 
 	"ID" int NOT NULL,
 	"CommentID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."CommentVoteTracker"( 
+CREATE TABLE "CommentVoteTracker"( 
 	"ID" int NOT NULL,
 	"CommentID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
@@ -132,11 +130,11 @@ CREATE TABLE "dbo"."CommentVoteTracker"(
 	"IPAddress" varchar(90),
 	"VoteValue" double precision NOT NULL);
 
-CREATE TABLE "dbo"."DefaultSubverse"( 
+CREATE TABLE "DefaultSubverse"( 
 	"Subverse" varchar(20) NOT NULL,
 	"Order" int NOT NULL);
 
-CREATE TABLE "dbo"."EventLog"( 
+CREATE TABLE "EventLog"( 
 	"ID" int NOT NULL,
 	"ParentID" int,
 	"ActivityID" varchar(50),
@@ -149,7 +147,7 @@ CREATE TABLE "dbo"."EventLog"(
 	"Data" varchar,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."Featured"( 
+CREATE TABLE "Featured"( 
 	"ID" int NOT NULL,
 	"DomainType" int NOT NULL,
 	"DomainID" int NOT NULL,
@@ -159,13 +157,13 @@ CREATE TABLE "dbo"."Featured"(
 	"EndDate" timestamp,
 	"CreatedBy" varchar(50) NOT NULL);
 
-CREATE TABLE "dbo"."FeaturedSubverse"( 
+CREATE TABLE "FeaturedSubverse"( 
 	"ID" int NOT NULL,
 	"Subverse" varchar(20) NOT NULL,
 	"CreatedBy" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."Filter"( 
+CREATE TABLE "Filter"( 
 	"ID" int NOT NULL,
 	"IsActive" boolean NOT NULL,
 	"Name" varchar(100) NOT NULL,
@@ -176,7 +174,7 @@ CREATE TABLE "dbo"."Filter"(
 	"Action" int,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."Message"( 
+CREATE TABLE "Message"( 
 	"ID" int NOT NULL,
 	"CorrelationID" varchar(36) NOT NULL,
 	"ParentID" int,
@@ -196,7 +194,7 @@ CREATE TABLE "dbo"."Message"(
 	"CreatedBy" varchar(50),
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."ModeratorInvitation"( 
+CREATE TABLE "ModeratorInvitation"( 
 	"ID" int NOT NULL,
 	"CreatedBy" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL,
@@ -204,7 +202,7 @@ CREATE TABLE "dbo"."ModeratorInvitation"(
 	"Subverse" varchar(50) NOT NULL,
 	"Power" int NOT NULL);
 
-CREATE TABLE "dbo"."RuleReport"( 
+CREATE TABLE "RuleReport"( 
 	"ID" bigint NOT NULL,
 	"Subverse" varchar(50),
 	"UserName" varchar(100),
@@ -216,7 +214,7 @@ CREATE TABLE "dbo"."RuleReport"(
 	"CreatedBy" varchar(100) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."RuleSet"( 
+CREATE TABLE "RuleSet"( 
 	"ID" int NOT NULL,
 	"IsActive" boolean NOT NULL,
 	"Subverse" varchar(50),
@@ -227,18 +225,18 @@ CREATE TABLE "dbo"."RuleSet"(
 	"CreatedBy" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."SessionTracker"( 
+CREATE TABLE "SessionTracker"( 
 	"SessionID" varchar(90) NOT NULL,
 	"Subverse" varchar(20) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."StickiedSubmission"( 
+CREATE TABLE "StickiedSubmission"( 
 	"SubmissionID" int NOT NULL,
 	"Subverse" varchar(20) NOT NULL,
 	"CreatedBy" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."Submission"( 
+CREATE TABLE "Submission"( 
 	"ID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"Content" varchar,
@@ -262,19 +260,19 @@ CREATE TABLE "dbo"."Submission"(
 	"IsAdult" boolean NOT NULL,
 	"ArchiveDate" timestamp);
 
-CREATE TABLE "dbo"."SubmissionRemovalLog"( 
+CREATE TABLE "SubmissionRemovalLog"( 
 	"SubmissionID" int NOT NULL,
 	"Moderator" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL,
 	"Reason" varchar(500) NOT NULL);
 
-CREATE TABLE "dbo"."SubmissionSaveTracker"( 
+CREATE TABLE "SubmissionSaveTracker"( 
 	"ID" int NOT NULL,
 	"SubmissionID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."SubmissionVoteTracker"( 
+CREATE TABLE "SubmissionVoteTracker"( 
 	"ID" int NOT NULL,
 	"SubmissionID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
@@ -283,7 +281,7 @@ CREATE TABLE "dbo"."SubmissionVoteTracker"(
 	"IPAddress" varchar(90),
 	"VoteValue" double precision NOT NULL);
 
-CREATE TABLE "dbo"."Subverse"( 
+CREATE TABLE "Subverse"( 
 	"ID" int NOT NULL,
 	"Name" varchar(20) NOT NULL,
 	"Title" varchar(100) NOT NULL,
@@ -305,7 +303,7 @@ CREATE TABLE "dbo"."Subverse"(
 	"CreatedBy" varchar(50),
 	"LastUpdateDate" timestamp);
 
-CREATE TABLE "dbo"."SubverseBan"( 
+CREATE TABLE "SubverseBan"( 
 	"ID" int NOT NULL,
 	"Subverse" varchar(20) NOT NULL,
 	"UserName" varchar(50) NOT NULL,
@@ -313,13 +311,13 @@ CREATE TABLE "dbo"."SubverseBan"(
 	"CreationDate" timestamp NOT NULL,
 	"Reason" varchar(500) NOT NULL);
 
-CREATE TABLE "dbo"."SubverseFlair"( 
+CREATE TABLE "SubverseFlair"( 
 	"ID" int NOT NULL,
 	"Subverse" varchar(20) NOT NULL,
 	"Label" varchar(50),
 	"CssClass" varchar(50));
 
-CREATE TABLE "dbo"."SubverseModerator"( 
+CREATE TABLE "SubverseModerator"( 
 	"ID" int NOT NULL,
 	"Subverse" varchar(20) NOT NULL,
 	"UserName" varchar(50) NOT NULL,
@@ -327,7 +325,7 @@ CREATE TABLE "dbo"."SubverseModerator"(
 	"CreatedBy" varchar(50),
 	"CreationDate" timestamp);
 
-CREATE TABLE "dbo"."SubverseSet"( 
+CREATE TABLE "SubverseSet"( 
 	"ID" int NOT NULL,
 	"Name" varchar(20) NOT NULL,
 	"Title" varchar(100),
@@ -338,31 +336,31 @@ CREATE TABLE "dbo"."SubverseSet"(
 	"SubscriberCount" int NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."SubverseSetList"( 
+CREATE TABLE "SubverseSetList"( 
 	"ID" int NOT NULL,
 	"SubverseSetID" int NOT NULL,
 	"SubverseID" int NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."SubverseSetSubscription"( 
+CREATE TABLE "SubverseSetSubscription"( 
 	"ID" int NOT NULL,
 	"SubverseSetID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."UserBadge"( 
+CREATE TABLE "UserBadge"( 
 	"ID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"BadgeID" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."UserBlockedUser"( 
+CREATE TABLE "UserBlockedUser"( 
 	"ID" int NOT NULL,
 	"BlockUser" varchar(50) NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."UserContribution"( 
+CREATE TABLE "UserContribution"( 
 	"ID" int NOT NULL,
 	"UserName" varchar(50) NOT NULL,
 	"IsReceived" boolean NOT NULL,
@@ -373,7 +371,7 @@ CREATE TABLE "dbo"."UserContribution"(
 	"ValidThroughDate" timestamp NOT NULL,
 	"LastUpdateDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."UserPreference"( 
+CREATE TABLE "UserPreference"( 
 	"UserName" varchar(50) NOT NULL,
 	"DisableCSS" boolean NOT NULL,
 	"NightMode" boolean NOT NULL,
@@ -393,11 +391,11 @@ CREATE TABLE "dbo"."UserPreference"(
 	"BlockAnonymized" boolean NOT NULL,
 	"CommentSort" int);
 
-CREATE TABLE "dbo"."ViewStatistic"( 
+CREATE TABLE "ViewStatistic"( 
 	"SubmissionID" int NOT NULL,
 	"ViewerID" varchar(90) NOT NULL);
 
-CREATE TABLE "dbo"."Vote"( 
+CREATE TABLE "Vote"( 
 	"ID" int NOT NULL,
 	"Title" varchar(200) NOT NULL,
 	"Content" varchar,
@@ -413,7 +411,7 @@ CREATE TABLE "dbo"."Vote"(
 	"CreatedBy" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE TABLE "dbo"."VoteOption"( 
+CREATE TABLE "VoteOption"( 
 	"ID" int NOT NULL,
 	"VoteID" int NOT NULL,
 	"Title" varchar(200) NOT NULL,
@@ -421,19 +419,19 @@ CREATE TABLE "dbo"."VoteOption"(
 	"FormattedContent" varchar,
 	"SortOrder" int NOT NULL);
 
-CREATE TABLE "dbo"."VoteOutcome"( 
+CREATE TABLE "VoteOutcome"( 
 	"ID" int NOT NULL,
 	"VoteOptionID" int NOT NULL,
 	"Type" varchar(1000) NOT NULL,
 	"Data" varchar NOT NULL);
 
-CREATE TABLE "dbo"."VoteRestriction"( 
+CREATE TABLE "VoteRestriction"( 
 	"ID" int NOT NULL,
 	"VoteID" int NOT NULL,
 	"Type" varchar(1000) NOT NULL,
 	"Data" varchar NOT NULL);
 
-CREATE TABLE "dbo"."VoteTracker"( 
+CREATE TABLE "VoteTracker"( 
 	"ID" int NOT NULL,
 	"VoteID" int NOT NULL,
 	"VoteOptionID" int NOT NULL,
@@ -441,246 +439,246 @@ CREATE TABLE "dbo"."VoteTracker"(
 	"UserName" varchar(50) NOT NULL,
 	"CreationDate" timestamp NOT NULL);
 
-CREATE SEQUENCE "dbo"."ad_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."Ad"."ID";
-CREATE SEQUENCE "dbo"."adminlog_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."AdminLog"."ID";
-CREATE SEQUENCE "dbo"."apiclient_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."ApiClient"."ID";
-CREATE SEQUENCE "dbo"."apicorspolicy_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."ApiCorsPolicy"."ID";
-CREATE SEQUENCE "dbo"."apilog_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."ApiLog"."ID";
-CREATE SEQUENCE "dbo"."apipermissionpolicy_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."ApiPermissionPolicy"."ID";
-CREATE SEQUENCE "dbo"."apithrottlepolicy_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."ApiThrottlePolicy"."ID";
-CREATE SEQUENCE "dbo"."banneddomain_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."BannedDomain"."ID";
-CREATE SEQUENCE "dbo"."banneduser_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."BannedUser"."ID";
-CREATE SEQUENCE "dbo"."comment_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."Comment"."ID";
-CREATE SEQUENCE "dbo"."commentsavetracker_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."CommentSaveTracker"."ID";
-CREATE SEQUENCE "dbo"."commentvotetracker_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."CommentVoteTracker"."ID";
-CREATE SEQUENCE "dbo"."eventlog_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."EventLog"."ID";
-CREATE SEQUENCE "dbo"."featured_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."Featured"."ID";
-CREATE SEQUENCE "dbo"."featuredsubverse_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."FeaturedSubverse"."ID";
-CREATE SEQUENCE "dbo"."filter_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."Filter"."ID";
-CREATE SEQUENCE "dbo"."message_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."Message"."ID";
-CREATE SEQUENCE "dbo"."moderatorinvitation_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."ModeratorInvitation"."ID";
-CREATE SEQUENCE "dbo"."rulereport_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."RuleReport"."ID";
-CREATE SEQUENCE "dbo"."ruleset_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."RuleSet"."ID";
-CREATE SEQUENCE "dbo"."submission_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."Submission"."ID";
-CREATE SEQUENCE "dbo"."submissionsavetracker_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."SubmissionSaveTracker"."ID";
-CREATE SEQUENCE "dbo"."submissionvotetracker_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."SubmissionVoteTracker"."ID";
-CREATE SEQUENCE "dbo"."subverse_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."Subverse"."ID";
-CREATE SEQUENCE "dbo"."subverseban_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."SubverseBan"."ID";
-CREATE SEQUENCE "dbo"."subverseflair_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."SubverseFlair"."ID";
-CREATE SEQUENCE "dbo"."subversemoderator_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."SubverseModerator"."ID";
-CREATE SEQUENCE "dbo"."subverseset_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."SubverseSet"."ID";
-CREATE SEQUENCE "dbo"."subversesetlist_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."SubverseSetList"."ID";
-CREATE SEQUENCE "dbo"."subversesetsubscription_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."SubverseSetSubscription"."ID";
-CREATE SEQUENCE "dbo"."userbadge_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."UserBadge"."ID";
-CREATE SEQUENCE "dbo"."userblockeduser_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."UserBlockedUser"."ID";
-CREATE SEQUENCE "dbo"."usercontribution_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."UserContribution"."ID";
-CREATE SEQUENCE "dbo"."vote_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."Vote"."ID";
-CREATE SEQUENCE "dbo"."voteoption_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."VoteOption"."ID";
-CREATE SEQUENCE "dbo"."voteoutcome_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."VoteOutcome"."ID";
-CREATE SEQUENCE "dbo"."voterestriction_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."VoteRestriction"."ID";
-CREATE SEQUENCE "dbo"."votetracker_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "dbo"."VoteTracker"."ID";
-ALTER TABLE "dbo"."Ad" ADD CONSTRAINT "PK_Ad" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."AdminLog" ADD CONSTRAINT "PK_AdminLog" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."ApiClient" ADD CONSTRAINT "PK_ApiClient" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."ApiCorsPolicy" ADD CONSTRAINT "PK_ApiCorsPolicy" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."ApiLog" ADD CONSTRAINT "PK_ApiLog" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."ApiPermissionPolicy" ADD CONSTRAINT "PK_ApiPermissionPolicy" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."ApiThrottlePolicy" ADD CONSTRAINT "PK_ApiThrottlePolicy" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."Badge" ADD CONSTRAINT "PK_Badge" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."BannedDomain" ADD CONSTRAINT "PK_BannedDomain" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."BannedUser" ADD CONSTRAINT "PK_BannedUser" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."Comment" ADD CONSTRAINT "PK_Comment" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."CommentRemovalLog" ADD CONSTRAINT "PK_CommentRemovalLog" PRIMARY KEY ("CommentID");
-ALTER TABLE "dbo"."CommentSaveTracker" ADD CONSTRAINT "PK_CommentSaveTracker" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."CommentVoteTracker" ADD CONSTRAINT "PK_CommentVoteTracker" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."DefaultSubverse" ADD CONSTRAINT "PK_DefaultSubverse" PRIMARY KEY ("Subverse");
-ALTER TABLE "dbo"."EventLog" ADD CONSTRAINT "PK_EventLog" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."Featured" ADD CONSTRAINT "PK_Featured" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."FeaturedSubverse" ADD CONSTRAINT "PK_FeaturedSubverse" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."Filter" ADD CONSTRAINT "PK_Filter" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."Message" ADD CONSTRAINT "PK_Message" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."ModeratorInvitation" ADD CONSTRAINT "PK_ModeratorInvitation" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."RuleReport" ADD CONSTRAINT "PK_RuleReport" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."RuleSet" ADD CONSTRAINT "PK_RuleSet" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."SessionTracker" ADD CONSTRAINT "PK_SessionTracker" PRIMARY KEY ("SessionID","Subverse");
-ALTER TABLE "dbo"."StickiedSubmission" ADD CONSTRAINT "PK_StickiedSubmission" PRIMARY KEY ("SubmissionID","Subverse");
-ALTER TABLE "dbo"."Submission" ADD CONSTRAINT "PK_Submission" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."SubmissionRemovalLog" ADD CONSTRAINT "PK_SubmissionRemovalLog" PRIMARY KEY ("SubmissionID");
-ALTER TABLE "dbo"."SubmissionSaveTracker" ADD CONSTRAINT "PK_SubmissionSaveTracker" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."SubmissionVoteTracker" ADD CONSTRAINT "PK_SubmissionVoteTracker" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."Subverse" ADD CONSTRAINT "PK_Subverse" PRIMARY KEY ("Name");
-ALTER TABLE "dbo"."SubverseBan" ADD CONSTRAINT "PK_SubverseBan" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."SubverseFlair" ADD CONSTRAINT "PK_SubverseFlair" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."SubverseModerator" ADD CONSTRAINT "PK_SubverseModerator" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."SubverseSet" ADD CONSTRAINT "PK_SubverseSet" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."SubverseSetList" ADD CONSTRAINT "PK_SubverseSetList" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."SubverseSetSubscription" ADD CONSTRAINT "PK_SubverseSetSubscription" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."UserBadge" ADD CONSTRAINT "PK_UserBadge" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."UserBlockedUser" ADD CONSTRAINT "PK_UserBlockedUser" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."UserContribution" ADD CONSTRAINT "PK_UserContribution" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."UserPreference" ADD CONSTRAINT "PK_UserPreference" PRIMARY KEY ("UserName");
-ALTER TABLE "dbo"."ViewStatistic" ADD CONSTRAINT "PK_ViewStatistic" PRIMARY KEY ("SubmissionID","ViewerID");
-ALTER TABLE "dbo"."Vote" ADD CONSTRAINT "PK_Vote" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."VoteOption" ADD CONSTRAINT "PK_VoteOption" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."VoteOutcome" ADD CONSTRAINT "PK_VoteOutcome" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."VoteRestriction" ADD CONSTRAINT "PK_VoteRestriction" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."VoteTracker" ADD CONSTRAINT "PK_VoteTracker" PRIMARY KEY ("ID");
-ALTER TABLE "dbo"."Subverse" ADD CONSTRAINT "IX_Subverse" UNIQUE ("ID");
-ALTER TABLE "dbo"."ApiClient" ADD CONSTRAINT "FK_ApiClient_ApiPermissionPolicy" FOREIGN KEY ("ApiPermissionPolicyID") REFERENCES "dbo"."ApiPermissionPolicy" ( "ID");
-ALTER TABLE "dbo"."ApiClient" ADD CONSTRAINT "FK_ApiClient_ApiThrottlePolicy" FOREIGN KEY ("ApiThrottlePolicyID") REFERENCES "dbo"."ApiThrottlePolicy" ( "ID");
-ALTER TABLE "dbo"."Comment" ADD CONSTRAINT "FK_Comment_Submission" FOREIGN KEY ("SubmissionID") REFERENCES "dbo"."Submission" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "dbo"."CommentRemovalLog" ADD CONSTRAINT "FK_CommentRemovalLog_Comment" FOREIGN KEY ("CommentID") REFERENCES "dbo"."Comment" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "dbo"."CommentSaveTracker" ADD CONSTRAINT "FK_CommentSaveTracker_Comment" FOREIGN KEY ("CommentID") REFERENCES "dbo"."Comment" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "dbo"."CommentVoteTracker" ADD CONSTRAINT "FK_CommentVoteTracker_Comment" FOREIGN KEY ("CommentID") REFERENCES "dbo"."Comment" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "dbo"."DefaultSubverse" ADD CONSTRAINT "FK_DefaultSubverse_Subverse" FOREIGN KEY ("Subverse") REFERENCES "dbo"."Subverse" ( "Name") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "dbo"."FeaturedSubverse" ADD CONSTRAINT "FK_FeaturedSubverse_Subverse" FOREIGN KEY ("Subverse") REFERENCES "dbo"."Subverse" ( "Name");
-ALTER TABLE "dbo"."RuleReport" ADD CONSTRAINT "FK_RuleReport_RuleSet" FOREIGN KEY ("RuleSetID") REFERENCES "dbo"."RuleSet" ( "ID");
-ALTER TABLE "dbo"."StickiedSubmission" ADD CONSTRAINT "FK_StickiedSubmission_Submission" FOREIGN KEY ("SubmissionID") REFERENCES "dbo"."Submission" ( "ID");
-ALTER TABLE "dbo"."StickiedSubmission" ADD CONSTRAINT "FK_StickiedSubmission_Subverse" FOREIGN KEY ("Subverse") REFERENCES "dbo"."Subverse" ( "Name") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "dbo"."Submission" ADD CONSTRAINT "FK_Submission_Subverse" FOREIGN KEY ("Subverse") REFERENCES "dbo"."Subverse" ( "Name") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "dbo"."SubmissionRemovalLog" ADD CONSTRAINT "FK_SubmissionRemovalLog_Submission" FOREIGN KEY ("SubmissionID") REFERENCES "dbo"."Submission" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "dbo"."SubmissionSaveTracker" ADD CONSTRAINT "FK_SubmissionSaveTracker_Submission" FOREIGN KEY ("SubmissionID") REFERENCES "dbo"."Submission" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "dbo"."SubmissionVoteTracker" ADD CONSTRAINT "FK_SubmissionVoteTracker_Submission" FOREIGN KEY ("SubmissionID") REFERENCES "dbo"."Submission" ( "ID");
-ALTER TABLE "dbo"."SubverseBan" ADD CONSTRAINT "FK_SubverseBan_Subverse" FOREIGN KEY ("Subverse") REFERENCES "dbo"."Subverse" ( "Name") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "dbo"."SubverseFlair" ADD CONSTRAINT "FK_SubverseFlair_Subverse" FOREIGN KEY ("Subverse") REFERENCES "dbo"."Subverse" ( "Name") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "dbo"."SubverseModerator" ADD CONSTRAINT "FK_SubverseModerator_Subverse" FOREIGN KEY ("Subverse") REFERENCES "dbo"."Subverse" ( "Name") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "dbo"."SubverseSetList" ADD CONSTRAINT "FK_SubverseSetList_Subverse" FOREIGN KEY ("SubverseID") REFERENCES "dbo"."Subverse" ( "ID");
-ALTER TABLE "dbo"."SubverseSetList" ADD CONSTRAINT "FK_SubverseSetList_SubverseSet" FOREIGN KEY ("SubverseSetID") REFERENCES "dbo"."SubverseSet" ( "ID");
-ALTER TABLE "dbo"."SubverseSetSubscription" ADD CONSTRAINT "FK_SubverseSetSubscription_Set" FOREIGN KEY ("SubverseSetID") REFERENCES "dbo"."SubverseSet" ( "ID");
-ALTER TABLE "dbo"."UserBadge" ADD CONSTRAINT "FK_UserBadge_Badge" FOREIGN KEY ("BadgeID") REFERENCES "dbo"."Badge" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "dbo"."ViewStatistic" ADD CONSTRAINT "FK_ViewStatistic_Submission" FOREIGN KEY ("SubmissionID") REFERENCES "dbo"."Submission" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "dbo"."VoteOption" ADD CONSTRAINT "FK_VoteOption_Vote" FOREIGN KEY ("VoteID") REFERENCES "dbo"."Vote" ( "ID");
-ALTER TABLE "dbo"."VoteOutcome" ADD CONSTRAINT "FK_VoteOutcome_VoteOption" FOREIGN KEY ("VoteOptionID") REFERENCES "dbo"."VoteOption" ( "ID");
-ALTER TABLE "dbo"."VoteRestriction" ADD CONSTRAINT "FK_VoteRestriction_Vote" FOREIGN KEY ("VoteID") REFERENCES "dbo"."Vote" ( "ID");
-ALTER TABLE "dbo"."VoteTracker" ADD CONSTRAINT "FK_VoteTracker_Vote" FOREIGN KEY ("VoteID") REFERENCES "dbo"."Vote" ( "ID");
-ALTER TABLE "dbo"."VoteTracker" ADD CONSTRAINT "FK_VoteTracker_VoteOption" FOREIGN KEY ("VoteOptionID") REFERENCES "dbo"."VoteOption" ( "ID");
-ALTER TABLE "dbo"."Ad" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."ad_id_seq"');
-ALTER TABLE "dbo"."Ad" ALTER COLUMN "IsActive" SET DEFAULT true;
-ALTER TABLE "dbo"."AdminLog" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."adminlog_id_seq"');
-ALTER TABLE "dbo"."ApiClient" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."apiclient_id_seq"');
-ALTER TABLE "dbo"."ApiClient" ALTER COLUMN "IsActive" SET DEFAULT true;
-ALTER TABLE "dbo"."ApiCorsPolicy" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."apicorspolicy_id_seq"');
-ALTER TABLE "dbo"."ApiLog" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."apilog_id_seq"');
-ALTER TABLE "dbo"."ApiPermissionPolicy" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."apipermissionpolicy_id_seq"');
-ALTER TABLE "dbo"."ApiThrottlePolicy" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."apithrottlepolicy_id_seq"');
-ALTER TABLE "dbo"."BannedDomain" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."banneddomain_id_seq"');
-ALTER TABLE "dbo"."BannedUser" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."banneduser_id_seq"');
-ALTER TABLE "dbo"."Comment" ALTER COLUMN "DownCount" SET DEFAULT 0;
-ALTER TABLE "dbo"."Comment" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."comment_id_seq"');
-ALTER TABLE "dbo"."Comment" ALTER COLUMN "IsAnonymized" SET DEFAULT false;
-ALTER TABLE "dbo"."Comment" ALTER COLUMN "IsDeleted" SET DEFAULT false;
-ALTER TABLE "dbo"."Comment" ALTER COLUMN "IsDistinguished" SET DEFAULT false;
-ALTER TABLE "dbo"."Comment" ALTER COLUMN "UpCount" SET DEFAULT 1;
-ALTER TABLE "dbo"."CommentSaveTracker" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."commentsavetracker_id_seq"');
-ALTER TABLE "dbo"."CommentVoteTracker" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."commentvotetracker_id_seq"');
-ALTER TABLE "dbo"."CommentVoteTracker" ALTER COLUMN "VoteValue" SET DEFAULT 0;
-ALTER TABLE "dbo"."EventLog" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."eventlog_id_seq"');
-ALTER TABLE "dbo"."Featured" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."featured_id_seq"');
-ALTER TABLE "dbo"."FeaturedSubverse" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."featuredsubverse_id_seq"');
-ALTER TABLE "dbo"."Filter" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."filter_id_seq"');
-ALTER TABLE "dbo"."Filter" ALTER COLUMN "IsActive" SET DEFAULT true;
-ALTER TABLE "dbo"."Message" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."message_id_seq"');
-ALTER TABLE "dbo"."ModeratorInvitation" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."moderatorinvitation_id_seq"');
-ALTER TABLE "dbo"."RuleReport" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."rulereport_id_seq"');
-ALTER TABLE "dbo"."RuleSet" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."ruleset_id_seq"');
-ALTER TABLE "dbo"."RuleSet" ALTER COLUMN "IsActive" SET DEFAULT true;
-ALTER TABLE "dbo"."Submission" ALTER COLUMN "DownCount" SET DEFAULT 0;
-ALTER TABLE "dbo"."Submission" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."submission_id_seq"');
-ALTER TABLE "dbo"."Submission" ALTER COLUMN "IsAdult" SET DEFAULT false;
-ALTER TABLE "dbo"."Submission" ALTER COLUMN "IsAnonymized" SET DEFAULT false;
-ALTER TABLE "dbo"."Submission" ALTER COLUMN "IsDeleted" SET DEFAULT false;
-ALTER TABLE "dbo"."Submission" ALTER COLUMN "Rank" SET DEFAULT 0;
-ALTER TABLE "dbo"."Submission" ALTER COLUMN "RelativeRank" SET DEFAULT 0;
-ALTER TABLE "dbo"."Submission" ALTER COLUMN "UpCount" SET DEFAULT 1;
-ALTER TABLE "dbo"."Submission" ALTER COLUMN "Views" SET DEFAULT 1;
-ALTER TABLE "dbo"."SubmissionSaveTracker" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."submissionsavetracker_id_seq"');
-ALTER TABLE "dbo"."SubmissionVoteTracker" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."submissionvotetracker_id_seq"');
-ALTER TABLE "dbo"."SubmissionVoteTracker" ALTER COLUMN "VoteValue" SET DEFAULT 0;
-ALTER TABLE "dbo"."Subverse" ALTER COLUMN "ExcludeSitewideBans" SET DEFAULT false;
-ALTER TABLE "dbo"."Subverse" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."subverse_id_seq"');
-ALTER TABLE "dbo"."Subverse" ALTER COLUMN "IsAdminPrivate" SET DEFAULT false;
-ALTER TABLE "dbo"."Subverse" ALTER COLUMN "IsAdult" SET DEFAULT false;
-ALTER TABLE "dbo"."Subverse" ALTER COLUMN "IsAnonymized" SET DEFAULT false;
-ALTER TABLE "dbo"."Subverse" ALTER COLUMN "IsAuthorizedOnly" SET DEFAULT false;
-ALTER TABLE "dbo"."Subverse" ALTER COLUMN "IsPrivate" SET DEFAULT false;
-ALTER TABLE "dbo"."Subverse" ALTER COLUMN "IsThumbnailEnabled" SET DEFAULT true;
-ALTER TABLE "dbo"."Subverse" ALTER COLUMN "MinCCPForDownvote" SET DEFAULT 0;
-ALTER TABLE "dbo"."SubverseBan" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."subverseban_id_seq"');
-ALTER TABLE "dbo"."SubverseFlair" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."subverseflair_id_seq"');
-ALTER TABLE "dbo"."SubverseModerator" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."subversemoderator_id_seq"');
-ALTER TABLE "dbo"."SubverseSet" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."subverseset_id_seq"');
-ALTER TABLE "dbo"."SubverseSet" ALTER COLUMN "IsPublic" SET DEFAULT true;
-ALTER TABLE "dbo"."SubverseSet" ALTER COLUMN "SubscriberCount" SET DEFAULT 0;
-ALTER TABLE "dbo"."SubverseSetList" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."subversesetlist_id_seq"');
-ALTER TABLE "dbo"."SubverseSetSubscription" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."subversesetsubscription_id_seq"');
-ALTER TABLE "dbo"."UserBadge" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."userbadge_id_seq"');
-ALTER TABLE "dbo"."UserBlockedUser" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."userblockeduser_id_seq"');
-ALTER TABLE "dbo"."UserContribution" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."usercontribution_id_seq"');
-ALTER TABLE "dbo"."UserContribution" ALTER COLUMN "IsReceived" SET DEFAULT true;
-ALTER TABLE "dbo"."UserContribution" ALTER COLUMN "VoteCount" SET DEFAULT 0;
-ALTER TABLE "dbo"."UserPreference" ALTER COLUMN "BlockAnonymized" SET DEFAULT false;
-ALTER TABLE "dbo"."UserPreference" ALTER COLUMN "DisplayAds" SET DEFAULT false;
-ALTER TABLE "dbo"."UserPreference" ALTER COLUMN "DisplaySubscriptions" SET DEFAULT false;
-ALTER TABLE "dbo"."UserPreference" ALTER COLUMN "UseSubscriptionsMenu" SET DEFAULT true;
-ALTER TABLE "dbo"."Vote" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."vote_id_seq"');
-ALTER TABLE "dbo"."VoteOption" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."voteoption_id_seq"');
-ALTER TABLE "dbo"."VoteOutcome" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."voteoutcome_id_seq"');
-ALTER TABLE "dbo"."VoteRestriction" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."voterestriction_id_seq"');
-ALTER TABLE "dbo"."VoteTracker" ALTER COLUMN "ID" SET DEFAULT nextval('"dbo"."votetracker_id_seq"');
-ALTER TABLE "dbo"."Ad" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."AdminLog" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."ApiClient" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."ApiCorsPolicy" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."ApiLog" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."EventLog" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."Filter" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."RuleReport" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."RuleSet" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."SessionTracker" ALTER COLUMN "CreationDate" SET DEFAULT CURRENT_TIMESTAMP;
-ALTER TABLE "dbo"."SubverseSet" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."SubverseSetList" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."SubverseSetSubscription" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."UserBlockedUser" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."UserContribution" ALTER COLUMN "LastUpdateDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."Vote" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-ALTER TABLE "dbo"."VoteTracker" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
-select setval('"dbo"."ad_id_seq"',(select max("ID") from "dbo"."Ad")::bigint);
-select setval('"dbo"."adminlog_id_seq"',(select max("ID") from "dbo"."AdminLog")::bigint);
-select setval('"dbo"."apiclient_id_seq"',(select max("ID") from "dbo"."ApiClient")::bigint);
-select setval('"dbo"."apicorspolicy_id_seq"',(select max("ID") from "dbo"."ApiCorsPolicy")::bigint);
-select setval('"dbo"."apilog_id_seq"',(select max("ID") from "dbo"."ApiLog")::bigint);
-select setval('"dbo"."apipermissionpolicy_id_seq"',(select max("ID") from "dbo"."ApiPermissionPolicy")::bigint);
-select setval('"dbo"."apithrottlepolicy_id_seq"',(select max("ID") from "dbo"."ApiThrottlePolicy")::bigint);
-select setval('"dbo"."banneddomain_id_seq"',(select max("ID") from "dbo"."BannedDomain")::bigint);
-select setval('"dbo"."banneduser_id_seq"',(select max("ID") from "dbo"."BannedUser")::bigint);
-select setval('"dbo"."comment_id_seq"',(select max("ID") from "dbo"."Comment")::bigint);
-select setval('"dbo"."commentsavetracker_id_seq"',(select max("ID") from "dbo"."CommentSaveTracker")::bigint);
-select setval('"dbo"."commentvotetracker_id_seq"',(select max("ID") from "dbo"."CommentVoteTracker")::bigint);
-select setval('"dbo"."eventlog_id_seq"',(select max("ID") from "dbo"."EventLog")::bigint);
-select setval('"dbo"."featured_id_seq"',(select max("ID") from "dbo"."Featured")::bigint);
-select setval('"dbo"."featuredsubverse_id_seq"',(select max("ID") from "dbo"."FeaturedSubverse")::bigint);
-select setval('"dbo"."filter_id_seq"',(select max("ID") from "dbo"."Filter")::bigint);
-select setval('"dbo"."message_id_seq"',(select max("ID") from "dbo"."Message")::bigint);
-select setval('"dbo"."moderatorinvitation_id_seq"',(select max("ID") from "dbo"."ModeratorInvitation")::bigint);
-select setval('"dbo"."rulereport_id_seq"',(select max("ID") from "dbo"."RuleReport")::bigint);
-select setval('"dbo"."ruleset_id_seq"',(select max("ID") from "dbo"."RuleSet")::bigint);
-select setval('"dbo"."submission_id_seq"',(select max("ID") from "dbo"."Submission")::bigint);
-select setval('"dbo"."submissionsavetracker_id_seq"',(select max("ID") from "dbo"."SubmissionSaveTracker")::bigint);
-select setval('"dbo"."submissionvotetracker_id_seq"',(select max("ID") from "dbo"."SubmissionVoteTracker")::bigint);
-select setval('"dbo"."subverse_id_seq"',(select max("ID") from "dbo"."Subverse")::bigint);
-select setval('"dbo"."subverseban_id_seq"',(select max("ID") from "dbo"."SubverseBan")::bigint);
-select setval('"dbo"."subverseflair_id_seq"',(select max("ID") from "dbo"."SubverseFlair")::bigint);
-select setval('"dbo"."subversemoderator_id_seq"',(select max("ID") from "dbo"."SubverseModerator")::bigint);
-select setval('"dbo"."subverseset_id_seq"',(select max("ID") from "dbo"."SubverseSet")::bigint);
-select setval('"dbo"."subversesetlist_id_seq"',(select max("ID") from "dbo"."SubverseSetList")::bigint);
-select setval('"dbo"."subversesetsubscription_id_seq"',(select max("ID") from "dbo"."SubverseSetSubscription")::bigint);
-select setval('"dbo"."userbadge_id_seq"',(select max("ID") from "dbo"."UserBadge")::bigint);
-select setval('"dbo"."userblockeduser_id_seq"',(select max("ID") from "dbo"."UserBlockedUser")::bigint);
-select setval('"dbo"."usercontribution_id_seq"',(select max("ID") from "dbo"."UserContribution")::bigint);
-select setval('"dbo"."vote_id_seq"',(select max("ID") from "dbo"."Vote")::bigint);
-select setval('"dbo"."voteoption_id_seq"',(select max("ID") from "dbo"."VoteOption")::bigint);
-select setval('"dbo"."voteoutcome_id_seq"',(select max("ID") from "dbo"."VoteOutcome")::bigint);
-select setval('"dbo"."voterestriction_id_seq"',(select max("ID") from "dbo"."VoteRestriction")::bigint);
-select setval('"dbo"."votetracker_id_seq"',(select max("ID") from "dbo"."VoteTracker")::bigint);
+CREATE SEQUENCE "ad_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "Ad"."ID";
+CREATE SEQUENCE "adminlog_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "AdminLog"."ID";
+CREATE SEQUENCE "apiclient_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "ApiClient"."ID";
+CREATE SEQUENCE "apicorspolicy_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "ApiCorsPolicy"."ID";
+CREATE SEQUENCE "apilog_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "ApiLog"."ID";
+CREATE SEQUENCE "apipermissionpolicy_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "ApiPermissionPolicy"."ID";
+CREATE SEQUENCE "apithrottlepolicy_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "ApiThrottlePolicy"."ID";
+CREATE SEQUENCE "banneddomain_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "BannedDomain"."ID";
+CREATE SEQUENCE "banneduser_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "BannedUser"."ID";
+CREATE SEQUENCE "comment_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "Comment"."ID";
+CREATE SEQUENCE "commentsavetracker_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "CommentSaveTracker"."ID";
+CREATE SEQUENCE "commentvotetracker_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "CommentVoteTracker"."ID";
+CREATE SEQUENCE "eventlog_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "EventLog"."ID";
+CREATE SEQUENCE "featured_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "Featured"."ID";
+CREATE SEQUENCE "featuredsubverse_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "FeaturedSubverse"."ID";
+CREATE SEQUENCE "filter_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "Filter"."ID";
+CREATE SEQUENCE "message_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "Message"."ID";
+CREATE SEQUENCE "moderatorinvitation_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "ModeratorInvitation"."ID";
+CREATE SEQUENCE "rulereport_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "RuleReport"."ID";
+CREATE SEQUENCE "ruleset_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "RuleSet"."ID";
+CREATE SEQUENCE "submission_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "Submission"."ID";
+CREATE SEQUENCE "submissionsavetracker_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "SubmissionSaveTracker"."ID";
+CREATE SEQUENCE "submissionvotetracker_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "SubmissionVoteTracker"."ID";
+CREATE SEQUENCE "subverse_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "Subverse"."ID";
+CREATE SEQUENCE "subverseban_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "SubverseBan"."ID";
+CREATE SEQUENCE "subverseflair_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "SubverseFlair"."ID";
+CREATE SEQUENCE "subversemoderator_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "SubverseModerator"."ID";
+CREATE SEQUENCE "subverseset_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "SubverseSet"."ID";
+CREATE SEQUENCE "subversesetlist_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "SubverseSetList"."ID";
+CREATE SEQUENCE "subversesetsubscription_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "SubverseSetSubscription"."ID";
+CREATE SEQUENCE "userbadge_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "UserBadge"."ID";
+CREATE SEQUENCE "userblockeduser_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "UserBlockedUser"."ID";
+CREATE SEQUENCE "usercontribution_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "UserContribution"."ID";
+CREATE SEQUENCE "vote_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "Vote"."ID";
+CREATE SEQUENCE "voteoption_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "VoteOption"."ID";
+CREATE SEQUENCE "voteoutcome_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "VoteOutcome"."ID";
+CREATE SEQUENCE "voterestriction_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "VoteRestriction"."ID";
+CREATE SEQUENCE "votetracker_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "VoteTracker"."ID";
+ALTER TABLE "Ad" ADD CONSTRAINT "PK_Ad" PRIMARY KEY ("ID");
+ALTER TABLE "AdminLog" ADD CONSTRAINT "PK_AdminLog" PRIMARY KEY ("ID");
+ALTER TABLE "ApiClient" ADD CONSTRAINT "PK_ApiClient" PRIMARY KEY ("ID");
+ALTER TABLE "ApiCorsPolicy" ADD CONSTRAINT "PK_ApiCorsPolicy" PRIMARY KEY ("ID");
+ALTER TABLE "ApiLog" ADD CONSTRAINT "PK_ApiLog" PRIMARY KEY ("ID");
+ALTER TABLE "ApiPermissionPolicy" ADD CONSTRAINT "PK_ApiPermissionPolicy" PRIMARY KEY ("ID");
+ALTER TABLE "ApiThrottlePolicy" ADD CONSTRAINT "PK_ApiThrottlePolicy" PRIMARY KEY ("ID");
+ALTER TABLE "Badge" ADD CONSTRAINT "PK_Badge" PRIMARY KEY ("ID");
+ALTER TABLE "BannedDomain" ADD CONSTRAINT "PK_BannedDomain" PRIMARY KEY ("ID");
+ALTER TABLE "BannedUser" ADD CONSTRAINT "PK_BannedUser" PRIMARY KEY ("ID");
+ALTER TABLE "Comment" ADD CONSTRAINT "PK_Comment" PRIMARY KEY ("ID");
+ALTER TABLE "CommentRemovalLog" ADD CONSTRAINT "PK_CommentRemovalLog" PRIMARY KEY ("CommentID");
+ALTER TABLE "CommentSaveTracker" ADD CONSTRAINT "PK_CommentSaveTracker" PRIMARY KEY ("ID");
+ALTER TABLE "CommentVoteTracker" ADD CONSTRAINT "PK_CommentVoteTracker" PRIMARY KEY ("ID");
+ALTER TABLE "DefaultSubverse" ADD CONSTRAINT "PK_DefaultSubverse" PRIMARY KEY ("Subverse");
+ALTER TABLE "EventLog" ADD CONSTRAINT "PK_EventLog" PRIMARY KEY ("ID");
+ALTER TABLE "Featured" ADD CONSTRAINT "PK_Featured" PRIMARY KEY ("ID");
+ALTER TABLE "FeaturedSubverse" ADD CONSTRAINT "PK_FeaturedSubverse" PRIMARY KEY ("ID");
+ALTER TABLE "Filter" ADD CONSTRAINT "PK_Filter" PRIMARY KEY ("ID");
+ALTER TABLE "Message" ADD CONSTRAINT "PK_Message" PRIMARY KEY ("ID");
+ALTER TABLE "ModeratorInvitation" ADD CONSTRAINT "PK_ModeratorInvitation" PRIMARY KEY ("ID");
+ALTER TABLE "RuleReport" ADD CONSTRAINT "PK_RuleReport" PRIMARY KEY ("ID");
+ALTER TABLE "RuleSet" ADD CONSTRAINT "PK_RuleSet" PRIMARY KEY ("ID");
+ALTER TABLE "SessionTracker" ADD CONSTRAINT "PK_SessionTracker" PRIMARY KEY ("SessionID","Subverse");
+ALTER TABLE "StickiedSubmission" ADD CONSTRAINT "PK_StickiedSubmission" PRIMARY KEY ("SubmissionID","Subverse");
+ALTER TABLE "Submission" ADD CONSTRAINT "PK_Submission" PRIMARY KEY ("ID");
+ALTER TABLE "SubmissionRemovalLog" ADD CONSTRAINT "PK_SubmissionRemovalLog" PRIMARY KEY ("SubmissionID");
+ALTER TABLE "SubmissionSaveTracker" ADD CONSTRAINT "PK_SubmissionSaveTracker" PRIMARY KEY ("ID");
+ALTER TABLE "SubmissionVoteTracker" ADD CONSTRAINT "PK_SubmissionVoteTracker" PRIMARY KEY ("ID");
+ALTER TABLE "Subverse" ADD CONSTRAINT "PK_Subverse" PRIMARY KEY ("Name");
+ALTER TABLE "SubverseBan" ADD CONSTRAINT "PK_SubverseBan" PRIMARY KEY ("ID");
+ALTER TABLE "SubverseFlair" ADD CONSTRAINT "PK_SubverseFlair" PRIMARY KEY ("ID");
+ALTER TABLE "SubverseModerator" ADD CONSTRAINT "PK_SubverseModerator" PRIMARY KEY ("ID");
+ALTER TABLE "SubverseSet" ADD CONSTRAINT "PK_SubverseSet" PRIMARY KEY ("ID");
+ALTER TABLE "SubverseSetList" ADD CONSTRAINT "PK_SubverseSetList" PRIMARY KEY ("ID");
+ALTER TABLE "SubverseSetSubscription" ADD CONSTRAINT "PK_SubverseSetSubscription" PRIMARY KEY ("ID");
+ALTER TABLE "UserBadge" ADD CONSTRAINT "PK_UserBadge" PRIMARY KEY ("ID");
+ALTER TABLE "UserBlockedUser" ADD CONSTRAINT "PK_UserBlockedUser" PRIMARY KEY ("ID");
+ALTER TABLE "UserContribution" ADD CONSTRAINT "PK_UserContribution" PRIMARY KEY ("ID");
+ALTER TABLE "UserPreference" ADD CONSTRAINT "PK_UserPreference" PRIMARY KEY ("UserName");
+ALTER TABLE "ViewStatistic" ADD CONSTRAINT "PK_ViewStatistic" PRIMARY KEY ("SubmissionID","ViewerID");
+ALTER TABLE "Vote" ADD CONSTRAINT "PK_Vote" PRIMARY KEY ("ID");
+ALTER TABLE "VoteOption" ADD CONSTRAINT "PK_VoteOption" PRIMARY KEY ("ID");
+ALTER TABLE "VoteOutcome" ADD CONSTRAINT "PK_VoteOutcome" PRIMARY KEY ("ID");
+ALTER TABLE "VoteRestriction" ADD CONSTRAINT "PK_VoteRestriction" PRIMARY KEY ("ID");
+ALTER TABLE "VoteTracker" ADD CONSTRAINT "PK_VoteTracker" PRIMARY KEY ("ID");
+ALTER TABLE "Subverse" ADD CONSTRAINT "IX_Subverse" UNIQUE ("ID");
+ALTER TABLE "ApiClient" ADD CONSTRAINT "FK_ApiClient_ApiPermissionPolicy" FOREIGN KEY ("ApiPermissionPolicyID") REFERENCES "ApiPermissionPolicy" ( "ID");
+ALTER TABLE "ApiClient" ADD CONSTRAINT "FK_ApiClient_ApiThrottlePolicy" FOREIGN KEY ("ApiThrottlePolicyID") REFERENCES "ApiThrottlePolicy" ( "ID");
+ALTER TABLE "Comment" ADD CONSTRAINT "FK_Comment_Submission" FOREIGN KEY ("SubmissionID") REFERENCES "Submission" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "CommentRemovalLog" ADD CONSTRAINT "FK_CommentRemovalLog_Comment" FOREIGN KEY ("CommentID") REFERENCES "Comment" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "CommentSaveTracker" ADD CONSTRAINT "FK_CommentSaveTracker_Comment" FOREIGN KEY ("CommentID") REFERENCES "Comment" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "CommentVoteTracker" ADD CONSTRAINT "FK_CommentVoteTracker_Comment" FOREIGN KEY ("CommentID") REFERENCES "Comment" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "DefaultSubverse" ADD CONSTRAINT "FK_DefaultSubverse_Subverse" FOREIGN KEY ("Subverse") REFERENCES "Subverse" ( "Name") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "FeaturedSubverse" ADD CONSTRAINT "FK_FeaturedSubverse_Subverse" FOREIGN KEY ("Subverse") REFERENCES "Subverse" ( "Name");
+ALTER TABLE "RuleReport" ADD CONSTRAINT "FK_RuleReport_RuleSet" FOREIGN KEY ("RuleSetID") REFERENCES "RuleSet" ( "ID");
+ALTER TABLE "StickiedSubmission" ADD CONSTRAINT "FK_StickiedSubmission_Submission" FOREIGN KEY ("SubmissionID") REFERENCES "Submission" ( "ID");
+ALTER TABLE "StickiedSubmission" ADD CONSTRAINT "FK_StickiedSubmission_Subverse" FOREIGN KEY ("Subverse") REFERENCES "Subverse" ( "Name") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Submission" ADD CONSTRAINT "FK_Submission_Subverse" FOREIGN KEY ("Subverse") REFERENCES "Subverse" ( "Name") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "SubmissionRemovalLog" ADD CONSTRAINT "FK_SubmissionRemovalLog_Submission" FOREIGN KEY ("SubmissionID") REFERENCES "Submission" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "SubmissionSaveTracker" ADD CONSTRAINT "FK_SubmissionSaveTracker_Submission" FOREIGN KEY ("SubmissionID") REFERENCES "Submission" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "SubmissionVoteTracker" ADD CONSTRAINT "FK_SubmissionVoteTracker_Submission" FOREIGN KEY ("SubmissionID") REFERENCES "Submission" ( "ID");
+ALTER TABLE "SubverseBan" ADD CONSTRAINT "FK_SubverseBan_Subverse" FOREIGN KEY ("Subverse") REFERENCES "Subverse" ( "Name") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "SubverseFlair" ADD CONSTRAINT "FK_SubverseFlair_Subverse" FOREIGN KEY ("Subverse") REFERENCES "Subverse" ( "Name") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "SubverseModerator" ADD CONSTRAINT "FK_SubverseModerator_Subverse" FOREIGN KEY ("Subverse") REFERENCES "Subverse" ( "Name") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "SubverseSetList" ADD CONSTRAINT "FK_SubverseSetList_Subverse" FOREIGN KEY ("SubverseID") REFERENCES "Subverse" ( "ID");
+ALTER TABLE "SubverseSetList" ADD CONSTRAINT "FK_SubverseSetList_SubverseSet" FOREIGN KEY ("SubverseSetID") REFERENCES "SubverseSet" ( "ID");
+ALTER TABLE "SubverseSetSubscription" ADD CONSTRAINT "FK_SubverseSetSubscription_Set" FOREIGN KEY ("SubverseSetID") REFERENCES "SubverseSet" ( "ID");
+ALTER TABLE "UserBadge" ADD CONSTRAINT "FK_UserBadge_Badge" FOREIGN KEY ("BadgeID") REFERENCES "Badge" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ViewStatistic" ADD CONSTRAINT "FK_ViewStatistic_Submission" FOREIGN KEY ("SubmissionID") REFERENCES "Submission" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "VoteOption" ADD CONSTRAINT "FK_VoteOption_Vote" FOREIGN KEY ("VoteID") REFERENCES "Vote" ( "ID");
+ALTER TABLE "VoteOutcome" ADD CONSTRAINT "FK_VoteOutcome_VoteOption" FOREIGN KEY ("VoteOptionID") REFERENCES "VoteOption" ( "ID");
+ALTER TABLE "VoteRestriction" ADD CONSTRAINT "FK_VoteRestriction_Vote" FOREIGN KEY ("VoteID") REFERENCES "Vote" ( "ID");
+ALTER TABLE "VoteTracker" ADD CONSTRAINT "FK_VoteTracker_Vote" FOREIGN KEY ("VoteID") REFERENCES "Vote" ( "ID");
+ALTER TABLE "VoteTracker" ADD CONSTRAINT "FK_VoteTracker_VoteOption" FOREIGN KEY ("VoteOptionID") REFERENCES "VoteOption" ( "ID");
+ALTER TABLE "Ad" ALTER COLUMN "ID" SET DEFAULT nextval('"ad_id_seq"');
+ALTER TABLE "Ad" ALTER COLUMN "IsActive" SET DEFAULT true;
+ALTER TABLE "AdminLog" ALTER COLUMN "ID" SET DEFAULT nextval('"adminlog_id_seq"');
+ALTER TABLE "ApiClient" ALTER COLUMN "ID" SET DEFAULT nextval('"apiclient_id_seq"');
+ALTER TABLE "ApiClient" ALTER COLUMN "IsActive" SET DEFAULT true;
+ALTER TABLE "ApiCorsPolicy" ALTER COLUMN "ID" SET DEFAULT nextval('"apicorspolicy_id_seq"');
+ALTER TABLE "ApiLog" ALTER COLUMN "ID" SET DEFAULT nextval('"apilog_id_seq"');
+ALTER TABLE "ApiPermissionPolicy" ALTER COLUMN "ID" SET DEFAULT nextval('"apipermissionpolicy_id_seq"');
+ALTER TABLE "ApiThrottlePolicy" ALTER COLUMN "ID" SET DEFAULT nextval('"apithrottlepolicy_id_seq"');
+ALTER TABLE "BannedDomain" ALTER COLUMN "ID" SET DEFAULT nextval('"banneddomain_id_seq"');
+ALTER TABLE "BannedUser" ALTER COLUMN "ID" SET DEFAULT nextval('"banneduser_id_seq"');
+ALTER TABLE "Comment" ALTER COLUMN "DownCount" SET DEFAULT 0;
+ALTER TABLE "Comment" ALTER COLUMN "ID" SET DEFAULT nextval('"comment_id_seq"');
+ALTER TABLE "Comment" ALTER COLUMN "IsAnonymized" SET DEFAULT false;
+ALTER TABLE "Comment" ALTER COLUMN "IsDeleted" SET DEFAULT false;
+ALTER TABLE "Comment" ALTER COLUMN "IsDistinguished" SET DEFAULT false;
+ALTER TABLE "Comment" ALTER COLUMN "UpCount" SET DEFAULT 1;
+ALTER TABLE "CommentSaveTracker" ALTER COLUMN "ID" SET DEFAULT nextval('"commentsavetracker_id_seq"');
+ALTER TABLE "CommentVoteTracker" ALTER COLUMN "ID" SET DEFAULT nextval('"commentvotetracker_id_seq"');
+ALTER TABLE "CommentVoteTracker" ALTER COLUMN "VoteValue" SET DEFAULT 0;
+ALTER TABLE "EventLog" ALTER COLUMN "ID" SET DEFAULT nextval('"eventlog_id_seq"');
+ALTER TABLE "Featured" ALTER COLUMN "ID" SET DEFAULT nextval('"featured_id_seq"');
+ALTER TABLE "FeaturedSubverse" ALTER COLUMN "ID" SET DEFAULT nextval('"featuredsubverse_id_seq"');
+ALTER TABLE "Filter" ALTER COLUMN "ID" SET DEFAULT nextval('"filter_id_seq"');
+ALTER TABLE "Filter" ALTER COLUMN "IsActive" SET DEFAULT true;
+ALTER TABLE "Message" ALTER COLUMN "ID" SET DEFAULT nextval('"message_id_seq"');
+ALTER TABLE "ModeratorInvitation" ALTER COLUMN "ID" SET DEFAULT nextval('"moderatorinvitation_id_seq"');
+ALTER TABLE "RuleReport" ALTER COLUMN "ID" SET DEFAULT nextval('"rulereport_id_seq"');
+ALTER TABLE "RuleSet" ALTER COLUMN "ID" SET DEFAULT nextval('"ruleset_id_seq"');
+ALTER TABLE "RuleSet" ALTER COLUMN "IsActive" SET DEFAULT true;
+ALTER TABLE "Submission" ALTER COLUMN "DownCount" SET DEFAULT 0;
+ALTER TABLE "Submission" ALTER COLUMN "ID" SET DEFAULT nextval('"submission_id_seq"');
+ALTER TABLE "Submission" ALTER COLUMN "IsAdult" SET DEFAULT false;
+ALTER TABLE "Submission" ALTER COLUMN "IsAnonymized" SET DEFAULT false;
+ALTER TABLE "Submission" ALTER COLUMN "IsDeleted" SET DEFAULT false;
+ALTER TABLE "Submission" ALTER COLUMN "Rank" SET DEFAULT 0;
+ALTER TABLE "Submission" ALTER COLUMN "RelativeRank" SET DEFAULT 0;
+ALTER TABLE "Submission" ALTER COLUMN "UpCount" SET DEFAULT 1;
+ALTER TABLE "Submission" ALTER COLUMN "Views" SET DEFAULT 1;
+ALTER TABLE "SubmissionSaveTracker" ALTER COLUMN "ID" SET DEFAULT nextval('"submissionsavetracker_id_seq"');
+ALTER TABLE "SubmissionVoteTracker" ALTER COLUMN "ID" SET DEFAULT nextval('"submissionvotetracker_id_seq"');
+ALTER TABLE "SubmissionVoteTracker" ALTER COLUMN "VoteValue" SET DEFAULT 0;
+ALTER TABLE "Subverse" ALTER COLUMN "ExcludeSitewideBans" SET DEFAULT false;
+ALTER TABLE "Subverse" ALTER COLUMN "ID" SET DEFAULT nextval('"subverse_id_seq"');
+ALTER TABLE "Subverse" ALTER COLUMN "IsAdminPrivate" SET DEFAULT false;
+ALTER TABLE "Subverse" ALTER COLUMN "IsAdult" SET DEFAULT false;
+ALTER TABLE "Subverse" ALTER COLUMN "IsAnonymized" SET DEFAULT false;
+ALTER TABLE "Subverse" ALTER COLUMN "IsAuthorizedOnly" SET DEFAULT false;
+ALTER TABLE "Subverse" ALTER COLUMN "IsPrivate" SET DEFAULT false;
+ALTER TABLE "Subverse" ALTER COLUMN "IsThumbnailEnabled" SET DEFAULT true;
+ALTER TABLE "Subverse" ALTER COLUMN "MinCCPForDownvote" SET DEFAULT 0;
+ALTER TABLE "SubverseBan" ALTER COLUMN "ID" SET DEFAULT nextval('"subverseban_id_seq"');
+ALTER TABLE "SubverseFlair" ALTER COLUMN "ID" SET DEFAULT nextval('"subverseflair_id_seq"');
+ALTER TABLE "SubverseModerator" ALTER COLUMN "ID" SET DEFAULT nextval('"subversemoderator_id_seq"');
+ALTER TABLE "SubverseSet" ALTER COLUMN "ID" SET DEFAULT nextval('"subverseset_id_seq"');
+ALTER TABLE "SubverseSet" ALTER COLUMN "IsPublic" SET DEFAULT true;
+ALTER TABLE "SubverseSet" ALTER COLUMN "SubscriberCount" SET DEFAULT 0;
+ALTER TABLE "SubverseSetList" ALTER COLUMN "ID" SET DEFAULT nextval('"subversesetlist_id_seq"');
+ALTER TABLE "SubverseSetSubscription" ALTER COLUMN "ID" SET DEFAULT nextval('"subversesetsubscription_id_seq"');
+ALTER TABLE "UserBadge" ALTER COLUMN "ID" SET DEFAULT nextval('"userbadge_id_seq"');
+ALTER TABLE "UserBlockedUser" ALTER COLUMN "ID" SET DEFAULT nextval('"userblockeduser_id_seq"');
+ALTER TABLE "UserContribution" ALTER COLUMN "ID" SET DEFAULT nextval('"usercontribution_id_seq"');
+ALTER TABLE "UserContribution" ALTER COLUMN "IsReceived" SET DEFAULT true;
+ALTER TABLE "UserContribution" ALTER COLUMN "VoteCount" SET DEFAULT 0;
+ALTER TABLE "UserPreference" ALTER COLUMN "BlockAnonymized" SET DEFAULT false;
+ALTER TABLE "UserPreference" ALTER COLUMN "DisplayAds" SET DEFAULT false;
+ALTER TABLE "UserPreference" ALTER COLUMN "DisplaySubscriptions" SET DEFAULT false;
+ALTER TABLE "UserPreference" ALTER COLUMN "UseSubscriptionsMenu" SET DEFAULT true;
+ALTER TABLE "Vote" ALTER COLUMN "ID" SET DEFAULT nextval('"vote_id_seq"');
+ALTER TABLE "VoteOption" ALTER COLUMN "ID" SET DEFAULT nextval('"voteoption_id_seq"');
+ALTER TABLE "VoteOutcome" ALTER COLUMN "ID" SET DEFAULT nextval('"voteoutcome_id_seq"');
+ALTER TABLE "VoteRestriction" ALTER COLUMN "ID" SET DEFAULT nextval('"voterestriction_id_seq"');
+ALTER TABLE "VoteTracker" ALTER COLUMN "ID" SET DEFAULT nextval('"votetracker_id_seq"');
+ALTER TABLE "Ad" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "AdminLog" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "ApiClient" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "ApiCorsPolicy" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "ApiLog" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "EventLog" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "Filter" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "RuleReport" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "RuleSet" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "SessionTracker" ALTER COLUMN "CreationDate" SET DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE "SubverseSet" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "SubverseSetList" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "SubverseSetSubscription" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "UserBlockedUser" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "UserContribution" ALTER COLUMN "LastUpdateDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "Vote" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+ALTER TABLE "VoteTracker" ALTER COLUMN "CreationDate" SET DEFAULT (now() at time zone 'utc');
+select setval('"ad_id_seq"',(select max("ID") from "Ad")::bigint);
+select setval('"adminlog_id_seq"',(select max("ID") from "AdminLog")::bigint);
+select setval('"apiclient_id_seq"',(select max("ID") from "ApiClient")::bigint);
+select setval('"apicorspolicy_id_seq"',(select max("ID") from "ApiCorsPolicy")::bigint);
+select setval('"apilog_id_seq"',(select max("ID") from "ApiLog")::bigint);
+select setval('"apipermissionpolicy_id_seq"',(select max("ID") from "ApiPermissionPolicy")::bigint);
+select setval('"apithrottlepolicy_id_seq"',(select max("ID") from "ApiThrottlePolicy")::bigint);
+select setval('"banneddomain_id_seq"',(select max("ID") from "BannedDomain")::bigint);
+select setval('"banneduser_id_seq"',(select max("ID") from "BannedUser")::bigint);
+select setval('"comment_id_seq"',(select max("ID") from "Comment")::bigint);
+select setval('"commentsavetracker_id_seq"',(select max("ID") from "CommentSaveTracker")::bigint);
+select setval('"commentvotetracker_id_seq"',(select max("ID") from "CommentVoteTracker")::bigint);
+select setval('"eventlog_id_seq"',(select max("ID") from "EventLog")::bigint);
+select setval('"featured_id_seq"',(select max("ID") from "Featured")::bigint);
+select setval('"featuredsubverse_id_seq"',(select max("ID") from "FeaturedSubverse")::bigint);
+select setval('"filter_id_seq"',(select max("ID") from "Filter")::bigint);
+select setval('"message_id_seq"',(select max("ID") from "Message")::bigint);
+select setval('"moderatorinvitation_id_seq"',(select max("ID") from "ModeratorInvitation")::bigint);
+select setval('"rulereport_id_seq"',(select max("ID") from "RuleReport")::bigint);
+select setval('"ruleset_id_seq"',(select max("ID") from "RuleSet")::bigint);
+select setval('"submission_id_seq"',(select max("ID") from "Submission")::bigint);
+select setval('"submissionsavetracker_id_seq"',(select max("ID") from "SubmissionSaveTracker")::bigint);
+select setval('"submissionvotetracker_id_seq"',(select max("ID") from "SubmissionVoteTracker")::bigint);
+select setval('"subverse_id_seq"',(select max("ID") from "Subverse")::bigint);
+select setval('"subverseban_id_seq"',(select max("ID") from "SubverseBan")::bigint);
+select setval('"subverseflair_id_seq"',(select max("ID") from "SubverseFlair")::bigint);
+select setval('"subversemoderator_id_seq"',(select max("ID") from "SubverseModerator")::bigint);
+select setval('"subverseset_id_seq"',(select max("ID") from "SubverseSet")::bigint);
+select setval('"subversesetlist_id_seq"',(select max("ID") from "SubverseSetList")::bigint);
+select setval('"subversesetsubscription_id_seq"',(select max("ID") from "SubverseSetSubscription")::bigint);
+select setval('"userbadge_id_seq"',(select max("ID") from "UserBadge")::bigint);
+select setval('"userblockeduser_id_seq"',(select max("ID") from "UserBlockedUser")::bigint);
+select setval('"usercontribution_id_seq"',(select max("ID") from "UserContribution")::bigint);
+select setval('"vote_id_seq"',(select max("ID") from "Vote")::bigint);
+select setval('"voteoption_id_seq"',(select max("ID") from "VoteOption")::bigint);
+select setval('"voteoutcome_id_seq"',(select max("ID") from "VoteOutcome")::bigint);
+select setval('"voterestriction_id_seq"',(select max("ID") from "VoteRestriction")::bigint);
+select setval('"votetracker_id_seq"',(select max("ID") from "VoteTracker")::bigint);
 
 COMMIT;

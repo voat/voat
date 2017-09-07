@@ -111,7 +111,7 @@ namespace Voat.UI.Controllers
                     var result = await cmd.Execute();
                     if (result.Success)
                     {
-                        response.Response = await _viewRenderService.RenderToStringAsync("Vote/_View", result.Response);
+                        response.Response = await _viewRenderService.RenderToStringAsync("_View", result.Response);
                         return JsonResult(response);
                         //return PartialView("_View", result.Response);
                     }

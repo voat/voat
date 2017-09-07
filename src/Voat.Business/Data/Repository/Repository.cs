@@ -2054,7 +2054,7 @@ namespace Voat.Data
                     break;
                 case DataStoreType.PostgreSql:
                     var d = new DapperQuery();
-                    d.Select = "* FROM \"dbo\".\"usp_CommentTree\"(@SubmissionID, @Depth, @ParentID)";
+                    d.Select = "* FROM \"usp_CommentTree\"(@SubmissionID, @Depth, @ParentID)";
                     commentTree = _db.Connection.Query<usp_CommentTree_Result>(d.ToString(), new { SubmissionID = submissionID, Depth = depth, ParentID = parentID });
                     break;
             }
@@ -5346,9 +5346,9 @@ namespace Voat.Data
                             //Get rid of EF
 
 
-                            var statement = "INSERT INTO \"dbo\".\"UserBadge\" (\"UserName\", \"BadgeID\", \"CreationDate\") " +
+                            var statement = "INSERT INTO \"UserBadge\" (\"UserName\", \"BadgeID\", \"CreationDate\") " +
                                             "SELECT @UserName, @BadgeID, @Date " +
-                                            "WHERE NOT EXISTS (SELECT * FROM \"dbo\".\"UserBadge\" WHERE \"UserName\" = @UserName AND \"BadgeID\" = @BadgeID)";
+                                            "WHERE NOT EXISTS (SELECT * FROM \"UserBadge\" WHERE \"UserName\" = @UserName AND \"BadgeID\" = @BadgeID)";
                             await _db.Connection.ExecuteAsync(statement, new { BadgeID = badgeID, UserName = userName, Date = CurrentDate });
 
                             //var existing = _db.UserBadges.FirstOrDefault(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && x.BadgeID.Equals(badgeID, StringComparison.OrdinalIgnoreCase));

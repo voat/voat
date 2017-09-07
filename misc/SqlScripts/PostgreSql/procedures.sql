@@ -1,6 +1,6 @@
-DROP FUNCTION IF EXISTS "dbo"."usp_CommentTree"(int, int, int);
+DROP FUNCTION IF EXISTS "usp_CommentTree"(int, int, int);
 
-CREATE OR REPLACE FUNCTION "dbo"."usp_CommentTree"
+CREATE OR REPLACE FUNCTION "usp_CommentTree"
 	(
         SubmissionID INT,
 		Depth INT,
@@ -9,7 +9,7 @@ CREATE OR REPLACE FUNCTION "dbo"."usp_CommentTree"
     
     /*
     
-	SELECT * FROM "dbo"."usp_CommentTree"(1, NULL, NULL)
+	SELECT * FROM "usp_CommentTree"(1, NULL, NULL)
 
     */
 	RETURNS TABLE (
@@ -44,26 +44,26 @@ BEGIN
 
     IF ParentID IS NULL THEN
         INSERT INTO tree
-        SELECT p."SubmissionID", p."UserName", p."ID", 0 FROM "dbo"."Comment" AS p 
+        SELECT p."SubmissionID", p."UserName", p."ID", 0 FROM "Comment" AS p 
         WHERE 
             1 = 1
             AND p."ParentID" IS NULL
             AND p."SubmissionID" = SubmissionID
         UNION ALL
-        SELECT c."SubmissionID", c."UserName", c."ParentID", c."ID" FROM "dbo"."Comment" AS c
+        SELECT c."SubmissionID", c."UserName", c."ParentID", c."ID" FROM "Comment" AS c
         WHERE
             1 = 1 
             AND c."ParentID" IS NOT NULL
             AND c."SubmissionID" = SubmissionID;
     ELSE
         INSERT INTO tree
-        SELECT p."SubmissionID", p."UserName", p."ID", 0 FROM "dbo"."Comment" AS p 
+        SELECT p."SubmissionID", p."UserName", p."ID", 0 FROM "Comment" AS p 
         WHERE 
             1 = 1
             AND p."ParentID" = ParentID
             AND p."SubmissionID" = SubmissionID
         UNION ALL
-        SELECT c."SubmissionID", c."UserName", c."ParentID", c."ID" FROM "dbo"."Comment" AS c
+        SELECT c."SubmissionID", c."UserName", c."ParentID", c."ID" FROM "Comment" AS c
         WHERE
             1 = 1
             AND c."ParentID" IS NOT NULL 
@@ -110,15 +110,15 @@ BEGIN
         m."Subverse",
         c.*
     FROM comment_hierarchy AS h
-    INNER JOIN "dbo"."Comment" AS c ON (c."ID" = CASE WHEN h."ChildID" IS NULL OR h."ChildID" = 0 THEN h."ParentID" ELSE h."ChildID" END)
-    INNER JOIN "dbo"."Submission" AS m ON (c."SubmissionID" = m."ID")
+    INNER JOIN "Comment" AS c ON (c."ID" = CASE WHEN h."ChildID" IS NULL OR h."ChildID" = 0 THEN h."ParentID" ELSE h."ChildID" END)
+    INNER JOIN "Submission" AS m ON (c."SubmissionID" = m."ID")
     WHERE 
         (h."Depth" <= Depth OR Depth IS NULL);
 END;
 $$ LANGUAGE 'plpgsql';
 
 
-CREATE OR REPLACE FUNCTION "dbo"."usp_Reports_UserVoteGivenStats"
+CREATE OR REPLACE FUNCTION "usp_Reports_UserVoteGivenStats"
 (
 	"BeginDate" TIMESTAMP,
 	"EndDate" TIMESTAMP,
@@ -134,7 +134,7 @@ RETURNS TABLE
 AS $$
 BEGIN
 	RETURN QUERY (
-		(SELECT 1 AS "ContentType", 1 AS "VoteType", x."UserName", COUNT(*) AS "TotalCount" FROM "dbo"."SubmissionVoteTracker" x
+		(SELECT 1 AS "ContentType", 1 AS "VoteType", x."UserName", COUNT(*) AS "TotalCount" FROM "SubmissionVoteTracker" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND "VoteStatus" = 1
@@ -144,7 +144,7 @@ BEGIN
 
 		UNION ALL
 
-		(SELECT 1 AS "ContentType", -1 AS "VoteType", x."UserName", COUNT(*) AS "TotalCount" FROM "dbo"."SubmissionVoteTracker" x
+		(SELECT 1 AS "ContentType", -1 AS "VoteType", x."UserName", COUNT(*) AS "TotalCount" FROM "SubmissionVoteTracker" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND "VoteStatus" = -1
@@ -154,7 +154,7 @@ BEGIN
 
 		UNION ALL
 
-		(SELECT 2 AS "ContentType", 1 AS "VoteType", x."UserName", COUNT(*) AS "TotalCount" FROM "dbo"."CommentVoteTracker" x
+		(SELECT 2 AS "ContentType", 1 AS "VoteType", x."UserName", COUNT(*) AS "TotalCount" FROM "CommentVoteTracker" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND "VoteStatus" = 1
@@ -164,7 +164,7 @@ BEGIN
 
 		UNION ALL
 
-		(SELECT 2 AS "ContentType", -1 AS "VoteType", x."UserName", COUNT(*) AS "TotalCount" FROM "dbo"."CommentVoteTracker" x
+		(SELECT 2 AS "ContentType", -1 AS "VoteType", x."UserName", COUNT(*) AS "TotalCount" FROM "CommentVoteTracker" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND "VoteStatus" = -1
@@ -178,7 +178,7 @@ $$ LANGUAGE 'plpgsql';
 
 
 
-CREATE OR REPLACE FUNCTION "dbo"."usp_Reports_HighestVotedContent"
+CREATE OR REPLACE FUNCTION "usp_Reports_HighestVotedContent"
 (
 	"BeginDate" TIMESTAMP,
 	"EndDate" TIMESTAMP,
@@ -194,7 +194,7 @@ AS $$
 BEGIN
 	RETURN QUERY (
 		(SELECT 1 AS "ContentType", 1 AS "VoteType", x."ID"
-		FROM "dbo"."Submission" x
+		FROM "Submission" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND x."IsAnonymized" = False AND x."IsDeleted" = False
@@ -204,7 +204,7 @@ BEGIN
 		UNION ALL
 		
 		(SELECT 2 AS "ContentType", 1 AS "VoteType", x."ID" 
-		FROM "dbo"."Comment" x
+		FROM "Comment" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND x."IsAnonymized" = False AND x."IsDeleted" = False
@@ -214,7 +214,7 @@ BEGIN
 		UNION ALL
 		
 		(SELECT 1 AS "ContentType", -1 AS VoteType, x."ID"
-		FROM "dbo"."Submission" x
+		FROM "Submission" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND x."IsAnonymized" = False AND x."IsDeleted" = False
@@ -224,7 +224,7 @@ BEGIN
 		UNION ALL
 		
 		(SELECT 2 AS "ContentType", -1 AS "VoteType", x."ID"
-		FROM "dbo"."Comment" x
+		FROM "Comment" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND x."IsAnonymized" = False AND x."IsDeleted" = False
@@ -235,7 +235,7 @@ END;
 $$ LANGUAGE 'plpgsql';
 
 
-CREATE OR REPLACE FUNCTION "dbo"."usp_Reports_UserVoteReceivedStats"
+CREATE OR REPLACE FUNCTION "usp_Reports_UserVoteReceivedStats"
 (
 	"BeginDate" TIMESTAMP,
 	"EndDate" TIMESTAMP,
@@ -255,7 +255,7 @@ BEGIN
 	RETURN QUERY (
 		--- SUBMISSION AVG ---
 		-- Top 
-		(SELECT 1 AS "ContentType", 1 AS "VoteType", x."UserName", SUM(x."UpCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", CAST(SUM(x."UpCount") AS INT) AS "TotalVotes", CAST(COUNT(x."ID") AS INT) AS "TotalCount"  FROM "dbo"."Submission" x
+		(SELECT 1 AS "ContentType", 1 AS "VoteType", x."UserName", SUM(x."UpCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", CAST(SUM(x."UpCount") AS INT) AS "TotalVotes", CAST(COUNT(x."ID") AS INT) AS "TotalCount"  FROM "Submission" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND x."IsAnonymized" = False
@@ -266,7 +266,7 @@ BEGIN
 		--Bottom
 		UNION ALL
 		
-		(SELECT 1 AS "ContentType", -1 AS "VoteType", x."UserName", SUM(x."DownCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", CAST(SUM(x."DownCount") AS INT) AS "TotalVotes", CAST(COUNT(x."ID") AS INT) AS "TotalCount"  FROM "dbo"."Submission" x
+		(SELECT 1 AS "ContentType", -1 AS "VoteType", x."UserName", SUM(x."DownCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", CAST(SUM(x."DownCount") AS INT) AS "TotalVotes", CAST(COUNT(x."ID") AS INT) AS "TotalCount"  FROM "Submission" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND x."IsAnonymized" = False
@@ -278,7 +278,7 @@ BEGIN
 		--- COMMENTS ---
 
 		-- Top 
-		(SELECT 2 AS "ContentType", 1 AS "VoteType", x."UserName", SUM(x."UpCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", CAST(SUM(x."UpCount") AS INT) AS "TotalVotes", CAST(COUNT(x."ID") AS INT) AS "TotalCount"  FROM "dbo"."Comment" x
+		(SELECT 2 AS "ContentType", 1 AS "VoteType", x."UserName", SUM(x."UpCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", CAST(SUM(x."UpCount") AS INT) AS "TotalVotes", CAST(COUNT(x."ID") AS INT) AS "TotalCount"  FROM "Comment" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND x."IsAnonymized" = False
@@ -288,7 +288,7 @@ BEGIN
 
 		UNION ALL
 		
-		(SELECT 2 AS "ContentType", -1 AS "VoteType", x."UserName", SUM(x."DownCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", CAST(SUM(x."DownCount") AS INT) AS "TotalVotes", CAST(COUNT(x."ID") AS INT) AS "TotalCount"  FROM "dbo"."Comment" x
+		(SELECT 2 AS "ContentType", -1 AS "VoteType", x."UserName", SUM(x."DownCount") / CAST(COUNT(x."ID") AS float) AS "AvgVotes", CAST(SUM(x."DownCount") AS INT) AS "TotalVotes", CAST(COUNT(x."ID") AS INT) AS "TotalCount"  FROM "Comment" x
 		WHERE 
 			x."CreationDate" > "BeginDate" AND x."CreationDate" < "EndDate"
 			AND x."IsAnonymized" = False

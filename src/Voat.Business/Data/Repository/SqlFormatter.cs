@@ -44,7 +44,7 @@ namespace Voat.Data
                         break;
                     case DataStoreType.PostgreSql:
                         //will be public when we remove dbo schema from pg files
-                        return "dbo";
+                        return "public";
                         break;
                     default:
                         throw new NotImplementedException();

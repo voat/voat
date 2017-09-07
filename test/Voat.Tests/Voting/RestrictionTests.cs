@@ -24,7 +24,7 @@ namespace Voat.Tests.Voting
                 Type = typeof(ContributionCountRestriction).Name,
                 Data = (new ContributionCountRestriction() {
                     ContentType = (ContentTypeRestriction)(Domain.Models.ContentType.Comment | Domain.Models.ContentType.Submission),
-                    Duration = TimeSpan.FromDays(14),
+                    Duration = TimeSpan.FromDays(45),
                     Subverse = "unit",
                     MinimumCount = 1,
                     EndDate = DateTime.UtcNow
