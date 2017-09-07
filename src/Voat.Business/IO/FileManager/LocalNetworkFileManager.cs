@@ -22,7 +22,7 @@ namespace Voat.IO
                     path = VoatSettings.Instance.DestinationPathAvatars;
                     break;
                 case FileType.Badge:
-                    path = "~/images/Badges/";
+                    path = "~/images/badges/";
                     break;
                 case FileType.Thumbnail:
                     path = VoatSettings.Instance.DestinationPathThumbs;

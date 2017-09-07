@@ -1,0 +1,33 @@
+﻿/*
+@import this file directly into your existing Scss files to use these mixins
+*/
+@mixin sprite-Graphics-voat-logo() {
+/* You may have to set 'display: block' */
+	width: 112px;
+	height: 31px;
+	background: url('/Graphics/WVSprite.png') -1px -1px;
+}
+@mixin sprite-Graphics-nsfw-thumb() {
+/* You may have to set 'display: block' */
+	width: 70px;
+	height: 70px;
+	background: url('/Graphics/WVSprite.png') -1px -33px;
+}
+@mixin sprite-Graphics-thumb-placeholder() {
+/* You may have to set 'display: block' */
+	width: 70px;
+	height: 70px;
+	background: url('/Graphics/WVSprite.png') -1px -104px;
+}
+@mixin sprite-Graphics-404() {
+/* You may have to set 'display: block' */
+	width: 450px;
+	height: 405px;
+	background: url('/Graphics/WVSprite.png') -1px -175px;
+}
+@mixin sprite-Graphics-voat-goat() {
+/* You may have to set 'display: block' */
+	width: 345px;
+	height: 252px;
+	background: url('/Graphics/WVSprite.png') -1px -581px;
+}

@@ -164,7 +164,7 @@ namespace Voat.Tests.Utils
             var fileName = "Donor.jpg";
             var fm = new LocalNetworkFileManager();
             var key = new FileKey() { ID = fileName, FileType = FileType.Badge };
-            string partialPath = String.Join("/", new string[] { "~/images/Badges", fileName }.ToPathParts());
+            string partialPath = String.Join("/", new string[] { "~/images/badges", fileName }.ToPathParts());
 
             VerifyPath(fm, key, partialPath);
 
@@ -270,7 +270,7 @@ namespace Voat.Tests.Utils
             var fileName = "Donor.jpg";
             var fm = new AzureBlobFileManager("");
             var key = new FileKey() { ID = fileName, FileType = FileType.Badge };
-            string partialPath = String.Join("/", new string[] { "~/images/Badges", fileName }.ToPathParts());
+            string partialPath = String.Join("/", new string[] { "~/images/badges", fileName }.ToPathParts());
 
             VerifyPath(fm, key, partialPath, VoatSettings.Instance.ContentDeliveryDomain);
 

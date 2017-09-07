@@ -46,7 +46,7 @@
             "wwwroot/js/voat.dashboard.js",
             "wwwroot/js/voat.ui.js",
             "wwwroot/js/voat.js",
-            "wwwroot/js/voat.markdownEditor.js",
+            "wwwroot/js/voat.markdowneditor.js",
             "wwwroot/js/voat.voting.js"
         ]
     },

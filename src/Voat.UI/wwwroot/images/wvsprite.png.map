@@ -1,0 +1,39 @@
+{
+  "images": [
+    {
+        "name": "/images/voat-logo.png",
+        "width": 112,
+        "height": 31,
+        "offsetX": 1,
+        "offsetY": 1
+    },
+    {
+        "name": "/images/nsfw-thumb.png",
+        "width": 70,
+        "height": 70,
+        "offsetX": 1,
+        "offsetY": 33
+    },
+    {
+        "name": "/images/thumb-placeholder.png",
+        "width": 70,
+        "height": 70,
+        "offsetX": 1,
+        "offsetY": 104
+    },
+    {
+        "name": "/images/404.png",
+        "width": 450,
+        "height": 405,
+        "offsetX": 1,
+        "offsetY": 175
+    },
+    {
+        "name": "/images/voat-goat.png",
+        "width": 345,
+        "height": 252,
+        "offsetX": 1,
+        "offsetY": 581
+    }
+  ]
+}
