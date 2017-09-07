@@ -3745,7 +3745,7 @@ namespace Voat.Data
                                         Title = b.Title,
                                         Graphic = b.Graphic,
                                     }
-                              ).ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
+                              ).OrderByDescending(x => x.CreationDate).ToListAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
             userInfo.Badges = userBadges;
 
