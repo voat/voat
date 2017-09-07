@@ -57,7 +57,7 @@ namespace Voat.IO
                     }
                     else if (length == null || length.Value == 0 || length > 2500000)
                     {
-                        result = CommandResponse.FromStatus(Status.Invalid, "File length is too big or too small but we aren't saying");
+                        result = CommandResponse.FromStatus(Status.Invalid, "File length is too big or too small but we aren't saying (Hint: 2.5MB max)");
                     }
                     break;
             }
