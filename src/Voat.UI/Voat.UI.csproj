@@ -77,7 +77,7 @@
     <None Include="wwwroot\images\badges\tinkerer.png" />
     <None Include="wwwroot\images\badges\voat_cakeday.png" />
     <None Include="wwwroot\images\badges\whoaverse.png" />
-    <None Include="wwwroot\images\Dark-SpriteSheet.png" />
+    <None Include="wwwroot\images\dark-spritesheet.png" />
     <None Include="wwwroot\images\edit.png" />
     <None Include="wwwroot\images\feed-icon-14x14.png" />
     <None Include="wwwroot\images\group_edit.png" />
@@ -109,8 +109,8 @@
     <None Include="wwwroot\images\icons\arrow\mstile-310x310.png" />
     <None Include="wwwroot\images\icons\arrow\mstile-70x70.png" />
     <None Include="wwwroot\images\icons\touch-icon-192x192.png" />
-    <None Include="wwwroot\images\Light-SpriteSheet.png" />
-    <None Include="wwwroot\images\markdownEditorSprite.png" />
+    <None Include="wwwroot\images\light-spritesheet.png" />
+    <None Include="wwwroot\images\markdowneditorsprite.png" />
     <None Include="wwwroot\images\missing_image.png" />
     <None Include="wwwroot\images\nsfw-thumb.png" />
     <None Include="wwwroot\images\thumb-placeholder.png" />
