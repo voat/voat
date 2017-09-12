@@ -50,7 +50,7 @@
                     @foreach (var logItem in Model)
                     {
                         var submission = Voat.Domain.DomainMaps.Map(logItem.Submission);
-                        <div id="logItem" class="logItem alert-singlethread">
+                        <div class="alert-singlethread">
                             <p>@logItem.Moderator removed @Age.ToRelative(logItem.CreationDate) ago on @logItem.CreationDate</p>
                             <p>"@logItem.Reason"</p>
                         </div>

@@ -227,7 +227,9 @@ namespace Voat.Http
             if (full)
             {
                 originationInfo += request.Headers["User-Agent"].ToString();
-                originationInfo += request.GetUrl();
+                var url = request.GetUrl();
+                //Need to filter out querystrings from signature
+                originationInfo += url.GetLeftPart(UriPartial.Path);
             }
 
             var hashValue = string.Join("", MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(originationInfo)).Select(s => s.ToString("x2")));

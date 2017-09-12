@@ -201,7 +201,8 @@ label {
   color: #333;
   display: block;
   margin: 15px 10px;
-  padding: 8px; }
+  padding: 8px;
+  overflow: auto; }
 
 .alert-notice {
   border-top: 1px solid;
@@ -421,7 +422,7 @@ input, button, select, textarea {
   overflow: hidden; }
 
 .moderator.accept-invite .main:before {
-  background-image: url(/images/WVSprite.png);
+  background-image: url(/images/wvsprite.png);
   background-position: 0 -642px;
   background-repeat: no-repeat; }
 
@@ -523,7 +524,7 @@ input, button, select, textarea {
   color: #FFF; }
 
 .titlebox form.leavecontributor-button:before {
-  background-image: url(/images/WVSprite.png);
+  background-image: url(/images/wvsprite.png);
   background-position: -66px -730px;
   background-repeat: no-repeat; }
 
@@ -538,7 +539,7 @@ input, button, select, textarea {
   padding: 5px; }
 
 .titlebox .leavemoderator:before, .moderator.toggle .main:before {
-  background-image: url(/images/WVSprite.png);
+  background-image: url(/images/wvsprite.png);
   background-position: 0 -1546px;
   background-repeat: no-repeat; }
 
@@ -856,42 +857,42 @@ select.form-control {
 /* ! Body : WVSprites
 ------------------------------------------------------------------------------------ */
 .whoaverse_padded {
-  background: url(/images/WVSprite.png) 0 0;
+  background: url(/images/wvsprite.png) 0 0;
   height: 44px;
   width: 125px; }
 
 .nsfw-thumb {
-  background: url(/images/WVSprite.png) 0 -176px;
+  background: url(/images/wvsprite.png) 0 -176px;
   height: 70px;
   width: 70px; }
 
 .pattern-welcome {
-  background: url(/images/WVSprite.png) 0 -246px;
+  background: url(/images/wvsprite.png) 0 -246px;
   height: 128px;
   width: 128px; }
 
 .thumb-placeholder {
-  background: url(/images/WVSprite.png) 0 -374px;
+  background: url(/images/wvsprite.png) 0 -374px;
   height: 70px;
   width: 70px; }
 
 .whoaverse-404 {
-  background: url(/images/WVSprite.png) 0 -444px;
+  background: url(/images/wvsprite.png) 0 -444px;
   height: 405px;
   width: 450px; }
 
 .whoaverse-bg {
-  background: url(/images/WVSprite.png) 0 -849px;
+  background: url(/images/wvsprite.png) 0 -849px;
   height: 250px;
   width: 1920px; }
 
 .whoaverse-mascot {
-  background: url(/images/WVSprite.png) 0 -1099px;
+  background: url(/images/wvsprite.png) 0 -1099px;
   height: 404px;
   width: 400px; }
 
 .whoaverse {
-  background: url(/images/WVSprite.png) 0 -1503px;
+  background: url(/images/wvsprite.png) 0 -1503px;
   height: 43px;
   width: 120px; }
 
@@ -899,7 +900,7 @@ select.form-control {
 ------------------------------------------------------------------------------------ */
 /* Global */
 .arrow-downvote, .arrow-downvoted, .arrow-upvote, .arrow-upvoted {
-  background: url("/images/Light-SpriteSheet.png");
+  background: url("/images/light-spritesheet.png");
   cursor: pointer;
   height: 16px;
   margin: auto;
@@ -927,7 +928,7 @@ select.form-control {
 /* Comments */
 .comment .arrow-downvote, .comment .arrow-downvoted,
 .comment .arrow-upvote, .comment .arrow-upvoted {
-  background: url("/images/Light-SpriteSheet.png");
+  background: url("/images/light-spritesheet.png");
   height: 12px;
   width: 12px; }
 
@@ -1360,7 +1361,7 @@ pre, code {
   vertical-align: unset; }
 
 #header-img.default-header {
-  background-image: url(/images/WVSprite.png);
+  background-image: url(/images/wvsprite.png);
   background-position: 0 -313px;
   background-repeat: no-repeat;
   display: inline-block;
@@ -1518,7 +1519,7 @@ pre, code {
   text-decoration: underline; }
 
 #manage {
-  background: url("/images/Light-SpriteSheet.png");
+  background: url("/images/light-spritesheet.png");
   background-position: -68px 0;
   cursor: pointer;
   display: inline-block;
@@ -1530,7 +1531,7 @@ pre, code {
   top: 4px; }
 
 #nightmodetoggle {
-  background: url("/images/Light-SpriteSheet.png");
+  background: url("/images/light-spritesheet.png");
   background-position: -98px 0;
   display: inline-block;
   cursor: pointer;
@@ -1547,14 +1548,14 @@ pre, code {
   top: 2px; }
 
 #mail.havemail {
-  background: url("/images/Light-SpriteSheet.png");
+  background: url("/images/light-spritesheet.png");
   background-position: -21px 0;
   cursor: pointer;
   height: 12px;
   width: 18px; }
 
 #mail.nohavemail {
-  background: url("/images/Light-SpriteSheet.png");
+  background: url("/images/light-spritesheet.png");
   background-position: 0 0;
   cursor: pointer;
   height: 12px;
@@ -1821,19 +1822,19 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 .thumbnail.nsfw {
   background-repeat: no-repeat;
-  background: url("/images/WVSprite.png") -1px -33px;
+  background: url("/images/wvsprite.png") -1px -33px;
   height: 70px;
   width: 70px; }
 
 .thumbnail.self {
   background-repeat: no-repeat;
-  background: url("/images/WVSprite.png") -1px -104px;
+  background: url("/images/wvsprite.png") -1px -104px;
   height: 70px;
   width: 70px; }
 
 .thumbnail.default {
   background-repeat: no-repeat;
-  background: url("/images/WVSprite.png") -1px -104px;
+  background: url("/images/wvsprite.png") -1px -104px;
   height: 70px;
   width: 70px; }
 
@@ -1946,37 +1947,37 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
   cursor: pointer; }
 
 .expando-button.selftext.collapsed {
-  background: url("/images/Light-SpriteSheet.png");
+  background: url("/images/light-spritesheet.png");
   background-position: 0 -53px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.collapsed:hover {
-  background: url("/images/Light-SpriteSheet.png");
+  background: url("/images/light-spritesheet.png");
   background-position: -19px -53px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.expanded {
-  background: url("/images/Light-SpriteSheet.png");
+  background: url("/images/light-spritesheet.png");
   background-position: 0 -72px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.expanded:hover {
-  background: url("/images/Light-SpriteSheet.png");
+  background: url("/images/light-spritesheet.png");
   background-position: -19px -72px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.loading {
-  background: url("/images/Light-SpriteSheet.png");
+  background: url("/images/light-spritesheet.png");
   background-position: 0 -91px;
   height: 16px;
   width: 16px; }
 
 .expando-button.selftext.loading:hover {
-  background: url("/images/Light-SpriteSheet.png");
+  background: url("/images/light-spritesheet.png");
   background-position: -19px -91px;
   height: 16px;
   width: 16px; }
@@ -2593,7 +2594,7 @@ input[type=checkbox].form-control {
     padding: 0 0 4px 4px; }
   .comment .arrow-downvote, .comment .arrow-downvoted,
   .comment .arrow-upvote, .comment .arrow-upvoted {
-    background: url("/images/Light-SpriteSheet.png");
+    background: url("/images/light-spritesheet.png");
     height: 16px;
     width: 16px; }
   .comment .arrow-upvote {
@@ -2641,27 +2642,27 @@ input[type=checkbox].form-control {
     margin: 5px 5px 2px 0;
     width: 32px; }
   .expando-button.selftext.collapsed {
-    background: url("/images/Light-SpriteSheet.png");
+    background: url("/images/light-spritesheet.png");
     background-position: -38px -53px;
     height: 32px;
     width: 32px; }
   .expando-button.selftext.collapsed:hover {
-    background: url("/images/Light-SpriteSheet.png");
+    background: url("/images/light-spritesheet.png");
     background-position: -38px -53px;
     height: 32px;
     width: 32px; }
   .expando-button.selftext.expanded {
-    background: url("/images/Light-SpriteSheet.png");
+    background: url("/images/light-spritesheet.png");
     background-position: -73px -53px;
     height: 32px;
     width: 32px; }
   .expando-button.selftext.expanded:hover {
-    background: url("/images/Light-SpriteSheet.png");
+    background: url("/images/light-spritesheet.png");
     background-position: -73px -53px;
     height: 32px;
     width: 32px; }
   .expando-button.selftext.loading, .expando-button.selftext.loading:hover {
-    background: url("/images/Light-SpriteSheet.png");
+    background: url("/images/light-spritesheet.png");
     background-position: -38px -88px;
     height: 32px;
     width: 32px; }
@@ -2738,8 +2739,14 @@ input[type=checkbox].form-control {
 #submission-preview-area .panel-body {
   display: block; }
 
-.form-horizontal {
+.form-horizontal, .titlerow {
   overflow: auto; }
+
+.btn-apply-flair {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%; }
 
 /* ------------------------------------- RETRO PROTOTYPE ------------------------------ */
 .retro .submission > a {

@@ -226,6 +226,7 @@ label {
     display: block;
     margin: 15px 10px;
     padding: 8px;
+    overflow:auto;
 }
 
 .alert-notice {
@@ -477,7 +478,7 @@ input, button, select, textarea {
 }
 
 .moderator.accept-invite .main:before {
-    background-image: url( /images/WVSprite.png );
+    background-image: url( /images/wvsprite.png );
     background-position: 0 -642px;
     background-repeat: no-repeat;
 }
@@ -602,7 +603,7 @@ input, button, select, textarea {
 }
 
 .titlebox form.leavecontributor-button:before {
-    background-image: url( /images/WVSprite.png );
+    background-image: url( /images/wvsprite.png );
     background-position: -66px -730px;
     background-repeat: no-repeat;
 }
@@ -620,7 +621,7 @@ input, button, select, textarea {
 }
 
 .titlebox .leavemoderator:before, .moderator.toggle .main:before {
-    background-image: url( /images/WVSprite.png );
+    background-image: url( /images/wvsprite.png );
     background-position: 0 -1546px;
     background-repeat: no-repeat;
 }
@@ -954,49 +955,49 @@ select.form-control {
 ------------------------------------------------------------------------------------ */
 
 .whoaverse_padded {
-    background: url( /images/WVSprite.png ) 0 0;
+    background: url( /images/wvsprite.png ) 0 0;
     height: 44px;
     width: 125px;
 }
 
 .nsfw-thumb {
-    background: url( /images/WVSprite.png ) 0 -176px;
+    background: url( /images/wvsprite.png ) 0 -176px;
     height: 70px;
     width: 70px;
 }
 
 .pattern-welcome {
-    background: url( /images/WVSprite.png ) 0 -246px;
+    background: url( /images/wvsprite.png ) 0 -246px;
     height: 128px;
     width: 128px;
 }
 
 .thumb-placeholder {
-    background: url( /images/WVSprite.png ) 0 -374px;
+    background: url( /images/wvsprite.png ) 0 -374px;
     height: 70px;
     width: 70px;
 }
 
 .whoaverse-404 {
-    background: url( /images/WVSprite.png ) 0 -444px;
+    background: url( /images/wvsprite.png ) 0 -444px;
     height: 405px;
     width: 450px;
 }
 
 .whoaverse-bg {
-    background: url( /images/WVSprite.png ) 0 -849px;
+    background: url( /images/wvsprite.png ) 0 -849px;
     height: 250px;
     width: 1920px;
 }
 
 .whoaverse-mascot {
-    background: url( /images/WVSprite.png ) 0 -1099px;
+    background: url( /images/wvsprite.png ) 0 -1099px;
     height: 404px;
     width: 400px;
 }
 
 .whoaverse {
-    background: url( /images/WVSprite.png ) 0 -1503px;
+    background: url( /images/wvsprite.png ) 0 -1503px;
     height: 43px;
     width: 120px;
 }
@@ -1562,7 +1563,7 @@ pre, code {
 }
 
 #header-img.default-header {
-    background-image: url( /images/WVSprite.png );
+    background-image: url( /images/wvsprite.png );
     background-position: 0 -313px;
     background-repeat: no-repeat;
     display: inline-block;
@@ -2102,21 +2103,21 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
 
 .thumbnail.nsfw {
     background-repeat: no-repeat;
-    background: url('/images/WVSprite.png') -1px -33px;
+    background: url('/images/wvsprite.png') -1px -33px;
     height: 70px;
     width: 70px;
 }
 
 .thumbnail.self {
     background-repeat: no-repeat;
-    background: url('/images/WVSprite.png') -1px -104px;
+    background: url('/images/wvsprite.png') -1px -104px;
     height: 70px;
     width: 70px;
 }
 
 .thumbnail.default {
     background-repeat: no-repeat;
-    background: url('/images/WVSprite.png') -1px -104px;
+    background: url('/images/wvsprite.png') -1px -104px;
     height: 70px;
     width: 70px;
 }
@@ -3273,11 +3274,17 @@ input[type=checkbox].form-control {
     display: block;
 }
 
-.form-horizontal {
+.form-horizontal, .titlerow {
     overflow: auto;
 }
-/* ------------------------------------- RETRO PROTOTYPE ------------------------------ */
 
+.btn-apply-flair {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+/* ------------------------------------- RETRO PROTOTYPE ------------------------------ */
 .retro .submission > a {
     font-size: 1.2em;
     font-family: Helvetica, Arial, Verdana, Arial, Helvetica, sans-serif;

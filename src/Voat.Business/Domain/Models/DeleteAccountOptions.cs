@@ -48,19 +48,23 @@ namespace Voat.Domain.Models
     {
         [Required(ErrorMessage = "Please type your UserName")]
         [Display(Name = "UserName")]
+        [StringLength(50, ErrorMessage = "{0} is limited to {1} characters")]
         public string UserName { get; set; }
 
         [Required(ErrorMessage = "Confirm your UserName here")]
         [Display(Name = "Confirm UserName")]
         [Compare("UserName", ErrorMessage = "Confirmation UserName does not match")]
+        [StringLength(50, ErrorMessage = "{0} is limited to {1} characters")]
         public string ConfirmUserName { get; set; }
 
         [Required(ErrorMessage = "Current password is required")]
         [DataType(DataType.Password)]
         [Display(Name = "Current password")]
+        [StringLength(50, ErrorMessage = "{0} is limited to {1} characters")]
         public string CurrentPassword { get; set; }
 
         [Display(Name = "Reason for leaving")]
+        [StringLength(500, ErrorMessage = "{0} is limited to {1} characters")]
         public string Reason { get; set; }
 
         [Display(Name = "Link Submission Action")]
@@ -74,11 +78,13 @@ namespace Voat.Domain.Models
 
         [EmailAddress]
         [Display(Name = "Recovery Email")]
+        [StringLength(255, ErrorMessage = "{0} is limited to a maximum of {1} characters")]
         public string RecoveryEmailAddress { get; set; }
 
         [EmailAddress]
         [Display(Name = "Confirm Recovery Email")]
         [Compare("RecoveryEmailAddress", ErrorMessage = "Confirmation Recovery Email does not match")]
+        [StringLength(50, ErrorMessage = "{0} is limited to {1} characters")]
         public string ConfirmRecoveryEmailAddress { get; set; }
     }
 }

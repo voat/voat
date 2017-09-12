@@ -49,7 +49,7 @@
                 <div id="removedCommentsList" class="">
                     @foreach (var logItem in Model)
                     {
-                        <div id="logItem" class="logItem alert-singlethread">
+                        <div class="alert-singlethread">
                             <p>@logItem.CreatedBy removed @Age.ToRelative(logItem.CreationDate) ago on @logItem.CreationDate</p>
                             <p>"@logItem.Reason"</p>
                         </div>

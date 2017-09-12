@@ -1150,7 +1150,7 @@ namespace Voat.Data
                         case AGGREGATE_SUBVERSE.ALL:
                         case "all":
 
-                            query.Append(x => x.Where, $"s.\"ID\" NOT IN (SELECT sticky.\"SubmissionID\" FROM {SqlFormatter.Table("StickiedSubmission", "sticky", null, "NOLOCK")} WHERE sticky.\"SubmissionID\" = s.\"ID\" AND sticky.\"Subverse\" = 'announcements')");
+                            query.Append(x => x.Where, $"s.\"ID\" NOT IN (SELECT sticky.\"SubmissionID\" FROM {SqlFormatter.Table("StickiedSubmission", "sticky", null, "NOLOCK")} WHERE sticky.\"SubmissionID\" = s.\"ID\" AND {SqlFormatter.ToNormalized("sticky.\"Subverse\"", Normalization.Lower)} = 'announcements')");
 
                             break;
                         //for regular subverse queries
@@ -1732,7 +1732,8 @@ namespace Voat.Data
                     }
                     else
                     {
-                        submission.Url = "http://voat.co";
+                        //Why don't we just # this out? I don't know.... Maybe someone smarter will tell me in the future.
+                        submission.Url = $"http{(VoatSettings.Instance.ForceHTTPS ? "s" : "")}://{VoatSettings.Instance.SiteDomain}";
                     }
 
                     // remove sticky if submission was stickied
@@ -2290,12 +2291,27 @@ namespace Voat.Data
 
             //set any state we have so context doesn't have to retrieve
             context.SubmissionID = submissionID;
+            //Not using this yet, but may move this check into rules engine
+            //context.PropertyBag.ParentID = parentCommentID;
             context.PropertyBag.CommentContent = commentContent;
-
             var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.Post, RuleScope.PostComment);
 
             if (outcome.IsAllowed)
             {
+                //Check ParentID to asses validity (users are able to submit any values for submission/parentid, so need to validate)
+                if (parentCommentID.HasValue)
+                {
+                    var comment = await GetComment(parentCommentID.Value);
+                    if (comment == null)
+                    {
+                        return CommandResponse.FromStatus<Domain.Models.Comment>(null, Status.Invalid, "Can not find parent comment");
+                    }
+                    else if (comment.SubmissionID.Value != submission.ID)
+                    {
+                        return CommandResponse.FromStatus<Domain.Models.Comment>(null, Status.Invalid, "Parent comment does not belong to submission");
+                    }
+                }
+
                 //Save comment
                 var c = new Models.Comment();
                 c.CreationDate = Repository.CurrentDate;
@@ -2934,22 +2950,22 @@ namespace Voat.Data
             }
             else
             {
-                //Sender can be passed in from the UI , ensure it is replaced here
-                message.Sender = User.Identity.Name;
+                //Sender can be passed in from the UI , ensure it is replaced here with current context owner
+                sender.Name = User.Identity.Name;
 
                 if (Voat.Utilities.BanningUtility.ContentContainsBannedDomain(null, message.Message))
                 {
                     return CommandResponse.FromStatus(responseMessage, Status.Ignored, "Message contains banned domain");
                 }
-                if (Voat.Utilities.UserHelper.IsUserGloballyBanned(message.Sender))
+                if (Voat.Utilities.UserHelper.IsUserGloballyBanned(sender.Name))
                 {
                     return CommandResponse.FromStatus(responseMessage, Status.Ignored, "User is banned");
                 }
-                var userData = new UserData(message.Sender);
+                var userData = new UserData(sender.Name);
                 //add exception for system messages from sender
                 var minCCPToSendMessages = VoatSettings.Instance.MinimumCommentPointsForSendingMessages;
 
-                if (!forceSend && !CONSTANTS.SYSTEM_USER_NAME.Equals(message.Sender, StringComparison.OrdinalIgnoreCase) && userData.Information.CommentPoints.Sum < minCCPToSendMessages)
+                if (!forceSend && !CONSTANTS.SYSTEM_USER_NAME.Equals(sender.Name, StringComparison.OrdinalIgnoreCase) && userData.Information.CommentPoints.Sum < minCCPToSendMessages)
                 {
                     return CommandResponse.FromStatus(responseMessage, Status.Ignored, $"Comment points too low to send messages. Need at least {minCCPToSendMessages} CCP.");
                 }
@@ -2967,19 +2983,30 @@ namespace Voat.Data
             {
                 if (def.Type == IdentityType.Subverse)
                 {
-                    messages.Add(new Domain.Models.Message
+                    var recipient = ToCorrectSubverseCasing(def.Name);
+                    if (String.IsNullOrEmpty(recipient))
                     {
-                        CorrelationID = Domain.Models.Message.NewCorrelationID(),
-                        Sender = sender.Name,
-                        SenderType = sender.Type,
-                        Recipient = def.Name,
-                        RecipientType = IdentityType.Subverse,
-                        Title = message.Subject,
-                        Content = message.Message,
-                        ReadDate = null,
-                        CreationDate = Repository.CurrentDate,
-                        IsAnonymized = isAnonymized,
-                    });
+                        if (ensureUserExists)
+                        {
+                            return CommandResponse.FromStatus<Domain.Models.Message>(null, Status.Error, $"Subverse {def.Name} does not exist");
+                        }
+                    }
+                    else
+                    {
+                        messages.Add(new Domain.Models.Message
+                        {
+                            CorrelationID = Domain.Models.Message.NewCorrelationID(),
+                            Sender = sender.Name,
+                            SenderType = sender.Type,
+                            Recipient = recipient,
+                            RecipientType = IdentityType.Subverse,
+                            Title = message.Subject,
+                            Content = message.Message,
+                            ReadDate = null,
+                            CreationDate = Repository.CurrentDate,
+                            IsAnonymized = isAnonymized,
+                        });
+                    }
                 }
                 else
                 {
@@ -2989,7 +3016,7 @@ namespace Voat.Data
                     {
                         if (ensureUserExists)
                         {
-                            return CommandResponse.FromStatus<Domain.Models.Message>(null, Status.Error, $"User {recipient} does not exist.");
+                            return CommandResponse.FromStatus<Domain.Models.Message>(null, Status.Error, $"User {recipient} does not exist");
                         }
                     }
                     else

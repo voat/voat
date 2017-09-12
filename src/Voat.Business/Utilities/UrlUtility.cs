@@ -58,14 +58,18 @@ namespace Voat.Utilities
         }
 
         // check if a URI is valid HTTP or HTTPS URI
-        public static bool IsUriValid(string completeUri, bool evaluateRegex = true)
+        public static bool IsUriValid(string completeUri, bool evaluateRegex = true, bool dnsNamesOnly = false)
         {
             Uri uriResult;
             bool result = false;
 
             if (Uri.TryCreate(completeUri, UriKind.Absolute, out uriResult))
             {
-                if (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)
+                if (
+                        (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps) 
+                        && !uriResult.IsLoopback
+                        && (!dnsNamesOnly || dnsNamesOnly && uriResult.HostNameType == UriHostNameType.Dns)
+                        )
                 {
                     if (evaluateRegex)
                     {

@@ -414,6 +414,12 @@ namespace Voat.Controllers
                 ModelState.AddModelError("", "Can not find comment. Who did this?");
                 return View(new ModeratorDeleteContentViewModel());
             }
+            if (!comment.Subverse.IsEqual(subverse))
+            {
+                ModelState.AddModelError("", "Data mismatch detected");
+                return View(new ModeratorDeleteContentViewModel());
+            }
+
             ViewBag.Comment = comment;
             return View(new ModeratorDeleteContentViewModel() { ID = commentID });
         }
@@ -429,6 +435,11 @@ namespace Voat.Controllers
             if (comment == null || comment.SubmissionID != submissionID)
             {
                 ModelState.AddModelError("", "Can not find comment. Who did this?");
+                return View(new ModeratorDeleteContentViewModel());
+            }
+            if (!comment.Subverse.IsEqual(subverse))
+            {
+                ModelState.AddModelError("", "Data mismatch detected");
                 return View(new ModeratorDeleteContentViewModel());
             }
 

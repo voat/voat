@@ -354,6 +354,10 @@ namespace Voat.Controllers
                         {
                             subverse = AGGREGATE_SUBVERSE.DEFAULT;
                         }
+                        else
+                        {
+                            subverse = AGGREGATE_SUBVERSE.FRONT;
+                        }
                         //viewProperties.Title = "Front";
                         //ViewBag.SelectedSubverse = "frontpage";
                     }

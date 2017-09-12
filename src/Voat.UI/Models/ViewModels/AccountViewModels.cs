@@ -84,11 +84,13 @@ namespace Voat.Models.ViewModels
     {
         [Required(ErrorMessage = "Username is required. Please fill this field.")]
         [Display(Name = "User name")]
+        [StringLength(50, ErrorMessage = "The {0} must be between {2} and {1} characters", MinimumLength = 1)]
         public string UserName { get; set; }
 
         [Required(ErrorMessage = "A password is required. Please fill this field.")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
+        [StringLength(100, ErrorMessage = "The {0} must be between {2} and {1} characters", MinimumLength = 2)]
         public string Password { get; set; }
 
         [Display(Name = "Remember me?")]

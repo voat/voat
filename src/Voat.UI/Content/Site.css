@@ -350,13 +350,13 @@ ul.flat-vert {
 }
 
     #modmail.havemail {
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: -88px -708px;
         background-repeat: no-repeat;
     }
 
     #modmail.nohavemail {
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: 0px -730px;
         background-repeat: no-repeat;
     }
@@ -533,7 +533,7 @@ ul.flat-vert {
             content: '';
             display: inline-block;
             float: left;
-            background-image: url(/Graphics/WVSprite.png);
+            background-image: url(/images/wvsprite.png);
             background-position: -66px -642px;
             background-repeat: no-repeat;
             width: 16px;
@@ -564,7 +564,7 @@ ul.flat-vert {
         }
 
             .side .side-message.gold:before {
-                background-image: url(/Graphics/WVSprite.png);
+                background-image: url(/images/wvsprite.png);
                 background-position: 0px -817px;
                 background-repeat: no-repeat;
                 width: 13px;
@@ -578,7 +578,7 @@ ul.flat-vert {
     position: relative;
     border: 1px solid #c4dbf1;
     background: #ffffff none repeat-x scroll center left;
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: 0px -278px;
     background-repeat: repeat;
     font-size: 150%;
@@ -592,7 +592,7 @@ ul.flat-vert {
         border-color: #879eb4;
         width: 23px;
         height: 23px;
-        background: url('/Graphics/WVSprite.png') 0 -99px;
+        background: url('/images/wvsprite.png') 0 -99px;
         background-repeat: repeat;
     }
 
@@ -618,19 +618,19 @@ ul.flat-vert {
         height: 31px;
         width: 24px;
         background: #ffffff none no-repeat scroll center left;
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: -30px -547px;
         background-repeat: no-repeat;
     }
 
     .morelink:hover .nub, .mlhn {
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: 0px -547px;
         background-repeat: no-repeat;
     }
 
 .disabled .morelink, .disabled .morelink:hover {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: 0px -208px;
     background-repeat: repeat;
     border-color: #dadada;
@@ -642,7 +642,7 @@ ul.flat-vert {
     }
 
     .disabled .morelink .nub, .disabled .morelink:hover .nub {
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: -76px -491px;
         background-repeat: no-repeat;
     }
@@ -684,13 +684,13 @@ ul.flat-vert {
     }
 
 .sidebox.create .spacer a {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -76px -359px;
     background-repeat: no-repeat;
 }
 
 .sidebox.gold .spacer a {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -76px -435px;
     background-repeat: no-repeat;
 }
@@ -841,25 +841,25 @@ ul.flat-vert {
 }
 
     .arrow.upmod {
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: -84px -796px;
         background-repeat: no-repeat;
     }
 
     .arrow.downmod {
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: -42px -796px;
         background-repeat: no-repeat;
     }
 
     .arrow.up {
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: -63px -796px;
         background-repeat: no-repeat;
     }
 
     .arrow.down {
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: -21px -796px;
         background-repeat: no-repeat;
     }
@@ -967,7 +967,7 @@ body > .content .link.compressed .midcol {
         text-indent: -9999px;
         width: 11px;
         height: 8px;
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: -109px -774px;
         background-repeat: no-repeat;
         vertical-align: middle;
@@ -1198,7 +1198,7 @@ a.author {
 
     .media-button .option.active {
         background: none no-repeat scroll right center;
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: -107px -491px;
         background-repeat: no-repeat;
         padding-right: 15px;
@@ -1305,13 +1305,13 @@ body.with-listing-chooser.explore-page #header .pagename {
             }
 
             .explore-item .explore-feedback .fancy-toggle-button .add:hover {
-                background-image: url(/Graphics/WVSprite.png);
+                background-image: url(/images/wvsprite.png);
                 background-position: 0px 0px;
                 background-repeat: repeat;
             }
 
             .explore-item .explore-feedback .fancy-toggle-button .remove:hover {
-                background-image: url(/Graphics/WVSprite.png);
+                background-image: url(/images/wvsprite.png);
                 background-position: 0px -182px;
                 background-repeat: repeat;
             }
@@ -1327,7 +1327,7 @@ body.with-listing-chooser.explore-page #header .pagename {
         text-indent: -9999px;
         width: 9px;
         height: 9px;
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: -110px -642px;
         background-repeat: no-repeat;
         opacity: .3;
@@ -1696,13 +1696,13 @@ body.with-listing-chooser.explore-page #header .pagename {
     }
 
 .wikiaction-revisions::before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -44px -774px;
     background-repeat: no-repeat;
 }
 
 .wikiaction-pages::before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -44px -730px;
     background-repeat: no-repeat;
 }
@@ -1780,13 +1780,13 @@ body.with-listing-chooser.explore-page #header .pagename {
         }
 
             .organic-listing .nextprev .arrow.prev {
-                background-image: url(/Graphics/WVSprite.png);
+                background-image: url(/images/wvsprite.png);
                 background-position: -83px -613px;
                 background-repeat: no-repeat;
             }
 
             .organic-listing .nextprev .arrow.next {
-                background-image: url(/Graphics/WVSprite.png);
+                background-image: url(/images/wvsprite.png);
                 background-position: -58px -613px;
                 background-repeat: no-repeat;
             }
@@ -2721,13 +2721,13 @@ textarea.gray {
     }
 
     .fancy-toggle-button .remove {
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: 0px -182px;
         background-repeat: repeat;
     }
 
     .fancy-toggle-button .add {
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: 0px 0px;
         background-repeat: repeat;
     }
@@ -5199,7 +5199,7 @@ ul#image-preview-list {
 
     .sr-row.sr-selected {
         background: #eff7ff none no-repeat scroll 0px 5px;
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: -108px -613px;
         background-repeat: no-repeat;
     }
@@ -6760,7 +6760,7 @@ dd {
     .multi-details button.remove-sr.remove-sr, .multi-details button.add.remove-sr {
         width: 9px;
         height: 9px;
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: -110px -642px;
         background-repeat: no-repeat;
     }
@@ -6768,7 +6768,7 @@ dd {
     .multi-details button.remove-sr.add, .multi-details button.add.add {
         width: 15px;
         height: 15px;
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: -88px -774px;
         background-repeat: no-repeat;
     }
@@ -6866,7 +6866,7 @@ dd {
         }
 
             .side .recommend-box .rec-item button.add:after {
-                background-image: url(/Graphics/WVSprite.png);
+                background-image: url(/images/wvsprite.png);
                 background-position: -88px -774px;
                 background-repeat: no-repeat;
                 content: "";
@@ -6956,64 +6956,64 @@ dd {
 }
 
 .icon-menu .reddit-edit:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: 0px -752px;
     background-repeat: no-repeat;
 }
 
 .icon-menu .reddit-traffic:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: 0px -774px;
     background-repeat: no-repeat;
 }
 
 .icon-menu .reddit-reported:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -66px -752px;
     background-repeat: no-repeat;
 }
 
 .icon-menu .reddit-spam:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -88px -752px;
     background-repeat: no-repeat;
 }
 
 .icon-menu .reddit-ban:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -88px -730px;
     background-repeat: no-repeat;
 }
 
 .icon-menu .reddit-flair:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -22px -752px;
     background-repeat: no-repeat;
     margin-left: 1px;
 }
 
 .icon-menu .reddit-moderationlog:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -44px -774px;
     background-repeat: no-repeat;
     margin-left: 1px;
 }
 
 .icon-menu .reddit-unmoderated:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -22px -774px;
     background-repeat: no-repeat;
     margin-left: 1px;
 }
 
 .icon-menu .reddit-moderators:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -66px -774px;
     background-repeat: no-repeat;
 }
 
 .icon-menu .moderator-mail:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -29px -817px;
     background-repeat: no-repeat;
     width: 15px;
@@ -7023,19 +7023,19 @@ dd {
 }
 
 .icon-menu .reddit-contributors:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -66px -730px;
     background-repeat: no-repeat;
 }
 
 .icon-menu .reddit-modqueue:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -44px -752px;
     background-repeat: no-repeat;
 }
 
 .users-online:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -22px -730px;
     background-repeat: no-repeat;
 }
@@ -7045,19 +7045,19 @@ dd {
 }
 
 .notice-taken:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -88px -752px;
     background-repeat: no-repeat;
 }
 
 .notice-available:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -44px -642px;
     background-repeat: no-repeat;
 }
 
 .info-notice:before {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -22px -642px;
     background-repeat: no-repeat;
 }
@@ -7224,37 +7224,37 @@ a.pretty-button {
     }
 
     a.pretty-button.negative {
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: 0px -52px;
         background-repeat: repeat;
     }
 
         a.pretty-button.negative.pressed {
-            background-image: url(/Graphics/WVSprite.png);
+            background-image: url(/images/wvsprite.png);
             background-position: 0px -26px;
             background-repeat: repeat;
         }
 
     a.pretty-button.neutral {
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: 0px -104px;
         background-repeat: repeat;
     }
 
         a.pretty-button.neutral.pressed {
-            background-image: url(/Graphics/WVSprite.png);
+            background-image: url(/images/wvsprite.png);
             background-position: 0px -78px;
             background-repeat: repeat;
         }
 
     a.pretty-button.positive {
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: 0px -156px;
         background-repeat: repeat;
     }
 
         a.pretty-button.positive.pressed {
-            background-image: url(/Graphics/WVSprite.png);
+            background-image: url(/images/wvsprite.png);
             background-position: 0px -130px;
             background-repeat: repeat;
         }
@@ -7338,7 +7338,7 @@ body:not(.gold) .allminus-link {
             height: 14px;
             width: 14px;
             margin: 0 6px 0 1px;
-            background-image: url(/Graphics/WVSprite.png);
+            background-image: url(/images/wvsprite.png);
             background-position: 0px -817px;
             background-repeat: no-repeat;
         }
@@ -7469,7 +7469,7 @@ body:not(.gold) .allminus-link {
     }
 
         .giftgold a:before, .gold-form h1.goldgift:before, .infobar.gold:before {
-            background-image: url(/Graphics/WVSprite.png);
+            background-image: url(/images/wvsprite.png);
             background-position: 0px -796px;
             background-repeat: no-repeat;
         }
@@ -7876,145 +7876,145 @@ body:not(.gold) .allminus-link {
 }
 
 .modactions.banuser {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -88px -730px;
     background-repeat: no-repeat;
 }
 
 .modactions.unbanuser {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -88px -686px;
     background-repeat: no-repeat;
 }
 
 .modactions.removelink {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -22px -686px;
     background-repeat: no-repeat;
 }
 
 .modactions.approvelink {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -44px -642px;
     background-repeat: no-repeat;
 }
 
 .modactions.removecomment {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -88px -664px;
     background-repeat: no-repeat;
 }
 
 .modactions.approvecomment {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: 0px -664px;
     background-repeat: no-repeat;
 }
 
 .modactions.addmoderator, .modactions.invitemoderator, .modactions.acceptmoderatorinvite {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: 0px -642px;
     background-repeat: no-repeat;
 }
 
 .modactions.removemoderator, .modactions.uninvitemoderator {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -44px -686px;
     background-repeat: no-repeat;
 }
 
 .modactions.addcontributor {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -88px -642px;
     background-repeat: no-repeat;
 }
 
 .modactions.removecontributor {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: 0px -686px;
     background-repeat: no-repeat;
 }
 
 .modactions.wikipagelisted, .modactions.editsettings {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: 0px -752px;
     background-repeat: no-repeat;
 }
 
 .modactions.editflair {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -22px -752px;
     background-repeat: no-repeat;
 }
 
 .modactions.distinguish {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -22px -664px;
     background-repeat: no-repeat;
 }
 
 .modactions.marknsfw {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -44px -664px;
     background-repeat: no-repeat;
 }
 
 .modactions.wikirevise {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -66px -708px;
     background-repeat: no-repeat;
 }
 
 .modactions.wikipermlevel {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -44px -708px;
     background-repeat: no-repeat;
 }
 
 .modactions.wikibanned {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -88px -730px;
     background-repeat: no-repeat;
 }
 
 .modactions.wikiunbanned {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -88px -686px;
     background-repeat: no-repeat;
 }
 
 .modactions.wikicontributor {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -88px -642px;
     background-repeat: no-repeat;
 }
 
 .modactions.removewikicontributor {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: 0px -686px;
     background-repeat: no-repeat;
 }
 
 .modactions.ignorereports {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -66px -664px;
     background-repeat: no-repeat;
 }
 
 .modactions.unignorereports {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: 0px -708px;
     background-repeat: no-repeat;
 }
 
 .modactions.sticky {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -66px -686px;
     background-repeat: no-repeat;
 }
 
 .modactions.unsticky {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: -22px -708px;
     background-repeat: no-repeat;
 }
@@ -8423,7 +8423,7 @@ body:not(.gold) .allminus-link {
     }
 
 .sr-interest-bar .subscribe {
-    background-image: url(/Graphics/WVSprite.png);
+    background-image: url(/images/wvsprite.png);
     background-position: 0px 0px;
     background-repeat: repeat;
     border: 1px solid #444;
@@ -8678,7 +8678,7 @@ table.diff {
     .gilded-icon:before {
         display: inline-block;
         content: '';
-        background-image: url(/Graphics/WVSprite.png);
+        background-image: url(/images/wvsprite.png);
         background-position: 0px -817px;
         background-repeat: no-repeat;
         height: 14px;

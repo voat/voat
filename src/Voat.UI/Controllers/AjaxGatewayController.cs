@@ -110,7 +110,7 @@ namespace Voat.Controllers
             var uri = Request.Query["uri"].FirstOrDefault();
             uri = uri.TrimSafe();
 
-            if (!string.IsNullOrEmpty(uri) && UrlUtility.IsUriValid(uri))
+            if (!string.IsNullOrEmpty(uri) && UrlUtility.IsUriValid(uri, true, true))
             {
                 //Old Code:
                 //string title = UrlUtility.GetTitleFromUri(uri);
