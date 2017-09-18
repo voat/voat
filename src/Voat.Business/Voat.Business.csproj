@@ -25,10 +25,10 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
     <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="Sendgrid" Version="9.8.0" />
+    <PackageReference Include="Sendgrid" Version="9.9.0" />
     <PackageReference Include="StackExchange.Redis.StrongName" Version="1.2.6" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0" />
-    <PackageReference Include="WindowsAzure.Storage" Version="8.3.0" />
+    <PackageReference Include="WindowsAzure.Storage" Version="8.4.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\external\Source\ghorsey\OpenGraph-Net\OpenGraph-Net.csproj" />

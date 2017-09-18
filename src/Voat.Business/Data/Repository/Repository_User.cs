@@ -49,12 +49,15 @@ namespace Voat.Data
             if (range.StartDate.HasValue)
             {
                 q.Append(x => x.Where, "c.\"CreationDate\" >= @StartDate");
-                q.Parameters.Add("StartDate", range.StartDate.Value);
+                //Bug in Dapper this line looses TimeZome info see: https://github.com/npgsql/npgsql/issues/972#issuecomment-218745473
+                //q.Parameters.Add("StartDate", range.StartDate.Value);
+                q.Parameters.AddDynamicParams(new { StartDate = range.StartDate.Value });
             }
             if (range.EndDate.HasValue)
             {
-                var endDate = range.EndDate;
                 q.Append(x => x.Where, "c.\"CreationDate\" <= @EndDate");
+                //Bug in Dapper this line looses TimeZome info see: https://github.com/npgsql/npgsql/issues/972#issuecomment-218745473
+                //q.Parameters.Add("EndDate", range.EndDate.Value);
                 q.Parameters.AddDynamicParams(new { EndDate = range.EndDate.Value });
             }
 
@@ -84,12 +87,16 @@ namespace Voat.Data
             if (range.StartDate.HasValue)
             {
                 q.Append(x => x.Where, "\"CreationDate\" >= @StartDate");
-                q.Parameters.Add("StartDate", range.StartDate.Value);
+                //Bug in Dapper this line looses TimeZome info see: https://github.com/npgsql/npgsql/issues/972#issuecomment-218745473
+                //q.Parameters.Add("StartDate", range.StartDate.Value);
+                q.Parameters.AddDynamicParams(new { StartDate = range.StartDate.Value });
             }
             if (range.EndDate.HasValue)
             {
                 q.Append(x => x.Where, "\"CreationDate\" <= @EndDate");
-                q.Parameters.Add("EndDate", range.EndDate.Value);
+                //Bug in Dapper this line looses TimeZome info see: https://github.com/npgsql/npgsql/issues/972#issuecomment-218745473
+                //q.Parameters.Add("EndDate", range.EndDate.Value);
+                q.Parameters.AddDynamicParams(new { EndDate = range.EndDate.Value });
             }
 
             if (type != null)
