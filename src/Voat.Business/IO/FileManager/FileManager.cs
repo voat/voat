@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Voat.Common;
+using Voat.Common.Models;
+using Voat.Configuration;
 using Voat.Domain.Command;
 using Voat.Utilities;
 
@@ -38,8 +41,13 @@ namespace Voat.IO
         }
         public virtual CommandResponse IsUploadPermitted(string fileName, FileType fileType, string mimeType = null, long? length = null)
         {
-
             var result = CommandResponse.FromStatus(Status.Success);
+
+            var uploadLimit = VoatSettings.Instance.FileUploadLimits.FirstOrDefault(x => x.Type == fileType);
+            if (uploadLimit == null)
+            {
+                uploadLimit = new FileUploadLimit() { Type = fileType };
+            }
 
             switch (fileType)
             {
@@ -47,17 +55,17 @@ namespace Voat.IO
                 case FileType.Thumbnail:
                 case FileType.Badge:
 
-                    if (!fileName.IsImageExtension())
+                    if (!uploadLimit.IsExtensionAllowed(fileName))
                     {
                         result = CommandResponse.FromStatus(Status.Invalid, "File type is not permitted for upload");
                     }
-                    else if (!String.IsNullOrEmpty(mimeType) && !IsMimeTypePermitted(fileType, mimeType))
+                    else if (!uploadLimit.IsMimeTypeAllowed(mimeType))
                     {
                         result = CommandResponse.FromStatus(Status.Invalid, "Mime type is not permitted for upload");
                     }
-                    else if (length == null || length.Value == 0 || length > 2500000)
+                    if (length == null || length.Value == 0 || (uploadLimit.ByteLimit > 0 && length > uploadLimit.ByteLimit))
                     {
-                        result = CommandResponse.FromStatus(Status.Invalid, "File length is too big or too small but we aren't saying (Hint: 2.5MB max)");
+                        result = CommandResponse.FromStatus(Status.Invalid, $"File length is too big or too small but we aren't saying (Hint: {Math.Round(uploadLimit.ByteLimit / (decimal)1000000, 1)} MB max)");
                     }
                     break;
             }

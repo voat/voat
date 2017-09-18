@@ -136,7 +136,7 @@ namespace Voat.Tests.Infrastructure
                         Assert.AreEqual(Status.Success, m.Status, String.Format("NewContext PostSubmission for user {0} received non-success message : {1}", userName, m.Message));
                         var submissionid = m.Response.ID;
 
-                        var c = db.PostComment(submissionid, -1, "This is a comment in disappearing ink. Wait for it.... -> " + Guid.NewGuid().ToString()).Result;
+                        var c = db.PostComment(submissionid, null, "This is a comment in disappearing ink. Wait for it.... -> " + Guid.NewGuid().ToString()).Result;
                         Assert.AreEqual(Status.Success, c.Status, String.Format("NewContext PostComment for user {0} received non-success message : {1}", userName, m.Message));
                         var commentid = c.Response.ID;
                         context = new ContentContext() { UserName = userName, CommentID = commentid, SubmissionID = submissionid };

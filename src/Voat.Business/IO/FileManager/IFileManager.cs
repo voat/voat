@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Voat.Common;
+using Voat.Common.Models;
 using Voat.Utilities;
 
 namespace Voat.IO
@@ -33,11 +34,6 @@ namespace Voat.IO
         //public string Name { get; set; }
         public FileType FileType {get; set;}
     }
-    public enum FileType
-    {
-        Badge,
-        Avatar,
-        Thumbnail
-    }
+   
     
 }

@@ -20,7 +20,7 @@ namespace Voat.Voting.Restrictions
     {
         public override CommandResponse<IVoteRestriction> Evaluate(IPrincipal principal)
         {
-            var evaluation = CommandResponse.FromStatus<IVoteRestriction>(null, Status.Success);
+            var evaluation = CommandResponse.FromStatus<IVoteRestriction>(this, Status.Success);
             using (var repo = new Repository())
             {
                 var count = repo.UserContributionCount(principal.Identity.Name, (Voat.Domain.Models.ContentType)ContentType, Subverse, DateRange);

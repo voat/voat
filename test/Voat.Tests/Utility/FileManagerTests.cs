@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 using Voat.IO;
 using Voat.Utilities;
 using System.Linq;
+using Voat.Common.Models;
 
 namespace Voat.Tests.Utils
 {

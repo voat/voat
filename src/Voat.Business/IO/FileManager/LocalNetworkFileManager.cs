@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Common.Components;
+using Voat.Common.Models;
 using Voat.Configuration;
 using Voat.Logging;
 using Voat.Utilities;

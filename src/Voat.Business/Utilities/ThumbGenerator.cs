@@ -34,6 +34,7 @@ using Voat.IO;
 using Voat.Utilities.Components;
 using Voat.Imaging;
 using Voat.Logging;
+using Voat.Common.Models;
 
 namespace Voat.Utilities
 {

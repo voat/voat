@@ -68,7 +68,7 @@ namespace Voat.Tests.CommandTests
                     UserName = modName,
                     Subverse = subName,
                     CreatedBy = "PuttItOut",
-                    CreationDate = DateTime.Now.AddDays(100) //we want to ensure no-one can remove system at L1
+                    CreationDate = DateTime.UtcNow.AddDays(100) //we want to ensure no-one can remove system at L1
                 }).Entity;
                 context.SaveChanges();
                 _subMods.Add(modName, mod);

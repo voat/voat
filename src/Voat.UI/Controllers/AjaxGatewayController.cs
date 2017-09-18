@@ -140,9 +140,10 @@ namespace Voat.Controllers
         // GET: subverse names containing search term (used for autocomplete on new submission views)
         public async Task<JsonResult> AutocompleteSubverseName(string term, bool exact = false)
         {
+
             var q = new QuerySubmissionSubverseSettings(term, exact);
             var resultList = await q.ExecuteAsync().ConfigureAwait(false);
-            return Json(resultList /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
+            return Json(resultList);
         }
 
         // GET: markdown format a submission and return rendered result

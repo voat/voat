@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 
 namespace Voat.Common
 {
+    
     public class LimitedQueue<T> : Queue<T>
     {
         private int _limit = 100;
@@ -44,7 +45,7 @@ namespace Voat.Common
         public LimitedQueue(int limit) : base(limit)
         {
             Limit = limit;
-            
+
         }
         public int Limit
         {
@@ -62,13 +63,107 @@ namespace Voat.Common
         {
             Add(item);
         }
-        public void Add(T item)
+        public virtual void Add(T item)
         {
             while (Count >= Limit && Count > 0)
             {
                 base.Dequeue();
             }
             base.Enqueue(item);
+        }
+    }
+    public class LimitedStack<T> : Stack<T>
+    {
+        private int _limit = 100;
+
+        public LimitedStack(IEnumerable<T> collection) : base(collection)
+        {
+
+        }
+        public LimitedStack() : this(100) { }
+
+        public LimitedStack(int limit) : base(limit)
+        {
+            Limit = limit;
+
+        }
+        public int Limit
+        {
+            get
+            {
+                return _limit;
+            }
+            set
+            {
+                _limit = value;
+            }
+        }
+
+        public new void Push(T item)
+        {
+            Add(item);
+        }
+        public virtual void Add(T item)
+        {
+            while (Count >= Limit && Count > 0)
+            {
+                base.Pop();
+            }
+            base.Push(item);
+        }
+    }
+    public enum TrimEnd
+    {
+        Head,
+        Tail
+    }
+    public class LimitedList<T> : List<T>
+    {
+        private int _limit = 100;
+        /// <summary>
+        /// Changes the behavior of items being added - Tail (Queue), Head (Stack)
+        /// </summary>
+        private TrimEnd TrimBehavior { get; set; } = TrimEnd.Tail;
+
+        public LimitedList(IEnumerable<T> collection) : base(collection)
+        {
+
+        }
+
+        public LimitedList() : this(100) { }
+
+        public LimitedList(int limit) : base(limit)
+        {
+            Limit = limit;
+
+        }
+        public int Limit { get => _limit; set => _limit = value; }
+
+        public virtual new void Add(T item)
+        {
+            while (Count >= Limit && Count > 0)
+            {
+                switch (TrimBehavior)
+                {
+                    case TrimEnd.Head:
+                        base.RemoveAt(0);
+                        break;
+                    case TrimEnd.Tail:
+                        base.RemoveAt(Count - 1);
+                        break;
+                }
+            }
+
+            switch (TrimBehavior)
+            {
+                case TrimEnd.Head:
+                    base.Add(item);
+                    break;
+                case TrimEnd.Tail:
+                    base.Insert(0, item);
+                    break;
+            }
+            
         }
     }
 }

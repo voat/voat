@@ -65,7 +65,7 @@ namespace Voat.Domain.Query
                 return CachingKey.DomainSearch(_domain, _options.Page, _options.Sort.ToString());
             }
         }
-
+        
         public override async Task<IEnumerable<Domain.Models.Submission>> ExecuteAsync()
         {
             var result = await base.ExecuteAsync();

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Text;
 using Voat.Common;
 using Voat.Common.Configuration;
+using Voat.Common.Models;
 using Voat.Configuration;
 
 namespace Voat.Configuration
@@ -169,6 +170,12 @@ namespace Voat.Configuration
         public bool EnableVotes { get; set; } = false;
 
         public string ManagementAreaName { get; set; } = "Admin";
+
+        public IList<FileUploadLimit> FileUploadLimits { get; set; } = new List<FileUploadLimit>();
+        //{
+        //    new FileUploadLimit() { Type = FileType.Thumbnail, ByteLimit = 5000000, ExtensionTypes = new string[] { ".jpg", ".png", ".gif", ".jpeg" } },
+        //    new FileUploadLimit() { Type = FileType.Avatar,    ByteLimit = 3000000, ExtensionTypes = new string[] { ".jpg", ".png", ".gif", ".jpeg" }  }
+        //};
 
         #endregion AppSettings Accessors
 

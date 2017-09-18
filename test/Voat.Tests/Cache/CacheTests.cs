@@ -605,10 +605,10 @@ namespace Voat.Tests.Cache
                 if (handler.CacheEnabled)
                 {
                     //Try to bail as quickly as possible once we know the hot cache is functioning
-                    var startTime = DateTime.Now;
+                    var startTime = DateTime.UtcNow;
                     var timeoutTimeSpan = TimeSpan.FromSeconds(60);
                     var hasUpdated = false;
-                    while (!hasUpdated && DateTime.Now.Subtract(startTime) < timeoutTimeSpan)
+                    while (!hasUpdated && DateTime.UtcNow.Subtract(startTime) < timeoutTimeSpan)
                     {
                         int? checkValue = handler.Retrieve<int?>(cacheKey);
                         hasUpdated = (checkValue.HasValue && checkValue.Value != 0 && checkValue.Value != 1);

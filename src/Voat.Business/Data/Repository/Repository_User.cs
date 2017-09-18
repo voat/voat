@@ -31,8 +31,6 @@ namespace Voat.Data
             {
                 range = new DateRange();
             }
-            var startDate = range.StartDate;
-            var endDate = range.EndDate;
             //var result = (from x in _db.Comment
             //              where
             //                x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
@@ -55,8 +53,9 @@ namespace Voat.Data
             }
             if (range.EndDate.HasValue)
             {
+                var endDate = range.EndDate;
                 q.Append(x => x.Where, "c.\"CreationDate\" <= @EndDate");
-                q.Parameters.Add("EndDate", range.EndDate.Value);
+                q.Parameters.AddDynamicParams(new { EndDate = range.EndDate.Value });
             }
 
             if (!String.IsNullOrEmpty(subverse))

@@ -80,7 +80,7 @@ namespace Voat.Common
     public class ActivityContext : IDisposable, IActivityContext
     {
         private string _activityID = Guid.NewGuid().ToString();
-        private DateTime _startDate = DateTime.Now;
+        private DateTime _startDate = DateTime.UtcNow;
         private DateTime? _endDate = null;
         private ActivityPrincipal _activityPrincipal = null;
 

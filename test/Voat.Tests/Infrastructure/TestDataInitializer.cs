@@ -599,7 +599,7 @@ namespace Voat.Tests.Infrastructure
 
             #region Disabled Test Data
 
-            context.Subverse.Add(new Subverse() { Name = SUBVERSES.Disabled, Title = "Disabled", IsAdminDisabled = true, CreatedBy = USERNAMES.Unit, CreationDate = DateTime.Now.AddDays(-100), SideBar = "We will never be disabled"});
+            context.Subverse.Add(new Subverse() { Name = SUBVERSES.Disabled, Title = "Disabled", IsAdminDisabled = true, CreatedBy = USERNAMES.Unit, CreationDate = DateTime.UtcNow.AddDays(-100), SideBar = "We will never be disabled"});
 
             context.SaveChanges();
 

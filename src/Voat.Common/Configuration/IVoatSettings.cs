@@ -1,4 +1,7 @@
-﻿namespace Voat.Common.Configuration
+﻿using System.Collections.Generic;
+using Voat.Common.Models;
+
+namespace Voat.Common.Configuration
 {
     public interface IVoatSettings
     {
@@ -58,5 +61,9 @@
         string SiteUserName { get; }
         int SubverseUpdateTimeLockInHours { get; }
         string ManagementAreaName { get; set; }
+
+        IList<FileUploadLimit> FileUploadLimits { get; set; }
+
     }
+   
 }

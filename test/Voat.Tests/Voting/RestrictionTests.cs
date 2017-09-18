@@ -24,7 +24,7 @@ namespace Voat.Tests.Voting
                 Type = typeof(ContributionCountRestriction).Name,
                 Data = (new ContributionCountRestriction() {
                     ContentType = (ContentTypeRestriction)(Domain.Models.ContentType.Comment | Domain.Models.ContentType.Submission),
-                    Duration = TimeSpan.FromDays(45),
+                    Duration = TimeSpan.FromDays(180),
                     Subverse = "unit",
                     MinimumCount = 1,
                     EndDate = DateTime.UtcNow
@@ -33,10 +33,10 @@ namespace Voat.Tests.Voting
             };
 
             var constructed = (IVoteRestriction)VoteItem.Deserialize<VoteItem>(r.Data);
-            var user = TestHelper.SetPrincipal("User500CCP");
+            var user = TestHelper.SetPrincipal(USERNAMES.User500CCP);
             var outcome = constructed.Evaluate(user);
 
-            Assert.AreEqual(Status.Success, outcome.Status);
+            VoatAssert.IsValid(outcome);
 
 
             var restrictionSet = new VoteRestrictionSet();

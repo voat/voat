@@ -115,7 +115,7 @@ namespace Voat.Controllers
                         var cookie = HttpContext.Request.Cookies["theme"];
                         if (cookie != null && !String.IsNullOrEmpty(cookie))
                         {
-                            Response.Cookies.Append("theme", "", new Microsoft.AspNetCore.Http.CookieOptions() { Expires = DateTime.Now.AddDays(-1) });
+                            Response.Cookies.Append("theme", "", new Microsoft.AspNetCore.Http.CookieOptions() { Expires = DateTime.UtcNow.AddDays(-1) });
                         }
 
                         return RedirectToLocal(returnUrl);

@@ -29,6 +29,7 @@ using System.Linq;
 using System.Security.Principal;
 using System.Threading;
 using Voat.Common;
+using Voat.Common.Models;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Domain.Models;

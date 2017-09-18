@@ -54,6 +54,7 @@ using Voat.Common.Components;
 using Voat.IO;
 using Voat.Logging;
 using Voat.Notifications;
+using Voat.Common.Models;
 
 namespace Voat.Data
 {
@@ -2309,6 +2310,10 @@ namespace Voat.Data
                     else if (comment.SubmissionID.Value != submission.ID)
                     {
                         return CommandResponse.FromStatus<Domain.Models.Comment>(null, Status.Invalid, "Parent comment does not belong to submission");
+                    }
+                    else if (comment.IsDeleted)
+                    {
+                        return CommandResponse.FromStatus<Domain.Models.Comment>(null, Status.Invalid, "Closed for the holidays: Deleted comments do not allow new replies");
                     }
                 }
 
@@ -5195,24 +5200,30 @@ namespace Voat.Data
 
         public async Task<IEnumerable<SubverseSubmissionSetting>> SubverseSubmissionSettingsSearch(string subverseName, bool exactMatch)
         {
-
-            var q = new DapperQuery();
-            q.Select = $"\"Name\", \"IsAnonymized\", \"IsAdult\" FROM {SqlFormatter.Table("Subverse")}";
-            q.OrderBy = "\"SubscriberCount\" DESC, \"CreationDate\" ASC";
-
-            if (exactMatch)
+            var domainReference = DomainReference.Parse(subverseName, DomainType.Subverse);
+            if (domainReference != null)
             {
-                q.Where = $"{SqlFormatter.ToNormalized("\"Name\"", Normalization.Lower)} = @Name";
-                q.TakeCount = 1;
+                var q = new DapperQuery();
+                q.Select = $"\"Name\", \"IsAnonymized\", \"IsAdult\" FROM {SqlFormatter.Table("Subverse")}";
+                q.OrderBy = "\"SubscriberCount\" DESC, \"CreationDate\" ASC";
+
+                if (exactMatch)
+                {
+                    q.Where = $"{SqlFormatter.ToNormalized("\"Name\"", Normalization.Lower)} = @Name";
+                    q.TakeCount = 1;
+                }
+                else
+                {
+                    q.Where = $"{SqlFormatter.ToNormalized("\"Name\"", Normalization.Lower)} LIKE CONCAT(@Name, '%') OR {SqlFormatter.ToNormalized("\"Name\"", Normalization.Lower)} = @Name";
+                    q.TakeCount = 10;
+                }
+
+                return await _db.Connection.QueryAsync<SubverseSubmissionSetting>(q.ToString(), new { Name = subverseName.ToLower() });
             }
             else
             {
-                q.Where = $"{SqlFormatter.ToNormalized("\"Name\"", Normalization.Lower)} LIKE CONCAT(@Name, '%') OR {SqlFormatter.ToNormalized("\"Name\"", Normalization.Lower)} = @Name";
-                q.TakeCount = 10;
+                return await Task.FromResult(Enumerable.Empty<SubverseSubmissionSetting>());
             }
-
-           return await _db.Connection.QueryAsync<SubverseSubmissionSetting>(q.ToString(), new { Name = subverseName.ToLower() });
-
         }
 
         #endregion

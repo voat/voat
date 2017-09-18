@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Voat.Common;
+using Voat.Common.Models;
 using Voat.Configuration;
 using Voat.Utilities;
 

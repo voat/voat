@@ -32,6 +32,7 @@ using Voat.Tests.Infrastructure;
 using Voat.IO;
 using System.Net.Http;
 using Voat.Domain.Command;
+using Voat.Common.Models;
 
 namespace Voat.Tests.Utils
 {

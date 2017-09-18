@@ -24,6 +24,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Voat.Common;
 using Voat.Data;
@@ -59,6 +60,12 @@ namespace Voat.Controllers
             ViewBag.SelectedSubverse = "domains";
             ViewBag.SelectedDomain = domainName;
             domainName = domainName.Trim().ToLower();
+
+            var match = Regex.Match(domainName, CONSTANTS.HOST_AND_PATH_LINK_REGEX);
+            if (!match.Success)
+            {
+                return ErrorView(new ErrorViewModel() { Title = "Wacky domain", Description = "The domain you are searching for appears to be invalid", Footer = "What is really going on?" });
+            }
 
             //TODO: This needs to moved to Query/Repository
             var options = new SearchOptions();

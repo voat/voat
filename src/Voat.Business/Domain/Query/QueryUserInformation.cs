@@ -31,6 +31,7 @@ using System.Linq;
 using Voat.Common;
 using System.Threading.Tasks;
 using Voat.IO;
+using Voat.Common.Models;
 
 namespace Voat.Domain.Query
 {
