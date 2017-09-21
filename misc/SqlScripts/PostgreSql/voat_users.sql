@@ -9,8 +9,8 @@ CREATE TABLE "AspNetRoleClaims"(
 CREATE TABLE "AspNetRoles"( 
 	"Id" varchar(128) NOT NULL,
 	"ConcurrencyStamp" varchar(50),
-	"Name" varchar(256),
-	"NormalizedName" varchar(256));
+	"Name" varchar(256) NOT NULL,
+	"NormalizedName" varchar(256) NOT NULL);
 
 CREATE TABLE "AspNetUserClaims"( 
 	"Id" int NOT NULL,
@@ -67,7 +67,7 @@ ALTER TABLE "AspNetUserRoles" ADD CONSTRAINT "PK_AspNetUserRoles" PRIMARY KEY ("
 ALTER TABLE "AspNetUserTokens" ADD CONSTRAINT "PK_AspNetUserTokens" PRIMARY KEY ("UserId","LoginProvider","Name");
 ALTER TABLE "AspNetUsers" ADD CONSTRAINT "PK_AspNetUsers" PRIMARY KEY ("Id");
 CREATE INDEX "IX_AspNetRoleClaims_RoleId" ON "AspNetRoleClaims" ("RoleId" ASC);
-CREATE INDEX "RoleNameIndex" ON "AspNetRoles" ("NormalizedName" ASC);
+CREATE INDEX "IX_AspNetRoles_NormalizedName" ON "AspNetRoles" ("NormalizedName" ASC);
 CREATE INDEX "IX_AspNetUserClaims_UserId" ON "AspNetUserClaims" ("UserId" ASC);
 CREATE INDEX "IX_AspNetUserLogins_UserId" ON "AspNetUserLogins" ("UserId" ASC);
 CREATE INDEX "IX_AspNetUserRoles_RoleId" ON "AspNetUserRoles" ("RoleId" ASC);

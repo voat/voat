@@ -16,7 +16,7 @@ CREATE TABLE [dbo].[Ad](
 	[CreationDate] [datetime] NOT NULL,
  CONSTRAINT [PK_Ad] PRIMARY KEY CLUSTERED 
 (
-	[ID] ASC
+	[ID] DESC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
@@ -341,23 +341,7 @@ CREATE TABLE [dbo].[Featured](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[FeaturedSubverse]    Script Date: 5/18/2017 8:40:29 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[FeaturedSubverse](
-	[ID] [int] IDENTITY(1,1) NOT FOR REPLICATION NOT NULL,
-	[Subverse] [nvarchar](20) NOT NULL,
-	[CreatedBy] [nvarchar](50) NOT NULL,
-	[CreationDate] [datetime] NOT NULL,
- CONSTRAINT [PK_FeaturedSubverse] PRIMARY KEY CLUSTERED 
-(
-	[ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 100) ON [PRIMARY]
-) ON [PRIMARY]
 
-GO
 /****** Object:  Table [dbo].[Filter]    Script Date: 5/18/2017 8:40:29 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -864,7 +848,7 @@ ALTER TABLE [dbo].[ApiCorsPolicy] ADD  CONSTRAINT [DF_ApiCorsPolicy_CreationDate
 GO
 ALTER TABLE [dbo].[ApiLog] ADD  CONSTRAINT [DF_ApiLog_CreationDate]  DEFAULT (getutcdate()) FOR [CreationDate]
 GO
-ALTER TABLE [dbo].[Comment] ADD  CONSTRAINT [DF_Comment_UpCount]  DEFAULT ((1)) FOR [UpCount]
+ALTER TABLE [dbo].[Comment] ADD  CONSTRAINT [DF_Comment_UpCount]  DEFAULT ((0)) FOR [UpCount]
 GO
 ALTER TABLE [dbo].[Comment] ADD  CONSTRAINT [DF_Comment_DownCount]  DEFAULT ((0)) FOR [DownCount]
 GO
@@ -994,11 +978,6 @@ ON UPDATE CASCADE
 ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[DefaultSubverse] CHECK CONSTRAINT [FK_DefaultSubverse_Subverse]
-GO
-ALTER TABLE [dbo].[FeaturedSubverse]  WITH NOCHECK ADD  CONSTRAINT [FK_FeaturedSubverse_Subverse] FOREIGN KEY([Subverse])
-REFERENCES [dbo].[Subverse] ([Name])
-GO
-ALTER TABLE [dbo].[FeaturedSubverse] CHECK CONSTRAINT [FK_FeaturedSubverse_Subverse]
 GO
 ALTER TABLE [dbo].[RuleReport]  WITH CHECK ADD  CONSTRAINT [FK_RuleReport_RuleSet] FOREIGN KEY([RuleSetID])
 REFERENCES [dbo].[RuleSet] ([ID])

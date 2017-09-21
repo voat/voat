@@ -22,10 +22,10 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[AspNetRoles](
 	[Id] [nvarchar](128) NOT NULL,
+	[Name] [nvarchar](256) NOT NULL,
 	[ConcurrencyStamp] [nvarchar](50) NULL,
-	[Name] [nvarchar](256) NULL,
-	[NormalizedName] [nvarchar](256) NULL,
- CONSTRAINT [PK_AspNetRoles] PRIMARY KEY NONCLUSTERED 
+	[NormalizedName] [nvarchar](256) NOT NULL,
+ CONSTRAINT [PK_AspNetRoles] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -59,7 +59,7 @@ CREATE TABLE [dbo].[AspNetUserLogins](
 	[LoginProvider] [nvarchar](128) NOT NULL,
 	[ProviderKey] [nvarchar](128) NOT NULL,
 	[ProviderDisplayName] [nvarchar](500) NOT NULL,
- CONSTRAINT [PK_AspNetUserLogins] PRIMARY KEY NONCLUSTERED 
+ CONSTRAINT [PK_AspNetUserLogins] PRIMARY KEY CLUSTERED 
 (
 	[UserId] ASC,
 	[LoginProvider] ASC,
@@ -76,7 +76,7 @@ GO
 CREATE TABLE [dbo].[AspNetUserRoles](
 	[UserId] [nvarchar](128) NOT NULL,
 	[RoleId] [nvarchar](128) NOT NULL,
- CONSTRAINT [PK_AspNetUserRoles] PRIMARY KEY NONCLUSTERED 
+ CONSTRAINT [PK_AspNetUserRoles] PRIMARY KEY CLUSTERED 
 (
 	[UserId] ASC,
 	[RoleId] ASC
@@ -110,10 +110,10 @@ CREATE TABLE [dbo].[AspNetUsers](
 	[ConcurrencyStamp] [nvarchar](50) NULL,
 	[NormalizedEmail] [nvarchar](256) NULL,
 	[NormalizedUserName] [nvarchar](256) NULL,
- CONSTRAINT [PK_AspNetUsers] PRIMARY KEY NONCLUSTERED 
+ CONSTRAINT [PK_AspNetUsers] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+)WITH (FILLFACTOR = 75, PAD_INDEX = ON, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
@@ -149,7 +149,7 @@ SET ANSI_PADDING ON
 
 GO
 /****** Object:  Index [RoleNameIndex]    Script Date: 6/7/2017 4:29:33 PM ******/
-CREATE NONCLUSTERED INDEX [RoleNameIndex] ON [dbo].[AspNetRoles]
+CREATE NONCLUSTERED INDEX [IX_AspNetRoles_NormalizedName] ON [dbo].[AspNetRoles]
 (
 	[NormalizedName] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -208,7 +208,7 @@ CREATE NONCLUSTERED INDEX [IX_AspNetUsers_NormalizedUserName] ON [dbo].[AspNetUs
 	[NormalizedUserName] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
-ALTER TABLE [dbo].[AspNetUsers] ADD  CONSTRAINT [DF__AspNetUse__Regis__47DBAE45]  DEFAULT (getutcdate()) FOR [RegistrationDateTime]
+ALTER TABLE [dbo].[AspNetUsers] ADD  CONSTRAINT [DF_AspNetUsers_RegistrationDateTime]  DEFAULT (getutcdate()) FOR [RegistrationDateTime]
 GO
 ALTER TABLE [dbo].[AspNetRoleClaims]  WITH CHECK ADD  CONSTRAINT [FK_AspNetRoleClaims_AspNetRoles] FOREIGN KEY([RoleId])
 REFERENCES [dbo].[AspNetRoles] ([Id])

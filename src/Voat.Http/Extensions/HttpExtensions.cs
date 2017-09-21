@@ -58,20 +58,17 @@ namespace Voat.Http
         public static bool IsLocal(this HttpRequest req)
         {
             var connection = req.HttpContext.Connection;
-            if (connection.RemoteIpAddress != null)
-            {
-                if (connection.LocalIpAddress != null)
-                {
-                    return connection.RemoteIpAddress.Equals(connection.LocalIpAddress);
-                }
-                else
-                {
-                    return IPAddress.IsLoopback(connection.RemoteIpAddress);
-                }
-            }
 
+            if (connection.RemoteIpAddress.Equals(connection.LocalIpAddress))
+            {
+                return true;
+            }
+            else if (IPAddress.IsLoopback(connection.RemoteIpAddress))
+            {
+                return true;
+            }
             // for in memory TestServer or when dealing with default connection info
-            if (connection.RemoteIpAddress == null && connection.LocalIpAddress == null)
+            else if (connection.RemoteIpAddress == null && connection.LocalIpAddress == null)
             {
                 return true;
             }
@@ -110,8 +107,8 @@ namespace Voat.Http
 
             if (!isLocal)
             {
-                var url = request.GetUrl();
-                var path = url.AbsolutePath.ToLower();
+                var currentUri = request.GetUrl();
+                var path = currentUri.AbsolutePath.ToLower();
                 var isSignalR = path.StartsWith("/signalr/");
                 if (!isSignalR)
                 {
@@ -159,16 +156,17 @@ namespace Voat.Http
                     }
 
                     // force single site domain
-                    if (VoatSettings.Instance.RedirectToSiteDomain && !VoatSettings.Instance.SiteDomain.Equals(url.Host, StringComparison.OrdinalIgnoreCase))
+                    if (VoatSettings.Instance.RedirectToSiteDomain && !VoatSettings.Instance.SiteDomain.Equals(currentUri.Host, StringComparison.OrdinalIgnoreCase))
                     {
-                        context.Response.Redirect(String.Format("http{2}://{0}{1}", VoatSettings.Instance.SiteDomain, url.PathAndQuery, (VoatSettings.Instance.ForceHTTPS ? "s" : "")), true);
+                        context.Response.Redirect(String.Format("http{2}://{0}{1}", VoatSettings.Instance.SiteDomain, currentUri.PathAndQuery, (VoatSettings.Instance.ForceHTTPS ? "s" : "")), true);
                         result = true;
                     }
 
                     // force SSL for every request if enabled in Web.config
                     if (VoatSettings.Instance.ForceHTTPS && !request.IsHttps)
                     {
-                        context.Response.Redirect(String.Format("https://{0}{1}", url.Host, url));
+                        var sslUrl = String.Format("https://{0}/{1}", currentUri.Authority, currentUri.PathAndQuery.TrimStart('/'));
+                        context.Response.Redirect(sslUrl);
                         result = true;
                     }
                 }

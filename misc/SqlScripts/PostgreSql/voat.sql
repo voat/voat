@@ -158,12 +158,6 @@ CREATE TABLE "Featured"(
 	"EndDate" timestamp,
 	"CreatedBy" varchar(50) NOT NULL);
 
-CREATE TABLE "FeaturedSubverse"( 
-	"ID" int NOT NULL,
-	"Subverse" varchar(20) NOT NULL,
-	"CreatedBy" varchar(50) NOT NULL,
-	"CreationDate" timestamp NOT NULL);
-
 CREATE TABLE "Filter"( 
 	"ID" int NOT NULL,
 	"IsActive" boolean NOT NULL,
@@ -454,7 +448,6 @@ CREATE SEQUENCE "commentsavetracker_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH
 CREATE SEQUENCE "commentvotetracker_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "CommentVoteTracker"."ID";
 CREATE SEQUENCE "eventlog_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "EventLog"."ID";
 CREATE SEQUENCE "featured_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "Featured"."ID";
-CREATE SEQUENCE "featuredsubverse_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "FeaturedSubverse"."ID";
 CREATE SEQUENCE "filter_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "Filter"."ID";
 CREATE SEQUENCE "message_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "Message"."ID";
 CREATE SEQUENCE "moderatorinvitation_id_seq" INCREMENT BY 1 MINVALUE 1 START WITH 1 OWNED BY "ModeratorInvitation"."ID";
@@ -495,7 +488,6 @@ ALTER TABLE "CommentVoteTracker" ADD CONSTRAINT "PK_CommentVoteTracker" PRIMARY 
 ALTER TABLE "DefaultSubverse" ADD CONSTRAINT "PK_DefaultSubverse" PRIMARY KEY ("Subverse");
 ALTER TABLE "EventLog" ADD CONSTRAINT "PK_EventLog" PRIMARY KEY ("ID");
 ALTER TABLE "Featured" ADD CONSTRAINT "PK_Featured" PRIMARY KEY ("ID");
-ALTER TABLE "FeaturedSubverse" ADD CONSTRAINT "PK_FeaturedSubverse" PRIMARY KEY ("ID");
 ALTER TABLE "Filter" ADD CONSTRAINT "PK_Filter" PRIMARY KEY ("ID");
 ALTER TABLE "Message" ADD CONSTRAINT "PK_Message" PRIMARY KEY ("ID");
 ALTER TABLE "ModeratorInvitation" ADD CONSTRAINT "PK_ModeratorInvitation" PRIMARY KEY ("ID");
@@ -532,7 +524,6 @@ ALTER TABLE "CommentRemovalLog" ADD CONSTRAINT "FK_CommentRemovalLog_Comment" FO
 ALTER TABLE "CommentSaveTracker" ADD CONSTRAINT "FK_CommentSaveTracker_Comment" FOREIGN KEY ("CommentID") REFERENCES "Comment" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "CommentVoteTracker" ADD CONSTRAINT "FK_CommentVoteTracker_Comment" FOREIGN KEY ("CommentID") REFERENCES "Comment" ( "ID") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "DefaultSubverse" ADD CONSTRAINT "FK_DefaultSubverse_Subverse" FOREIGN KEY ("Subverse") REFERENCES "Subverse" ( "Name") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "FeaturedSubverse" ADD CONSTRAINT "FK_FeaturedSubverse_Subverse" FOREIGN KEY ("Subverse") REFERENCES "Subverse" ( "Name");
 ALTER TABLE "RuleReport" ADD CONSTRAINT "FK_RuleReport_RuleSet" FOREIGN KEY ("RuleSetID") REFERENCES "RuleSet" ( "ID");
 ALTER TABLE "StickiedSubmission" ADD CONSTRAINT "FK_StickiedSubmission_Submission" FOREIGN KEY ("SubmissionID") REFERENCES "Submission" ( "ID");
 ALTER TABLE "StickiedSubmission" ADD CONSTRAINT "FK_StickiedSubmission_Subverse" FOREIGN KEY ("Subverse") REFERENCES "Subverse" ( "Name") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -569,13 +560,12 @@ ALTER TABLE "Comment" ALTER COLUMN "ID" SET DEFAULT nextval('"comment_id_seq"');
 ALTER TABLE "Comment" ALTER COLUMN "IsAnonymized" SET DEFAULT false;
 ALTER TABLE "Comment" ALTER COLUMN "IsDeleted" SET DEFAULT false;
 ALTER TABLE "Comment" ALTER COLUMN "IsDistinguished" SET DEFAULT false;
-ALTER TABLE "Comment" ALTER COLUMN "UpCount" SET DEFAULT 1;
+ALTER TABLE "Comment" ALTER COLUMN "UpCount" SET DEFAULT 0;
 ALTER TABLE "CommentSaveTracker" ALTER COLUMN "ID" SET DEFAULT nextval('"commentsavetracker_id_seq"');
 ALTER TABLE "CommentVoteTracker" ALTER COLUMN "ID" SET DEFAULT nextval('"commentvotetracker_id_seq"');
 ALTER TABLE "CommentVoteTracker" ALTER COLUMN "VoteValue" SET DEFAULT 0;
 ALTER TABLE "EventLog" ALTER COLUMN "ID" SET DEFAULT nextval('"eventlog_id_seq"');
 ALTER TABLE "Featured" ALTER COLUMN "ID" SET DEFAULT nextval('"featured_id_seq"');
-ALTER TABLE "FeaturedSubverse" ALTER COLUMN "ID" SET DEFAULT nextval('"featuredsubverse_id_seq"');
 ALTER TABLE "Filter" ALTER COLUMN "ID" SET DEFAULT nextval('"filter_id_seq"');
 ALTER TABLE "Filter" ALTER COLUMN "IsActive" SET DEFAULT true;
 ALTER TABLE "Message" ALTER COLUMN "ID" SET DEFAULT nextval('"message_id_seq"');
@@ -657,7 +647,6 @@ select setval('"commentsavetracker_id_seq"',(select max("ID") from "CommentSaveT
 select setval('"commentvotetracker_id_seq"',(select max("ID") from "CommentVoteTracker")::bigint);
 select setval('"eventlog_id_seq"',(select max("ID") from "EventLog")::bigint);
 select setval('"featured_id_seq"',(select max("ID") from "Featured")::bigint);
-select setval('"featuredsubverse_id_seq"',(select max("ID") from "FeaturedSubverse")::bigint);
 select setval('"filter_id_seq"',(select max("ID") from "Filter")::bigint);
 select setval('"message_id_seq"',(select max("ID") from "Message")::bigint);
 select setval('"moderatorinvitation_id_seq"',(select max("ID") from "ModeratorInvitation")::bigint);
