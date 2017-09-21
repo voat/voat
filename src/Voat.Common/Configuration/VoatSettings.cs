@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -176,6 +177,7 @@ namespace Voat.Configuration
         //    new FileUploadLimit() { Type = FileType.Thumbnail, ByteLimit = 5000000, ExtensionTypes = new string[] { ".jpg", ".png", ".gif", ".jpeg" } },
         //    new FileUploadLimit() { Type = FileType.Avatar,    ByteLimit = 3000000, ExtensionTypes = new string[] { ".jpg", ".png", ".gif", ".jpeg" }  }
         //};
+        public Dictionary<string, LogLevel> LogLevels { get; set; } = new Dictionary<string, LogLevel>();
 
         #endregion AppSettings Accessors
 

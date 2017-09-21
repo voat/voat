@@ -18,11 +18,12 @@ namespace Voat.Configuration
         private static void ConfigureVoat(IConfigurationRoot config, bool reloading)
         {
 
+            VoatSettings.Load(config, "voat:settings", reloading);
+
             Caching.CacheConfigurationSettings.Load(config, "voat:cache", reloading);
             RulesEngine.RuleConfigurationSettings.Load(config, "voat:rules", reloading);
             Logging.LoggingConfigurationSettings.Load(config, "voat:logging", reloading);
             Data.DataConfigurationSettings.Load(config, "voat:data", reloading);
-            VoatSettings.Load(config, "voat:settings", reloading);
             IO.FileManagerConfigurationSettings.Load(config, "voat:fileManager", reloading);
             IO.Email.EmailConfigurationSettings.Load(config, "voat:emailSender", reloading);
 

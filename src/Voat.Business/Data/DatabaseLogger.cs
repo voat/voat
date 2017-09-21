@@ -24,9 +24,16 @@ namespace Voat.Data
             info.Category = _categoryName;
             EventLogger.Instance.Log(info);
         }
+        
     }
     public class VoatLoggerProvider : ILoggerProvider
     {
+        //private Func<string, LogLevel, bool> _filter;
+        //public VoatLoggerProvider(Func<string, LogLevel, bool> filter)
+        //{
+        //    _filter = filter;
+        //}
+
         public Microsoft.Extensions.Logging.ILogger CreateLogger(string categoryName)
         {
             return new VoatCategoryLogger(categoryName);

@@ -7,6 +7,9 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Voat.Data;
+using Voat.Utilities;
+using Voat.Common;
 
 namespace Voat.UI
 {
@@ -20,6 +23,9 @@ namespace Voat.UI
                .UseIISIntegration()
                .UseStartup<Startup>()
                //.UseApplicationInsights()
+               //.ConfigureLogging((context, logging) => {
+               //    logging.AddConfiguration(context.Configuration.GetSection("Logging"));
+               //})
                .Build();
 
             host.Run();

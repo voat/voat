@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
@@ -18,6 +19,7 @@ namespace Voat.Http
 
         public static ILogInformation GetLogInformation(this HttpContext context, string category, LogType logLevel, Exception exception = null)
         {
+            
             var logInfo = new LogInformation()
             {
                 ActivityID = null,

@@ -50,7 +50,7 @@ namespace Voat.Logging
             var enabled = (LogLevel != LogType.Off && logType != LogType.Off) && ((int)logType >= (int)LogLevel || (logType == LogType.All || LogLevel == LogType.All));
             return enabled;
         }
-
+        
         public virtual void Log(ILogInformation info)
         {
             Debug.WriteLine(info.ToString());
@@ -98,6 +98,31 @@ namespace Voat.Logging
             return IsEnabledFor(logType);
         }
 
+        void Microsoft.Extensions.Logging.ILogger.Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        {
+            
+            Log(new LogInformation() {
+                Data = new { State = state, Event = eventId } ,
+                Exception = exception,
+                Type = MapLogLevel(logLevel),
+                Origin = VoatSettings.Instance.Origin.ToString(),
+                Message = formatter(state, exception)
+            });
+        }
+
+        IDisposable Microsoft.Extensions.Logging.ILogger.BeginScope<TState>(TState state)
+        {
+            return new DummyScope();
+        }
+
+        private class DummyScope : IDisposable
+        {
+            public void Dispose()
+            {
+                
+            }
+        }
+
         private LogType MapLogLevel(Microsoft.Extensions.Logging.LogLevel logLevel)
         {
             var logType = LogType.All;
@@ -129,31 +154,6 @@ namespace Voat.Logging
 
             return logType;
         }
-
-        void Microsoft.Extensions.Logging.ILogger.Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-        {
-            Log(new LogInformation() {
-                Data = new { State = state, Event = eventId } ,
-                Exception = exception,
-                Type = MapLogLevel(logLevel),
-                Origin = VoatSettings.Instance.Origin.ToString(),
-                Message = formatter(state, exception)
-            });
-        }
-
-        IDisposable Microsoft.Extensions.Logging.ILogger.BeginScope<TState>(TState state)
-        {
-            return new DummyScope();
-        }
-
-        private class DummyScope : IDisposable
-        {
-            public void Dispose()
-            {
-                
-            }
-        }
-
         #endregion
     }
 }

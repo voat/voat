@@ -44,6 +44,7 @@ using Voat.Http.Middleware;
 using Voat.UI.Areas.Admin;
 using Voat.UI.Runtime;
 using Voat.UI.Utils;
+using Voat.Utilities;
 
 namespace Voat
 {
@@ -55,7 +56,7 @@ namespace Voat
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
+            
             if (env.IsDevelopment())
             {
                 // For more details on using the user secret store see https://go.microsoft.com/fwlink/?LinkID=532709
@@ -67,9 +68,10 @@ namespace Voat
             
             //Configure Voat Runtime 
             Configuration.ConfigureVoat();
+
         }
 
-        public IConfigurationRoot Configuration { get; }
+        public static IConfigurationRoot Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -119,11 +121,20 @@ namespace Voat
                 options.HeaderName = Utilities.CONSTANTS.REQUEST_VERIFICATION_HEADER_NAME;
                 options.FormFieldName = Utilities.CONSTANTS.REQUEST_VERIFICATION_HEADER_NAME;
             });
-
+            
             // Add application services.
             services.AddScoped<IViewRenderService, ViewRenderService>();
             //services.AddTransient<IEmailSender, AuthMessageSender>();
             //services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            services.AddLogging(loggingBuilder =>
+            {
+                //Can not figure out how to filter out native log statements (i.e. Microsoft.AspNetCore.Mvc...) from logging 
+                //using the default format json. So have to implement a custom filter.
+                //loggingBuilder.AddConfiguration(Configuration.GetSection("Logging"));
+                var filter = new LoggingFilter();
+                loggingBuilder.AddFilter(filter.Filter);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -132,7 +143,7 @@ namespace Voat
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
             loggerFactory.AddProvider(new VoatLoggerProvider());
-
+            
             ////Configure Voat Middleware
             app.UseVoatGlobalExceptionLogger();
 

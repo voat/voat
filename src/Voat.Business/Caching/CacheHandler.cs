@@ -46,7 +46,9 @@ namespace Voat.Caching
 
         public MonitoredMemoryCache(IOptions<MemoryCacheOptions> options) : base(options)
         {
-            _timer = new Timer(new TimerCallback(x => { this.Compact(0); }), this, options.Value.ExpirationScanFrequency, options.Value.ExpirationScanFrequency);
+            _timer = new Timer(new TimerCallback(x => {
+                this.Compact(0);
+            }), this, options.Value.ExpirationScanFrequency, options.Value.ExpirationScanFrequency);
         }
         protected override void Dispose(bool disposing)
         {
@@ -110,7 +112,7 @@ namespace Voat.Caching
         private bool _requiresExpirationRemoval = false;
         private bool _cacheEnabled = true;
         private bool _refetchEnabled = true;
-        private IMemoryCache _memoryCache;
+        private IMemoryCache _expirationTrackingCache;
 
         //holds meta data about the cache item such as the Func, expiration, recacheLimit, and current recaches
         //private ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>> _meta = new ConcurrentDictionary<string, Tuple<Func<object>, TimeSpan, int, int>>();
@@ -118,7 +120,7 @@ namespace Voat.Caching
 
         public CacheHandler(bool refetchEnabled = true)
         {
-            _refetchEnabled = true;
+            _refetchEnabled = refetchEnabled;
         }
 
         protected void Initialize()
@@ -229,6 +231,9 @@ namespace Voat.Caching
                 //Attempt removal of metaCache
                 RefetchEntry y;
                 _meta.TryRemove(cacheKey, out y);
+
+                //Remove Expiration Tracking
+                ExpirationTrackingCache.Remove(cacheKey);
             }
             finally
             {
@@ -314,6 +319,7 @@ namespace Voat.Caching
 
                 if (refreshLimit == 0 || refreshCount <= refreshLimit)
                 {
+                    meta.CurrentCount = refreshCount;
                     string msg = String.Format("Refetching cache ({0}) - #{1}", cacheKey, refreshCount);
                     EventLogger.Instance.Log(new LogInformation() { Type = LogType.Debug, Category = "Cache", Message = msg, Origin = Configuration.VoatSettings.Instance.Origin.ToString() });
 
@@ -467,27 +473,27 @@ namespace Voat.Caching
                 _refetchEnabled = value;
             }
         }
-        private IMemoryCache SystemMemoryCache
+        private IMemoryCache ExpirationTrackingCache
         {
             get
             {
                 //CORE_PORT: This is currently just roughed in to ensure it works, needs expirationscanfrequency value from config
-                if (_memoryCache == null)
+                if (_expirationTrackingCache == null)
                 {
                     lock (this)
                     {
-                        if (_memoryCache == null)
+                        if (_expirationTrackingCache == null)
                         {
                             var moptions = new MemoryCacheOptions();
                             moptions.ExpirationScanFrequency = TimeSpan.FromSeconds(5); // For unit testing only
                             var ioptions = Options.Create(moptions);
                             var memoryCache = new MonitoredMemoryCache(ioptions);
-                            _memoryCache = memoryCache;
+                            _expirationTrackingCache = memoryCache;
                         }
                     }
                 }
 
-                return _memoryCache;
+                return _expirationTrackingCache;
             }
         }
         #endregion
@@ -516,7 +522,7 @@ namespace Voat.Caching
         {
             if (expirationSpan > TimeSpan.Zero)
             {
-                var cache = SystemMemoryCache;
+                var cache = ExpirationTrackingCache;
                 var options = new MemoryCacheEntryOptions()
                 {
                     //AbsoluteExpiration = absoluteExpiration,
