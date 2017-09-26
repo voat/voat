@@ -60,8 +60,11 @@ namespace Voat.Http
         public static bool IsLocal(this HttpRequest req)
         {
             var connection = req.HttpContext.Connection;
-
-            if (connection.RemoteIpAddress.Equals(connection.LocalIpAddress))
+            if (connection.RemoteIpAddress == null && connection.LocalIpAddress == null)
+            {
+                return true; // This is a test host scenario
+            }
+            else if (connection.RemoteIpAddress.Equals(connection.LocalIpAddress))
             {
                 return true;
             }

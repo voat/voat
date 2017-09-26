@@ -90,9 +90,12 @@ namespace Voat
                 x.Password.RequireNonAlphanumeric = false;
                 x.Password.RequireUppercase = false;
                 x.Password.RequireLowercase = false;
+                
             }).AddEntityFrameworkStores<IdentityDataContext>()
+            .AddUserManager<VoatUserManager>()
             .AddDefaultTokenProviders();
-
+            
+           
             services.ConfigureApplicationCookie(options => {
                 if (!String.IsNullOrEmpty(VoatSettings.Instance.CookieDomain))
                 {
@@ -124,6 +127,8 @@ namespace Voat
             
             // Add application services.
             services.AddScoped<IViewRenderService, ViewRenderService>();
+            //services.AddScoped<VoatUserManager, VoatUserManager>();
+
             //services.AddTransient<IEmailSender, AuthMessageSender>();
             //services.AddTransient<ISmsSender, AuthMessageSender>();
 

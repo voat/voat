@@ -34,6 +34,7 @@ namespace Voat.Configuration
         private static JsonSerializerSettings _public = null;
         private static JsonSerializerSettings _data = null;
         private static JsonSerializerSettings _publicinput = null;
+        private static JsonSerializerSettings _api = null;
         /// <summary>
         /// Settings to serialize the input and output of standardized Json 
         /// </summary>
@@ -80,6 +81,19 @@ namespace Voat.Configuration
                         TypeNameHandling = TypeNameHandling.All,
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                     };
+                });
+                return settings;
+            }
+        }
+        public static JsonSerializerSettings APISerializationSettings
+        {
+            get
+            {
+                var settings = Voat.Common.Extensions.GetOrLoad(ref _api, () => {
+                    var s = new JsonSerializerSettings();
+                    s = ConfigureJsonSerializer(s);
+                    //s.Converters.Add(new JsonUnprintableCharConverter());
+                    return s;
                 });
                 return settings;
             }

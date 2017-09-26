@@ -22,6 +22,7 @@
 
 #endregion LICENSE
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -201,6 +202,16 @@ namespace Voat
             }
 
             return new Tuple<DateTime, DateTime>(start, end);
+        }
+
+        public static string ToJson(this object value, JsonSerializerSettings settings = null)
+        {
+            if (settings == null)
+            {
+                settings = new JsonSerializerSettings();
+            }
+
+            return JsonConvert.SerializeObject(value, settings);
         }
     }
 }

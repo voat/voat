@@ -145,6 +145,18 @@ namespace Voat.Domain.Models
             {
                 errors.Add(ValidationPathResult.Create(this, "A Vote is limited to 10 options", (m) => m.Options));
             }
+
+            //Ensure no duplicate titles
+            if (Options != null || Options.Count >= 2)
+            {
+                var grouped = Options.GroupBy(x => x.Title.TrimSafe().ToNormalized(Normalization.Lower)).Select(x => new { Key = x.Key, Count = x.Count() });
+                var duplicateTitle = grouped.FirstOrDefault(x => x.Count > 1);
+                if (duplicateTitle != null)
+                {
+                    errors.Add(ValidationPathResult.Create(this, "Option titles must be unique.", (m) => m.Options));
+                }
+            }
+
             return errors;
         }
     }

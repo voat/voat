@@ -12,6 +12,9 @@
     <Copyright>Voat, Inc.</Copyright>
     <RootNamespace>Voat</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1591,1572,1571,1573,1587,1570</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CoreCompat.System.Drawing.v2" Version="5.2.0-preview1-r131" />
     <PackageReference Include="Dapper" Version="1.50.2" />

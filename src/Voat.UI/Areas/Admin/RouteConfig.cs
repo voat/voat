@@ -7,6 +7,9 @@ using Voat.Utilities;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Voat.Models.ViewModels;
 using Voat.Common;
+using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Voat.UI.Areas.Admin
 {
@@ -14,18 +17,25 @@ namespace Voat.UI.Areas.Admin
     {
         public static void RegisterRoutes(IRouteBuilder routes)
         {
-            if (!VoatSettings.Instance.ManagementAreaName.IsEqual("Admin"))
+            RerouteDefaultArea(routes, "Admin", VoatSettings.Instance.AreaMaps, new { controller = "Spam", action = "Ban" });
+        }
+        private static void RerouteDefaultArea(IRouteBuilder routes, string areaName, IDictionary<string, string> areaMaps, object defaults = null)
+        {
+            var altName = areaName;
+
+            //If config has an areaMap for admin re-route here
+            if (areaMaps != null && areaMaps.Any() && areaMaps.Any(x => x.Key.IsEqual(areaName)))
             {
-                routes.MapRoute(
-                   name: "hideadmin",
-                   template: "Admin/{*url}",
-                   defaults: new { area = "", controller = "Error", action = "Type", type = ErrorType.Default }
-                   );
+                var keyPair = VoatSettings.Instance.AreaMaps.FirstOrDefault(x => x.Key.IsEqual(areaName));
+                altName = keyPair.Value;
             }
 
             routes.MapRoute(
-                name: "admin",
-                template: "{area}/{controller=Spam}/{action=Ban}");
+                name: areaName,
+                template: $"{{area:regex({altName})}}/{{controller}}/{{action}}", //Attn: Future People: Need to pull out these defaults. Hello past person, ok.
+                defaults: defaults == null ? new { } : defaults,
+                constraints: new { area = altName }
+            );
         }
     }
 }

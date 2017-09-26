@@ -49,7 +49,7 @@ namespace Voat.Controllers
     [Authorize]
     public class AccountController : BaseController
     {
-        private readonly UserManager<VoatIdentityUser> _userManager;
+        private readonly VoatUserManager _userManager;
         private readonly SignInManager<VoatIdentityUser> _signInManager;
         //private readonly IEmailSender _emailSender;
         //private readonly ISmsSender _smsSender;
@@ -57,7 +57,7 @@ namespace Voat.Controllers
         //private readonly string _externalCookieScheme;
 
         public AccountController(
-            UserManager<VoatIdentityUser> userManager,
+            VoatUserManager userManager,
             SignInManager<VoatIdentityUser> signInManager
             //IOptions<IdentityCookieOptions> identityCookieOptions
             //IEmailSender emailSender,
@@ -75,7 +75,7 @@ namespace Voat.Controllers
             UserManager = _userManager;
         }
        
-        public UserManager<VoatIdentityUser> UserManager { get; private set; }
+        public VoatUserManager UserManager { get; private set; }
 
         // GET: /Account/Login
         [AllowAnonymous]

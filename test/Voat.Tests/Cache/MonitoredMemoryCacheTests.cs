@@ -18,7 +18,7 @@ namespace Voat.Tests.Cache
             public DateTime CreationDate { get; } = DateTime.UtcNow;
 
         }
-        [TestMethod]
+        //[TestMethod]
         public async Task TestExcessiveRefresh()
         {
             //var memCache = new MemoryCacheHandler(true);

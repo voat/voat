@@ -59,12 +59,6 @@ namespace Voat.Domain.Query
                 _cacheHit = value;
             }
         }
-
-        /// <summary>
-        /// Implements a unique key. Override this method and provide a unique value.
-        /// </summary>
-        public abstract string CacheKey { get; }
-
         public virtual CachePolicy CachingPolicy
         {
             get
@@ -74,16 +68,16 @@ namespace Voat.Domain.Query
             protected set
             {
                 _cachePolicy = (value != null ? value : CachePolicy.None);
-            } 
-        }
-
-        protected virtual string CacheContainer
-        {
-            get { return this.GetType().Name; }
+            }
         }
 
         /// <summary>
-        /// Appends type information to CacheKey. This should not be overriden if possible.
+        /// Implements a unique key. Override this method and provide a unique value.
+        /// </summary>
+        public abstract string CacheKey { get; }
+
+        /// <summary>
+        /// Appends type information to CacheKey. Override this to provide an exact cache key.
         /// </summary>
         /// <returns></returns>
         protected virtual string FullCacheKey
@@ -97,6 +91,12 @@ namespace Voat.Domain.Query
                 return full;
             }
         }
+
+        protected virtual string CacheContainer
+        {
+            get { return this.GetType().Name; }
+        }
+
         /// <summary>
         /// A plug for unit testing, this should never be set directly by calling code unless it is a special snowflake
         /// </summary>

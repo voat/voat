@@ -15,11 +15,15 @@ namespace Voat.UI.Runtime
             //{2} is area, {1} is controller,{0} is the action
             //"/Views/{2}/{1}/{0}.cshtml" 
             string[] locations = new string[] { };
-            if (context.AreaName.IsEqual(VoatSettings.Instance.ManagementAreaName))
-            {
-                locations = new string[] { "/Areas/Admin/Views/{1}/{0}.cshtml" };
-            }
 
+            if (context.AreaName != null)
+            {
+                if (VoatSettings.Instance.AreaMaps.Values.Any(x => x.IsEqual(context.AreaName)))
+                {
+                    var keyValue = VoatSettings.Instance.AreaMaps.FirstOrDefault(x => x.Value.IsEqual(context.AreaName));
+                    locations = new string[] { $"/Areas/{keyValue.Key}/Views/{{1}}/{{0}}.cshtml" };
+                }
+            }
             return locations.Union(viewLocations); //Add mvc default locations after ours
         }
 

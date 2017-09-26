@@ -40,12 +40,13 @@ namespace Voat.Domain.Query
         public QueryBannedUsers(CachePolicy policy) : base(policy)
         {
         }
+        protected override string FullCacheKey => CachingKey.BannedUsers();
 
         public override string CacheKey
         {
             get
             {
-                return "Banned:Users";
+                return CachingKey.BannedUsers();
             }
         }
 

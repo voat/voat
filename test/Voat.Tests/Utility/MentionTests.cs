@@ -141,7 +141,30 @@ namespace Voat.Tests.Utils
                 Assert.AreEqual(1, count, "Expected to receive shill mention! THIS IS CENSORSHIP!");
             }
         }
+        [TestMethod]
+        [TestCategory("Mention")]
+        public async Task MentionUser_Comment_Test_InvalidUser()
+        {
+            string user1 = "UnitTestUser07";
+            var users = new[] { "UnitTestUser10", "NotGunnaWorkHere", "UnitTestUser11" };
 
+            var user = TestHelper.SetPrincipal(user1);
+            string mentionTwiceContent = $"PSA: {String.Join(", ", users.Select(x => $"@{x}"))} are shills. I saw them getting ready for work and their socks were standard shill issue.";
+            var cmd = new CreateCommentCommand(submission.ID, null, mentionTwiceContent).SetUserContext(user);
+            var result = await cmd.Execute();
+            VoatAssert.IsValid(result);
+
+            using (var db = new VoatDataContext())
+            {
+                var userName = users.First();
+                var count = db.Message.Where(x => x.Sender == user1 && x.Recipient == userName && x.CommentID == result.Response.ID).Count();
+                Assert.AreEqual(1, count, $"Expected to receive shill mention for {userName}! THIS IS CENSORSHIP!");
+
+                userName = users.Last();
+                count = db.Message.Where(x => x.Sender == user1 && x.Recipient == userName && x.CommentID == result.Response.ID).Count();
+                Assert.AreEqual(1, count, $"Expected to receive shill mention for {userName}! THIS IS CENSORSHIP!");
+            }
+        }
 
         [TestMethod]
         [TestCategory("Mention")]

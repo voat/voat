@@ -19,7 +19,6 @@ namespace Voat.Imaging
             {
                 using (var bitmapImage = new Bitmap(image))
                 {
-                   
                     var destinationSize = new Size(maximumSize.Width, maximumSize.Height);
                     //Sizing
                     Size scaledSize = scale ? Scale(bitmapImage.Size, maximumSize) : maximumSize;

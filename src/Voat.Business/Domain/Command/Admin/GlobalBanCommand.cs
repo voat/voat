@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Voat.Caching;
 using Voat.Common;
 using Voat.Data;
 using Voat.Domain.Models;
@@ -88,6 +89,12 @@ namespace Voat.Domain.Command
 
                     }
                     break;
+                //case CommandStage.OnExecuted:
+                //    if (!User.IsInAnyRole(new[] { UserRole.GlobalAdmin, UserRole.Admin, UserRole.DelegateAdmin, UserRole.GlobalBans }))
+                //    {
+                //        commandResponse = CommandResponse.FromStatus(Status.Denied, "Permissions not granted");
+                //    }
+                //    break;
             }
 
             return Task.FromResult(commandResponse);
@@ -104,7 +111,19 @@ namespace Voat.Domain.Command
 
         protected override void UpdateCache(CommandResponse result)
         {
-            //throw new NotImplementedException();
+            if (result.Success)
+            {
+                var hasDomain = _banList.Any(x => x.Type == BanType.Domain);
+                var hasUser = _banList.Any(x => x.Type == BanType.User);
+                if (hasDomain)
+                {
+                    CacheHandler.Instance.Remove(CachingKey.BannedDomains());
+                }
+                if (hasUser)
+                {
+                    CacheHandler.Instance.Remove(CachingKey.BannedUsers());
+                }
+            }
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Voat.Tests.Infrastructure
     public class TestDataInitializer 
     {
 
-        public void InitializeDatabase(VoatDataContext context, bool seed = true)
+        public virtual void InitializeDatabase(VoatDataContext context, bool seed = true)
         {
             CreateSchema(context);
             if (seed)
@@ -51,7 +51,7 @@ namespace Voat.Tests.Infrastructure
             }
         }
 
-        protected void CreateSchema(VoatDataContext context)
+        protected virtual void CreateSchema(VoatDataContext context)
         {
             //Parse and run sql scripts
             var connection = context.Connection;
@@ -151,7 +151,7 @@ namespace Voat.Tests.Infrastructure
         }
 
 
-        protected void Seed(VoatDataContext context)
+        protected virtual void Seed(VoatDataContext context)
         {
             //*******************************************************************************************************
             //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -633,8 +633,10 @@ namespace Voat.Tests.Infrastructure
                 VoatAssert.IsValid(r);
             }
             CacheHandler.Instance.Remove(CachingKey.UserInformation(USERNAMES.User500CCP));
-            
-            #endregion  
+
+            #endregion
+
+           
             //******************************************************************************************************************
             // ADD YOUR STUFF BELOW - DO NOT EDIT THE ABOVE CODE - NOT EVEN ONCE - I'LL SO FIGHT YOU IF YOU DO AND I FIGHT DIRTY
             //******************************************************************************************************************

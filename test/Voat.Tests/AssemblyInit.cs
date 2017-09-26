@@ -39,53 +39,60 @@ using Voat.Tests;
 using Voat.Tests.Infrastructure;
 using Voat.Tests.Repository;
 
-
-[NUnit.Framework.SetUpFixture]
-[TestClass]
-public class UnitTestSetup
+namespace Voat.Tests
 {
 
-
-
-    [NUnit.Framework.OneTimeSetUp()]
-    [AssemblyInitialize()]
-    public static void SetUp(TestContext context)
+    [NUnit.Framework.SetUpFixture]
+    [TestClass]
+    public class UnitTestSetup
     {
-        //Configure App
-        var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .Build();
-        config.ConfigureVoat();
-
-        FilePather.Instance = new FilePather(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
-
-
-        if (config["voat:test:preventDatabaseDrop"] != "True")
+        [NUnit.Framework.OneTimeSetUp()]
+        [AssemblyInitialize()]
+        public static void SetUp(TestContext context)
         {
+            SetUp(context, new TestDataInitializer(), true);
+        }
+
+        public static void SetUp(TestContext context, TestDataInitializer intializer, bool configure = true)
+        {
+            //bool preventDrop = false;
+
+            if (configure)
+            {
+                //Configure App
+                var config = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .Build();
+                config.ConfigureVoat();
+                //config["voat:test:preventDatabaseDrop"] != "True"
+
+            }
+
+            FilePather.Instance = new FilePather(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+
             //Drop and reseed database
             using (var db = new VoatDataContext())
             {
-                var init = new TestDataInitializer();
-                init.InitializeDatabase(db); //This attempts to create and seed unit test db
+                intializer.InitializeDatabase(db); //This attempts to create and seed unit test db
             }
+
+            //This causes the voat rules engine to init using config section for load
+            var rulesEngine = VoatRulesEngine.Instance;
+
+            //purge redis for unit tests if enabled
+            var defaultHandler = CacheConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Enabled && x.Type.ToLower().Contains("redis"));
+            if (defaultHandler != null)
+            {
+                var instance = defaultHandler.Construct<ICacheHandler>();
+                instance.Purge();
+            }
+
         }
 
-        //This causes the voat rules engine to init using config section for load
-        var rulesEngine = VoatRulesEngine.Instance;
-
-        //purge redis for unit tests if enabled
-        var defaultHandler = CacheConfigurationSettings.Instance.Handlers.FirstOrDefault(x => x.Enabled && x.Type.ToLower().Contains("redis"));
-        if (defaultHandler != null)
+        [NUnit.Framework.OneTimeTearDown()]
+        public void TearDown()
         {
-            var instance = defaultHandler.Construct<ICacheHandler>();
-            instance.Purge();
+
         }
-
-    }
-
-    [NUnit.Framework.OneTimeTearDown()]
-    public void TearDown()
-    {
-
     }
 }

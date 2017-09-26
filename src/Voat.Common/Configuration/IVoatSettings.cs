@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using Voat.Common.Models;
 
 namespace Voat.Common.Configuration
@@ -60,10 +61,13 @@ namespace Voat.Common.Configuration
         string SiteSlogan { get; }
         string SiteUserName { get; }
         int SubverseUpdateTimeLockInHours { get; }
-        string ManagementAreaName { get; set; }
-
+        //string ManagementAreaName { get; set; }
+        ApiInfo ApiInfo { get; set; } 
         IList<FileUploadLimit> FileUploadLimits { get; set; }
 
+        IDictionary<string, LogLevel> LogLevels { get; set; }
+        IDictionary<string, string> AreaMaps { get; set; }
+
     }
-   
+
 }

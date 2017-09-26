@@ -44,14 +44,14 @@ namespace Voat.Data.Models
         [StringLength(50)]
         public string LastLoginFromIp { get; set; }
 
-        //For WebApi OAuth2
-        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<VoatIdentityUser> manager, string authenticationType)
-        {
-            //CORE_PORT: No extension
-            throw new NotImplementedException("Core Port Build");
-            //var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
-            //return userIdentity;
-        }
+        ////For WebApi OAuth2
+        //public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<VoatIdentityUser> manager, string authenticationType)
+        //{
+        //    //CORE_PORT: No extension
+        //    throw new NotImplementedException("Core Port Build");
+        //    //var userIdentity = await manager.CreateIdentityAsync(this, authenticationType);
+        //    //return userIdentity;
+        //}
     }
 
     public class IdentityDataContext : IdentityDbContext<VoatIdentityUser>

@@ -32,8 +32,8 @@ namespace Voat
     //This class is a CORE PORT Shim 
     public class VoatUserManager : UserManager<VoatIdentityUser>
     {
-        private VoatUserManager(
-            UserStore<VoatIdentityUser, IdentityRole<string>, IdentityDataContext, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityUserToken<string>, IdentityRoleClaim<string>> store, 
+        public VoatUserManager(
+            UserStore<VoatIdentityUser, IdentityRole, IdentityDataContext, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityUserToken<string>, IdentityRoleClaim<string>> store, 
             IOptions<IdentityOptions> optionsAccessor, 
             IPasswordHasher<VoatIdentityUser> passwordHasher, 
             IEnumerable<IUserValidator<VoatIdentityUser>> userValidators, 
@@ -47,26 +47,22 @@ namespace Voat
         {
 
         }
-
-        public static VoatUserManager Create()
-        {
-
-            var options = new IdentityOptions();
-            var ioptions = Microsoft.Extensions.Options.Options.Create(options);
-
-            var mgr = new VoatUserManager(
-                new UserStore<VoatIdentityUser, IdentityRole<string>, IdentityDataContext, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityUserToken<string>, IdentityRoleClaim<string>>(new IdentityDataContext(), new IdentityErrorDescriber()),
-                ioptions,
-                new PasswordHasher<VoatIdentityUser>(),
+        public VoatUserManager() : this(new UserStore<VoatIdentityUser, IdentityRole, IdentityDataContext, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityUserToken<string>, IdentityRoleClaim<string>>(new IdentityDataContext(), new IdentityErrorDescriber()),
+                Microsoft.Extensions.Options.Options.Create(new IdentityOptions()),
+                //CORE_PORT: Need to tell this to use compatible v2 hashing until API is converted to Core then we can use v3. Or not. Listen, this is a decision we can make together!
+                new PasswordHasher<VoatIdentityUser>(Microsoft.Extensions.Options.Options.Create(new PasswordHasherOptions() { CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV2 })),
                 new[] { new UserValidator<VoatIdentityUser>() },
                 new[] { new VoatPasswordValidator() },
                 new UpperInvariantLookupNormalizer(),
                 new IdentityErrorDescriber(),
                 null,
-                new Logger<UserManager<VoatIdentityUser>>(new LoggerFactory()));
+                new Logger<UserManager<VoatIdentityUser>>(new LoggerFactory()))
+        { 
 
-            return mgr;
-
+        }
+        public static VoatUserManager Create()
+        {
+            return new VoatUserManager();
         }
 
         public IdentityResult Create(VoatIdentityUser user, string password)

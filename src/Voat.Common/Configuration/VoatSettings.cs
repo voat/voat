@@ -152,10 +152,10 @@ namespace Voat.Configuration
         public bool AllowUnicodeInTitles { get; set; } = false;
         public int MinimumTitleLength { get; set; } = 10;
         public int MaximumTitleLength { get; set; } = 200;
-        
-        public string ApiEndPoint { get; set; } = "";
-        public string ApiPublickKey { get; set; } = "";
-        public string ApiPrivateKey { get; set; } = "";
+        public ApiInfo ApiInfo { get; set; } = new ApiInfo();
+        //public string ApiEndPoint { get; set; } = "";
+        //public string ApiPublickKey { get; set; } = "";
+        //public string ApiPrivateKey { get; set; } = "";
 
         public string[] ReservedSubverseNames { get; set; } = new string[] { };
         public string[] ReservedUserNames { get; set; } = new string[] { };
@@ -170,15 +170,11 @@ namespace Voat.Configuration
 
         public bool EnableVotes { get; set; } = false;
 
-        public string ManagementAreaName { get; set; } = "Admin";
-
         public IList<FileUploadLimit> FileUploadLimits { get; set; } = new List<FileUploadLimit>();
-        //{
-        //    new FileUploadLimit() { Type = FileType.Thumbnail, ByteLimit = 5000000, ExtensionTypes = new string[] { ".jpg", ".png", ".gif", ".jpeg" } },
-        //    new FileUploadLimit() { Type = FileType.Avatar,    ByteLimit = 3000000, ExtensionTypes = new string[] { ".jpg", ".png", ".gif", ".jpeg" }  }
-        //};
-        public Dictionary<string, LogLevel> LogLevels { get; set; } = new Dictionary<string, LogLevel>();
 
+        public IDictionary<string, LogLevel> LogLevels { get; set; } = new Dictionary<string, LogLevel>();
+
+        public IDictionary<string, string> AreaMaps { get; set; } = new Dictionary<string, string>();
         #endregion AppSettings Accessors
 
     }
