@@ -33,14 +33,14 @@ namespace Voat.Models.ViewModels
 {
     public enum ErrorType
     {
+        Default,
         SubverseDisabled,
         SubvereExists,
         Unauthorized,
         TheOthers,
         SubverseNotFound,
         NotFound,
-        ThrowException,
-        Default
+        ThrowException
     }
     public class ErrorViewModel
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Caching;
 using Voat.Data;
 using Voat.Domain.Models;
 
@@ -22,7 +23,7 @@ namespace Voat.Domain.Command
                 return response;
             }
         }
-        protected override Task<CommandResponse<Vote>> ExecuteStage(CommandStage stage)
+        protected override async Task<CommandResponse<Vote>> ExecuteStage(CommandStage stage, CommandResponse<Vote> previous)
         {
             switch (stage)
             {
@@ -30,13 +31,13 @@ namespace Voat.Domain.Command
                     //perform validationn return non-success if not success
                     break;
             }
-            return base.ExecuteStage(stage);
+            return await base.ExecuteStage(stage, previous);
         }
         protected override void UpdateCache(CommandResponse<Vote> result)
         {
             if (result.Success)
             {
-                //Clear Cache
+                CacheHandler.Instance.Remove(CachingKey.Vote(result.Response.ID));
             }
         }
     }

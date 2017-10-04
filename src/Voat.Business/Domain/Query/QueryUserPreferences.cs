@@ -57,7 +57,7 @@ namespace Voat.Domain.Query
         {
             get
             {
-                return (String.IsNullOrEmpty(_userToRetrieve) ? "_default" : _userToRetrieve);
+                return UserNameToUse;
             }
         }
 
@@ -69,12 +69,20 @@ namespace Voat.Domain.Query
             }
         }
 
+        private string UserNameToUse
+        {
+            get
+            {
+                return String.IsNullOrEmpty(_userToRetrieve) ? String.IsNullOrEmpty(UserName) ? "_default" : UserName : _userToRetrieve;
+            }
+        }
+
         protected override async Task<Domain.Models.UserPreference> GetData()
         {
             UserPreference pref = null;
             using (var db = new Repository(User))
             {
-                var nameToUse = String.IsNullOrEmpty(_userToRetrieve) ? UserName : _userToRetrieve;
+                var nameToUse = UserNameToUse;
                 pref = await db.GetUserPreferences(nameToUse);
             }
             return pref.Map();

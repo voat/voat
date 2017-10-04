@@ -218,7 +218,7 @@ namespace Voat.Data
         {
             using (var db = new VoatDataContext())
             {
-                var set = db.SubverseSet.FirstOrDefault(x => x.Name.Equals(setInfo.Name, StringComparison.OrdinalIgnoreCase) && x.UserName == setInfo.UserName);
+                var set = db.SubverseSet.FirstOrDefault(x => x.Name.ToLower() == setInfo.Name.ToLower() && x.UserName == setInfo.UserName);
                 if (set == null)
                 {
                     setInfo.CreationDate = CurrentDate;
@@ -316,7 +316,7 @@ namespace Voat.Data
                 //HACK: Need to clear this entry out of cache if name changes and check name
                 if (!existingSet.Name.IsEqual(set.Name))
                 {
-                    if (_db.SubverseSet.Any(x => x.Name.Equals(set.Name, StringComparison.OrdinalIgnoreCase) && x.UserName.Equals(UserName, StringComparison.OrdinalIgnoreCase)))
+                    if (_db.SubverseSet.Any(x => x.Name.ToLower() == set.Name.ToLower() && x.UserName.ToLower() == UserName.ToLower()))
                     {
                         return CommandResponse.FromStatus<Set>(null, Status.Denied, "A set with this name already exists");
                     }

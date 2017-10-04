@@ -346,13 +346,13 @@ namespace Voat.Tests.CommandTests
                 {
                     case Domain.Models.DeleteOption.Anonymize:
 
-                        count = db.Comment.Count(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase) && !x.IsAnonymized);
+                        count = db.Comment.Count(x => x.UserName.ToLower() == options.UserName && !x.IsAnonymized);
                         Assert.AreEqual(0, count, $"Comment {options.Comments.ToString()} setting found violations");
 
                         break;
                     case Domain.Models.DeleteOption.Delete:
 
-                        count = db.Comment.Count(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase) && !x.IsDeleted);
+                        count = db.Comment.Count(x => x.UserName.ToLower() == options.UserName.ToLower() && !x.IsDeleted);
                         Assert.AreEqual(0, count, $"Comment {options.Comments.ToString()} setting found violations");
                         break;
                 }
@@ -363,13 +363,13 @@ namespace Voat.Tests.CommandTests
                     {
                         case Domain.Models.DeleteOption.Anonymize:
 
-                            count = db.Submission.Count(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase) && !x.IsAnonymized && x.Type == (int)submissionType);
+                            count = db.Submission.Count(x => x.UserName.ToLower() == options.UserName.ToLower() && !x.IsAnonymized && x.Type == (int)submissionType);
                             Assert.AreEqual(0, count, $"{submissionType.ToString()} Submission {deleteSetting.ToString()} setting found violations");
 
                             break;
                         case Domain.Models.DeleteOption.Delete:
 
-                            count = db.Submission.Count(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase) && !x.IsDeleted && x.Type == (int)submissionType);
+                            count = db.Submission.Count(x => x.UserName.ToLower() == options.UserName.ToLower() && !x.IsDeleted && x.Type == (int)submissionType);
                             Assert.AreEqual(0, count, $"{submissionType.ToString()} Submission {deleteSetting.ToString()} setting found violations");
                             break;
                     }
@@ -409,7 +409,7 @@ namespace Voat.Tests.CommandTests
                 Assert.AreEqual(1, db.UserBadge.Count(x => x.UserName == options.UserName && x.BadgeID == badgeToCheck), "Can not find delete badge");
 
                 //Verify Bio and Avatar cleared
-                var prefs = db.UserPreference.Where(x => x.UserName.Equals(options.UserName, StringComparison.OrdinalIgnoreCase)).ToList();
+                var prefs = db.UserPreference.Where(x => x.UserName.ToLower() == options.UserName.ToLower()).ToList();
                 foreach (var pref in prefs)
                 {
                     Assert.AreEqual(null, pref.Avatar, "Avatar not cleared");

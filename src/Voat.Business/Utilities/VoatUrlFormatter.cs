@@ -174,5 +174,17 @@ namespace Voat.Utilities
             }
             return "#";
         }
+
+        public static string VotePagePath(string subverse, int id, PathOptions options = null)
+        {
+            //these are all default relative I believe
+            options = options == null ? new PathOptions(false, false) : options;
+
+            //long
+            //return $"/v/{subverse}/comments/{submissionID.ToString()}{commentPath}";
+            //short
+            return BuildUrlPath(null, options, "v", subverse, "vote", id.ToString());
+            //return $"/v/{subverse}/{submissionID.ToString()}{commentPath}";
+        }
     }
 }

@@ -1,0 +1,161 @@
+﻿@*
+
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@model Voat.Data.Models.Subverse
+
+@using Voat.Models.ViewModels;
+
+@{
+    string subverseAge = Age.ToRelative(Model.CreationDate);
+    string subverseOwner = "YouCanClaimThisSub";
+
+    if (!String.IsNullOrEmpty(Model.CreatedBy))
+    {
+        subverseOwner = Model.CreatedBy;
+    }
+    var userData = Voat.Domain.UserData.GetContextUserData(Context);
+    //TODO: Pull this in throug the View Model
+    var submission = (Voat.Domain.Models.Submission)ViewBag.Submission;
+
+}
+
+<div class="side">
+    <p>THIS IS VOTE SIDEBAR</p>
+    @Html.Partial("_SearchBox", new SearchViewModel() { Sub = Model.Name }, ViewData)
+    @if (submission != null)
+    {
+        @Html.Partial("_SidebarSubmissionInfo.cshtml", submission)
+    }
+
+    <div class="spacer">
+        <a href="/v/@Model.Name/submit?linkpost=true" class="btn-whoaverse btn-block contribute submit-link">
+            Share a link
+        </a>
+    </div>
+    <div class="spacer">
+        <a href="/v/@Model.Name/submit" class="btn-whoaverse btn-block contribute submit-text">
+            Discuss
+        </a>
+    </div>
+    @if (VoatSettings.Instance.EnableVotes || User.IsInAnyRole(new[] { Voat.Domain.Models.UserRole.GlobalAdmin, Voat.Domain.Models.UserRole.Admin, Voat.Domain.Models.UserRole.DelegateAdmin }))
+    {
+        <div class="spacer">
+            <a href="/v/@Model.Name/vote/create" class="btn-whoaverse btn-block contribute submit-text">
+                Create Vote
+            </a>
+        </div>
+    }
+    <div class="spacer spacerbig">
+        <div class="titlebox">
+
+            @Html.Partial("~/Views/Shared/Components/Sidebar/_SidebarModToolbox.cshtml")
+
+            <h1 class="hover whoaversename">
+                <a href="/v/@Model.Name" class="hover">@Model.Name</a>
+                @*
+                    Rss is deaded this isn't 1999
+                    <a href="/rss/@Model.Name"><img src="~/Graphics/feed-icon-14x14.png" alt="RSS feed for this subverse" /></a>
+                *@
+            </h1>
+
+            @Html.Partial("~/Views/Shared/Sidebars/Buttons/_SubscribeButtons.cshtml", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Subverse, Model.Name), new ViewDataDictionary(ViewData) { { "UserData", userData } })
+
+            <span class="subscribers">
+                <span id="subscriberCount" class="number">@Model.SubscriberCount</span>
+                <span class="word">subscribers</span>
+            </span>
+            <p class="users-online fuzzed" title="number of users viewing this subverse in the past 15 minutes">
+                <span class="number">~@ViewBag.OnlineUsers</span>
+                <span class="word">user(s) here now</span>
+            </p>
+            @if (User.Identity.IsAuthenticated && ModeratorPermission.IsModerator(User, Model.Name))
+            {
+                <div class="leavemoderator">
+                    you are a moderator of this subverse. (<a href="/v/@Model.Name/about/moderators/resign">resign</a>)
+                </div>
+            }
+            <form action="#" class="usertext" onsubmit="return post_form(this, 'editusertext')" id="form-xxxxx">
+                <input name="submission-id" value="xxxx" type="hidden">
+                <div class="usertext-body may-blank-within">
+                    <div class="md">
+                        <p>
+                            @Html.Raw(@Formatting.FormatMessage(@Model.SideBar))
+                        </p>
+                    </div>
+                </div>
+            </form>
+            <div class="bottom">
+                created by <a href="/user/@subverseOwner" class="author may-blank">@subverseOwner</a>
+                <span class="userattrs"></span>
+                <span class="age">@(Model.ExcludeSitewideBans ? "*" : "") a community for <time title="@Model.CreationDate" datetime="@Model.CreationDate">@subverseAge</time></span>
+                @if (Model.MinCCPForDownvote > 0)
+                {
+                    <p>Minimum CCP required to downvote in this sub: @Model.MinCCPForDownvote</p>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <p>Your CCP for this sub: @userData.ContributionPointsForSubverse(Model.Name)</p>
+                    }
+                }
+                @if (Model.IsAnonymized.HasValue)
+                {
+                    if (Model.IsAnonymized.Value)
+                    {
+                        <p>This subverse is anonymized: all usernames are hidden.</p>
+                    }
+                }
+                else
+                {
+                    <p>This subverse allows anonymized submissions.</p>
+                }
+
+                <div class="sub-attributes">
+                    <p>
+                        NSFW: @Model.IsAdult.ToYesNo()
+                        <br />
+                        Authorized: @Model.IsAuthorizedOnly.ToYesNo()
+                        <br />
+                        Anon: @Model.IsAnonymized.ToYesNo("Both")
+                        <br />
+                        Private: @Model.IsPrivate.ToYesNo()
+                    </p>
+                </div>
+            </div>
+            <div class="clear">
+            </div>
+        </div>
+    </div>
+    <div class="spacer">
+        <div class="sidecontentbox ">
+            @await Component.InvokeAsync("SidebarAd", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Subverse, Model.Name))
+        </div>
+    </div>
+    <div class="spacer">
+        <div class="sidecontentbox ">
+            <a class="helplink message-moderators-temporary-class" title="Message the Moderators" href="/messages/compose?recipient=v/@Model.Name">message the moderators</a>
+            <div class="title">
+                <h1 class="alert-h1">MODERATORS</h1>
+            </div>
+            <ul class="content">
+                @await Component.InvokeAsync("SubverseModeratorList", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Subverse, Model.Name))
+            </ul>
+        </div>
+    </div>
+    @Html.Partial("~/Views/ModLog/_ModLogSidebarLinks.cshtml", Model.Name)
+</div>

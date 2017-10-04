@@ -14,6 +14,7 @@ namespace Voat.Domain.Query
         {
             _id = id;
         }
+        protected override string FullCacheKey => Caching.CachingKey.Vote(_id);
         public override string CacheKey => Caching.CachingKey.Vote(_id);
 
         protected override async Task<Vote> GetData()

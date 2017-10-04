@@ -1,0 +1,15 @@
+﻿@model Voat.Domain.Models.Vote
+
+<ul class="flat-list buttons">
+    @if (User.Identity.IsAuthenticated)
+    {
+        @if (Model.CreatedBy == User.Identity.Name 
+            //&& Model.StartDate < DateTime.UtcNow
+            )
+        {
+            <li>
+                <a href="/v/@Model.Subverse/vote/edit/@Model.ID">edit</a>
+            </li>
+        }
+    }
+</ul>

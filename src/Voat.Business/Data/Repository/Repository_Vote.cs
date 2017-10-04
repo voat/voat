@@ -10,15 +10,53 @@ using Voat.Data.Models;
 using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
+using Voat.Voting.Models;
 
 namespace Voat.Data
 {
     public partial class Repository
     {
-        public async Task<CommandResponse> RecordUserVote(int voteID, int optionID)
+        public async Task<CommandResponse<VoteTracker>> RecordUserVote(int voteID, int optionID, bool restrictionsPassed)
         {
-            throw new NotImplementedException();
+            DemandAuthentication();
+
+            //TODO: Fuzzy Trap, ensure this option belongs to the vote
+
+            var response = new CommandResponse<VoteTracker>();
+            var userName = User.Identity.Name;
+            bool saveChanges = false;
+
+            var voteRecord = await _db.VoteTracker.Where(x => x.VoteID == voteID && x.VoteOptionID == optionID && x.UserName == userName).FirstOrDefaultAsync();
+
+            if (voteRecord == null)
+            {
+                voteRecord = new VoteTracker() {
+                    VoteID = voteID,
+                    VoteOptionID = optionID,
+                    RestrictionsPassed = restrictionsPassed,
+                    CreationDate = CurrentDate,
+                    UserName = User.Identity.Name
+                };
+                _db.VoteTracker.Add(voteRecord);
+                saveChanges = true;
+            }
+            else if (voteRecord.VoteOptionID != optionID)
+            {
+                voteRecord.VoteOptionID = optionID;
+                saveChanges = true;
+            }
+
+            if (saveChanges)
+            {
+                await _db.SaveChangesAsync();
+            }
+
+            response.Response = voteRecord;
+            response.Status = Status.Success;
+
+            return response;
         }
+
         public async Task<CommandResponse<Domain.Models.Vote>> SaveVote(Domain.Models.Vote vote)
         {
 
@@ -68,8 +106,9 @@ namespace Voat.Data
                 existingDataModel.Title = newDataModel.Title;
                 existingDataModel.Content = newDataModel.Content;
                 existingDataModel.FormattedContent = newDataModel.FormattedContent;
-                
-                newDataModel.VoteOptions.ForEachIndex((option, index) => {
+
+                newDataModel.VoteOptions.ForEachIndex((option, index) =>
+                {
 
                     //TODO: Ensure ID belongs to proper vote (aka fuzzy will exploit this)
                     if (option.ID > 0)
@@ -81,7 +120,8 @@ namespace Voat.Data
                         existingOption.FormattedContent = option.FormattedContent;
                         existingOption.SortOrder = index;
 
-                        option.VoteOutcomes.ForEachIndex((outcome, oIndex) => {
+                        option.VoteOutcomes.ForEachIndex((outcome, oIndex) =>
+                        {
 
                             if (outcome.ID > 0)
                             {
@@ -111,7 +151,8 @@ namespace Voat.Data
                         newOption.SortOrder = index;
                         existingDataModel.VoteOptions.Add(newOption);
 
-                        option.VoteOutcomes.ForEachIndex((outcome, oIndex) => {
+                        option.VoteOutcomes.ForEachIndex((outcome, oIndex) =>
+                        {
                             var newOutcome = new VoteOutcome();
                             newOutcome.Type = outcome.Type;
                             newOutcome.Data = outcome.Data;
@@ -176,7 +217,13 @@ namespace Voat.Data
               .Include(x => x.VoteOptions).ThenInclude(o => o.VoteOutcomes)
               .Include(x => x.VoteRestrictions).FirstOrDefaultAsync();
             return dataModel;
-
+        }
+        public async Task<IEnumerable<Data.Models.Vote>> GetVoteDataModel(int[] ids)
+        {
+            var dataModel = await _db.Vote.Where(x => ids.Contains(x.ID))
+              .Include(x => x.VoteOptions).ThenInclude(o => o.VoteOutcomes)
+              .Include(x => x.VoteRestrictions).ToListAsync();
+            return dataModel;
         }
         public async Task<Domain.Models.Vote> GetVote(int id)
         {
@@ -186,6 +233,104 @@ namespace Voat.Data
             var domainModel = VoteDomainMaps.Map(dataModel);
 
             return domainModel;
+        }
+
+        public async Task<IEnumerable<Domain.Models.Vote>> GetVotes(string subverse, SearchOptions searchOptions)
+        {
+
+            IEnumerable<Data.Models.Vote> votes = null;
+            //IEnumerable<Data.Models.VoteOption> options = null;
+            //IEnumerable<Data.Models.VoteOutcome> outcomes = null;
+            //IEnumerable<Data.Models.VoteRestriction> restrictions = null;
+
+            var q = new DapperQuery();
+            q.Select = $"SELECT {SqlFormatter.QuoteIndentifier("ID")} FROM {SqlFormatter.Table("Vote")}";
+            if (!String.IsNullOrEmpty(subverse))
+            {
+                q.Where = "\"Subverse\" = @Subverse";
+                q.Parameters.Add("Subverse", subverse);
+            }
+            q.OrderBy = SqlFormatter.OrderBy("CreationDate", true);
+            q.TakeCount = searchOptions.Count;
+            q.SkipCount = searchOptions.Index;
+
+            var voteIDs = await _db.Connection.QueryAsync<int>(q.ToString(), q.Parameters);
+
+            if (voteIDs != null && voteIDs.Any())
+            {
+                //var voteIDs = votes.Select(x => x.ID).ToList();
+
+                var data = await GetVoteDataModel(voteIDs.ToArray());
+                votes = data;
+
+                //q = new DapperQuery();
+                //q.Select = $"SELECT * FROM {SqlFormatter.Table("VoteRestriction")} WHERE \"VoteID\" {SqlFormatter.In("@VoteID")} ";
+                //q.Select += $"SELECT * FROM {SqlFormatter.Table("VoteOption")} WHERE \"VoteID\" {SqlFormatter.In("@VoteID")} ";
+                //q.Parameters.Add("VoteID", voteIDs);
+
+                //using (var multi = await _db.Connection.QueryMultipleAsync(q.ToString(), q.Parameters))
+                //{
+                //    restrictions = multi.Read<Data.Models.VoteRestriction>().ToList();
+                //    options = multi.Read<Data.Models.VoteOption>().ToList();
+                //}
+
+                //var voteOptionIDs = options.Select(x => x.ID).ToList();
+                //q = new DapperQuery();
+                //q.Select = $"SELECT * FROM {SqlFormatter.Table("VoteOutcome")} WHERE \"VoteOptionID\" {SqlFormatter.In("@VoteOptionID")} ";
+                //q.Parameters.Add("VoteOptionID", voteIDs);
+
+                //outcomes = await _db.Connection.QueryAsync<Data.Models.VoteOutcome>(q.ToString(), q.Parameters);
+            }
+
+            ////CONSTRUCT 
+            //votes.ForEach(v => {
+            //    v.VoteRestrictions = new List<VoteRestriction>();
+            //    v.VoteRestrictions.AddRange(restrictions.Where(r => r.VoteID == v.ID).ToList());
+
+            //    v.VoteOptions = new List<Models.VoteOption>();
+            //    v.VoteOptions.AddRange(options.Where(o => o.VoteID == v.ID).ToList());
+
+            //    v.VoteOptions.ForEach(option => {
+            //        option.VoteOutcomes = new List<VoteOutcome>();
+            //        var outcomeList = outcomes.Where(o => option.ID == o.VoteOptionID).ToList();
+            //        option.VoteOutcomes.AddRange(outcomeList);
+            //    });
+            //});
+
+            var domainVotes = votes.IsNullOrEmpty() ?
+                Enumerable.Empty<Domain.Models.Vote>() :
+                votes.Select(x => VoteDomainMaps.Map(x)).ToList();
+
+            return domainVotes;
+        }
+        //GetVotes
+        public async Task<VoteStatistics> GetVoteStatistics(int id)
+        {
+            var result = new VoteStatistics();
+
+            var data = (from v in _db.VoteTracker
+                        where v.VoteID == id
+                        group v by new { v.RestrictionsPassed, v.VoteOptionID } into g
+                        select new {
+                                g.Key.RestrictionsPassed,
+                                g.Key.VoteOptionID,
+                                Count = g.Count()
+                        }).ToList();
+
+            var passed = data.Where(x => x.RestrictionsPassed).ToDictionary(x => x.VoteOptionID, y => y.Count);
+            var failed = data.Where(x => !x.RestrictionsPassed).ToDictionary(x => x.VoteOptionID, y => y.Count);
+
+            result.VoteID = id;
+            if (passed != null && passed.Count > 0)
+            {
+                result.Raw.Add(VoteRestrictionStatus.Certified, passed);
+            }
+            if (failed != null && failed.Count > 0)
+            {
+                result.Raw.Add(VoteRestrictionStatus.Uncertified, failed);
+            }
+
+            return result;
         }
     }
 }

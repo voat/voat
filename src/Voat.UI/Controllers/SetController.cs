@@ -97,9 +97,9 @@ namespace Voat.Controllers
             var q = new QuerySubmissions(domainReference, options).SetUserContext(User);
             var result = await q.ExecuteAsync();
             
-            var model = new SubmissionListViewModel();
-            model.Submissions = new Utilities.PaginatedList<Domain.Models.Submission>(result, options.Page, options.Count);
-            model.Submissions.RouteName = "SetIndex";
+            var model = new ListViewModel<Domain.Models.Submission>();
+            model.Items = new Utilities.PaginatedList<Domain.Models.Submission>(result, options.Page, options.Count);
+            model.Items.RouteName = "SetIndex";
             model.Context = domainReference;
             model.Sort = options.Sort;// == SortAlgorithm.RelativeRank ? SortAlgorithm.Hot :options.Sort; //UI doesn't want relative rank
             model.Span = options.Span;

@@ -45,7 +45,7 @@ namespace Voat.Domain.Command
             this.SubmissionID = submissionID;
             this.ParentCommentID = parentCommentID;
         }
-        protected override async Task<CommandResponse<Models.Comment>> ExecuteStage(CommandStage stage)
+        protected override async Task<CommandResponse<Models.Comment>> ExecuteStage(CommandStage stage, CommandResponse<Models.Comment> previous)
         {
             switch (stage)
             {
@@ -160,7 +160,8 @@ namespace Voat.Domain.Command
         public int CommentID { get; set; }
 
         public string Content { get; set; }
-        protected override async Task<CommandResponse<Models.Comment>> ExecuteStage(CommandStage stage)
+
+        protected override async Task<CommandResponse<Domain.Models.Comment>> ExecuteStage(CommandStage stage, CommandResponse<Domain.Models.Comment> previous)
         {
             switch (stage)
             {

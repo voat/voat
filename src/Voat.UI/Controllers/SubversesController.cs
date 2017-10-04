@@ -303,7 +303,7 @@ namespace Voat.Controllers
         {
             const string cookieName = "NSFWEnabled";
            
-            var viewProperties = new SubmissionListViewModel();
+            var viewProperties = new ListViewModel<Domain.Models.Submission>();
             viewProperties.PreviewMode = previewMode ?? false;
             ViewBag.PreviewMode = viewProperties.PreviewMode;
 
@@ -436,7 +436,7 @@ namespace Voat.Controllers
                 viewProperties.Context = domainReference;
                 pageList = new PaginatedList<Domain.Models.Submission>(results, options.Page, options.Count, -1);
                 pageList.RouteName = routeName;
-                viewProperties.Submissions = pageList;
+                viewProperties.Items = pageList;
 
                 var navModel = new NavigationViewModel()
                 {

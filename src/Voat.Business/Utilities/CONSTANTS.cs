@@ -35,7 +35,7 @@ namespace Voat.Utilities
         public const string CONNECTION_LIVE = "ReadWrite";
         public const string CONNECTION_READONLY = "ReadOnly";
         public const int DEFAULT_GUEST_PAGE_CACHE_MINUTES = 3;
-        public const string USER_NAME_REGEX = @"ted\.shield|o\.o|bill\.lee|casualwhoaversereader|anothercuriousredditor|[a-zA-Z0-9]{1}[a-zA-Z0-9-_]{1,19}"; //Backwords compat for these three users with dots in their name. See, we love them.
+        public const string USER_NAME_REGEX = @"ted\.shield|o\.o|bill\.lee|casualwhoaversereader|anothercuriousredditor|[a-zA-Z0-9]{1}([a-zA-Z0-9-_]{1,19})?"; //Backwords compat for these three users with dots in their name. See, we love them.
         public const string SUBVERSE_REGEX = "[a-zA-Z0-9]{1,20}";
         public const string SUBMISSION_ID_REGEX = @"\d*";
         public const string COMMENT_ID_REGEX = @"\d*";

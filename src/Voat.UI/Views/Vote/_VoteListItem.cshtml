@@ -1,0 +1,146 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@model Voat.Domain.Models.Vote
+
+@{
+    //LINK
+    string ahrefTarget = "_self";
+    var showNSFWThumbs = false;
+
+    if (User.Identity.IsAuthenticated)
+    {
+        var userData = Voat.Domain.UserData.GetContextUserData(Context);
+        showNSFWThumbs = userData.Preferences.EnableAdultContent;
+
+        if (userData.Preferences.OpenInNewWindow)
+        {
+            ahrefTarget = "_blank";
+        }
+    }
+
+    //bool anonymizedSubverse = Model.IsAnonymized;
+
+    string routeActiveSubverse = (string)ViewContext.RouteData.Values["subverse"];
+
+    string commentsUrl = VoatUrlFormatter.VotePagePath(Model.Subverse, Model.ID);
+
+    //var x = this.Request.RequestContext.RouteData.Values["sort"];
+    //if (x != null && x.ToString() == "active")
+    //{
+    //    commentsUrl = VoatUrlFormatter.CommentsPagePath(Model.Subverse, Model.ID, Voat.Domain.Models.CommentSortAlgorithm.New);
+    //}
+
+    DateTime submissionDate = Model.CreationDate;
+    string postAge = Age.ToRelative(submissionDate);
+
+    string submissionDomain = Model.Subverse;
+    string submissionDomainHref = "/v/" + Model.Subverse;
+    string titleUrl = commentsUrl;
+
+    var submissionClass = "";
+    var classes = "";
+    if (ViewBag.CssClass != null)
+    {
+        classes = String.Join(" ", ViewBag.CssClass);
+    }
+}
+<div class="submission id-@Model.ID @classes link @submissionClass" data-fullname="@Model.ID">
+    <p class="parent"></p>
+
+    @*@Html.Partial("~/Views/Shared/VotingIcons/_VotingIconsSubmission.cshtml", Model)*@
+    <div class="scorebar">
+    </div>
+    @{
+
+        @*if (Model.ThumbnailUrl != null)
+        {
+            if (routeActiveSubverse != null)
+            {
+                if (Model.IsAdult && (Model.Subverse.ToLower() != routeActiveSubverse.ToLower() || !showNSFWThumbs))
+                {
+                    <a class="thumbnail nsfw may-blank" href="@Model.Url" rel="nofollow" target="@ahrefTarget"></a>
+                }
+                else
+                {
+                    <a class="thumbnail may-blank" href="@Model.Url" target="@ahrefTarget">
+                        <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
+                    </a>
+                }
+            }
+            else
+            {
+                if (Model.IsAdult)
+                {
+                    <a class="thumbnail nsfw may-blank" href="@Model.Url" rel="nofollow" target="@ahrefTarget"></a>
+                }
+                else
+                {
+                    <a class="thumbnail may-blank" href="@Model.Url" target="@ahrefTarget">
+                        <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
+                    </a>
+                }
+            }
+        }*@
+
+        <div class="entry unvoted">
+            <p class="title">
+                <a class="title may-blank " href="@titleUrl" tabindex="1" title="@Model.Title" target="@ahrefTarget">@Model.Title</a>
+                <span class="domain">(<a href="@submissionDomainHref">@submissionDomain</a>)</span>
+            </p>
+
+            <div title="Show Vote" class="expando-button collapsed selftext" onclick="loadSelfText(this, @Model.ID)"></div>
+               
+            <p class="tagline">
+                submitted <time title="@Model.CreationDate" datetime="@Model.CreationDate">@postAge</time> ago by <a href="/user/@Model.CreatedBy" class="author may-blank userinfo" data-username="@Model.CreatedBy">@Model.CreatedBy</a>
+                <span class="userattrs"></span> to <a href="/v/@Model.Subverse" class="subverse hover may-blank">@Model.Subverse</a>
+            </p>
+
+            <ul class="flat-list buttons">
+                <li class="first">
+                    <a href="@commentsUrl" class="comments may-blank">view@*@Model.CommentCount.PluralizeIt("comment", "discuss")*@</a>
+                </li>
+                @*@if (User.Identity.IsAuthenticated)
+                {
+                    if (!Model.IsDeleted)
+                    {
+                        <li>
+                            @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonSave.cshtml", Model, new ViewDataDictionary(ViewData) { { "submissionId", Model.ID } })
+                        </li>
+                        if (!string.IsNullOrEmpty(routeActiveSubverse) && routeActiveSubverse == "all")
+                        {
+                            if (!Model.Attributes.Any(x => x.Name.IsEqual("sticky")))
+                            {
+                                <li>
+                                    @Html.Partial("~/Views/Shared/Submissions/SubmissionFlatListButtons/_SFLButtonBlockSubverse.cshtml", Model, new ViewDataDictionary(ViewData) { { "subverseName", Model.Subverse } })
+                                </li>
+                            }
+                        }
+                    }
+                }*@
+            </ul>
+            <div class="expando" style="display: none">
+                @Html.Partial("_VoteDetailContents.cshtml", await Voat.Domain.Models.VoteAggregate.Load(Model))
+            </div>
+        </div>
+    }
+    <div class="child"></div>
+    <div class="clearleft">@*IE6fix*@</div>
+</div>

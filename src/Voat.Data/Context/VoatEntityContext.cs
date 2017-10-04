@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Voat.Data.Models
 {
-    public partial class VoatEntityContext : DbContext
+    public abstract partial class VoatEntityContext : DbContext
     {
 
         public class UnintentionalCodeFirstException : Exception { }

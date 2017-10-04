@@ -51,7 +51,7 @@
                 Member for: <b>@Age.ToRelative(userRegistrationDateTime)</b><br />
                 <span class="bottommenu">(joined on: @userRegistrationDateTime.ToShortDateString())</span>
             </p>
-            @if (User.Identity.IsAuthenticated && !User.Identity.Name.Equals(userName, StringComparison.OrdinalIgnoreCase))
+            @if (User.Identity.IsAuthenticated && !User.Identity.Name.IsEqual(userName))
             {
                 <a href="#" class="btn-whoaverse-paging disabled">
                     Follow

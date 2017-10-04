@@ -495,7 +495,7 @@ namespace Voat.Tests.CommandTests
             using (var db = new VoatDataContext())
             {
                 var subverse = (from x in db.Subverse
-                                where x.Name.Equals(sub, StringComparison.OrdinalIgnoreCase)
+                                where x.Name.ToLower() == sub.ToLower()
                                 select x).FirstOrDefault();
 
                 Assert.AreEqual(submission.IsAnonymized, subverse.IsAnonymized, "Expecting matching anon settings");

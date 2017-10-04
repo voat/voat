@@ -42,7 +42,7 @@ namespace Voat.Utilities
 
             if (blocks != null)
             {
-                return blocks.Any(x => x.Type == DomainType.User && x.Name.Equals(sender, StringComparison.OrdinalIgnoreCase));
+                return blocks.Any(x => x.Type == DomainType.User && x.Name.ToLower() == sender.ToLower());
             }
             return false;
         }

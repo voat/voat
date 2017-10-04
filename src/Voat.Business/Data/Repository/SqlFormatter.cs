@@ -93,6 +93,11 @@ namespace Voat.Data
 
         //    return result.ToString();
         //}
+        public static string OrderBy(string columnName, bool ascending)
+        {
+            return QuoteIndentifier(columnName) + (ascending ? " ASC" : " DESC");
+        }
+
         public static string DeleteBlock(string fromTable, string alias = null)
         {
             var result = "";

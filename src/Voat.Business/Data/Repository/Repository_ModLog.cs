@@ -41,7 +41,7 @@ namespace Voat.Data
             using (var db = new VoatDataContext(CONSTANTS.CONNECTION_READONLY))
             {
                 var data = (from b in db.SubverseBan
-                            where b.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
+                            where b.Subverse.ToLower() == subverse.ToLower()
                             select new Domain.Models.SubverseBan
                             {
                                 CreatedBy = b.CreatedBy,
@@ -64,7 +64,7 @@ namespace Voat.Data
             {
                 var data = (from b in db.SubmissionRemovalLog
                             join s in db.Submission on b.SubmissionID equals s.ID
-                            where s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
+                            where s.Subverse.ToLower() == subverse.ToLower()
                             select new SubmissionRemovalLog()
                             {
                                 SubmissionID = b.SubmissionID,
@@ -86,7 +86,7 @@ namespace Voat.Data
                 var data = (from b in db.CommentRemovalLog
                             join c in db.Comment on b.CommentID equals c.ID
                             join s in db.Submission on c.SubmissionID equals s.ID
-                            where s.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase)
+                            where s.Subverse.ToLower() == subverse.ToLower()
                             select b).Include(x => x.Comment).Include(x => x.Comment.Submission);
 
                 var data_ordered = data.OrderByDescending(x => x.CreationDate).Skip(options.Index).Take(options.Count);

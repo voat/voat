@@ -13,44 +13,50 @@ namespace Voat.Domain
     {
         public static Domain.Models.Vote Map(this Data.Models.Vote entity)
         {
-            var vote = new Domain.Models.Vote();
+            Domain.Models.Vote vote = null;
+            if (entity != null)
+            {
+                vote = new Domain.Models.Vote();
 
-            vote.ID = entity.ID;
-            vote.Title = entity.Title;
-            vote.Content = entity.Content;
-            vote.FormattedContent = entity.FormattedContent;
-            vote.Subverse = entity.Subverse;
-            vote.SubmissionID = entity.SubmissionID;
-            vote.StartDate = entity.StartDate;
-            vote.DisplayStatistics = entity.DisplayStatistics;
-            vote.EndDate = entity.EndDate;
-            vote.CreationDate = entity.CreationDate;
-            vote.CreatedBy = entity.CreatedBy;
-            
-            entity.VoteOptions?.ForEach(x => {
-                var newOption = new Domain.Models.VoteOption();
+                vote.ID = entity.ID;
+                vote.Title = entity.Title;
+                vote.Content = entity.Content;
+                vote.FormattedContent = entity.FormattedContent;
+                vote.Subverse = entity.Subverse;
+                vote.SubmissionID = entity.SubmissionID;
+                vote.StartDate = entity.StartDate;
+                vote.DisplayStatistics = entity.DisplayStatistics;
+                vote.EndDate = entity.EndDate;
+                vote.CreationDate = entity.CreationDate;
+                vote.CreatedBy = entity.CreatedBy;
 
-                newOption.ID = x.ID;
-                newOption.Title = x.Title;
-                newOption.Content = x.Content;
-                newOption.FormattedContent = x.FormattedContent;
-                newOption.SortOrder = x.SortOrder;
+                entity.VoteOptions?.ForEach(x =>
+                {
+                    var newOption = new Domain.Models.VoteOption();
 
-                x.VoteOutcomes?.ForEach(o => {
-                    var obj = VoteItem.Deserialize<VoteOutcome>(o.Data);
-                    obj.ID = o.ID;
-                    newOption.Outcomes.Add(obj);
+                    newOption.ID = x.ID;
+                    newOption.Title = x.Title;
+                    newOption.Content = x.Content;
+                    newOption.FormattedContent = x.FormattedContent;
+                    newOption.SortOrder = x.SortOrder;
+
+                    x.VoteOutcomes?.ForEach(o =>
+                    {
+                        var obj = VoteItem.Deserialize<VoteOutcome>(o.Data);
+                        obj.ID = o.ID;
+                        newOption.Outcomes.Add(obj);
+                    });
+
+                    vote.Options.Add(newOption);
                 });
 
-                vote.Options.Add(newOption);
-            });
-
-            entity.VoteRestrictions?.ForEach(x => {
-                var obj = VoteItem.Deserialize<VoteRestriction>(x.Data);
-                obj.ID = x.ID;
-                vote.Restrictions.Add(obj);
-            });
-
+                entity.VoteRestrictions?.ForEach(x =>
+                {
+                    var obj = VoteItem.Deserialize<VoteRestriction>(x.Data);
+                    obj.ID = x.ID;
+                    vote.Restrictions.Add(obj);
+                });
+            }
             return vote;
         }
         public static Data.Models.Vote Map(this Domain.Models.Vote entity)

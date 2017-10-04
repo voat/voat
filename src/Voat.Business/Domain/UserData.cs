@@ -332,7 +332,7 @@ namespace Voat.Domain
         }
         public bool IsUserBlockingSubverse(string subverse)
         {
-            var result = BlockedSubverses.Any(x => x.Equals(subverse, StringComparison.OrdinalIgnoreCase));
+            var result = BlockedSubverses.Any(x => x.ToLower() == subverse.ToLower());
             return result;
         }
         public bool HasSubscriptions(DomainType type = DomainType.Subverse)

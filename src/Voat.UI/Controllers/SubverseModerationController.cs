@@ -848,14 +848,14 @@ namespace Voat.Controllers
             }
 
             // check if logged in user is actually the invited user
-            if (!User.Identity.Name.Equals(userInvitation.Recipient, StringComparison.OrdinalIgnoreCase))
+            if (!User.Identity.Name.IsEqual(userInvitation.Recipient))
             {
                 return ErrorView(ErrorViewModel.GetErrorViewModel(HttpStatusCode.Unauthorized));
                 //return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
             }
 
             // check if user is over modding limits
-            var amountOfSubsUserModerates = _db.SubverseModerator.Where(s => s.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+            var amountOfSubsUserModerates = _db.SubverseModerator.Where(s => s.UserName.ToLower() == User.Identity.Name.ToLower());
             if (amountOfSubsUserModerates.Any())
             {
                 if (amountOfSubsUserModerates.Count() >= maximumOwnedSubs)
@@ -865,7 +865,7 @@ namespace Voat.Controllers
             }
 
             // check if subverse exists
-            var subverse = _db.Subverse.FirstOrDefault(s => s.Name.Equals(userInvitation.Subverse, StringComparison.OrdinalIgnoreCase));
+            var subverse = _db.Subverse.FirstOrDefault(s => s.Name.ToLower() == userInvitation.Subverse.ToLower());
             if (subverse == null)
             {
                 return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseNotFound));
@@ -873,7 +873,7 @@ namespace Voat.Controllers
             }
 
             // check if user is already a moderator of this sub
-            var userModerating = _db.SubverseModerator.Where(s => s.Subverse.Equals(userInvitation.Subverse, StringComparison.OrdinalIgnoreCase) && s.UserName.Equals(User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+            var userModerating = _db.SubverseModerator.Where(s => s.Subverse.ToLower() == userInvitation.Subverse.ToLower() && s.UserName.ToLower() == User.Identity.Name.ToLower());
             if (userModerating.Any())
             {
                 _db.ModeratorInvitation.Remove(userInvitation);
@@ -980,7 +980,7 @@ namespace Voat.Controllers
             });
 
             // prevent invites to the current moderator
-            if (User.Identity.Name.Equals(subverseAdmin.UserName, StringComparison.OrdinalIgnoreCase))
+            if (User.Identity.Name.IsEqual(subverseAdmin.UserName))
             {
                 return sendFailureResult("Can not add yourself as a moderator");
             }
@@ -1025,7 +1025,7 @@ namespace Voat.Controllers
                 if (isAlreadyModerator == null)
                 {
                     // check if this user is already invited
-                    var userModeratorInvitations = _db.ModeratorInvitation.Where(i => i.Recipient.Equals(originalRecipientUserName, StringComparison.OrdinalIgnoreCase) && i.Subverse.Equals(subverseModel.Name, StringComparison.OrdinalIgnoreCase));
+                    var userModeratorInvitations = _db.ModeratorInvitation.Where(i => i.Recipient.ToLower() == originalRecipientUserName.ToLower() && i.Subverse.ToLower() == subverseModel.Name.ToLower());
                     if (userModeratorInvitations.Any())
                     {
                         return sendFailureResult("Sorry, the user is already invited to moderate this subverse");

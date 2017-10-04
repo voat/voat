@@ -44,7 +44,7 @@ namespace Voat.Domain.Command
             _submissionID = submissionID;
             _userSubmission = submission;
         }
-        protected override async Task<CommandResponse<Submission>> ExecuteStage(CommandStage stage)
+        protected override async Task<CommandResponse<Submission>> ExecuteStage(CommandStage stage, CommandResponse<Submission> previous)
         {
             switch (stage)
             {
@@ -55,7 +55,7 @@ namespace Voat.Domain.Command
                     }
                     break;
             }
-            return await base.ExecuteStage(stage);
+            return await base.ExecuteStage(stage, previous);
         }
         protected override async Task<Tuple<CommandResponse<Domain.Models.Submission>, Data.Models.Submission>> CacheExecute()
         {

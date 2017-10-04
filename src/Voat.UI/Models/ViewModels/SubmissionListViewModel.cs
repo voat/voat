@@ -32,7 +32,7 @@ using Voat.Utilities;
 
 namespace Voat.Models.ViewModels
 {
-    public class SubmissionListViewModel
+    public class ListViewModel<T>
     {
 
         private Domain.Models.SortAlgorithm? _sort = null;
@@ -80,7 +80,7 @@ namespace Voat.Models.ViewModels
                 _span = value;
             }
         }
-        public PaginatedList<Domain.Models.Submission> Submissions { get; set; }
+        public PaginatedList<T> Items { get; set; }
 
         public bool IsActualSubverse
         {

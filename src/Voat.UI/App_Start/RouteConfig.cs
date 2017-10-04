@@ -1129,6 +1129,11 @@ namespace Voat
                template: "v/{subverse}/vote/element",
                defaults: new { controller = "Vote", action = "Element" }
            );
+            routes.MapRoute(
+               name: "ListVotes",
+               template: "v/{subverse}/votes",
+               defaults: new { controller = "Vote", action = "List" }
+           );
             #endregion
 
             // submissions/applylinkflair

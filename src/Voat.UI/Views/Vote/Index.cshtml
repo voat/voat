@@ -18,5 +18,17 @@
 
 *@
 
-@model IEnumerable<Voat.Domain.Models.Vote>
+@using Voat.Models;
+@using Voat.Domain.Models;
 
+@model Voat.Domain.Models.VoteAggregate
+
+@{
+    Voat.Domain.Models.Submission submission = ViewBag.Submission;
+}
+
+@section PageHeader {
+    @Html.Partial("_SubverseStylesheetLink", Model.Vote.Subverse, new ViewDataDictionary(ViewData))
+}
+
+@Html.Partial("_View", Model)

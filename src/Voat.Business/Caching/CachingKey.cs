@@ -245,6 +245,14 @@ namespace Voat.Caching
         {
             return $"Vote:Object:{id}";
         }
+        public static string Votes(string subverse, SearchOptions options)
+        {
+            return $"Vote:List:{subverse}:page{options.Page}:{options.Sort.ToString()}:{options.Phrase}";
+        }
+        public static string VoteStatistics(int id)
+        {
+            return $"Vote:Stats:{id}";
+        }
         public static string BannedDomains()
         {
             return "Banned:Domains";

@@ -45,7 +45,8 @@ namespace Voat.Domain.Models
     public enum ContentType
     {
         Submission = 1,
-        Comment = 2
+        Comment = 2,
+        Vote = 3
     }
 
     public enum SubscriptionAction

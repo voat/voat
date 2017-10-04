@@ -108,9 +108,9 @@ namespace Voat.Controllers
 
             var paginatedSubmissions = new PaginatedList<Domain.Models.Submission>(results, page ?? 0, pageSize, -1);
 
-            var viewProperties = new SubmissionListViewModel();
-            viewProperties.Submissions = paginatedSubmissions;
-            viewProperties.Submissions.RouteName = "DomainIndex";
+            var viewProperties = new ListViewModel<Domain.Models.Submission>();
+            viewProperties.Items = paginatedSubmissions;
+            viewProperties.Items.RouteName = "DomainIndex";
 
             viewProperties.Title = "Domain: " + domainName;
 

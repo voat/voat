@@ -63,22 +63,33 @@ namespace Voat.UI.Utilities
     {
         public static async Task<bool> Validate(HttpRequest request)
         {
-            string privateKey = VoatSettings.Instance.RecaptchaPrivateKey;
-            string encodedResponse = request.Form["g-Recaptcha-Response"];
-
-            using (var httpResource = new HttpResource("https://www.google.com/recaptcha/api/siteverify"))
+            if (VoatSettings.Instance.OutgoingTraffic.Enabled)
             {
-                var content = new FormUrlEncodedContent(new[]
+                string privateKey = VoatSettings.Instance.RecaptchaPrivateKey;
+                string encodedResponse = request.Form["g-Recaptcha-Response"];
+
+                using (var httpResource = new HttpResource(
+                    new Uri("https://www.google.com/recaptcha/api/siteverify"), 
+                    null, 
+                    VoatSettings.Instance.OutgoingTraffic.Proxy.ToWebProxy()))
                 {
-                    new KeyValuePair<string, string>("secret", privateKey),
-                    new KeyValuePair<string, string>("response", encodedResponse),
-                });
-                await httpResource.GiddyUp(HttpMethod.Post, content);
+                    var content = new FormUrlEncodedContent(new[]
+                    {
+                        new KeyValuePair<string, string>("secret", privateKey),
+                        new KeyValuePair<string, string>("response", encodedResponse),
+                    });
 
-                var responseString = await httpResource.Response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var captchaResponse = JsonConvert.DeserializeObject<ReCaptchaResponse>(responseString);
+                    await httpResource.GiddyUp(HttpMethod.Post, content);
 
-                return captchaResponse.Success;
+                    var responseString = await httpResource.Response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var captchaResponse = JsonConvert.DeserializeObject<ReCaptchaResponse>(responseString);
+
+                    return captchaResponse.Success;
+                }
+            }
+            else
+            {
+                return false;
             }
         }
         private class ReCaptchaResponse

@@ -161,7 +161,7 @@ namespace Voat.Http
                     }
 
                     // force single site domain
-                    if (VoatSettings.Instance.RedirectToSiteDomain && !VoatSettings.Instance.SiteDomain.Equals(currentUri.Host, StringComparison.OrdinalIgnoreCase))
+                    if (VoatSettings.Instance.RedirectToSiteDomain && !VoatSettings.Instance.SiteDomain.IsEqual(currentUri.Host))
                     {
                         context.Response.Redirect(String.Format("http{2}://{0}{1}", VoatSettings.Instance.SiteDomain, currentUri.PathAndQuery, (VoatSettings.Instance.ForceHTTPS ? "s" : "")), true);
                         result = true;

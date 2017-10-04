@@ -12,7 +12,7 @@ namespace Voat.UI.ViewComponents
 {
     public class SidebarViewComponent : ViewComponent
     {
-        public async Task<IViewComponentResult> InvokeAsync(DomainReference domainReference) //, ContentReference contentReference = null
+        public async Task<IViewComponentResult> InvokeAsync(DomainReference domainReference, ContentReference contentReference = null)
         {
             IViewComponentResult result = View("Default", domainReference);
             if (domainReference != null)
@@ -33,6 +33,17 @@ namespace Voat.UI.ViewComponents
                             ViewBag.OnlineUsers = await qa.ExecuteAsync();
 
                             var view = "Subverse";// contentReference != null && contentReference.Type == ContentType.Submission ? "Submission" : "Subverse";
+
+                            if (contentReference != null)
+                            {
+                                switch (contentReference.Type)
+                                {
+                                    case ContentType.Vote:
+                                        view = "VoteSubmission";
+                                        break;
+                                }
+                            }
+
 
                             result = View(view, subverse);
                         }

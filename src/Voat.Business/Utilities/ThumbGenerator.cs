@@ -89,57 +89,63 @@ namespace Voat.Utilities
         }
         public static async Task<CommandResponse<string>> GenerateThumbnail(Uri uri, bool purgeTempFile = true)
         {
-            var url = uri.ToString();
-            if (!String.IsNullOrEmpty(url) && UrlUtility.IsUriValid(url))
+            if (VoatSettings.Instance.OutgoingTraffic.Enabled)
             {
-                try
+                var url = uri.ToString();
+                if (!String.IsNullOrEmpty(url) && UrlUtility.IsUriValid(url))
                 {
-                    //Ok this all needs to be centralized, we should only make 1 request to a remote resource
-                    using (var httpResource = new HttpResource(url, new HttpResourceOptions() { AllowAutoRedirect = true }))
+                    try
                     {
-                        var result = await httpResource.GiddyUp();
-                    
-                        if (httpResource.IsImage)
+                        //Ok this all needs to be centralized, we should only make 1 request to a remote resource
+                        using (var httpResource = new HttpResource(
+                            new Uri(url), 
+                            new HttpResourceOptions() { AllowAutoRedirect = true }, 
+                            VoatSettings.Instance.OutgoingTraffic.Proxy.ToWebProxy()))
                         {
-                            var fileManager = FileManager.Instance;
-                            var fileCheck = fileManager.IsUploadPermitted(url, FileType.Thumbnail, httpResource.Response.Content.Headers.ContentType.MediaType, httpResource.Stream.Length);
+                            var result = await httpResource.GiddyUp();
 
-                            if (fileCheck.Success)
+                            if (httpResource.IsImage)
                             {
-                                var key = new FileKey();
-                                key.FileType = FileType.Thumbnail;
-                                key.ID = await GenerateRandomFilename(".jpg", FileType.Thumbnail);
-                                var stream = httpResource.Stream;
+                                var fileManager = FileManager.Instance;
+                                var fileCheck = fileManager.IsUploadPermitted(url, FileType.Thumbnail, httpResource.Response.Content.Headers.ContentType.MediaType, httpResource.Stream.Length);
 
-                                await GenerateImageThumbnail(fileManager, key, stream, VoatSettings.Instance.ThumbnailSize, true);
+                                if (fileCheck.Success)
+                                {
+                                    var key = new FileKey();
+                                    key.FileType = FileType.Thumbnail;
+                                    key.ID = await GenerateRandomFilename(".jpg", FileType.Thumbnail);
+                                    var stream = httpResource.Stream;
 
-                                return CommandResponse.Successful(key.ID);
+                                    await GenerateImageThumbnail(fileManager, key, stream, VoatSettings.Instance.ThumbnailSize, true);
+
+                                    return CommandResponse.Successful(key.ID);
+                                }
+
                             }
-                          
-                        }
-                        else if (httpResource.Image != null)
-                        {
-                            //just do it. again.
-                            return await GenerateThumbnail(httpResource.Image);
+                            else if (httpResource.Image != null)
+                            {
+                                //just do it. again.
+                                return await GenerateThumbnail(httpResource.Image);
+                            }
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        EventLogger.Instance.Log(ex, new { url = url, type = FileType.Thumbnail });
+                        var response = CommandResponse.Error<CommandResponse<string>>(ex);
+                        response.Response = ""; //Make sure this returns string.empty as other failures do.
+                        return response;
+                    }
                 }
-                catch (Exception ex)
+                EventLogger.Instance.Log(new LogInformation()
                 {
-                    EventLogger.Instance.Log(ex, new { url = url, type = FileType.Thumbnail });
-                    var response = CommandResponse.Error<CommandResponse<string>>(ex);
-                    response.Response = ""; //Make sure this returns string.empty as other failures do.
-                    return response;
-                }
+                    Type = LogType.Debug,
+                    Category = "Thumbnail Diag",
+                    Message = "Default Response",
+                    Data = new { url = url },
+                    Origin = VoatSettings.Instance.Origin
+                });
             }
-            EventLogger.Instance.Log(new LogInformation()
-            {
-                Type = LogType.Debug,
-                Category = "Thumbnail Diag",
-                Message = "Default Response",
-                Data = new { url = url },
-                Origin = VoatSettings.Instance.Origin
-            });
             return CommandResponse.FromStatus<string>("", Status.Invalid);
         }
     }

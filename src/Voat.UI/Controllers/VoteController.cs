@@ -11,18 +11,19 @@ using Voat.Caching;
 using Voat.Common;
 using Voat.Configuration;
 using Voat.Controllers;
+using Voat.Data;
 using Voat.Domain;
 using Voat.Domain.Command;
 using Voat.Domain.Models;
 using Voat.Domain.Query;
 using Voat.Models.ViewModels;
 using Voat.UI.Utils;
+using Voat.Utilities;
 using Voat.Voting.Outcomes;
 using Voat.Voting.Restrictions;
 
 namespace Voat.UI.Controllers
 {
-    [Authorize]
     public class VoteController : BaseController
     {
         private IViewRenderService _viewRenderService;
@@ -40,23 +41,34 @@ namespace Voat.UI.Controllers
         [HttpGet]
         public async Task<ActionResult> View(string subverse, int id)
         {
-            var q = new QueryVote(id);
-            var vote = await q.ExecuteAsync();
+            var agg = await VoteAggregate.Load(id);
+            //var q = new QueryVote(id);
+            //var vote = await q.ExecuteAsync();
 
-            if (vote == null)
+            if (agg.Vote == null)
             {
                 return ErrorController.ErrorView(ErrorType.NotFound);
             }
-            if (!vote.Subverse.IsEqual(subverse))
+            if (!agg.Vote.Subverse.IsEqual(subverse))
             {
                 return ErrorController.ErrorView(ErrorType.NotFound);
             }
-            return View(vote);
+            return View("Index", agg);
         }
+
+        private bool VotesEnabled
+        {
+            get
+            {
+                return VoatSettings.Instance.EnableVotes || User.IsInAnyRole(new[] { Voat.Domain.Models.UserRole.GlobalAdmin, Voat.Domain.Models.UserRole.Admin, Voat.Domain.Models.UserRole.DelegateAdmin });
+            }
+        }
+
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult> Create(string subverse)
         {
-            if (!VoatSettings.Instance.EnableVotes)
+            if (!VotesEnabled)
             {
                 return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.Unauthorized));
             }
@@ -81,10 +93,22 @@ namespace Voat.UI.Controllers
             //object model = ExpressionMetadataProvider.FromLambdaExpression(expression, helper.ViewData, helper.MetadataProvider).Model;
             return TryValidateModel(model, name);
         }
+        public class SaveVoteResponse
+        {
+            public int ID { get; set; }
+            public string Html { get; set; }
+        }
         [HttpPost]
+        [Authorize]
         [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Save([FromBody] CreateVote model)
         {
+            //This needs fixed
+            if (!VotesEnabled)
+            {
+                return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.Unauthorized));
+            }
+
             try
             {
 
@@ -102,7 +126,7 @@ namespace Voat.UI.Controllers
                 {
                     valResult.ForEach(x => ModelState.AddModelError(x.MemberNames.FirstOrDefault(), x.ErrorMessage));
                 }
-                CommandResponse<string> response = new CommandResponse<string>("", Status.Success, "");
+                CommandResponse<SaveVoteResponse> response = new CommandResponse<SaveVoteResponse>(new SaveVoteResponse(), Status.Success, "");
 
                 if (ModelState.IsValid)
                 {
@@ -111,7 +135,8 @@ namespace Voat.UI.Controllers
                     var result = await cmd.Execute();
                     if (result.Success)
                     {
-                        response.Response = await _viewRenderService.RenderToStringAsync("_View", result.Response);
+                        response.Response.ID = result.Response.ID;
+                        response.Response.Html = await _viewRenderService.RenderToStringAsync("_View", await VoteAggregate.Load(result.Response));
                         return JsonResult(response);
                         //return PartialView("_View", result.Response);
                     }
@@ -122,7 +147,7 @@ namespace Voat.UI.Controllers
                 }
 
                 response.Status = Status.Error;
-                response.Response = await _viewRenderService.RenderToStringAsync("_Edit", domainModel, ModelState);
+                response.Response.Html = await _viewRenderService.RenderToStringAsync("_Edit", domainModel, ModelState);
                 return JsonResult(response);
                 //return PartialView("_Edit", domainModel);
 
@@ -137,6 +162,7 @@ namespace Voat.UI.Controllers
         }
         
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult> Edit(string subverse, int id)
         {
             var q = new QueryVote(id);
@@ -155,12 +181,14 @@ namespace Voat.UI.Controllers
             return View(vote);
         }
         [HttpGet]
+        [Authorize]
         public ActionResult Delete(string subverse, int id)
         {
             object model = null;
             return View("Delete", model);
         }
         [HttpGet]
+        [Authorize]
         public ActionResult Element(string subverse, string type)
         {
             var typeName = type.TrimSafe();
@@ -186,5 +214,20 @@ namespace Voat.UI.Controllers
             return new EmptyResult();
         }
 
+        [HttpGet]
+        public async Task<ActionResult> List(string subverse)
+        {
+            var q = new QueryVotes(subverse, SearchOptions.Default);
+
+            var votes = await q.ExecuteAsync();
+
+            var list = new ListViewModel<Vote>();
+            list.Context = new DomainReference(DomainType.Subverse, subverse);
+            list.Items = new PaginatedList<Vote>(votes, 0, 100);
+            list.Title = $"{subverse} Votes";
+            list.Description = $"Votes listed in v/{subverse}";
+            
+            return View("VoteList", list);
+        }
     }
 }

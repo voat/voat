@@ -102,7 +102,7 @@ namespace Voat.Rules.Posting
                 return CreateOutcome(RuleResult.Denied, "Submission title is a url? Why would you even think about doing this?! Why?");
             }
             //if context.Subverse is null this means that it can't be found/doesn't exist
-            if (context.Subverse == null || userSubmission.Subverse.Equals("all", StringComparison.OrdinalIgnoreCase)) //<-- the all subverse actually exists? HA! (Putts: leaving this code in because it's rad)
+            if (context.Subverse == null || userSubmission.Subverse.IsEqual("all")) //<-- the all subverse actually exists? HA! (Putts: leaving this code in because it's rad)
             {
                 return CreateOutcome(RuleResult.Denied, "Subverse does not exist");
             }

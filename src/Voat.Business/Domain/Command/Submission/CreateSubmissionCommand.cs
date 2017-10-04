@@ -43,7 +43,7 @@ namespace Voat.Domain.Command
             _userSubmission = submission;
             base.CommandStageMask = CommandStage.OnValidation;
         }
-        protected override async Task<CommandResponse<Submission>> ExecuteStage(CommandStage stage)
+        protected override async Task<CommandResponse<Submission>> ExecuteStage(CommandStage stage, CommandResponse<Submission> previous)
         {
             switch (stage)
             {
@@ -55,7 +55,7 @@ namespace Voat.Domain.Command
                     }
                     break;
             }
-            return await base.ExecuteStage(stage);
+            return await base.ExecuteStage(stage, previous);
         }
         public UserSubmission UserSubmission { get => _userSubmission; set => _userSubmission = value; }
 

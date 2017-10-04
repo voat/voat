@@ -46,8 +46,8 @@ namespace Voat.Controllers
 {
     public class SearchController : BaseController
     {
-        //TODO: Port to submission search alg
         [PreventSpam]
+        [HttpGet]
         public async Task<ActionResult> SearchResults(int? page, string q, string l, string sub)
         {
 
@@ -61,8 +61,6 @@ namespace Voat.Controllers
             if (String.IsNullOrWhiteSpace(q) || q.Length < 3 || q.Length > 50)
             {
                 return ErrorView(new ErrorViewModel() { Title = "Your search found one result: An error", Description = "Search phrases are required to be between 3 and 50 characters", Footer = "Got it?" });
-                //return View("~/Views/Search/Index.cshtml", new PaginatedList<Domain.Models.Submission>(new List<Domain.Models.Submission>(), 0, 25, 24));
-                //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             
             if (q == "rick roll")
@@ -104,30 +102,5 @@ namespace Voat.Controllers
 
             return View("~/Views/Search/Index.cshtml", paginatedResults);
         }
-
-        ////THIS IS A DISCOVERY METHOD REDIRECTED FROM /subverses/search
-        //[PreventSpam]
-        //public async Task<ActionResult> FindSubverse(int? page, string d, string q)
-        //{
-        //    ViewBag.SearchTerm = q;
-        //    ViewBag.Title = "Search results";
-        //    page = page.HasValue ? page.Value : 0;
-
-        //    var options = new SearchOptions() { Phrase = q, Page = page.Value, Count = 30 };
-        //    var query = new QueryDomainObject(Domain.Models.DomainType.Subverse, options);
-        //    var results = await query.ExecuteAsync();
-
-        //    var paginatedResults = new PaginatedList<DomainReferenceDetails>(results, options.Page, options.Count);
-
-        //    ViewBag.NavigationViewModel = new Models.ViewModels.NavigationViewModel()
-        //    {
-        //        Description = "Search Subverses",
-        //        Name = "Subverses",
-        //        MenuType = Models.ViewModels.MenuType.Discovery,
-        //        BasePath = null,
-        //        Sort = null
-        //    };
-        //    return View("~/Views/Search/DomainSearchResults.cshtml", paginatedResults);
-        //}
     }
 }

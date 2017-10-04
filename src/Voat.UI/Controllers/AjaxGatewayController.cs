@@ -35,6 +35,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Voat.Data.Models;
+using Voat.Configuration;
+using System;
 
 namespace Voat.Controllers
 {
@@ -107,32 +109,37 @@ namespace Voat.Controllers
         [Authorize]
         public async Task<JsonResult> TitleFromUri()
         {
-            var uri = Request.Query["uri"].FirstOrDefault();
-            uri = uri.TrimSafe();
-
-            if (!string.IsNullOrEmpty(uri) && UrlUtility.IsUriValid(uri, true, true))
+            if (VoatSettings.Instance.OutgoingTraffic.Enabled)
             {
-                //Old Code:
-                //string title = UrlUtility.GetTitleFromUri(uri);
-                using (var httpResource = new HttpResource(uri, new HttpResourceOptions() { AllowAutoRedirect = true }))
+                var uri = Request.Query["uri"].FirstOrDefault();
+                uri = uri.TrimSafe();
+
+                if (!string.IsNullOrEmpty(uri) && UrlUtility.IsUriValid(uri, true, true))
                 {
-                    await httpResource.GiddyUp();
-
-                    string title = httpResource.Title;
-
-                    if (title != null)
+                    //Old Code:
+                    //string title = UrlUtility.GetTitleFromUri(uri);
+                    using (var httpResource = new HttpResource(
+                        new Uri(uri), 
+                        new HttpResourceOptions() { AllowAutoRedirect = true }, 
+                        VoatSettings.Instance.OutgoingTraffic.Proxy.ToWebProxy()))
                     {
-                        title = title.StripUnicode();
-                        var resultList = new List<string>
+                        await httpResource.GiddyUp();
+
+                        string title = httpResource.Title;
+
+                        if (title != null)
+                        {
+                            title = title.StripUnicode();
+                            var resultList = new List<string>
                         {
                             title
                         };
 
-                        return Json(resultList /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
+                            return Json(resultList /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
+                        }
                     }
                 }
             }
-
             Response.StatusCode = (int)HttpStatusCode.BadRequest;
             return Json("Bad request." /* CORE_PORT: Removed , JsonRequestBehavior.AllowGet */);
         }

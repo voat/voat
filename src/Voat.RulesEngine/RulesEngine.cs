@@ -39,7 +39,7 @@ namespace Voat.RulesEngine
         protected HashSet<Rule> _rules = new HashSet<Rule>();
 
         protected Func<Rule, Rule, bool> _validityAddCheck = new Func<Rule, Rule, bool>((existing, adding) =>
-            existing.Number.Equals(adding.Number, StringComparison.OrdinalIgnoreCase)
+            existing.Number.IsEqual(adding.Number)
             //            || existing.Name.Equals(adding.Name, StringComparison.OrdinalIgnoreCase)
             );
 

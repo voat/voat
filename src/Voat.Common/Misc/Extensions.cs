@@ -322,6 +322,16 @@ namespace Voat.Common
                 }
             }
         }
+        public static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
+        {
+            if (items != null && items.Any())
+            {
+                foreach (var item in items)
+                {
+                    action(item);
+                }
+            }
+        }
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> col)
         {
             if (col != null)
@@ -329,6 +339,12 @@ namespace Voat.Common
                 return !col.Any();
             }
             return true;
+        }
+        public static IEnumerable<T> ToEnumerable<T>(this T value)
+        {
+            var x = new List<T>();
+            x.Add(value);
+            return x;
         }
     }
 }

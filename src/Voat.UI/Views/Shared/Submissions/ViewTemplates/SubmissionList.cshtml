@@ -20,7 +20,7 @@
 
 @using Voat.Domain.Models
 
-@model Voat.Models.ViewModels.SubmissionListViewModel
+@model Voat.Models.ViewModels.ListViewModel<Submission>
 
 @{
     ViewBag.Title = Model.Title;
@@ -43,7 +43,7 @@
 
 <div id="container">
 
-    @await Component.InvokeAsync("Sidebar", Model.Context)
+    @await Component.InvokeAsync("Sidebar", new { domainReference = Model.Context })
 
     <div class="content" role="main">
 
@@ -56,7 +56,7 @@
                         var spans = new SortSpan[] { SortSpan.Day, SortSpan.Week, SortSpan.Month, SortSpan.Quarter, SortSpan.Year, SortSpan.All };
                         foreach (var span in spans)
                         {
-                            <li class='@(Model.Span.HasValue && Model.Span.Value == span ? "selected" : "disabled")'>@Html.RouteLink(span.ToString(), Model.Submissions.RouteName, new { sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), span = span.ToString().ToLower() })</li>
+                            <li class='@(Model.Span.HasValue && Model.Span.Value == span ? "selected" : "disabled")'>@Html.RouteLink(span.ToString(), Model.Items.RouteName, new { sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), span = span.ToString().ToLower() })</li>
                         }
                     }
                 </ul>
@@ -75,12 +75,12 @@
                 @await Component.InvokeAsync("StickiedSubmission", null)
             }
 
-            @if (Model.Submissions.Count <= 0)
+            @if (Model.Items.Count <= 0)
             {
                 Html.RenderPartial("_DefaultMessage");
             }
 
-            @foreach (var submission in Model.Submissions)
+            @foreach (var submission in Model.Items)
             {
                 @Html.Partial("~/Views/Shared/Submissions/_Submission.cshtml", submission, new ViewDataDictionary(ViewData) { { "CssClass", new string[] { counter % 2 == 0 ? "even" : "odd" } } })
                 counter++;
@@ -89,21 +89,21 @@
 
         @{
 
-            Model.Submissions.RouteData = ViewContext.RouteData.Values;
+            Model.Items.RouteData = ViewContext.RouteData.Values;
             if (Model.Sort != null)
             {
-                Model.Submissions.RouteData["sort"] = Model.Sort.ToString().ToLower();
+                Model.Items.RouteData["sort"] = Model.Sort.ToString().ToLower();
             }
             if (Model.Span != null)
             {
-                Model.Submissions.RouteData["span"] = Model.Span.ToString().ToLower();
+                Model.Items.RouteData["span"] = Model.Span.ToString().ToLower();
             }
             if (!String.IsNullOrEmpty(Context.Request.Query["frontpage"]))
             {
-                Model.Submissions.RouteData["frontpage"] = Context.Request.Query["frontpage"];
+                Model.Items.RouteData["frontpage"] = Context.Request.Query["frontpage"];
             }
         }
-        @Html.DisplayFor(model => Model.Submissions, "IPaginatedList")
+        @Html.DisplayFor(model => Model.Items, "IPaginatedList")
 
         @*<div class="pagination-container">
             <ul>

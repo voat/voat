@@ -22,7 +22,7 @@ namespace Voat.Domain.Command
             _banList = banItem;
             _reason = reason;
         }
-        protected override Task<CommandResponse> ExecuteStage(CommandStage stage)
+        protected override async Task<CommandResponse> ExecuteStage(CommandStage stage, CommandResponse previous)
         {
             var commandResponse = CommandResponse.FromStatus(Status.Success);
 
@@ -97,7 +97,7 @@ namespace Voat.Domain.Command
                 //    break;
             }
 
-            return Task.FromResult(commandResponse);
+            return commandResponse;
         }
 
         protected override async Task<CommandResponse> CacheExecute()

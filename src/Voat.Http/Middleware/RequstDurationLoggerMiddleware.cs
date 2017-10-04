@@ -15,6 +15,7 @@ namespace Voat.Http.Middleware
 
         public override async Task Invoke(HttpContext context)
         {
+            
             var logger = EventLogger.Instance;
             var logLevel = LogType.Information;
             var logInfo = context.GetLogInformation("RequestDuration", logLevel);

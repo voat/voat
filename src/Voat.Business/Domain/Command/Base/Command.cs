@@ -110,31 +110,37 @@ namespace Voat.Domain.Command
     [Serializable]
     public abstract class Command<T> : Command, IExcutableCommand<T> where T : CommandResponse, new()
     {
+        ////This is for future use
+        //private bool _enableQueuing = false;
+
         protected CommandStage CommandStageMask { get; set; } = CommandStage.All;
+
         protected abstract Task<T> ProtectedExecute();
 
-        protected virtual Task<T> ExecuteStage(CommandStage stage)
+        protected virtual Task<T> ExecuteStage(CommandStage stage, T previous)
         {
-            //return true
-            var response = new T();
-            response.Status = Status.Success;
-            return Task.FromResult(response);
+            return Task.FromResult(previous);
+
+            ////return true
+            //var response = new T();
+            //response.Status = Status.Success;
+            //return Task.FromResult(response);
         }
 
-        private async Task<T> ExecuteStages(IEnumerable<CommandStage> stages, T response)
+        private async Task<T> ExecuteStages(IEnumerable<CommandStage> stages, T previous)
         {
-            if (response.Success)
+            if (previous.Success)
             {
                 foreach (var stage in stages)
                 {
-                    var r = await ExecuteStage(stage);
+                    var r = await ExecuteStage(stage, previous);
                     if (!r.Success)
                     {
                         return r;
                     }
                 }
             }
-            return response;
+            return previous;
         }
 
         public virtual async Task<T> Execute()
@@ -146,7 +152,7 @@ namespace Voat.Domain.Command
                     CommandStageMask.GetEnumFlagsIntersect(
                     CommandStage.OnAuthorization |
                     CommandStage.OnValidation |
-                    CommandStage.OnQueuing |
+                    //CommandStage.OnQueuing |
                     CommandStage.OnExecuting
                 ), new T() { Status = Status.Success });
 

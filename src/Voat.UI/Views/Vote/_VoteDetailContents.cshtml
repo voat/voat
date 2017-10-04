@@ -1,0 +1,164 @@
+﻿
+@model Voat.Domain.Models.VoteAggregate
+
+@{
+    var vote = Model.Vote;
+}
+<style type="text/css">
+    .vote-title {
+        font-size: 1.5em;
+        font-weight:bold;
+    }
+    
+    .vote-content {
+        padding-bottom: 5px;
+        font-size:13px;
+    }
+    .vote-options {
+        padding-top: 10px;
+    }
+
+    .vote-option {
+        padding: 5px;
+    }
+
+    .vote-option > .vote-content {
+        padding-left: 10px;
+    }
+
+    .vote-bar {
+        background: #f2f2f2;
+        margin: 2px;
+    }
+    .dark .vote-bar {
+        background: #313131;
+    }
+    .vote-percentage {
+        background: #c7edff !important;
+        padding: 2px;
+        white-space: nowrap;
+    }
+    .dark .vote-percentage {
+        background: #4F3333 !important;
+    }
+
+
+    .vote-outcomes, .vote-restrictions {
+        border: 1px dashed #4b96c4 !important;
+        background: #e7f7ff !important;
+        margin: 10px;
+    }
+        .vote-outcomes > .vote-title, .vote-restrictions > .vote-title {
+            background: #c7edff !important;
+            border-color: #c7edff !important;
+            padding: 5px 10px;
+            font-size: 1.2em;
+        }
+
+    .dark .vote-outcomes, .dark .vote-restrictions {
+        border: 1px dashed #A23E3E !important;
+        background: #4F3333 !important;
+    }
+
+        .dark .vote-outcomes > .vote-title, .dark .vote-restrictions > .vote-title {
+            background: #432626 !important;
+            border-color: #432626 !important;
+            padding: 5px 10px;
+            font-size: 1.2em;
+        }
+
+    .vote-outcome, .vote-restriction {
+        padding: 5px 10px;
+    }
+
+</style>
+<div class="vote-content">
+    @if (!String.IsNullOrEmpty(vote.FormattedContent))
+    {
+        <div class="usertext">
+            <div class="usertext-body original may-blank-within" style="display: block;">
+                <div class="md">
+                    <p>@Html.Raw(vote.FormattedContent)</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<div class="vote-options">
+        <div data-voat-list="Options">
+        @if (vote.Options != null && vote.Options.Any())
+        {
+            for (int i = 0; i < vote.Options.Count; i++)
+            {
+                var optionNumber = String.Format("{0})", (i + 1));
+                <div class="vote-option">
+                    <div class="vote-title">@optionNumber @vote.Options[i].Title</div>
+                    <div class="vote-statistics">
+
+                        @if (Model.Statistics != null && Model.Statistics.Raw.Count > 0)
+                        {
+                            foreach (var stat in Model.Statistics.Friendly)
+                            {
+                                if (stat.Value.ContainsKey(vote.Options[i].ID))
+                                {
+                                    var optionStats = stat.Value[vote.Options[i].ID];
+                                    var percentage = Math.Round(optionStats.Percentage * 100, 0);
+                                    <div class="vote-bar">
+                                        <div class="vote-percentage" style="width:@percentage%">
+                                            <span>@stat.Key.ToString() (@percentage%, @optionStats.Count votes)</span>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
+
+                    <div class="vote-content">
+
+                    @if (!String.IsNullOrEmpty(vote.Options[i].FormattedContent))
+                    {
+                            <div class="usertext link" style="display: block;">
+                                <div class="md">
+                                    <p>@Html.Raw(vote.Options[i].FormattedContent)</p>
+                                </div>
+                            </div>
+                        }
+
+                    @if (vote.Options[i].Outcomes != null && vote.Options[i].Outcomes.Count > 0)
+                    {
+                            <div class="vote-outcomes">
+                                <div class="vote-title">Outcomes</div>
+                                @foreach (var outcome in vote.Options[i].Outcomes)
+                                {
+                                    <div class="vote-outcome vote-content">
+                                        <p>@Html.Raw(Formatting.FormatMessage(outcome.ToDescription()))</p>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <p>What are my options? I need options!</p>
+        }
+    </div>
+</div>
+@if (vote.Restrictions != null && vote.Restrictions.Any())
+{
+    <div class="vote-restrictions">
+        <div class="vote-title">Voting Restrictions</div>
+        <div data-voat-list="Restrictions">
+            @for (int i = 0; i < vote.Restrictions.Count; i++)
+            {
+                <div class="vote-restriction vote-content">
+                    <p>@Html.Raw(Formatting.FormatMessage(vote.Restrictions[i].ToDescription()))</p>
+                </div>
+            }
+        </div>
+    </div>
+}
+

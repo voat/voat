@@ -1,0 +1,95 @@
+﻿@using Voat.Domain.Models
+
+@model Voat.Models.ViewModels.ListViewModel<Vote>
+
+@{
+    ViewBag.Title = Model.Title;
+    ViewBag.Description = Model.Description;
+    int counter = 0;
+}
+
+@section PageHeader {
+    @*@if (Model.IsActualSubverse)
+    {
+        @Html.Partial("_SubverseStylesheetLink", Model.Context.Name, new ViewDataDictionary(ViewData))
+    }*@
+}
+
+<style type="text/css">
+    body > .content .link .rank {
+        width: 3.2ex;
+    }
+</style>
+
+<div id="container">
+
+    @await Component.InvokeAsync("Sidebar", new { domainReference = Model.Context })
+
+    <div class="content" role="main">
+
+        @*Top Sort Span Buttons*@
+        @if (Model.Context != null && Model.Sort == Voat.Domain.Models.SortAlgorithm.Top)
+        {
+            <div>
+                <ul class="tabmenu submenu">
+                    @{
+                        var spans = new SortSpan[] { SortSpan.Day, SortSpan.Week, SortSpan.Month, SortSpan.Quarter, SortSpan.Year, SortSpan.All };
+                        foreach (var span in spans)
+                        {
+                            <li class='@(Model.Span.HasValue && Model.Span.Value == span ? "selected" : "disabled")'>@Html.RouteLink(span.ToString(), Model.Items.RouteName, new { sort = (Model.Sort == null ? "" : Model.Sort.ToString().ToLower()), span = span.ToString().ToLower() })</li>
+                        }
+                    }
+                </ul>
+            </div>
+         }
+
+        <div class="sitetable linklisting">
+            @*@if (Model.IsActualSubverse)
+            {
+                @await Component.InvokeAsync("StickiedSubmission", Model.Context)
+            }
+            else if (Model.Context == null || (Model.Context != null && Model.Context.Type != DomainType.Set))
+            {
+                @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
+                @await Component.InvokeAsync("Featured")
+                @await Component.InvokeAsync("StickiedSubmission", null)
+            }
+
+            @if (Model.Submissions.Count <= 0)
+            {
+                Html.RenderPartial("_DefaultMessage");
+            }*@
+
+            @foreach (var vote in Model.Items)
+            {
+                @Html.Partial("_VoteListItem.cshtml", vote, new ViewDataDictionary(ViewData) { { "CssClass", new string[] { counter % 2 == 0 ? "even" : "odd" } } })
+                counter++;
+            }
+        </div>
+
+        @{
+
+            Model.Items.RouteData = ViewContext.RouteData.Values;
+            if (Model.Sort != null)
+            {
+                Model.Items.RouteData["sort"] = Model.Sort.ToString().ToLower();
+            }
+            if (Model.Span != null)
+            {
+                Model.Items.RouteData["span"] = Model.Span.ToString().ToLower();
+            }
+            //if (!String.IsNullOrEmpty(Context.Request.Query["frontpage"]))
+            //{
+            //    Model.Submissions.RouteData["frontpage"] = Context.Request.Query["frontpage"];
+            //}
+        }
+        @Html.DisplayFor(model => Model.Items, "IPaginatedList")
+
+        @*@if (!Model.IsActualSubverse)
+        {
+            <div>
+                <a href="/random">try a random subverse</a> or <a href="/randomnsfw">a NSFW random subverse</a>
+            </div>
+        }*@
+    </div>
+</div>

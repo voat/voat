@@ -42,7 +42,7 @@
 
 <div id="container" class="page-userprofile">
     
-    @await Component.InvokeAsync("Sidebar", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.User, User.Identity.Name))
+    @await Component.InvokeAsync("Sidebar", new { domainReference = new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.User, User.Identity.Name) })
 
     <div class="content" role="main">
         <div class="row nomargin">

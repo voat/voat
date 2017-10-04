@@ -39,7 +39,7 @@ namespace Voat.Utilities
             if (modList != null)
             {
                 //just ensure we filter - probably don't have to but this protects a bit
-                return modList.Where(x => x.Subverse.Equals(subverse, StringComparison.OrdinalIgnoreCase));
+                return modList.Where(x => x.Subverse.ToLower() == subverse.ToLower());
             }
             else
             {
@@ -60,7 +60,7 @@ namespace Voat.Utilities
         {
             var mods = GetModerators(subverse, modList);
             return mods.Any(x =>
-                x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+                x.UserName.ToLower() == userName.ToLower()
                 && (levels == null || (levels != null && levels.Any(l => x.Power == (int)l)))
             );
         }
@@ -79,7 +79,7 @@ namespace Voat.Utilities
 
             var userName = user.Identity.Name;
             var mods = GetModerators(subverse, modList);
-            var o = mods.FirstOrDefault(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase));
+            var o = mods.FirstOrDefault(x => x.UserName.ToLower() == userName.ToLower());
             if (o != null)
             {
                 return (ModeratorLevel)Enum.Parse(typeof(ModeratorLevel), o.Power.ToString());
@@ -154,7 +154,7 @@ namespace Voat.Utilities
                 if (r != null && r.Any())
                 {
                     result = r.Any(x =>
-                                x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) &&
+                                x.UserName.ToLower() == userName.ToLower() &&
                                 HasPermission((ModeratorLevel)x.Power, action));
                 }
                 //if they don't have permissions check if global janitor and request is for janitor role 

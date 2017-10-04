@@ -10,20 +10,23 @@ namespace Voat.Tests.CommandTests.Framework
     {
         private CommandStage? _stage;
         private bool _pass;
-
+        public List<CommandStage> StagesExecuted { get; set; } = new List<CommandStage>();
         public TestCommand(CommandStage? stage, bool pass = true)
         {
             _stage = stage;
             _pass = pass;
         }
         public CommandStage SetComandStageMask { set => CommandStageMask = value; }
-        protected override Task<CommandResponse> ExecuteStage(CommandStage stage)
+
+        protected override Task<CommandResponse> ExecuteStage(CommandStage stage, CommandResponse previous)
         {
-            var r = new CommandResponse(Status.Success, "");
+            StagesExecuted.Add(stage);
+
+            var r = new CommandResponse(Status.Success, stage.ToString());
 
             if (_stage.HasValue && stage == _stage.Value && !_pass)
             {
-                r = CommandResponse.FromStatus(Status.Error, stage.ToString());
+                r.Status = Status.Denied;
             }
             return Task.FromResult(r);
         }

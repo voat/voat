@@ -40,7 +40,6 @@ namespace Voat.Controllers
         }
         public ActionResult Type(ErrorType type)
         {
-            
             var viewName = "Index";
             var errorModel = ErrorViewModel.GetErrorViewModel(type);
             return View(viewName, errorModel);

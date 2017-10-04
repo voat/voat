@@ -69,7 +69,7 @@ namespace Voat.Domain.Command
                         //Added block
                         CacheHandler.Instance.Replace<IList<BlockedItem>>(key, new Func<IList<BlockedItem>, IList<BlockedItem>>(x =>
                         {
-                            var entry = x.FirstOrDefault(b => b.Type == _domainType && b.Name.Equals(_name, StringComparison.OrdinalIgnoreCase));
+                            var entry = x.FirstOrDefault(b => b.Type == _domainType && b.Name.ToLower() == _name.ToLower());
                             if (entry == null)
                             {
                                 x.Add(new BlockedItem() { Type = this._domainType, Name = this._name, CreationDate = Repository.CurrentDate });
@@ -82,7 +82,7 @@ namespace Voat.Domain.Command
                         //Removed block
                         CacheHandler.Instance.Replace<IList<BlockedItem>>(key, new Func<IList<BlockedItem>, IList<BlockedItem>>(x =>
                         {
-                            var entry = x.FirstOrDefault(b => b.Type == _domainType && b.Name.Equals(_name, StringComparison.OrdinalIgnoreCase));
+                            var entry = x.FirstOrDefault(b => b.Type == _domainType && b.Name.ToLower() == _name.ToLower());
                             if (entry != null)
                             {
                                 x.Remove(entry);

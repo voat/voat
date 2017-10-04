@@ -110,7 +110,7 @@ namespace Voat.Controllers
             }
 
             // make sure that the combination of selected subverse and submission subverse are linked
-            if (!submission.Subverse.Equals(subverseName, StringComparison.OrdinalIgnoreCase))
+            if (!submission.Subverse.IsEqual(subverseName))
             {
                 return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }

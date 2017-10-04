@@ -28,7 +28,7 @@
 
 <div id="container">
     
-    @await Component.InvokeAsync("Sidebar", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.User, userName))
+    @await Component.InvokeAsync("Sidebar", new { domainReference = new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.User, userName) })
 
     <div class="content" role="main">
 

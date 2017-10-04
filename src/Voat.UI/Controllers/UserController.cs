@@ -168,7 +168,7 @@ namespace Voat.Controllers
             {
                 return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.NotFound));
             }
-            if (!User.Identity.IsAuthenticated || (User.Identity.IsAuthenticated && !User.Identity.Name.Equals(originalUserName, StringComparison.OrdinalIgnoreCase)))
+            if (!User.Identity.IsAuthenticated || (User.Identity.IsAuthenticated && !User.Identity.Name.IsEqual(originalUserName)))
             {
                 return RedirectToAction("Overview");
             }

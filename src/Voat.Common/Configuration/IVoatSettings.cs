@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using Voat.Common.Models;
 
@@ -68,6 +69,9 @@ namespace Voat.Common.Configuration
         IDictionary<string, LogLevel> LogLevels { get; set; }
         IDictionary<string, string> AreaMaps { get; set; }
 
+        OutgoingTraffic OutgoingTraffic { get; set; }
+
+        PasswordOptions PasswordOptions { get; set; }
     }
 
 }

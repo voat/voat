@@ -146,18 +146,17 @@
                     alert("error on post");
                 },
                 success: function (result) {
+                    $("#container").replaceWith(result.data.html);
+                    voat.voting.syncValidationChanges();
+                    voat.voting.gimmieTheFormMEOW();
+                    document.body.scrollTop = document.documentElement.scrollTop = 0;
 
                     if (result.success) {
-
+                        //change url on success save to the view path
+                        history.pushState({}, "Viewing Vote", "../" + result.data.id);
                     } else {
 
                     }
-
-                    //TODO: Need to return a commandResponse object and act on success/failure
-                    $("#container").replaceWith(result.data);
-                    voat.voting.syncValidationChanges();
-                    voat.voting.gimmieTheFormMEOW();
-                    //history.pushState({what:"isthis"}, "View", "?view=true");
                 }
             });
         }

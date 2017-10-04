@@ -18,76 +18,34 @@
 
 *@
 
-@model Voat.Domain.Models.Vote
+@using Voat.Models;
+@using Voat.Domain.Models;
+
+@model Voat.Domain.Models.VoteAggregate
 
 <div id="container">
-    <div role="main">
-            <div class="row nomargin">
-                <div>
-                <h1>@Model.Title</h1>
-                @if (!String.IsNullOrEmpty(Model.FormattedContent))
-                {
-                    <div class="usertext-body original may-blank-within" style="display: block;">
-                        <div class="md">
-                            <p>@Html.Raw(Model.FormattedContent)</p>
-                        </div>
-                    </div>
-                }
-                </div>
-                <div>
-                    <div class="alert-title">Options</div>
-                    <div data-voat-list="Options">
-                        @if (Model.Options != null && Model.Options.Any())
-                        {
-                            for (int i = 0; i < Model.Options.Count; i++)
-                            {
-                                <h1>@Model.Options[i].Title</h1>
-                                @if (!String.IsNullOrEmpty(Model.Options[i].FormattedContent))
-                                {
-                                    <div class="usertext-body original may-blank-within" style="display: block;">
-                                        <div class="md">
-                                            <p>@Html.Raw(Model.Options[i].FormattedContent)</p>
-                                        </div>
-                                    </div>
-                                }
-                                if (Model.Options[i].Outcomes != null && Model.Options[i].Outcomes.Count > 0)
-                                {
-                                    <div class="alert-title">Outcome</div>
-                                    foreach (var outcome in Model.Options[i].Outcomes)
-                                    {
-                                        <div class="vote-outcome">
-                                            <p>@outcome.ToDescription()</p>
-                                        </div>
-                                    }
-                                }
-                                else
-                                {
-                                        <p> No outcomes, no consequences!</p>
-                                }
-                            }
-                        }
-                        else
-                        {
-                            <p>What are my options! I need options!</p>
-                        }
-                    </div>
-                </div>
-                @if (Model.Restrictions != null && Model.Restrictions.Any())
-                {
-                    <div>
-                        <div class="alert-title">Restrictions</div>
-                        <div data-voat-list="Restrictions">
-                            @for (int i = 0; i < Model.Restrictions.Count; i++)
-                            {
-                                <p>@Model.Restrictions[i].ToDescription()</p>
-                            }
-                        </div>
-                    </div>
-                }
-                @if (Model.CreatedBy == User.Identity.Name)
-                {
-                    <a href="/v/@Model.Subverse/vote/edit/@Model.ID">Edit</a>
-                }
-            </div>
+    @*
+        display 1 submission with details and comments
+    *@
+
+    @await Component.InvokeAsync("Sidebar",
+        new
+        {
+            domainReference = new Voat.Domain.Models.DomainReference(DomainType.Subverse, Model.Vote.Subverse),
+            contentReference = new ContentReference() { Type = ContentType.Vote, ID = Model.Vote.SubmissionID }
+        })
+
+    <div class="content" role="main">
+
+        @Html.Partial("~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml")
+
+        @Html.Partial("_VoteDetail.cshtml", Model)
+
+        @*@Html.Partial("_AddComment", new Voat.Data.Models.Comment() { SubmissionID = submission.ID })*@
+
+        <div class="horizontal-line"></div>
+
+        @*@Html.Partial("~/Views/Shared/Comments/_CommentTree.cshtml", Model, ViewData)*@
+
     </div>
 </div>

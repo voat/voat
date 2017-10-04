@@ -96,7 +96,7 @@ namespace Voat.Domain.Models
                         var userDef = Parse(userName);
                         if (userDef != null)
                         {
-                            if (distinctOnly && users.Any(x => x.Name.Equals(userDef.Name, StringComparison.OrdinalIgnoreCase) && x.Type == userDef.Type))
+                            if (distinctOnly && users.Any(x => x.Name.ToLower() == userDef.Name.ToLower() && x.Type == userDef.Type))
                             {
                                 continue;
                             }

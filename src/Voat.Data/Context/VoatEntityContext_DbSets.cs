@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Voat.Data.Models
 {
-    public partial class VoatEntityContext : DbContext
+    public abstract partial class VoatEntityContext : DbContext
     {
         public virtual DbSet<ApiClient> ApiClient { get; set; }
         public virtual DbSet<ApiLog> ApiLog { get; set; }

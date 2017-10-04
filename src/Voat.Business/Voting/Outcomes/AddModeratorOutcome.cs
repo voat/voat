@@ -31,7 +31,7 @@ namespace Voat.Voting.Outcomes
 
         public override string ToDescription()
         {
-            return $"@{UserName} will be added as a moderator on v/{Subverse} as a {Level.ToString()}";
+            return $"@{UserName} will be added as a moderator on v/{Subverse} as {Level.ToString()}";
         }
 
         public ModeratorLevel Level { get; set; }

@@ -40,7 +40,7 @@
     @Html.Partial("_SearchBox", new SearchViewModel() { Sub = Model.Name }, ViewData)
     @if (submission != null)
     {
-        @Html.Partial("~/Views/Shared/Sidebars/_SidebarSubmissionInfo.cshtml", submission)
+        @Html.Partial("_SidebarSubmissionInfo.cshtml", submission)
     }
 
     <div class="spacer">
@@ -53,7 +53,7 @@
             Discuss
         </a>
     </div>
-    @if (VoatSettings.Instance.EnableVotes)
+    @if (VoatSettings.Instance.EnableVotes || User.IsInAnyRole(new[] { Voat.Domain.Models.UserRole.GlobalAdmin, Voat.Domain.Models.UserRole.Admin, Voat.Domain.Models.UserRole.DelegateAdmin }))
     {
         <div class="spacer">
             <a href="/v/@Model.Name/vote/create" class="btn-whoaverse btn-block contribute submit-text">
@@ -64,7 +64,7 @@
     <div class="spacer spacerbig">
         <div class="titlebox">
 
-            @Html.Partial("Sidebars/_SidebarModToolbox")
+            @Html.Partial("~/Views/Shared/Components/Sidebar/_SidebarModToolbox.cshtml")
 
             <h1 class="hover whoaversename">
                 <a href="/v/@Model.Name" class="hover">@Model.Name</a>
@@ -74,7 +74,7 @@
                 *@
             </h1>
 
-            @Html.Partial("Sidebars/Buttons/_SubscribeButtons", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Subverse, Model.Name), new ViewDataDictionary(ViewData) { { "UserData", userData } })
+            @Html.Partial("~/Views/Shared/Sidebars/Buttons/_SubscribeButtons.cshtml", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Subverse, Model.Name), new ViewDataDictionary(ViewData) { { "UserData", userData } })
 
             <span class="subscribers">
                 <span id="subscriberCount" class="number">@Model.SubscriberCount</span>
@@ -110,7 +110,6 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <p>Your CCP for this sub: @userData.ContributionPointsForSubverse(Model.Name)</p>
-
                     }
                 }
                 @if (Model.IsAnonymized.HasValue)

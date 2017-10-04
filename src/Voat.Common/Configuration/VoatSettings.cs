@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -144,7 +145,6 @@ namespace Voat.Configuration
         public string SiteThemeDefault { get; set; } = "light"; //valid values: light or dark
         public int SubverseUpdateTimeLockInHours { get; set; } = 48;
 
-        
         public RuntimeStateSetting RuntimeState { get; set; } = RuntimeStateSetting.Enabled;
 
         public bool ThumbnailsEnabled { get; set; } = true;
@@ -153,10 +153,7 @@ namespace Voat.Configuration
         public int MinimumTitleLength { get; set; } = 10;
         public int MaximumTitleLength { get; set; } = 200;
         public ApiInfo ApiInfo { get; set; } = new ApiInfo();
-        //public string ApiEndPoint { get; set; } = "";
-        //public string ApiPublickKey { get; set; } = "";
-        //public string ApiPrivateKey { get; set; } = "";
-
+        
         public string[] ReservedSubverseNames { get; set; } = new string[] { };
         public string[] ReservedUserNames { get; set; } = new string[] { };
 
@@ -175,6 +172,11 @@ namespace Voat.Configuration
         public IDictionary<string, LogLevel> LogLevels { get; set; } = new Dictionary<string, LogLevel>();
 
         public IDictionary<string, string> AreaMaps { get; set; } = new Dictionary<string, string>();
+
+        public OutgoingTraffic OutgoingTraffic { get; set; } = new OutgoingTraffic();
+
+        public PasswordOptions PasswordOptions { get; set; } = new PasswordOptions() { RequiredLength = 6 };
+
         #endregion AppSettings Accessors
 
     }

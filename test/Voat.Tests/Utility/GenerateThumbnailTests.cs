@@ -33,6 +33,7 @@ using Voat.IO;
 using System.Net.Http;
 using Voat.Domain.Command;
 using Voat.Common.Models;
+using Voat.Configuration;
 
 namespace Voat.Tests.Utils
 {
@@ -82,8 +83,11 @@ namespace Voat.Tests.Utils
         {
             var result = await ThumbGenerator.GenerateThumbnail("https://voat.co/graphics/voat-goat.png", false);
             var key = new FileKey(result.Response, FileType.Thumbnail);
-            Assert.AreEqual(true, await FileManager.Instance.Exists(key), "Thumb did not get generated from image url");
+
+
+            Assert.AreEqual(!VoatSettings.Instance.OutgoingTraffic.Enabled, await FileManager.Instance.Exists(key), "Thumb did not get generated from image url");
             await FileManager.Instance.Delete(key);
+
             Assert.AreEqual(false, await FileManager.Instance.Exists(key), "Thumb did not delete");
         }
     }

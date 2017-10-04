@@ -1,0 +1,91 @@
+@*
+    
+    Copyright(c) Voat, Inc.
+
+    This file is part of Voat.
+
+    This source file is subject to version 3 of the GPL license,
+    that is bundled with this package in the file LICENSE, and is
+    available online at http://www.gnu.org/licenses/gpl-3.0.txt;
+    you may not use this file except in compliance with the License.
+
+    Software distributed under the License is distributed on an
+    "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express
+    or implied. See the License for the specific language governing
+    rights and limitations under the License.
+
+    All Rights Reserved.
+
+*@
+
+@model Voat.Domain.Models.VoteAggregate
+
+@{
+    DateTime submissionDate = Model.Vote.CreationDate;
+    string postAge = Age.ToRelative(submissionDate);
+
+    string submissionDomain = Model.Vote.Subverse;
+    string submissionDomainHref = "/v/" + Model.Vote.Subverse;
+    //if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
+    //{
+    //    var domain = UrlUtility.GetDomainFromUri(Model.Url);
+    //    submissionDomain = domain.SubstringMax(50, false, "...");
+    //    submissionDomainHref = "/domains/" + domain;
+    //}
+}
+
+<div class="modal fade" id="linkFlairSelectModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true"></div>
+
+<div id="siteTable" class="sitetable linklisting">
+    <div id="submissionid-@Model.Vote.ID" class="submission odd link self id-@Model.Vote.ID" data-fullname="@Model.Vote.ID" data-ups="" data-downs="">
+        <a name="submissionTop"></a>
+        <p class="parent"></p>
+
+        @*@Html.Partial("~/Views/Shared/VotingIcons/_VotingIconsSubmission.cshtml", Model)*@
+        <div class="scorebar">
+        </div>
+        @{
+            string ahrefTarget = "_self";
+
+            if (User.Identity.IsAuthenticated)
+            {
+                var userData = Voat.Domain.UserData.GetContextUserData(Context);
+                if (userData.Preferences.OpenInNewWindow)
+                {
+                    ahrefTarget = "_blank";
+                }
+            }
+
+            @*if (Model.ThumbnailUrl != null)
+            {
+                <a class="thumbnail may-blank" href="@Model.Url" target="@ahrefTarget">
+                    <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
+                </a>
+            }*@
+
+            <div class="entry unvoted">
+                <p class="title">
+                    @*@Html.Partial("~/Views/Shared/Submissions/_Flair.cshtml", Model)*@
+                    <a class="title may-blank " tabindex="1" href="@VoatUrlFormatter.VotePagePath(Model.Vote.Subverse, Model.Vote.ID)" title="@Model.Vote.Title">@Model.Vote.Title</a>&#32;<span class="domain">(<a href="@submissionDomainHref">@submissionDomain</a>)</span>
+                </p>
+
+                <p class="tagline">
+                    submitted&#32;<time title="@Model.Vote.CreationDate" datetime="@Model.Vote.CreationDate">@postAge</time>&#32;ago&#32;by&#32;
+                    <span class="userattrs">
+                        <a href="/user/@Model.Vote.CreatedBy" class="author may-blank userinfo" data-username="@Model.Vote.CreatedBy">@Model.Vote.CreatedBy</a>
+                    </span>
+                </p>
+
+                @Html.Partial("_VoteDetailContents.cshtml", Model)
+                @Html.Partial("Buttons/_VoteButtons.cshtml", Model.Vote)
+            </div>
+        }
+        <div class="child"></div>
+        <div class="clearleft">
+            @*IE6fix*@
+        </div>
+    </div>
+    <div class="clearleft">
+        @*IE6fix*@
+    </div>
+</div>

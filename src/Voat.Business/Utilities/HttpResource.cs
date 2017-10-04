@@ -37,16 +37,19 @@ namespace Voat.Utilities
         public Uri RedirectedUri { get => _redirectedUri; }
         public bool Redirected { get => _uri != _redirectedUri; }
         public HttpResourceOptions Options { get => _options; set => _options = value; }
+        public IWebProxy Proxy { get; set; }
 
-        public HttpResource(Uri uri, HttpResourceOptions options = null)
+        public HttpResource(Uri uri, HttpResourceOptions options = null, IWebProxy proxy = null)
         {
             _uri = uri;
             if (options != null)
             {
                 _options = options;
             }
+            Proxy = proxy;
         }
-        public HttpResource(string uri, HttpResourceOptions options = null) : this(new Uri(uri), options)
+
+        public HttpResource(string uri, HttpResourceOptions options = null) : this(new Uri(uri), options, null)
         {
         }
         /// <summary>
@@ -58,7 +61,8 @@ namespace Voat.Utilities
         public async Task<HttpStatusCode> GiddyUp(HttpMethod method = null, HttpContent content = null, HttpCompletionOption options = HttpCompletionOption.ResponseContentRead)
         {
             var handler = new HttpClientHandler() {
-                AllowAutoRedirect = _options.AllowAutoRedirect
+                AllowAutoRedirect = _options.AllowAutoRedirect,
+                Proxy = this.Proxy
             };
 
             using (var httpClient = new HttpClient(handler))
