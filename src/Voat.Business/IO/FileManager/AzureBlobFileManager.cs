@@ -73,6 +73,7 @@ namespace Voat.IO
             switch (key.FileType)
             {
                 case FileType.Badge:
+                    options.ForceDomain = VoatSettings.Instance.SiteDomain;
                     result = base.Uri(key, options);
                     break;
                 case FileType.Avatar:
