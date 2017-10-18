@@ -142,7 +142,7 @@
             @await Component.InvokeAsync("SidebarAd", new Voat.Domain.Models.DomainReference(Voat.Domain.Models.DomainType.Subverse, null))
         </div>
     </div>
-    @if (VoatSettings.Instance.IsVoatBranded)
+    @*@if (VoatSettings.Instance.IsVoatBranded)
     {
         <div class="spacer">
             <div class="sidecontentbox ">
@@ -150,7 +150,7 @@
                     <h1 class="alert-h1">Help us keep Voat alive</h1>
                 </div>
                 <div class="sidecontentbox content">
-                    <img src="https://voat.co/graphics/jumping_goat.png" style="border:0" />
+                    <img src="https://voat.co/images/jumping_goat.png" style="border:0" />
                     <p>Weeee! Voat is flying on our own now. It feels like Freedom.</p>
                     <p>
                         If you can, please donate to help us keep Voat running and free. As a thank you, we will display a donor badge on your profile.
@@ -164,6 +164,6 @@
                 </div>
             </div>
         </div>
-    }
+    }*@
     @Html.Partial("~/Views/Log/_LogSidebarLinks.cshtml")
 </div>

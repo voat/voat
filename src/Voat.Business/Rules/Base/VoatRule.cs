@@ -163,7 +163,7 @@ namespace Voat.Rules
             using (var repo = new Repository())
             {
                 // check how many submission user made in the last hour
-                var userSubmissionsToTargetSub = repo.UserContributionCount(context.UserName, Domain.Models.ContentType.Submission, subverse, DateRange.StartFrom(TimeSpan.FromHours(24)));
+                var userSubmissionsToTargetSub = repo.UserContributionCount(context.UserName, Domain.Models.ContentType.Submission, subverse, DateRange.StartFrom(TimeSpan.FromHours(1)));
 
                 if (limit <= userSubmissionsToTargetSub)
                 {

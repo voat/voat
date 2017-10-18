@@ -93,7 +93,7 @@ namespace Voat.Logging
         /// <returns></returns>
         public override string ToString()
         {
-            return $"{Origin}:{Type.ToString()}{(String.IsNullOrEmpty(UserName) ? "" : $" ({UserName}) ")}{Message}{(Exception != null ? $" Exception: {Exception.ToString()}" : "")}{(Data == null ? "" : " Data:" + Data.ToString())}";
+            return $"{Origin}:{Type.ToString()}{(String.IsNullOrEmpty(UserName) ? " " : $" ({UserName}) ")}{Message}{(Exception != null ? $" Exception: {Exception.ToString()}" : "")}{(Data == null ? "" : " Data:" + Data.ToString())}";
             //return String.Format("{0}:{1}({2}) {3}{4}{5}", Origin, Type.ToString(), UserName, Message, (Exception != null ? $" Exception: {Exception.ToString()}" : "")), (Data == null ? "" : " Data:" + Data.ToString());
         }
     }

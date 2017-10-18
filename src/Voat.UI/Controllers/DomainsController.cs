@@ -27,6 +27,7 @@ using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Voat.Common;
+using Voat.Configuration;
 using Voat.Data;
 using Voat.Domain.Query;
 using Voat.Models.ViewModels;
@@ -39,6 +40,13 @@ namespace Voat.Controllers
        
         public async Task<ActionResult> Index(int? page, string domainName, string sortingMode)
         {
+
+            if (!VoatSettings.Instance.DomainSearchEnabled)
+            {
+                return ErrorView(new ErrorViewModel() { Title = "Domain Search Disabled", Description = "Listings by domain is currently disabled", Footer = "Sorry" });
+                //return GenericErrorView(new ErrorViewModel() { Title = "Domain Search Disabled", Description = "Listings by domain is currently disabled", FooterMessage = "Sorry" });
+            }
+
             const int pageSize = 25;
             int pageNumber = (page ?? 0);
 

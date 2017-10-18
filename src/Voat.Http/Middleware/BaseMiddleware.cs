@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Configuration;
 
 namespace Voat.Http.Middleware
 {
@@ -28,6 +31,12 @@ namespace Voat.Http.Middleware
 
             await Next.Invoke(context);
         }
-
+        public static async Task WriteJsonResponse(HttpContext context, HttpStatusCode statusCode, object responseObject)
+        {
+            var responseJson = JsonConvert.SerializeObject(responseObject, JsonSettings.APISerializationSettings);
+            context.Response.StatusCode = (int)statusCode;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(responseJson);
+        }
     }
 }

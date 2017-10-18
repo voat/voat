@@ -62,7 +62,7 @@ namespace Voat.UI.ViewComponents
                 {
                     var ad = (from x in db.Ad
                               where
-                              ((subverse != null && x.Subverse.Equals(subverse, StringComparison.InvariantCultureIgnoreCase) || (x.Subverse == null)))
+                              ((subverse != null && subverse.ToLower() == subverse.ToLower() || (x.Subverse == null)))
                               && (x.EndDate >= Repository.CurrentDate && x.StartDate <= Repository.CurrentDate)
                               && x.IsActive
                               orderby x.Subverse descending

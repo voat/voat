@@ -144,7 +144,7 @@ namespace Voat.Http
                                 else
                                 {
                                     //page requests
-                                    context.Response.Redirect("/inactive.min.htm");
+                                    context.Response.Redirect("/static/inactive.min.htm");
                                     result = true;
                                 }
                             }

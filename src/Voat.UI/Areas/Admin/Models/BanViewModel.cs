@@ -11,7 +11,7 @@ namespace Voat.UI.Areas.Admin.Models
     public class BanViewModel
     {
         [Required]
-        [StringLength(100)]
+        [StringLength(1000)]
         public string Name { get; set; }
 
         [Required]

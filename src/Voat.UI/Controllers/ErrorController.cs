@@ -34,9 +34,21 @@ namespace Voat.Controllers
 {
     public class ErrorController : BaseController
     {
+        public ActionResult Status(int statusCode)
+        {
+            var type = ErrorType.Default;
+            switch (statusCode)
+            {
+                case 404:
+                    type = ErrorType.NotFound;
+                    break;
+            }
+
+            return Type(type);
+        }
         public ActionResult Index()
         {
-            return Type(ErrorType.Default);
+            return Status(500);
         }
         public ActionResult Type(ErrorType type)
         {

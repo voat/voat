@@ -157,6 +157,7 @@ namespace Voat
             else
             {
                 app.UseExceptionHandler("/Error");
+                app.UseStatusCodePagesWithReExecute("/error/status/{0}");
             }
 
             app.UseStaticFiles();

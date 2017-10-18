@@ -2,15 +2,15 @@
 // More info at https://go.microsoft.com/fwlink/?LinkId=808241
 [
     {
-        "outputFileName": "wwwroot/ddos.min.htm",
+        "outputFileName": "wwwroot/static/ddos.min.htm",
         "inputFiles": [
-            "wwwroot/ddos.htm"
+            "wwwroot/static/ddos.htm"
         ]
     },
     {
-        "outputFileName": "wwwroot/inactive.min.htm",
+        "outputFileName": "wwwroot/static/inactive.min.htm",
         "inputFiles": [
-            "wwwroot/inactive.htm"
+            "wwwroot/static/inactive.htm"
         ]
     },
     {

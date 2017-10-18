@@ -10,8 +10,19 @@ namespace Voat.Common
 {
     public static class StringExtensions
     {
+        public static Dictionary<string, string> ToKeyValuePairs(this string value, string pairDelim = ";", string keyValueDelim = "=")
+        {
+            return ToKeyValuePairs(value, new string[] { pairDelim }, new string[] { keyValueDelim });
+        }
+        public static Dictionary<string, string> ToKeyValuePairs(this string value, string[] pairDelim, string[] keyValueDelim)
+        {
+            var keyValuePairs = value.Split(pairDelim, StringSplitOptions.RemoveEmptyEntries)
+                                .Select(x => x.Split(keyValueDelim, StringSplitOptions.RemoveEmptyEntries))
+                                .Where(x => x.Length == 2)
+                                .ToDictionary(x => x.First().TrimSafe(), x => x.Last().TrimSafe());
+            return keyValuePairs;
+        }
 
-        
         public static string NullIfEmpty(this string text)
         {
             if (String.IsNullOrEmpty(text))

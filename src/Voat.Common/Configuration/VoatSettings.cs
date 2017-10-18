@@ -105,6 +105,8 @@ namespace Voat.Configuration
         public int MinimumCommentPointsForSubverseCreation { get; set; } = 10;
 
         public int MinimumSubmissionPointsForSubverseCreation { get; set; } = 10;
+        public int MinimumCommentPointsForSubmissionCreation { get; set; } = 0;
+        
         public int MinimumCommentPointsForCaptchaMessaging { get; set; } = 100;
         public int MinimumCommentPointsForCaptchaSubmission { get; set; } = 25;
         public int MinimumCommentPointsForSendingChatMessages { get; set; } = 100;
@@ -123,6 +125,7 @@ namespace Voat.Configuration
 
         public bool RegistrationEnabled { get; set; } = true;
         public bool SearchEnabled { get; set; } = true;
+        public bool DomainSearchEnabled { get; set; } = true;
         public bool SetsEnabled { get; set; } = true;
         public bool SetCreationEnabled { get; set; } = true;
         public bool SignalrEnabled { get; set; } = false;

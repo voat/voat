@@ -1176,10 +1176,17 @@ namespace Voat
 
             #endregion
 
-            //catch The Others 
+            //catch Errors
+            routes.MapRoute(
+                name: "ErrorStatus",
+                template: "error/status/{statusCode:int}",
+                defaults: new { controller = "Error", action = "Status" }
+            );
+
+            //catch Errors
             routes.MapRoute(
                 name: "Error",
-                template: "Error/{*type}",
+                template: "error/{*type}",
                 defaults: new { controller = "Error", action = "Type" }
             );
 

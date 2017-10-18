@@ -44,6 +44,9 @@ namespace Voat.Common.Configuration
         int MinimumCommentPointsForSendingMessages { get; }
         int MinimumCommentPointsForSubverseCreation { get; }
         int MinimumSubmissionPointsForSubverseCreation { get; }
+        int MinimumCommentPointsForSubmissionCreation { get; }
+        
+
         string Origin { get; }
         string RecaptchaPrivateKey { get; }
         string RecaptchaPublicKey { get; }
@@ -51,6 +54,7 @@ namespace Voat.Common.Configuration
         bool RegistrationEnabled { get; }
         RuntimeStateSetting RuntimeState { get; }
         bool SearchEnabled { get; }
+        bool DomainSearchEnabled { get; }
         bool SetCreationEnabled { get; }
         bool SetsEnabled { get; }
         bool SignalrEnabled { get; }

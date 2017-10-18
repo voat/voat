@@ -25,7 +25,7 @@ namespace Voat.Data
             return count;
         }
 
-        private int UserCommentCount(string userName, DateRange range = null, string subverse = null)
+        private int UserCommentCount(string userName, DateRange range = null, string subverse = null, bool? isDeleted = null)
         {
             if (range == null)
             {
@@ -53,12 +53,19 @@ namespace Voat.Data
                 //q.Parameters.Add("StartDate", range.StartDate.Value);
                 q.Parameters.AddDynamicParams(new { StartDate = range.StartDate.Value });
             }
+
             if (range.EndDate.HasValue)
             {
                 q.Append(x => x.Where, "c.\"CreationDate\" <= @EndDate");
                 //Bug in Dapper this line looses TimeZome info see: https://github.com/npgsql/npgsql/issues/972#issuecomment-218745473
                 //q.Parameters.Add("EndDate", range.EndDate.Value);
                 q.Parameters.AddDynamicParams(new { EndDate = range.EndDate.Value });
+            }
+
+            if (isDeleted.HasValue)
+            {
+                q.Append(x => x.Where, "\"IsDeleted\" = @IsDeleted");
+                q.Parameters.Add("IsDeleted", isDeleted.Value);
             }
 
             if (!String.IsNullOrEmpty(subverse))
@@ -73,7 +80,7 @@ namespace Voat.Data
             return count;
         }
 
-        private int UserSubmissionCount(string userName, DateRange range, SubmissionType? type = null, string subverse = null)
+        private int UserSubmissionCount(string userName, DateRange range, SubmissionType? type = null, string subverse = null, bool? isDeleted = null)
         {
             if (range == null)
             {
@@ -91,6 +98,7 @@ namespace Voat.Data
                 //q.Parameters.Add("StartDate", range.StartDate.Value);
                 q.Parameters.AddDynamicParams(new { StartDate = range.StartDate.Value });
             }
+
             if (range.EndDate.HasValue)
             {
                 q.Append(x => x.Where, "\"CreationDate\" <= @EndDate");
@@ -99,11 +107,19 @@ namespace Voat.Data
                 q.Parameters.AddDynamicParams(new { EndDate = range.EndDate.Value });
             }
 
-            if (type != null)
+            if (isDeleted.HasValue)
+            {
+                q.Append(x => x.Where, "\"IsDeleted\" = @IsDeleted");
+                q.Parameters.Add("IsDeleted", isDeleted.Value);
+            }
+
+
+            if (type.HasValue)
             {
                 q.Append(x => x.Where, "\"Type\" = @Type");
-                q.Parameters.Add("Type", type);
+                q.Parameters.Add("Type", (int)type.Value);
             }
+
             if (!String.IsNullOrEmpty(subverse))
             {
                 q.Append(x => x.Where, "\"Subverse\" = @Subverse");

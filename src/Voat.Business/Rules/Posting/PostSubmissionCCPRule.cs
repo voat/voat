@@ -48,15 +48,24 @@ namespace Voat.Rules.Posting
             //var isModerator = context.UserData.Information.Moderates.Any(x => x == context.Subverse.Name);
             var userData = context.UserData;
             var userInfo = userData.Information;
+
             if (userInfo.CommentPoints.Sum <= base.MinimumCommentPoints && userData.TotalSubmissionsPostedIn24Hours >= postThreshold)
             {
                 return CreateOutcome(RuleResult.Denied, "An Account with a CCP value of {0} is limited to {1} posts(s) in 24 hours", userInfo.CommentPoints.Sum, postThreshold);
             }
+
             if (userInfo.SubmissionPoints.Sum <= base.MinimumCommentPoints && userData.TotalSubmissionsPostedIn24Hours >= postThreshold)
             {
                 return CreateOutcome(RuleResult.Denied, "An Account with a SCP value of {0} is limited to {1} posts(s) in 24 hours", userInfo.SubmissionPoints.Sum, postThreshold);
             }
 
+            //less than zero turns off this check
+            var minCCPForPost = VoatSettings.Instance.MinimumCommentPointsForSubmissionCreation;
+            if (minCCPForPost != -1 && userInfo.CommentPoints.Sum < minCCPForPost)
+            {
+                return CreateOutcome(RuleResult.Denied, $"An Account must have a minimum of {minCCPForPost} CCP to create a submission");
+            }
+            
             return base.EvaluateRule(context);
         }
     }

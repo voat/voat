@@ -102,6 +102,7 @@ namespace Voat.Controllers
                     return ErrorView(ErrorViewModel.GetErrorViewModel(ErrorType.SubverseDisabled));
                 }
             }
+
             var options = new SearchOptions(Request.QueryString.Value);
             var q = new QueryModLogBannedUsers(subverse, options);
             var results = await q.ExecuteAsync();
