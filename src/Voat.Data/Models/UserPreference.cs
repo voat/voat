@@ -32,5 +32,6 @@ namespace Voat.Data.Models
         public Nullable<int> CollapseCommentLimit { get; set; }
         public bool BlockAnonymized { get; set; }
         public Nullable<int> CommentSort { get; set; }
+        public bool DisplayThumbnails { get; set; }
     }
 }

@@ -63,15 +63,14 @@ namespace Voat.UI.Utilities
     {
         public static async Task<bool> Validate(HttpRequest request)
         {
-            if (VoatSettings.Instance.OutgoingTraffic.Enabled)
-            {
+            //if (VoatSettings.Instance.OutgoingTraffic.Enabled)
+            //{
                 string privateKey = VoatSettings.Instance.RecaptchaPrivateKey;
                 string encodedResponse = request.Form["g-Recaptcha-Response"];
 
                 using (var httpResource = new HttpResource(
                     new Uri("https://www.google.com/recaptcha/api/siteverify"), 
-                    null, 
-                    VoatSettings.Instance.OutgoingTraffic.Proxy.ToWebProxy()))
+                    null))
                 {
                     var content = new FormUrlEncodedContent(new[]
                     {
@@ -86,11 +85,11 @@ namespace Voat.UI.Utilities
 
                     return captchaResponse.Success;
                 }
-            }
-            else
-            {
-                return false;
-            }
+            //}
+            //else
+            //{
+            //    return false;
+            //}
         }
         private class ReCaptchaResponse
         {

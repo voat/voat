@@ -1,5 +1,5 @@
 @*
-    
+
     Copyright(c) Voat, Inc.
 
     This file is part of Voat.
@@ -35,7 +35,7 @@
 @using (Html.BeginForm("UserPreferences", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-group">
         @Html.LabelFor(m => m.DisableCSS, new { @class = "col-md-4 control-label" })
         <div class="col-md-6">
@@ -76,7 +76,12 @@
         @Html.LabelFor(m => m.CommentSort, new { @class = "col-md-4 control-label" })
         <div class="col-md-6">
             <select asp-for="CommentSort" asp-items="Html.GetEnumSelectList(typeof(Voat.Domain.Models.CommentSortAlgorithm))" class="form-control"></select>
-            @*@Html.EnumDropDownListFor(m => m.CommentSort, new { @class = "form-control" })*@
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.DisplayThumbnails, new { @class = "col-md-4 control-label" })
+        <div class="col-md-6">
+            @Html.CheckBoxFor(m => m.DisplayThumbnails, new { @class = "form-control" })
         </div>
     </div>
     <div class="form-group">

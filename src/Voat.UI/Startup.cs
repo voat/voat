@@ -144,8 +144,7 @@ namespace Voat
             loggerFactory.AddDebug();
             loggerFactory.AddProvider(new VoatLoggerProvider());
             
-            ////Configure Voat Middleware
-            app.UseVoatGlobalExceptionLogger();
+            
 
             if (env.IsDevelopment())
             {
@@ -159,6 +158,9 @@ namespace Voat
                 app.UseExceptionHandler("/Error");
                 app.UseStatusCodePagesWithReExecute("/error/status/{0}");
             }
+            
+            ////Configure Voat Middleware
+            app.UseVoatGlobalExceptionLogger();
 
             app.UseStaticFiles();
             app.UseIdentity();

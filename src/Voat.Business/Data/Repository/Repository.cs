@@ -686,7 +686,7 @@ namespace Voat.Data
         {
             var data = (from x in _db.SubverseModerator
                         where x.Subverse.ToLower() == subverse.ToLower()
-                        orderby x.Power ascending, x.CreationDate descending
+                        orderby x.Power ascending, x.CreationDate ascending
                         select x).ToList();
 
             return data.AsEnumerable();
@@ -1206,7 +1206,7 @@ namespace Voat.Data
 
             //TODO: Re-implement this logic
             //HACK: Warning, Super hacktastic
-            if (!String.IsNullOrEmpty(options.Phrase))
+            if (VoatSettings.Instance.SearchEnabled && !String.IsNullOrEmpty(options.Phrase))
             {
                 query.Append(x => x.Where, "(s.\"Title\" LIKE CONCAT('%', @Phrase, '%') OR s.\"Content\" LIKE CONCAT('%', @Phrase, '%') OR s.\"Url\" LIKE CONCAT('%', @Phrase, '%'))");
                 ////WARNING: This is a quickie that views spaces as AND conditions in a search.
@@ -2653,6 +2653,7 @@ namespace Voat.Data
             p.DisplayCommentCount = 5;
             p.HighlightMinutes = 30;
             p.VanityTitle = null;
+            p.DisplayThumbnails = true;
         }
 
         [Authorize]
@@ -2735,6 +2736,10 @@ namespace Voat.Data
             if (preferences.CommentSort != null)
             {
                 p.CommentSort = (int)preferences.CommentSort.Value;
+            }
+            if (preferences.DisplayThumbnails.HasValue)
+            {
+                p.DisplayThumbnails = preferences.DisplayThumbnails.Value;
             }
             //if (Extensions.IsValidEnumValue(preferences.CommentSort))
             //{

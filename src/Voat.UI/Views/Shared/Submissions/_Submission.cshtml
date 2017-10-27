@@ -24,6 +24,7 @@
     //LINK
     string ahrefTarget = "_self";
     var showNSFWThumbs = false;
+    var userDisplayThumbnails = true;
 
     if (User.Identity.IsAuthenticated)
     {
@@ -34,6 +35,7 @@
         {
             ahrefTarget = "_blank";
         }
+        userDisplayThumbnails = userData.Preferences.DisplayThumbnails;
     }
 
     bool anonymizedSubverse = Model.IsAnonymized;
@@ -76,7 +78,7 @@
     
     @{
 
-        if (Model.ThumbnailUrl != null)
+        if (Model.ThumbnailUrl != null && userDisplayThumbnails)
         {
             if (routeActiveSubverse != null)
             {

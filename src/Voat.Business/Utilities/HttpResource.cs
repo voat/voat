@@ -14,7 +14,7 @@ namespace Voat.Utilities
 {
     public class HttpResourceOptions
     {
-        public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(5);
+        public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(10);
         public bool AllowAutoRedirect { get; set; } = false;
 
     }
@@ -160,9 +160,13 @@ namespace Voat.Utilities
         }
         private void EnsureReady()
         {
-            if (this.Response == null || !this.Response.IsSuccessStatusCode)
+            if (this.Response == null)
             {
                 throw new InvalidOperationException("Request has not been processed");
+            }
+            else if (!this.Response.IsSuccessStatusCode)
+            {
+                throw new InvalidOperationException($"Request returned: {this.Response.StatusCode} {this.Response.ReasonPhrase}");
             }
         }
         private string ContentString

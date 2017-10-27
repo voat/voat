@@ -117,7 +117,7 @@ namespace Voat.Controllers
             var userData = UserData;
             model.RequireCaptcha = userData.Information.CommentPoints.Sum < VoatSettings.Instance.MinimumCommentPointsForCaptchaSubmission && VoatSettings.Instance.CaptchaEnabled;
 
-            return View("Submit", model);
+            return View(model);
         }
        
         // POST: submit
@@ -145,7 +145,7 @@ namespace Voat.Controllers
                 if (!captchaSuccess)
                 {
                     ModelState.AddModelError(string.Empty, "Incorrect recaptcha answer");
-                    return View("Submit");
+                    return View(model);
                 }
             }
 
@@ -189,7 +189,7 @@ namespace Voat.Controllers
                     ModelState.AddModelError(string.Empty, result.DebugMessage());
                 }
                 PreventSpamAttribute.Reset(HttpContext);
-                return View("Submit", model);
+                return View(model);
             }
         }
 

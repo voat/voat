@@ -570,6 +570,7 @@ namespace Voat.Domain
                 model.OpenInNewWindow = preferences.OpenInNewWindow;
                 model.UseSubscriptionsMenu = preferences.UseSubscriptionsMenu;
                 model.VanityTitle = preferences.VanityTitle;
+                model.DisplayThumbnails = preferences.DisplayThumbnails;
             }
 
             return model;

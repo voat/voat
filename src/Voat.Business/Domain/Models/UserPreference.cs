@@ -81,5 +81,8 @@ namespace Voat.Domain.Models
 
         [Display(Name = "Default Comment Sort")]
         public CommentSortAlgorithm CommentSort { get; set; }
+
+        [Display(Name = "Display Thumbnails")]
+        public bool DisplayThumbnails { get; set; }
     }
 }

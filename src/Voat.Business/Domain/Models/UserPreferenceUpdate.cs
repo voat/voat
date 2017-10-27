@@ -71,5 +71,7 @@ namespace Voat.Domain.Models
         /// Specifies the default sort used for comments when no sort is supplied.
         /// </summary>
         public SafeEnum<CommentSortAlgorithm> CommentSort { get; set; }
+
+        public bool? DisplayThumbnails { get; set; }
     }
 }

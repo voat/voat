@@ -45,7 +45,7 @@
 
         @{
             string ahrefTarget = "_self";
-
+            var userDisplayThumbnails = true;
             if (User.Identity.IsAuthenticated)
             {
                 var userData = Voat.Domain.UserData.GetContextUserData(Context);
@@ -53,9 +53,10 @@
                 {
                     ahrefTarget = "_blank";
                 }
+                userDisplayThumbnails = userData.Preferences.DisplayThumbnails;
             }
 
-            if (Model.ThumbnailUrl != null)
+            if (Model.ThumbnailUrl != null && userDisplayThumbnails)
             {
                 <a class="thumbnail may-blank" href="@Model.Url" target="@ahrefTarget">
                     <img src="@Model.ThumbnailUrl" alt="@Model.Title" />
