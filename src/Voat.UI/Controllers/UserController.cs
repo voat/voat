@@ -70,6 +70,8 @@ namespace Voat.Controllers
             };
             return View();
         }
+
+        [Authorize]
         public async  Task<ActionResult> Comments(string userName, int? page = null)
         {
             if (page.HasValue && page.Value < 0)
@@ -114,6 +116,7 @@ namespace Voat.Controllers
             ViewBag.RobotIndexing = Domain.Models.RobotIndexing.None;
             return View(paged);
         }
+        [Authorize]
         public async Task<ActionResult> Submissions(string userName, int? page = null)
         {
             if (page.HasValue && page.Value < 0)
