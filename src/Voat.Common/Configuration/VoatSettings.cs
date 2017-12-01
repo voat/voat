@@ -179,6 +179,7 @@ namespace Voat.Configuration
         public OutgoingTraffic OutgoingTraffic { get; set; } = new OutgoingTraffic();
 
         public PasswordOptions PasswordOptions { get; set; } = new PasswordOptions() { RequiredLength = 6 };
+        public string SigningKey { get; set; } = "";
 
         #endregion AppSettings Accessors
 

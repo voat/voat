@@ -36,10 +36,10 @@ namespace Voat.Domain.Command
 {
     public class EditSubmissionCommand : CacheCommand<CommandResponse<Domain.Models.Submission>, Data.Models.Submission>
     {
-        private UserSubmission _userSubmission;
+        private UserSubmissionContent _userSubmission;
         private int _submissionID;
 
-        public EditSubmissionCommand(int submissionID, UserSubmission submission)
+        public EditSubmissionCommand(int submissionID, UserSubmissionContent submission)
         {
             _submissionID = submissionID;
             _userSubmission = submission;

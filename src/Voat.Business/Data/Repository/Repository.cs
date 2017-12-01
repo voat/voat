@@ -936,7 +936,7 @@ namespace Voat.Data
             var query = new DapperQuery();
             query.SelectColumns = "s.*";
             query.Select = $"SELECT DISTINCT {"{0}"} FROM {SqlFormatter.Table("Submission", "s", null, "NOLOCK")} INNER JOIN {SqlFormatter.Table("Subverse", "sub", null, "NOLOCK")} ON s.\"Subverse\" = sub.\"Name\"";
-            query.Where = $"s.\"Type\" = {((int)SubmissionType.Link).ToString()} AND s.\"Url\" LIKE CONCAT('%', @Domain, '%')";
+            query.Where = $"s.\"Type\" = {((int)SubmissionType.Link).ToString()} AND (s.\"DomainReversed\" = @DomainReversed OR s.\"DomainReversed\" LIKE CONCAT(@DomainReversed, '.', '%'))";
             ApplySubmissionSort(query, options);
 
             query.SkipCount = options.Index;
@@ -946,7 +946,8 @@ namespace Voat.Data
             query.Append(x => x.Where, $"sub.\"IsAdminDisabled\" = {SqlFormatter.BooleanLiteral(false)}");
             query.Append(x => x.Where, $"s.\"IsDeleted\" = {SqlFormatter.BooleanLiteral(false)}");
 
-            query.Parameters = (new { Domain = domain }).ToDynamicParameters();
+            var domainReversed = domain.ReverseSplit();
+            query.Parameters = (new { DomainReversed = domainReversed }).ToDynamicParameters();
 
             //execute query
             var data = await _db.Connection.QueryAsync<Data.Models.Submission>(query.ToString(), query.Parameters);
@@ -1236,6 +1237,7 @@ namespace Voat.Data
 
             query.Parameters.Add("StartDate", startDate);
             query.Parameters.Add("EndDate", endDate);
+            
             query.Parameters.Add("Name", name);
             query.Parameters.Add("UserName", userName);
             query.Parameters.Add("Phrase", options.Phrase);
@@ -1594,6 +1596,7 @@ namespace Voat.Data
             {
                 newSubmission.Title = userSubmission.Title;
                 newSubmission.Url = userSubmission.Url;
+                newSubmission.DomainReversed = UrlUtility.GetDomainFromUri(userSubmission.Url).ReverseSplit().ToNormalized(Normalization.Lower);
 
                 //TODO: This code needs to execute outside of the repository on it's own thread... Move this Future People!
                 var generateThumbnail = VoatSettings.Instance.ThumbnailsEnabled && subverseObject.IsThumbnailEnabled;
@@ -1644,11 +1647,11 @@ namespace Voat.Data
         }
 
         [Authorize]
-        public async Task<CommandResponse<Models.Submission>> EditSubmission(int submissionID, UserSubmission userSubmission)
+        public async Task<CommandResponse<Models.Submission>> EditSubmission(int submissionID, UserSubmissionContent userSubmissionContent)
         {
             DemandAuthentication();
 
-            if (userSubmission == null || (!userSubmission.HasState && String.IsNullOrEmpty(userSubmission.Content)))
+            if (userSubmissionContent == null || (!userSubmissionContent.HasState && String.IsNullOrEmpty(userSubmissionContent.Content)))
             {
                 throw new VoatValidationException("The submission must not be null or have invalid state");
             }
@@ -1671,13 +1674,13 @@ namespace Voat.Data
 
             if (submission.UserName != User.Identity.Name)
             {
-                throw new VoatSecurityException(String.Format("Submission can not be edited by account"));
+                return CommandResponse.FromStatus((Models.Submission)null, Status.Denied, "User does not have permissions to perform requested action");
             }
 
             //Evaluate Rules
             var context = new VoatRuleContext(User);
             context.Subverse = DataCache.Subverse.Retrieve(submission.Subverse);
-            context.PropertyBag.UserSubmission = userSubmission;
+            context.PropertyBag.UserSubmission = new UserSubmission(submission.Subverse, userSubmissionContent);
             var outcome = VoatRulesEngine.Instance.EvaluateRuleSet(context, RuleScope.EditSubmission);
 
             //if rules engine denies bail.
@@ -1690,19 +1693,19 @@ namespace Voat.Data
             //only allow edits for self posts
             if (submission.Type == 1)
             {
-                submission.Content = userSubmission.Content ?? submission.Content;
+                submission.Content = userSubmissionContent.Content ?? submission.Content;
                 submission.FormattedContent = Formatting.FormatMessage(submission.Content, true);
             }
 
             //allow edit of title if in 10 minute window
             if (CurrentDate.Subtract(submission.CreationDate).TotalMinutes <= 10.0f)
             {
-                if (!String.IsNullOrEmpty(userSubmission.Title) && userSubmission.Title.ContainsUnicode())
+                if (!String.IsNullOrEmpty(userSubmissionContent.Title) && userSubmissionContent.Title.ContainsUnicode())
                 {
                     throw new VoatValidationException("Submission title can not contain Unicode characters");
                 }
 
-                submission.Title = (String.IsNullOrEmpty(userSubmission.Title) ? submission.Title : userSubmission.Title);
+                submission.Title = (String.IsNullOrEmpty(userSubmissionContent.Title) ? submission.Title : userSubmissionContent.Title);
             }
 
             submission.LastEditDate = CurrentDate;
@@ -1812,7 +1815,8 @@ namespace Voat.Data
                 }
                 else
                 {
-                    return CommandResponse.FromStatus(Selectors.SecureSubmission(submission), Status.Denied, "User doesn't have permission to delete submission.");
+                    //throw new VoatSecurityException("User does not have permission to delete submission");
+                    return CommandResponse.FromStatus((Models.Submission)null, Status.Denied, "User does not have permissions to perform requested action");
                 }
             }
 
@@ -2134,18 +2138,19 @@ namespace Voat.Data
             int count = await _db.Connection.ExecuteAsync(u.ToString(), new { ID = id, VoteStatus = (int)voteStatus, VoteValue = (int)voteValue });
         }
 
-        public async Task<CommandResponse<Data.Models.Comment>> DeleteComment(int commentID, string reason = null)
+        public async Task<CommandResponse<Domain.Models.Comment>> DeleteComment(int commentID, string reason = null)
         {
             DemandAuthentication();
 
             var comment = _db.Comment.Find(commentID);
+            var subverseName = "";
 
             if (comment != null && !comment.IsDeleted)
             {
                 var submission = _db.Submission.Find(comment.SubmissionID);
                 if (submission != null)
                 {
-                    var subverseName = submission.Subverse;
+                    subverseName = submission.Subverse;
 
                     // delete comment if the comment author is currently logged in user
                     if (comment.UserName == User.Identity.Name)
@@ -2206,13 +2211,11 @@ namespace Voat.Data
                     }
                     else
                     {
-                        var ex = new VoatSecurityException("User doesn't have permissions to perform requested action");
-                        ex.Data["CommentID"] = commentID;
-                        throw ex;
+                        return CommandResponse.FromStatus((Domain.Models.Comment)null, Status.Denied, "User does not have permissions to perform requested action");
                     }
                 }
             }
-            return CommandResponse.Successful(Selectors.SecureComment(comment));
+            return CommandResponse.Successful(DomainMaps.Map(Selectors.SecureComment(comment), User, subverseName, false));
         }
 
         [Authorize]
@@ -2226,7 +2229,10 @@ namespace Voat.Data
             {
                 if (comment.UserName != User.Identity.Name)
                 {
-                    return CommandResponse.FromStatus((Data.Models.Comment)null, Status.Denied, "User doesn't have permissions to perform requested action");
+                    //var ex = new VoatSecurityException("User does not have permission to perform requested action");
+                    //ex.Data["CommentID"] = commentID;
+                    //throw ex;
+                    return CommandResponse.FromStatus((Data.Models.Comment)null, Status.Denied, "User does not have permissions to perform requested action");
                 }
 
                 //evaluate rule
@@ -2356,212 +2362,7 @@ namespace Voat.Data
 
         #endregion Comments
 
-        #region Api
 
-        public bool IsApiKeyValid(string apiPublicKey)
-        {
-            var key = GetApiKey(apiPublicKey);
-
-            if (key != null && key.IsActive)
-            {
-                //TODO: This needs to be non-blocking and non-queued. If 20 threads with same apikey are accessing this method at once we don't want to perform 20 updates on record.
-                //keep track of last access date
-                key.LastAccessDate = CurrentDate;
-                _db.SaveChanges();
-
-                return true;
-            }
-
-            return false;
-        }
-
-        public ApiClient GetApiKey(string apiPublicKey)
-        {
-            var result = (from x in this._db.ApiClient
-                          where x.PublicKey == apiPublicKey
-                          select x).FirstOrDefault();
-            return result;
-        }
-
-        [Authorize]
-        public IEnumerable<ApiClient> GetApiKeys(string userName)
-        {
-            var result = from x in this._db.ApiClient
-                         where x.UserName == userName
-                         orderby x.IsActive descending, x.CreationDate descending
-                         select x;
-            return result.ToList();
-        }
-
-        [Authorize]
-        public ApiThrottlePolicy GetApiThrottlePolicy(int throttlePolicyID)
-        {
-            var result = from policy in _db.ApiThrottlePolicy
-                         where policy.ID == throttlePolicyID
-                         select policy;
-
-            return result.FirstOrDefault();
-        }
-
-        [Authorize]
-        public ApiPermissionPolicy GetApiPermissionPolicy(int permissionPolicyID)
-        {
-            var result = from policy in _db.ApiPermissionPolicy
-                         where policy.ID == permissionPolicyID
-                         select policy;
-
-            return result.FirstOrDefault();
-        }
-
-        [Authorize]
-        public List<KeyValuePair<string, string>> GetApiClientKeyThrottlePolicies()
-        {
-            List<KeyValuePair<string, string>> policies = new List<KeyValuePair<string, string>>();
-
-            var result = from client in this._db.ApiClient
-                         join policy in _db.ApiThrottlePolicy on client.ApiThrottlePolicyID equals policy.ID
-                         where client.IsActive == true
-                         select new { client.PublicKey, policy.Policy };
-
-            foreach (var policy in result)
-            {
-                policies.Add(new KeyValuePair<string, string>(policy.PublicKey, policy.Policy));
-            }
-
-            return policies;
-        }
-
-        public async Task<ApiClient> EditApiKey(string apiKey, string name, string description, string url, string redirectUrl)
-        {
-            DemandAuthentication();
-
-            //Only allow users to edit ApiKeys if they IsActive == 1 and Current User owns it.
-            var apiClient = (from x in _db.ApiClient
-                             where x.PublicKey == apiKey && x.UserName == User.Identity.Name && x.IsActive == true
-                             select x).FirstOrDefault();
-
-            if (apiClient != null)
-            {
-                apiClient.AppAboutUrl = url;
-                apiClient.RedirectUrl = redirectUrl;
-                apiClient.AppDescription = description;
-                apiClient.AppName = name;
-                await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
-            }
-
-            return apiClient;
-
-        }
-
-        [Authorize]
-        public void CreateApiKey(string name, string description, string url, string redirectUrl)
-        {
-            DemandAuthentication();
-
-            ApiClient c = new ApiClient();
-            c.IsActive = true;
-            c.AppAboutUrl = url;
-            c.RedirectUrl = redirectUrl;
-            c.AppDescription = description;
-            c.AppName = name;
-            c.UserName = User.Identity.Name;
-            c.CreationDate = CurrentDate;
-
-            var generatePublicKey = new Func<string>(() =>
-            {
-                return String.Format("VO{0}AT", Guid.NewGuid().ToString().Replace("-", "").ToUpper());
-            });
-
-            //just make sure key isn't already in db
-            var publicKey = generatePublicKey();
-            while (_db.ApiClient.Any(x => x.PublicKey == publicKey))
-            {
-                publicKey = generatePublicKey();
-            }
-
-            c.PublicKey = publicKey;
-            c.PrivateKey = (Guid.NewGuid().ToString() + Guid.NewGuid().ToString()).Replace("-", "").ToUpper();
-
-            //Using OAuth 2, we don't need enc keys
-            //var keyGen = RandomNumberGenerator.Create();
-            //byte[] tempKey = new byte[16];
-            //keyGen.GetBytes(tempKey);
-            //c.PublicKey = Convert.ToBase64String(tempKey);
-
-            //tempKey = new byte[64];
-            //keyGen.GetBytes(tempKey);
-            //c.PrivateKey = Convert.ToBase64String(tempKey);
-
-            _db.ApiClient.Add(c);
-            _db.SaveChanges();
-        }
-
-        [Authorize]
-        public ApiClient DeleteApiKey(int id)
-        {
-            DemandAuthentication();
-
-            //Only allow users to delete ApiKeys if they IsActive == 1
-            var apiKey = (from x in _db.ApiClient
-                          where x.ID == id && x.UserName == User.Identity.Name && x.IsActive == true
-                          select x).FirstOrDefault();
-
-            if (apiKey != null)
-            {
-                apiKey.IsActive = false;
-                _db.SaveChanges();
-            }
-            return apiKey;
-        }
-
-        public IEnumerable<ApiCorsPolicy> GetApiCorsPolicies()
-        {
-            var policy = (from x in _db.ApiCorsPolicy
-                          where
-                          x.IsActive
-                          select x).ToList();
-            return policy;
-        }
-
-        public ApiCorsPolicy GetApiCorsPolicy(string origin)
-        {
-            var domain = origin;
-
-            //Match and pull domain only
-            var domainMatch = Regex.Match(origin, @"://(?<domainPort>(?<domain>[\w.-]+)(?::\d+)?)[/]?");
-            if (domainMatch.Success)
-            {
-                domain = domainMatch.Groups["domain"].Value;
-
-                //var domain = domainMatch.Groups["domainPort"];
-            }
-
-            var policy = (from x in _db.ApiCorsPolicy
-
-                              //haven't decided exactly how we are going to store origin (i.e. just the doamin name, with/without protocol, etc.)
-                          where
-                          (x.AllowOrigin.ToLower() == origin.ToLower()
-                          || x.AllowOrigin.ToLower() == domain.ToLower())
-                          && x.IsActive
-                          select x).FirstOrDefault();
-            return policy;
-        }
-
-        public void SaveApiLogEntry(ApiLog logentry)
-        {
-            logentry.CreationDate = CurrentDate;
-            _db.ApiLog.Add(logentry);
-            _db.SaveChanges();
-        }
-
-        public void UpdateApiClientLastAccessDate(int apiClientID)
-        {
-            var client = _db.ApiClient.Where(x => x.ID == apiClientID).FirstOrDefault();
-            client.LastAccessDate = CurrentDate;
-            _db.SaveChanges();
-        }
-
-        #endregion Api
 
         #region UserMessages
 
@@ -2587,7 +2388,7 @@ namespace Voat.Data
         /// <param name="ID">The ID of the item in which to save</param>
         /// <param name="forceAction">Forces the Save function to operate as a Save only or Unsave only rather than a toggle. If true, will only save if it hasn't been previously saved, if false, will only remove previous saved entry, if null (default) will function as a toggle.</param>
         /// <returns>The end result if the item is saved or not. True if saved, false if not saved.</returns>
-        public async Task<CommandResponse<bool?>> Save(ContentType type, int ID, bool? forceAction = null)
+        public async Task<CommandResponse<bool>> Save(ContentType type, int ID, bool? forceAction = null)
         {
             //TODO: These save trackers should be stored in a single table in SQL. Two tables for such similar information isn't ideal... mmkay. Makes querying nasty.
             //TODO: There is a potential issue with this code. There is no validation that the ID belongs to a comment or a submission. This is nearly impossible to determine anyways but it's still an issue.
@@ -2610,6 +2411,10 @@ namespace Voat.Data
                     {
                         _db.CommentSaveTracker.Remove(c);
                         isSaved = false;
+                    }
+                    else
+                    {
+                        isSaved = forceAction.Value;
                     }
                     await _db.SaveChangesAsync().ConfigureAwait(CONSTANTS.AWAIT_CAPTURE_CONTEXT);
 
@@ -2634,7 +2439,7 @@ namespace Voat.Data
                     break;
             }
 
-            return CommandResponse.FromStatus<bool?>(forceAction.HasValue ? forceAction.Value : isSaved, Status.Success, "");
+            return CommandResponse.FromStatus(isSaved, Status.Success, "");
         }
 
         public static void SetDefaultUserPreferences(Data.Models.UserPreference p)
@@ -4218,7 +4023,7 @@ namespace Voat.Data
             // check if caller has clearance to remove a moderator
             if (!ModeratorPermission.HasPermission(User, subverse.Name, Domain.Models.ModeratorAction.RemoveMods))
             {
-                return new CommandResponse<RemoveModeratorResponse>(response, Status.Denied, "User doesn't have permissions to execute action");
+                return new CommandResponse<RemoveModeratorResponse>(response, Status.Denied, "User does not have permissions to execute action");
             }
 
             var allowRemoval = false;

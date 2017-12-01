@@ -44,7 +44,7 @@ namespace Voat.Rules.Posting
             }
             if (comment.UserName != context.UserName)
             {
-                return base.CreateOutcome(RuleResult.Denied, "User doesn't have permissions to perform requested action");
+                return base.CreateOutcome(RuleResult.Denied, "User does not have permissions to perform requested action");
             }
 
             //rules checkd in base class

@@ -151,5 +151,10 @@ namespace Voat.Domain.Models
         /// Date Submission was archived
         /// </summary>
         public DateTime? ArchiveDate { get; set; }
+
+        /// <summary>
+        /// The domain of this submission.
+        /// </summary>
+        public string Domain { get; set; }
     }
 }

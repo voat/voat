@@ -373,7 +373,7 @@ namespace Voat.Tests.CommandTests
             var r = cmd.Execute().Result;
             Assert.IsNotNull(r, "Response was null");
             Assert.IsFalse(r.Success, "Expecting a false response");
-            Assert.AreEqual(r.Message, "A subverse must be provided");
+            Assert.AreEqual("A subverse must be provided", r.Message);
         }
         [TestMethod]
         [TestCategory("Command"), TestCategory("Submission"), TestCategory("Command.Submission.Post")]

@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -256,6 +258,21 @@ namespace Voat.Http
             }
 
             return $"{host}{port}";
+        }
+
+        public static void WriteJsonResponse(this HttpResponse response, object content, HttpStatusCode? statusCode = null, string contentType = "application/json", JsonSerializerSettings jsonSerializerSettings = null)
+        {
+            response.StatusCode = statusCode.HasValue ? (int)statusCode.Value : response.StatusCode;
+            using (var writer = new StreamWriter(response.Body))
+            {
+                writer.Write(content.ToJson(jsonSerializerSettings));
+            }
+            response.ContentType = contentType;
+        }
+        public static void WriteJsonResponse(this HttpResponseMessage response, object content, HttpStatusCode? statusCode = null, string contentType = "application/json", JsonSerializerSettings jsonSerializerSettings = null)
+        {
+            response.StatusCode = statusCode.HasValue ? statusCode.Value : response.StatusCode;
+            response.Content = new StringContent(content.ToJson(jsonSerializerSettings), Encoding.UTF8, contentType);
         }
     }
 }

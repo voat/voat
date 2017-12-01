@@ -72,18 +72,19 @@ type DataValidationAttribute(validator:Type, pipeline: String, stage: String, or
 
     override this.IsValid(model, context) =
         let validations = this.ValidationProvider.Validate(model, context)
-        let validation = match Seq.toList(validations) with
-                            | [] -> null
-                            //| [ _ ] -> Seq.find(fun x -> true) (validations) :> ValidationResult
-                            //| null -> null
-                            | _ as x ->
-                                let r = x
-                                        |> Seq.map(fun v ->
-                                            if String.IsNullOrEmpty(v.Type) then
-                                                v.Type <- validator.Name
-                                            v
-                                        )
-                                new ValidationPathResultComposite(r) :> ValidationResult
+        let validation = 
+            match Seq.toList(validations) with
+                | [] -> null
+                //| [ _ ] -> Seq.find(fun x -> true) (validations) :> ValidationResult
+                //| null -> null
+                | _ as x ->
+                    let r = x
+                            |> Seq.map(fun v ->
+                                if String.IsNullOrEmpty(v.Type) then
+                                    v.Type <- validator.Name
+                                v
+                            )
+                    new ValidationPathResultComposite(r) :> ValidationResult
         validation
 
     new(validator:Type) =

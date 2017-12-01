@@ -45,7 +45,7 @@ namespace Voat.RulesEngine
         //Ignored = 2,
 
         /// <summary>
-        /// Operation was denied by the system. Typically this response is returned when user doesn't have the neccessary requirements to complete operation.
+        /// Operation was denied by the system. Typically this response is returned when User does not have the neccessary requirements to complete operation.
         /// </summary>
         Denied = 3
     }

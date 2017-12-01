@@ -100,7 +100,7 @@ namespace Voat.Domain.Command
     }
 
     [Serializable]
-    public class DeleteCommentCommand : CacheCommand<CommandResponse<Comment>>
+    public class DeleteCommentCommand : CacheCommand<CommandResponse<Domain.Models.Comment>>
     {
         public DeleteCommentCommand(int commentID, string reason = null)
         {
@@ -116,7 +116,7 @@ namespace Voat.Domain.Command
 
         public string Reason { get; set; }
 
-        protected override async Task<CommandResponse<Comment>> CacheExecute()
+        protected override async Task<CommandResponse<Domain.Models.Comment>> CacheExecute()
         {
             using (var db = new Repository(User))
             {
@@ -125,7 +125,7 @@ namespace Voat.Domain.Command
             }
         }
 
-        protected override void UpdateCache(CommandResponse<Comment> result)
+        protected override void UpdateCache(CommandResponse<Domain.Models.Comment> result)
         {
             if (result != null && result.Success)
             {

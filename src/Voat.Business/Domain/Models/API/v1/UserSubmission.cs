@@ -30,7 +30,32 @@ using Voat.Utilities;
 
 namespace Voat.Domain.Models
 {
-    public class UserSubmission
+    public class UserSubmission : UserSubmissionContent
+    {
+        public UserSubmission()
+        {
+        }
+        public UserSubmission(string subverse, UserSubmissionContent content)
+        {
+            this.Subverse = subverse;
+            this.Title = content.Title;
+            this.Url = content.Url;
+            this.Content = content.Content;
+        }
+        
+        [Required(ErrorMessage = "A subverse must be provided")]
+        public string Subverse { get; set; }
+
+        public override bool IsValid
+        {
+            get
+            {
+                return base.IsValid && !String.IsNullOrEmpty(Subverse);
+            }
+        }
+    }
+
+    public class UserSubmissionContent
     {
         private string _title = null;
         private string _url = null;
@@ -56,8 +81,7 @@ namespace Voat.Domain.Models
         }
 
         //[JsonIgnore] CORE_PORT Need this for serialization tests
-        [Required(ErrorMessage = "A subverse must be provided")]
-        public string Subverse { get; set; }
+       
 
         [JsonIgnore]
         public bool HasState
@@ -69,11 +93,11 @@ namespace Voat.Domain.Models
         }
 
         [JsonIgnore]
-        public bool IsValid
+        public virtual bool IsValid
         {
             get
             {
-                return (Type == SubmissionType.Link ? !String.IsNullOrEmpty(Url) : true) && !String.IsNullOrEmpty(Title) && !String.IsNullOrEmpty(Subverse);
+                return (Type == SubmissionType.Link ? !String.IsNullOrEmpty(Url) : true) && !String.IsNullOrEmpty(Title);
             }
         }
 

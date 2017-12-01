@@ -196,7 +196,7 @@ namespace Voat.Domain
                 result.Rank = submission.Rank;
                 result.RelativeRank = submission.RelativeRank;
                 result.ArchiveDate = submission.ArchiveDate;
-
+                result.Domain = submission.DomainReversed.ReverseSplit();
 
                 //add flair if present
                 if (!String.IsNullOrEmpty(submission.FlairLabel))

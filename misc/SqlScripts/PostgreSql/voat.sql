@@ -251,6 +251,7 @@ CREATE TABLE "Submission"(
 	"IsDeleted" boolean NOT NULL,
 	"RelativeRank" double precision NOT NULL,
 	"Url" varchar(3000),
+	"DomainReversed" varchar(3000) NULL,
 	"FormattedContent" varchar,
 	"IsAdult" boolean NOT NULL,
 	"ArchiveDate" timestamp);
@@ -384,7 +385,8 @@ CREATE TABLE "UserPreference"(
 	"VanityTitle" varchar(50),
 	"CollapseCommentLimit" int,
 	"BlockAnonymized" boolean NOT NULL,
-	"CommentSort" int);
+	"CommentSort" int,
+	"DisplayThumbnails" boolean NOT NULL);
 
 CREATE TABLE "ViewStatistic"( 
 	"SubmissionID" int NOT NULL,

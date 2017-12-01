@@ -17,5 +17,14 @@ namespace Voat.Tests.Infrastructure
             var result = new String(Enumerable.Range(0, times).SelectMany(x => s).ToArray());
             return result.Substring(0, n);
         }
+        public static string GetUnitTestUserPassword(this string userName)
+        {
+            var pwd = userName;
+            while (pwd.Length < 6)
+            {
+                pwd += userName;
+            }
+            return pwd;
+        }
     }
 }

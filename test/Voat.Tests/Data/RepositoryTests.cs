@@ -281,7 +281,7 @@ namespace Voat.Tests.Repository
             {
                 var result = await db.Save(ContentType.Comment, 1);
                 Assert.AreEqual(Status.Success, result.Status);
-                Assert.AreEqual(true, result.Response.Value);
+                Assert.AreEqual(true, result.Response);
             }
         }
 
@@ -294,12 +294,17 @@ namespace Voat.Tests.Repository
             {
                 var result =  await db.Save(ContentType.Comment, 3, true);
                 Assert.AreEqual(Status.Success, result.Status);
-                Assert.AreEqual(true, result.Response.Value);
+                Assert.AreEqual(true, result.Response);
 
                 //Should only save, never toggle because forceAction == true
                 result = await db.Save(ContentType.Comment, 3, true);
                 Assert.AreEqual(Status.Success, result.Status);
-                Assert.AreEqual(true, result.Response.Value);
+                Assert.AreEqual(true, result.Response);
+
+                //Should only save, never toggle because forceAction == true
+                result = await db.Save(ContentType.Comment, 3, false);
+                Assert.AreEqual(Status.Success, result.Status);
+                Assert.AreEqual(false, result.Response);
 
             }
         }
@@ -313,12 +318,12 @@ namespace Voat.Tests.Repository
             {
                 var result = await db.Save(ContentType.Comment, 4, false);
                 Assert.AreEqual(Status.Success, result.Status);
-                Assert.AreEqual(false, result.Response.Value);
+                Assert.AreEqual(false, result.Response);
 
                 //Should only save, never toggle because forceAction == true
                 result = await db.Save(ContentType.Comment, 3, false);
                 Assert.AreEqual(Status.Success, result.Status);
-                Assert.AreEqual(false, result.Response.Value);
+                Assert.AreEqual(false, result.Response);
             }
         }
 
@@ -331,11 +336,11 @@ namespace Voat.Tests.Repository
             {
                 var result = await db.Save(ContentType.Comment, 2);
                 Assert.AreEqual(Status.Success, result.Status);
-                Assert.AreEqual(true, result.Response.Value);
+                Assert.AreEqual(true, result.Response);
 
                 result = await db.Save(ContentType.Comment, 2);
                 Assert.AreEqual(Status.Success, result.Status);
-                Assert.AreEqual(false, result.Response.Value);
+                Assert.AreEqual(false, result.Response);
             } 
         }
 

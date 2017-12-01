@@ -33,39 +33,45 @@ using Voat.Domain.Models;
 
 namespace Voat.Domain.Command
 {
-    public class SaveCommand : CacheCommand<CommandResponse<bool?>>, IExcutableCommand<CommandResponse<bool?>>
+    public class SaveCommand : CacheCommand<CommandResponse<bool>>, IExcutableCommand<CommandResponse<bool>>
     {
         protected ContentType _type = ContentType.Submission;
         protected int _id;
-        protected bool? _toggleSetting = false; //if true then this command functions as a toggle command
+        protected bool? _forceSetting = false; //if true then this command functions as a toggle command
 
-        public SaveCommand(ContentType type, int id, bool? toggleSetting = null)
+        /// <summary>
+        /// Saves or unsaves content for a user
+        /// </summary>
+        /// <param name="type">Type of content id points to</param>
+        /// <param name="id">The ID of the content</param>
+        /// <param name="forceSetting">True for forcing a save, false for unsave, and null for toggle</param>
+        public SaveCommand(ContentType type, int id, bool? forceSetting = null)
         {
             _type = type;
             _id = id;
-            _toggleSetting = toggleSetting;
+            _forceSetting = forceSetting;
         }
 
-        protected override async Task<CommandResponse<bool?>> CacheExecute()
+        protected override async Task<CommandResponse<bool>> CacheExecute()
         {
             DemandAuthentication();
 
             using (var repo = new Repository(User))
             {
                 //TODO: Convert to async repo method
-                var response = await repo.Save(_type, _id, _toggleSetting);
+                var response = await repo.Save(_type, _id, _forceSetting);
                 return response;
             }
         }
 
-        protected override void UpdateCache(CommandResponse<bool?> result)
+        protected override void UpdateCache(CommandResponse<bool> result)
         {
             if (result.Success)
             {
                 string key = CachingKey.UserSavedItems(_type, UserName);
-                if (result.Response.HasValue && CacheHandler.Instance.Exists(key))
+                if (CacheHandler.Instance.Exists(key))
                 {
-                    if (result.Response.Value)
+                    if (result.Response)
                     {
                         CacheHandler.Instance.SetAdd(key, _id);
                     }

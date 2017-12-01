@@ -60,7 +60,7 @@
     if (Model.Type == Voat.Domain.Models.SubmissionType.Link)
     {
         titleUrl = Model.Url;
-        var domain = UrlUtility.GetDomainFromUri(Model.Url);
+        var domain = Model.Domain;
         submissionDomain = domain.SubstringMax(50, false, "...");
         submissionDomainHref = "/domains/" + domain;
     }

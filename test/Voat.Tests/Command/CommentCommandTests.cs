@@ -162,10 +162,8 @@ namespace Voat.Tests.CommandTests
             var editResult = editCmd.Execute().Result;
 
             VoatAssert.IsValid(editResult, Status.Denied);
-            Assert.AreEqual("User doesn't have permissions to perform requested action", editResult.Message);
+            Assert.AreEqual("User does not have permissions to perform requested action", editResult.Message);
         }
-
-
 
         [TestMethod]
         [TestCategory("Command")]
@@ -200,6 +198,7 @@ namespace Voat.Tests.CommandTests
             Assert.AreEqual("Comment contains banned domains", c.Message);
 
         }
+
         [TestMethod]
         [TestCategory("Command")]
         [TestCategory("Comment")]
@@ -219,8 +218,6 @@ namespace Voat.Tests.CommandTests
             VoatAssert.IsValid(editResult, Status.Denied, "Expecting Denied Status");
             Assert.AreEqual("Comment contains banned domains", editResult.Message);
         }
-
-
 
         [TestMethod]
         [TestCategory("Command")]

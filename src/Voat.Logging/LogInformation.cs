@@ -81,7 +81,14 @@ namespace Voat.Logging
             }
             set
             {
-                _data = JsonConvert.SerializeObject(value, JsonSettings.FriendlySerializationSettings);
+                try
+                {
+                    _data = JsonConvert.SerializeObject(value, JsonSettings.FriendlySerializationSettings);
+                }
+                catch (Exception ex)
+                {
+                    _data = JsonConvert.SerializeObject(new { name = "Serialization Error", Exception = ex });
+                }
             }
         }
 

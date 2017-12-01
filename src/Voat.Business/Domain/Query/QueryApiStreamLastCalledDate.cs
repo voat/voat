@@ -26,7 +26,10 @@ using System;
 using System.Threading.Tasks;
 using Voat.Caching;
 using Voat.Data;
+using Voat.Data.Models;
 using Voat.Domain.Models;
+using Voat.Logging;
+using Voat.Utilities.Components;
 
 namespace Voat.Domain.Query
 {
@@ -61,8 +64,12 @@ namespace Voat.Domain.Query
         public override async Task<DateTime> ExecuteAsync()
         {
             var lastCallDate = await base.ExecuteAsync();
+            var newCallDate = Repository.CurrentDate;
+            var cacheKey = FullCacheKey;
 
-            CacheHandler.Replace(FullCacheKey, Repository.CurrentDate, base.CachingPolicy.Duration);
+            CacheHandler.Replace(cacheKey, newCallDate, base.CachingPolicy.Duration);
+
+            EventLogger.Instance.Log(LogType.Debug, "Method Invoked", "QueryApiStreamLastCalledDate", new { lastCallDate, newCallDate, cacheKey, user = User.Identity.Name });
 
             return lastCallDate;
         }

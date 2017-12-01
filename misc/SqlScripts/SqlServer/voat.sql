@@ -519,6 +519,7 @@ CREATE TABLE [dbo].[Submission](
 	[IsDeleted] [bit] NOT NULL,
 	[RelativeRank] [float] NOT NULL,
 	[Url] [nvarchar](3000) NULL,
+	[DomainReversed] [nvarchar](3000) NULL,
 	[FormattedContent] [nvarchar](max) NULL,
 	[IsAdult] [bit] NOT NULL,
 	[ArchiveDate] [smalldatetime] NULL,
@@ -811,6 +812,7 @@ CREATE TABLE [dbo].[UserPreference](
 	[CollapseCommentLimit] [int] NULL,
 	[BlockAnonymized] [bit] NOT NULL,
 	[CommentSort] [int] NULL,
+	[DisplayThumbnails] bit NOT NULL
  CONSTRAINT [PK_UserPreference] PRIMARY KEY CLUSTERED 
 (
 	[UserName] ASC

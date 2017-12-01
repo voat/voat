@@ -76,6 +76,8 @@ namespace Voat.Common.Configuration
         OutgoingTraffic OutgoingTraffic { get; set; }
 
         PasswordOptions PasswordOptions { get; set; }
+
+        string SigningKey { get; set; }
     }
 
 }

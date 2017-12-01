@@ -52,7 +52,8 @@ namespace Voat.Data.Models
         public virtual ICollection<Comment> Comments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SubmissionVoteTracker> SubmissionVoteTrackers { get; set; }
-
+        public string DomainReversed { get; set; }
+        
         //CORE_PORT: Kill relationships... 
         //public virtual StickiedSubmission StickiedSubmission { get; set; }
         //public virtual Subverse Subverse1 { get; set; }

@@ -71,10 +71,11 @@ namespace Voat.Tests.Utils
         public void VerifyPath(FileManager fm, FileKey key, string partialPath, string domain = null)
         {
             string url = null;
-            string domainPart = (domain == null ? VoatSettings.Instance.SiteDomain : domain);
+            string domainPart = (domain == null || (fm is AzureBlobFileManager && key.FileType == FileType.Badge) ? VoatSettings.Instance.SiteDomain : domain);
 
             if (key != null && !String.IsNullOrEmpty(key.ID))
             {
+
                 url = fm.Uri(key, new PathOptions() { FullyQualified = false, ProvideProtocol = false });
                 Assert.AreEqual($"/{partialPath}", url, "Condition:1.1");
 
@@ -89,7 +90,6 @@ namespace Voat.Tests.Utils
             {
                 url = fm.Uri(key, new PathOptions() { FullyQualified = false, ProvideProtocol = false });
                 Assert.IsNull(url, "Condition:1.4");
-
             }
 
         }

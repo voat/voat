@@ -747,11 +747,7 @@ namespace Voat.Tests.Infrastructure
             //{
                 var user = new Voat.Data.Models.VoatIdentityUser() { UserName = userName, RegistrationDateTime = (registrationDate.HasValue ? registrationDate.Value : DateTime.UtcNow), LastLoginDateTime = new DateTime(1900, 1, 1, 0, 0, 0, 0), LastLoginFromIp = "0.0.0.0" };
 
-                string pwd = userName;
-                while (pwd.Length < 6)
-                {
-                    pwd += userName;
-                }
+                string pwd = userName.GetUnitTestUserPassword();
                 
                 var result = manager.Create(user, pwd);
 
