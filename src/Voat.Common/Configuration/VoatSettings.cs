@@ -181,6 +181,8 @@ namespace Voat.Configuration
         public PasswordOptions PasswordOptions { get; set; } = new PasswordOptions() { RequiredLength = 6 };
         public string SigningKey { get; set; } = "";
 
+
+        public IDictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
         #endregion AppSettings Accessors
 
     }

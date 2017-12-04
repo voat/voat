@@ -239,27 +239,28 @@ namespace Voat.Common
             }
         }
 
-        public static string ToQueryString(this object o, bool includeEmptyArguments = false)
+        public static string ToQueryString(this object anyObject, bool includeEmptyArguments = false, Func<Object, String> conversion = null)
         {
-            if (o != null)
-            {
+            conversion = conversion ?? new Func<object, string>(x => x.ToString());
 
+            if (anyObject != null)
+            {
                 List<string> keyPairs = new List<string>();
-                var props = o.GetType().GetProperties();
+                var props = anyObject.ToKeyValuePairs();
 
                 foreach (var prop in props)
                 {
-                    var pValue = prop.GetValue(o);
+                    var pValue = prop.Value;
                     var qsValue = "";
 
                     if (pValue != null)
                     {
-                        qsValue = pValue.ToString();
+                        qsValue = conversion(pValue);
                     }
                     if (includeEmptyArguments || (!includeEmptyArguments && !String.IsNullOrEmpty(qsValue)))
                     {
                         //I don't know if this encoding is correct: Uri.EscapeUriString
-                        keyPairs.Add($"{prop.Name.ToLower()}={Uri.EscapeDataString(qsValue)}");
+                        keyPairs.Add($"{prop.Key}={Uri.EscapeDataString(qsValue)}");
                     }
                 }
                 var result = String.Join("&", keyPairs);
@@ -267,7 +268,22 @@ namespace Voat.Common
             }
             return "";
         }
+        public static Dictionary<string, object> ToKeyValuePairs(this object anyObject)
+        {
+            var keyValues = new Dictionary<string, object>();
 
+            if (anyObject != null)
+            {
+                var props = anyObject.GetType().GetProperties();
+
+                foreach (var prop in props)
+                {
+                    var pValue = prop.GetValue(anyObject);
+                    keyValues.Add(prop.Name, pValue);
+                }
+            }
+            return keyValues;
+        }
         public static bool IsValidEnumValue<T>(int? value) where T : struct, IConvertible
         {
             var result = false;

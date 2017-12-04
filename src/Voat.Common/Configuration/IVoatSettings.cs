@@ -78,6 +78,11 @@ namespace Voat.Common.Configuration
         PasswordOptions PasswordOptions { get; set; }
 
         string SigningKey { get; set; }
+
+        /// <summary>
+        /// Stores misc settings and config values such as api values that aren't global 
+        /// </summary>
+        IDictionary<string, string> Properties { get; set; }
     }
 
 }

@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "Voat.Tests": {
+      "commandName": "Project"
+    }
+  }
+}

@@ -211,7 +211,8 @@ namespace Voat
                 settings = new JsonSerializerSettings();
             }
 
-            return JsonConvert.SerializeObject(value, settings);
+            var content = JsonConvert.SerializeObject(value, settings);
+            return content;
         }
     }
 }
