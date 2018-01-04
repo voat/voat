@@ -118,7 +118,7 @@
             "siteSlogan": "Voat - have your say",
             "siteDescription": "a community platform where you can have your say. No censorship.",
             "siteKeywords": "voat, voat.co, vote, submit, comment",
-            "footerText": "&amp;copy; 2017 Voat, Inc. All rights reserved. Voat and the Voat Mascot are trademarks of Voat, Inc.",
+            "footerText": "&amp;copy; 2018 Voat, Inc. All rights reserved. Voat and the Voat Mascot are trademarks of Voat, Inc.",
             "siteLogo": "/images/voat-logo.png",
             "cookieDomain": ".voat.co",
             "siteDomain": "", //Use blank to have the runtime automatically set
