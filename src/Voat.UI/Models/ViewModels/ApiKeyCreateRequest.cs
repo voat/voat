@@ -46,7 +46,7 @@ namespace Voat.Models.ViewModels
 
         [Display(Name = "App About Url")]
         [StringLength(200)]
-        [Url(ErrorMessage = "Please enter a valid http, https, or ftp URL.")]
+        [Url(ErrorMessage = "Please enter a valid HTTP, HTTPS, or FTP URL.")]
         public string AboutUrl { get; set; }
 
 
