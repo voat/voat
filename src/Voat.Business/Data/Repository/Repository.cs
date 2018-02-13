@@ -3736,7 +3736,7 @@ namespace Voat.Data
                         return CommandResponse.FromStatus<bool?>(null, Status.Denied, "Subverse is disabled");
                     }
 
-                    var set = GetOrCreateSubverseSet(new SubverseSet() { Name = SetType.Front.ToString(), UserName = User.Identity.Name, Type = (int)SetType.Front, Description = "Front Page Subverse Subscriptions" });
+                    var set = GetOrCreateSubverseSet(new SubverseSet() { Name = SetType.Front.ToString(), UserName = User.Identity.Name, Type = (int)SetType.Front, Description = "Frontpage Subverse Subscriptions" });
 
                     response = await SetSubverseListChange(set, subverse, action);
 
@@ -3983,7 +3983,7 @@ namespace Voat.Data
                 {
                     //send unban msg
                     msg.Subject = $"You've been unbanned from v/{subverse} :)";
-                    msg.Message = $"@{User.Identity.Name} has unbanned you from v/{subverseModel.Name}. Play nice. Promise me. Ok, I believe you.";
+                    msg.Message = $"@{User.Identity.Name} has unbanned you from v/{subverseModel.Name}. Play nice. Promise me. OK, I believe you.";
                 }
                 SendMessage(msg);
             }
