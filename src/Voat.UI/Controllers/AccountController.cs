@@ -274,7 +274,7 @@ namespace Voat.Controllers
                 var accountsWithSameIp = UserManager.Users.Count(x => x.LastLoginFromIp == clientIpAddress);
                 if (accountsWithSameIp >= VoatSettings.Instance.MaxAllowedAccountsFromSingleIP)
                 {
-                    ModelState.AddModelError(string.Empty, "This device can not be used to create a voat account.");
+                    ModelState.AddModelError(string.Empty, "This device can not be used to create a Voat account.");
                     return View(model);
                 }
 
@@ -875,7 +875,7 @@ namespace Voat.Controllers
                 var response = await EmailSender.Instance.SendEmail(
                     user.Email,
                     "Voat Password Reset Request", 
-                    $"You have requested to reset your Voat password.<br/><br/>If you did not do this, please ignore this email.<br/><br/>To reset your password please click the following link or copy and paste the url into your browser address bar: <a href=\"{callbackUrl}\">{callbackUrl}</a>");
+                    $"You have requested to reset your Voat password.<br/><br/>If you did not do this, please ignore this email.<br/><br/>To reset your password please click the following link or copy and paste the URL into your browser address bar: <a href=\"{callbackUrl}\">{callbackUrl}</a>");
 
                 return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
