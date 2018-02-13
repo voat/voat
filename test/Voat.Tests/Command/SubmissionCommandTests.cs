@@ -342,7 +342,7 @@ namespace Voat.Tests.CommandTests
         {
             var user = TestHelper.SetPrincipal("TestUser09");
 
-            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = SUBVERSES.Whatever, Title = "Long Url Bug", Url = "http://kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.com/" }).SetUserContext(user);
+            var cmd = new CreateSubmissionCommand(new Domain.Models.UserSubmission() { Subverse = SUBVERSES.Whatever, Title = "Long URL Bug", Url = "http://kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.com/" }).SetUserContext(user);
             var r = cmd.Execute().Result;
             VoatAssert.IsValid(r, Status.Success);
             //Assert.AreNotEqual(0, r.Response.ID);
