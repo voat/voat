@@ -1,6 +1,6 @@
 # Contributing to Voat
 
-We use [git-flow branching model](http://nvie.com/posts/a-successful-git-branching-model/"). 
+We use [git-flow branching model](http://nvie.com/posts/a-successful-git-branching-model/). 
 
 ## Git-flow concept summary
 
