@@ -1,7 +1,7 @@
 #region LICENSE
 
 /*
-    
+
     Copyright(c) Voat, Inc.
 
     This file is part of Voat.
@@ -74,7 +74,7 @@ namespace Voat.Controllers
 
             UserManager = _userManager;
         }
-       
+
         public VoatUserManager UserManager { get; private set; }
 
         // GET: /Account/Login
@@ -144,71 +144,7 @@ namespace Voat.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
 
-            //CORE_PORT: Original code
-            /*
-             ViewBag.ReturnUrl = returnUrl;
-             if (!ModelState.IsValid)
-             {
-                 return View(model);
-             }
-             var user = await UserManager.FindAsync(model.UserName, model.Password);
 
-             // invalid credentials, increment failed login attempt and lockout account
-             if (user == null)
-             {
-                 var tmpuser = await UserManager.FindByNameAsync(model.UserName);
-                 // correct username was entered with wrong credentials
-                 if (tmpuser != null)
-                 {
-                     // record failed login attempt and lockout account if failed login limit is reached
-                     await UserManager.AccessFailedAsync(tmpuser);
-
-                     // if account is locked out, notify the user
-                     if (await UserManager.IsLockedOutAsync(tmpuser))
-                     {
-                         ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
-                         return View(model);
-                     }
-                 }
-
-                 ModelState.AddModelError("", "Invalid username or password.");
-                 return View(model);
-             }
-             else if (await UserManager.IsLockedOutAsync(user))
-             {
-                 ModelState.AddModelError("", "This account has been locked out for security reasons. Try again later.");
-                 return View(model);
-             }
-             else
-             {
-                 //var userData = new UserData(user.UserName);
-                 //userData.PreLoad();
-
-                 // when token is verified correctly, clear the access failed count used for lockout
-                 await UserManager.ResetAccessFailedCountAsync(user);
-
-                 // get user IP address
-                 string clientIpAddress = UserHelper.UserIpAddress(Request);
-
-                 // save last login ip and timestamp
-                 user.LastLoginFromIp = clientIpAddress;
-                 user.LastLoginDateTime = Repository.CurrentDate;
-                 await UserManager.UpdateAsync(user);
-
-                 // sign in and continue
-                 await SignInAsync(user, model.RememberMe);
-
-                 // remove the theme cookie, it will be set to the user preference after the page reloads
-                 var cookie = HttpContext.Request.Cookies["theme"];
-                 if(cookie != null && !String.IsNullOrEmpty(cookie))
-                 {
-                     //CORE_PORT: 
-                     Response.Cookies.Append("theme", "", new Microsoft.AspNetCore.Http.CookieOptions() { Expires = DateTime.Now.AddDays(-1) });
-                     //HttpContext.Response.Cookies["theme"].Expires = DateTime.Now.AddDays(-1);
-                 }
-                 return RedirectToLocal(returnUrl);
-             } 
-            */
         }
 
         // GET: /Account/Register
@@ -263,8 +199,8 @@ namespace Voat.Controllers
                 ModelState.AddModelError(string.Empty, "Your password is not secure. You must use at least one uppercase letter, one lowercase letter, one number and one special character such as ?, ! or .");
                 return View(model);
             }
-           
-            
+
+
             try
             {
                 // get user IP address
@@ -413,40 +349,8 @@ namespace Voat.Controllers
             }
 
             return View(model);
-        } 
+        }
 
-        //[Authorize]
-        //public async Task<ActionResult> GetUserPreferencesAbout()
-        //{
-        //    var userPreferences = UserData.Preferences;
-        //    var tmpModel = new UserAboutViewModel()
-        //    {
-        //        Bio = String.IsNullOrEmpty(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio,
-        //        Avatar = userPreferences.Avatar
-        //    };
-        //    return PartialView("_UserPreferencesAbout", tmpModel);
-
-        //    //return PartialView("_UserPreferencesAbout", tmpModel);
-        //    //try
-        //    //{
-        //    //    using (var db = new VoatUIDataContextAccessor())
-        //    //    {
-        //    //        var userPreferences = GetUserPreference(db);
-
-        //    //        var tmpModel = new UserAboutViewModel()
-        //    //        {
-        //    //            Bio = String.IsNullOrEmpty(userPreferences.Bio) ? STRINGS.DEFAULT_BIO : userPreferences.Bio,
-        //    //            Avatar = userPreferences.Avatar
-        //    //        };
-
-        //    //        return PartialView("_UserPreferencesAbout", tmpModel);
-        //    //    }
-        //    //}
-        //    //catch (Exception)
-        //    //{
-        //    //    return new EmptyResult();
-        //    //}
-        //}
 
         // POST: /Account/UserPreferences
         [Authorize]
@@ -489,7 +393,7 @@ namespace Voat.Controllers
             }
 
             var bio = model.Bio.TrimSafe();
-            
+
             //This is a hack
             var context = new VoatOutOfRepositoryDataContextAccessor();
             using (var repo = new Repository(User, context))
@@ -512,7 +416,7 @@ namespace Voat.Controllers
                 }
                 if (!String.IsNullOrEmpty(avatarKey))
                 {
-                    p.Avatar = avatarKey;   
+                    p.Avatar = avatarKey;
                 }
                 await context.SaveChangesAsync();
             }
@@ -729,7 +633,7 @@ namespace Voat.Controllers
 
         // GET: /Account/UserAccountEmail
         [Authorize]
-        
+
         public async Task<ActionResult> GetUserAccountEmail()
         {
             //CORE_PORT: Changes in User Manager
@@ -772,7 +676,7 @@ namespace Voat.Controllers
                 {
                     if (existingAccount.UserName == User.Identity.Name)
                     {
-                        //we have the current user with the same email address, abort 
+                        //we have the current user with the same email address, abort
                         return View("Manage", model);
                     }
                     else
@@ -874,7 +778,7 @@ namespace Voat.Controllers
 
                 var response = await EmailSender.Instance.SendEmail(
                     user.Email,
-                    "Voat Password Reset Request", 
+                    "Voat Password Reset Request",
                     $"You have requested to reset your Voat password.<br/><br/>If you did not do this, please ignore this email.<br/><br/>To reset your password please click the following link or copy and paste the url into your browser address bar: <a href=\"{callbackUrl}\">{callbackUrl}</a>");
 
                 return RedirectToAction("ForgotPasswordConfirmation", "Account");
@@ -883,7 +787,7 @@ namespace Voat.Controllers
             // If we got this far, something failed, redisplay form
             ViewBag.SelectedSubverse = string.Empty;
             return View(model);
-            
+
         }
 
         //
@@ -922,7 +826,7 @@ namespace Voat.Controllers
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }
             var result = await UserManager.ResetPasswordAsync(user, model.Code, model.Password);
-            
+
             if (result.Succeeded)
             {
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
