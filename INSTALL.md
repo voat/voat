@@ -176,7 +176,7 @@ sudo usermod -aG docker $USER   # then log out and back in
 ### 3b. Get the code and configure
 
 ```bash
-git clone https://github.com/YOUR/voat.git voat
+git clone https://github.com/welchythecat/REvoat.git
 cd voat
 cp .env.example .env
 nano .env                     # or any editor
