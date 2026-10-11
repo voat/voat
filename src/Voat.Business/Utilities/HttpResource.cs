@@ -16,6 +16,9 @@ namespace Voat.Utilities
     {
         public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(10);
         public bool AllowAutoRedirect { get; set; } = false;
+        //SSRF guard: refuse to fetch urls whose host resolves to non-public addresses.
+        //Turn off only for trusted, hard-coded endpoints (e.g. localhost test servers).
+        public bool BlockNonPublicAddresses { get; set; } = true;
 
     }
 
@@ -60,8 +63,11 @@ namespace Voat.Utilities
         //TODO: This method needs to return a status
         public async Task<HttpStatusCode> GiddyUp(HttpMethod method = null, HttpContent content = null, HttpCompletionOption options = HttpCompletionOption.ResponseContentRead)
         {
+            //Auto-redirect is always disabled at the handler level: when redirects are wanted
+            //they are followed manually below so every hop can be checked against the SSRF
+            //deny-list (a public url must not be able to redirect us into the internal network).
             var handler = new HttpClientHandler() {
-                AllowAutoRedirect = _options.AllowAutoRedirect,
+                AllowAutoRedirect = false,
                 Proxy = this.Proxy
             };
 
@@ -70,20 +76,44 @@ namespace Voat.Utilities
                 httpClient.Timeout = _options.Timeout;
                 httpClient.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue($"Voat-OpenGraph-Parser", "2"));
 
-                switch (method?.Method.ToLower())
+                var target = Uri;
+                const int maxRedirects = 5;
+                for (int hop = 0; ; hop++)
                 {
-                    case "get":
-                    case null:
-                        _response = await httpClient.GetAsync(Uri, options);
-                        break;
-                    case "post":
-                        _response = await httpClient.PostAsync(Uri, content);
-                        break;
-                    default:
-                        throw new NotImplementedException($"{method?.Method} is currently not implemented");
-                        break;
+                    if (_options.BlockNonPublicAddresses && !await UrlUtility.IsUriSafeForServerFetch(target))
+                    {
+                        throw new InvalidOperationException($"Blocked request to non-public address: {target}");
+                    }
+
+                    switch (method?.Method.ToLower())
+                    {
+                        case "get":
+                        case null:
+                            _response = await httpClient.GetAsync(target, options);
+                            break;
+                        case "post":
+                            _response = await httpClient.PostAsync(target, content);
+                            break;
+                        default:
+                            throw new NotImplementedException($"{method?.Method} is currently not implemented");
+                            break;
+                    }
+
+                    var isRedirect = (int)_response.StatusCode >= 300 && (int)_response.StatusCode < 400;
+                    if (_options.AllowAutoRedirect && isRedirect && hop < maxRedirects)
+                    {
+                        var location = _response.Headers.Location;
+                        if (location == null)
+                        {
+                            break;
+                        }
+                        target = location.IsAbsoluteUri ? location : new Uri(target, location);
+                        _response.Dispose();
+                        continue;
+                    }
+                    break;
                 }
-                
+
                 _redirectedUri = _response.RequestMessage.RequestUri;
 
                 if (options == HttpCompletionOption.ResponseContentRead)

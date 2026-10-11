@@ -61,6 +61,9 @@ namespace Voat.Configuration
                     return new JsonSerializerSettings()
                     {
                         TypeNameHandling = TypeNameHandling.All,
+                        // $type resolution is restricted to an allow-list (see SafeTypeNameBinder)
+                        // so deserialized payloads can not instantiate arbitrary types.
+                        SerializationBinder = new SafeTypeNameBinder(),
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                     };
                 });
@@ -79,6 +82,9 @@ namespace Voat.Configuration
                             args.ErrorContext.Handled = true;
                         },
                         TypeNameHandling = TypeNameHandling.All,
+                        // $type resolution is restricted to an allow-list (see SafeTypeNameBinder);
+                        // this path deserializes user-supplied vote option JSON.
+                        SerializationBinder = new SafeTypeNameBinder(),
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                     };
                 });

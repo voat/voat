@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Voat.Configuration;
 using Voat.Data;
 using Voat.Data.Models;
 using Voat.Utilities;
@@ -24,8 +25,8 @@ namespace Voat
         
         public override Task<IdentityResult> ValidateAsync(UserManager<VoatIdentityUser> manager, VoatIdentityUser user, string password)
         {
-            //no op
-            return Task.FromResult(IdentityResult.Success);
+            //Enforce the configured password policy (VoatSettings.PasswordOptions) instead of accepting anything.
+            return base.ValidateAsync(manager, user, password);
         }
     }
 
@@ -48,9 +49,12 @@ namespace Voat
 
         }
         public VoatUserManager() : this(new UserStore<VoatIdentityUser, IdentityRole, IdentityDataContext, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityUserToken<string>, IdentityRoleClaim<string>>(new IdentityDataContext(), new IdentityErrorDescriber()),
-                Microsoft.Extensions.Options.Options.Create(new IdentityOptions()),
-                //CORE_PORT: Need to tell this to use compatible v2 hashing until API is converted to Core then we can use v3. Or not. Listen, this is a decision we can make together!
-                new PasswordHasher<VoatIdentityUser>(Microsoft.Extensions.Options.Options.Create(new PasswordHasherOptions() { CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV2 })),
+                //Use the same password policy this shim's validator enforces as the web (DI) pipeline does.
+                Microsoft.Extensions.Options.Options.Create(new IdentityOptions() { Password = VoatSettings.Instance.PasswordOptions }),
+                //IdentityV3 = PBKDF2-HMAC-SHA256 with a pinned iteration count (hashes carry their own
+                //count and format byte, so existing IdentityV2 hashes keep verifying and are upgraded on
+                //next successful login).
+                new PasswordHasher<VoatIdentityUser>(Microsoft.Extensions.Options.Options.Create(new PasswordHasherOptions() { CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV3, IterationCount = 100000 })),
                 new[] { new UserValidator<VoatIdentityUser>() },
                 new[] { new VoatPasswordValidator() },
                 new UpperInvariantLookupNormalizer(),

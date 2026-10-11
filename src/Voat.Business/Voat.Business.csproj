@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Company>Voat, Inc.</Company>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
@@ -16,22 +16,22 @@
     <NoWarn>1701;1702;1705;1591,1572,1571,1573,1587,1570</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CoreCompat.System.Drawing.v2" Version="5.2.0-preview1-r131" />
-    <PackageReference Include="Dapper" Version="1.50.2" />
-    <PackageReference Include="dotnet-test-nunit" Version="3.4.0-beta-3" />
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor" Version="2.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
-    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="Sendgrid" Version="9.9.0" />
-    <PackageReference Include="StackExchange.Redis.StrongName" Version="1.2.6" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0" />
-    <PackageReference Include="WindowsAzure.Storage" Version="8.4.0" />
+    <!-- ASP.NET Core shared framework: Identity, Authorization, Http, Routing types. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.30.1" />
+    <PackageReference Include="Dapper" Version="2.1.89" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.12" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Sendgrid" Version="9.29.3" />
+    <!-- Imaging: SkiaSharp (Apache-2.0). ImageSharp 4.x — the line with the
+         security fixes — requires a Six Labors license key to build Release. -->
+    <PackageReference Include="SkiaSharp" Version="4.153.1" />
+    <!-- Linux native runtime for the Docker image. The NoDependencies variant
+         drops fontconfig; only bitmap operations are used here. -->
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.153.1" />
+    <PackageReference Include="StackExchange.Redis" Version="3.4.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\external\Source\ghorsey\OpenGraph-Net\OpenGraph-Net.csproj" />

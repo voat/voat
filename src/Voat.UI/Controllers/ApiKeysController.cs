@@ -75,6 +75,7 @@ namespace Voat.Controllers
 
 
         [HttpPost]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(int id)
         {
             //delete key
@@ -89,6 +90,7 @@ namespace Voat.Controllers
         }
 
         [HttpPost]
+        [VoatValidateAntiForgeryToken]
         public async Task<ActionResult> Create(ApiKeyCreateRequest model)
         {
             if (!VoatSettings.Instance.ApiKeyCreationEnabled)

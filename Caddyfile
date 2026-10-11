@@ -1,0 +1,27 @@
+# Caddy reverse proxy for Voat — automatic HTTPS.
+#
+# Local:   VOAT_DOMAIN defaults to "localhost"; Caddy issues a local
+#          (self-signed) certificate. The easiest local URL is the app's own
+#          port, http://localhost:8080 (see docker-compose.yml).
+# VPS:     set VOAT_DOMAIN in .env to your real domain (DNS A record pointing
+#          at the server) and Caddy obtains/renews a Let's Encrypt certificate
+#          automatically.
+
+{
+    email {$VOAT_ACME_EMAIL:}
+}
+
+{$VOAT_DOMAIN:localhost} {
+    encode gzip
+
+    # App container on the internal network. Caddy sets X-Forwarded-For /
+    # X-Forwarded-Proto, which the app honors for client IP + HTTPS detection.
+    reverse_proxy app:8080
+
+    # Voat's CSP is intentionally not set at this layer: the legacy UI relies
+    # on inline scripts in its views (documented in the security audit).
+    header {
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+    }
+}

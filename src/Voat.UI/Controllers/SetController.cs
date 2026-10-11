@@ -262,6 +262,7 @@ namespace Voat.Controllers
         }
         [Authorize]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Update(Set set)
         {
             if (ModelState.IsValid)

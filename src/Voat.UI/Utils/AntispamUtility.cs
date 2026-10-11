@@ -55,6 +55,9 @@ namespace Voat.UI.Utilities
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                //Fail closed: if the captcha can not be verified, the request must not proceed
+                //as if it were verified. (Disabling CaptchaEnabled remains the opt-out.)
+                filterContext.ModelState.AddModelError(string.Empty, "Captcha verification failed.");
             }
         }
     }
@@ -83,7 +86,8 @@ namespace Voat.UI.Utilities
                     var responseString = await httpResource.Response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var captchaResponse = JsonConvert.DeserializeObject<ReCaptchaResponse>(responseString);
 
-                    return captchaResponse.Success;
+                    //Null/empty responses count as failure (fail closed).
+                    return captchaResponse != null && captchaResponse.Success;
                 }
             //}
             //else

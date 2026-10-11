@@ -30,7 +30,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Routing;
 using System;
 using System.Collections.Generic;
@@ -124,7 +123,7 @@ namespace Voat
         public static IHtmlContent PartialFor<TModel, TProperty>(this IHtmlHelper<TModel> helper, Expression<Func<TModel, TProperty>> expression, string partialViewName)
         {
             string name = ExpressionHelper.GetExpressionText(expression);
-            object model = ExpressionMetadataProvider.FromLambdaExpression(expression, helper.ViewData, helper.MetadataProvider).Model;
+            object model = ExpressionHelper.Evaluate(expression, helper.ViewData.Model);
             var viewData = new ViewDataDictionary(helper.ViewData);
 
             var previousName = helper.ViewData.TemplateInfo.HtmlFieldPrefix;

@@ -21,6 +21,7 @@ namespace Voat.UI.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "GlobalAdmin,Admin,DelegateAdmin,GlobalBans")]
         public async Task<ActionResult> Ban(BanViewModel model)
         {

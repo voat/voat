@@ -1,23 +1,28 @@
-﻿
+
 namespace OpenGraph_Net
 {
     using System;
     using System.IO;
-    using System.IO.Compression;
     using System.Net;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
 
-    // 
+    //
     /// <summary>
     /// Http Downloader
     /// </summary>
     /// <remarks>
     /// http://stackoverflow.com/a/2700707
+    /// Modernization: rewritten from the obsolete WebRequest/HttpWebRequest API (SYSLIB0014)
+    /// to HttpClient. Encoding sniffing and meta-charset re-encode behavior is preserved.
     /// </remarks>
     public class HttpDownloader
     {
+        private static readonly HttpClient Client = CreateClient();
+
         private readonly string referer;
         private readonly string userAgent;
 
@@ -35,7 +40,7 @@ namespace OpenGraph_Net
         /// <value>
         /// The headers.
         /// </value>
-        public WebHeaderCollection Headers { get; set; }
+        public HttpResponseHeaders Headers { get; set; }
 
         /// <summary>
         /// Gets or sets the URL.
@@ -44,6 +49,15 @@ namespace OpenGraph_Net
         /// The URL.
         /// </value>
         public Uri Url { get; set; }
+
+        private static HttpClient CreateClient()
+        {
+            HttpClientHandler handler = new HttpClientHandler
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
+            return new HttpClient(handler);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpDownloader"/> class.
@@ -75,24 +89,7 @@ namespace OpenGraph_Net
         /// <returns>The content of the page</returns>
         public string GetPage()
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(this.Url);
-            if (!string.IsNullOrEmpty(this.referer))
-            {
-                request.Referer = this.referer;
-            }
-            if (!string.IsNullOrEmpty(this.userAgent))
-            {
-                request.UserAgent = this.userAgent;
-            }
-
-            request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
-
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            {
-                this.Headers = response.Headers;
-                this.Url = response.ResponseUri;
-                return this.ProcessContent(response);
-            }
+            return this.GetPageAsync().GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -103,23 +100,29 @@ namespace OpenGraph_Net
         /// </returns>
         public async Task<string> GetPageAsync()
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(this.Url);
-            if (!string.IsNullOrEmpty(this.referer))
+            using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, this.Url))
             {
-                request.Referer = this.referer;
-            }
-            if (!string.IsNullOrEmpty(this.userAgent))
-            {
-                request.UserAgent = this.userAgent;
-            }
+                if (!string.IsNullOrEmpty(this.referer))
+                {
+                    request.Headers.TryAddWithoutValidation("Referer", this.referer);
+                }
+                if (!string.IsNullOrEmpty(this.userAgent))
+                {
+                    request.Headers.TryAddWithoutValidation("User-Agent", this.userAgent);
+                }
 
-            request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
+                request.Headers.TryAddWithoutValidation("Accept-Encoding", "gzip,deflate");
 
-            using (HttpWebResponse response = (HttpWebResponse)(await request.GetResponseAsync()))
-            {
-                this.Headers = response.Headers;
-                this.Url = response.ResponseUri;
-                return this.ProcessContent(response);
+                using (HttpResponseMessage response = await Client.SendAsync(request))
+                {
+                    response.EnsureSuccessStatusCode();
+                    this.Headers = response.Headers;
+                    if (response.RequestMessage != null && response.RequestMessage.RequestUri != null)
+                    {
+                        this.Url = response.RequestMessage.RequestUri;
+                    }
+                    return await this.ProcessContent(response);
+                }
             }
         }
         /// <summary>
@@ -127,33 +130,19 @@ namespace OpenGraph_Net
         /// </summary>
         /// <param name="response">The response.</param>
         /// <returns></returns>
-        private string ProcessContent(HttpWebResponse response)
+        private async Task<string> ProcessContent(HttpResponseMessage response)
         {
             this.SetEncodingFromHeader(response);
 
-            Stream s = response.GetResponseStream();
+            Stream s = await response.Content.ReadAsStreamAsync();
 
             if (s == null)
             {
                 throw new InvalidOperationException("Response stream came back as null");
             }
 
-            if (response.ContentEncoding.ToLower().Contains("gzip"))
-            {
-                s = new GZipStream(s, CompressionMode.Decompress);
-            }
-            else if (response.ContentEncoding.ToLower().Contains("deflate"))
-            {
-                s = new DeflateStream(s, CompressionMode.Decompress);
-            }
-
             MemoryStream memStream = new MemoryStream();
-            int bytesRead;
-            byte[] buffer = new byte[0x1000];
-            for (bytesRead = s.Read(buffer, 0, buffer.Length); bytesRead > 0; bytesRead = s.Read(buffer, 0, buffer.Length))
-            {
-                memStream.Write(buffer, 0, bytesRead);
-            }
+            await s.CopyToAsync(memStream);
             s.Close();
             string html;
             memStream.Position = 0;
@@ -170,20 +159,20 @@ namespace OpenGraph_Net
         /// Sets the encoding from header.
         /// </summary>
         /// <param name="response">The response.</param>
-        private void SetEncodingFromHeader(HttpWebResponse response)
+        private void SetEncodingFromHeader(HttpResponseMessage response)
         {
             string charset = null;
-            if (string.IsNullOrEmpty(response.CharacterSet))
+            if (response.Content.Headers.ContentType != null && !string.IsNullOrEmpty(response.Content.Headers.ContentType.CharSet))
             {
-                Match m = Regex.Match(response.ContentType, @";\s*charset\s*=\s*(?<charset>.*)", RegexOptions.IgnoreCase);
+                charset = response.Content.Headers.ContentType.CharSet.Trim('\'', '"');
+            }
+            else if (response.Content.Headers.ContentType != null)
+            {
+                Match m = Regex.Match(response.Content.Headers.ContentType.ToString(), @";\s*charset\s*=\s*(?<charset>.*)", RegexOptions.IgnoreCase);
                 if (m.Success)
                 {
                     charset = m.Groups["charset"].Value.Trim('\'', '"');
                 }
-            }
-            else
-            {
-                charset = response.CharacterSet;
             }
             if (!string.IsNullOrEmpty(charset))
             {

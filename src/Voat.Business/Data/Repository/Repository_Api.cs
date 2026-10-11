@@ -123,9 +123,11 @@ namespace Voat.Data
             c.UserName = User.Identity.Name;
             c.CreationDate = CurrentDate;
 
+            //Key material comes from a CSPRNG (Guid.NewGuid is not cryptographically secure).
+            //Formats preserved: public "VO{32 hex}AT", private 64 hex chars.
             var generatePublicKey = new Func<string>(() =>
             {
-                return String.Format("VO{0}AT", Guid.NewGuid().ToString().Replace("-", "").ToUpper());
+                return String.Format("VO{0}AT", GenerateApiKeyToken(16));
             });
 
             //just make sure key isn't already in db
@@ -136,21 +138,21 @@ namespace Voat.Data
             }
 
             c.PublicKey = publicKey;
-            c.PrivateKey = (Guid.NewGuid().ToString() + Guid.NewGuid().ToString()).Replace("-", "").ToUpper();
+            c.PrivateKey = GenerateApiKeyToken(32);
             c.ApiPermissionPolicyID = _defaultApiPermissionPolicyID;
-
-            //Using OAuth 2, we don't need enc keys
-            //var keyGen = RandomNumberGenerator.Create();
-            //byte[] tempKey = new byte[16];
-            //keyGen.GetBytes(tempKey);
-            //c.PublicKey = Convert.ToBase64String(tempKey);
-
-            //tempKey = new byte[64];
-            //keyGen.GetBytes(tempKey);
-            //c.PrivateKey = Convert.ToBase64String(tempKey);
 
             _db.ApiClient.Add(c);
             _db.SaveChanges();
+        }
+
+        private static string GenerateApiKeyToken(int byteCount)
+        {
+            using (var rng = System.Security.Cryptography.RandomNumberGenerator.Create())
+            {
+                var data = new byte[byteCount];
+                rng.GetBytes(data);
+                return Convert.ToHexString(data);
+            }
         }
 
         [Authorize]

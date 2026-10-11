@@ -31,6 +31,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System;
@@ -50,7 +51,7 @@ namespace Voat
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -80,6 +81,11 @@ namespace Voat
             {
                 options.ForwardedHeaders = ForwardedHeaders.All;
                 options.RequireHeaderSymmetry = false;
+                //Trust forwarding headers only from local/loopback proxies and RFC1918
+                //(docker/Caddy/nginx sidecar networks) — mirrors HttpExtensions.RemoteAddress.
+                options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(System.Net.IPAddress.Parse("10.0.0.0"), 8));
+                options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(System.Net.IPAddress.Parse("172.16.0.0"), 12));
+                options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(System.Net.IPAddress.Parse("192.168.0.0"), 16));
             });
 
             services.AddDbContext<IdentityDataContext>();
@@ -100,10 +106,19 @@ namespace Voat
                 {
                     options.Cookie.Name = VoatSettings.Instance.CookieName;
                 }
+                //Explicit cookie policy (was implicit framework defaults).
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                 options.AccessDeniedPath = new PathString("/error/default");
             });
 
-            var mvcBuilder = services.AddMvc();
+            var mvcBuilder = services.AddMvc(options =>
+            {
+                // Preserve the legacy IRouteBuilder route table (RouteConfig) on ASP.NET Core 10:
+                // UseMvc requires endpoint routing to be disabled.
+                options.EnableEndpointRouting = false;
+            });
 
             services.Configure<RazorViewEngineOptions>(options => {
                 options.ViewLocationExpanders.Add(new ViewLocationExpander());
@@ -129,27 +144,48 @@ namespace Voat
 
             services.AddLogging(loggingBuilder =>
             {
-                //Can not figure out how to filter out native log statements (i.e. Microsoft.AspNetCore.Mvc...) from logging 
+                //Can not figure out how to filter out native log statements (i.e. Microsoft.AspNetCore.Mvc...) from logging
                 //using the default format json. So have to implement a custom filter.
                 //loggingBuilder.AddConfiguration(Configuration.GetSection("Logging"));
+                loggingBuilder.AddConsole();
+                loggingBuilder.AddDebug();
                 var filter = new LoggingFilter();
                 loggingBuilder.AddFilter(filter.Filter);
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            // Console and debug providers moved to ConfigureServices(AddLogging); the ILoggerFactory
+            // AddConsole/AddDebug overloads are obsolete on modern ASP.NET Core.
             loggerFactory.AddProvider(new VoatLoggerProvider());
+
+            //Honor X-Forwarded-* from trusted proxies before anything reads scheme or client ip.
+            //(The options were configured in ConfigureServices but the middleware was never added.)
+            app.UseForwardedHeaders();
+
+            //Security headers (a strict CSP is intentionally not set: 250 legacy views rely on
+            //inline scripts/handlers; enforcing one without a rewrite would break features).
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+                context.Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
+                context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+                await next();
+            });
+
+            if (!env.IsDevelopment() && VoatSettings.Instance.ForceHTTPS)
+            {
+                app.UseHsts();
+            }
             
             
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                //app.UseDatabaseErrorPage(); // removed in .NET 5+ (EF migrations diagnostics); not needed since Voat runs on hand-written SQL scripts
                 //app.UseBrowserLink();
                 VoatSettings.Instance.IsDevelopment = true;
             }
@@ -163,7 +199,9 @@ namespace Voat
             app.UseVoatGlobalExceptionLogger();
 
             app.UseStaticFiles();
-            app.UseIdentity();
+            // UseIdentity() became UseAuthentication() + UseAuthorization() in ASP.NET Core 3.0+.
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseVoatRequestDurationLogger();
 

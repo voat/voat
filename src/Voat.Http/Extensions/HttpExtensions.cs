@@ -99,7 +99,15 @@ namespace Voat.Http
 
         public static void Add(this IResponseCookies cookies, HttpCookie cookie)
         {
-            cookies.Append(cookie.Name, cookie.Value, new CookieOptions() { Expires = cookie.Expires });
+            cookies.Append(cookie.Name, cookie.Value, new CookieOptions()
+            {
+                Expires = cookie.Expires,
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                //Mark Secure when the site runs https (ForceHTTPS deployments); keeps
+                //plain-http local development working.
+                Secure = VoatSettings.Instance.ForceHTTPS
+            });
         }
         public static void SetCookie(this HttpResponse response, HttpCookie cookie)
         {
@@ -196,8 +204,59 @@ namespace Voat.Http
 
         }
 
+        //Trusted reverse proxies (Caddy, nginx, Cloudflare in local-network deployments) are the
+        //only peers allowed to speak for the client via forwarding headers. Anything else on the
+        //internet can trivially spoof X-Forwarded-For, which feeds throttles, registration caps
+        //and IP hashing.
+        private static bool IsTrustedProxyAddress(IPAddress address)
+        {
+            if (address == null)
+            {
+                return false;
+            }
+            if (IPAddress.IsLoopback(address))
+            {
+                return true;
+            }
+            if (address.IsIPv4MappedToIPv6)
+            {
+                address = address.MapToIPv4();
+            }
+            if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            {
+                var bytes = address.GetAddressBytes();
+                if (bytes[0] == 10)
+                {
+                    return true; //10.0.0.0/8
+                }
+                if (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31)
+                {
+                    return true; //172.16.0.0/12
+                }
+                if (bytes[0] == 192 && bytes[1] == 168)
+                {
+                    return true; //192.168.0.0/16
+                }
+            }
+            else if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+            {
+                if ((address.GetAddressBytes()[0] & 0xFE) == 0xFC)
+                {
+                    return true; //fc00::/7 unique local
+                }
+            }
+            return false;
+        }
+
         public static string RemoteAddress(this HttpRequest request, string headerKeys = "CF-Connecting-IP, X-Forwarded-For, X-Original-For")
         {
+            //The socket peer is authoritative unless it is a trusted proxy.
+            var peer = request.HttpContext.Connection.RemoteIpAddress;
+            if (!IsTrustedProxyAddress(peer))
+            {
+                return peer == null ? String.Empty : peer.ToString();
+            }
+
             var keys = headerKeys.Split(',', ';').Select(x => x.TrimSafe());
             string clientIpAddress = String.Empty;
 
@@ -212,7 +271,7 @@ namespace Voat.Http
                     }
                 }
             }
-            return clientIpAddress;
+            return String.IsNullOrEmpty(clientIpAddress) && peer != null ? peer.ToString() : clientIpAddress;
         }
         public static string StripIPAddressPort(this string ipAddress)
         {
@@ -237,8 +296,13 @@ namespace Voat.Http
                 originationInfo += url.GetLeftPart(UriPartial.Path);
             }
 
-            var hashValue = string.Join("", MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(originationInfo)).Select(s => s.ToString("x2")));
-            return hashValue;
+            //SHA-256 replaces MD5: this value is only an in-memory throttle cache key
+            //(PreventSpamAttribute), but there is no reason to keep a broken primitive.
+            using (var sha = SHA256.Create())
+            {
+                var hashValue = string.Join("", sha.ComputeHash(Encoding.ASCII.GetBytes(originationInfo)).Select(s => s.ToString("x2")));
+                return hashValue;
+            }
         }
 
         public static string SiteDomain(this HttpRequest request, string siteDomain, bool preferRequestDomain = false)

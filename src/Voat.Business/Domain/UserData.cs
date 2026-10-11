@@ -111,7 +111,7 @@ namespace Voat.Domain
         {
             _userNameInit = user.Identity.Name;
         }
-        public UserData(string userName, bool validateUserExists = false) : base(new ActivityContext(new ActivityPrincipal(new ActivityIdentity(userName))))
+        public UserData(string userName, bool validateUserExists = false) : base(new Voat.Common.ActivityContext(new ActivityPrincipal(new ActivityIdentity(userName))))
         {
             System.Diagnostics.Debug.WriteLine("UserData({0}, {1})", userName, validateUserExists.ToString());
             var val = UserDefinition.Parse(userName);

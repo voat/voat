@@ -23,6 +23,15 @@ namespace Voat.Common.Components
         public string LocalPath(params string[] relativeParts)
         {
             var result = Path.Combine(ProcessRelative(_physicalPathRoot, relativeParts).ToArray());
+
+            //Defense-in-depth: the joined path must stay under the configured root even if a
+            //caller passes traversal segments ("..") or rooted input.
+            var fullResult = Path.GetFullPath(result);
+            var fullRoot = Path.GetFullPath(_physicalPathRoot);
+            if (!fullResult.StartsWith(fullRoot, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException($"Path '{result}' escapes the content root", nameof(relativeParts));
+            }
             return result;
         }
         //public string UrlPath(string relativePath)
@@ -34,7 +43,8 @@ namespace Voat.Common.Components
         {
             List<string> paths = new List<string>();
             paths.Add(root);
-            paths.AddRange(relativePaths.ToPathParts());
+            //Drop "." and ".." segments so they can never traverse outside the root.
+            paths.AddRange(relativePaths.ToPathParts().Where(x => x != "." && x != ".."));
             return paths;
         }
 

@@ -63,13 +63,15 @@ type ValidationHandler() =
                         | _ ->
                             //this only finds the first member name in a regular ValidationResult object, will need to update this maybe
                             let del = typedefof<Func<_,_>>.MakeGenericType(root.Type, t)
-                            let name = match validator with 
+                            let name =
+                                match validator with
                                 | null -> t.Name
                                 | _ -> validator.GetType().Name
                             let lambda = Expression.Lambda(del, expression, root)
                             let f, p = Helper.NormalizeExpressionPath lambda
                             let memberName = valResponse.MemberNames.FirstOrDefault()
-                            let fullPath = match String.IsNullOrEmpty(memberName) with 
+                            let fullPath =
+                                match String.IsNullOrEmpty(memberName) with
                                 | true -> p
                                 | false -> String.Concat(p, ".", memberName)
                             validationResults.Add(new ValidationPathResult(valResponse.ErrorMessage, fullPath, name))
@@ -98,9 +100,10 @@ type ValidationHandler() =
 
                         //property atts
                         currentObject.Keys
-                        |> Seq.filter(fun x -> match x with
-                                        | :? PropertyInfo -> true
-                                        | _ -> false)
+                        |> Seq.filter(fun x ->
+                            match x with
+                            | :? PropertyInfo -> true
+                            | _ -> false)
                         |> Seq.map(fun p -> p :?> PropertyInfo)
                         |> Seq.iter(fun p -> currentObject.Item(p)
                                                 |> Seq.cast<ValidationAttribute>

@@ -38,4 +38,5 @@ INSERT INTO "RuleSet" ("ID", "IsActive", "Subverse", "ContentType", "SortOrder",
 SELECT 10, FALSE, NULL, NULL, -100, 'Placeholder', 'Placeholder', 'Voat',  now() at time zone 'utc'
 WHERE NOT EXISTS (SELECT * FROM "RuleSet" WHERE "ID" = 10);
 
-select setval('"ruleset_id_seq"',(select max("ID") from "RuleSet")::bigint);
+-- Resynchronize the sequence with table contents (safe on empty tables).
+select setval('"ruleset_id_seq"', COALESCE((select max("ID") from "RuleSet"), 0) + 1, false);

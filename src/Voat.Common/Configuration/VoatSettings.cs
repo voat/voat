@@ -178,7 +178,18 @@ namespace Voat.Configuration
 
         public OutgoingTraffic OutgoingTraffic { get; set; } = new OutgoingTraffic();
 
-        public PasswordOptions PasswordOptions { get; set; } = new PasswordOptions() { RequiredLength = 6 };
+        //Minimum password length 8 (NIST baseline). Deliberately no composition rules
+        //(require-digit etc.) — length is the modern guidance; override via config if desired.
+        //The flags are set explicitly because PasswordOptions' own defaults ENABLE the
+        //composition rules, which the legacy validator never enforced.
+        public PasswordOptions PasswordOptions { get; set; } = new PasswordOptions()
+        {
+            RequiredLength = 8,
+            RequireNonAlphanumeric = false,
+            RequireLowercase = false,
+            RequireUppercase = false,
+            RequireDigit = false
+        };
         public string SigningKey { get; set; } = "";
 
 

@@ -126,25 +126,29 @@ namespace Voat.Validation.Tests
 
         [TestMethod]
         [TestCategory("Validation"), TestCategory("Validation.Framework")]
-        [ExpectedException(typeof(ArgumentException))]
         public void Validation_FindsCorrectAmountOfValidators()
         {
-            var dictionary = new Dictionary<object, object>();
-            dictionary.Add("Hello", "Goodbye");
+            // MSTest 4 removed [ExpectedException]; Assert.ThrowsExactly matches the attribute's
+            // default exact-type semantics.
+            Assert.ThrowsExactly<ArgumentException>(() =>
+            {
+                var dictionary = new Dictionary<object, object>();
+                dictionary.Add("Hello", "Goodbye");
 
-            var attributes = AttributeFinder.Find<ValidationAttribute>(typeof(PipelineStageTestModel));
-            Assert.AreEqual(6, attributes[typeof(PipelineStageTestModel)].First().Value.Count);
+                var attributes = AttributeFinder.Find<ValidationAttribute>(typeof(PipelineStageTestModel));
+                Assert.AreEqual(6, attributes[typeof(PipelineStageTestModel)].First().Value.Count);
 
-            attributes = AttributeFinder.Find<ValidationAttribute>(typeof(PipelineStageTestModel), false, false, null);
-            Assert.AreEqual(6, attributes[typeof(PipelineStageTestModel)].First().Value.Count);
+                attributes = AttributeFinder.Find<ValidationAttribute>(typeof(PipelineStageTestModel), false, false, null);
+                Assert.AreEqual(6, attributes[typeof(PipelineStageTestModel)].First().Value.Count);
 
-            attributes = AttributeFinder.Find<ValidationAttribute>(typeof(PipelineStateTestModelDerived), false, false, null);
-            Assert.AreEqual(2, attributes[typeof(PipelineStateTestModelDerived)].First().Value.Count);
+                attributes = AttributeFinder.Find<ValidationAttribute>(typeof(PipelineStateTestModelDerived), false, false, null);
+                Assert.AreEqual(2, attributes[typeof(PipelineStateTestModelDerived)].First().Value.Count);
 
-            attributes = AttributeFinder.Find<ValidationAttribute>(typeof(PipelineStateTestModelDerived), false, false, null);
-            Assert.AreEqual(8, attributes[typeof(PipelineStateTestModelDerived)].First().Value.Count);
+                attributes = AttributeFinder.Find<ValidationAttribute>(typeof(PipelineStateTestModelDerived), false, false, null);
+                Assert.AreEqual(8, attributes[typeof(PipelineStateTestModelDerived)].First().Value.Count);
 
-            var a = (typeof(PipelineStateTestModelDerived)).GetCustomAttributes(false);
+                var a = (typeof(PipelineStateTestModelDerived)).GetCustomAttributes(false);
+            });
         }
 
         [TestMethod]

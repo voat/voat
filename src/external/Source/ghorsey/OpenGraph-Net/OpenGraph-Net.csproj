@@ -4,7 +4,7 @@
     <!-- Voat Changed/Added here -->
 	<AssemblyVersion>1.3.4.0</AssemblyVersion>
     <AssemblyFileVersion>1.3.4.0</AssemblyFileVersion>
-	<TargetFramework>netcoreapp2.0</TargetFramework>
+	<TargetFramework>net10.0</TargetFramework>
   
     <Copyright>Copyright © 2016</Copyright>
     <AssemblyTitle>OpenGraph.Net</AssemblyTitle>
@@ -34,6 +34,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.5.5" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.13.0" />
   </ItemGroup>
 </Project>

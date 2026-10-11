@@ -15,8 +15,9 @@ type LoaderAttribute(loaderType:Type) =
 
     new(loaderType:String) =
 
-        let foundType = match Type.GetType(loaderType) with
-                | null -> raise(new ArgumentException(String.Format("Type '{0}' can not be loaded.", loaderType)))
-                | _ as x -> x
+        let foundType =
+            match Type.GetType(loaderType) with
+            | null -> raise(new ArgumentException(String.Format("Type '{0}' can not be loaded.", loaderType)))
+            | _ as x -> x
 
         new LoaderAttribute(foundType)

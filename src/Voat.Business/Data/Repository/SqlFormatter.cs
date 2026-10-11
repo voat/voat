@@ -222,6 +222,30 @@ namespace Voat.Data
 
             return result;
         }
+        //Returns the command text (and matching CommandType) for invoking a
+        //table-returning function. The PostgreSql usp_Reports_* objects are
+        //CREATE FUNCTION ... RETURNS TABLE; CommandType.StoredProcedure renders
+        //as CALL under modern Npgsql, which only matches CREATE PROCEDURE
+        //objects, so PostgreSql invokes them via SELECT. SqlServer keeps the
+        //legacy procedure semantics.
+        public static string TableFunctionCall(string name, string arguments, out System.Data.CommandType commandType)
+        {
+            string result = null;
+            switch (DataConfigurationSettings.Instance.StoreType)
+            {
+                case DataStoreType.SqlServer:
+                    commandType = System.Data.CommandType.StoredProcedure;
+                    result = Object(name);
+                    break;
+                case DataStoreType.PostgreSql:
+                    commandType = System.Data.CommandType.Text;
+                    result = String.Format("SELECT * FROM {0}({1})", Object(name), arguments);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+            return result;
+        }
         public static string BooleanLiteral(bool value)
         {
             var result = "";

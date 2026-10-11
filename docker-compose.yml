@@ -1,0 +1,116 @@
+# Voat — one-command startup:
+#
+#     cp .env.example .env     # then edit .env (at minimum: passwords + signing key)
+#     docker compose up -d --build
+#
+# All deployment-specific values come from .env — nothing secret lives in this
+# file or in appsettings.json. See INSTALL.md for the full walkthrough.
+
+services:
+
+  # ---- PostgreSQL --------------------------------------------------------
+  db:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-voat}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-voat}
+    volumes:
+      # postgres:18+ keeps data in a major-version subdir and refuses to boot
+      # with a mount at the legacy /var/lib/postgresql/data path; mount the
+      # parent dir instead (docker-library/postgres#1259).
+      - db-data:/var/lib/postgresql
+      # Schema + seed scripts (read-only). Only used on first boot of an empty
+      # data volume; see docker/db-init/00-voat-setup.sql.
+      - ./misc/SqlScripts/PostgreSql:/voat-sql:ro
+      - ./docker/db-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER:-voat}\" -d \"$${POSTGRES_DB:-voat}\""]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - backend
+
+  # ---- Voat web app ------------------------------------------------------
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+
+      # Database connections (users / read-write / read-only share one database
+      # in the default setup). Config keys use "__" for nesting.
+      voat__data__connections__0__value: "Server=db;port=5432;Database=${POSTGRES_DB:-voat};User ID=${POSTGRES_USER:-voat};Password=${POSTGRES_PASSWORD};Persist Security Info=True;Keepalive=1;"
+      voat__data__connections__1__value: "Server=db;port=5432;Database=${POSTGRES_DB:-voat};User ID=${POSTGRES_USER:-voat};Password=${POSTGRES_PASSWORD};Persist Security Info=True;Keepalive=1;"
+      voat__data__connections__2__value: "Server=db;port=5432;Database=${POSTGRES_DB:-voat};User ID=${POSTGRES_USER:-voat};Password=${POSTGRES_PASSWORD};Persist Security Info=True;Keepalive=1;"
+
+      # Site identity + security
+      voat__settings__siteDomain: ${VOAT_DOMAIN:-}
+      voat__settings__cookieDomain: ${VOAT_COOKIE_DOMAIN:-}
+      voat__settings__forceHTTPS: ${VOAT_FORCE_HTTPS:-false}
+      voat__settings__signingKey: ${VOAT_SIGNING_KEY:?set VOAT_SIGNING_KEY in .env}
+
+      # reCAPTCHA (leave disabled for local use)
+      voat__settings__captchaEnabled: ${VOAT_CAPTCHA_ENABLED:-false}
+      voat__settings__recaptchaPublicKey: ${VOAT_RECAPTCHA_PUBLIC_KEY:-}
+      voat__settings__recaptchaPrivateKey: ${VOAT_RECAPTCHA_PRIVATE_KEY:-}
+
+      # Email: SMTP handler arguments are "host;port" (0 = default port).
+      # Set VOAT_SMTP_HOST for real mail, e.g. your VPS's mail relay.
+      voat__emailSender__handlers__0__arguments: "[System.String](${VOAT_SMTP_HOST:-127.0.0.1});[System.Int32](${VOAT_SMTP_PORT:-0})"
+
+      # Optional SendGrid instead of SMTP
+      voat__emailSender__handlers__1__enabled: ${VOAT_USE_SENDGRID:-false}
+      voat__emailSender__handlers__1__arguments: "[System.String](${VOAT_SENDGRID_API_KEY:-})"
+
+      # Legacy API keys + Azure storage (optional; see INSTALL.md)
+      voat__settings__apiPublicKey: ${VOAT_API_PUBLIC_KEY:-}
+      voat__settings__apiPrivateKey: ${VOAT_API_PRIVATE_KEY:-}
+      voat__settings__storageConnectionString: ${VOAT_STORAGE_CONNECTION_STRING:-}
+      voat__settings__emailServiceKey: ${VOAT_EMAIL_SERVICE_KEY:-}
+    volumes:
+      - storage:/app/wwwroot/storage
+      - dataprotection:/home/app/.aspnet/DataProtection-Keys
+    # Bound to loopback only: convenient for local use (http://localhost:8080)
+    # and unreachable from the internet on a VPS (Caddy fronts the site there).
+    ports:
+      - "127.0.0.1:8080:8080"
+    networks:
+      - backend
+      - frontend
+
+  # ---- Caddy reverse proxy (automatic HTTPS) -----------------------------
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    environment:
+      VOAT_DOMAIN: ${VOAT_DOMAIN:-localhost}
+      VOAT_ACME_EMAIL: ${VOAT_ACME_EMAIL:-}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - frontend
+
+volumes:
+  db-data:
+  storage:
+  dataprotection:
+  caddy-data:
+  caddy-config:
+
+networks:
+  backend:
+  frontend:

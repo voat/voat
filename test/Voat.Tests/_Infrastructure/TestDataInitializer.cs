@@ -753,7 +753,9 @@ namespace Voat.Tests.Infrastructure
 
                 if (!result.Succeeded)
                 {
-                    throw new Exception("Error creating test user " + userName);
+                    //Include the Identity error list: without it a seed failure is undebuggable.
+                    var errors = String.Join("; ", result.Errors.Select(x => $"{x.Code}: {x.Description}"));
+                    throw new Exception($"Error creating test user {userName}: {errors}");
                 }
            // }
         }

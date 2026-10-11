@@ -38,11 +38,13 @@ namespace Voat.Data
 
         public async Task<Statistics<IEnumerable<UserVoteStats>>> UserVotesGivenStatistics(SearchOptions options)
         {
-            var procedure = SqlFormatter.Object("usp_Reports_UserVoteGivenStats");
+            var procedure = SqlFormatter.TableFunctionCall("usp_Reports_UserVoteGivenStats",
+                "CAST(@BeginDate AS timestamp), CAST(@EndDate AS timestamp), CAST(@RecordCount AS int)",
+                out var commandType);
 
             var result = await _db.Connection.QueryAsync<UserVoteStats>(procedure,
                  new { BeginDate = options.StartDate.Value, EndDate = options.EndDate.Value, RecordCount = options.Count },
-                commandType: System.Data.CommandType.StoredProcedure);
+                commandType: commandType);
 
             return new Statistics<IEnumerable<UserVoteStats>>() {
                 BeginDate = options.StartDate.Value,
@@ -53,11 +55,13 @@ namespace Voat.Data
         }
         public async Task<Statistics<IEnumerable<UserVoteReceivedStats>>> UserVotesReceivedStatistics(SearchOptions options)
         {
-            var procedure = SqlFormatter.Object("usp_Reports_UserVoteReceivedStats");
+            var procedure = SqlFormatter.TableFunctionCall("usp_Reports_UserVoteReceivedStats",
+                "CAST(@BeginDate AS timestamp), CAST(@EndDate AS timestamp), CAST(@RecordCount AS int)",
+                out var commandType);
 
             var result = await _db.Connection.QueryAsync<UserVoteReceivedStats>(procedure,
                   new { BeginDate = options.StartDate, EndDate = options.EndDate, RecordCount = options.Count },
-                commandType: System.Data.CommandType.StoredProcedure);
+                commandType: commandType);
 
             return new Statistics<IEnumerable<UserVoteReceivedStats>>()
             {
@@ -70,11 +74,13 @@ namespace Voat.Data
         public async Task<Statistics<IEnumerable<StatContentItem>>> HighestVotedContentStatistics(SearchOptions options)
         {
             //Get content items
-            var procedure = SqlFormatter.Object("usp_Reports_HighestVotedContent");
+            var procedure = SqlFormatter.TableFunctionCall("usp_Reports_HighestVotedContent",
+                "CAST(@BeginDate AS timestamp), CAST(@EndDate AS timestamp), CAST(@RecordCount AS int)",
+                out var commandType);
 
             var result = await _db.Connection.QueryAsync<StatContentItem>(procedure,
                new { BeginDate = options.StartDate, EndDate = options.EndDate, RecordCount = options.Count },
-               commandType: System.Data.CommandType.StoredProcedure);
+               commandType: commandType);
 
             //Load content items
             var comments = await GetComments(result.Where(x => x.ContentType == ContentType.Comment).Select(x => x.ID).ToArray());

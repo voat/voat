@@ -90,8 +90,28 @@ namespace Voat.Utilities
                             //add it to the output for verification?
                             x.attributes.Add("data-ScriptStrip", String.Format("/* script detected: {0} */", href));
                         }
+                        else if (!UrlUtility.IsUrlSchemeAllowed(href))
+                        {
+                            //Scheme allow-list: strip data:/vbscript:/anything else non-http(s)/ftp/mailto
+                            x.attributes["href"] = "#";
+
+                            x.attributes.Add("data-ScriptStrip", String.Format("/* scheme not allowed: {0} */", href));
+                        }
                     }
                     return true;
+                }),
+                PrepareImage = new Func<HtmlTag, bool, bool>((x, titledImage) =>
+                {
+                    //Images got no scheme check before: ![x](javascript:...)/![x](data:text/html,...)
+                    if (x.attributes.ContainsKey("src"))
+                    {
+                        string src = x.attributes["src"];
+                        if (!String.IsNullOrEmpty(src) && !UrlUtility.IsUrlSchemeAllowed(src))
+                        {
+                            x.attributes["src"] = "#";
+                        }
+                    }
+                    return false;
                 }),
                 ExtraMode = true,
                 SafeMode = true,

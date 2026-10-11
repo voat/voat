@@ -202,8 +202,16 @@ Voat/Voat-All.sln
 
 Voat/.vs/
 Logging.config
-appsettings.json
+
+# --- Secrets / machine-specific config (Phase 6) -------------------------
+# appsettings.json itself is committed and contains NO secrets (values come
+# from the environment / .env — see .env.example and INSTALL.md). Everything
+# below carries credentials or machine-local state and must stay untracked.
 appsettings.Development.json
+test/Voat.Tests/appsettings.json
+.env
+.env.*
+!.env.example
 .vs/
 src/Voat.UI/wwwroot/storage/thumbs/
 src/Voat.UI/wwwroot/storage/avatars/

@@ -25,17 +25,22 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using Voat.Configuration;
 
 namespace Voat.Utilities
 {
     public static class IpHash
     {
         // encrypt user IP (one-way) before storing it in database
+        //HMAC-SHA256 keyed with VoatSettings.SigningKey: an unsalted hash of an IPv4
+        //address can be brute-forced offline over the whole 32-bit space; with a server
+        //secret the values are not reversible without the key. Set SigningKey in
+        //production (see .env.example) — with an empty key this degrades to plain hashing.
         public static string CreateHash(string ip)
         {
-            using (SHA512 shaM = new SHA512Managed())
+            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(VoatSettings.Instance.SigningKey ?? String.Empty)))
             {
-                return Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(ip)));
+                return Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(ip)));
             }
         }
     }

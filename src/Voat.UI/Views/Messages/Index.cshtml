@@ -127,7 +127,7 @@
 
                                         <div class="panel-message-body">
                                             @Html.Raw(message.FormattedContent)
-                                            <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@Html.Raw(message.Content)</textarea>
+                                            <textarea id="sourceDisplay" readonly="" class="commenttextarea" style="display: none;">@message.Content</textarea>
                                             <ul class="flat-list buttons">
 
                                                 @if (message.Type == Voat.Domain.Models.MessageType.Private)
