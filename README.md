@@ -1,9 +1,9 @@
-# Quick Status Updates
+<img width="2000" height="800" alt="VoatTextLogo" src="https://github.com/user-attachments/assets/c564ea14-c802-4269-8068-9ac2d713ced5" />
 
-This branch is fully building on .NET 10 (LTS) and a majority of unit tests and UI are ported and working.
+# REvoat
 
-Right now we are concentrating on getting 100% unit test coverage. 
+REvoat is a new and improved version of voat (a now-defunct social media site)
 
-# Voat Branch for .NET Core Port (With the PostgreSQL Branch Merged)
+# Installation
 
-Currently using .NET 10 (LTS)
+Read the installation guide here: https://github.com/welchythecat/REvoat/blob/modernize/INSTALL.md
