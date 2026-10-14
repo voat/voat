@@ -7,6 +7,12 @@ Phase 2 foundation, Phase 3 data, Phase 4 web/security, Phase 5 tests, Phase 6 p
 ## [Unreleased]
 
 ### Post-Phase 6 — user-requested changes
+- `src/Voat.UI/appsettings.json` — enabled `enableVotes` (user request).
+  Scope clarification: this key gates the **"Vote" (poll) submission
+  feature** (`VoteController.Create/Save`, the "create a poll" sidebar
+  button) — it never gated ordinary upvote/downvote arrows, which run
+  through `UserController.Vote` and work for all logged-in users. With the
+  key off, only admin-role holders could create polls.
 - `src/Voat.UI/appsettings.json` — enabled role checks (`enableRoles: true`,
   `enabledRoles: [ "*" ]`) in `voat:settings`. The admin command pipeline
   (`GlobalBanCommand`) authorizes via `SecurityExtension.IsInAnyRole`, which
