@@ -6,6 +6,31 @@ Phase 2 foundation, Phase 3 data, Phase 4 web/security, Phase 5 tests, Phase 6 p
 
 ## [Unreleased]
 
+### Post-Phase 6 — user-requested changes
+- `src/Voat.UI/appsettings.json` — enabled role checks (`enableRoles: true`,
+  `enabledRoles: [ "*" ]`) in `voat:settings`. The admin command pipeline
+  (`GlobalBanCommand`) authorizes via `SecurityExtension.IsInAnyRole`, which
+  drops every requested role not listed in `enabledRoles` and returns false
+  outright when `enableRoles` is false; both settings default to off/empty —
+  same as upstream, where production config was never checked into the repo —
+  so the Admin Ban Utility answered "Permissions not granted" even to a
+  GlobalAdmin. `"*"` simply honors all role names in checks; it grants nothing
+  by itself (the user must still hold the role). This also revives the other
+  grant gates that were dead for everyone: moderator removal
+  (`Repository.cs`), `ModeratorPermission`'s global-admin bypass, and admin
+  voting when `EnableVotes` is off (`VoteController.VotesEnabled`).
+- `/ModLog` — investigated, **no code change**. Bare `/ModLog` has never been a
+  route (identical upstream). Voat's moderation log is per-subverse by design:
+  `/v/{subverse}/modlog/submission|comment|banned`. The site-wide ban lists are
+  `/log/banned/user` and `/log/banned/domain`. The data layer requires a
+  subverse (a null one throws in `Repository_ModLog`), so a global `/ModLog`
+  landing page would be new functionality — pending user decision.
+- `src/Voat.UI/Views/Shared/Components/Sidebar/Default.cshtml` — removed the
+  "Unofficial Voat Mobile Apps" sidebar box (user request). The apps it
+  promoted (Boats for Voat, Appvoat, Voatify) are discontinued and every
+  link was dead. The surrounding sidebar boxes (Most viewed, Advertisement)
+  are unchanged.
+
 ### Phase 6 — Packaging, deployment & configuration
 
 Status: **complete**. One-command Docker deployment (app + PostgreSQL + Caddy
