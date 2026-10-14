@@ -4,8 +4,6 @@
 
 REvoat is a new and improved version of voat (a now-defunct social media site)
 
-**WARNING: THERE IS NO WAY TO BE AN ADMIN. I WILL FIX THAT**
-
 # Installation
 
 Read the installation guide here: https://github.com/welchythecat/REvoat/blob/modernize/INSTALL.md
