@@ -29,6 +29,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using System.Collections.Generic;
 using Voat.Common;
+using Voat.Configuration;
 
 namespace Voat.Utilities
 {
@@ -127,6 +128,27 @@ namespace Voat.Utilities
             {
                 return "Content contains unsafe or unknown tags.";
             }
+        }
+
+        /// <summary>
+        /// Renders an owner-edited site page (User Agreement, Privacy Policy).
+        ///
+        /// Differs from FormatMessage in two ways:
+        ///   - processContent is off, so the social autolinker leaves the text
+        ///     alone. It would otherwise turn @mentions, v/sub, /r/... and bare
+        ///     urls in legal copy into links. SafeMode and the link scheme
+        ///     allow-list still apply, exactly as for user content.
+        ///   - {siteName} is substituted after markdown, HtmlEncoded first, so a
+        ///     brand name carrying markdown punctuation or markup cannot alter
+        ///     the output.
+        /// </summary>
+        public static string FormatSitePageMessage(string markdown)
+        {
+            var html = FormatMessage(markdown, processContent: false);
+
+            return html.Replace(
+                SitePageDefaults.SiteNamePlaceholder,
+                System.Net.WebUtility.HtmlEncode(VoatSettings.Instance.SiteName));
         }
 
         

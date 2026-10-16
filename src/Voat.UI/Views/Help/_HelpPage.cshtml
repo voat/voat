@@ -1,0 +1,84 @@
+@*
+
+    Shared body for the owner-editable help pages (User Agreement, Privacy
+    Policy). Renders the page, and for the site owner only, an Edit affordance
+    that swaps the body for an inline markdown editor.
+
+*@
+
+@model Voat.Models.ViewModels.HelpPageViewModel
+
+<div id="container">
+    <div id="about-main" class="content about-page" role="main">
+
+        @if (Model.IsSiteOwner)
+        {
+            <div id="page-edit-toolbar" style="margin-bottom: 10px;">
+                <a href="#" id="page-edit-link" title="Edit this page">
+                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit
+                </a>
+            </div>
+        }
+
+        <div id="page-view">
+            @Html.Raw(Formatting.FormatSitePageMessage(Model.Content))
+        </div>
+
+        @if (Model.IsSiteOwner)
+        {
+            <div id="page-edit" style="display: none;">
+                @using (Html.BeginForm("UpdateHelpPage", "Home", new { pagetoshow = Model.Name }, FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.Name)
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    @* The markdown toolbar finds its target with find('textarea')[0],
+                       so this wrapper must contain exactly one textarea. *@
+                    <div class="form-group">
+                        @Html.MarkdownEditorFor(m => m.Content, new { @class = "form-control", rows = "30" })
+                    </div>
+
+                    <button type="submit" class="btn-whoaverse">Save</button>
+                    <button type="button" class="btn-whoaverse" id="page-edit-cancel">Cancel</button>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@if (Model.IsSiteOwner)
+{
+    @* Plain DOM, not jQuery: jQuery is loaded in _LayoutContainer.cshtml AFTER
+       @RenderBody(), so a $(...) here throws "$ is not defined" and the handler
+       never binds. These elements are already parsed by the time this runs. *@
+    <script type="text/javascript">
+        (function () {
+            function toggle(showEdit) {
+                var view = document.getElementById('page-view');
+                var toolbar = document.getElementById('page-edit-toolbar');
+                var edit = document.getElementById('page-edit');
+                if (!view || !toolbar || !edit) { return; }
+                view.style.display = showEdit ? 'none' : '';
+                toolbar.style.display = showEdit ? 'none' : '';
+                edit.style.display = showEdit ? 'block' : 'none';
+            }
+
+            var link = document.getElementById('page-edit-link');
+            if (link) {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    toggle(true);
+                });
+            }
+
+            var cancel = document.getElementById('page-edit-cancel');
+            if (cancel) {
+                cancel.addEventListener('click', function () {
+                    toggle(false);
+                });
+            }
+        })();
+    </script>
+}

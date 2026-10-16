@@ -55,6 +55,12 @@ services:
       voat__settings__forceHTTPS: ${VOAT_FORCE_HTTPS:-false}
       voat__settings__signingKey: ${VOAT_SIGNING_KEY:?set VOAT_SIGNING_KEY in .env}
 
+      # Accounts allowed to edit the User Agreement and Privacy Policy.
+      # Several accounts may be comma-separated (e.g. "admin,otheruser").
+      # The ":-admin" default matters: an empty value here would override
+      # appsettings.json and leave editing with no owner at all.
+      voat__settings__siteOwners__0: ${VOAT_SITE_OWNERS:-admin}
+
       # reCAPTCHA (leave disabled for local use)
       voat__settings__captchaEnabled: ${VOAT_CAPTCHA_ENABLED:-false}
       voat__settings__recaptchaPublicKey: ${VOAT_RECAPTCHA_PUBLIC_KEY:-}

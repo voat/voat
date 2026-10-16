@@ -20,6 +20,7 @@ namespace Voat.Data.Models
         public virtual DbSet<DefaultSubverse> DefaultSubverse { get; set; }
         public virtual DbSet<ModeratorInvitation> ModeratorInvitation { get; set; }
         public virtual DbSet<SessionTracker> SessionTracker { get; set; }
+        public virtual DbSet<SitePage> SitePage { get; set; }
         public virtual DbSet<StickiedSubmission> StickiedSubmission { get; set; }
         public virtual DbSet<Submission> Submission { get; set; }
         public virtual DbSet<SubmissionRemovalLog> SubmissionRemovalLog { get; set; }

@@ -259,6 +259,7 @@ All secrets and environment-specific values come from the environment
 | `VOAT_CAPTCHA_ENABLED` + `VOAT_RECAPTCHA_*` | reCAPTCHA on registration | disabled |
 | `VOAT_API_PUBLIC_KEY` / `VOAT_API_PRIVATE_KEY` | Legacy API keys (API not ported) | empty |
 | `VOAT_STORAGE_CONNECTION_STRING` | Azure blob storage (optional) | empty |
+| `VOAT_SITE_OWNERS` | Accounts that may edit the User Agreement & Privacy Policy (comma-separated for several) | `admin` |
 
 Every setting in `src/Voat.UI/appsettings.json` can be overridden by an
 environment variable using `__` for nesting, e.g.
@@ -279,6 +280,38 @@ Anyone who finds your site can otherwise take it over.
 
 ---
 
+## Editing the User Agreement & Privacy Policy
+
+Both pages live in the database and can be edited from the site — no code
+changes, no rebuild.
+
+1. Set `VOAT_SITE_OWNERS` in `.env` to the account(s) allowed to edit. Several
+   accounts can be comma-separated: `VOAT_SITE_OWNERS=admin,otheruser`. Leave it
+   unset and `admin` is used.
+2. Log in as one of those accounts and open `/help/useragreement` or
+   `/help/privacy`.
+3. Click **✎ Edit** at the top of the page. The body becomes a markdown editor
+   pre-filled with the current text.
+4. Click **Save**. The page reloads showing the new text. Edits are stored in
+   the database and survive rebuilds and restarts.
+
+Notes:
+
+- **Markdown** is the format. Raw HTML is escaped — the same `SafeMode` the
+  comment and submission renderer uses. Heading levels (`#`, `##`) are what the
+  page styling expects.
+- Use the literal text **`{siteName}`** wherever you want the site's name. It is
+  substituted on render, so renaming `siteName` in config updates both pages.
+- The list is **usernames, not roles**. A GlobalAdmin who is not listed still
+  cannot edit.
+- Only these two pages are editable this way. The footer copyright line is a
+  setting (`footerText` in `src/Voat.UI/appsettings.json`) and still needs a
+  rebuild.
+- If `VOAT_SITE_OWNERS` is set to an empty value, it **overrides** the default
+  and leaves editing with no owner at all. Unset it rather than blanking it.
+
+---
+
 ## Troubleshooting
 
 **`docker compose up` fails with "set POSTGRES_PASSWORD in .env"**
@@ -290,6 +323,15 @@ The database initializes only when the data volume is empty and healthy.
 Check `docker compose logs db` and `docker compose logs app`. If the volume was
 created before the scripts existed, apply them manually:
 `docker compose exec db psql -U voat -d voat -f /voat-sql/setup.sql`
+
+**`SitePage` table missing / "relation \"SitePage\" does not exist"**
+The User Agreement and Privacy Policy tables are created by a startup schema
+patch, so existing databases need no manual step. If it did not run, check
+`docker compose logs app` for the message from `SitePageSchema` — it will say
+which statement failed. Confirm the table with
+`docker compose exec db psql -U voat -d voat -c '\d "SitePage"'`, and note the
+app connects as the `voat` role, which must be able to `CREATE TABLE` for the
+patch to apply (it can on a stock install).
 
 **Port already in use (`8080`, `80`, `443`, `5432`)**
 Another program (often IIS, Skype, or a local PostgreSQL) owns the port. Either

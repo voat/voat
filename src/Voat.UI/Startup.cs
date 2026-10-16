@@ -161,6 +161,10 @@ namespace Voat
             // AddConsole/AddDebug overloads are obsolete on modern ASP.NET Core.
             loggerFactory.AddProvider(new VoatLoggerProvider());
 
+            //Brings databases provisioned before SitePage existed up to the current
+            //schema. Idempotent; see SitePageSchema for why this is not left to voat.sql.
+            SitePageSchema.EnsureSitePageTable();
+
             //Honor X-Forwarded-* from trusted proxies before anything reads scheme or client ip.
             //(The options were configured in ConfigureServices but the middleware was never added.)
             app.UseForwardedHeaders();

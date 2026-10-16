@@ -7,6 +7,120 @@ Phase 2 foundation, Phase 3 data, Phase 4 web/security, Phase 5 tests, Phase 6 p
 ## [Unreleased]
 
 ### Post-Phase 6 — user-requested changes
+- **Owner-editable User Agreement & Privacy Policy** (user request: edit both
+  pages "without having to go into the code"). An account listed in
+  `voat:settings:siteOwners` sees a pencil glyph + "Edit" on `/help/useragreement`
+  and `/help/privacy`; clicking swaps the body for an inline markdown editor
+  (Save/Cancel, no navigation). New `SitePage` table stores the markdown keyed by
+  route slug (`useragreement`, `privacy`) with `UpdatedBy` / `LastUpdateDate`, so
+  edits survive `docker compose up -d --build` — which replaces the container
+  filesystem and would destroy anything held in the view files. Nothing is seeded
+  into the table: a missing row falls back to the compiled-in defaults in
+  `SitePageDefaults`, so a fresh install renders the same pages as before.
+  **Schema, zero manual steps:** `docker/db-init` never re-runs on an existing
+  volume, so `SitePageSchema.EnsureSitePageTable()` runs from `Startup.Configure`
+  and creates the table only if absent (idempotent single guard per dialect, PG +
+  SQL Server). `misc/SqlScripts/*/voat.sql` carry the full definition for fresh
+  databases. **Rendering:** `Formatting.FormatSitePageMessage` calls the existing
+  `FormatMessage` with `processContent: false` (disables the social autolinker —
+  `@mentions`, `s/set`, `/r/`, bare-URL wrapping must not fire on legal text —
+  while keeping MarkdownDeep `SafeMode` and its scheme allow-list intact) and
+  then substitutes the `{siteName}` placeholder with the HtmlEncoded `siteName`.
+  Both page bodies were flattened out of Razor into markdown for this: `<h1>`/`<h2>`
+  → `#`/`##` (levels kept 1:1 so `.about-page` CSS still matches), `<ul><li>` →
+  `- `, `@siteName` → `{siteName}`. Two Razor-only constructs could not survive
+  as markdown and were flattened deliberately: the `IsVoatBranded`/`SiteDomain`
+  ternary in Privacy is now plain wording (there is no `{siteDomain}` placeholder
+  in scope), and the `@if (IsVoatBranded)` gate around the Updates block is now
+  unconditional — otherwise renaming `siteName` would silently hide it. The raw
+  `<a href>` to Google's privacy policy became a markdown link, because SafeMode's
+  raw-HTML whitelist is only `s`/`sub`/`sup` and a raw `<a>` renders as visible
+  escaped text. The DMCA contact `copyright@voat.co` is preserved verbatim rather
+  than being run through `{siteName}`. **Access control:** `VoatSettings.SiteOwners`
+  (`string[]`, comma-separated entries also accepted so one env var can name
+  several accounts) + `IsSiteOwner(userName)` — deliberately a config list, not a
+  role, so a GlobalAdmin off the list still cannot edit. Fails closed: null or
+  empty list, or a null/empty user name, is denied. Default ships as `["admin"]`
+  so the feature works immediately on a stock install; **note that `admin`'s
+  default password is published in INSTALL.md, so change it.** Wiring:
+  `voat__settings__siteOwners__0: ${VOAT_SITE_OWNERS:-admin}` in `docker-compose.yml`
+  — the `:-admin` default matters, because an empty environment variable overrides
+  `appsettings.json` and would silently leave the feature with no owner. **Save
+  path:** `HomeController.UpdateHelpPage` at `POST /help/edit/{pagetoshow}`
+  (route registered before the `help/{*pagetoshow}` catch-all, which would
+  otherwise match it as `pagetoshow = "edit/..."`), guarded by
+  `[Authorize]` + `[PreventSpam(30)]` + `[VoatValidateAntiForgeryToken]`, writes
+  through `Repository` (`SaveSitePage`) rather than the controller's read-only
+  `_db`, and redirects back (Post/Redirect/Get). The hidden form is UX only —
+  the owner check is enforced again server-side and returns **403** on deny, and
+  an unrecognized slug is also 403. Markdown is capped at 30000 characters.
+  **Tests:** `SiteOwnerTests` (failing closed, case-insensitivity, comma-separated
+  entries, blank-entry handling), `SitePageDefaultsTests` (both defaults non-empty,
+  `{siteName}` present, **no** surviving Razor tokens, unknown slug → `null`),
+  `SitePageRepositoryTests` (round-trip, unknown name → `null`, second save updates
+  in place, author/timestamp restamped), and `SitePageFormattingTests`
+  (`FormatSitePageMessage` against the real default bodies: `{siteName}`
+  substitution + encoding, SafeMode escaping of `<script>`, no social autolinking,
+  markdown links still work, `javascript:` hrefs neutralized). **Gotcha worth
+  keeping:** both page views are rendered by `HomeController`, so
+  `@Html.Partial("_HelpPage", Model)` with a short name resolved against
+  `/Views/Home/` and `/Views/Shared/` and **never** `/Views/Help/` — the first
+  cut 500'd on both pages with "The partial view '_HelpPage' was not found".
+  Fixed with the explicit `~/Views/Help/_HelpPage.cshtml` path, which is the
+  existing convention (`Views/Home/Comments.cshtml` does the same for
+  `~/Views/Welcome/_FirstTimeVisitorWelcome.cshtml`). **Second gotcha:** the Edit
+  button rendered but did nothing on click. The toggle was written with jQuery
+  (`$(function () { ... })`) inline in the partial, but jQuery is loaded in
+  `_LayoutContainer.cshtml` *after* `@RenderBody()` (jQuery at line 119, body at
+  114), so the script ran as `ReferenceError: $ is not defined` and the handler
+  never bound. Rewritten with plain `document.getElementById` /
+  `addEventListener` — the elements are already parsed above the script, so it
+  binds immediately and has no load-order dependency. The markdown-editor
+  toolbar buttons are unaffected: they use inline `onclick="... $(...) ..."`,
+  which resolves at click time when jQuery has long since loaded. **Not
+  included, by decision:** no preview button in v1 — the existing preview
+  endpoint hardcodes `processContent: true` and is duplicated in the minified
+  `voat.min.js` bundle.
+- `src/Voat.UI/Views/Help/UserAgreement.cshtml` — user agreement updated with
+  new rules (user-supplied text). **Rules additions:** "Do Not Incite Harm" now
+  carries three explicit bullets (no supporting/idolizing terrorist groups, no
+  animal abuse, no crush or animal-abuse videos), and "Protect Kids" now
+  carries an explicit bullet against sexualized drawings of children
+  (Lolicon/Shotacon) instead of a trailing sentence fragment. **Contact
+  info:** the Security and Children sections now publish
+  `rayman@disroot.org` in place of `security@voat.co` / `hello@voat.co`. The
+  DMCA Copyright Agent remains `copyright@voat.co` as the supplied text
+  specifies. **Wording:** "agree to not" → "agree not" (Keep Everyone Safe),
+  "real world" → "real-world", "providing they do not" → "provided they do
+  not", "third-parties" / "third party service providers" → "third parties" /
+  "third-party service providers" (Moderators, Indemnity, Disclaimer),
+  "disclaim any and all warranties" → "disclaim any warranties", and an
+  Oxford comma in "claims, demands, and damages". **Dates:** Updates section
+  moved from 2017-01-11 / May 9, 2014 to 10/15/2026 / October, 2026.
+  **Behavior change worth noting:** the two contact-email sentences and the
+  Updates section were wrapped in `@if (VoatSettings.Instance.IsVoatBranded)`,
+  which is true only while `siteName` is literally "Voat". Those gates were
+  dropped so the contact addresses and the Updates block render for every
+  deployment; otherwise renaming `siteName` to REvoat would silently blank
+  the contact emails and hide the Updates section. `@siteName` substitutions
+  throughout the page are preserved. Incidental fix: the Security line
+  rendered as "send an emailto security@voat.co" (missing space in the
+  conditional string); it now reads "send an email to rayman@disroot.org".
+- Footer copyright line rewritten site-wide (user request) to disclaim
+  affiliation with the original project: `© REVOAT IS NOT AFFILIATED WITH
+  VOAT, Inc. All rights reserved. The original Voat and the Voat Mascot are
+  trademarks of Voat, Inc.` Applied to the live `footerText` setting in
+  `src/Voat.UI/appsettings.json` (rendered by `Views/Shared/_Footer.cshtml`),
+  the two template copies (`src/Voat.UI/~appsettings.json`,
+  `test/Voat.Tests/~appsettings.json`), and the four standalone offline
+  pages that hard-code the same sentence
+  (`wwwroot/static/inactive.htm`/`inactive.min.htm`, `ddos.htm`/`ddos.min.htm`
+  /`ddos.min.2.htm`). Each file keeps its existing copyright-symbol encoding:
+  `&amp;copy;` in the JSON settings, `&copy;` in the unminified pages, and a
+  literal `©` in the minified ones. Note `ddos.min.2.htm` previously read
+  "2014-2016" where the others said "2014-2017"; both collapse to the new
+  text. The link row above it (`advertise`/`donate`/`API`/`about`/`faq`/
+  `markdown`/`source code`) is unchanged and still lives in `_Footer.cshtml`.
 - `src/Voat.UI/appsettings.json` — enabled `enableVotes` (user request).
   Scope clarification: this key gates the **"Vote" (poll) submission
   feature** (`VoteController.Create/Save`, the "create a poll" sidebar
