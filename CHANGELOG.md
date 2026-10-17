@@ -7,6 +7,60 @@ Phase 2 foundation, Phase 3 data, Phase 4 web/security, Phase 5 tests, Phase 6 p
 ## [Unreleased]
 
 ### Post-Phase 6 — user-requested changes
+- **Operator upgrade / backup / restore, without losing data** (user request:
+  "include a easy way to upgrade to a new release of the REvoat without losing
+  data"). New `scripts/lib.sh`, `scripts/backup.sh`, `scripts/upgrade.sh`,
+  `scripts/restore.sh` + a new `UPGRADING.md`, bash only, written for the Linux
+  VPS case (and clean under Git Bash). **The actual data-loss hazard is the
+  Compose project name:** `docker-compose.yml` deliberately has no top-level
+  `name:`, so Compose names the volumes after the checkout folder
+  (`voat-core_db-data`, `voat-core_storage`, ...). Extracting a new release into
+  a fresh folder therefore stands up a *second, empty* site — the old data is
+  untouched but invisible, which reads exactly like a wipe. `lib.sh` resolves
+  the project from the volumes that exist on disk (`*_db-data` that also has
+  `*_storage`) rather than from the folder name, always passes `-p <project>`,
+  and adopts an existing project when the folder disagrees — that adoption is
+  the feature, not a failure. It falls back to the folder name only when no
+  install exists at all. **Backup is deliberately hybrid:** `pg_dump --clean
+  --if-exists` for the database (portable across machines and PostgreSQL
+  majors, and *crash-consistent* — a `tar` of a running `db-data` is not, which
+  is why the database is never tarred here) plus tarballs of `storage`,
+  `dataprotection` and `caddy-data`, a `chmod 600` copy of `.env`, and a
+  `manifest.txt` **written last**, so its absence marks an incomplete run and
+  `restore.sh` refuses to touch such a directory. The manifest carries sha256
+  per artifact and `restore.sh` verifies them before mutating anything.
+  **Secrets are never parsed:** `POSTGRES_USER` / `POSTGRES_DB` come from
+  `docker compose exec db printenv`, and `.env` is only ever copied. **Two
+  platform bugs found and designed around rather than patched:** tars travel
+  over stdin/stdout with no host bind mounts at all, because MSYS rewrites
+  POSIX-looking paths (`/backup` → `C:/Program Files/Git/backup`) before docker
+  reads them; and `git -C <path>` is avoided for the same reason (Windows git
+  wants a Windows path) in favour of a `git_at` helper that `cd`s first.
+  `upgrade.sh` backs up first, handles both git checkouts (`--ref` for a
+  specific tag, otherwise the newest `v*` — filtered, because this repo carries
+  non-release tags like `avatar-upload-fix`) and release-archive installs (no
+  git at all; prints the unpack-over-the-directory instructions instead of
+  failing), then rebuilds, runs the idempotent `/voat-sql/setup.sql` and probes
+  `http://127.0.0.1:8080/` (there is no `/health` endpoint). **Schema, zero
+  manual steps:** `setup.sql` is additive-only — `CREATE ... IF NOT EXISTS`
+  throughout, seed rows behind `WHERE NOT EXISTS`, sequences resynced to
+  `max("ID")+1` — so re-running it on a populated database cannot overwrite
+  operator edits; `docker/db-init` only ever runs on an empty volume, which is
+  why the upgrade has to invoke it explicitly. `UPGRADING.md` also covers the
+  bootstrap gap (upgrading *from* a release that predates these scripts) and
+  moving to a new machine. **Gotcha worth keeping:** `INSTALL.md`'s
+  `docker compose down -v` suggestion was the single most likely way to nuke
+  the state this work protects — the line is kept (it is legitimate for a
+  throwaway local install) but is now annotated as deleting everything with no
+  undo. **Not included, by decision:** no PowerShell twins (bash matches
+  `INSTALL.md` and the audience); `docker-compose.yml` left untouched — pinning
+  `name:` would silently orphan every existing install whose folder is not
+  named `voat-Core`, so detection preserves instead; no migration framework
+  (the idempotent `setup.sql` + `SitePageSchema.EnsureSitePageTable()` at
+  `Startup.cs:166` *is* the schema story). Also: `.gitattributes` pins `*.sh`
+  to LF (a Windows `autocrlf` checkout would otherwise break every script on
+  Linux with `$'\r': command not found`), and `backups/` is gitignored because
+  it embeds `.env`.
 - **Owner-editable User Agreement & Privacy Policy** (user request: edit both
   pages "without having to go into the code"). An account listed in
   `voat:settings:siteOwners` sees a pencil glyph + "Edit" on `/help/useragreement`

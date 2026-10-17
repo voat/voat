@@ -81,7 +81,11 @@ Useful commands:
 ```bash
 docker compose logs -f app     # watch the app's log
 docker compose down            # stop everything (data is kept)
-docker compose down -v         # stop and DELETE all data (fresh start)
+
+# docker compose down -v ALSO deletes every named volume: the database,
+# uploaded files and TLS certificates. There is no undo. Only ever use it
+# on a throwaway install you are deliberately wiping — take
+# scripts/backup.sh first if there is anything you want to keep.
 ```
 
 ---
@@ -217,17 +221,52 @@ sudo ufw enable
 
 ### 3e. Backups
 
-Two things matter:
+One command takes a complete backup — database, uploads, cookie keys, TLS
+certificates and your `.env` — into a timestamped folder under `./backups/`:
+
+```bash
+./scripts/backup.sh
+```
+
+It is safe to run as often as you like (every run makes a new folder), and
+`./scripts/restore.sh backups/<timestamp> --yes` puts everything back. See
+[UPGRADING.md](UPGRADING.md) for the details and for a nightly cron example.
+
+<details>
+<summary>Manual fallback (if you cannot run the script)</summary>
+
+Two things matter: the database, and the volumes holding uploaded files and
+cookie keys.
 
 ```bash
 # 1. Database (run nightly via cron, for example)
 docker compose exec -T db pg_dump -U voat voat | gzip > backup-$(date +%F).sql.gz
 
-# 2. Uploaded files + cookie keys (copy the named volumes)
-docker run --rm -v voat-core_storage:/s -v $PWD:/backup alpine tar czf /backup/storage-$(date +%F).tar.gz -C /s .
+# 2. Uploaded files + cookie keys
+#    Replace "voat-core" with YOUR compose project name — the lowercased name
+#    of the folder you cloned into. `docker volume ls` shows the real names.
+docker run --rm -v voat-core_storage:/src:ro alpine tar czf - -C /src . > storage-$(date +%F).tar.gz
 ```
 
+</details>
+
 ### 3f. Updates
+
+```bash
+./scripts/upgrade.sh
+```
+
+That backs up first, brings in the newest release, rebuilds, applies any new
+database schema and checks the site answers. If something goes wrong it tells
+you how to roll back. Use `./scripts/upgrade.sh --ref v0.5-alpha` to move to a
+specific release rather than the newest one.
+
+**Read [UPGRADING.md](UPGRADING.md) before your first upgrade** — in
+particular, never extract a new release into a separate folder; Docker
+Compose would treat it as a brand-new, empty install.
+
+<details>
+<summary>Manual fallback (if you cannot run the script)</summary>
 
 ```bash
 git pull
@@ -235,7 +274,10 @@ docker compose up -d --build
 docker compose exec db psql -U voat -d voat -f /voat-sql/setup.sql   # apply any new SQL
 ```
 
-(`setup.sql` is idempotent — safe to run repeatedly.)
+(`setup.sql` is idempotent — safe to run repeatedly, and it never overwrites
+data you have changed yourself.)
+
+</details>
 
 ---
 

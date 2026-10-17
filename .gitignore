@@ -215,3 +215,7 @@ test/Voat.Tests/appsettings.json
 .vs/
 src/Voat.UI/wwwroot/storage/thumbs/
 src/Voat.UI/wwwroot/storage/avatars/
+
+# Operator backups (scripts/backup.sh) contain a copy of .env and a full
+# database dump. Never commit one — treat the directory like the server.
+backups/
