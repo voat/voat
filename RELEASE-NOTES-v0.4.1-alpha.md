@@ -1,4 +1,4 @@
-# REvoat v0.4-alpha
+# REvoat v0.4.1-alpha
 
 Two things for people running REvoat as a website: the User Agreement and
 Privacy Policy can now be edited from the web UI without touching source code,
