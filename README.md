@@ -7,3 +7,13 @@ REvoat is a new and improved version of voat (a now-defunct social media site)
 # Installation
 
 Read the installation guide here: https://github.com/welchythecat/REvoat/blob/modernize/INSTALL.md
+
+
+---
+
+<div align="center">
+	
+Support us with a ⭐!
+
+
+</div>
