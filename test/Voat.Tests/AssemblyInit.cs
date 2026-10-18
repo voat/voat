@@ -42,11 +42,9 @@ using Voat.Tests.Repository;
 namespace Voat.Tests
 {
 
-    [NUnit.Framework.SetUpFixture]
     [TestClass]
     public class UnitTestSetup
     {
-        [NUnit.Framework.OneTimeSetUp()]
         [AssemblyInitialize()]
         public static void SetUp(TestContext context)
         {
@@ -89,8 +87,8 @@ namespace Voat.Tests
 
         }
 
-        [NUnit.Framework.OneTimeTearDown()]
-        public void TearDown()
+        [AssemblyCleanup()]
+        public static void TearDown()
         {
 
         }

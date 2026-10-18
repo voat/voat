@@ -112,8 +112,13 @@ namespace Voat
             string hash = "";
             if (!String.IsNullOrEmpty(userName))
             {
-                var hashAlg = System.Security.Cryptography.MD5.Create();
-                hash = System.Convert.ToBase64String(hashAlg.ComputeHash(System.Text.ASCIIEncoding.Unicode.GetBytes(String.Format("{0}-{1}", userName, passphrase))));
+                //HMAC-SHA256 keyed with VoatSettings.SigningKey replaces unsalted MD5: this
+                //token travels in urls, so it must not be brute-forceable back to the room
+                //passphrase. NOTE: the token still appears in query strings (see Phase 4 report).
+                using (var hmac = new System.Security.Cryptography.HMACSHA256(System.Text.Encoding.UTF8.GetBytes(Voat.Configuration.VoatSettings.Instance.SigningKey ?? String.Empty)))
+                {
+                    hash = System.Convert.ToBase64String(hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(String.Format("{0}-{1}", userName, passphrase))));
+                }
             }
             return hash;
         }

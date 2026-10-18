@@ -1,4 +1,4 @@
-# Contributing to Voat
+# Contributing to REvoat
 
 We use [git-flow branching model](http://nvie.com/posts/a-successful-git-branching-model/"). 
 

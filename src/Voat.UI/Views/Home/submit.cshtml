@@ -136,12 +136,14 @@
                 <div id="AnonDiv" class="form-group">
                     @Html.LabelFor(model => model.IsAnonymized, new { @class = "control-label col-md-2" })
                     <div class="col-md-9">
-                        @{ 
+                        @{
                             //Such a hack, need to create a tagHelper for this instead
-                            object anonCheckBoxHtmlAttributes = new { @class = "form-control" };
+                            //Modern Razor rejects @class in anonymous objects inside code blocks (RZ1007);
+                            //a dictionary renders the same html attributes.
+                            object anonCheckBoxHtmlAttributes = new Dictionary<string, object> { { "class", "form-control" } };
                             if (!Model.AllowAnonymized)
                             {
-                                anonCheckBoxHtmlAttributes = new { @class = "form-control", disabled="disabled" };
+                                anonCheckBoxHtmlAttributes = new Dictionary<string, object> { { "class", "form-control" }, { "disabled", "disabled" } };
                             }
                         }
                         @Html.CheckBoxFor(model => model.IsAnonymized, anonCheckBoxHtmlAttributes)

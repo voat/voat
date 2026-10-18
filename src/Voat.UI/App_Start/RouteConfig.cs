@@ -544,6 +544,14 @@ namespace Voat
            
             #endregion Message
 
+            // help/edit/pagetoshow — must stay above the "Help" catch-all, which
+            // would otherwise match this URL as pagetoshow = "edit/...".
+            routes.MapRoute(
+                name: "HelpEdit",
+                template: "help/edit/{pagetoshow}",
+                defaults: new { controller = "Home", action = "UpdateHelpPage" }
+            );
+
             // help/pagetoshow
             routes.MapRoute(
                 name: "Help",

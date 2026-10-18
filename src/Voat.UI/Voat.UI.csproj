@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
-    <MvcRazorCompileOnPublish>true</MvcRazorCompileOnPublish>
+    <TargetFramework>net10.0</TargetFramework>
     <UserSecretsId>aspnet-Voat.UI-66547C1D-A539-4A2E-9CBD-7A9CC003D6CD</UserSecretsId>
     <ApplicationIcon />
     <OutputTypeEx>exe</OutputTypeEx>
@@ -24,14 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0-preview1-final" />
+    <!-- ASP.NET Core shared framework provides Identity, MVC, and logging providers on .NET 10. -->
   </ItemGroup>
 
   <ItemGroup>

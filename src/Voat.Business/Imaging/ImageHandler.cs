@@ -1,82 +1,116 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
+using SkiaSharp;
+using Rectangle = System.Drawing.Rectangle;
+using Size = System.Drawing.Size;
 
 namespace Voat.Imaging
 {
     public class ImageHandler
     {
         //This is a direct port for default thumbnails that Voat has used in the past
+        //Modernization: implemented on SkiaSharp (System.Drawing.Common is Windows-only
+        //from .NET 7 on). SkiaSharp is Apache-2.0 and builds without a license key;
+        //ImageSharp 4.x (the security-fixed line) refuses Release builds without a
+        //Six Labors license. Resize geometry and output quality (JPEG at 100) are
+        //preserved.
         public static Stream Resize(Stream input, Size maximumSize, bool forceJpegFormat = false, bool square = true, bool scale = true, bool center = true)
         {
-            MemoryStream output = null;
-            using (var image = Image.FromStream(input))
+            //Buffer the source: the format sniff and the decode both read from the
+            //start, and byte[] APIs avoid any stream-ownership questions.
+            byte[] sourceBytes;
+            using (var buffer = new MemoryStream())
             {
-                using (var bitmapImage = new Bitmap(image))
+                input.CopyTo(buffer);
+                sourceBytes = buffer.ToArray();
+            }
+
+            var sourceFormat = GetEncodedFormat(sourceBytes);
+
+            using (var source = Decode(sourceBytes))
+            {
+                var destinationSize = new Size(maximumSize.Width, maximumSize.Height);
+                //Sizing
+                Size scaledSize = scale ? Scale(new Size(source.Width, source.Height), maximumSize) : maximumSize;
+
+                //default destination
+                var destinationRectangle = new Rectangle(0, 0, scaledSize.Width, scaledSize.Height);
+                //centered destination
+                if (square && center)
                 {
-                    var destinationSize = new Size(maximumSize.Width, maximumSize.Height);
-                    //Sizing
-                    Size scaledSize = scale ? Scale(bitmapImage.Size, maximumSize) : maximumSize;
-                    //The original image size is our source
-                    var sourceRectangle = new Rectangle(0, 0, bitmapImage.Size.Width, bitmapImage.Size.Height);
+                    destinationRectangle = Center(maximumSize, scaledSize);
+                }
+                //allow non-squared output
+                if (!square)
+                {
+                    destinationSize = destinationRectangle.Size;
+                }
 
-                    //default destination
-                    var destinationRectangle = new Rectangle(0, 0, scaledSize.Width, scaledSize.Height);
-                    //centered destination
-                    if (square && center)
+                using (var surface = SKSurface.Create(new SKImageInfo(destinationSize.Width, destinationSize.Height, SKColorType.Rgba8888, SKAlphaType.Premul)))
+                {
+                    var canvas = surface.Canvas;
+
+                    //Assuming that if we are forcing jpeg we are creating site thumbnails which uses black bars
+                    canvas.Clear(forceJpegFormat ? SKColors.Black : SKColors.Transparent);
+
+                    //Scale the source to the computed size and place it at the
+                    //destination offset in one draw (equivalent to the old
+                    //resize-then-draw steps).
+                    var destination = new SKRect(
+                        destinationRectangle.X,
+                        destinationRectangle.Y,
+                        destinationRectangle.X + scaledSize.Width,
+                        destinationRectangle.Y + scaledSize.Height);
+                    canvas.DrawBitmap(source,
+                        new SKRect(0, 0, source.Width, source.Height),
+                        destination,
+                        new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.None));
+
+                    using (var image = surface.Snapshot())
                     {
-                        destinationRectangle = Center(maximumSize, scaledSize);
-                    }
-                    //allow non-squared output
-                    if (!square)
-                    {
-                        destinationSize = destinationRectangle.Size;
-                    }
+                        var output = new MemoryStream();
 
-                    var resized = new Bitmap(destinationSize.Width, destinationSize.Height);
-
-                    using (var graphics = Graphics.FromImage(resized))
-                    {
-                        graphics.CompositingQuality = CompositingQuality.HighSpeed;
-                        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                        graphics.CompositingMode = CompositingMode.SourceCopy;
-
-                        //Assuming that if we are forcing jpeg we are creating site thumbnails which uses black bars
-                        if (forceJpegFormat)
+                        //match legacy behavior: source format preserved, JPEG quality always 100
+                        using (var data = (forceJpegFormat || sourceFormat == SKEncodedImageFormat.Jpeg)
+                            ? image.Encode(SKEncodedImageFormat.Jpeg, 100)
+                            : (sourceFormat != null
+                                ? image.Encode(sourceFormat.Value, 100) ?? image.Encode(SKEncodedImageFormat.Png, 100)
+                                : image.Encode(SKEncodedImageFormat.Png, 100)))
                         {
-                            //Draw black background
-                            graphics.DrawRectangle(new Pen(new SolidBrush(Color.Black)), new Rectangle(0, 0, maximumSize.Width, maximumSize.Height));
+                            data.SaveTo(output);
                         }
-
-                        graphics.DrawImage(bitmapImage, destinationRectangle, sourceRectangle, GraphicsUnit.Pixel);
-
-                        output = new MemoryStream();
-                        var qualityParamId = System.Drawing.Imaging.Encoder.Quality;
-                        var encoderParameters = new EncoderParameters(1);
-                        encoderParameters.Param[0] = new EncoderParameter(qualityParamId, 100);
-
-                        var codec = ImageCodecInfo.GetImageDecoders().FirstOrDefault(x =>
-                            //Force JPEG
-                            (forceJpegFormat && x.FormatID == ImageFormat.Jpeg.Guid)
-                            //Allow source format
-                            || (!forceJpegFormat && x.FormatID == image.RawFormat.Guid)
-                        );
-
-                        resized.Save(output, codec, encoderParameters);
 
                         //reset resized stream
                         output.Seek(0, SeekOrigin.Begin);
+                        return output;
                     }
                 }
             }
-            
-
-            return output;
+        }
+        //SKBitmap.Decode throws ArgumentNullException (rather than returning
+        //null) when the bytes are not a decodable image; normalize so callers
+        //always get the InvalidDataException this method has long raised for
+        //bad input.
+        private static SKBitmap Decode(byte[] sourceBytes)
+        {
+            SKBitmap bitmap;
+            try
+            {
+                bitmap = SKBitmap.Decode(sourceBytes);
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw new InvalidDataException("Stream does not contain a supported image.", ex);
+            }
+            return bitmap ?? throw new InvalidDataException("Stream does not contain a supported image.");
+        }
+        private static SKEncodedImageFormat? GetEncodedFormat(byte[] sourceBytes)
+        {
+            using (var buffer = new MemoryStream(sourceBytes))
+            using (var codec = SKCodec.Create(buffer))
+            {
+                return codec?.EncodedFormat;
+            }
         }
         public static Rectangle Center(Size destinationSize, Size scaledSize)
         {
@@ -113,132 +147,5 @@ namespace Voat.Imaging
             }
             return new Size(scaleWidth, scaleHeight);
         }
-
-        #region Port From Gen Libs
-        private static ImageFormat GetImageFormatFromString(string Format)
-        {
-            ImageFormat format = null;
-            if (!String.IsNullOrEmpty(Format))
-            {
-                switch (Format.ToLower())
-                {
-                    case ".png":
-                    case "png":
-                    case "image/png":
-                        format = ImageFormat.Png;
-                        break;
-
-                    case ".gif":
-                    case ".giff":
-                    case "gif":
-                    case "image/gif":
-                        format = ImageFormat.Gif;
-                        break;
-
-                    case ".jpg":
-                    case ".jpeg":
-                    case ".jpe":
-                    case ".jfif":
-                    case ".pjpeg":
-                    case ".pjp":
-                    case "jpg":
-                    case "jpeg":
-                    case "image/jpeg":
-                    case "image/pjpeg":
-                    case "image/pipeg":
-                        format = ImageFormat.Jpeg;
-                        break;
-
-                    case ".tif":
-                    case ".tiff":
-                    case "tiff":
-                    case "tif":
-                    case "image/tiff":
-                        format = ImageFormat.Tiff;
-                        break;
-
-                    case ".bmp":
-                    case "bmp":
-                    case "image/bmp":
-                        format = ImageFormat.Bmp;
-                        break;
-
-                    case ".ico":
-                    case "ico":
-                    case "icon":
-                    case "image/x-icon":
-                        format = ImageFormat.Icon;
-                        break;
-                }
-            }
-            else
-            {
-                throw new ArgumentException("Format can not be null or Empty", Format);
-            }
-            return format;
-        }
-
-        private static string GetMimeType(System.Drawing.Imaging.ImageFormat format)
-        {
-            if (format.Equals(ImageFormat.Bmp))
-            {
-                return "image/bmp";
-            }
-            if (format.Equals(ImageFormat.Gif))
-            {
-                return "image/gif";
-            }
-            if (format.Equals(ImageFormat.Jpeg))
-            {
-                return "image/jpeg";
-            }
-            if (format.Equals(ImageFormat.Tiff))
-            {
-                return "image/tiff";
-            }
-            if (format.Equals(ImageFormat.Png))
-            {
-                return "image/png";
-            }
-            if (format.Equals(ImageFormat.Icon))
-            {
-                return "image/x-icon";
-            }
-            if (format.Equals(ImageFormat.Wmf))
-            {
-                return "windows/metafile";
-            }
-
-            return "";
-        }
-        private static string GetMimeType(Image image)
-        {
-            return GetMimeType(image.RawFormat);
-        }
-        private static ImageCodecInfo GetEncoder(string mimeType)
-        {
-            ImageCodecInfo[] encoders = ImageCodecInfo.GetImageDecoders();
-            for (int i = 0; i < encoders.Length; ++i)
-            {
-                if (encoders[i].MimeType == mimeType)
-                {
-                    return encoders[i];
-                }
-            }
-            return null;
-        }
-        public static ImageCodecInfo GetEncoder(ImageFormat imageFormat)
-        {
-            ImageCodecInfo[] encoders = ImageCodecInfo.GetImageDecoders();
-            for (int i = 0; i < encoders.Length; ++i)
-            {
-                if (encoders[i].FormatID == imageFormat.Guid)
-                {
-                    return encoders[i];
-                }
-            }
-            return null;
-        }
-        #endregion
     }
 }

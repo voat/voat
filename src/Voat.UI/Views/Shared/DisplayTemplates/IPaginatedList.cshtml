@@ -41,12 +41,12 @@
                 <li class="btn-whoaverse-paging">
                     @if (routeLink)
                     {
-                        <a href='@Url.RouteUrlPretty(Model.RouteName, Model.RouteData)'>< prev</a>
+                        <a href='@Url.RouteUrlPretty(Model.RouteName, Model.RouteData)'>&lt; prev</a>
                         //@Html.RouteLink("< prev", Model.RouteName, Model.RouteData)
                     }
                     else
                     {
-                        <a href='@Url.ActionPretty((string)ViewContext.RouteData.Values["action"], Model.RouteData)'>< prev</a>
+                        <a href='@Url.ActionPretty((string)ViewContext.RouteData.Values["action"], Model.RouteData)'>&lt; prev</a>
                         //@Html.ActionLink("< prev", (string)Request.RequestContext.RouteData.Values["action"], Model.RouteData)
                     }
                 </li>

@@ -44,6 +44,40 @@ namespace Voat.Configuration
             }
         }
 
+        /// <summary>
+        /// Whether this account may edit site-owned pages (User Agreement, Privacy
+        /// Policy). This is a config list of user names, deliberately not a role:
+        /// a GlobalAdmin who is not listed here still cannot edit. Fails closed —
+        /// an empty list leaves editing inert.
+        /// </summary>
+        public bool IsSiteOwner(string userName)
+        {
+            if (System.String.IsNullOrEmpty(userName) || SiteOwners == null)
+            {
+                return false;
+            }
+
+            foreach (var entry in SiteOwners)
+            {
+                if (System.String.IsNullOrEmpty(entry))
+                {
+                    continue;
+                }
+
+                //Comma-separated so a single environment variable can name several
+                //accounts (docker compose has no clean way to pass an array).
+                foreach (var name in entry.Split(','))
+                {
+                    if (userName.Equals(name.Trim(), System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public bool AdsEnabled { get; set; } = false;
 
         public bool ApiKeyCreationEnabled { get; set; } = false;
@@ -160,6 +194,9 @@ namespace Voat.Configuration
         public string[] ReservedSubverseNames { get; set; } = new string[] { };
         public string[] ReservedUserNames { get; set; } = new string[] { };
 
+        //Accounts allowed to edit the User Agreement and Privacy Policy. See IsSiteOwner.
+        public string[] SiteOwners { get; set; } = new string[] { };
+
         public Size ThumbnailSize { get; set; } = new Size(100, 100);
         public Size AvatarSize { get; set; } = new Size(100, 100);
 
@@ -178,7 +215,18 @@ namespace Voat.Configuration
 
         public OutgoingTraffic OutgoingTraffic { get; set; } = new OutgoingTraffic();
 
-        public PasswordOptions PasswordOptions { get; set; } = new PasswordOptions() { RequiredLength = 6 };
+        //Minimum password length 8 (NIST baseline). Deliberately no composition rules
+        //(require-digit etc.) — length is the modern guidance; override via config if desired.
+        //The flags are set explicitly because PasswordOptions' own defaults ENABLE the
+        //composition rules, which the legacy validator never enforced.
+        public PasswordOptions PasswordOptions { get; set; } = new PasswordOptions()
+        {
+            RequiredLength = 8,
+            RequireNonAlphanumeric = false,
+            RequireLowercase = false,
+            RequireUppercase = false,
+            RequireDigit = false
+        };
         public string SigningKey { get; set; } = "";
 
 

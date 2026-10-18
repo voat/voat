@@ -1,0 +1,13 @@
+# Keep the Docker build context small and secret-free.
+**/bin/
+**/obj/
+.git/
+.vs/
+.env
+.env.*
+!.env.example
+test/
+misc/
+*.md
+**/*.suo
+**/*.user

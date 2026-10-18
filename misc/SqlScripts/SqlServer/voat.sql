@@ -476,6 +476,28 @@ CREATE TABLE [dbo].[SessionTracker](
 ) ON [PRIMARY]
 
 GO
+/****** Object:  Table [dbo].[SitePage]    Script Date: 10/15/2026 1:00:00 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[SitePage](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	[Content] [nvarchar](max) NULL,
+	[UpdatedBy] [nvarchar](50) NULL,
+	[LastUpdateDate] [datetime] NULL,
+ CONSTRAINT [PK_SitePage] PRIMARY KEY CLUSTERED
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+ CONSTRAINT [IX_SitePage_Name] UNIQUE NONCLUSTERED
+(
+	[Name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
 /****** Object:  Table [dbo].[StickiedSubmission]    Script Date: 5/18/2017 8:40:29 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -875,6 +897,8 @@ GO
 ALTER TABLE [dbo].[RuleSet] ADD  CONSTRAINT [DF_RuleSet_CreationDate]  DEFAULT (getutcdate()) FOR [CreationDate]
 GO
 ALTER TABLE [dbo].[SessionTracker] ADD  CONSTRAINT [DF_SessionTracker_CreationDate]  DEFAULT (getdate()) FOR [CreationDate]
+GO
+ALTER TABLE [dbo].[SitePage] ADD  CONSTRAINT [DF_SitePage_LastUpdateDate]  DEFAULT (getutcdate()) FOR [LastUpdateDate]
 GO
 ALTER TABLE [dbo].[Submission] ADD  CONSTRAINT [DF_Submission_Rank]  DEFAULT ((0)) FOR [Rank]
 GO

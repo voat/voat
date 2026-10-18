@@ -1,0 +1,241 @@
+using System;
+
+namespace Voat.Utilities
+{
+    /// <summary>
+    /// The shipped markdown bodies for the site-owned help pages. These are the
+    /// fallback the pages render until the owner saves an edited copy to the
+    /// SitePage table, and the text the editor is pre-filled with on first use.
+    ///
+    /// Conventions, so a later edit to these strings keeps rendering correctly:
+    ///   - "# " / "## " stand in for the h1 / h2 the .about-page stylesheet styles.
+    ///   - {siteName} is a placeholder, replaced after markdown by
+    ///     Formatting.FormatSitePageMessage. It is deliberately not "@siteName":
+    ///     that is a Razor token and would leak into the editor as text.
+    ///   - No raw HTML. MarkdownDeep's SafeMode whitelist is only s/sub/sup, so
+    ///     any other tag renders as visible escaped text.
+    /// </summary>
+    public static class SitePageDefaults
+    {
+        public const string SiteNamePlaceholder = "{siteName}";
+
+        public const string UserAgreement =
+"""
+# User agreement
+
+This agreement is a legal contract between you and us. You acknowledge that you have read, understood, and agree to be bound by the terms of this agreement. If you do not agree to this agreement, you should not use {siteName}.
+
+# Your access to {siteName}
+
+Without advance notice and at any time, we may, for violations of this agreement or for any other reason we choose: (1) suspend your access to {siteName}, (2) suspend or terminate Your Account, and/or (3) remove any of your User Content from {siteName}.
+We reserve the right to monitor {siteName}, and your use of the Service means you agree to such monitoring. At the same time, we do not guarantee we will monitor at all.
+
+# {siteName} is for your personal, lawful use
+
+{siteName} is designed and supported for personal use only. You may not use {siteName} to break the law, violate an individual's privacy, or infringe any person or entity’s intellectual property or any other proprietary rights.
+We are not responsible for any decisions you make based on something you read on {siteName}.
+
+# Your {siteName} account
+
+To participate on {siteName}, you must create an account that includes a username and password ("Your Account") and, if you want to be able to reset your password or have us contact you, an email address as well. Of course, you can also browse {siteName} without logging in.
+You are solely responsible for the information associated with Your Account and anything that happens related to Your Account. You may not license, transfer, sell, or assign Your Account without our written approval.
+
+# Content
+
+You retain the rights to your copyrighted content or information that you submit to {siteName} ("user content") except as described below.
+
+By submitting user content to {siteName}, you grant us a royalty-free, perpetual, irrevocable, non-exclusive, unrestricted, worldwide license to reproduce, prepare derivative works, distribute copies, perform, or publicly display your user content in any medium and for any purpose, including commercial purposes, and to authorize others to do so.
+You agree that you have the right to submit anything you post, and that your user content does not violate the copyright, trademark, trade secret or any other personal or proprietary right of any other party.
+We take no responsibility for, we do not expressly or implicitly endorse, and we do not assume any liability for any user content submitted by you to {siteName}.
+
+# Links
+
+{siteName} is a place with many third-party hyperlinks posted by users like you. We are not responsible for the content or actions of any third party websites or services associated with posted links. You agree to take sole legal responsibility for any links you post, and neither this agreement nor our privacy policy applies to any content on other websites related to those links.
+
+# Rules
+
+These guidelines are intended to keep people safe, protect kids, keep {siteName} running, and to encourage personal responsibility for what you do on {siteName}. You must:
+
+## Keep Everyone Safe:
+
+You agree not to intentionally jeopardize the health and safety of others or yourself.
+
+## Keep Personal Information Off {siteName}:
+
+You agree to not post anyone's sensitive personal information that relates to that person's real-world or online identity.
+
+## Do Not Incite Harm:
+
+You agree not to encourage harm against people.
+
+- Supporting or idolizing terrorist groups is not allowed
+- Animal abuse is forbidden
+- Crush videos and animal abuse videos are not allowed on this site
+
+## Protect Kids:
+
+You agree not to post any child pornography or sexually suggestive content involving minors.
+
+- Drawings of children drawn sexually (Lolicon/Shotacon) are forbidden
+
+## Take Personal Responsibility:
+
+As you use {siteName}, please remember that your speech may have consequences and could lead to criminal and civil liability.
+
+Subverses may create their own rules and enforce them as they see fit, provided they do not violate the terms of this agreement.
+You agree that {siteName} is not responsible for the actions taken or not taken by moderators.
+
+# Moderators
+
+Moderating a subverse is an unofficial, voluntary position. We reserve the right to revoke that position for any user at any time.
+You may not perform moderation actions in return for any form of compensation or favor from third parties.
+When you receive notice that there is content that violates this user agreement on subverses you moderate, you agree to remove it.
+
+# Spam
+
+You may not post any graphics, text, photographs, images, video, audio or other material that we deem to be junk or spam.
+
+# Respect other users
+
+You may not purposefully negate any user's actions to delete or edit their content on {siteName}.
+This is intended to respect the privacy of {siteName} users who delete or edit their content, and is not intended to abridge the fair use or the expressive rights shared by us all.
+
+# Security
+
+Please don't hack us :) We support the responsible reporting of security vulnerabilities. To report a {siteName} security issue, please send an email to rayman@disroot.org.
+
+# Children and {siteName}
+
+{siteName} is not directed at people under the age of 13, and {siteName} does not knowingly collect any personal information from such people. If you know that a user under the age of 13 is accessing {siteName}, please contact us by
+sending an email to rayman@disroot.org.
+
+# DMCA
+
+We will respond to legitimate requests under the Digital Millennium Copyright Act ("DMCA"), and we retain the right to remove user content on {siteName} that we deem to be infringing the copyright of others.
+If you become aware of user content on {siteName} that infringes your copyright rights, you may submit a properly formatted DMCA request (see 17 U.S.C. § 512) to {siteName}.
+
+Misrepresentations of infringement can result in liability for monetary damages. You may want to consult an attorney before taking any action pursuant to the DMCA.
+Any DMCA request should be sent to this contact information:
+
+Copyright Agent copyright@voat.co
+
+Please send our Copyright Agent the following information:
+
+The electronic or physical signature of the owner of the copyright or the person authorized to act on the owner's behalf;
+Identification of the copyrighted work claimed to have been infringed, or a representative list of such works;
+The URL or Internet location of the materials claimed to have been infringed or to be the subject of infringing activity, or information reasonably sufficient to permit us to locate the material;
+Your name, address, telephone number and email address;
+A statement by you that you have a good faith belief that the disputed use of the material is not authorized by the copyright owner, its agent or the law; and
+A statement by you, made under penalty of perjury, that the above information in your notice is accurate and that you are the copyright owner or are authorized to act on the copyright owner's behalf.
+
+If you believe User Content was wrongly removed from the {siteName} site due to a DMCA request, you may request a copy of the DMCA notice and you may file a counter-notification by sending us the following:
+
+Your physical or electronic signature;
+Identification of the material that has been removed or to which access has been disabled and where the material was located online before it was removed or access to it was disabled;
+A statement by you, under penalty of perjury, that you have a good faith belief that the material was removed or disabled as a result of mistake or misidentification of the material to be removed or disabled; and
+Your name, address, and telephone number, and a statement that you consent to the jurisdiction of federal district court for the judicial district in which the address is located, or if your address is outside of the United States, for any judicial district in which the service provider may be found, and that you will accept service of process from the person who provided notification under DMCA 512 subsection (c)(1)(c) or an agent of such person.
+
+# Indemnity
+
+All the things you do and all the information you submit or post to {siteName} remain your responsibility. Indemnity is basically a way of saying that you will not hold us legally liable for any of your user content or actions that infringe the law or the rights of a third party or person in any way.
+
+Specifically, you agree to hold {siteName}, its affiliates, officers, directors, employees, agents, and third-party service providers harmless from and defend them against any claims, costs, damages, losses, expenses, and any other liabilities, including attorneys’ fees and costs, arising out of or related to your access to or use of {siteName}, your violation of this user agreement, and/or your violation of the rights of any third party or person.
+
+# Disclaimer of warranties
+
+{siteName} is provided "as is" and without warranty of any kind. To the maximum extent permitted by law, we and our affiliates and third-party service providers disclaim any warranties, express or implied,
+including (but not limited to) implied warranties of merchantability, fitness for a particular purpose, and non-infringement of proprietary rights, or any other warranty, condition, guarantee or representation, whether oral or electronic.
+You are solely responsible for any damage to your computer or mobile device, loss of use, or loss of your user content.
+We do not guarantee that {siteName} will always work properly.
+
+# Limitation of liability
+
+We will not be liable for any special, consequential, indirect, incidental, punitive, reliance, or exemplary damages, whether in tort, contract, or any other legal theory,
+arising out of or in any way connected with this agreement or your use of or attempt to use {siteName}, including (but not limited to) damages for loss of profits, goodwill, use, or data.
+This limitation on liability shall not be affected even if we have been advised of the possibility of such damages.
+Some states do not allow for the exclusion of implied warranties or the limitation or exclusion of liability for incidental or consequential damages, so the above exclusions may not apply to you.
+You may have other rights that vary from state to state.
+
+You agree to release us, our affiliates, and third-party service providers, and each associated director, employee, agents, and officers, from claims, demands, and damages (actual and consequential), of every kind and nature, known and unknown, disclosed or undisclosed, arising out of or in any way connected to your use of {siteName}.
+
+The headings in this agreement are for convenience and do not control any of its provisions.
+
+# Updates
+
+This Privacy Policy was last updated on: 10/15/2026. Should we update, amend or make any changes to our privacy policy, those changes
+will be posted here.
+This user agreement is effective as of October, 2026.
+""";
+
+        public const string Privacy =
+"""
+# Privacy Policy
+
+If you require any more information or have any questions about our privacy policy, please feel free to contact us by email.
+We consider the privacy of our visitors to be extremely important. This privacy policy document describes in detail the types of personal information is collected and recorded by {siteName} and how we use it.
+
+# Log Files
+
+Like many other Web sites, {siteName} makes use of log files. These files merely logs visitors to the site - usually a standard procedure for hosting companies and a part of hosting services's analytics.
+The information inside the log files includes internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date/time stamp, referring/exit pages, and possibly the number of clicks.
+This information is used to analyze trends, administer the site and track user's movement around the site.
+IP addresses, and other such information are not linked to any information that is personally identifiable.
+
+# Cookies and Web Beacons
+
+{siteName} uses cookies to store information about visitors' preferences, to record user-specific information on which pages the site visitor accesses or visits,
+and to personalize or customize our web page content based upon visitors' browser type or other information that the visitor sends via their browser.
+
+# Third Party Privacy Policies
+
+{siteName} uses Google Recaptcha in order to minimize spam. For more information about how Google handles recorded data, please consult the [Google Privacy Policy](http://www.google.com/policies/privacy/partners/).
+You should consult the respective privacy policies of these third-party servers for more detailed information on their practices as well as for instructions
+about how to opt-out of certain practices. {siteName}'s privacy policy does not apply to, and we cannot control the activities of, such other advertisers or
+web sites. if you wish to disable cookies, you may do so through your individual browser options. more detailed information about cookie management with specific
+web browsers can be found at the browsers' respective websites.
+
+# Children's Information
+
+We believe it is important to provide added protection for children online. We encourage parents and guardians to spend time online with their children to observe,
+participate in and/or monitor and guide their online activity. {siteName} does not knowingly collect any personally identifiable information from children
+under the age of 13. If a parent or guardian believes that {siteName} has in its database the personally-identifiable information of a child under the age of 13,
+please contact us immediately (using the contact in the first paragraph) and we will use our best efforts to promptly remove such information from our records.
+
+# Online Privacy Policy
+
+Only This privacy policy applies only to our online activities and is valid for visitors to our website and regarding information shared and/or collected there.
+This policy does not apply to any information collected offline or via channels other than this website.
+
+# Consent
+
+By using our website, you hereby consent to our privacy policy and agree to its terms.
+
+# Update
+
+This Privacy Policy was last updated on: May 16th, 2015. Should we update, amend or make any changes to our privacy policy, those changes
+will be posted here.
+""";
+
+        /// <summary>
+        /// The shipped body for a help page, or null when the name is not one of
+        /// the site-owned pages — that null is also how callers validate a slug.
+        /// </summary>
+        public static string GetDefault(string name)
+        {
+            if (String.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
+            switch (name.Trim().ToLowerInvariant())
+            {
+                case "useragreement":
+                    return UserAgreement;
+                case "privacy":
+                    return Privacy;
+                default:
+                    return null;
+            }
+        }
+    }
+}

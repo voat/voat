@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Voat, Inc.</Authors>
     <Company>Voat, Inc.</Company>
-    <Description>Port from legacy .net 3.5 validation runtime library for .net 4.5 and now to Core 2</Description>
+    <Description>Port of the legacy .net 3.5 validation runtime library to modern .NET</Description>
     <Version>2.0.1</Version>
   </PropertyGroup>
 
@@ -18,11 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.2.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 
 </Project>

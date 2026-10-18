@@ -1,5 +1,5 @@
-﻿using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -45,19 +45,15 @@ namespace Voat.IO
 
         public override async Task<bool> Delete(FileKey key)
         {
-            //var storageAccount = CloudStorageAccount.Parse(_connectionString);
-            //var blobClient = storageAccount.CreateCloudBlobClient();
-            //var containerReference = blobClient.GetContainerReference(GetContainerName(key));
-            //var blockReference = containerReference.GetBlockBlobReference(key.ID);
             var blockBlob = await GetBlock(key, false);
 
-            return await blockBlob.DeleteIfExistsAsync();
+            return (await blockBlob.DeleteIfExistsAsync()).Value;
         }
         public override async Task<bool> Exists(FileKey key)
         {
             var blockBlob = await GetBlock(key, false);
 
-            return await blockBlob.ExistsAsync();
+            return (await blockBlob.ExistsAsync()).Value;
         }
         public override string Uri(FileKey key, PathOptions options = null)
         {
@@ -82,42 +78,37 @@ namespace Voat.IO
                     break;
             }
             return result;
-            
+
         }
         public override async Task Upload(FileKey key, Stream stream)
         {
             var blockBlob = await GetBlock(key);
 
-            await blockBlob.UploadFromStreamAsync(stream);
+            // default mode: overwrite existing
+            await blockBlob.UploadAsync(stream, overwrite: true);
 
         }
-        private async Task<CloudBlockBlob> GetBlock(FileKey key, bool ensureCreated = true)
+        private async Task<BlobClient> GetBlock(FileKey key, bool ensureCreated = true)
         {
             // Retrieve storage account information from connection string
-            var storageAccount = CloudStorageAccount.Parse(_connectionString);
-
-            // Create a blob client for interacting with the blob service.
-            var blobClient = storageAccount.CreateCloudBlobClient();
+            var blobServiceClient = new BlobServiceClient(_connectionString);
 
             // Create a container for organizing blobs within the storage account.
-            var container = blobClient.GetContainerReference(GetContainerName(key));
+            var container = blobServiceClient.GetBlobContainerClient(GetContainerName(key));
 
             if (ensureCreated)
             {
-                await container.CreateIfNotExistsAsync();
-
-                // allow public access to blobs in this container
-                await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+                // create the container if it does not exist and allow public access to blobs in this container
+                await container.CreateIfNotExistsAsync(PublicAccessType.Blob);
             }
 
-            // Upload a BlockBlob to the newly created container, default mode: overwrite existing
-            var blockBlob = container.GetBlockBlobReference(key.ID);
+            var blockBlob = container.GetBlobClient(key.ID);
 
             return blockBlob;
         }
         protected override string ContentPath(FileKey key)
         {
-            //container is part of path for azureblobs. We can have folders in a container but currenty we aren't using this 
+            //container is part of path for azureblobs. We can have folders in a container but currenty we aren't using this
             //so we just return container-name
             if (key.FileType == FileType.Badge)
             {
@@ -127,95 +118,6 @@ namespace Voat.IO
             {
                 return GetContainerName(key);
             }
-            //var path = "";
-            //switch (type)
-            //{
-            //    case FileType.Badge:
-            //        path = base.ContentPath(type);
-            //        break;
-            //    case FileType.Avatar:
-            //        path = "avatars";
-            //        break;
-            //    case FileType.Thumbnail:
-            //        path = "thumbs";
-            //        break;
-            //}
-            //return path;
         }
     }
-    /*
-     * Original CDN Interaction code
-     * 
-        public static class CloudStorageUtility
-        {
-            // validate the connection string information
-            private static CloudStorageAccount CreateStorageAccountFromConnectionString(string storageConnectionString)
-            {
-                CloudStorageAccount storageAccount;
-                try
-                {
-                    storageAccount = CloudStorageAccount.Parse(storageConnectionString);
-                }
-                catch (FormatException)
-                {
-                    Console.WriteLine("Invalid storage account information provided. Please confirm the AccountName and AccountKey are valid in the app.config file - then restart the sample.");
-                    throw;
-                }
-                catch (ArgumentException)
-                {
-                    Console.WriteLine("Invalid storage account information provided. Please confirm the AccountName and AccountKey are valid in the app.config file - then restart the sample.");
-                    throw;
-                }
-
-                return storageAccount;
-            }
-
-            // check if a blob exists
-            public static bool BlobExists(string blobName, string containerName)
-            {
-                CloudStorageAccount storageAccount = CreateStorageAccountFromConnectionString(CloudConfigurationManager.GetSetting("StorageConnectionString"));
-                CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-
-                return blobClient.GetContainerReference(containerName).GetBlockBlobReference(blobName).Exists();
-            }
-
-            // upload a blob to storage, requires full path
-            public static async Task UploadBlobToStorageAsync(string blobToUpload, string containerName)
-            {
-                // Retrieve storage account information from connection string
-                CloudStorageAccount storageAccount = CreateStorageAccountFromConnectionString(CloudConfigurationManager.GetSetting("StorageConnectionString"));
-
-                // Create a blob client for interacting with the blob service.
-                CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-
-                // Create a container for organizing blobs within the storage account.
-                CloudBlobContainer container = blobClient.GetContainerReference(containerName);
-                try
-                {
-                    await container.CreateIfNotExistsAsync();
-                }
-                catch (StorageException)
-                {
-                    throw;
-                }
-
-                // allow public access to blobs in this container
-                await container.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
-
-                // Upload a BlockBlob to the newly created container, default mode: overwrite existing
-                CloudBlockBlob blockBlob = container.GetBlockBlobReference(Path.GetFileName(blobToUpload));
-                await blockBlob.UploadFromFileAsync(blobToUpload, FileMode.Open);
-            }
-
-            // delete a blob from storage
-            public static bool DeleteBlob(string blobName, string containerName)
-            {
-                CloudStorageAccount storageAccount = CreateStorageAccountFromConnectionString(CloudConfigurationManager.GetSetting("StorageConnectionString"));
-                CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-
-                return blobClient.GetContainerReference(containerName).GetBlockBlobReference(blobName).DeleteIfExists();
-            }
-        }
-    */
-     
 }

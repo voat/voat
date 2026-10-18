@@ -291,17 +291,17 @@ namespace Voat.Controllers
         }
 
         // GET: /help
-        public ActionResult Help(string pagetoshow)
+        public async Task<ActionResult> Help(string pagetoshow)
         {
             ViewBag.SelectedSubverse = string.Empty;
 
             switch (pagetoshow)
             {
                 case "privacy":
-                    return View("~/Views/Help/Privacy.cshtml");
+                    return View("~/Views/Help/Privacy.cshtml", await BuildHelpPageModel("privacy"));
 
                 case "useragreement":
-                    return View("~/Views/Help/UserAgreement.cshtml");
+                    return View("~/Views/Help/UserAgreement.cshtml", await BuildHelpPageModel("useragreement"));
 
                 case "markdown":
                     return View("~/Views/Help/Markdown.cshtml");
@@ -315,10 +315,85 @@ namespace Voat.Controllers
         }
 
         // GET: /help/privacy
-        public ActionResult Privacy()
+        public async Task<ActionResult> Privacy()
         {
             ViewBag.Message = "Privacy Policy";
-            return View("~/Views/Help/Privacy.cshtml");
+            return View("~/Views/Help/Privacy.cshtml", await BuildHelpPageModel("privacy"));
+        }
+
+        // POST: /help/edit/{pagetoshow}
+        [Authorize]
+        [HttpPost]
+        [PreventSpam(30)]
+        [VoatValidateAntiForgeryToken]
+        public async Task<ActionResult> UpdateHelpPage(HelpPageEditModel model)
+        {
+            //This is the enforcement point. The Edit control in _HelpPage.cshtml is
+            //only shown to the owner as UX; anything can POST here, so the check has
+            //to happen again on the way in.
+            if (!VoatSettings.Instance.IsSiteOwner(User?.Identity?.Name))
+            {
+                return StatusCode(403);
+            }
+
+            if (model == null || SitePageDefaults.GetDefault(model.Name) == null)
+            {
+                return StatusCode(403);
+            }
+
+            var name = model.Name.Trim().ToLowerInvariant();
+
+            if (!ModelState.IsValid)
+            {
+                //Hand the draft back so a rejected save does not lose the owner's text.
+                ViewBag.SelectedSubverse = string.Empty;
+                return View(HelpPageViewPath(name), new HelpPageViewModel
+                {
+                    Name = name,
+                    Content = model.Content,
+                    IsSiteOwner = true
+                });
+            }
+
+            using (var repo = new Repository(User))
+            {
+                await repo.SaveSitePage(name, model.Content, User.Identity.Name);
+            }
+
+            //Post/Redirect/Get so a refresh does not resubmit.
+            return RedirectToAction("Help", new { pagetoshow = name });
+        }
+
+        private async Task<HelpPageViewModel> BuildHelpPageModel(string name)
+        {
+            var model = new HelpPageViewModel
+            {
+                Name = name,
+                IsSiteOwner = VoatSettings.Instance.IsSiteOwner(User?.Identity?.Name)
+            };
+
+            using (var repo = new Repository(User))
+            {
+                var page = await repo.GetSitePage(name);
+                model.Content = page?.Content ?? SitePageDefaults.GetDefault(name);
+            }
+
+            return model;
+        }
+
+        private static string HelpPageViewPath(string name)
+        {
+            switch (name)
+            {
+                case "privacy":
+                    return "~/Views/Help/Privacy.cshtml";
+
+                case "useragreement":
+                    return "~/Views/Help/UserAgreement.cshtml";
+
+                default:
+                    return null;
+            }
         }
 
         // GET: list of subverses user is subscribed to for sidebar

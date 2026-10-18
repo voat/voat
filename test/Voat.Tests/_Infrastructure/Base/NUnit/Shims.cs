@@ -108,12 +108,14 @@ namespace Microsoft.VisualStudio.TestTools.UnitTesting
     {
         public static async Task ThrowsAsync<T>(Func<Task> func) where T: Exception
         {
-            await Assert.ThrowsExceptionAsync<T>(func);
+            // MSTest 4 renamed ThrowsExceptionAsync to ThrowsExactlyAsync (still an exact type match).
+            await Assert.ThrowsExactlyAsync<T>(func);
 
         }
         public static void Throws<T>(Action action) where T : Exception
         {
-            Assert.ThrowsException<T>(action);
+            // MSTest 4 renamed ThrowsException to ThrowsExactly (still an exact type match).
+            Assert.ThrowsExactly<T>(action);
         }
         /// <summary>
         /// Verifies Query returns

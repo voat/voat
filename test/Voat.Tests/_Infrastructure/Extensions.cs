@@ -19,8 +19,9 @@ namespace Voat.Tests.Infrastructure
         }
         public static string GetUnitTestUserPassword(this string userName)
         {
+            //Must satisfy the configured password policy (VoatSettings.PasswordOptions.RequiredLength = 8).
             var pwd = userName;
-            while (pwd.Length < 6)
+            while (pwd.Length < 8)
             {
                 pwd += userName;
             }

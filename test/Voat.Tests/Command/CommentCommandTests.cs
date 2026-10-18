@@ -67,7 +67,7 @@ namespace Voat.Tests.CommandTests
             using (var db = new Voat.Data.Repository(user))
             {
                 var comment = await db.GetComment(c.Response.ID);
-                Assert.IsNotNull(comment, "Couldn't find comment in db", c.Response.ID);
+                Assert.IsNotNull(comment, $"Couldn't find comment in db {c.Response.ID}");
 
                 Assert.AreEqual(c.Response.ID, comment.ID);
                 Assert.AreEqual(comment.ID.ToString(), comment.UserName);
@@ -102,7 +102,7 @@ namespace Voat.Tests.CommandTests
             using (var db = new Voat.Data.Repository(user))
             {
                 var comment = await db.GetComment(c.Response.ID);
-                Assert.IsNotNull(comment, "Couldn't find comment in db", c.Response.ID);
+                Assert.IsNotNull(comment, $"Couldn't find comment in db {c.Response.ID}");
                 Assert.AreEqual(c.Response.ID, comment.ID);
                 Assert.AreEqual(c.Response.UserName, comment.UserName);
                 Assert.AreEqual(c.Response.Content, comment.Content);

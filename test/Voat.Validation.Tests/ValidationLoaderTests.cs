@@ -11,11 +11,15 @@ namespace Voat.Validation.Tests
     {
         [TestMethod]
         [TestCategory("Validation"), TestCategory("Validation.Framework")]
-        [ExpectedException(typeof(ArgumentException))]
         public void ValidationLoader_AttributeTest_BadTypeName()
         {
-            var obj = new DomainObjectError();
-            var result = ValidationHandler.Validate(obj);
+            // MSTest 4 removed [ExpectedException]; Assert.ThrowsExactly matches the attribute's
+            // default exact-type semantics.
+            Assert.ThrowsExactly<ArgumentException>(() =>
+            {
+                var obj = new DomainObjectError();
+                var result = ValidationHandler.Validate(obj);
+            });
         }
 
         [TestMethod]

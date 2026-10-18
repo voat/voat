@@ -184,6 +184,7 @@
                             {
                                 using (Html.BeginForm("Delete", "ApiKeys", new { id = item.ID }, FormMethod.Post))
                                 {
+                                    @Html.AntiForgeryToken()
                                     <input type="submit" value="Delete" class="btn-whoaverse" />
                                 }
                             }

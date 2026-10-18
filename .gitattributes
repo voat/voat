@@ -1,0 +1,7 @@
+# Shell scripts must stay LF. A Windows checkout with core.autocrlf=true would
+# otherwise turn every line into CRLF and produce "$'\r': command not found"
+# the moment an operator runs them on a Linux VPS.
+*.sh text eol=lf
+
+# Docker entrypoint scripts have the same requirement.
+docker/db-init/*.sql text eol=lf

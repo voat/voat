@@ -29,6 +29,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using System.Collections.Generic;
 using Voat.Common;
+using Voat.Configuration;
 
 namespace Voat.Utilities
 {
@@ -90,8 +91,28 @@ namespace Voat.Utilities
                             //add it to the output for verification?
                             x.attributes.Add("data-ScriptStrip", String.Format("/* script detected: {0} */", href));
                         }
+                        else if (!UrlUtility.IsUrlSchemeAllowed(href))
+                        {
+                            //Scheme allow-list: strip data:/vbscript:/anything else non-http(s)/ftp/mailto
+                            x.attributes["href"] = "#";
+
+                            x.attributes.Add("data-ScriptStrip", String.Format("/* scheme not allowed: {0} */", href));
+                        }
                     }
                     return true;
+                }),
+                PrepareImage = new Func<HtmlTag, bool, bool>((x, titledImage) =>
+                {
+                    //Images got no scheme check before: ![x](javascript:...)/![x](data:text/html,...)
+                    if (x.attributes.ContainsKey("src"))
+                    {
+                        string src = x.attributes["src"];
+                        if (!String.IsNullOrEmpty(src) && !UrlUtility.IsUrlSchemeAllowed(src))
+                        {
+                            x.attributes["src"] = "#";
+                        }
+                    }
+                    return false;
                 }),
                 ExtraMode = true,
                 SafeMode = true,
@@ -107,6 +128,27 @@ namespace Voat.Utilities
             {
                 return "Content contains unsafe or unknown tags.";
             }
+        }
+
+        /// <summary>
+        /// Renders an owner-edited site page (User Agreement, Privacy Policy).
+        ///
+        /// Differs from FormatMessage in two ways:
+        ///   - processContent is off, so the social autolinker leaves the text
+        ///     alone. It would otherwise turn @mentions, v/sub, /r/... and bare
+        ///     urls in legal copy into links. SafeMode and the link scheme
+        ///     allow-list still apply, exactly as for user content.
+        ///   - {siteName} is substituted after markdown, HtmlEncoded first, so a
+        ///     brand name carrying markdown punctuation or markup cannot alter
+        ///     the output.
+        /// </summary>
+        public static string FormatSitePageMessage(string markdown)
+        {
+            var html = FormatMessage(markdown, processContent: false);
+
+            return html.Replace(
+                SitePageDefaults.SiteNamePlaceholder,
+                System.Net.WebUtility.HtmlEncode(VoatSettings.Instance.SiteName));
         }
 
         
