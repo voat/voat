@@ -15,5 +15,12 @@ Read the installation guide here: https://github.com/welchythecat/REvoat/blob/mo
 	
 Support us with a ⭐!
 
+<a href="https://www.star-history.com/?repos=welchythecat%2Frevoat&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=welchythecat/revoat&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=welchythecat/revoat&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=welchythecat/revoat&type=date&legend=top-left" />
+ </picture>
+</a>
 
 </div>
