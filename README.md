@@ -8,6 +8,15 @@ REvoat is a new and improved version of voat (a now-defunct social media site)
 
 Read the installation guide here: https://github.com/welchythecat/REvoat/blob/modernize/INSTALL.md
 
+# DONATE
+
+**BTC** - `bc1qh4hgx2nnsye0lf2w6rar8wj3j3j4cdwc0nnr7h`
+
+**ETH** - `0x261df8c7CBDe616f335Dd81caB235Ec0bE914b2f`
+
+**SOL** - `8NAwwC7pTCteMrf61uoiQYTZAoYEurWJ51gYtCgdHuM2`
+
+
 
 ---
 
